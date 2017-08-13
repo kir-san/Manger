@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:tools="http://schemas.android.com/tools">
+    <PreferenceCategory
+        android:title="@string/pref_temp"/>
+    <EditTextPreference
+        android:key="set_memory"
+        android:summary="Меняйте его если это вам действительно надо"
+        android:title="Путь к корневой папке"
+        />
+    <PreferenceCategory
+        android:title="Настройка сетки библиотеки">
+        <ListPreference
+            android:key="portrait_span"
+            android:title="Портретный режим"/>
+        <ListPreference
+            android:key="landscape_span"
+            android:title="Ландшафтный режим"/>
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="Настройки библиотеки">
+        <CheckBoxPreference
+            android:title="Отображение категории"
+            android:key="show_category"
+            android:summary="Отображение названия категории у каждой манги в категории 'Все'"
+            />
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

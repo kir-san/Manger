@@ -1,0 +1,88 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+
+android {
+
+    signingConfigs {
+        realese {
+            keyAlias 'kir-san'
+            keyPassword 'el psy kongro'
+            storeFile file('C:/Projects/android/Key.jks')
+            storePassword 'el psy kongro'
+        }
+    }
+
+    compileSdkVersion 26
+    buildToolsVersion "26.0.0"
+    defaultConfig {
+        applicationId "com.san.kir.manger"
+        minSdkVersion 19
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.6.3"
+        vectorDrawables.useSupportLibrary = true
+    }
+    buildTypes {
+        debug {
+            ext.enableCrashlytics = false
+        }
+        release {
+//            shrinkResources true
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.realese
+        }
+    }
+}
+
+def dbflow_version = "3.1.1"
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation 'com.android.support:appcompat-v7:26.0.0'
+    implementation 'com.android.support:design:26.0.0'
+    implementation 'com.android.support:recyclerview-v7:26.0.0'
+    implementation 'com.android.support:preference-v7:26.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.15'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.15'
+
+    implementation "org.jetbrains.anko:anko:0.10.1"
+    implementation 'org.jetbrains.anko:anko-appcompat-v7:0.10.1'
+    implementation 'org.jetbrains.anko:anko-design:0.10.1'
+    implementation 'org.jetbrains.anko:anko-recyclerview-v7:0.10.1'
+
+    implementation 'android.arch.lifecycle:extensions:1.0.0-alpha8'
+    implementation 'android.arch.persistence.room:runtime:1.0.0-alpha8'
+    kapt "android.arch.lifecycle:compiler:1.0.0-alpha8"
+    kapt "android.arch.persistence.room:compiler:1.0.0-alpha8"
+
+    implementation 'io.reactivex:rxjava:1.1.9'
+    implementation 'io.reactivex:rxandroid:1.2.1'
+
+    kapt "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflow_version}"
+    implementation "com.github.Raizlabs.DBFlow:dbflow-core:${dbflow_version}"
+    implementation "com.github.Raizlabs.DBFlow:dbflow:${dbflow_version}"
+    implementation "com.github.Raizlabs.DBFlow:dbflow-kotlinextensions:${dbflow_version}"
+
+//    compile 'com.android.support:multidex:1.0.1'
+//    compile "com.github.chrisbanes:PhotoView:1.3.1"
+//    compile 'com.squareup.picasso:picasso:2.5.2'
+
+    implementation 'com.bignerdranch.android:expandablerecyclerview:2.1.1'
+    implementation 'com.squareup.okhttp3:okhttp:3.7.0'
+    implementation 'org.jsoup:jsoup:1.8.3'
+}
+
+kapt {
+    generateStubs = true
+}
+
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
+}

@@ -1,0 +1,258 @@
+<resources>
+  <string name="app_name"
+          translatable="false">Manger
+  </string>
+
+    <!-- Main Activity -->
+    <string name="main_check_app_ver_find">Найденная версия: %1$s.\nТекущая версия: %2$s</string>
+    <string name="main_check_app_ver_no_find">У вас установленна актуальная версия</string>
+    <string name="main_check_app_ver_close">Закрыть</string>
+    <string name="main_check_app_ver_go_to">Перейти на 4pda.ru</string>
+    <string name="main_check_app_ver_error">Произошла ошибка при поиске обновлений, возможно у вас интернет отключен</string>
+    <string name="main_check_new_manga_find">Найдена новая манга</string>
+    <string name="main_check_new_manga_go_to">Перейти</string>
+    <string name="main_check_new_manga_no_dirs">Нет папки local в папке Manger/manga, она будет создана автоматически</string>
+
+    <!-- AddManga -->
+    <string name="add_manga_ready">Готово</string>
+    <string name="add_manga_name">Название</string>
+    <string name="add_manga_author">Автор</string>
+    <string name="add_manga_about">Описание</string>
+    <string name="add_manga_categories">Категории</string>
+    <string name="add_manga_genres">Жанры</string>
+    <string name="add_manga_path">Путь к папке</string>
+    <string name="add_manga_status">Статус</string>
+    <string name="add_manga_site">Ссылка</string>
+    <string name="add_manga_color">Цвет элемента</string>
+    <string name="add_manga_logo">Логотип</string>
+
+    <!-- CatalogForOneSite -->
+    <string name="catalog_for_one_site_prefix_volume">Глав %d</string>
+    <string name="catalog_for_one_site_load_ok">Манга %s успешно добавлена</string>
+    <string name="catalog_for_one_site_selector_item">Выберете в какую категорию добавить</string>
+    <string name="catalog_for_one_site_name">Название</string>
+    <string name="catalog_for_one_site_date">Дата</string>
+    <string name="catalog_for_one_site_pop">Популярность</string>
+    <string name="catalog_for_one_site_types">Типы</string>
+    <string name="catalog_for_one_site_genres">Жанры</string>
+    <string name="catalog_for_one_site_load_data">Загрузка данных</string>
+    <string name="catalog_for_one_site_load_cancel">Загрузка отменена</string>
+    <string name="catalog_for_one_site_search">Поиск</string>
+    <string name="catalog_for_one_site_update">Обновить</string>
+    <string name="catalog_for_one_site_redownload">Перекачать</string>
+    <string name="catalog_for_one_site_filters">Фильтры</string>
+    <string name="catalog_for_one_site_update_all">Обновить все</string>
+    <string name="catalog_for_one_site_on_error_load">Произошла ошибка при загрузке каталогов, возможно у вас интернет отключен</string>
+    <string name="catalog_for_one_site_progress_title">Получение списка глав</string>
+
+    <!-- Viewer -->
+    <string name="viewer_chapters_text">Главы: %1$d/%2$d</string>
+    <string name="viewer_pages_text">Страницы: %1$d/%2$d</string>
+    <string name="viewer_page_next_text">Для перехода на следующию главу нажмите на экран</string>
+    <string name="viewer_page_prev_text">Для перехода на предыдущую главу нажмите на экран</string>
+    <string name="viewer_page_none_next_text">Увы но еще одной главы нет, мне очень жаль.</string>
+    <string name="viewer_page_none_prev_text">Эта самая первая глава, ничего первее быть не должно</string>
+    <string name="viewer_menu_orientation">Ориентация</string>
+    <string name="viewer_menu_orientation_portrait">Портретная</string>
+    <string name="viewer_menu_orientation_portrait_reverse">Портретная обратная</string>
+    <string name="viewer_menu_orientation_landscape">Ландшафтная</string>
+    <string name="viewer_menu_orientation_landscape_reverse">Ландшафтная обратная</string>
+    <string name="viewer_menu_orientation_auto">Автоматическая</string>
+    <string name="viewer_menu_control">Управление</string>
+    <string name="viewer_menu_is_tap">Тапы по экрану</string>
+    <string name="viewer_menu_is_swipe">Свайпы по экрану</string>
+    <string name="viewer_menu_is_key">Кнопки громкости</string>
+
+    <!-- FirstRun -->
+    <string name="first_run_text">Это первый запуск приложения надо бы кое-чего настроить</string>
+    <string name="first_run_help">Первым делом обновите каталоги из соответствующего пункта меню и ищите себе мангу которую хотите почитать</string>
+    <string name="first_run_exit">Выйти</string>
+    <string name="first_run_next">Дальше</string>
+    <string name="first_run_okay">Готово</string>
+    <string name="first_run_storage">Выберете где хранить мангу:</string>
+    <string name="first_run_exit_text">Двойное нажатие закроет приложение</string>
+
+    <!-- MainMenu -->
+    <string name="main_menu_library">Библиотека</string>
+    <string name="main_menu_library_count">Библиотека: %d</string>
+    <string name="main_menu_storage">Хранилище</string>
+    <string name="main_menu_category">Категории</string>
+    <string name="main_menu_catalogs">Каталоги</string>
+    <string name="main_menu_downloader">Загрузчик</string>
+    <string name="main_menu_downloader_count">Загрузчик: %d</string>
+    <string name="main_menu_latest">Обновления</string>
+    <string name="main_menu_latest_count">Обновления: %d</string>
+
+    <!-- Storage -->
+    <string name="storage_local">Локальное хранилище</string>
+    <string name="storage_list_item_size">Размер: %s Мб</string>
+    <string name="storage_list_item_new">Новая</string>
+    <string name="storage_popmenu_add">Добавить</string>
+    <string name="storage_popmenu_del_read_chapters">Удалить прочитанные главы</string>
+
+    <!-- Library -->
+    <string name="library_sort_dialog_add">По дате добавления</string>
+    <string name="library_sort_dialog_abc">В алфавитном порядке</string>
+    <string name="library_popupmenu_about">Свойства</string>
+    <string name="library_popupmenu_delete">Удалить</string>
+    <string name="library_popupmenu_storage">Используемая память</string>
+    <string name="library_popupmenu_delete_message">Вы действительно хотите удалить эту мангу</string>
+    <string name="library_popupmenu_delete_title">Внимание!!!</string>
+    <string name="library_popupmenu_delete_ok">Конечно</string>
+    <string name="library_popupmenu_delete_no">Никогда</string>
+    <string name="library_popupmenu_set_category">Сменить категорию</string>
+    <string name="library_popupmenu_select">Выделить</string>
+    <string name="library_popupmenu_delete_read_chapters">Удалить прочитанное</string>
+    <string name="library_popupmenu_delete_read_chapters_message">Своими действиями вы хотите лишить себя такой кучи манги?</string>
+    <string name="library_popupmenu_delete_read_chapters_ok">Да</string>
+    <string name="library_popupmenu_delete_read_chapters_no">Не, не</string>
+    <string name="library_help">Библиотека пуста.\n перейдите в каталог\n и добавьте новой манги</string>
+    <string name="library_help_go">В каталоги</string>
+    <string name="library_sort_dialog_reverse">Изменить порядок?</string>
+    <string name="library_page_item_read_status">%1$d</string>
+    <string name="library_menu_reload">Обновить текущую категорию</string>
+    <string name="library_menu_reload_all">Обновить все</string>
+    <string name="library_menu_order">Порядок</string>
+    <string name="library_menu_order_title">Настройки порядка в библиотеке</string>
+    <string name="library_menu_update">Поиск обновлений</string>
+    <string name="library_action_move_to_category">Переместить в категорию</string>
+    <string name="library_action_remove">Удалить</string>
+    <string name="library_action_remove_title">Вы действительно хотите удалить</string>
+    <string name="library_action_remove_yes">Да, хочу</string>
+    <string name="library_action_remove_yes_with_files">Да, вместе с файлами</string>
+    <string name="library_action_remove_no">Нет, не хочу</string>
+
+
+    <!-- ListChapters -->
+    <string name="list_chapters_read">Прочитано %1$d из %2$d</string>
+    <string name="list_chapters_remove_text">Вы действительно хотите удалить</string>
+    <string name="list_chapters_remove_yes">Да</string>
+    <string name="list_chapters_remove_no">Нет</string>
+    <string name="list_chapters_option_update">Обновить</string>
+    <string name="list_chapters_message_error">Произошла ошибка при обновлении</string>
+    <string name="list_chapters_message_no_found">Новых глав найти не удалось</string>
+    <string name="list_chapters_message_count_new">Новые главы есть, их а ж %d</string>
+    <plurals name="list_chapters_action_selected">
+        <item quantity="one">%d выбран</item>
+        <item quantity="other">%d выбрано</item>
+    </plurals>
+    <string name="list_chapters_open_is_download">Спокойствие, только спокойствие! Скоро скачается.</string>
+    <string name="list_chapters_open_not_exists">Глава отсутствует в телефоне, вы наверное удалили ее или не скачали</string>
+    <string name="list_chapters_delete_text">Вы действительно хотите удалить эту главу?</string>
+    <string name="list_chapters_delete_yes">Окей</string>
+    <string name="list_chapters_delete_no">О, нет</string>
+    <string name="list_chapters_delete_not_delete">Удалить не получилось</string>
+    <string name="list_chapters_delete_okay_delete">Глава была удалена без возвратно</string>
+    <string name="list_chapters_delete_error">При удалении главы произошла не предвиденная ошибка</string>
+    <string name="list_chapters_download_cancel">Нажми два раза и отмени загрузку</string>
+    <string name="list_chapters_download_progress">%d %%</string>
+    <string name="list_chapters_selection_del_ok">У вас нет больше этих глав</string>
+    <string name="list_chapters_selection_del_error">Нельзя удалить то чего нет</string>
+    <string name="list_chapters_selection_load_ok">Качаю главы. Их всего %d</string>
+    <string name="list_chapters_selection_load_error">Все было скачано раньше</string>
+    <string name="action_select_all">Выбрать все</string>
+    <string name="action_delete">Удалить</string>
+    <string name="action_set_download">Скачать</string>
+    <string name="action_set_read">Пометить прочитаными</string>
+    <string name="action_set_not_read">Пометить не прочитаными</string>
+    <string name="action_select_prev">Выбрать предыдущие</string>
+    <string name="action_select_next">Выбрать следующие</string>
+
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Настройки</string>
+
+    <string name="fab_menu_local_manga">Локальное хранилище</string>
+
+    <string name="pref_temp">Настройки приложения</string>
+
+    <string name="site_volume">Объем: %1$d + %2$d</string>
+
+    <string name="ic_action_all">readAll</string>
+    <string name="ic_action_read">readVisible</string>
+    <string name="ic_action_not_read">notRead</string>
+    <string name="ic_action_name">sort</string>
+
+    <string name="name">Автор: Kir San</string>
+    <string name="email">provakator-30@mail.ru</string>
+    <string name="catalog_fot_one_site_warning">Внимание</string>
+    <string name="catalog_fot_one_site_redownload_text">Нужно ваше согласие на обновление каталога</string>
+    <string name="catalog_fot_one_site_redownload_ok">Согласен</string>
+    <string name="catalog_fot_one_site_redownload_cancel">Не согласен</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_social_recommendations">Enable social recommendations</string>
+    <string name="pref_description_social_recommendations">Recommendations for people to contact
+        based on your message history
+    </string>
+
+    <string name="pref_title_display_name">Display name</string>
+    <string name="pref_default_display_name">John Smith</string>
+
+    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
+    <string-array name="pref_example_list_titles">
+        <item>Always</item>
+        <item>When possible</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_example_list_values">
+        <item>1</item>
+        <item>0</item>
+        <item>-1</item>
+    </string-array>
+
+    <!-- Example settings for Data & Sync -->
+    <string name="pref_header_data_sync">Data &amp; sync</string>
+
+    <string name="pref_title_sync_frequency">Sync frequency</string>
+    <string-array name="pref_sync_frequency_titles">
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_sync_frequency_values">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>360</item>
+        <item>-1</item>
+    </string-array>
+
+    <string-array name="list_preference_entries">
+        <item>Entry 1</item>
+        <item>Entry 2</item>
+        <item>Entry 3</item>
+    </string-array>
+
+    <string-array name="list_preference_entry_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <string-array name="multi_select_list_preference_default_value"/>
+
+    <string name="pref_title_system_sync_settings">System sync settings</string>
+
+    <!-- Example settings for Notifications -->
+    <string name="pref_header_notifications">Notifications</string>
+
+    <string name="pref_title_new_message_notifications">New message notifications</string>
+
+    <string name="pref_title_ringtone">Ringtone</string>
+    <string name="pref_ringtone_silent">Silent</string>
+
+    <string name="pref_title_vibrate">Vibrate</string>
+    <string name="title_activity_category">CategoryActivity</string>
+</resources>

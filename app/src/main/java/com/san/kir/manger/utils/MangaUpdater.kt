@@ -16,7 +16,7 @@ import rx.schedulers.Schedulers
 
 
 object MangaUpdater {
-    private val _context = App.context
+    private var _context: App = App.context
     private val _notifyManager = _context.notificationManager
     private val _notify = NotificationCompat.Builder(_context)
             .setContentTitle("Ищу новые главы")

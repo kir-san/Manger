@@ -65,8 +65,7 @@ class ViewerPageFragment : Fragment() {
                 textView("При загрузке произошла ошибка")
                 textView {
                     bind(errorData) { (size, width, height) ->
-                        text = "Размер файла $size Мб\n" +
-                                "Размер страницы $width x $height"
+                        text = "Размер файла $size Мб\n" + "Размер страницы $width x $height"
                     }
                 }
                 bind(isError) { visibility = if (it) View.VISIBLE else View.GONE }
@@ -88,8 +87,8 @@ class ViewerPageFragment : Fragment() {
                     img.inJustDecodeBounds = true
                     BitmapFactory.decodeFile(mFile.path, img)
 
-                    val MAX: Double = 9500.0
-                    var diff: Double = 1.0
+                    val MAX = 9500.0
+                    var diff = 1.0
 
                     val mainSize = maxOf(img.outWidth, img.outHeight)
 
@@ -137,16 +136,6 @@ class ViewerPageFragment : Fragment() {
                 bind(isError) { visibility = if (it) View.GONE else View.VISIBLE }
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-//        sub?.let {
-//            if (!it.isUnsubscribed)
-//                it.unsubscribe()
-//        }
-//        sub = null
-//        loadImg = null
     }
 }
 

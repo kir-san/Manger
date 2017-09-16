@@ -27,9 +27,8 @@ import com.san.kir.manger.picasso.Callback
 import com.san.kir.manger.picasso.NetworkPolicy
 import com.san.kir.manger.picasso.Picasso
 import com.san.kir.manger.utils.ID
-import com.san.kir.manger.utils.LibraryAdaptersCount
-import com.san.kir.manger.utils.SET_MEMORY
 import com.san.kir.manger.utils.getDrawableCompat
+import com.san.kir.manger.utils.getFullPath
 import com.san.kir.manger.utils.lengthMb
 import com.san.kir.manger.utils.name_SHOW_CATEGORY
 import kotlinx.coroutines.experimental.CommonPool
@@ -62,20 +61,15 @@ import org.jetbrains.anko.textColor
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.verticalLayout
 import org.jetbrains.anko.wrapContent
-import java.io.File
 
 class LibraryPageItemView(private val isMain: Boolean = false,
                           private val fragment: LibraryFragment) : AnkoComponent<ViewGroup> {
-    object categories {
-        val name_CAT = "category"
-        val mCat = CategoryWrapper.getCategories().map { mapOf(name_CAT to it.name) }
-    }
+    private val name_CAT = "category"
+    private val mCat = CategoryWrapper.getCategories().map { mapOf(name_CAT to it.name) }
 
     private object _id {
         val logo = ID.generate()
         val name = ID.generate()
-        val color = ID.generate()
-        val author = ID.generate()
         val notRead = ID.generate()
     }
 
@@ -118,14 +112,14 @@ class LibraryPageItemView(private val isMain: Boolean = false,
                 margin = dip(2)
             }
             onClick {
-                if (LibraryFragment.actionMode == null)
+                if (fragment.actionMode == null)
                     startActivity<ListChaptersActivity>("manga_unic" to manga.unic)
                 else
                     fragment.onListItemSelect(_position)
             }
 
             onLongClick {
-                if (LibraryFragment.actionMode == null)
+                if (fragment.actionMode == null)
                     PopupMenu(ctx, it).apply {
                         val menu_about = menu.add(R.string.library_popupmenu_about)
                         val menu_set_cat = menu.add(R.string.library_popupmenu_set_category)
@@ -171,8 +165,7 @@ class LibraryPageItemView(private val isMain: Boolean = false,
                                                     labelView("Текущий объем")
                                                     textViewBold15Size(text = "Считаю2s...") {
                                                         launch(CommonPool) {
-                                                            val size = File(SET_MEMORY,
-                                                                            manga.path).lengthMb
+                                                            val size = getFullPath(manga.path).lengthMb
                                                             launch(UI) {
                                                                 text = "$size Мб"
                                                             }
@@ -221,7 +214,7 @@ class LibraryPageItemView(private val isMain: Boolean = false,
                                 menu_delete -> alert(R.string.library_popupmenu_delete_message,
                                                      R.string.library_popupmenu_delete_title) {
                                     positiveButton(R.string.library_popupmenu_delete_ok) {
-                                        LibraryAdaptersCount.delete(manga)
+                                        fragment.pagerAdapter.delete(manga)
                                     }
                                     negativeButton(R.string.library_popupmenu_delete_no) {}
                                 }.show()
@@ -232,16 +225,16 @@ class LibraryPageItemView(private val isMain: Boolean = false,
                                         anchorView = this@squareRelativeLayout
 //                                    width = wrapContent
                                         setAdapter(SimpleAdapter(this@with.ctx,
-                                                                 categories.mCat,
+                                                                 mCat,
                                                                  R.layout.dialog_library_item_set_category,
-                                                                 arrayOf(categories.name_CAT),
+                                                                 arrayOf(name_CAT),
                                                                  intArrayOf(android.R.id.text1)
                                         ))
 //                                    isModal = true
                                         setOnItemClickListener { _, _, i, _ ->
-                                            manga.categories = categories.mCat[i][categories.name_CAT] as String
+                                            manga.categories = mCat[i][name_CAT] as String
                                             manga.update()
-                                            LibraryAdaptersCount.update()
+                                            fragment.pagerAdapter.update()
                                             dismiss()
                                         }
                                         show()
@@ -251,9 +244,10 @@ class LibraryPageItemView(private val isMain: Boolean = false,
                                     fragment.onListItemSelect(_position)
                                 }
                                 menu_storage -> {
-                                    val dialog = StorageItemFragment()
-                                    dialog.setManga(manga)
-                                    dialog.show(fragment.fragmentManager, "storage")
+                                    with(StorageItemFragment()) {
+                                        bind(manga, fragment)
+                                        show(fragment.fragmentManager, "storage")
+                                    }
                                 }
                                 menu_delete_read -> {
                                     StorageUtils.deleteReadChapters(this@with, manga)
@@ -283,7 +277,7 @@ class LibraryPageItemView(private val isMain: Boolean = false,
                 scaleType = ImageView.ScaleType.FIT_XY
 
                 bind(logo) { uri ->
-                    com.san.kir.manger.picasso.Picasso.with(this@with.ctx)
+                    Picasso.with(this@with.ctx)
                             .load(uri)
                             .networkPolicy(com.san.kir.manger.picasso.NetworkPolicy.OFFLINE)
                             .into(this, object : Callback {
@@ -328,7 +322,7 @@ class LibraryPageItemView(private val isMain: Boolean = false,
                     text = resources.getString(com.san.kir.manger.R.string.library_page_item_read_status,
                                                it.first)
                 }
-                backgroundResource = com.san.kir.manger.R.color.colorPrimary
+                backgroundResource = R.color.colorPrimary
                 bind(color) { background = context.getDrawableCompat(it) }
 
                 onClick {

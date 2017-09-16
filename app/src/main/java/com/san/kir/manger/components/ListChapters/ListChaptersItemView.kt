@@ -378,8 +378,8 @@ class ListChaptersItemView(val activity: ListChaptersActivity) : AnkoComponent<V
         }
         progressDownload.item = 0 // Сбросить прогресс
         task = ChaptersDownloader.getTask(chapter) // Получить новую задачу
-        task.max.bind(0) { maxDownload.item = it } // Подписаться на новые данные
-        task.progress.bind(0) { progressDownload.item = it } // Подписаться на новые данные
+        task.max.bindAndRun(0) { maxDownload.item = it } // Подписаться на новые данные
+        task.progress.bindAndRun(0) { progressDownload.item = it } // Подписаться на новые данные
     }
 
     // Привязка значений

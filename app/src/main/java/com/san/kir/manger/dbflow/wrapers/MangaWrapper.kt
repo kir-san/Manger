@@ -12,6 +12,7 @@ import com.san.kir.manger.dbflow.models.Manga_Table.categories
 import com.san.kir.manger.dbflow.models.Manga_Table.unic
 import com.san.kir.manger.dbflow.models.SiteCatalogElement
 import com.san.kir.manger.utils.categoryAll
+import com.san.kir.manger.utils.getFullPath
 
 object MangaWrapper {
     private fun getAll() = (select from Manga::class)
@@ -27,6 +28,10 @@ object MangaWrapper {
     fun get(unicName: String) = (getAll() where (unic `is` unicName)).querySingle()
     suspend fun asyncGet(unic: String): Manga? {
         return (asyncGetAll() where (Manga_Table.unic `is` unic)).querySingle()
+    }
+
+    fun getFromPath(shortPath: String) = getAllManga().firstOrNull {
+        getFullPath(it.path) == getFullPath(shortPath)
     }
 
     /*fun getAllWithCategories(category: String): MutableList<Manga> {

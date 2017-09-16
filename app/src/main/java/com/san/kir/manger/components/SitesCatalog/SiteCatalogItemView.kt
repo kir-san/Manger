@@ -36,6 +36,7 @@ import org.jetbrains.anko.wrapContent
 import kotlin.coroutines.experimental.CoroutineContext
 
 class SiteCatalogItemView : AnkoComponent<ViewGroup> {
+
     private object _id {
         val name = ID.generate()
         val logo = ID.generate()

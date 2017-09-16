@@ -37,7 +37,7 @@ class DownloadManagerItemView(private val adapter: DownloadManagerAdapter) :
         val cancel = ID.generate()
         val percent = ID.generate()
         val name = ID.generate()
-        val progress: Int = ID.generate()
+        val progress = ID.generate()
         val bar = ID.generate()
     }
 
@@ -66,8 +66,7 @@ class DownloadManagerItemView(private val adapter: DownloadManagerAdapter) :
                 onClick {
                     item?.let {
                         // На нажатие кнопки отменить загрузку и удалить элемент из списка
-                        ChaptersDownloader.cancelTask(
-                                item!!)
+                        ChaptersDownloader.cancelTask(item!!)
                         adapter.removeItem(item!!)
                     }
                 }
@@ -146,8 +145,8 @@ class DownloadManagerItemView(private val adapter: DownloadManagerAdapter) :
 
         this.item = item
         name.item = item.name
-        item.progress.bind(0) { progressBinder.item = it }
-        item.max.bind(0) { maxBinder = it }
+        item.progress.bindAndRun(0) { progressBinder.item = it }
+        item.max.bindAndRun(0) { maxBinder = it }
 
 
     }

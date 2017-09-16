@@ -22,7 +22,7 @@ import com.san.kir.manger.R
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.isFirstRun
 import com.san.kir.manger.utils.sPrefViewer
-import com.san.kir.manger.utils.showAlways
+import com.san.kir.manger.Extending.Views.showAlways
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.checkBox
 import org.jetbrains.anko.customView

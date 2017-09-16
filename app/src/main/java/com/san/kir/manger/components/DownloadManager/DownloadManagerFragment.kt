@@ -12,11 +12,12 @@ import android.view.View
 import android.view.ViewGroup
 import com.san.kir.manger.R
 import com.san.kir.manger.components.ChaptersDownloader.ChaptersDownloader
-import com.san.kir.manger.utils.showAlways
+import com.san.kir.manger.Extending.Views.showAlways
 import org.jetbrains.anko.support.v4.act
 
 class DownloadManagerFragment : Fragment() {
-    private val downAdap = DownloadManagerAdapter()
+
+    private val downAdap = DownloadManagerAdapter(ChaptersDownloader.catalog)
 
     override fun onCreateView(inflater: LayoutInflater?,
                               container: ViewGroup?,
@@ -24,11 +25,12 @@ class DownloadManagerFragment : Fragment() {
         ChaptersDownloader.bus.register(1)
         setHasOptionsMenu(true)
 
+        changeTitle()
         downAdap.onSizeChanged {
             if (it > 0)
                 act.title = getString(R.string.main_menu_downloader_count, it)
             else
-                act.setTitle(R.string.main_menu_downloader)
+                changeTitle()
         }
 
         return RecyclerView(context).apply {
@@ -36,6 +38,8 @@ class DownloadManagerFragment : Fragment() {
             adapter = downAdap
         }
     }
+
+    fun changeTitle() = act.setTitle(R.string.main_menu_downloader)
 
     override fun onDestroyView() {
         ChaptersDownloader.bus.unregister(1)

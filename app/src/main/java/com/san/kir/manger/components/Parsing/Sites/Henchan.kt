@@ -16,7 +16,7 @@ import kotlin.coroutines.experimental.CoroutineContext
 class Henchan : MangachanTemplate() {
     override val ID: Int = 4
     override val name: String = "Хентай - тян!"
-    override val catalogName: String = "henchan.me"
+    override val catalogName: String = "hentai-chan.me"
     override var volume = SiteWrapper.get(name)?.count ?: 0
     override var oldVolume = volume
 

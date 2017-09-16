@@ -16,6 +16,10 @@ class Binder<T>(initValue: T) {
 
     fun bind(id: Int, binding: (item: T) -> Unit) {
         bound.put(id, binding)
+    }
+
+    fun bindAndRun(id: Int, binding: (item: T) -> Unit) {
+        bound.put(id, binding)
         binding(item)
     }
 

@@ -4,22 +4,25 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
+import com.san.kir.manger.Extending.BaseFragment
 import com.san.kir.manger.dbflow.models.Manga
 
 class StorageItemFragment : DialogFragment() {
 
-    private val view = StorageItemView()
+    private val mView = StorageItemView()
+    private lateinit var _manga: Manga
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
-        val builder = AlertDialog.Builder(activity)
-        builder.setView(view.createView(this))
-        builder.setPositiveButton("Закрыть") { _, _ -> }
-
-        return builder.create()
+        with(AlertDialog.Builder(activity)) {
+            setView(mView.createView(this@StorageItemFragment))
+            setPositiveButton("Закрыть") { _, _ -> }
+            setTitle(_manga.name)
+            return create()
+        }
     }
 
-    fun setManga(manga: Manga) {
-        view.bind(manga)
+    fun bind(manga: Manga, fragment: BaseFragment) {
+        mView.bind(manga, fragment)
     }
 }

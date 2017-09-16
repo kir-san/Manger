@@ -11,9 +11,9 @@ import com.san.kir.manger.dbflow.wrapers.MangaWrapper
 import com.san.kir.manger.utils.CHAPTER_STATUS
 import com.san.kir.manger.utils.MangaUpdater
 import com.san.kir.manger.utils.sPrefListChapters
-import com.san.kir.manger.utils.showAlways
-import com.san.kir.manger.utils.showIfRoom
-import com.san.kir.manger.utils.showNever
+import com.san.kir.manger.Extending.Views.showAlways
+import com.san.kir.manger.Extending.Views.showIfRoom
+import com.san.kir.manger.Extending.Views.showNever
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.alert

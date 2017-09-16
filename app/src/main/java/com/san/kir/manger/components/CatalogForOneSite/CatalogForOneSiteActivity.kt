@@ -6,17 +6,16 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.SearchView
 import android.view.Menu
 import android.view.MenuItem
-import com.san.kir.manger.App
 import com.san.kir.manger.R
 import com.san.kir.manger.components.Parsing.ManageSites
 import com.san.kir.manger.dbflow.models.Site
 import com.san.kir.manger.dbflow.models.SiteCatalogElement
 import com.san.kir.manger.dbflow.wrapers.SiteWrapper
 import com.san.kir.manger.utils.DIR
-import com.san.kir.manger.utils.SET_MEMORY
+import com.san.kir.manger.utils.getFullPath
 import com.san.kir.manger.utils.log
-import com.san.kir.manger.utils.showAlways
-import com.san.kir.manger.utils.showIfRoom
+import com.san.kir.manger.Extending.Views.showAlways
+import com.san.kir.manger.Extending.Views.showIfRoom
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.channels.ProducerJob
@@ -27,7 +26,6 @@ import org.jetbrains.anko.indeterminateProgressDialog
 import org.jetbrains.anko.progressDialog
 import org.jetbrains.anko.setContentView
 import org.jetbrains.anko.toast
-import java.io.File
 
 class CatalogForOneSiteActivity : AppCompatActivity() {
     // Основной адаптер
@@ -52,7 +50,6 @@ class CatalogForOneSiteActivity : AppCompatActivity() {
     private lateinit var catalog: ProducerJob<SiteCatalogElement>
 
     /* перезаписанные функции */
-
     override fun onCreate(savedInstanceState: android.os.Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -159,7 +156,7 @@ class CatalogForOneSiteActivity : AppCompatActivity() {
         // Получаем название каталога
         val name = ManageSites.CATALOG_SITES[mSiteID].catalogName
         // Получаем файл
-        val f = File("$SET_MEMORY/${DIR.CATALOGS}/$name")
+        val f = getFullPath("${DIR.CATALOGS}/$name")
         // Если файл существовал и был успешно удален
         if (!f.exists() or (f.exists() and f.delete())) {
 
@@ -198,7 +195,7 @@ class CatalogForOneSiteActivity : AppCompatActivity() {
                 } catch (ex: Throwable) {
                     log = ex.message!!
                     finishLoad {
-                        App.context.toast(R.string.catalog_for_one_site_on_error_load)
+                        this@CatalogForOneSiteActivity.toast(R.string.catalog_for_one_site_on_error_load)
                     }
                 } finally {
                     finishLoad()

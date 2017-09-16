@@ -7,10 +7,12 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView.ScaleType.FIT_XY
+import com.san.kir.manger.App
 import com.san.kir.manger.EventBus.Binder
 import com.san.kir.manger.Extending.AnkoExtend.bind
 import com.san.kir.manger.Extending.AnkoExtend.labelView
 import com.san.kir.manger.Extending.AnkoExtend.textView
+import com.san.kir.manger.R
 import com.san.kir.manger.components.Parsing.ManageSites
 import com.san.kir.manger.dbflow.models.Chapter
 import com.san.kir.manger.dbflow.models.SiteCatalogElement
@@ -117,7 +119,7 @@ class CatalogForOneSiteItemView : AnkoComponent<ViewGroup> {
 
                     onClick {
                         val progress = ProgressDialog(this@with.ctx).apply {
-                            setMessage(com.san.kir.manger.App.context.getString(com.san.kir.manger.R.string.catalog_for_one_site_progress_title))
+                            setMessage(App.context.getString(R.string.catalog_for_one_site_progress_title))
                             isIndeterminate = true
                             setCanceledOnTouchOutside(false)
                             show()
@@ -132,7 +134,7 @@ class CatalogForOneSiteItemView : AnkoComponent<ViewGroup> {
                                     .removePrefix(pat.group()).removeSuffix(".html")
                         val path = "${DIR.MANGA}/${element.catalogName}/${element.shotLink}"
 
-                        selector(title = com.san.kir.manger.App.context.getString(com.san.kir.manger.R.string.catalog_for_one_site_selector_item),
+                        selector(title = App.context.getString(R.string.catalog_for_one_site_selector_item),
                                  items = categories) { _, index ->
                             // Сохраняем полученную категорию
                             val category = categories[index]
@@ -159,7 +161,7 @@ class CatalogForOneSiteItemView : AnkoComponent<ViewGroup> {
                             }
                         } catch (es: Throwable) {
                             progress.dismiss()
-                            com.san.kir.manger.App.context.toast(com.san.kir.manger.R.string.catalog_for_one_site_on_error_load)
+                            App.context.toast(R.string.catalog_for_one_site_on_error_load)
                         } finally {
                             chapters.reversed().forEach(Chapter::insert)
                             /*toast(App.context.getString(

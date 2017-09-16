@@ -1,5 +1,6 @@
 package com.san.kir.manger.Extending.Views
 
+import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -11,6 +12,8 @@ import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 
 class DiagramForManga(context: Context) : View(context) {
+
+    private val _all = MutableLiveData<Long>()
 
     companion object {
         val YELLOW = Color.parseColor("#FFFF00")
@@ -123,7 +126,7 @@ class DiagramForManga(context: Context) : View(context) {
             if (!isFirst) {
                 isFirst = true
                 delay(500L)
-                invalidate()
+                calculate()
             }
         }
     }

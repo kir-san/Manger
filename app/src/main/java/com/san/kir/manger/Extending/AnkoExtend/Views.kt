@@ -2,30 +2,22 @@ package com.san.kir.manger.Extending.AnkoExtend
 
 import android.graphics.Typeface
 import android.text.InputType
-import android.view.Gravity
 import android.view.View
 import android.view.ViewManager
 import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.TextView
 import com.san.kir.manger.EventBus.Binder
+import com.san.kir.manger.EventBus.BinderLive
 import com.san.kir.manger.EventBus.BinderRx
 import com.san.kir.manger.Extending.Views.DiagramForManga
 import com.san.kir.manger.Extending.Views.SpecialViewPager
 import com.san.kir.manger.photoview.PhotoView
 import com.san.kir.manger.utils.ID
-import org.jetbrains.anko.backgroundColor
-import org.jetbrains.anko.backgroundResource
 import org.jetbrains.anko.bottomPadding
 import org.jetbrains.anko.custom.ankoView
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.editText
-import org.jetbrains.anko.imageView
-import org.jetbrains.anko.leftPadding
-import org.jetbrains.anko.linearLayout
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.padding
 import org.jetbrains.anko.radioButton
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.topPadding
@@ -50,11 +42,16 @@ inline fun ViewManager.photoView(theme: Int = 0, init: PhotoView.() -> Unit) = a
     init()
 }
 
-fun <T> View.bind(binder: Binder<T>, binding: (item: T) -> Unit) = binder.bind(this.id, binding)
+
+fun <T> View.bind(binder: Binder<T>, binding: (item: T) -> Unit) = binder.bindAndRun(this.id, binding)
+fun <T> View.bindOnly(binder: Binder<T>, binding: (item: T) -> Unit) = binder.bind(this.id, binding)
 fun <T> View.unBind(binder: Binder<T>) = binder.unBind(this.id)
 
 fun <T> View.bind(binder: BinderRx<T>, binding: (T) -> Unit) = binder.bind(this.id, binding)
 fun <T> View.unBind(binder: BinderRx<T>) = binder.unBind(this.id)
+
+fun <T> View.bind(binder: BinderLive<T>, binding: (T) -> Unit) = binder.bind(this.id, binding)
+fun <T> View.unBind(binder: BinderLive<T>) = binder.unBind(this.id)
 
 inline fun ViewManager.squareRelativeLayout(theme: Int = 0,
                                             init: _SquareRelativeLayout.() -> Unit) = ankoView(::_SquareRelativeLayout,
@@ -138,30 +135,4 @@ fun ViewManager.radioButton(id: Int = ID.generate(),
     }
 }
 
-fun ViewManager.storageItem(color: Int,
-                            textBinder: BinderRx<Long>,
-                            icon: Int = 0,
-                            actionBinder: (TextView, Long) -> Unit): LinearLayout {
-    return linearLayout {
-        lparams(width = matchParent, height = dip(30))
-        padding = dip(4)
 
-        imageView {
-            backgroundColor = color
-        }.lparams(width = dip(50), height = dip(28))
-
-        textView {
-            leftPadding = dip(4)
-            bind(textBinder) {
-                actionBinder.invoke(this, it)
-            }
-        }.lparams {
-            gravity = Gravity.CENTER_VERTICAL
-        }
-
-        if (icon > 0)
-            imageView {
-                backgroundResource = icon
-            }
-    }
-}

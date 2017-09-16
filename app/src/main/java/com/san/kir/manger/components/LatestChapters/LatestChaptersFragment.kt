@@ -12,7 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.san.kir.manger.R
 import com.san.kir.manger.components.ChaptersDownloader.ChaptersDownloader
-import com.san.kir.manger.utils.showNever
+import com.san.kir.manger.Extending.Views.showNever
 
 class LatestChaptersFragment : Fragment() {
     private val adapter by lazy {

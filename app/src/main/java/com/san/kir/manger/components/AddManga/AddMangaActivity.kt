@@ -12,12 +12,11 @@ import com.san.kir.manger.components.Storage.StorageItem
 import com.san.kir.manger.dbflow.models.Chapter
 import com.san.kir.manger.dbflow.models.Manga
 import com.san.kir.manger.dbflow.wrapers.MangaWrapper
-import com.san.kir.manger.utils.LibraryAdaptersCount
 import com.san.kir.manger.utils.getChapters
 import com.san.kir.manger.utils.getFullPath
 import com.san.kir.manger.utils.getMangaLogo
 import com.san.kir.manger.utils.getShortPath
-import com.san.kir.manger.utils.showAlways
+import com.san.kir.manger.Extending.Views.showAlways
 import org.jetbrains.anko.setContentView
 import java.io.File
 
@@ -44,7 +43,7 @@ class AddMangaActivity : AppCompatActivity(), LifecycleRegistryOwner {
                 val manga = intent.getParcelableExtra<StorageItem>(StorageItem::class.java.canonicalName)
                 mView.setManga(Manga(name = manga.name,
                                      path = manga.path,
-                                     logo = getShortPath(getMangaLogo(getFullPath(manga.path)))))
+                                     logo = getShortPath(getMangaLogo(manga.path))))
             }
             intent.hasExtra("unic") -> {
                 val manga = MangaWrapper.get(intent.getStringExtra("unic"))!!
@@ -70,7 +69,6 @@ class AddMangaActivity : AppCompatActivity(), LifecycleRegistryOwner {
                 val manga: Manga = mView.getManga()
                 if (isEditMode) {
                     manga.update()
-                    LibraryAdaptersCount.update()
                 } else {
                     manga.insert()
                     getChapters(getFullPath(manga.path)).forEach {

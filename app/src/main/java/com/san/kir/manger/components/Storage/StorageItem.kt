@@ -3,18 +3,21 @@ package com.san.kir.manger.components.Storage
 import android.os.Parcel
 import android.os.Parcelable
 
-class StorageItem(val name: String,
-                  val path: String,
-                  val size: Long,
-                  val isNew: Boolean) : Parcelable {
+class StorageItem(val name: String = "",
+                  val path: String = "",
+                  var sizeFull: Long = 0L,
+                  var sizeRead: Long = 0L,
+                  var isNew: Boolean = true) : Parcelable {
 
     constructor(source: Parcel) : this(source.readString(), source.readString(), source.readLong(),
+                                       source.readLong(),
                                        1.toByte() == source.readByte())
 
     override fun writeToParcel(dest: Parcel?, flags: Int) {
         dest?.writeString(name)
         dest?.writeString(path)
-        dest?.writeLong(size)
+        dest?.writeLong(sizeFull)
+        dest?.writeLong(sizeRead)
         dest?.writeByte((if (isNew) 1 else 0).toByte())
     }
 

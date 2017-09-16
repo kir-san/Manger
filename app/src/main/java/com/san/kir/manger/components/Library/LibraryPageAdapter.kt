@@ -4,24 +4,43 @@ import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.view.View
 import android.view.ViewGroup
-import com.san.kir.manger.dbflow.models.Category
+import com.san.kir.manger.dbflow.models.Manga
+import com.san.kir.manger.dbflow.wrapers.CategoryWrapper
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
+import javax.inject.Inject
 
 // адаптер страниц
-class LibraryPageAdapter(private val fragment: LibraryFragment) : PagerAdapter() {
-    val categories = mutableListOf<Category>()
-    private var pagers = mutableListOf<LibraryPage>() // список страниц
-    val adapters = mutableListOf<LibraryItemsAdapter>() // список адаптеров
+class LibraryPageAdapter @Inject constructor(private val fragment: LibraryFragment) : PagerAdapter() {
+    private val categories by lazy { CategoryWrapper.getCategories() }
+    private var pagers = listOf<LibraryPage>() // список страниц
+    var adapters = listOf<LibraryItemsAdapter>() // список адаптеров
 
-    fun addPage(category: Category) {
-        val view = LibraryPageView(category, fragment) // создаем страницу
-        val page = LibraryPage(name = category.name, view = view.createView(fragment))
-        // сохраняем ее в списке
-        pagers.add(page)
-        // адаптер храним отдельно
-        adapters.add(view.adapter)
-        categories.add(category)
-//            fragment.mView.viewPager.addView(page.view)
-        notifyDataSetChanged()
+    init {
+        launch(UI) {
+            if (categories.isNotEmpty())
+                categories.forEach { cat ->
+                    // то каждой категории, которая видима создаем страницу в адаптере страниц
+                    if (cat.isVisible) {
+                        val view = LibraryPageView(cat, fragment) // создаем страницу
+                        // адаптер храним отдельно
+                        adapters += view.adapter
+                        pagers += LibraryPage(name = cat.name, view = view.createView(fragment))
+                        notifyDataSetChanged()
+                    }
+                }
+        }
+    }
+
+    fun delete(manga: Manga) {
+        manga.delete()
+        update()
+    }
+
+    fun update() {
+        adapters.forEach {
+            it.update()
+        }
     }
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any? {
@@ -38,7 +57,5 @@ class LibraryPageAdapter(private val fragment: LibraryFragment) : PagerAdapter()
 
     override fun getCount() = pagers.size
 
-    override fun getPageTitle(position: Int): String {
-        return pagers[position].name
-    }
+    override fun getPageTitle(position: Int) = pagers[position].name
 }

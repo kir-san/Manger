@@ -25,7 +25,6 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".components.FirstRun.FirstRunActivity"/>
         <activity
             android:name=".components.Viewer.ViewerActivity"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar"/>

@@ -1,5 +1,9 @@
 package com.san.kir.manger.components.Parsing
 
+import android.os.Environment
+import com.san.kir.manger.BuildConfig
+import com.san.kir.manger.R
+import com.san.kir.manger.components.Main.MainActivity
 import com.san.kir.manger.components.Parsing.Sites.Allhentai
 import com.san.kir.manger.components.Parsing.Sites.Henchan
 import com.san.kir.manger.components.Parsing.Sites.Mangachan
@@ -12,14 +16,19 @@ import com.san.kir.manger.dbflow.models.Manga
 import com.san.kir.manger.dbflow.models.SiteCatalogElement
 import com.san.kir.manger.dbflow.wrapers.MangaWrapper
 import com.san.kir.manger.utils.DIR
-import com.san.kir.manger.utils.SET_MEMORY
+import com.san.kir.manger.utils.getFullPath
 import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.channels.produce
+import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.newFixedThreadPoolContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.browse
+import org.jetbrains.anko.longToast
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import rx.Observable
@@ -30,6 +39,8 @@ import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.nio.charset.Charset
 import java.util.concurrent.TimeUnit
+import java.util.regex.Pattern
+import javax.inject.Inject
 import kotlin.coroutines.experimental.CoroutineContext
 
 object ManageSites {
@@ -114,7 +125,8 @@ object ManageSites {
     fun loadCatalogFromLocal(context: CoroutineContext, id: Int) = produce(context) {
         val catalog = MangaWrapper.getAllManga()
         val name = CATALOG_SITES[id].catalogName
-        val f: File = File("$SET_MEMORY/${DIR.CATALOGS}/$name")
+        val f = File(Environment.getExternalStorageDirectory(), "${DIR.CATALOGS}/$name")
+//        val f = File("$SET_MEMORY/${DIR.CATALOGS}/$name")
 
         var fis: FileInputStream? = null
         var ois: ObjectInputStream? = null
@@ -139,7 +151,7 @@ object ManageSites {
         // Получаем название каталога
         val name = CATALOG_SITES[id].catalogName
         // Получаем по полному пути файл
-        val f = File("$SET_MEMORY/${DIR.CATALOGS}/$name")
+        val f = getFullPath("${DIR.CATALOGS}/$name")
         f.createNewFile()
 
         // Открываем потоки для записи в файл
@@ -180,5 +192,44 @@ object ManageSites {
                 site = it
         }
         return site?.getPages(observable)!!
+    }
+
+    private val url = "http://4pda.ru/forum/index.php?showtopic=772886&st=0#entry53336845"
+
+    class UpdateApp @Inject constructor(private val act: MainActivity) {
+        // функция проверки новой версии приложения на сайте 4pda.ru
+        fun checkNewVersion(user: Boolean = false) = launch(CommonPool) {
+            try {
+                val doc = asyncGetDocument(url)
+                val matcher = Pattern.compile("[0-9]\\.[0-9]\\.[0-9]")
+                        .matcher(doc.select("#post-53336845 span > b").text())
+                if (matcher.find()) {
+                    val version = matcher.group()
+                    var message = ""
+                    if (version != BuildConfig.VERSION_NAME)
+                        message = act.getString(R.string.main_check_app_ver_find,
+                                                        version,
+                                                        BuildConfig.VERSION_NAME)
+                    else
+                        if (user)
+                            message = act.getString(R.string.main_check_app_ver_no_find)
+
+                    if (message.isNotEmpty())
+                        launch(UI) {
+                            act.alert {
+                                this.message = message
+                                positiveButton(R.string.main_check_app_ver_close) {}
+                                negativeButton(R.string.main_check_app_ver_go_to) {
+                                    act.browse(url)
+                                }
+                            }.show()
+                        }
+                }
+            } catch (ex: Throwable) {
+                launch(UI) {
+                    act.longToast(R.string.main_check_app_ver_error)
+                }
+            }
+        }
     }
 }

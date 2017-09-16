@@ -20,7 +20,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 26
         versionCode 1
-        versionName "1.6.3"
+        versionName "1.7.1 fix"
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
@@ -40,11 +40,12 @@ def dbflow_version = "3.1.1"
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-    implementation 'com.android.support:appcompat-v7:26.0.0'
-    implementation 'com.android.support:design:26.0.0'
-    implementation 'com.android.support:recyclerview-v7:26.0.0'
-    implementation 'com.android.support:preference-v7:26.0.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation 'com.android.support:appcompat-v7:26.0.2'
+    implementation 'com.android.support:design:26.0.2'
+    implementation 'com.android.support:recyclerview-v7:26.0.2'
+    implementation 'com.android.support:preference-v7:26.0.2'
+    implementation 'com.android.support:support-vector-drawable:26.0.2'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.15'
@@ -55,10 +56,10 @@ dependencies {
     implementation 'org.jetbrains.anko:anko-design:0.10.1'
     implementation 'org.jetbrains.anko:anko-recyclerview-v7:0.10.1'
 
-    implementation 'android.arch.lifecycle:extensions:1.0.0-alpha8'
-    implementation 'android.arch.persistence.room:runtime:1.0.0-alpha8'
-    kapt "android.arch.lifecycle:compiler:1.0.0-alpha8"
-    kapt "android.arch.persistence.room:compiler:1.0.0-alpha8"
+    implementation 'android.arch.lifecycle:extensions:1.0.0-alpha9'
+//    implementation 'android.arch.persistence.room:runtime:1.0.0-alpha8'
+    kapt "android.arch.lifecycle:compiler:1.0.0-alpha9"
+//    kapt "android.arch.persistence.room:compiler:1.0.0-alpha8"
 
     implementation 'io.reactivex:rxjava:1.1.9'
     implementation 'io.reactivex:rxandroid:1.2.1'
@@ -75,6 +76,17 @@ dependencies {
     implementation 'com.bignerdranch.android:expandablerecyclerview:2.1.1'
     implementation 'com.squareup.okhttp3:okhttp:3.7.0'
     implementation 'org.jsoup:jsoup:1.8.3'
+
+    //Dagger 2
+    implementation 'com.google.dagger:dagger:2.11'
+    kapt 'com.google.dagger:dagger-compiler:2.11'
+
+    // Dagger - Android
+    implementation 'com.google.dagger:dagger-android:2.11'
+    kapt 'com.google.dagger:dagger-android-processor:2.11'
+
+    //Если мы собираемся использовать support библиотеку
+    implementation 'com.google.dagger:dagger-android-support:2.11'
 }
 
 kapt {

@@ -10,7 +10,6 @@ import com.san.kir.manger.dbflow.models.Chapter
 import com.san.kir.manger.dbflow.models.Manga
 import com.san.kir.manger.dbflow.wrapers.ChapterWrapper
 import com.san.kir.manger.dbflow.wrapers.MangaWrapper
-import com.san.kir.manger.utils.SET_MEMORY
 import com.san.kir.manger.utils.SortLibrary
 import com.san.kir.manger.utils.SortLibraryUtil
 import com.san.kir.manger.utils.categoryAll
@@ -18,7 +17,6 @@ import com.san.kir.manger.utils.getFullPath
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
-import java.io.File
 
 class LibraryItemsAdapter(val cat: Category,
                           private val fragment: LibraryFragment) :
@@ -34,6 +32,7 @@ class LibraryItemsAdapter(val cat: Category,
 
     init {
         // при создании адаптера обновить списки
+        setHasStableIds(true)
         update()
     }
 
@@ -49,6 +48,8 @@ class LibraryItemsAdapter(val cat: Category,
     }
 
     override fun getItemCount(): Int = mItemsList.size
+    override fun getItemId(position: Int): Long = position.toLong()
+    override fun getItemViewType(position: Int): Int = position
 
     // использование DiffUtil для простого мониторинга и
     // применения изменений в адаптере

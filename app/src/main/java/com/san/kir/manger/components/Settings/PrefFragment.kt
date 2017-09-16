@@ -3,10 +3,13 @@ package com.san.kir.manger.components.Settings
 import android.os.Bundle
 import android.support.v7.preference.ListPreference
 import android.support.v7.preference.PreferenceFragmentCompat
+import com.san.kir.manger.R
 import com.san.kir.manger.R.xml
+import org.jetbrains.anko.support.v4.act
 
 class PrefFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(p0: Bundle?, p1: String?) {
+        act.setTitle(R.string.action_settings)
         addPreferencesFromResource(xml.pref_main)
 
         val portSpan = findPreference("portrait_span") as ListPreference

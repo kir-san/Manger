@@ -1,5 +1,6 @@
 package com.san.kir.manger.components.Parsing.Sites
 
+import com.san.kir.manger.components.Parsing.ManageSites
 import com.san.kir.manger.dbflow.wrapers.SiteWrapper
 
 class Selfmanga : ReadmangaTemplate() {
@@ -11,6 +12,14 @@ class Selfmanga : ReadmangaTemplate() {
     override var oldVolume = volume
 
     override fun init(): Selfmanga {
-        return super.init() as Selfmanga
+        if (!isInit) {
+            oldVolume = SiteWrapper.get(name)?.count ?: 0
+            val doc = ManageSites.getDocument(host)
+            doc.select(".rightContent .rightBlock h5")
+                    .filter { it -> it.text() == "У нас сейчас" }
+                    .forEach { it -> volume = it.parent().select("li b").first().text().toInt() }
+            isInit = true
+        }
+        return this
     }
 }

@@ -12,8 +12,9 @@ import android.view.View
 import android.view.ViewGroup
 import com.san.kir.manger.R
 import com.san.kir.manger.components.Parsing.ManageSites
-import com.san.kir.manger.utils.showAlways
+import com.san.kir.manger.Extending.Views.showAlways
 import org.jetbrains.anko.include
+import org.jetbrains.anko.support.v4.act
 
 class SiteCatalogFragment : Fragment() {
     private lateinit var siteCatalog: SiteCatalogAdapter
@@ -30,6 +31,7 @@ class SiteCatalogFragment : Fragment() {
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // установить меню из фрагмента
+        act.setTitle(R.string.main_menu_catalogs)
         setHasOptionsMenu(true)
 
         return recycler

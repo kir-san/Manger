@@ -2,10 +2,9 @@ package com.san.kir.manger.components.DownloadManager
 
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
-import com.san.kir.manger.components.ChaptersDownloader.ChaptersDownloader
 import com.san.kir.manger.dbflow.models.DownloadItem
 
-class DownloadManagerAdapter : RecyclerView.Adapter<DownloadManagerAdapter.ViewHolder>() {
+class DownloadManagerAdapter(chapters: List<DownloadItem>) : RecyclerView.Adapter<DownloadManagerAdapter.ViewHolder>() {
 
     private val catalog: MutableList<DownloadItem> = mutableListOf()
     private var sizeChanged: ((Int) -> Unit)? = null
@@ -20,7 +19,7 @@ class DownloadManagerAdapter : RecyclerView.Adapter<DownloadManagerAdapter.ViewH
         catalog.add(item)*/
 
         ///end test\\\
-        catalog.addAll(ChaptersDownloader.catalog)
+        catalog.addAll(chapters)
         sizeChanged()
     }
 

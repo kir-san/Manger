@@ -8,6 +8,7 @@ import android.view.ViewConfiguration;
 import com.san.kir.manger.photoview.log.LogManager;
 
 
+@SuppressWarnings("ALL")
 public class CupcakeGestureDetector implements GestureDetector {
 
     protected OnGestureListener mListener;

@@ -4,29 +4,34 @@ import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.util.SparseBooleanArray
 import android.view.ViewGroup
-import com.san.kir.manger.EventBus.BinderRx
-import com.san.kir.manger.dbflow.models.Category
-import com.san.kir.manger.dbflow.models.Chapter
-import com.san.kir.manger.dbflow.models.Manga
-import com.san.kir.manger.dbflow.wrapers.ChapterWrapper
-import com.san.kir.manger.dbflow.wrapers.MangaWrapper
+import com.san.kir.manger.EventBus.Binder
+import com.san.kir.manger.components.Main.Main
+import com.san.kir.manger.room.DAO.delete
+import com.san.kir.manger.room.DAO.loadMangaWhereCategory
+import com.san.kir.manger.room.DAO.removeChapters
+import com.san.kir.manger.room.DAO.update
+import com.san.kir.manger.room.models.Category
+import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.utils.SortLibrary
 import com.san.kir.manger.utils.SortLibraryUtil
-import com.san.kir.manger.utils.categoryAll
+import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.getFullPath
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 
-class LibraryItemsAdapter(val cat: Category,
-                          private val fragment: LibraryFragment) :
+class LibraryItemsAdapter(val cat: Category, private val fragment: LibraryActivity) :
         RecyclerView.Adapter<LibraryItemsViewHolder>() {
 
-    private var mItemsList = mutableListOf<Manga>() // основной список
-    private var dItemsList = listOf<Manga>() // вспомогательный список
-    val isEmpty = BinderRx(itemCount == 0) // флаг отсутствия элементов
+    private val mangas = Main.db.mangaDao
+    private val chapters = Main.db.chapterDao
+    private val categories = Main.db.categoryDao
 
-    private var type = SortLibraryUtil.toType(cat.typeSort ?: "")
+    private var mItemsList = listOf<Manga>() // основной список
+    private var dItemsList = listOf<Manga>() // вспомогательный список
+    val isEmpty = Binder(itemCount == 0) // флаг отсутствия элементов
+
+    private var type = SortLibraryUtil.toType(cat.typeSort)
     private var isReverse = cat.isReverseSort
     private val selectedItems = SparseBooleanArray()
 
@@ -39,8 +44,8 @@ class LibraryItemsAdapter(val cat: Category,
     /* Перезаписанные методы */
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LibraryItemsViewHolder? {
-        return LibraryItemsViewHolder(LibraryPageItemView(cat.name == categoryAll, fragment),
-                                      parent)
+        return LibraryItemsViewHolder(
+                LibraryPageItemView(cat.name == CATEGORY_ALL, fragment), parent)
     }
 
     override fun onBindViewHolder(holder: LibraryItemsViewHolder, position: Int) {
@@ -54,11 +59,9 @@ class LibraryItemsAdapter(val cat: Category,
     // использование DiffUtil для простого мониторинга и
     // применения изменений в адаптере
     private fun swapItems(mangas: List<Manga>) = launch(UI) {
-        val diffCallback = LibraryItemsDiffCalback(mItemsList, mangas)
-        val diffResult = DiffUtil.calculateDiff(diffCallback)
+        val diffResult = DiffUtil.calculateDiff(LibraryItemsDiffCalback(mItemsList, mangas))
 
-        mItemsList.clear()
-        mItemsList.addAll(mangas)
+        mItemsList = mangas
         isEmpty.item = itemCount == 0 // проверка не пуст ли адаптер
         diffResult.dispatchUpdatesTo(this@LibraryItemsAdapter)
         notifyDataSetChanged()
@@ -67,7 +70,7 @@ class LibraryItemsAdapter(val cat: Category,
     // Обновление адаптера
     fun update() = launch(CommonPool) {
         // получение данных из базы данных
-        dItemsList = MangaWrapper.asyncGetAllWithCategories(cat.name)
+        dItemsList = mangas.loadMangaWhereCategory(cat.name)
         changeOrder()
     }
 
@@ -77,7 +80,7 @@ class LibraryItemsAdapter(val cat: Category,
         // сохранение новых настроек порядка
         cat.typeSort = SortLibraryUtil.toString(type)
         cat.isReverseSort = isReverse
-        cat.update()
+        categories.update(cat)
         this@LibraryItemsAdapter.type = type
         this@LibraryItemsAdapter.isReverse = isReverse
 
@@ -120,16 +123,15 @@ class LibraryItemsAdapter(val cat: Category,
         }
     }
 
-    fun getSelectedCount(): Int { // Получение количества выделенных элементов
-        return selectedItems.size()
-    }
+    // Получение количества выделенных элементов
+    fun getSelectedCount() = selectedItems.size()
 
     fun remove(withFiles: Boolean = false) {
         forSelection { i ->
             val manga = mItemsList[i]
-            manga.delete()
+            mangas.delete(manga)
             launch(CommonPool) {
-                ChapterWrapper.asyncGetChapters(manga.unic).forEach(Chapter::delete)
+                chapters.removeChapters(manga.unic)
                 if (withFiles)
                     getFullPath(manga.path).deleteRecursively()
             }
@@ -141,7 +143,7 @@ class LibraryItemsAdapter(val cat: Category,
         forSelection { i ->
             val manga = mItemsList[i]
             manga.categories = newCategory
-            manga.update()
+            mangas.update(manga)
         }
     }
 

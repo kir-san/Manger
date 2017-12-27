@@ -4,8 +4,9 @@ import android.graphics.Color
 import android.support.v4.content.ContextCompat
 import android.view.View
 import android.widget.ImageView.ScaleType.CENTER_CROP
-import com.san.kir.manger.EventBus.BinderRx
+import com.san.kir.manger.EventBus.Binder
 import com.san.kir.manger.Extending.AnkoExtend.bind
+import com.san.kir.manger.Extending.AnkoExtend.goneOrVisible
 import com.san.kir.manger.Extending.AnkoExtend.specialViewPager
 import com.san.kir.manger.R
 import com.san.kir.manger.R.drawable
@@ -43,16 +44,14 @@ class ViewerView(private val act: ViewerActivity) : AnkoComponent<ViewerActivity
     private object _id { // id элементов
         val progressBar = ID.generate()
         val bottomBar = ID.generate()
-        val seekbar = ID.generate()
-        val pages = ID.generate()
         val chapters = ID.generate()
         val prev = ID.generate()
         val next = ID.generate()
     }
 
     var maxChapters = -1 // Количество глав доступных для чтения
-    val progressChapters = BinderRx(-1) // Текущая глава
-    val max = BinderRx(0) // Количество страниц в главе
+    val progressChapters = Binder(-1) // Текущая глава
+    val max = Binder(0) // Количество страниц в главе
 
     override fun createView(ui: AnkoContext<ViewerActivity>) = with(ui) {
 
@@ -64,10 +63,6 @@ class ViewerView(private val act: ViewerActivity) : AnkoComponent<ViewerActivity
             lparams(width = matchParent, height = matchParent)
 
             horizontalProgressBar {
-                lparams(width = matchParent, height = dip(2)) {
-                    alignParentTop()
-                }
-
                 id = _id.progressBar
 
                 // Установка своего прогрессБара
@@ -78,7 +73,9 @@ class ViewerView(private val act: ViewerActivity) : AnkoComponent<ViewerActivity
                 bind(this@ViewerView.max) { max = it } // Установка максимального значения
                 bind(act.progress) { progress = it } // Установка текущего значения
                 // Переключение режима видимости
-                bind(act.isBottomBar) { post { visibility = if (it) View.GONE else View.VISIBLE } }
+                goneOrVisible(act.isBottomBar)
+            }.lparams(width = matchParent, height = dip(2)) {
+                alignParentTop()
             }
 
             relativeLayout {
@@ -97,12 +94,6 @@ class ViewerView(private val act: ViewerActivity) : AnkoComponent<ViewerActivity
                 backgroundColor = Color.parseColor("#ff212121")
 
                 seekBar {
-                    // Ползунок
-                    id = _id.seekbar
-
-                    //TODO
-//                    gravity = Gravity.CENTER
-
                     bind(this@ViewerView.max) { max = it } // Установка максимального значения
                     bind(act.progress) { progress = it } // Установка текущего значения
 
@@ -123,8 +114,6 @@ class ViewerView(private val act: ViewerActivity) : AnkoComponent<ViewerActivity
 
                 textView {
                     // Отображение прогресса чтения страниц в текстовом виде
-                    id = _id.pages
-
                     padding = dip(6)
 
                     textColor = Color.WHITE
@@ -205,6 +194,7 @@ class ViewerView(private val act: ViewerActivity) : AnkoComponent<ViewerActivity
             }
 
             specialViewPager {
+                id = ID.generate()
                 // Виджет просмотра картинок
                 lparams(width = matchParent, height = matchParent) {
                     below(_id.progressBar) // Ниже прогрессБара
@@ -214,11 +204,11 @@ class ViewerView(private val act: ViewerActivity) : AnkoComponent<ViewerActivity
                 // При изменении страницы, изменить переменную progress
                 onPageChangeListener { onPageSelected { position -> act.progress.item = position } }
                 bind(act.progress) { currentItem = it } // Установка текущей страницы
-                bind(act.adapter) {
+                act.adapter.bind {
                     adapter = it
                     currentItem = act.progress.item
                 } // Установка адаптера
-                bind(act.isSwipeControl) { setLocked(!it) } // Переключения блокировки листания
+                act.isSwipeControl.bind { setLocked(!it) } // Переключения блокировки листания
             }
 
         }

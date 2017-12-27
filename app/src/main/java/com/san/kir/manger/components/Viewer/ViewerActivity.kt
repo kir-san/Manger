@@ -1,28 +1,27 @@
 package com.san.kir.manger.components.Viewer
 
 import android.R.id
+import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR
 import android.graphics.Point
-import android.os.Build.VERSION
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.san.kir.manger.EventBus.Binder
-import com.san.kir.manger.EventBus.BinderRx
 import com.san.kir.manger.Extending.AnkoExtend.radioButton
+import com.san.kir.manger.Extending.BaseActivity
+import com.san.kir.manger.Extending.Views.showAlways
 import com.san.kir.manger.R
-import com.san.kir.manger.utils.ID
+import com.san.kir.manger.components.Main.Main
 import com.san.kir.manger.utils.isFirstRun
 import com.san.kir.manger.utils.sPrefViewer
-import com.san.kir.manger.Extending.Views.showAlways
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.checkBox
 import org.jetbrains.anko.customView
@@ -39,7 +38,7 @@ import java.util.*
 import kotlin.properties.Delegates.notNull
 import kotlin.properties.Delegates.observable
 
-class ViewerActivity : AppCompatActivity() {
+class ViewerActivity : BaseActivity() {
     companion object { // константы для сохранения настроек
         private const val SAVE_IS_SHOW_BAR = "isShowBar"
         private const val ORIENTATION = "orientation"
@@ -52,10 +51,10 @@ class ViewerActivity : AppCompatActivity() {
         private var PAGE = "pagePostition"
     }
 
-    val progress = BinderRx(0) // Текущая страница, которую в данный момент читают
+    val chapters = Main.db.chapterDao
 
-    val isBottomBar = BinderRx(true) // Отображение нижнего бара
-
+    val progress = Binder(0) // Текущая страница, которую в данный момент читают
+    val isBottomBar = Binder(true) // Отображение нижнего бара
     var timer: Timer? = null // Таймер
     var isBar by observable(true) { _, old, new ->
         if (old != new) {
@@ -79,8 +78,8 @@ class ViewerActivity : AppCompatActivity() {
     } // Отображение обоих баров
 
 
-    val isNext = BinderRx(true) // Есть ли следующая глава
-    val isPrev = BinderRx(true) // Есть ли предыдущая глава
+    val isNext = Binder(true) // Есть ли следующая глава
+    val isPrev = Binder(true) // Есть ли предыдущая глава
 
     val adapter: Binder<ViewerPageAdapter?> = Binder(null) // Адаптер для читалки
 
@@ -101,13 +100,13 @@ class ViewerActivity : AppCompatActivity() {
     private val view = ViewerView(this)
 
     /* Перезаписанные функции */
+    @SuppressLint("MissingSuperCall", "RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         view.setContentView(this) // Установка разметки
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // Кнопка назад в верхнем баре
         supportActionBar?.setShowHideAnimationEnabled(true) // Анимация скрытия, сокрытия
-
 
         getSharedPreferences(sPrefViewer, MODE_PRIVATE).apply {
             if (contains(MANGA)) mangaName = getString(MANGA, "")
@@ -129,7 +128,7 @@ class ViewerActivity : AppCompatActivity() {
         title = chapterName // Смена заголвка
 
         // Создание менеджера
-        CHAPTERS = ChaptersList(mangaName, chapterName, pagePostition)
+        CHAPTERS = ChaptersList(mangaName, chapterName, pagePostition, this)
 
     }
 
@@ -160,7 +159,7 @@ class ViewerActivity : AppCompatActivity() {
                 else CHAPTERS.page.position // Иначе то что есть
 
         // При изменении прогресса, отдать новое значение в менеджер
-        progress.bind(ID.generate()) { pos -> CHAPTERS.page.position = pos }
+        progress.bind { pos -> CHAPTERS.page.position = pos }
 
         view.maxChapters = CHAPTERS.chapter.max // Установка значения
         view.progressChapters.item = CHAPTERS.chapter.position // Установка значения
@@ -172,13 +171,13 @@ class ViewerActivity : AppCompatActivity() {
         super.onWindowFocusChanged(hasFocus)
         // Установка режима во весь экрана без верхней строки и навигационных кнопок
         if (hasFocus) { // Срабатывает только если был получен фокус
-            if (VERSION.SDK_INT < 19) // Для разных версий андроида, разные значения
-                window.decorView.systemUiVisibility =
-                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                                View.SYSTEM_UI_FLAG_FULLSCREEN
-            else
+//            if (VERSION.SDK_INT < 19) // Для разных версий андроида, разные значения
+//                window.decorView.systemUiVisibility =
+//                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+//                                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+//                                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+//                                View.SYSTEM_UI_FLAG_FULLSCREEN
+//            else
                 window.decorView.systemUiVisibility =
                         View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
                                 View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
@@ -235,9 +234,10 @@ class ViewerActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("MissingSuperCall")
     override fun onDestroy() {
         super.onDestroy()
-        adapter.unBind(1) // отписка адаптера, только так заработало как надо
+        adapter.close()
     }
 
     /* Функции */
@@ -268,10 +268,10 @@ class ViewerActivity : AppCompatActivity() {
     // Меню для упраиления настройками
     private fun openMenu() {
         // id элементов меню
-        val port_n = 0
-        val port_r = 1
-        val land_n = 2
-        val land_r = 3
+        val portN = 0
+        val portR = 1
+        val landN = 2
+        val landR = 3
         val auto = 4
 
         var orientation = requestedOrientation // Сохраняем значение ориентации
@@ -289,24 +289,24 @@ class ViewerActivity : AppCompatActivity() {
                         textView(text = R.string.viewer_menu_orientation).lparams { gravity = Gravity.CENTER }
 
                         // Портретная
-                        radioButton(id = port_n, text = R.string.viewer_menu_orientation_portrait) {
+                        radioButton(id = portN, text = R.string.viewer_menu_orientation_portrait) {
                             isChecked = requestedOrientation == SCREEN_ORIENTATION_PORTRAIT
                         }
 
                         // Портретная обратная
-                        radioButton(id = port_r,
+                        radioButton(id = portR,
                                     text = R.string.viewer_menu_orientation_portrait_reverse) {
                             isChecked = requestedOrientation == SCREEN_ORIENTATION_REVERSE_PORTRAIT
                         }
 
                         // Ландшафтная
-                        radioButton(id = land_n,
+                        radioButton(id = landN,
                                     text = R.string.viewer_menu_orientation_landscape) {
                             isChecked = requestedOrientation == SCREEN_ORIENTATION_LANDSCAPE
                         }
 
                         // Ландшафтная обратная
-                        radioButton(id = land_r,
+                        radioButton(id = landR,
                                     text = R.string.viewer_menu_orientation_landscape_reverse) {
                             isChecked = requestedOrientation == SCREEN_ORIENTATION_REVERSE_LANDSCAPE
                         }
@@ -319,10 +319,10 @@ class ViewerActivity : AppCompatActivity() {
                         // Действия на изменение выбора
                         onCheckedChange { _, i ->
                             orientation = when (i) { // Присвоение выбора в переменную
-                                port_n -> SCREEN_ORIENTATION_PORTRAIT
-                                port_r -> SCREEN_ORIENTATION_REVERSE_PORTRAIT
-                                land_n -> SCREEN_ORIENTATION_LANDSCAPE
-                                land_r -> SCREEN_ORIENTATION_REVERSE_LANDSCAPE
+                                portN -> SCREEN_ORIENTATION_PORTRAIT
+                                portR -> SCREEN_ORIENTATION_REVERSE_PORTRAIT
+                                landN -> SCREEN_ORIENTATION_LANDSCAPE
+                                landR -> SCREEN_ORIENTATION_REVERSE_LANDSCAPE
                                 auto -> SCREEN_ORIENTATION_SENSOR
                                 else -> SCREEN_ORIENTATION_SENSOR
                             }

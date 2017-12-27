@@ -29,6 +29,7 @@ import static android.media.ExifInterface.ORIENTATION_NORMAL;
 import static android.media.ExifInterface.TAG_ORIENTATION;
 import static com.san.kir.manger.picasso.Picasso.LoadedFrom.DISK;
 
+@SuppressWarnings("ALL")
 class FileRequestHandler extends ContentStreamRequestHandler {
 
     FileRequestHandler(Context context) {

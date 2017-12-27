@@ -24,6 +24,7 @@ import java.io.InputStream;
  * marking and resetting. Each cursor is a token, and it's the caller's
  * responsibility to keep track of these.
  */
+@SuppressWarnings("ALL")
 final class MarkableInputStream extends InputStream {
   private static final int DEFAULT_BUFFER_SIZE = 4096;
   private static final int DEFAULT_LIMIT_INCREMENT = 1024;

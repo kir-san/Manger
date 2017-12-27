@@ -1,10 +1,10 @@
 package com.san.kir.manger.components.Parsing.Sites
 
+import com.san.kir.manger.components.Main.Main
 import com.san.kir.manger.components.Parsing.ManageSites
-import com.san.kir.manger.dbflow.models.Chapter
-import com.san.kir.manger.dbflow.models.Manga
-import com.san.kir.manger.dbflow.models.SiteCatalogElement
-import com.san.kir.manger.dbflow.wrapers.SiteWrapper
+import com.san.kir.manger.room.models.Chapter
+import com.san.kir.manger.room.models.Manga
+import com.san.kir.manger.room.models.SiteCatalogElement
 import kotlinx.coroutines.experimental.channels.produce
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
@@ -17,12 +17,10 @@ class Henchan : MangachanTemplate() {
     override val ID: Int = 4
     override val name: String = "Хентай - тян!"
     override val catalogName: String = "hentai-chan.me"
-    override var volume = SiteWrapper.get(name)?.count ?: 0
+    override var volume = Main.db.siteDao.loadSite(name)?.volume ?: 0
     override var oldVolume = volume
 
-    override fun init(): Henchan {
-        return super.init() as Henchan
-    }
+    override fun init() = super.init() as Henchan
 
     override suspend fun simpleParseElement(elem: Element): SiteCatalogElement {
         val element = SiteCatalogElement()
@@ -30,7 +28,7 @@ class Henchan : MangachanTemplate() {
         // Сохраняю в каждом елементе host и catalogName
         element.host = host
         element.catalogName = catalogName
-        element.id = ID
+        element.siteId = ID
 
         // название манги
         element.name = elem.select("a.title_link").first().text()
@@ -44,7 +42,7 @@ class Henchan : MangachanTemplate() {
 
         // Список авторов
         val mangakas = elem.select("a[href*=mangaka]")
-        mangakas.forEach { if (it != mangakas.last()) element.authors.add(it.text()) }
+        element.authors = mangakas.filter { it != mangakas.last() }.map { it.text() }
 
         // Статус выпуска
         element.statusEdition = ""

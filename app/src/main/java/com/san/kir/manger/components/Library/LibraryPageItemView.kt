@@ -1,15 +1,12 @@
 package com.san.kir.manger.components.Library
 
+import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.Typeface
-import android.support.v7.widget.ListPopupWindow
-import android.view.Gravity
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.PopupMenu
-import android.widget.SimpleAdapter
-import com.san.kir.manger.EventBus.BinderRx
+import com.san.kir.manger.EventBus.Binder
 import com.san.kir.manger.Extending.AnkoExtend.bind
 import com.san.kir.manger.Extending.AnkoExtend.labelView
 import com.san.kir.manger.Extending.AnkoExtend.squareRelativeLayout
@@ -18,20 +15,22 @@ import com.san.kir.manger.Extending.AnkoExtend.textViewBold15Size
 import com.san.kir.manger.R
 import com.san.kir.manger.components.AddManga.AddMangaActivity
 import com.san.kir.manger.components.ListChapters.ListChaptersActivity
-import com.san.kir.manger.components.Storage.StorageItemFragment
+import com.san.kir.manger.components.Main.Main
+import com.san.kir.manger.components.Storage.StorageDialogFragment
 import com.san.kir.manger.components.Storage.StorageUtils
-import com.san.kir.manger.dbflow.models.Manga
-import com.san.kir.manger.dbflow.wrapers.CategoryWrapper
-import com.san.kir.manger.dbflow.wrapers.ChapterWrapper
 import com.san.kir.manger.picasso.Callback
 import com.san.kir.manger.picasso.NetworkPolicy
 import com.san.kir.manger.picasso.Picasso
+import com.san.kir.manger.room.DAO.count
+import com.san.kir.manger.room.DAO.countNotRead
+import com.san.kir.manger.room.DAO.update
+import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.utils.ID
+import com.san.kir.manger.utils.NAME_SHOW_CATEGORY
+import com.san.kir.manger.utils.formatDouble
 import com.san.kir.manger.utils.getDrawableCompat
 import com.san.kir.manger.utils.getFullPath
 import com.san.kir.manger.utils.lengthMb
-import com.san.kir.manger.utils.name_SHOW_CATEGORY
-import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.AnkoComponent
@@ -63,9 +62,9 @@ import org.jetbrains.anko.verticalLayout
 import org.jetbrains.anko.wrapContent
 
 class LibraryPageItemView(private val isMain: Boolean = false,
-                          private val fragment: LibraryFragment) : AnkoComponent<ViewGroup> {
-    private val name_CAT = "category"
-    private val mCat = CategoryWrapper.getCategories().map { mapOf(name_CAT to it.name) }
+                          private val act: LibraryActivity) : AnkoComponent<ViewGroup> {
+    private val categories = Main.db.categoryDao
+    private val mCat = categories.loadCategories()
 
     private object _id {
         val logo = ID.generate()
@@ -73,23 +72,25 @@ class LibraryPageItemView(private val isMain: Boolean = false,
         val notRead = ID.generate()
     }
 
+    val chapters = Main.db.chapterDao
+
     var manga: Manga = Manga()
 
-    val name = BinderRx("")
-    val authors = BinderRx("")
-    val readStatus = BinderRx(0 to 0)
-    val logo = BinderRx("")
-    val color = BinderRx(R.color.colorPrimary)
-    val category = BinderRx("")
+    private val name = Binder("")
+    val authors = Binder("")
+    private val readStatus = Binder(0 to 0)
+    val logo = Binder("")
+    val color = Binder(R.color.colorPrimary)
+    val category = Binder("")
     private var _position = 0
-    val selected = BinderRx(false)
+    private val selected = Binder(false)
 
     fun bind(manga: Manga, isSelect: Boolean, position: Int) {
         this.manga = manga
         name.item = manga.name
         authors.item = manga.authors
         readStatus.item =
-                ChapterWrapper.countNotRead(manga.unic) to ChapterWrapper.count(manga.unic)
+                chapters.countNotRead(manga.unic) to chapters.count(manga.unic)
 
         logo.item = manga.logo
         if (manga.color != 0) color.item = manga.color
@@ -100,9 +101,7 @@ class LibraryPageItemView(private val isMain: Boolean = false,
         selected.item = isSelect
     }
 
-    fun createView(parent: ViewGroup): View {
-        return createView(AnkoContext.create(parent.context, parent))
-    }
+    fun createView(parent: ViewGroup) = createView(AnkoContext.create(parent.context, parent))
 
     override fun createView(ui: AnkoContext<ViewGroup>) = with(ui) {
 
@@ -112,26 +111,26 @@ class LibraryPageItemView(private val isMain: Boolean = false,
                 margin = dip(2)
             }
             onClick {
-                if (fragment.actionMode == null)
+                if (act.actionMode.hasFinish())
                     startActivity<ListChaptersActivity>("manga_unic" to manga.unic)
                 else
-                    fragment.onListItemSelect(_position)
+                    act.onListItemSelect(_position)
             }
 
-            onLongClick {
-                if (fragment.actionMode == null)
-                    PopupMenu(ctx, it).apply {
-                        val menu_about = menu.add(R.string.library_popupmenu_about)
-                        val menu_set_cat = menu.add(R.string.library_popupmenu_set_category)
-                        val menu_delete_read = menu.add(R.string.library_popupmenu_delete_read_chapters)
-                        val menu_storage = menu.add(R.string.library_popupmenu_storage)
-                        val menu_delete = menu.add(R.string.library_popupmenu_delete)
-                        val menu_select = menu.add(R.string.library_popupmenu_select)
+            onLongClick { view ->
+                if (act.actionMode.hasFinish())
+                    PopupMenu(ctx, view).apply {
+                        val menuAbout = menu.add(R.string.library_popupmenu_about)
+                        val menuSetCat = menu.add(R.string.library_popupmenu_set_category)
+                        val menuDeleteRead = menu.add(R.string.library_popupmenu_delete_read_chapters)
+                        val menuStorage = menu.add(R.string.library_popupmenu_storage)
+                        val menuDelete = menu.add(R.string.library_popupmenu_delete)
+                        val menuSelect = menu.add(R.string.library_popupmenu_select)
 
 
                         setOnMenuItemClickListener {
                             when (it) {
-                                menu_about -> alert {
+                                menuAbout -> alert {
                                     minimumWidth = matchParent
                                     customView {
                                         frameLayout {
@@ -164,10 +163,12 @@ class LibraryPageItemView(private val isMain: Boolean = false,
 
                                                     labelView("Текущий объем")
                                                     textViewBold15Size(text = "Считаю2s...") {
-                                                        launch(CommonPool) {
+                                                        launch {
                                                             val size = getFullPath(manga.path).lengthMb
                                                             launch(UI) {
-                                                                text = "$size Мб"
+                                                                text = this@with.ctx.getString(R.string.library_page_item_size,
+                                                                                               formatDouble(
+                                                                                                       size))
                                                             }
                                                         }
                                                     }
@@ -184,24 +185,24 @@ class LibraryPageItemView(private val isMain: Boolean = false,
 
                                                     labelView("Лого")
                                                     imageView {
-                                                        lparams(width = matchParent,
-                                                                height = dip(400))
-
                                                         scaleType = ImageView.ScaleType.FIT_CENTER
-
-                                                        Picasso.with(this@with.ctx)
-                                                                .load(manga.logo)
-                                                                .networkPolicy(NetworkPolicy.OFFLINE)
-                                                                .into(this, object : Callback {
-                                                                    override fun onSuccess() {}
-                                                                    override fun onError(e: Exception?) {
-                                                                        Picasso.with(this@with.ctx)
-                                                                                .load(manga.logo)
-                                                                                .error(color.item)
-                                                                                .into(this@imageView)
-                                                                    }
-                                                                })
-                                                    }
+                                                        if (manga.logo.isNotEmpty())
+                                                            Picasso.with(this@with.ctx)
+                                                                    .load(manga.logo)
+                                                                    .networkPolicy(NetworkPolicy.OFFLINE)
+                                                                    .into(this, object : Callback {
+                                                                        override fun onSuccess() {}
+                                                                        override fun onError(e: Exception?) {
+                                                                            Picasso.with(this@with.ctx)
+                                                                                    .load(manga.logo)
+                                                                                    .error(color.item)
+                                                                                    .into(this@imageView)
+                                                                        }
+                                                                    })
+                                                        else
+                                                            backgroundResource = color.item
+                                                    }.lparams(width = matchParent,
+                                                              height = dip(400))
                                                 }
                                             }
                                         }
@@ -211,46 +212,39 @@ class LibraryPageItemView(private val isMain: Boolean = false,
                                         startActivity<AddMangaActivity>("unic" to manga.unic)
                                     }
                                 }.show()
-                                menu_delete -> alert(R.string.library_popupmenu_delete_message,
-                                                     R.string.library_popupmenu_delete_title) {
+                                menuDelete -> alert(R.string.library_popupmenu_delete_message,
+                                                    R.string.library_popupmenu_delete_title) {
                                     positiveButton(R.string.library_popupmenu_delete_ok) {
-                                        fragment.pagerAdapter.delete(manga)
+                                        act.pagerAdapter.delete(manga)
                                     }
                                     negativeButton(R.string.library_popupmenu_delete_no) {}
                                 }.show()
-                                menu_set_cat -> {
-                                    ListPopupWindow(this@with.ctx).apply {
-                                        setDropDownGravity(Gravity.CENTER_HORIZONTAL)
-
-                                        anchorView = this@squareRelativeLayout
-//                                    width = wrapContent
-                                        setAdapter(SimpleAdapter(this@with.ctx,
-                                                                 mCat,
-                                                                 R.layout.dialog_library_item_set_category,
-                                                                 arrayOf(name_CAT),
-                                                                 intArrayOf(android.R.id.text1)
-                                        ))
-//                                    isModal = true
-                                        setOnItemClickListener { _, _, i, _ ->
-                                            manga.categories = mCat[i][name_CAT] as String
-                                            manga.update()
-                                            fragment.pagerAdapter.update()
+                                menuSetCat -> {
+                                    PopupMenu(ctx, view).apply {
+                                        mCat.forEachIndexed { i, cat ->
+                                            menu.add(i, i, i, cat.name)
+                                        }
+                                        setOnMenuItemClickListener { item ->
+                                            manga.categories = mCat[item.itemId].name
+                                            Main.db.mangaDao.update(manga)
+                                            act.pagerAdapter.update()
                                             dismiss()
+                                            return@setOnMenuItemClickListener true
                                         }
                                         show()
                                     }
                                 }
-                                menu_select -> {
-                                    fragment.onListItemSelect(_position)
+                                menuSelect -> {
+                                    act.onListItemSelect(_position)
                                 }
-                                menu_storage -> {
-                                    with(StorageItemFragment()) {
-                                        bind(manga, fragment)
-                                        show(fragment.fragmentManager, "storage")
+                                menuStorage -> {
+                                    StorageDialogFragment().apply {
+                                        bind(manga, act)
+                                        show(act.supportFragmentManager, "storage")
                                     }
                                 }
-                                menu_delete_read -> {
-                                    StorageUtils.deleteReadChapters(this@with, manga)
+                                menuDeleteRead -> {
+                                    StorageUtils.deleteReadChapters(this@with.ctx, manga) { }
                                 }
                                 else -> {
                                     return@setOnMenuItemClickListener false
@@ -264,8 +258,13 @@ class LibraryPageItemView(private val isMain: Boolean = false,
 
 
             backgroundResource = com.san.kir.manger.R.color.colorPrimary
-            bind(color) { background = context.getDrawableCompat(it) }
-
+            bind(color) {
+                try {
+                    background = context.getDrawableCompat(it)
+                } catch (ex: Resources.NotFoundException) {
+                    backgroundColor = it
+                }
+            }
             // лого
             imageView {
                 lparams(width = matchParent, height = matchParent) {
@@ -277,22 +276,22 @@ class LibraryPageItemView(private val isMain: Boolean = false,
                 scaleType = ImageView.ScaleType.FIT_XY
 
                 bind(logo) { uri ->
-                    Picasso.with(this@with.ctx)
-                            .load(uri)
-                            .networkPolicy(com.san.kir.manger.picasso.NetworkPolicy.OFFLINE)
-                            .into(this, object : Callback {
-                                override fun onSuccess() {}
-                                override fun onError(e: Exception?) {
-                                    com.san.kir.manger.picasso.Picasso.with(this@with.ctx)
-                                            .load(uri)
-                                            .error(color.item)
-                                            .into(this@imageView)
-                                }
-                            })
+                    if (uri.isNotEmpty())
+                        Picasso.with(this@with.ctx)
+                                .load(uri)
+                                .networkPolicy(com.san.kir.manger.picasso.NetworkPolicy.OFFLINE)
+                                .into(this, object : Callback {
+                                    override fun onSuccess() {}
+                                    override fun onError(e: Exception?) {
+                                        com.san.kir.manger.picasso.Picasso.with(this@with.ctx)
+                                                .load(uri)
+                                                .error(color.item)
+                                                .into(this@imageView)
+                                    }
+                                })
                 }
             }
 
-            // название
             textView(name) {
                 lparams(width = matchParent, height = wrapContent) {
                     //                    above(_id.author)
@@ -303,8 +302,13 @@ class LibraryPageItemView(private val isMain: Boolean = false,
                 id = _id.name
 
                 backgroundResource = R.color.colorPrimary
-                bind(color) { background = context.getDrawableCompat(it) }
-
+                bind(color) {
+                    try {
+                        background = context.getDrawableCompat(it)
+                    } catch (ex: Resources.NotFoundException) {
+                        backgroundColor = it
+                    }
+                }
                 maxLines = 1
                 typeface = Typeface.DEFAULT_BOLD
             }
@@ -323,7 +327,11 @@ class LibraryPageItemView(private val isMain: Boolean = false,
                                                it.first)
                 }
                 backgroundResource = R.color.colorPrimary
-                bind(color) { background = context.getDrawableCompat(it) }
+                bind(color) {  try {
+                    background = context.getDrawableCompat(it)
+                } catch (ex: Resources.NotFoundException) {
+                    backgroundColor = it
+                } }
 
                 onClick {
                     alert {
@@ -341,7 +349,7 @@ class LibraryPageItemView(private val isMain: Boolean = false,
             // Отображение названия категории
             // Отображается если текущая категория основная и активированна функция в настройках
             if (isMain
-                    && this@with.ctx.defaultSharedPreferences.getBoolean(name_SHOW_CATEGORY, true))
+                    && this@with.ctx.defaultSharedPreferences.getBoolean(NAME_SHOW_CATEGORY, true))
                 textView(category) {
                     lparams(width = wrapContent, height = wrapContent) {
                         alignParentEnd()

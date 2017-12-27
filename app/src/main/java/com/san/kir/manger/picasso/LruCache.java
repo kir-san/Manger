@@ -26,6 +26,7 @@ import java.util.Map;
 import static com.san.kir.manger.picasso.Utils.KEY_SEPARATOR;
 
 /** A memory cache which uses a least-recently used eviction policy. */
+@SuppressWarnings("ALL")
 public class LruCache implements Cache {
   final LinkedHashMap<String, Bitmap> map;
   private final int maxSize;

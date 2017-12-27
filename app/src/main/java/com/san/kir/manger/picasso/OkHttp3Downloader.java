@@ -27,6 +27,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 /** A {@link Downloader} which uses OkHttp to download images. */
+@SuppressWarnings("ALL")
 public final class OkHttp3Downloader implements Downloader {
   @VisibleForTesting final Call.Factory client;
   private final Cache cache;

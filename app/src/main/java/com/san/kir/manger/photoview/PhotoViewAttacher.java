@@ -32,6 +32,7 @@ import static android.view.MotionEvent.ACTION_CANCEL;
 import static android.view.MotionEvent.ACTION_DOWN;
 import static android.view.MotionEvent.ACTION_UP;
 
+@SuppressWarnings("ALL")
 public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
         OnGestureListener,
         ViewTreeObserver.OnGlobalLayoutListener {
@@ -139,6 +140,7 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
     private boolean mZoomEnabled;
     private ScaleType mScaleType = ScaleType.FIT_CENTER;
 
+    @SuppressLint("ClickableViewAccessibility")
     public PhotoViewAttacher(ImageView imageView) {
         mImageView = new WeakReference<>(imageView);
 
@@ -217,6 +219,7 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
      * from {@link android.app.Activity#onDestroy()}. This is automatically called if you are using
      * {@link PhotoView}.
      */
+    @SuppressLint("ClickableViewAccessibility")
     @SuppressWarnings("deprecation")
     public void cleanup() {
         if (null == mImageView) {

@@ -22,6 +22,7 @@ import java.lang.ref.WeakReference;
 
 import static com.san.kir.manger.picasso.Picasso.Priority;
 
+@SuppressWarnings("ALL")
 abstract class Action<T> {
   static class RequestWeakReference<M> extends WeakReference<M> {
     final Action action;

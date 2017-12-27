@@ -23,6 +23,7 @@ import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.widget.ImageView;
 import java.lang.ref.WeakReference;
 
+@SuppressWarnings("ALL")
 class DeferredRequestCreator implements OnPreDrawListener, OnAttachStateChangeListener {
   private final RequestCreator creator;
   @VisibleForTesting final WeakReference<ImageView> target;

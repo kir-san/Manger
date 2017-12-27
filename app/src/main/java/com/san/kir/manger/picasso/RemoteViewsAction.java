@@ -24,6 +24,7 @@ import android.widget.RemoteViews;
 import static android.content.Context.NOTIFICATION_SERVICE;
 import static com.san.kir.manger.picasso.Utils.getService;
 
+@SuppressWarnings("ALL")
 abstract class RemoteViewsAction extends Action<RemoteViewsAction.RemoteViewsTarget> {
   final RemoteViews remoteViews;
   final int viewId;

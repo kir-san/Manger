@@ -4,36 +4,36 @@ import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.view.View
 import android.view.ViewGroup
-import com.san.kir.manger.dbflow.models.Manga
-import com.san.kir.manger.dbflow.wrapers.CategoryWrapper
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
-import javax.inject.Inject
+import com.san.kir.manger.components.Main.Main
+import com.san.kir.manger.room.DAO.delete
+import com.san.kir.manger.room.models.Manga
 
 // адаптер страниц
-class LibraryPageAdapter @Inject constructor(private val fragment: LibraryFragment) : PagerAdapter() {
-    private val categories by lazy { CategoryWrapper.getCategories() }
+class LibraryPageAdapter(private val act: LibraryActivity) : PagerAdapter() {
+    private val categoryDao = Main.db.categoryDao
+    private val categories by lazy { categoryDao.loadCategories() }
     private var pagers = listOf<LibraryPage>() // список страниц
     var adapters = listOf<LibraryItemsAdapter>() // список адаптеров
 
     init {
-        launch(UI) {
-            if (categories.isNotEmpty())
-                categories.forEach { cat ->
-                    // то каждой категории, которая видима создаем страницу в адаптере страниц
-                    if (cat.isVisible) {
-                        val view = LibraryPageView(cat, fragment) // создаем страницу
-                        // адаптер храним отдельно
-                        adapters += view.adapter
-                        pagers += LibraryPage(name = cat.name, view = view.createView(fragment))
-                        notifyDataSetChanged()
-                    }
+        if (categories.isNotEmpty())
+            categories.forEach { cat ->
+                // то каждой категории, которая видима создаем страницу в адаптере страниц
+                if (cat.isVisible) {
+                    val view = LibraryPageView(cat, act) // создаем страницу
+                    // адаптер храним отдельно
+                    adapters += view.adapter
+                    pagers += LibraryPage(name = cat.name, view = view.createView(act))
+                    notifyDataSetChanged()
                 }
-        }
+            }
     }
 
     fun delete(manga: Manga) {
-        manga.delete()
+        with(Main.db) {
+            chapterDao.delete(*chapterDao.loadChapters(manga.unic).toTypedArray())
+            mangaDao.delete(manga)
+        }
         update()
     }
 

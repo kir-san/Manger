@@ -3,6 +3,7 @@ package com.san.kir.manger.photoview.log;
 /**
  * interface for a logger class to replace the static calls to {@link android.util.Log}
  */
+@SuppressWarnings("ALL")
 public interface Logger {
 
     int v(String tag, String msg);

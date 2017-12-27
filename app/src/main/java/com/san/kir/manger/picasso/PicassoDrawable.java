@@ -31,6 +31,7 @@ import android.widget.ImageView;
 import static android.graphics.Color.WHITE;
 import static com.san.kir.manger.picasso.Picasso.LoadedFrom.MEMORY;
 
+@SuppressWarnings("ALL")
 final class PicassoDrawable extends BitmapDrawable {
   // Only accessed from main thread.
   private static final Paint DEBUG_PAINT = new Paint();

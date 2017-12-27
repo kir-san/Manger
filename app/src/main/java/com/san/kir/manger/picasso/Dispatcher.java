@@ -56,6 +56,7 @@ import static com.san.kir.manger.picasso.Utils.getService;
 import static com.san.kir.manger.picasso.Utils.hasPermission;
 import static com.san.kir.manger.picasso.Utils.log;
 
+@SuppressWarnings("ALL")
 class Dispatcher {
   private static final int RETRY_DELAY = 500;
   private static final int AIRPLANE_MODE_ON = 1;

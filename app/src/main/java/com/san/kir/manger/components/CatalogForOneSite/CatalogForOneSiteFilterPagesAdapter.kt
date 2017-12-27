@@ -31,8 +31,8 @@ class CatalogForOneSiteFilterPagesAdapter(private val ctx: Context,
         }
     }
 
-    override fun instantiateItem(container: ViewGroup, position: Int): Any? {
-        val v = pagers[position]["view"] as View?
+    override fun instantiateItem(container: ViewGroup, position: Int): Any {
+        val v = pagers[position]["view"] as View
         (container as ViewPager).addView(v, position)
         return v
     }

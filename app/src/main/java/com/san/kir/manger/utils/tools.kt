@@ -6,18 +6,15 @@ import android.graphics.drawable.Drawable
 import android.os.Environment
 import android.support.v4.content.ContextCompat
 import android.util.Log
+import android.util.LruCache
 import android.view.View
-import android.view.ViewGroup
-import com.raizlabs.android.dbflow.structure.cache.LruCache
-import com.san.kir.manger.dbflow.models.Chapter
-import com.san.kir.manger.dbflow.wrapers.ChapterWrapper
-import kotlinx.coroutines.experimental.runBlocking
-import okhttp3.Response
-import okio.Okio
+import com.san.kir.manger.room.models.Chapter
+import com.san.kir.manger.room.models.LatestChapter
 import java.io.File
+import java.text.DecimalFormat
 
 object ID {
-    private var _count = 0
+    private var _count = 1
 
     fun generate(): Int {
         return _count++
@@ -32,19 +29,16 @@ fun createDirs(path: File): Boolean {
 }
 
 fun folderSize(directory: File): Long {
-    var length: Long = 0
-    val files: Array<out File>? = directory.listFiles()
-    files?.let {
-        for (file in it) {
-            if (file.isFile) length += file.length()
-            else length += folderSize(file)
-        }
+    var length = 0L
+    directory.listFiles()?.forEach { file ->
+        length += if (file.isFile) file.length()
+        else folderSize(file)
     }
     return length
 }
 
-val File.lengthMb: Long
-    get() = (folderSize(this) / (1024 * 1024))
+val File.lengthMb: Double
+    get() = bytesToMbytes(folderSize(this))
 
 val File.ifExists: File?
     get() = if (this.exists()) this else null
@@ -66,7 +60,9 @@ val File.isNotEmptyDirectory: Boolean
     get() = !isEmptyDirectory
 
 
-fun getShortPath(path: String): String = Regex("/${DIR.ROOT}.+").find(path)!!.value
+fun getShortPath(path: String) =
+        if (path.isNotEmpty()) Regex("/${DIR.ROOT}.+").find(path)!!.value else path
+
 fun getShortPath(path: File): String = getShortPath(path.path)
 
 fun getFullPath(path: String): File = File(Environment.getExternalStorageDirectory(), path)
@@ -79,10 +75,14 @@ fun getMangaLogo(path: File): String {
         val fin = File(file, s)
         fin.isFile and (fin.extension in extensions)
     }
-    return if (templist.isNotEmpty())
-        templist[0].path
-    else
-        getMangaLogo(path.listFiles { file, s -> File(file, s).isDirectory }[0])
+    return try {
+        if (templist.isNotEmpty())
+            templist[0].path
+        else
+            getMangaLogo(path.listFiles { file, s -> File(file, s).isDirectory }[0])
+    } catch (ex: Exception) {
+        ""
+    }
 }
 
 fun getChapters(path: File,
@@ -116,9 +116,6 @@ fun getChapters(path: File,
     }
     return readyList
 }
-
-fun getChapters(path: String, readyList: ArrayList<String> = arrayListOf<String>()) = getChapters(
-        File(path), readyList)
 
 fun getCountPagesForChapterInMemory(shortPath: String): Int {
     val listFiles = getFullPath(shortPath).ifExists?.listFiles { _, s ->
@@ -165,12 +162,12 @@ val cache = object : LruCache<String, Bitmap>(3) {
 
 data class ResultDeleting(val current: Int, val max: Int)
 
-fun delAllReadChapters(manga: String): ResultDeleting {
-    return delChapters(ChapterWrapper.getChapters(manga).filter { it.isRead })
-}
-
 fun delChapters(vararg chapters: Chapter): ResultDeleting {
     return delChapters(chapters.toList())
+}
+
+fun delChapters(vararg chapters: LatestChapter): ResultDeleting {
+    return delFiles(chapters.map { it.path })
 }
 
 fun delChapters(chapters: List<Chapter>): ResultDeleting {
@@ -187,12 +184,6 @@ fun delFiles(filesPath: List<String>): ResultDeleting {
         getFullPath(path).apply { if (exists() && deleteRecursively()) acc++ }
     }
     return ResultDeleting(current = acc, max = filesPath.size)
-}
-
-fun Response.downloadTo(file: File) = runBlocking {
-    val sink = Okio.buffer(Okio.sink(file)) // с помощью okio сохраняю загруженные данные в файл
-    sink.writeAll(this@downloadTo.body().source())
-    sink.close()
 }
 
 object SortLibraryUtil {
@@ -215,9 +206,6 @@ object SortLibraryUtil {
     }
 }
 
-// избавитель от родителя
-fun View.withoutParent(): View {
-    val parent: ViewGroup = this.parent as ViewGroup
-    parent.removeView(this)
-    return this
-}
+fun formatDouble(value: Double?) = DecimalFormat("#0.00").format(value)
+
+fun bytesToMbytes(value: Long) = value.toDouble() / (1024.0 * 1024.0)

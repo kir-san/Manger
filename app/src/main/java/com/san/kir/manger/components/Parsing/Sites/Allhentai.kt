@@ -1,18 +1,19 @@
 package com.san.kir.manger.components.Parsing.Sites
 
+import com.san.kir.manger.components.Main.Main
 import com.san.kir.manger.components.Parsing.ManageSites
 import com.san.kir.manger.components.Parsing.SiteCatalog
-import com.san.kir.manger.dbflow.models.Chapter
-import com.san.kir.manger.dbflow.models.DownloadItem
-import com.san.kir.manger.dbflow.models.Manga
-import com.san.kir.manger.dbflow.models.SiteCatalogElement
-import com.san.kir.manger.dbflow.wrapers.SiteWrapper
+import com.san.kir.manger.room.models.Chapter
+import com.san.kir.manger.room.models.DownloadItem
+import com.san.kir.manger.room.models.Manga
+import com.san.kir.manger.room.models.SiteCatalogElement
 import com.san.kir.manger.utils.createDirs
-import com.san.kir.manger.utils.log
+import com.san.kir.manger.utils.getFullPath
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.channels.produce
 import kotlinx.coroutines.experimental.run
 import kotlinx.coroutines.experimental.sync.Mutex
+import kotlinx.coroutines.experimental.sync.withLock
 import org.json.JSONArray
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
@@ -28,27 +29,22 @@ class Allhentai : SiteCatalog {
     override val catalogName = "allhentai.ru"
     override val host = "http://$catalogName"
     override val siteCatalog = host + "/list?type=&sortType=RATING"
-    override var volume = SiteWrapper.get(name)?.count ?: 0
+    override var volume = Main.db.siteDao.loadSite(name)?.volume ?: 0
     override var oldVolume = volume
 
     override fun init(): Allhentai {
         if (!isInit) {
             val doc = ManageSites.getDocument(host)
-            doc.select(".rightContent h5").forEach {
-                if (it.text() == "У нас сейчас") {
-                    volume = it.parent().select("li").first().text().split(" ").component4().toInt()
-                }
-
-            }
+            doc.select(".rightContent h5")
+                    .filter { it.text() == "У нас сейчас" }
+                    .map { it.parent().select("li") }
+                    .map { it.first().text() }
+                    .map { it.split(" ").component4().toInt() }
+                    .forEach { volume = it }
             isInit = true
         }
         return this
     }
-
-    override fun reInit() {
-        oldVolume = SiteWrapper.get(name)?.count ?: 0
-    }
-
 
     ////
     suspend override fun getFullElement(element: SiteCatalogElement): SiteCatalogElement {
@@ -56,8 +52,7 @@ class Allhentai : SiteCatalog {
         val doc = rootdoc.select("div.leftContent")
 
         // Список авторов
-        val mangakas = doc.select(".mangaSettings .elementList a[href*=author]")
-        mangakas.forEach { element.authors.add(it.text()) }
+        element.authors = doc.select(".mangaSettings .elementList a[href*=author]").map { it.text() }
 
         // Количество глав
         val volume = doc.select(".cTable tr").filter { !it.select("a").attr("href").contains("forum") }.size - 1
@@ -70,8 +65,8 @@ class Allhentai : SiteCatalog {
 
         return element
     }
-    ////
 
+    ////
     private var count = 1_000_000
     private val mutex = Mutex()
 
@@ -82,7 +77,7 @@ class Allhentai : SiteCatalog {
         // Сохраняю в каждом елементе host и catalogName
         element.host = host
         element.catalogName = catalogName
-        element.id = ID
+        element.siteId = ID
 
         // название манги
         element.name = elem.select("a").first().ownText()
@@ -133,18 +128,11 @@ class Allhentai : SiteCatalog {
             if (matcher3.find()) {
                 element.dateId = matcher3.group().toInt()
             }
-        } finally {
-            log = "watches " + element.dateId
         }
 
-
-        mutex.lock()
-        try {
+        mutex.withLock {
             element.populate = count--
-        } finally {
-            mutex.unlock()
         }
-
 
         return element
     }
@@ -159,7 +147,6 @@ class Allhentai : SiteCatalog {
                 true
             } else
                 false
-
         }
 
         do {
@@ -172,29 +159,26 @@ class Allhentai : SiteCatalog {
 
         close()
     }
+
     ///
-
-
     override fun asyncGetChapters(context: CoroutineContext,
                                   element: SiteCatalogElement,
                                   path: String) = produce(context) {
-        val doc = ManageSites.asyncGetDocument(element.link)
-        doc.select(".cTable").select("tr").forEach {
-            val select = it.select("a")
-
-            if (!select.attr("href").contains("forum"))
-                if (select.text().isNotEmpty()) {
-                    val name = select.text()
-                    var link = select.attr("href")
-                    if (!link.contains(host))
-                        link = host + link
-                    send(Chapter(manga = element.name,
-                                 name = name,
-                                 date = it.select("td[align]").text(),
-                                 site = link,
-                                 path = "$path/$name"))
+        ManageSites.asyncGetDocument(element.link)
+                .select(".cTable")
+                .select("tr")
+                .map { it.select("td[align]").text() to it.select("a") }
+                .filterNot { (_, it) -> it.attr("href").contains("forum") }
+                .filter { (_, it) -> it.text().isNotEmpty() }
+                .map { (date, select) ->
+                    val link = select.attr("href")
+                    Chapter(manga = element.name,
+                            name = select.text(),
+                            date = date,
+                            site = if (link.contains(host)) link else host + link,
+                            path = "$path/$name")
                 }
-        }
+                .onEach { send(it) }
     }
 
     override fun getChapters(element: Manga): Observable<Chapter> {
@@ -221,11 +205,36 @@ class Allhentai : SiteCatalog {
                 .subscribeOn(Schedulers.io())
     }
 
+    override fun asyncGetPages(item: DownloadItem): List<String> {
+        var list = listOf<String>()
+        // Создаю папку/папки по указанному пути
+        createDirs(getFullPath(item.path))
+        val doc = ManageSites.getDocument(item.link)
+
+        // с помощью регулярных выражений ищу нужные данные
+        val pat = Pattern.compile("var pictures.+").matcher(doc.body().html())
+        // если данные найдены то продолжаю
+        if (pat.find()) {
+            // избавляюсь от ненужного и разделяю строку в список и отправляю
+            val data = pat.group()
+                    .removeSuffix(";")
+                    .removePrefix("var pictures = ")
+            val json = JSONArray(data)
+
+            repeat(json.length()) { index ->
+                list += json.getJSONObject(index).getString("url")
+            }
+
+
+        }
+        return list
+    }
+
     override fun getPages(observable: Observable<DownloadItem>): Observable<List<String>> {
         return observable
                 .observeOn(Schedulers.io())
                 // Создаю папку/папки по указанному пути
-                .filter { createDirs(it.path) }
+                .filter { createDirs(getFullPath(it.path)) }
                 // С помощью okhttp получаю содержимое страницы и отдаю его на парсинг в jsoup
                 .map {
                     ManageSites.getDocument(it.link)

@@ -38,6 +38,7 @@ import static com.san.kir.manger.picasso.MediaStoreRequestHandler.PicassoKind.MI
 import static com.san.kir.manger.picasso.MediaStoreRequestHandler.PicassoKind.MINI;
 import static com.san.kir.manger.picasso.Picasso.LoadedFrom.DISK;
 
+@SuppressWarnings("ALL")
 class MediaStoreRequestHandler extends ContentStreamRequestHandler {
   private static final String[] CONTENT_ORIENTATION = new String[] {
       Images.ImageColumns.ORIENTATION

@@ -1,110 +1,136 @@
 package com.san.kir.manger.components.CatalogForOneSite
 
-import android.app.ProgressDialog
+import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.graphics.Color
 import android.support.v4.view.GravityCompat
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.SearchView
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ImageView
+import android.widget.TextView
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.instance
+import com.san.kir.manger.EventBus.negative
+import com.san.kir.manger.EventBus.positive
+import com.san.kir.manger.Extending.BaseActivity
+import com.san.kir.manger.Extending.Views.showAlways
+import com.san.kir.manger.Extending.Views.showNever
 import com.san.kir.manger.R
 import com.san.kir.manger.components.Parsing.ManageSites
-import com.san.kir.manger.dbflow.models.Site
-import com.san.kir.manger.dbflow.models.SiteCatalogElement
-import com.san.kir.manger.dbflow.wrapers.SiteWrapper
-import com.san.kir.manger.utils.DIR
-import com.san.kir.manger.utils.getFullPath
-import com.san.kir.manger.utils.log
-import com.san.kir.manger.Extending.Views.showAlways
-import com.san.kir.manger.Extending.Views.showIfRoom
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.channels.ProducerJob
-import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.appcompat.v7.coroutines.onQueryTextListener
-import org.jetbrains.anko.indeterminateProgressDialog
-import org.jetbrains.anko.progressDialog
+import org.jetbrains.anko.find
+import org.jetbrains.anko.imageResource
 import org.jetbrains.anko.setContentView
-import org.jetbrains.anko.toast
+import org.jetbrains.anko.startService
+import org.jetbrains.anko.support.v4.onRefresh
+import org.jetbrains.anko.textColor
 
-class CatalogForOneSiteActivity : AppCompatActivity() {
-    // Основной адаптер
-    private val mAdapter = CatalogForOneSiteAdapter()
 
-    // Список фильтрующих адаптеров
-    val filterAdapterList: List<CatalogFilter> = listOf(CatalogFilter("Жанры", FilterAdapter()),
-                                                        CatalogFilter("Тип манги", FilterAdapter()))
-
-    // id полученного сайта
-    private val mSiteID by lazy { intent.getIntExtra("id", -1) }
+class CatalogForOneSiteActivity : BaseActivity() {
+    private val mSite by lazy {
+        val id = intent.getIntExtra("id", -1)
+        ManageSites.CATALOG_SITES[id]
+    }
 
     // Сохраняем название окна
     val mOldTitle: CharSequence by lazy { title }
 
-    private lateinit var mProgress: ProgressDialog
-
-    // Разметка интерфейса
-    private val view = CatalogForOneSiteView(this)
-
-
-    private lateinit var catalog: ProducerJob<SiteCatalogElement>
+    private val adapter = CatalogForOneSiteRecyclerPresenter(injector)
+    private val view = CatalogForOneSiteView(injector, adapter)
+    private val receiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent) {
+            val id = intent.getIntExtra(CatalogForOneSiteUpdaterService.EXTRA_KEY_OUT, -1)
+            if (id != -1 && id == mSite.ID)
+                updateCatalog()
+        }
+    }
 
     /* перезаписанные функции */
+    @SuppressLint("MissingSuperCall")
     override fun onCreate(savedInstanceState: android.os.Bundle?) {
         super.onCreate(savedInstanceState)
-
         // Если id сайта не существует, то выйти из активити
-        if (mSiteID < 0)
+        if (mSite.ID < 0)
             onBackPressed()
+
+
 
         view.setContentView(this)
         // Присвоение адаптера
-        view.adapter.item = mAdapter
+        view.swipe.onRefresh {
+            reloadCatalogDialog()
+            view.swipe.isRefreshing = false
+        }
 
-        title = ManageSites.CATALOG_SITES[mSiteID].name
+        updateCatalog()
 
-        loadCatalog()
+        title = mSite.name
+
+        // регистрируем BroadcastReceiver
+        val intentFilter = IntentFilter(
+                CatalogForOneSiteUpdaterService.ACTION_CATALOGUPDATERSERVICE)
+        intentFilter.addCategory(Intent.CATEGORY_DEFAULT)
+
+        registerReceiver(receiver, intentFilter)
     }
 
+    private fun updateCatalog() {
+        adapter.setSite(mSite.ID,
+                        { view.isAction.positive() },
+                        { size ->
+                            // Изменяем заголовок окна
+                            title = "$mOldTitle: $size"
+
+                            // Закрываем окно
+                            view.isAction.negative()
+                        })
+    }
+
+    @SuppressLint("MissingSuperCall")
+    override fun onDestroy() {
+        unregisterReceiver(receiver)
+        super.onDestroy()
+    }
+
+    override fun provideOverridingModule() = Kodein.Module {
+        bind<CatalogForOneSiteActivity>() with instance(this@CatalogForOneSiteActivity)
+    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         // Текстовое поле для поиска по названию
-        val searchView = SearchView(this)
-        searchView.onQueryTextListener {
-            onQueryTextChange {
-                launch(UI) {
-                    // Фильтрация при каждом изменении текста
-                    mAdapter.changeOrder(searchText = it!!)
-                }
-                return@onQueryTextChange true
-            }
-        }
         menu!!.add(R.string.catalog_for_one_site_search)
                 .showAlways()
-//                .setIcon(R.drawable)
-                .actionView = searchView
+                .actionView = SearchView(this).apply {
+            setButton(R.drawable.ic_action_search)
+            setCloseButton(R.drawable.ic_action_close)
+            setTextColor(Color.WHITE)
+            onQueryTextListener {
+                onQueryTextChange {
+                    // Фильтрация при каждом изменении текста
+                    adapter.changeOrder(searchText = it!!)
+                    true
+                }
+            }
+        }
 
         // Обновление каталога
         menu.add(0, 0, 2, R.string.catalog_for_one_site_update)
-                .showIfRoom()
-                .setIcon(R.drawable.ic_update)
+                .showNever()
 
         return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-//            R.id.action_settings -> return true
             android.R.id.home -> onBackPressed()
             0 -> {
-                alert {
-                    titleResource = R.string.catalog_fot_one_site_warning
-                    messageResource = R.string.catalog_fot_one_site_redownload_text
-                    positiveButton(R.string.catalog_fot_one_site_redownload_ok) {
-                        reloadCatalog()
-                    }
-                    negativeButton(getString(R.string.catalog_fot_one_site_redownload_cancel)) {}
-                }.show()
+                reloadCatalogDialog()
             }
         }
         return super.onOptionsItemSelected(item)
@@ -119,116 +145,29 @@ class CatalogForOneSiteActivity : AppCompatActivity() {
         }
     }
 
-    override fun onDestroy() {
-        // отписаться при выходе из активити
-        super.onDestroy()
-    }
-
-
     /* приватные функции */
 
-
-    // Загрузка каталога из памяти
-    private fun loadCatalog() {
-        mProgress = indeterminateProgressDialog(R.string.catalog_for_one_site_load_data) {
-            setCanceledOnTouchOutside(false)
-        }
-
-        launch(CommonPool) {
-            try {
-                catalog = ManageSites.loadCatalogFromLocal(CommonPool, mSiteID)
-                for (item in catalog) {
-                    mAdapter.add(item)
-                    // Добавить данных в адаптеры
-                    filterAdapterList[0].adapter.addAll(item.genres)
-                    filterAdapterList[1].adapter.add(item.type)
-                }
-            } catch (ex: Throwable) {
-                finishLoad()
-            } finally {
-                finishLoad()
+    private fun reloadCatalogDialog() {
+        alert {
+            titleResource = R.string.catalog_fot_one_site_warning
+            messageResource = R.string.catalog_fot_one_site_redownload_text
+            positiveButton(R.string.catalog_fot_one_site_redownload_ok) {
+                if (!CatalogForOneSiteUpdaterService.isContain(mSite.ID))
+                    startService<CatalogForOneSiteUpdaterService>("id" to mSite.ID)
             }
-        }
+            negativeButton(getString(R.string.catalog_fot_one_site_redownload_cancel)) {}
+        }.show()
     }
 
-    // Перезагрузка каталога
-    private fun reloadCatalog() {
-        // Получаем название каталога
-        val name = ManageSites.CATALOG_SITES[mSiteID].catalogName
-        // Получаем файл
-        val f = getFullPath("${DIR.CATALOGS}/$name")
-        // Если файл существовал и был успешно удален
-        if (!f.exists() or (f.exists() and f.delete())) {
-
-            // Создаем окно
-            mProgress = progressDialog(R.string.catalog_for_one_site_load_data) {
-                progress = 0
-                // Отключение реагирования на касания за пределами окна
-                setCanceledOnTouchOutside(false)
-                setOnCancelListener {
-                    // Если отменена загрузка, то на отписаться и показать сообщение
-                    catalog.cancel()
-                    toast(R.string.catalog_for_one_site_load_cancel)
-                }
-            }
-
-            // Запускаем процесс обновления
-            launch(CommonPool) {
-                try {
-                    // Очищаем адаптеры
-                    mAdapter.clear()
-                    filterAdapterList[0].adapter.clear()
-                    filterAdapterList[1].adapter.clear()
-
-
-                    ManageSites.CATALOG_SITES[mSiteID].init()
-                    mProgress.max = ManageSites.CATALOG_SITES[mSiteID].volume
-
-                    catalog = ManageSites.loadCatalogFromInternet(CommonPool, mSiteID)
-                    for (item in catalog) {
-                        mAdapter.add(item)
-                        // Добавить данных в адаптеры
-                        filterAdapterList[0].adapter.addAll(item.genres)
-                        filterAdapterList[1].adapter.add(item.type)
-                        mProgress.progress++
-                    }
-                } catch (ex: Throwable) {
-                    log = ex.message!!
-                    finishLoad {
-                        this@CatalogForOneSiteActivity.toast(R.string.catalog_for_one_site_on_error_load)
-                    }
-                } finally {
-                    finishLoad()
-                }
-            }
-        }
+    private fun SearchView.setButton(resId: Int) {
+        find<ImageView>(android.support.v7.appcompat.R.id.search_button).imageResource = resId
     }
 
-    suspend private fun finishLoad(action: (() -> Unit)? = null) =
-            launch(UI) {
-                val size = mAdapter.changeOrder()
-                // Находим в базе данных наш сайт
-                val name = ManageSites.CATALOG_SITES[mSiteID].name
+    private fun SearchView.setCloseButton(resId: Int) {
+        find<ImageView>(android.support.v7.appcompat.R.id.search_close_btn).imageResource = resId
+    }
 
-                SiteWrapper.get(name)?.let {
-                    // Сохраняем новое значение количества элементов
-                    it.count = size
-                    // Обновляем наш сайт в базе данных
-                    it.update()
-                } ?: Site(name, size).insert()
-
-                // Изменяем значение предыдущего объема сайта
-                ManageSites.CATALOG_SITES[mSiteID].oldVolume = size
-                // Изменяем заголовок окна
-                title = "$mOldTitle: $size"
-
-                // Закрываем окно
-                mProgress.dismiss()
-
-                filterAdapterList[0].adapter.finishAdd()
-                filterAdapterList[1].adapter.finishAdd()
-
-                action?.invoke()
-            }
-
+    private fun SearchView.setTextColor(color: Int) {
+        find<TextView>(android.support.v7.appcompat.R.id.search_src_text).textColor = color
+    }
 }

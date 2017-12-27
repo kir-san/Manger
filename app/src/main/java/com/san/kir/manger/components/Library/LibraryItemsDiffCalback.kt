@@ -1,8 +1,7 @@
 package com.san.kir.manger.components.Library
 
 import android.support.v7.util.DiffUtil
-import com.san.kir.manger.dbflow.models.Manga
-
+import com.san.kir.manger.room.models.Manga
 
 class LibraryItemsDiffCalback(private val oldList: List<Manga>,
                               private val newList: List<Manga>) : DiffUtil.Callback() {

@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
  * Exists as a custom type so that we can differentiate the use of defaults versus a user-supplied
  * instance.
  */
+@SuppressWarnings("ALL")
 class PicassoExecutorService extends ThreadPoolExecutor {
   private static final int DEFAULT_THREAD_COUNT = 3;
 

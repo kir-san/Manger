@@ -51,7 +51,7 @@ import static com.san.kir.manger.picasso.Utils.createKey;
 import static com.san.kir.manger.picasso.Utils.log;
 
 /** Fluent API for building an image download request. */
-@SuppressWarnings("UnusedDeclaration") // Public API.
+@SuppressWarnings("ALL") // Public API.
 public class RequestCreator {
   private static final AtomicInteger nextId = new AtomicInteger();
 

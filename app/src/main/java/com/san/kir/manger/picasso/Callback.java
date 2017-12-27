@@ -15,6 +15,7 @@
  */
 package com.san.kir.manger.picasso;
 
+@SuppressWarnings("ALL")
 public interface Callback {
   void onSuccess();
 

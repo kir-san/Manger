@@ -25,6 +25,7 @@ import okio.Source;
 import static android.content.ContentResolver.SCHEME_FILE;
 import static com.san.kir.manger.picasso.Picasso.LoadedFrom.DISK;
 
+@SuppressWarnings("ALL")
 class AssetRequestHandler extends RequestHandler {
   protected static final String ANDROID_ASSET = "android_asset";
   private static final int ASSET_PREFIX_LENGTH =

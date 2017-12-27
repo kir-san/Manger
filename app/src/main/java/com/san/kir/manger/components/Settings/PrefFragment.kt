@@ -1,27 +1,25 @@
 package com.san.kir.manger.components.Settings
 
 import android.os.Bundle
-import android.support.v7.preference.ListPreference
-import android.support.v7.preference.PreferenceFragmentCompat
-import com.san.kir.manger.R
+import android.preference.ListPreference
+import android.preference.PreferenceFragment
 import com.san.kir.manger.R.xml
-import org.jetbrains.anko.support.v4.act
 
-class PrefFragment : PreferenceFragmentCompat() {
-    override fun onCreatePreferences(p0: Bundle?, p1: String?) {
-        act.setTitle(R.string.action_settings)
+class PrefFragment : PreferenceFragment() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
         addPreferencesFromResource(xml.pref_main)
 
         val portSpan = findPreference("portrait_span") as ListPreference
-        var span = arrayListOf<String>()
-        (2..5).mapTo(span) { "$it" }
-        portSpan.entries = span.toTypedArray()
-        portSpan.entryValues = span.toTypedArray()
+        val port = (2..5).map { "$it" }
+        portSpan.entries = port.toTypedArray()
+        portSpan.entryValues = port.toTypedArray()
 
         val landSpan = findPreference("landscape_span") as ListPreference
-        span = arrayListOf<String>()
-        (3..6).mapTo(span) { "$it" }
-        landSpan.entries = span.toTypedArray()
-        landSpan.entryValues = span.toTypedArray()
+        val land = (3..6).map { "$it" }
+        landSpan.entries = land.toTypedArray()
+        landSpan.entryValues = land.toTypedArray()
     }
 }

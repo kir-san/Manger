@@ -13,6 +13,7 @@ import com.san.kir.manger.photoview.PhotoViewAttacher.OnMatrixChangedListener;
 import com.san.kir.manger.photoview.PhotoViewAttacher.OnPhotoTapListener;
 import com.san.kir.manger.photoview.PhotoViewAttacher.OnViewTapListener;
 
+@SuppressWarnings("ALL")
 public class PhotoView extends android.support.v7.widget.AppCompatImageView implements IPhotoView {
 
     private PhotoViewAttacher mAttacher;

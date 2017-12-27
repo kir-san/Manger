@@ -1,79 +1,107 @@
 package com.san.kir.manger.components.ListChapters
 
+import android.annotation.SuppressLint
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import android.os.IBinder
 import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
-import com.san.kir.manger.R
-import com.san.kir.manger.components.ChaptersDownloader.ChaptersDownloader
-import com.san.kir.manger.dbflow.wrapers.MangaWrapper
-import com.san.kir.manger.utils.CHAPTER_STATUS
-import com.san.kir.manger.utils.MangaUpdater
-import com.san.kir.manger.utils.sPrefListChapters
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.singleton
+import com.san.kir.manger.Extending.BaseActivity
 import com.san.kir.manger.Extending.Views.showAlways
 import com.san.kir.manger.Extending.Views.showIfRoom
 import com.san.kir.manger.Extending.Views.showNever
+import com.san.kir.manger.R
+import com.san.kir.manger.components.DownloadManager.DownloadManager
+import com.san.kir.manger.components.DownloadManager.DownloadService
+import com.san.kir.manger.components.Main.Main
+import com.san.kir.manger.room.DAO.ChapterFilter
+import com.san.kir.manger.room.models.Manga
+import com.san.kir.manger.utils.ActionModeControl
+import com.san.kir.manger.utils.MangaUpdater
+import com.san.kir.manger.utils.log
+import com.san.kir.manger.utils.sPrefListChapters
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.alert
+import org.jetbrains.anko.cancelButton
 import org.jetbrains.anko.longToast
+import org.jetbrains.anko.okButton
 import org.jetbrains.anko.setContentView
-import org.jetbrains.anko.toast
 
-class ListChaptersActivity : AppCompatActivity(), ActionMode.Callback {
-
+@SuppressLint("MissingSuperCall")
+class ListChaptersActivity : BaseActivity(), ActionMode.Callback {
     companion object {
-        private const val filterStatus = "filterStatus"
-        private const val sortStatus = "sortStatus"
+        private const val filterStatus = "filteringStatus"
     }
 
-    // получение манги по уникальному имени
-    private val manga by lazy { MangaWrapper.get(intent.getStringExtra("manga_unic")) }
+    private val actionMode: ActionModeControl by instance()
+    private val adapter = ListChaptersRecyclerPresenter(injector)
+    private val view = ListChapterView(adapter)
+    private val mangas = Main.db.mangaDao
+    private lateinit var manga: Manga
+    private var bound = false
+    private val connection = object : ServiceConnection {
+        override fun onServiceDisconnected(name: ComponentName?) {
+            log("onServiceDisconnected()")
+            bound = false
+        }
 
-    var actionMode: ActionMode? = null
+        override fun onServiceConnected(name: ComponentName, service: IBinder) {
+            downloadManager =
+                    (service as DownloadService.LocalBinder).service.downloadManager
+            bound = true
+        }
+    }
+    lateinit var downloadManager: DownloadManager
 
-    private val view = ListChapterView(this)
+    override fun provideOverridingModule() = Kodein.Module {
+        bind<ListChaptersActivity>() with instance(this@ListChaptersActivity)
+        bind<ActionModeControl>() with singleton {
+            ActionModeControl(this@ListChaptersActivity)
+        }
+    }
 
-    private lateinit var adapter: ListChaptersAdapter
-
-    /* Перезаписанные функции */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        view.setContentView(this) // Загружаем разметку
+        view.setContentView(this)
+
+        manga = mangas.loadManga(intent.getStringExtra("manga_unic"))
+        title = manga.name
+
+        val intent = Intent(this, DownloadService::class.java)
+        bindService(intent, connection, Context.BIND_AUTO_CREATE)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        title = manga!!.name // Меняем заголовок
-
-        adapter = ListChaptersAdapter(this, manga!!)
-        view.adapter.item = adapter // Присваиваем наш адаптер
-
-        MangaUpdater.bus.register() // Подписка на обновление манги
-        ChaptersDownloader.bus.register(2) // Подписка на загрузчик глав
+        MangaUpdater.bus.register()
     }
 
     override fun onResume() {
         super.onResume()
         // Загрузка настроек
         getSharedPreferences(sPrefListChapters, MODE_PRIVATE).apply {
-            if (contains(sortStatus)) {// порядок сортировки
-                view.sortIndicator.item = getBoolean(sortStatus, false)
-                // Обновить список после загрузки параметра из настроек
-                adapter.update(!view.sortIndicator.item)
-            }
-            if (contains(filterStatus))
-                view.filterIndicator = getInt(filterStatus,
-                                              ListChaptersAdapter.ALL_READ) // тип фильтрации
+            if (contains(filterStatus)) {
+                val filterString = getString(filterStatus, ChapterFilter.ALL_READ_ASC.name)
+                adapter.setManga(manga, ChapterFilter.valueOf(filterString))
+                view.filterState = filterString
+            } // тип фильтрации
         }
 
         // Если в данный момент ведется поиск новых глав для данной манги
-        if (MangaUpdater.contains(manga!!))
-            view.isVisibleProgress.item = true // Показать прогрессБар
+        if (MangaUpdater.contains(manga))
+            view.isAction.item = true // Показать прогрессБар
 
         // Реакция на сообщения от поиска новых глав
         MangaUpdater.bus.onEvent { (manga, isFoundNew, countNew) ->
-            if (manga.unic == this.manga!!.unic) { // Если совпадает манга
+            if (manga.unic == this.manga.unic) { // Если совпадает манга
                 if (countNew == -1) // Если произошла ошибка ошибках
                     longToast(R.string.list_chapters_message_error)
                 else
@@ -83,10 +111,9 @@ class ListChaptersActivity : AppCompatActivity(), ActionMode.Callback {
                         longToast(getString(R.string.list_chapters_message_count_new,
                                             countNew))
                         // Обновить список
-                        adapter.update(!view.sortIndicator.item)
                     }
 
-                view.isVisibleProgress.item = false // Скрыть прогрессБар
+                view.isAction.item = false // Скрыть прогрессБар
             }
         }
     }
@@ -103,9 +130,9 @@ class ListChaptersActivity : AppCompatActivity(), ActionMode.Callback {
         val setNotRead = 5
         val selectPrev = 6
         val selectNext = 7
+        val fullDelete = 8
     }
 
-    // Создание меню для экшнМода
     override fun onCreateActionMode(mode: ActionMode, menu: Menu?): Boolean {
         // Выделить все
         mode.menu.add(groupId, id.selectAll, id.selectAll, R.string.action_select_all)
@@ -141,65 +168,74 @@ class ListChaptersActivity : AppCompatActivity(), ActionMode.Callback {
                 .showNever()
                 .isEnabled = false
 
+        // Полностью удалить главы
+        mode.menu.add(groupId, id.fullDelete, 102, R.string.action_full_delete)
+                .showNever()
+
         return true
     }
 
-    // При изменениях в опциях меню в экшнМоде
     override fun onPrepareActionMode(mode: ActionMode?, menu: Menu): Boolean {
-        if (adapter.getSelectedCount() == 1) { // Включение опций только если выделен 1 элемент
-            menu.findItem(id.selectNext).isEnabled = true
-            menu.findItem(id.selectPrev).isEnabled = true
-        } else {
-            menu.findItem(id.selectNext).isEnabled = false
-            menu.findItem(id.selectPrev).isEnabled = false
-        }
+        menu.findItem(id.selectNext).isEnabled = adapter.selectedCount == 1
+        menu.findItem(id.selectPrev).isEnabled = adapter.selectedCount == 1
         return true
     }
 
-    // При нажатии опций меню в экщнМоде
     override fun onActionItemClicked(mode: ActionMode?, item: MenuItem): Boolean {
         when (item.itemId) { // Действия над выделенными главами
             id.delete -> {
                 alert {
                     titleResource = R.string.list_chapters_remove_text
-//                    message("${adapter.item!!.getSelectedCount()}")
                     positiveButton(R.string.list_chapters_remove_yes) {
-                        adapter.remove()
-                        actionMode?.finish()
+                        adapter.deleteSelectedItems()
+                        actionMode.finish()
                     }
                     negativeButton(R.string.list_chapters_remove_no) {}
                 }.show()
                 return false
             } // Удалить
-            id.download -> adapter.downloadChapter() // Скачать
+            id.download -> adapter.downloadSelectedItems() // Скачать
             id.setNotRead -> adapter.setRead(false) // Сделать не прочитанными
             id.setRead -> adapter.setRead(true) // Сделать прочитанными
             id.selectAll -> {
                 adapter.selectAll() // Выбрать все
-                actionMode?.title = actionTitle()
+                actionMode.setTitle(actionTitle())
                 return false
             }
             id.selectPrev -> {
                 adapter.selectPrev() // Выбрать предыдущие элементы
-                actionMode?.title = actionTitle()
+                actionMode.setTitle(actionTitle())
                 return false
             }
             id.selectNext -> {
                 adapter.selectNext() // Выбрать последующие элементы
-                actionMode?.title = actionTitle()
+                actionMode.setTitle(actionTitle())
+                return false
+            }
+            id.fullDelete -> {
+                alert {
+                    this.title = "Внимание!!!"
+                    message = "Данное действие приведет к удалению глав из базы данных. " +
+                            "Все файлы и папки будут не тронуты, но приложение больше не будет " +
+                            "видеть эти главы. Рекомендуется использовать это " +
+                            "при появлении копий существующих глав. За один раз удаляет небольшое " +
+                            "количество глав."
+                    okButton {
+                        adapter.fullDeleteSelectedItems()
+                        actionMode.finish()
+                    }
+                    cancelButton { }
+                }.show()
                 return false
             }
         }
-        actionMode?.finish() // Выйти из экшнМода
+        actionMode.finish()
         return false
     }
 
-    // При выключении экшнМода
     override fun onDestroyActionMode(mode: ActionMode?) {
         adapter.removeSelection() // Очистить выделение
-        actionMode?.let {
-            actionMode = null // ЗаNULLить переменную
-        }
+        actionMode.clear()
         view.isVisibleBottom.item = true // Показать бар внизу экрана
     }
 
@@ -222,40 +258,12 @@ class ListChaptersActivity : AppCompatActivity(), ActionMode.Callback {
         when (item.itemId) {
             android.R.id.home -> onBackPressed() // Назад при нажатию стрелку
             0 -> { // Проверка на наличие новых глав
-                view.isVisibleProgress.item = true // Показать прогрессБар
-                MangaUpdater.addTask(manga!!) // Добавить мангу для проверки новых глав
+                view.isAction.item = true // Показать прогрессБар
+                MangaUpdater.addTask(manga) // Добавить мангу для проверки новых глав
             }
-            1 -> { // БЫстрая загрузка глав
-                val chapter = adapter.getCatalog()
-                        .filter { it.action == CHAPTER_STATUS.DOWNLOADABLE }
-                        .filter { !it.isRead }
-                        .first()
-                ChaptersDownloader.addTask(chapter)
-                adapter.notifyDataSetChanged()
-            }
-            2 -> {
-                val count = adapter.getCatalog()
-                        .filter { it.action == CHAPTER_STATUS.DOWNLOADABLE }
-                        .filter { !it.isRead }
-                        .map { ChaptersDownloader.addTask(it) }
-                        .size
-                if (count == 0)
-                    toast(R.string.list_chapters_selection_load_error)
-                else
-                    toast(getString(R.string.list_chapters_selection_load_ok, count))
-                adapter.notifyDataSetChanged()
-            }
-            3 -> {
-                val count = adapter.getCatalog()
-                        .filter { it.action == CHAPTER_STATUS.DOWNLOADABLE }
-                        .map { ChaptersDownloader.addTask(it) }
-                        .size
-                if (count == 0)
-                    toast(R.string.list_chapters_selection_load_error)
-                else
-                    toast(getString(R.string.list_chapters_selection_load_ok, count))
-                adapter.notifyDataSetChanged()
-            }
+            1 -> adapter.downloadNextNotReadChapter()
+            2 -> adapter.downloadAllNotReadChapters()
+            3 -> adapter.downloadAllChapters()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -263,48 +271,41 @@ class ListChaptersActivity : AppCompatActivity(), ActionMode.Callback {
     override fun onPause() {
         super.onPause()
         // Сохранение настроек
-        getSharedPreferences(sPrefListChapters, MODE_PRIVATE).apply {
-            edit().apply {
-                putInt(filterStatus, view.filterIndicator) // тип фильтрации
-                putBoolean(sortStatus, view.sortIndicator.item) // порядок сортировки
-            }.apply()
-        }
-        // Сохранение здесь так как этот метод сработает в любом случае
+        getSharedPreferences(sPrefListChapters, MODE_PRIVATE)
+                .edit()
+                .putString(filterStatus, view.filterState)
+                .apply()
     }
 
     override fun onDestroy() {
         MangaUpdater.bus.unregister() // Отписка
-        ChaptersDownloader.bus.unregister(2) // Отписка
         super.onDestroy()
+        if (bound) {
+            unbindService(connection)
+            bound = false
+        }
     }
 
-    /* Функции */
-    // При нажатии элементов
     fun onListItemSelect(position: Int) = launch(UI) {
         adapter.toggleSelection(position) // Переключить выбран элемент или нет
-
-        val hasCheckedItems = adapter.getSelectedCount() > 0 // Проверка есть ли выделенные элементы элементы
-
         // Если есть выделенные элементы и экшнМод не включен
-        if (hasCheckedItems and (actionMode == null)) {
-            actionMode = startActionMode(this@ListChaptersActivity) // Включить экшнМод
+        if (adapter.selectedCount > 0 && actionMode.hasFinish()) {
+            actionMode.start(this@ListChaptersActivity)
             view.isVisibleBottom.item = false // Скрыть меню снизу
-        } else if (!hasCheckedItems and (actionMode != null)) { // Если все наоборот
-            actionMode!!.finish() // Завершить работу экшнМода
+        } else if (adapter.selectedCount <= 0 && !actionMode.hasFinish()) { // Если все наоборот
+            actionMode.finish() // Завершить работу экшнМода
         }
 
         // Вывод в заголовок количество выделенных элементов
-        actionMode?.title = actionTitle()
+        actionMode.setTitle(actionTitle())
     }
 
-    /* Приватные функции */
-    // Заголовок для экшнМода, вынесен из-за повторов и большой длинны
     private fun actionTitle(): String {
         return resources
                 .getQuantityString(
                         R.plurals.list_chapters_action_selected,
-                        adapter.getSelectedCount(),
-                        adapter.getSelectedCount()
+                        adapter.selectedCount,
+                        adapter.selectedCount
                 )
     }
 }

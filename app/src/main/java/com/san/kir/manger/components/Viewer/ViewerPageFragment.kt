@@ -10,12 +10,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView.ScaleType.CENTER_CROP
-import com.san.kir.manger.EventBus.BinderRx
+import com.san.kir.manger.EventBus.Binder
 import com.san.kir.manger.Extending.AnkoExtend.bind
 import com.san.kir.manger.Extending.AnkoExtend.onDoubleTapListener
 import com.san.kir.manger.Extending.AnkoExtend.photoView
 import com.san.kir.manger.R
-import com.san.kir.manger.components.Viewer.ViewerActivity
 import com.san.kir.manger.picasso.Picasso
 import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.matchParent
@@ -41,8 +40,8 @@ class ViewerPageFragment : Fragment() {
         }
     }
 
-    private val isError = BinderRx(false)
-    private val errorData = BinderRx(Triple(0L, 0, 0))
+    private val isError = Binder(false)
+    private val errorData = Binder(Triple(0L, 0, 0))
     private lateinit var mFile: File
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,7 +64,7 @@ class ViewerPageFragment : Fragment() {
                 textView("При загрузке произошла ошибка")
                 textView {
                     bind(errorData) { (size, width, height) ->
-                        text = "Размер файла $size Мб\n" + "Размер страницы $width x $height"
+                        text = "Размер файла $size Мб\nРазмер страницы $width x $height"
                     }
                 }
                 bind(isError) { visibility = if (it) View.VISIBLE else View.GONE }
@@ -87,7 +86,7 @@ class ViewerPageFragment : Fragment() {
                     img.inJustDecodeBounds = true
                     BitmapFactory.decodeFile(mFile.path, img)
 
-                    val MAX = 9500.0
+                    val max = 9500.0
                     var diff = 1.0
 
                     val mainSize = maxOf(img.outWidth, img.outHeight)
@@ -98,8 +97,8 @@ class ViewerPageFragment : Fragment() {
                                                 img.outWidth,
                                                 img.outHeight)
                     } else {
-                        if (mainSize > MAX)
-                            diff = Math.floor(MAX / mainSize * 100) / 100
+                        if (mainSize > max)
+                            diff = Math.floor(max / mainSize * 100) / 100
 
                         Picasso.with(this@ViewerPageFragment.context)
                                 .load(mFile)
@@ -146,8 +145,8 @@ private fun Context.readyLayout(viewer: ViewerActivity,
     verticalLayout {
         // Корень
         lparams(width = matchParent, height = matchParent)
+
         textView(text = textRes) {
-            lparams(width = matchParent, height = matchParent)
             isClickable = true
             gravity = Gravity.CENTER
             textSize = sp(16).toFloat()
@@ -155,7 +154,7 @@ private fun Context.readyLayout(viewer: ViewerActivity,
             onClick {
                 onTap(viewer) // Выполнить свое действие при нажатии на экран
             }
-        }
+        }.lparams(width = matchParent, height = matchParent)
     }
 }
 

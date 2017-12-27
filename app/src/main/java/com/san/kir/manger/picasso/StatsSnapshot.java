@@ -22,6 +22,7 @@ import java.io.StringWriter;
 import static com.san.kir.manger.picasso.Picasso.TAG;
 
 /** Represents all stats for a {@link Picasso} instance at a single point in time. */
+@SuppressWarnings("ALL")
 public class StatsSnapshot {
   public final int maxSize;
   public final int size;

@@ -1,13 +1,14 @@
 package com.san.kir.manger.components.Parsing.Sites
 
+import com.san.kir.manger.components.Main.Main
 import com.san.kir.manger.components.Parsing.ManageSites
 import com.san.kir.manger.components.Parsing.SiteCatalog
-import com.san.kir.manger.dbflow.models.Chapter
-import com.san.kir.manger.dbflow.models.DownloadItem
-import com.san.kir.manger.dbflow.models.Manga
-import com.san.kir.manger.dbflow.models.SiteCatalogElement
-import com.san.kir.manger.dbflow.wrapers.SiteWrapper
+import com.san.kir.manger.room.models.Chapter
+import com.san.kir.manger.room.models.DownloadItem
+import com.san.kir.manger.room.models.Manga
+import com.san.kir.manger.room.models.SiteCatalogElement
 import com.san.kir.manger.utils.createDirs
+import com.san.kir.manger.utils.getFullPath
 import com.san.kir.manger.utils.log
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.channels.produce
@@ -41,7 +42,7 @@ open class ReadmangaTemplate : SiteCatalog {
 
     override fun init(): ReadmangaTemplate {
         if (!isInit) {
-            oldVolume = SiteWrapper.get(name)?.count ?: 0
+            oldVolume = Main.db.siteDao.loadSite(name)?.volume ?: 0
             val doc = ManageSites.getDocument(host)
             doc.select(".rightContent h5").forEach {
                 if (it.text() == "У нас сейчас")
@@ -51,11 +52,6 @@ open class ReadmangaTemplate : SiteCatalog {
         }
         return this
     }
-
-    override fun reInit() {
-        oldVolume = SiteWrapper.get(name)?.count ?: 0
-    }
-
 
     ///
     override suspend fun getFullElement(element: SiteCatalogElement): SiteCatalogElement {
@@ -70,9 +66,9 @@ open class ReadmangaTemplate : SiteCatalog {
         }
 
         // Список авторов
-        element.authors.clear()
+        element.authors = emptyList()
         val mangakas = doc.select(".flex-row .elementList .elem_author")
-        mangakas.forEach { element.authors.add(it.select(".person-link").text()) }
+        element.authors = mangakas.map { it.select(".person-link").text() }
 
         // Количество глав
         val volume = doc.select(".chapters-link tr").size - 1
@@ -99,7 +95,7 @@ open class ReadmangaTemplate : SiteCatalog {
         // Сохраняю в каждом елементе host и catalogName
         element.host = host
         element.catalogName = catalogName
-        element.id = ID
+        element.siteId = ID
 
         // название манги
         element.name = elem.select(".img a").select("img").attr("title")
@@ -140,7 +136,8 @@ open class ReadmangaTemplate : SiteCatalog {
         element.type = "Манга"
 
         // Список авторов
-        elem.select(".desc .tile-info .person-link").forEach { element.authors.add(it.select(".person-link").text()) }
+        element.authors = elem.select(".desc .tile-info .person-link")
+                .map { it.select(".person-link").text() }
 
         // Список жанров
         elem.select(".desc .tile-info a.element-link").forEach { element.genres.add(it.text()) }
@@ -216,11 +213,37 @@ open class ReadmangaTemplate : SiteCatalog {
                 .subscribeOn(Schedulers.io())
     }
 
+    override fun asyncGetPages(item: DownloadItem): List<String> {
+        var list = listOf<String>()
+        // Создаю папку/папки по указанному пути
+        createDirs(getFullPath(item.path))
+        val doc = ManageSites.getDocument(item.link + "?mature=1")
+        // с помощью регулярных выражений ищу нужные данные
+        val pat = Pattern.compile("rm_h.init.+").matcher(doc.body().html())
+        // если данные найдены то продолжаю
+        if (pat.find()) {
+            // избавляюсь от ненужного и разделяю строку в список и отправляю
+            val data = pat.group()
+                    .removeSuffix(", 0, false);")
+                    .removePrefix("rm_h.init( ")
+
+            val json = JSONArray(data)
+
+            repeat(json.length()) { index ->
+                val jsonArray = json.getJSONArray(index)
+                val url = jsonArray.getString(1) +
+                        jsonArray.getString(0) +
+                        jsonArray.getString(2)
+                list += url
+            }
+        }
+        return list
+    }
 
     override fun getPages(observable: Observable<DownloadItem>): Observable<List<String>> {
         return observable
                 .observeOn(Schedulers.io())
-                .filter { createDirs(it.path) } // Создаю папку/папки по указанному пути
+                .filter { createDirs(getFullPath(it.path)) } // Создаю папку/папки по указанному пути
                 .map {
                     ManageSites.getDocument(it.link + "?mature=1")
                 } // С помощью okhttp получаю содержимое страницы и отдаю его на парсинг в jsoup

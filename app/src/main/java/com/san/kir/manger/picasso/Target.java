@@ -29,6 +29,7 @@ import static com.san.kir.manger.picasso.Picasso.LoadedFrom;
  * It is recommended that you add this interface directly on to a custom view type when using in an
  * adapter to ensure correct recycling behavior.
  */
+@SuppressWarnings("ALL")
 public interface Target {
   /**
    * Callback when an image has been successfully loaded.

@@ -15,6 +15,7 @@
  */
 package com.san.kir.manger.picasso;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -53,6 +54,7 @@ import static com.san.kir.manger.picasso.Utils.VERB_TRANSFORMED;
 import static com.san.kir.manger.picasso.Utils.getLogIdsForHunter;
 import static com.san.kir.manger.picasso.Utils.log;
 
+@SuppressWarnings("ALL")
 class BitmapHunter implements Runnable {
   /**
    * Global lock for bitmap decoding to ensure that we are only are decoding one at a time. Since
@@ -499,6 +501,7 @@ class BitmapHunter implements Runnable {
     return result;
   }
 
+  @SuppressLint("RtlHardcoded")
   static Bitmap transformResult(Request data, Bitmap result, int exifOrientation) {
     int inWidth = result.getWidth();
     int inHeight = result.getHeight();

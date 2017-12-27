@@ -18,6 +18,7 @@ package com.san.kir.manger.picasso;
 import android.graphics.Bitmap;
 
 /** Image transformation. */
+@SuppressWarnings("ALL")
 public interface Transformation {
   /**
    * Transform the source bitmap into a new bitmap. If you create a new bitmap instance, you must

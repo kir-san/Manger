@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
   <string name="app_name"
           translatable="false">Manger
   </string>
@@ -9,11 +9,9 @@
     <string name="main_check_app_ver_close">Закрыть</string>
     <string name="main_check_app_ver_go_to">Перейти на 4pda.ru</string>
     <string name="main_check_app_ver_error">Произошла ошибка при поиске обновлений, возможно у вас интернет отключен</string>
-    <string name="main_check_new_manga_find">Найдена новая манга</string>
-    <string name="main_check_new_manga_go_to">Перейти</string>
-    <string name="main_check_new_manga_no_dirs">Нет папки local в папке Manger/manga, она будет создана автоматически</string>
 
     <!-- AddManga -->
+    <string name="add_manga_title">Редактор манги</string>
     <string name="add_manga_ready">Готово</string>
     <string name="add_manga_name">Название</string>
     <string name="add_manga_author">Автор</string>
@@ -28,19 +26,19 @@
 
     <!-- CatalogForOneSite -->
     <string name="catalog_for_one_site_prefix_volume">Глав %d</string>
-    <string name="catalog_for_one_site_load_ok">Манга %s успешно добавлена</string>
+    <string name="catalog_for_one_site_load_ok" tools:ignore="UnusedResources">Манга %s успешно добавлена</string>
     <string name="catalog_for_one_site_selector_item">Выберете в какую категорию добавить</string>
     <string name="catalog_for_one_site_name">Название</string>
     <string name="catalog_for_one_site_date">Дата</string>
     <string name="catalog_for_one_site_pop">Популярность</string>
-    <string name="catalog_for_one_site_types">Типы</string>
-    <string name="catalog_for_one_site_genres">Жанры</string>
+    <string name="catalog_for_one_site_types" tools:ignore="UnusedResources">Типы</string>
+    <string name="catalog_for_one_site_genres" tools:ignore="UnusedResources">Жанры</string>
     <string name="catalog_for_one_site_load_data">Загрузка данных</string>
     <string name="catalog_for_one_site_load_cancel">Загрузка отменена</string>
     <string name="catalog_for_one_site_search">Поиск</string>
     <string name="catalog_for_one_site_update">Обновить</string>
-    <string name="catalog_for_one_site_redownload">Перекачать</string>
-    <string name="catalog_for_one_site_filters">Фильтры</string>
+    <string name="catalog_for_one_site_redownload" tools:ignore="UnusedResources">Перекачать</string>
+    <string name="catalog_for_one_site_filters" tools:ignore="UnusedResources">Фильтры</string>
     <string name="catalog_for_one_site_update_all">Обновить все</string>
     <string name="catalog_for_one_site_on_error_load">Произошла ошибка при загрузке каталогов, возможно у вас интернет отключен</string>
     <string name="catalog_for_one_site_progress_title">Получение списка глав</string>
@@ -67,37 +65,41 @@
     <string name="viewer_menu_is_swipe">Свайпы по экрану</string>
     <string name="viewer_menu_is_key">Кнопки громкости</string>
 
-    <!-- FirstRun -->
-    <string name="first_run_text">Это первый запуск приложения надо бы кое-чего настроить</string>
-    <string name="first_run_help">Первым делом обновите каталоги из соответствующего пункта меню и ищите себе мангу которую хотите почитать</string>
-    <string name="first_run_exit">Выйти</string>
-    <string name="first_run_next">Дальше</string>
-    <string name="first_run_okay">Готово</string>
-    <string name="first_run_storage">Выберете где хранить мангу:</string>
-    <string name="first_run_exit_text">Двойное нажатие закроет приложение</string>
 
     <!-- MainMenu -->
     <string name="main_menu_library">Библиотека</string>
     <string name="main_menu_library_count">Библиотека: %d</string>
     <string name="main_menu_storage">Хранилище</string>
+    <string name="main_menu_storage_size_mb">%s Мб</string>
     <string name="main_menu_category">Категории</string>
     <string name="main_menu_catalogs">Каталоги</string>
     <string name="main_menu_downloader">Загрузчик</string>
     <string name="main_menu_downloader_count">Загрузчик: %d</string>
     <string name="main_menu_latest">Обновления</string>
     <string name="main_menu_latest_count">Обновления: %d</string>
+    <string name="main_menu_settings">Настройки</string>
+    <string name="main_menu_default">Default</string>
 
     <!-- Storage -->
-    <string name="storage_local">Локальное хранилище</string>
+    <string name="storage_local" tools:ignore="UnusedResources">Локальное хранилище</string>
     <string name="storage_title">Хранилище</string>
-    <string name="storage_title_size">Хранилище: %d Мб</string>
-    <string name="storage_title_size_ex">%s: %d Мб</string>
-    <string name="storage_list_item_size">Размер: %s Мб</string>
-    <string name="storage_list_item_new">Новая</string>
+    <string name="storage_title_size">Хранилище: %s Мб</string>
+    <string name="storage_list_item_size" tools:ignore="UnusedResources">Размер: %s Мб</string>
+    <string name="storage_list_item_new" tools:ignore="UnusedResources">Новая</string>
     <string name="storage_popmenu_add">Добавить</string>
     <string name="storage_popmenu_del_read_chapters">Удалить прочитанные главы</string>
     <string name="storage_option_menu_toggle">Смена отображения</string>
     <string name="storage_not_in_bd">Нет в базе</string>
+    <string name="storage_item_all_s">Всего занято: вычисление…</string>
+    <string name="storage_item_all_size">Всего занято: %s Мб</string>
+    <string name="storage_item_manga_size">Занято этой мангой: %s Мб</string>
+    <string name="storage_item_read_size">Прочитанное в этой манге: %s Мб</string>
+    <string name="storage_main_item_size_text">Место в памяти: %d Мб</string>
+    <string name="storage_main_item_folder_count">Содержит папок: %d</string>
+    <string name="storage_main_item_size_percent">%d %%</string>
+    <string name="storage_manga_item_size_text">Использовано: %s Мб</string>
+    <string name="storage_manga_item_size_percent">%d %%</string>
+
 
     <!-- Library -->
     <string name="library_sort_dialog_add">По дате добавления</string>
@@ -118,18 +120,20 @@
     <string name="library_help">Библиотека пуста.\n перейдите в каталог\n и добавьте новой манги</string>
     <string name="library_help_go">В каталоги</string>
     <string name="library_sort_dialog_reverse">Изменить порядок?</string>
+    <string name="library_sort_dialog_visible">Скрыть ?</string>
     <string name="library_page_item_read_status">%1$d</string>
     <string name="library_menu_reload">Обновить текущую категорию</string>
     <string name="library_menu_reload_all">Обновить все</string>
     <string name="library_menu_order">Порядок</string>
     <string name="library_menu_order_title">Настройки порядка в библиотеке</string>
-    <string name="library_menu_update">Поиск обновлений</string>
+    <string name="library_menu_update">Поиск обновлений приложения</string>
     <string name="library_action_move_to_category">Переместить в категорию</string>
     <string name="library_action_remove">Удалить</string>
     <string name="library_action_remove_title">Вы действительно хотите удалить</string>
     <string name="library_action_remove_yes">Да, хочу</string>
     <string name="library_action_remove_yes_with_files">Да, вместе с файлами</string>
     <string name="library_action_remove_no">Нет, не хочу</string>
+    <string name="library_page_item_size">%s Мб</string>
 
 
     <!-- ListChapters -->
@@ -154,7 +158,7 @@
     <string name="list_chapters_delete_okay_delete">Глава была удалена без возвратно</string>
     <string name="list_chapters_delete_error">При удалении главы произошла не предвиденная ошибка</string>
     <string name="list_chapters_download_cancel">Нажми два раза и отмени загрузку</string>
-    <string name="list_chapters_download_progress">%d %%</string>
+    <string name="list_chapters_download_progress">%d%%</string>
     <string name="list_chapters_selection_del_ok">У вас нет больше этих глав</string>
     <string name="list_chapters_selection_del_error">Нельзя удалить то чего нет</string>
     <string name="list_chapters_selection_load_ok">Качаю главы. Их всего %d</string>
@@ -166,25 +170,34 @@
     <string name="action_set_not_read">Пометить не прочитаными</string>
     <string name="action_select_prev">Выбрать предыдущие</string>
     <string name="action_select_next">Выбрать следующие</string>
+    <string name="action_full_delete">Удалить из базы данных</string>
 
+    <!--DownloadManager-->
+    <string name="download_item_progress_text">Загруженно %1$d из %2$d</string>
+    <string name="download_item_progress_size">%s Мб</string>
+    <string name="download_item_final_size_with_sec">%1$s Мб за %2$d сек</string>
+    <string name="download_item_final_size_with_min_and_sec">%1$s Мб за %2$d мин и %3$d сек</string>
+    <string name="download_item_progress_percent">%d %%</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="action_settings">Настройки</string>
 
-    <string name="fab_menu_local_manga">Локальное хранилище</string>
+    <string name="fab_menu_local_manga" tools:ignore="UnusedResources">Локальное хранилище</string>
 
     <string name="pref_temp">Настройки приложения</string>
 
     <string name="site_volume">Объем: %1$d + %2$d</string>
 
-    <string name="ic_action_all">readAll</string>
-    <string name="ic_action_read">readVisible</string>
-    <string name="ic_action_not_read">notRead</string>
-    <string name="ic_action_name">sort</string>
+    <string name="ic_action_all" tools:ignore="UnusedResources">readAll</string>
+    <string name="ic_action_read" tools:ignore="UnusedResources">readVisible</string>
+    <string name="ic_action_not_read" tools:ignore="UnusedResources">notRead</string>
+    <string name="ic_action_name" tools:ignore="UnusedResources">sort</string>
 
     <string name="name">Автор: Kir San</string>
     <string name="email">provakator-30@mail.ru</string>
-    <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_settings" tools:ignore="UnusedResources">Settings</string>
+    <string name="todo">TODO</string>
+
+
 </resources>

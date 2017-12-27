@@ -7,8 +7,6 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
 import com.san.kir.manger.utils.ID
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.checkBox
 import org.jetbrains.anko.find
 import org.jetbrains.anko.linearLayout
@@ -44,26 +42,20 @@ class FilterAdapter : RecyclerView.Adapter<FilterAdapter.ViewHolder>() {
         holder.bind(catalog[position], selected.get(position))
     }
 
-    override fun getItemCount(): Int {
-        return catalog.size
-    }
+    override fun getItemCount() = catalog.size
 
-    fun getSelected(): List<String> {
-        return selectedName
-    }
+    fun getSelected() = selectedName
 
     fun clear() {
         selectedName.clear()
         selected.clear()
         catalog = listOf()
-        launch(UI) {
-            notifyDataSetChanged()
-        }
+        notifyDataSetChanged()
     }
 
     inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-        val name = v.find<TextView>(nameId)
-        val check = v.find<CheckBox>(checkedId)
+        private val name = v.find<TextView>(nameId)
+        private val check = v.find<CheckBox>(checkedId)
 
         fun bind(name: String, isCheck: Boolean) {
             this.name.text = name
@@ -81,20 +73,17 @@ class FilterAdapter : RecyclerView.Adapter<FilterAdapter.ViewHolder>() {
         }
     }
 
-    private val set = mutableSetOf<String>()
-    suspend fun addAll(genres: List<String>) {
-        set.addAll(genres)
+    private var set = setOf<String>()
+    fun addAll(genres: List<String>) {
+        set += genres
     }
 
-    suspend fun add(type: String) {
-        set.add(type)
-
+    fun add(type: String) {
+        set += type
     }
 
-    suspend fun finishAdd() {
+    fun finishAdd() {
         catalog = set.sorted()
-        launch(UI) {
-            notifyDataSetChanged()
-        }
+        notifyDataSetChanged()
     }
 }

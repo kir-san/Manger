@@ -5,6 +5,7 @@ import android.content.Context;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
+@SuppressWarnings("ALL")
 @TargetApi(8)
 public class FroyoGestureDetector extends EclairGestureDetector {
 

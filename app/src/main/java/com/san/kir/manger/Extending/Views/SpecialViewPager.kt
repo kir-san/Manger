@@ -19,11 +19,11 @@ class SpecialViewPager : ViewPager {
 
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
         if (!isLocked)
-            try {
-                return super.onInterceptTouchEvent(ev)
+            return try {
+                super.onInterceptTouchEvent(ev)
             } catch (e: IllegalArgumentException) {
                 e.printStackTrace()
-                return false
+                false
             }
         return false
     }
@@ -31,16 +31,15 @@ class SpecialViewPager : ViewPager {
     override fun onTouchEvent(ev: MotionEvent?): Boolean {
         if (!isLocked)
             return super.onTouchEvent(ev)
+        performClick()
         return false
-    }
-
-    fun toggleLock() {
-        isLocked = !isLocked
     }
 
     fun setLocked(isLocked: Boolean) {
         this.isLocked = isLocked
     }
 
-    fun isLocked(): Boolean = isLocked
+    override fun performClick(): Boolean {
+        return super.performClick()
+    }
 }

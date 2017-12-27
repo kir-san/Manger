@@ -24,6 +24,7 @@ import okhttp3.ResponseBody;
 import static com.san.kir.manger.picasso.Picasso.LoadedFrom.DISK;
 import static com.san.kir.manger.picasso.Picasso.LoadedFrom.NETWORK;
 
+@SuppressWarnings("ALL")
 class NetworkRequestHandler extends RequestHandler {
   private static final String SCHEME_HTTP = "http";
   private static final String SCHEME_HTTPS = "https";

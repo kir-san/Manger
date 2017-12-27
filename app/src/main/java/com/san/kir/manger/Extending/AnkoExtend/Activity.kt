@@ -8,10 +8,6 @@ fun AppCompatActivity.compatCheckSelfPermission(permission: String): Int {
     return ContextCompat.checkSelfPermission(this, permission)
 }
 
-fun AppCompatActivity.compatShouldShowRequestPermissionRationale(permission: String): Boolean {
-    return ActivityCompat.shouldShowRequestPermissionRationale(this, permission)
-}
-
 fun AppCompatActivity.compatRequestPermissions(permissions: Array<String>, requestCode: Int) {
     ActivityCompat.requestPermissions(this, permissions, requestCode)
 }

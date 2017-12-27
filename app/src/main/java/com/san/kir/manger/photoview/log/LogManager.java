@@ -5,6 +5,7 @@ import android.util.Log;
 /**
  * class that holds the {@link Logger} for this library, defaults to {@link LoggerDefault} to send logs to android {@link Log}
  */
+@SuppressWarnings("ALL")
 public final class LogManager {
 
     private static Logger logger = new LoggerDefault();

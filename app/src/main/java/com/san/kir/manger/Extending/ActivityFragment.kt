@@ -1,23 +1,11 @@
 package com.san.kir.manger.Extending
 
-import android.annotation.SuppressLint
-import android.arch.lifecycle.LifecycleRegistry
-import android.arch.lifecycle.LifecycleRegistryOwner
-import dagger.android.support.DaggerAppCompatActivity
-import dagger.android.support.DaggerFragment
-import javax.inject.Inject
+import com.github.salomonbrys.kodein.android.KodeinAppCompatActivity
+import com.san.kir.manger.utils.MainRouter
+import com.san.kir.manger.utils.MainRouterImpl
 
 
-@SuppressLint("Registered")
-class BaseActivity : DaggerAppCompatActivity(), LifecycleRegistryOwner {
-    private val _lifecycle = LifecycleRegistry(this)
-
-    override fun getLifecycle(): LifecycleRegistry = _lifecycle
+abstract class BaseActivity : KodeinAppCompatActivity() {
+    val router: MainRouter by lazy { MainRouterImpl(this) }
 }
 
-
-open class BaseFragment @Inject constructor() : DaggerFragment(), LifecycleRegistryOwner {
-    private val _lifecycle = LifecycleRegistry(this)
-
-    override fun getLifecycle(): LifecycleRegistry = _lifecycle
-}

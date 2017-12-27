@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import static java.util.Collections.unmodifiableList;
 
 /** Immutable data about an image and the transformations that will be applied to it. */
+@SuppressWarnings("ALL")
 public final class Request {
   private static final long TOO_LONG_LOG = TimeUnit.SECONDS.toNanos(5);
 

@@ -17,6 +17,7 @@ package com.san.kir.manger.photoview.scrollerproxy;
 
 import android.content.Context;
 
+@SuppressWarnings("ALL")
 public abstract class ScrollerProxy {
 
     public static ScrollerProxy getScroller(Context context) {

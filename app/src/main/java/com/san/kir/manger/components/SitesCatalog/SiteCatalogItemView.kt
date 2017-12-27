@@ -1,20 +1,26 @@
 package com.san.kir.manger.components.SitesCatalog
 
 import android.graphics.Typeface
-import android.view.View
 import android.view.ViewGroup
-import com.san.kir.manger.App
+import android.widget.TextView
 import com.san.kir.manger.EventBus.Binder
-import com.san.kir.manger.Extending.AnkoExtend.bind
+import com.san.kir.manger.Extending.AnkoExtend.textView
+import com.san.kir.manger.Extending.AnkoExtend.visibleOrGone
 import com.san.kir.manger.R
 import com.san.kir.manger.components.CatalogForOneSite.CatalogForOneSiteActivity
+import com.san.kir.manger.components.CatalogForOneSite.SiteCatalogElementViewModel
+import com.san.kir.manger.components.Main.Main
+import com.san.kir.manger.components.Parsing.EmptySiteCatalog
+import com.san.kir.manger.components.Parsing.ManageSites
 import com.san.kir.manger.components.Parsing.SiteCatalog
 import com.san.kir.manger.picasso.Picasso
+import com.san.kir.manger.room.DAO.update
+import com.san.kir.manger.room.models.Site
 import com.san.kir.manger.utils.ID
+import com.san.kir.manger.utils.RecyclerViewAdapterFactory
+import com.san.kir.manger.utils.log
 import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.run
-import org.jetbrains.anko.AnkoComponent
+import kotlinx.coroutines.experimental.async
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.alignParentBottom
 import org.jetbrains.anko.alignParentEnd
@@ -31,44 +37,34 @@ import org.jetbrains.anko.rightOf
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.textView
-import org.jetbrains.anko.toast
 import org.jetbrains.anko.wrapContent
-import kotlin.coroutines.experimental.CoroutineContext
 
-class SiteCatalogItemView : AnkoComponent<ViewGroup> {
+class SiteCatalogItemView : RecyclerViewAdapterFactory.AnkoView<Site>() {
 
     private object _id {
-        val name = ID.generate()
         val logo = ID.generate()
-        val link = ID.generate()
-        val volume = ID.generate()
     }
 
-    var siteId = (-1)
-    val name = Binder("")
+    var site: SiteCatalog = EmptySiteCatalog()
+    lateinit var name: TextView
     val link = Binder("")
     val volume = Binder(0 to 0)
     val isInit = Binder(false)
-
-    fun createView(parent: ViewGroup): View {
-        return createView(AnkoContext.create(parent.context, parent))
-    }
+    val error = Binder(false)
 
     override fun createView(ui: AnkoContext<ViewGroup>) = with(ui) {
         relativeLayout {
             lparams(width = matchParent, height = dip(55))
             isClickable
             onClick {
-                if (siteId > -1)
-                    startActivity<CatalogForOneSiteActivity>("id" to siteId)
+                if (site.ID > -1)
+                    startActivity<CatalogForOneSiteActivity>("id" to site.ID)
             }
 
             // Название
-            textView {
-                id = _id.name
+            name = textView {
                 textSize = 16f
                 setTypeface(typeface, Typeface.BOLD)
-                bind(name) { text = it }
             }.lparams(width = wrapContent, height = wrapContent) {
                 alignParentTop()
                 margin = dip(6)
@@ -76,27 +72,17 @@ class SiteCatalogItemView : AnkoComponent<ViewGroup> {
             }
 
             // сайт
-            textView {
-                id = _id.link
-
-                bind(link) { text = it }
-            }.lparams(width = wrapContent, height = wrapContent) {
+            textView(link) {}.lparams(width = wrapContent, height = wrapContent) {
                 alignParentBottom()
                 margin = dip(6)
                 rightOf(_id.logo)
             }
 
-
             // иконка
             imageView {
                 id = _id.logo
-
-                bind(link) {
-                    //                    println(it)
+                link.bind {
                     if (it.isNotEmpty())
-//                        getPathForUrl(it,
-//                                      { background = Drawable.createFromPath(it) },
-//                                      { backgroundResource = R.drawable.ic_error })
                         Picasso.with(this@with.ctx)
                                 .load("http://www.google.com/s2/favicons?domain=$it")
                                 .error(com.san.kir.manger.R.drawable.ic_error)
@@ -107,13 +93,12 @@ class SiteCatalogItemView : AnkoComponent<ViewGroup> {
                 leftMargin = dip(5)
             }
 
-
             // Количество манги
             textView {
-                id = _id.volume
-
-                bind(volume) { (oldVolume, volume) ->
-                    text = context.getString(com.san.kir.manger.R.string.site_volume, oldVolume, volume - oldVolume)
+                volume.bind { (oldVolume, volume) ->
+                    text = context.getString(com.san.kir.manger.R.string.site_volume,
+                                             oldVolume,
+                                             volume - oldVolume)
                 }
             }.lparams(width = wrapContent, height = wrapContent) {
                 alignParentRight()
@@ -121,46 +106,67 @@ class SiteCatalogItemView : AnkoComponent<ViewGroup> {
                 margin = dip(4)
             }
 
-
             // прогресс бар
             progressBar {
                 isIndeterminate = true
-                bind(isInit) {
-                    visibility = if (it) View.VISIBLE else View.GONE
-                }
+                visibleOrGone(isInit)
             }.lparams(width = dip(12), height = dip(12)) {
                 alignParentTop()
                 alignParentEnd()
                 margin = dip(4)
             }
 
+            // Оповещение об ошибке
+            imageView {
+                setImageResource(R.drawable.unknown)
+                visibleOrGone(error)
+            }.lparams(width = dip(12), height = dip(12)) {
+                alignParentTop()
+                alignParentEnd()
+                margin = dip(4)
+            }
 
         }
     }
 
-    fun bind(el: SiteCatalog, context: CoroutineContext) {
-        siteId = el.ID
-        name.item = el.name
-        link.item = el.host
-        volume.item = el.oldVolume to el.volume
+    override fun bind(item: Site, isSelected: Boolean, position: Int) {
+        async(UI) {
+            try {
+                site = ManageSites.CATALOG_SITES[item.siteID]
+                name.text = site.name
+                link.item = site.host
 
-        if (!el.isInit) {
-            isInit.item = true
-            launch(context) {
-                try {
-                    el.init()
-                } catch (ex: Throwable) {
-                    run(UI) {
-                        App.context.toast(R.string.catalog_for_one_site_on_error_load)
-                    }
-                } finally {
-                    run(UI) {
-                        volume.item = el.oldVolume to el.volume
-                        isInit.item = false
-                    }
+                volume.item = item.oldVolume to item.volume
+
+                if (!site.isInit) {
+                    error.item = false
+                    isInit.item = true
+                    async {
+                        site.init()
+
+                        // Находим в базе данных наш сайт
+                        with(Main.db.siteDao) {
+                            loadSite(site.name)?.let {
+                                // Сохраняем новое значение количества элементов
+                                it.oldVolume = SiteCatalogElementViewModel.setSiteId(site.ID)
+                                        .items()
+                                        .size
+                                it.volume = site.volume
+                                // Обновляем наш сайт в базе данных
+                                update(it)
+                            }
+                        }
+                    }.join()
                 }
+            } catch (e: Exception) {
+                log(e.toString())
+                error.item = true
+            } finally {
+                volume.item = item.oldVolume to item.volume
+                isInit.item = false
             }
         }
-
     }
+
+
 }

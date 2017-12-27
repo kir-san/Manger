@@ -23,6 +23,7 @@ import android.os.Message;
 
 import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 
+@SuppressWarnings("ALL")
 class Stats {
   private static final int CACHE_HIT = 0;
   private static final int CACHE_MISS = 1;

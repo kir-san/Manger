@@ -42,6 +42,7 @@ import static com.san.kir.manger.picasso.Utils.checkNotNull;
  *
  * @see Picasso.Builder#addRequestHandler(RequestHandler)
  */
+@SuppressWarnings("ALL")
 public abstract class RequestHandler {
   /**
    * {@link Result} represents the result of a {@link #load(Request, int)} call in a

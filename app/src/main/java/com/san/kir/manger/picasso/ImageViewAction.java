@@ -21,6 +21,7 @@ import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 
+@SuppressWarnings("ALL")
 class ImageViewAction extends Action<ImageView> {
 
   Callback callback;

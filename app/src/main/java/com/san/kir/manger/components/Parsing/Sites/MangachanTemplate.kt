@@ -1,13 +1,14 @@
 package com.san.kir.manger.components.Parsing.Sites
 
+import com.san.kir.manger.components.Main.Main
 import com.san.kir.manger.components.Parsing.ManageSites
 import com.san.kir.manger.components.Parsing.SiteCatalog
-import com.san.kir.manger.dbflow.models.Chapter
-import com.san.kir.manger.dbflow.models.DownloadItem
-import com.san.kir.manger.dbflow.models.Manga
-import com.san.kir.manger.dbflow.models.SiteCatalogElement
-import com.san.kir.manger.dbflow.wrapers.SiteWrapper
+import com.san.kir.manger.room.models.Chapter
+import com.san.kir.manger.room.models.DownloadItem
+import com.san.kir.manger.room.models.Manga
+import com.san.kir.manger.room.models.SiteCatalogElement
 import com.san.kir.manger.utils.createDirs
+import com.san.kir.manger.utils.getFullPath
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.channels.produce
 import kotlinx.coroutines.experimental.launch
@@ -34,7 +35,7 @@ open class MangachanTemplate : SiteCatalog {
 
     override fun init(): MangachanTemplate {
         if (!isInit) {
-            oldVolume = SiteWrapper.get(name)?.count ?: 0
+            oldVolume = Main.db.siteDao.loadSite(name)?.volume ?: 0
             val doc = ManageSites.getDocument(siteCatalog)
             volume = doc.select("#pagination > b").text().split(" ").first().toInt()
             isInit = true
@@ -42,14 +43,7 @@ open class MangachanTemplate : SiteCatalog {
         return this
     }
 
-    override fun reInit() {
-        oldVolume = SiteWrapper.get(name)?.count ?: 0
-    }
-
-
-    suspend override fun getFullElement(element: SiteCatalogElement): SiteCatalogElement {
-        return element
-    }
+    suspend override fun getFullElement(element: SiteCatalogElement) = element
 
     open suspend fun simpleParseElement(elem: Element): SiteCatalogElement {
         val element = SiteCatalogElement()
@@ -57,7 +51,7 @@ open class MangachanTemplate : SiteCatalog {
         // Сохраняю в каждом елементе host и catalogName
         element.host = host
         element.catalogName = catalogName
-        element.id = ID
+        element.siteId = ID
 
         // название манги
         element.name = elem.select("a.title_link").first().text()
@@ -71,7 +65,7 @@ open class MangachanTemplate : SiteCatalog {
 
         // Список авторов
         val mangakas = elem.select("a[href*=mangaka]")
-        mangakas.forEach { if (it != mangakas.last()) element.authors.add(it.text()) }
+        element.authors = mangakas.filter { it != mangakas.last() }.map { it.text() }
 
         // Статус выпуска
         val matcher = Pattern.compile("[А-Яа-я]+ [А-Яа-я]+")
@@ -137,7 +131,6 @@ open class MangachanTemplate : SiteCatalog {
         close()
     }
 
-
     override fun asyncGetChapters(context: CoroutineContext,
                                   element: SiteCatalogElement,
                                   path: String)
@@ -182,11 +175,29 @@ open class MangachanTemplate : SiteCatalog {
                 .subscribeOn(Schedulers.io())
     }
 
+    override fun asyncGetPages(item: DownloadItem): List<String> {
+        var list = listOf<String>()
+        // Создаю папку/папки по указанному пути
+        createDirs(getFullPath(item.path))
+        val doc = ManageSites.getDocument(item.link)
+        val content = doc.select("#content").html()
+        // с помощью регулярных выражений ищу нужные данные
+        val pat = Pattern.compile("\"fullimg\":\\[.+").matcher(content)
+        // если данные найдены то продолжаю
+        if (pat.find()) {
+            // избавляюсь от ненужного и разделяю строку в список и отправляю
+            list = pat.group().removeSuffix(",]")
+                    .removePrefix("\"fullimg\":[")
+                    .split(",")
+        }
+        return list
+    }
+
     override fun getPages(observable: Observable<DownloadItem>): Observable<List<String>> {
         return observable
                 .observeOn(Schedulers.io())
                 // Создаю папку/папки по указанному пути
-                .filter { createDirs(it.path) }
+                .filter { createDirs(getFullPath(it.path)) }
                 // С помощью okhttp получаю содержимое страницы и отдаю его на парсинг в jsoup
                 .map { ManageSites.getDocument(it.link) }
                 .observeOn(Schedulers.computation())
@@ -203,4 +214,6 @@ open class MangachanTemplate : SiteCatalog {
                             .split(",")
                 }
     }
+
+
 }

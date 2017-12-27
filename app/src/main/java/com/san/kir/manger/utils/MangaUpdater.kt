@@ -4,10 +4,11 @@ import android.support.v4.app.NotificationCompat
 import com.san.kir.manger.App
 import com.san.kir.manger.EventBus.BusMain
 import com.san.kir.manger.R
+import com.san.kir.manger.components.Main.Main
 import com.san.kir.manger.components.Parsing.ManageSites
-import com.san.kir.manger.dbflow.models.LatestChapter
-import com.san.kir.manger.dbflow.models.Manga
-import com.san.kir.manger.dbflow.wrapers.ChapterWrapper
+import com.san.kir.manger.room.DAO.insert
+import com.san.kir.manger.room.models.LatestChapter
+import com.san.kir.manger.room.models.Manga
 import org.jetbrains.anko.notificationManager
 import rx.Observable
 import rx.Subscription
@@ -16,23 +17,25 @@ import rx.schedulers.Schedulers
 
 
 object MangaUpdater {
-    private var _context: App = App.context
-    private val _notifyManager = _context.notificationManager
-    private val _notify = NotificationCompat.Builder(_context)
+    private val chapters = Main.db.chapterDao
+    private val latestChapters = Main.db.latestChapterDao
+    private val context = App.context
+    private val notifyManager = context.notificationManager
+    private val notify = NotificationCompat.Builder(context, "mangaUpdate")
             .setContentTitle("Ищу новые главы")
             .setContentText(" ")
             .setSmallIcon(R.drawable.ic_notify_updater)
             .setOngoing(true) // Основной нотификатор
 
-    private var _catalog = mutableListOf<Manga>()
-    private var _currentItem: Manga? = null
-    private var _isWorked = false
-    private var _main_observable: Observable<Int>? = null
-    private var _main_subscription: Subscription? = null
+    private var catalog = mutableListOf<Manga>()
+    private var currentItem: Manga? = null
+    private var isWorked = false
+    private var mainObservable: Observable<Int>? = null
+    private var mainSubscription: Subscription? = null
 
-    private var _progress = 0 // Прогресс проверенных манг
-    private var _error = 0 // Счетчик закончившихся с ошибкой
-    private var _fullCountNew = 0 // Количество новых глав
+    private var progress = 0 // Прогресс проверенных манг
+    private var error = 0 // Счетчик закончившихся с ошибкой
+    private var fullCountNew = 0 // Количество новых глав
 
     // Сообщение передаваемое всем подписчикам
     data class Message(var manga: Manga, var isFoundNew: Boolean, var countNew: Int)
@@ -40,102 +43,102 @@ object MangaUpdater {
     // Шина для передачи сообщений
     val bus = BusMain<Message>()
 
-    private fun _setWorking(work: Boolean) {
+    private fun setWorking(work: Boolean) {
         if (work) {
-            if (_isWorked)
+            if (isWorked)
             else {
                 // Если только началась работа, сбросить прогресс и счетчик глав
-                _progress = 0
-                _fullCountNew = 0
-                _error = 0
-                _isWorked = true
+                progress = 0
+                fullCountNew = 0
+                error = 0
+                isWorked = true
             }
         } else {
-            _notifyManager.cancel(0)
-            _isWorked = false
+            notifyManager.cancel(0)
+            isWorked = false
             val end = NotificationCompat.InboxStyle(
-                    NotificationCompat.Builder(_context)
+                    NotificationCompat.Builder(context, "mangaUpdate")
                             .setContentTitle("Обновление завершено")
                             .setDefaults(NotificationCompat.DEFAULT_VIBRATE)
                             .setSmallIcon(R.drawable.ic_notify_updater)
             )
-                    .addLine("Проверенно манг было: $_progress")
-                    .addLine("Найдено новых глав: $_fullCountNew")
-                    .addLine("С ошибкой проверенно: $_error")
+                    .addLine("Проверенно манг было: $progress")
+                    .addLine("Найдено новых глав: $fullCountNew")
+                    .addLine("С ошибкой проверенно: $error")
                     .build()
 
-            _notifyManager.notify(1, end)
+            notifyManager.notify(1, end)
         }
     }
 
-    private fun _startTask(task: Manga) {
-        var _isFindNew = false
-        var _countNew = 0
+    private fun startTask(task: Manga) {
+        var isFindNew = false
+        var countNew = 0
 
-        _main_observable = Observable.defer {
+        mainObservable = Observable.defer {
             Observable.create<Int> { sub ->
-                _currentItem = task
-                val work = _notify.setContentText(task.name)
-                        .setProgress(_catalog.size, _progress, false)
+                currentItem = task
+                val work = notify.setContentText(task.name)
+                        .setProgress(catalog.size, progress, false)
                         .build().apply {
                     flags = NotificationCompat.FLAG_NO_CLEAR
                 }
-                _notifyManager.notify(0, work)
+                notifyManager.notify(0, work)
 
                 sub.onNext(0)
-                val chapters = ChapterWrapper.getChapters(task.unic)
+                val oldChapters = chapters.loadChapters(task.unic)
                 val newChapters = ManageSites.getOnlineChapters(task)!!.filter {
-                    if (chapters.isNotEmpty()) {
-                        chapters.none { chapter -> chapter.site == it.site }
+                    if (oldChapters.isNotEmpty()) {
+                        oldChapters.none { chapter -> chapter.site == it.site }
                     } else true
                 }.toList().toBlocking().single()
 
                 if (newChapters.isNotEmpty()) {
                     newChapters.reversed().forEach {
-                        it.save()
-                        LatestChapter(it).insert()
+                        chapters.insert(it)
+                        latestChapters.insert(LatestChapter(it))
                     }
-                    _isFindNew = true
-                    _countNew = newChapters.size
+                    isFindNew = true
+                    countNew = newChapters.size
                 }
                 sub.onCompleted()
             }
         }.subscribeOn(Schedulers.io())
 
-        _main_subscription = _main_observable!!
+        mainSubscription = mainObservable!!
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ },
                            {
-                               bus.post(Message(_currentItem!!, false, -1))
-                               _progress++
-                               _error++
-                               _next()
+                               bus.post(Message(currentItem!!, false, -1))
+                               progress++
+                               error++
+                               next()
                            },
                            {
-                               bus.post(Message(_currentItem!!, _isFindNew, _countNew))
-                               _fullCountNew += _countNew
-                               _progress++
-                               _next()
+                               bus.post(Message(currentItem!!, isFindNew, countNew))
+                               fullCountNew += countNew
+                               progress++
+                               next()
                            })
     }
 
-    private fun _next() {
-        _setWorking(true)
-        if (_currentItem == null)
-            if (_catalog.isNotEmpty())
-                _startTask(_catalog.first())
+    private fun next() {
+        setWorking(true)
+        if (currentItem == null)
+            if (catalog.isNotEmpty())
+                startTask(catalog.first())
             else
-                _setWorking(false)
+                setWorking(false)
         else
-            if (_catalog.remove(_currentItem!!)) {
-                _currentItem = null
-                _next()
+            if (catalog.remove(currentItem!!)) {
+                currentItem = null
+                next()
             } else
                 log = "Произошли непредвиденные внезапности"
     }
 
     fun contains(manga: Manga): Boolean {
-        _catalog.forEach {
+        catalog.forEach {
             if (it.unic == manga.unic)
                 return true
         }
@@ -143,32 +146,32 @@ object MangaUpdater {
     }
 
     fun addTask(task: Manga) {
-        _catalog.add(task)
-        if (!_isWorked) {
-            _next()
+        catalog.add(task)
+        if (!isWorked) {
+            next()
         }
     }
 
     fun cancelTask(task: Manga) {
-        if (_currentItem != null) {
-            if (_currentItem!!.unic == task.unic) {
-                _main_subscription!!.unsubscribe()
-                if (_main_subscription!!.isUnsubscribed) {
-                    _setWorking(false)
-                    _next()
+        if (currentItem != null) {
+            if (currentItem!!.unic == task.unic) {
+                mainSubscription!!.unsubscribe()
+                if (mainSubscription!!.isUnsubscribed) {
+                    setWorking(false)
+                    next()
                 }
             } else {
-                if (_catalog.contains(task))
-                    _catalog.remove(task)
+                if (catalog.contains(task))
+                    catalog.remove(task)
             }
         }
     }
 
     fun cancelAll() {
-        if (_main_subscription != null) {
-            _main_subscription!!.unsubscribe()
-            _catalog.clear()
-            _setWorking(false)
+        if (mainSubscription != null) {
+            mainSubscription!!.unsubscribe()
+            catalog.clear()
+            setWorking(false)
         }
     }
 

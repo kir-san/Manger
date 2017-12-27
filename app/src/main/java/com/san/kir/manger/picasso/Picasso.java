@@ -15,6 +15,7 @@
  */
 package com.san.kir.manger.picasso;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -62,6 +63,7 @@ import static com.san.kir.manger.picasso.Utils.log;
  * Use {@link #with(android.content.Context)} for the global singleton instance or construct your
  * own instance with {@link Builder}.
  */
+@SuppressWarnings("ALL")
 public class Picasso {
 
   /** Callbacks for Picasso events. */
@@ -104,6 +106,7 @@ public class Picasso {
    *
    * @see RequestCreator#priority(Priority)
    */
+  @SuppressWarnings("unused")
   public enum Priority {
     LOW,
     NORMAL,
@@ -145,6 +148,7 @@ public class Picasso {
     }
   };
 
+  @SuppressLint("StaticFieldLeak")
   static volatile Picasso singleton = null;
 
   private final Listener listener;

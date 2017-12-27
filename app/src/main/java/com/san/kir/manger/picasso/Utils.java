@@ -15,6 +15,7 @@
  */
 package com.san.kir.manger.picasso;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.ContentResolver;
@@ -47,6 +48,7 @@ import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 import static com.san.kir.manger.picasso.Picasso.TAG;
 import static java.lang.String.format;
 
+@SuppressWarnings("ALL")
 final class Utils {
   static final String THREAD_PREFIX = "Picasso-";
   static final String THREAD_IDLE_NAME = THREAD_PREFIX + "Idle";
@@ -224,10 +226,10 @@ final class Utils {
     try {
       StatFs statFs = new StatFs(dir.getAbsolutePath());
       //noinspection deprecation
-      long blockCount =
+      @SuppressLint("ObsoleteSdkInt") long blockCount =
           SDK_INT < JELLY_BEAN_MR2 ? (long) statFs.getBlockCount() : statFs.getBlockCountLong();
       //noinspection deprecation
-      long blockSize =
+      @SuppressLint("ObsoleteSdkInt") long blockSize =
           SDK_INT < JELLY_BEAN_MR2 ? (long) statFs.getBlockSize() : statFs.getBlockSizeLong();
       long available = blockCount * blockSize;
       // Target 2% of the total space.
@@ -247,6 +249,7 @@ final class Utils {
     return (int) (1024L * 1024L * memoryClass / 7);
   }
 
+  @SuppressLint("ObsoleteSdkInt")
   static boolean isAirplaneModeOn(Context context) {
     ContentResolver contentResolver = context.getContentResolver();
     try {

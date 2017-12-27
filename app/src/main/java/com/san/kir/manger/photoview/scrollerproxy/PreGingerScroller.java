@@ -18,6 +18,7 @@ package com.san.kir.manger.photoview.scrollerproxy;
 import android.content.Context;
 import android.widget.Scroller;
 
+@SuppressWarnings("ALL")
 public class PreGingerScroller extends ScrollerProxy {
 
     private final Scroller mScroller;

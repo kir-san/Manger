@@ -174,10 +174,6 @@ fun delChapters(chapters: List<Chapter>): ResultDeleting {
     return delFiles(chapters.map { it.path })
 }
 
-fun delFile(path: String): ResultDeleting {
-    return delFiles(listOf(path))
-}
-
 fun delFiles(filesPath: List<String>): ResultDeleting {
     var acc = 0
     filesPath.forEach { path ->

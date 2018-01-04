@@ -1,13 +1,11 @@
 package com.san.kir.manger.components.Category
 
 import android.view.Gravity
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import com.san.kir.manger.EventBus.Binder
-import com.san.kir.manger.EventBus.toogle
+import android.widget.RelativeLayout
+import android.widget.TextView
 import com.san.kir.manger.Extending.AnkoExtend.invisibleOrVisible
-import com.san.kir.manger.Extending.AnkoExtend.textView
 import com.san.kir.manger.R
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.utils.CATEGORY_ALL
@@ -25,6 +23,7 @@ import org.jetbrains.anko.leftOf
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.relativeLayout
 import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.textView
 import org.jetbrains.anko.wrapContent
 
 class CategoryItemView(private val adapter: CategoryRecyclerPresenter)
@@ -34,14 +33,11 @@ class CategoryItemView(private val adapter: CategoryRecyclerPresenter)
     }
 
     private var _category = Category()
-    private val name = Binder("")
-    private val isVisible = Binder(false)
 
-    override fun bind(item: Category, isSelected: Boolean, position: Int) {
-        _category = item
-        name.item = _category.name
-        isVisible.item = _category.isVisible
-    }
+    private lateinit var root: RelativeLayout
+    private lateinit var name: TextView
+    private lateinit var visibleBtn: ImageView
+    private lateinit var deleteBtn: ImageView
 
     override fun createView(ui: AnkoContext<ViewGroup>) = with(ui) {
         val sizeBtn = dip(35)
@@ -49,10 +45,7 @@ class CategoryItemView(private val adapter: CategoryRecyclerPresenter)
         relativeLayout {
             lparams(width = matchParent, height = dip(60))
 
-            onClick { edit() }
-
-            // название
-            textView(name) {
+            name = textView {
                 textSize = 18f
             }.lparams(width = matchParent, height = wrapContent) {
                 centerVertically()
@@ -61,17 +54,8 @@ class CategoryItemView(private val adapter: CategoryRecyclerPresenter)
             }
 
             // переключение видимости
-            imageView {
+            visibleBtn = imageView {
                 scaleType = ImageView.ScaleType.CENTER_CROP
-                onClick {
-                    _category.isVisible = isVisible.toogle()
-                    adapter.update(_category)
-                }
-                isVisible.bind {
-                    backgroundResource =
-                            if (it) R.drawable.ic_visibility
-                            else R.drawable.ic_visibility_off
-                }
             }.lparams(width = sizeBtn, height = sizeBtn) {
                 centerVertically()
                 rightMargin = dip(2)
@@ -80,40 +64,51 @@ class CategoryItemView(private val adapter: CategoryRecyclerPresenter)
             }
 
             // удаление
-            imageView {
+            deleteBtn = imageView {
                 id = _id.delete
                 scaleType = ImageView.ScaleType.CENTER_CROP
                 backgroundResource = R.drawable.ic_action_delete_black
-
-                name.bind {
-                    invisibleOrVisible(it == CATEGORY_ALL)
-                    if (it != CATEGORY_ALL) {
-                        isClickable = false
-                    } else {
-                        onClick {
-                            this@imageView.context.alert(message = "Вы действительно хотите удалить?") {
-                                positiveButton("Да") {
-                                    adapter.remove(_category)
-                                }
-                                negativeButton("Нет") { }
-                            }.show()
-                        }
-                    }
-                }
-
-
             }.lparams(width = sizeBtn, height = sizeBtn) {
                 alignParentRight()
                 centerVertically()
                 rightMargin = dip(8)
             }
+
+            root = this
         }
     }
 
-    private fun View.edit() {
-        CategoryEditDialog(context, _category) {
-            name.item = _category.name
-            adapter.update(_category, oldName)
+    override fun bind(item: Category, isSelected: Boolean, position: Int) {
+        root.onClick {
+            CategoryEditDialog(root.context, item) { cat ->
+                adapter.update(cat, oldName)
+                bind(item, isSelected, position)
+            }
+        }
+
+        name.text = item.name
+
+        visibleBtn.backgroundResource =
+                if (item.isVisible) R.drawable.ic_visibility
+                else R.drawable.ic_visibility_off
+        visibleBtn.onClick {
+            item.isVisible = !item.isVisible
+            adapter.update(item)
+            bind(item, isSelected, position)
+        }
+
+        deleteBtn.invisibleOrVisible(item.name == CATEGORY_ALL)
+        if (item.name != CATEGORY_ALL) {
+            deleteBtn.isClickable = false
+        } else {
+            deleteBtn.onClick {
+                root.context.alert(message = "Вы действительно хотите удалить?") {
+                    positiveButton("Да") {
+                        adapter.remove(item)
+                    }
+                    negativeButton("Нет") { }
+                }.show()
+            }
         }
     }
 }

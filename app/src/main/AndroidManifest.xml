@@ -87,6 +87,7 @@
             android:name=".components.DownloadManager.DownloadService"
             tools:ignore="InnerclassSeparator"
             />
+        <service android:name=".utils.MangaUpdaterService"/>
     </application>
 
 </manifest>

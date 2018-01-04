@@ -171,19 +171,12 @@ class ViewerActivity : BaseActivity() {
         super.onWindowFocusChanged(hasFocus)
         // Установка режима во весь экрана без верхней строки и навигационных кнопок
         if (hasFocus) { // Срабатывает только если был получен фокус
-//            if (VERSION.SDK_INT < 19) // Для разных версий андроида, разные значения
-//                window.decorView.systemUiVisibility =
-//                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-//                                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-//                                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-//                                View.SYSTEM_UI_FLAG_FULLSCREEN
-//            else
                 window.decorView.systemUiVisibility =
                         View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
                                 View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
                                 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
                                 View.SYSTEM_UI_FLAG_FULLSCREEN or
-                                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY // Данного флага нет в версии ниже 19
+                                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         }
     }
 
@@ -195,7 +188,6 @@ class ViewerActivity : BaseActivity() {
                 KeyEvent.KEYCODE_VOLUME_UP -> progress.item -= 1
             }
         }
-        // Открытие своего меню на кнопку меню
         if (keyCode == KeyEvent.KEYCODE_MENU) {
             openMenu()
         }
@@ -244,7 +236,6 @@ class ViewerActivity : BaseActivity() {
     // Предыдущая глава
     fun prevChapter() {
         CHAPTERS.chapter.prev // Переключение главы
-        // Смена адаптера
         initChapter()
     }
 

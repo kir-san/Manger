@@ -4,9 +4,7 @@ import com.san.kir.manger.room.models.Chapter
 import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.room.models.SiteCatalogElement
-import kotlinx.coroutines.experimental.channels.ProducerJob
 import kotlinx.coroutines.experimental.channels.produce
-import rx.Observable
 import kotlin.coroutines.experimental.CoroutineContext
 
 class EmptySiteCatalog : SiteCatalog {
@@ -21,17 +19,11 @@ class EmptySiteCatalog : SiteCatalog {
 
     override fun init() = this
 
-    suspend override fun getFullElement(element: SiteCatalogElement) = SiteCatalogElement()
+     override fun getFullElement(element: SiteCatalogElement) = SiteCatalogElement()
 
     override fun getCatalog(context: CoroutineContext) = produce { send(SiteCatalogElement()) }
 
-    override fun asyncGetChapters(context: CoroutineContext,
-                                  element: SiteCatalogElement,
-                                  path: String): ProducerJob<Chapter> = produce { send(Chapter()) }
+    override fun chapters(manga: Manga): List<Chapter> = emptyList()
 
-    override fun getChapters(element: Manga): Observable<Chapter> = Observable.just(Chapter())
-
-    override fun getPages(observable: Observable<DownloadItem>) = Observable.just(listOf(""))
-
-    override fun asyncGetPages(item: DownloadItem) = listOf("")
+    override fun pages(item: DownloadItem) = listOf("")
 }

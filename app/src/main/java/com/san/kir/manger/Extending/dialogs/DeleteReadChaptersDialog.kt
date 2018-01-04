@@ -1,4 +1,4 @@
-package com.san.kir.manger.components.Storage
+package com.san.kir.manger.Extending.dialogs
 
 import android.content.Context
 import android.view.Gravity
@@ -7,9 +7,8 @@ import com.san.kir.manger.R
 import com.san.kir.manger.components.Main.Main
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.utils.delChapters
-import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.async
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.customView
 import org.jetbrains.anko.dip
@@ -18,16 +17,12 @@ import org.jetbrains.anko.padding
 import org.jetbrains.anko.progressBar
 import org.jetbrains.anko.textView
 
-
-object StorageUtils {
-    private val chaptersDao = Main.db.chapterDao
-    fun deleteReadChapters(ctx: Context,
-                           manga: Manga,
-                           function: () -> Unit) {
-        ctx.alert {
+class DeleteReadChaptersDialog(context: Context, manga: Manga, function: (() -> Unit)? = null) {
+    init {
+        context.alert {
             messageResource = R.string.library_popupmenu_delete_read_chapters_message
             positiveButton(R.string.library_popupmenu_delete_read_chapters_ok) {
-                ctx.alert {
+                context.alert {
                     var task: Job? = null
                     onCancelled {
                         task?.cancel()
@@ -41,9 +36,8 @@ object StorageUtils {
                                 padding = dip(10)
                             }.lparams { gravity = Gravity.CENTER }
 
-                            task = launch(CommonPool) {
-                                val chapters = chaptersDao.loadChapters(
-                                        manga.unic).filter { it.isRead }
+                            task = async {
+                                val chapters = Main.db.chapterDao.loadChapters(manga.unic).filter { it.isRead }
                                 val size = chapters.size
 
                                 if (size == 0) {
@@ -56,7 +50,7 @@ object StorageUtils {
                                 post {
                                     progress.visibility = View.GONE
                                     message.text = "Готово"
-                                    function.invoke()
+                                    function?.invoke()
                                 }
                             }
                         }

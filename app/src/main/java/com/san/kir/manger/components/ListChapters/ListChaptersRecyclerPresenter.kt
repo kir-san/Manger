@@ -18,7 +18,6 @@ import com.san.kir.manger.utils.CHAPTER_STATUS
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.delChapters
-import com.san.kir.manger.utils.log
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import org.jetbrains.anko.startService
@@ -37,19 +36,14 @@ class ListChaptersRecyclerPresenter(val injector: KodeinInjector) : RecyclerPres
         recycler.adapter = adapter
     }
 
-    fun setManga(manga: Manga = this.manga, filter: ChapterFilter) = async(UI) {
-        try {
-            this@ListChaptersRecyclerPresenter.manga = manga
-            adapter.items = async {
-                dao.loadChapters(manga.unic)
-            }.await()
-            backupCatalog = adapter.items
+    fun setManga(manga: Manga = this.manga, filter: ChapterFilter) = async {
+        this@ListChaptersRecyclerPresenter.manga = manga
+        adapter.items = async {
+            dao.loadChapters(manga.unic)
+        }.await()
+        backupCatalog = adapter.items
 
-        } catch (e: Exception) {
-            log("setManga send exception: $e")
-        } finally {
-            changeOrder(filter)
-        }
+        changeOrder(filter)
     }
 
     private var filter = ChapterFilter.NOT_READ_DESC
@@ -69,7 +63,6 @@ class ListChaptersRecyclerPresenter(val injector: KodeinInjector) : RecyclerPres
     fun toggleSelection(position: Int) {
         adapter.selectedItems[position] = !adapter.selectedItems[position]
         adapter.notifyItemChanged(position)
-
     }
 
     val selectedCount get() = adapter.selectedItems.filter { it }.size
@@ -102,91 +95,73 @@ class ListChaptersRecyclerPresenter(val injector: KodeinInjector) : RecyclerPres
     }
 
     fun downloadNextNotReadChapter() = async(UI) {
-        try {
-            val job = async {
-                val chapter = dao.loadChaptersNotReadAsc(manga.unic)
-                        .first { it.action == CHAPTER_STATUS.DOWNLOADABLE }
-                val item = DownloadItem(name = chapter.manga + " " + chapter.name,
-                                        link = chapter.site,
-                                        path = chapter.path)
-                act.startService<DownloadService>("item" to item)
-            }
-
-            job.join()
-
-            changeOrder(filter)
-        } catch (ex: Exception) {
-            log("download next chapter finish with error: $ex")
+        val job = async {
+            val chapter = dao.loadChaptersNotReadAsc(manga.unic)
+                    .first { it.action == CHAPTER_STATUS.DOWNLOADABLE }
+            val item = DownloadItem(name = chapter.manga + " " + chapter.name,
+                                    link = chapter.site,
+                                    path = chapter.path)
+            act.startService<DownloadService>("item" to item)
         }
+
+        job.join()
+
+        changeOrder(filter)
     }
 
     fun downloadAllNotReadChapters() = async(UI) {
-        try {
-            val job = async {
-                dao.loadChaptersNotReadAsc(manga.unic)
-                        .filter { it.action == CHAPTER_STATUS.DOWNLOADABLE }
-                        .onEach { chapter ->
-                            val item = DownloadItem(name = chapter.manga + " " + chapter.name,
-                                                    link = chapter.site,
-                                                    path = chapter.path)
-                            act.startService<DownloadService>("item" to item)
-                        }
-                        .size
-            }
-
-            val count = job.await()
-
-            if (count == 0)
-                act.toast(R.string.list_chapters_selection_load_error)
-            else
-                act.toast(act.getString(R.string.list_chapters_selection_load_ok, count))
-
-            changeOrder(filter)
-        } catch (ex: Exception) {
+        val job = async {
+            dao.loadChaptersNotReadAsc(manga.unic)
+                    .filter { it.action == CHAPTER_STATUS.DOWNLOADABLE }
+                    .onEach { chapter ->
+                        val item = DownloadItem(name = chapter.manga + " " + chapter.name,
+                                                link = chapter.site,
+                                                path = chapter.path)
+                        act.startService<DownloadService>("item" to item)
+                    }
+                    .size
         }
+
+        val count = job.await()
+
+        if (count == 0)
+            act.toast(R.string.list_chapters_selection_load_error)
+        else
+            act.toast(act.getString(R.string.list_chapters_selection_load_ok, count))
+
+        changeOrder(filter)
     }
 
     fun downloadAllChapters() = async(UI) {
-        try {
-            val job = async {
-                dao.loadChaptersAllAsc(manga.unic)
-                        .filter { it.action == CHAPTER_STATUS.DOWNLOADABLE }
-                        .onEach { chapter ->
-                            val item = DownloadItem(name = chapter.manga + " " + chapter.name,
-                                                    link = chapter.site,
-                                                    path = chapter.path)
-                            act.startService<DownloadService>("item" to item)
-                        }
-                        .size
-            }
-
-            val count = job.await()
-            if (count == 0)
-                act.toast(R.string.list_chapters_selection_load_error)
-            else
-                act.toast(act.getString(R.string.list_chapters_selection_load_ok, count))
-        } finally {
-            changeOrder(filter)
+        val job = async {
+            dao.loadChaptersAllAsc(manga.unic)
+                    .filter { it.action == CHAPTER_STATUS.DOWNLOADABLE }
+                    .onEach { chapter ->
+                        val item = DownloadItem(name = chapter.manga + " " + chapter.name,
+                                                link = chapter.site,
+                                                path = chapter.path)
+                        act.startService<DownloadService>("item" to item)
+                    }
+                    .size
         }
+
+        val count = job.await()
+        if (count == 0)
+            act.toast(R.string.list_chapters_selection_load_error)
+        else
+            act.toast(act.getString(R.string.list_chapters_selection_load_ok, count))
+        changeOrder(filter)
     }
 
     fun setRead(isReading: Boolean) = async(UI) {
-        try {
-            val job = async {
-                forSelection { i ->
-                    // Для всех выделеных элементов
-                    items[i].let { chapter ->
-                        chapter.isRead = isReading
-                        dao.update(chapter)
-                    }
-                }
+        forSelection { i ->
+            // Для всех выделеных элементов
+            items[i].let { chapter ->
+                chapter.isRead = isReading
+                dao.update(chapter)
             }
-            job.join()
-        } finally {
-            changeOrder(filter)
         }
-
-
+        changeOrder(filter)
     }
 
     fun removeSelection() = async(UI) {
@@ -254,7 +229,6 @@ class ListChaptersRecyclerPresenter(val injector: KodeinInjector) : RecyclerPres
                 adapter.notifyItemChanged(index)
             }
         }
-        // Нужно для упращения работы с выделением
     }
 
 

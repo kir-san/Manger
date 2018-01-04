@@ -5,7 +5,6 @@ import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.room.models.SiteCatalogElement
 import kotlinx.coroutines.experimental.channels.ProducerJob
-import rx.Observable
 import kotlin.coroutines.experimental.CoroutineContext
 
 interface SiteCatalog {
@@ -19,12 +18,8 @@ interface SiteCatalog {
     var oldVolume: Int
     fun init(): SiteCatalog
 
-    suspend fun getFullElement(element: SiteCatalogElement): SiteCatalogElement
+    fun getFullElement(element: SiteCatalogElement): SiteCatalogElement
     fun getCatalog(context: CoroutineContext): ProducerJob<SiteCatalogElement>
-    fun asyncGetChapters(context: CoroutineContext,
-                         element: SiteCatalogElement,
-                         path: String): ProducerJob<Chapter>
-    fun getChapters(element: Manga): Observable<Chapter>
-    fun getPages(observable: Observable<DownloadItem>): Observable<List<String>>
-    fun asyncGetPages(item: DownloadItem): List<String>
+    fun chapters(manga: Manga): List<Chapter>
+    fun pages(item: DownloadItem): List<String>
 }

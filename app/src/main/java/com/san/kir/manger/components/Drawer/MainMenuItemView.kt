@@ -57,7 +57,11 @@ class MainMenuItemView(private val act: BaseActivity) : RecyclerViewAdapterFacto
 
     private fun TextView.setCounter(type: MainMenuType) {
         when (type) {
-            MainMenuType.Library -> text = "${db.mangaDao.loadAllManga().size}"
+            MainMenuType.Library -> {
+                Main.db.mangaDao
+                        .loadMangaAbcSortAsc()
+                        .observe(act, Observer { text = "${it?.size}" })
+            }
             MainMenuType.Storage -> {
                 Main.db.storageDao
                         .loadAllSize()

@@ -17,8 +17,6 @@ import kotlinx.coroutines.experimental.sync.withLock
 import org.json.JSONArray
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
-import rx.Observable
-import rx.schedulers.Schedulers
 import java.util.regex.Pattern
 import kotlin.coroutines.experimental.CoroutineContext
 
@@ -47,8 +45,8 @@ class Allhentai : SiteCatalog {
     }
 
     ////
-    suspend override fun getFullElement(element: SiteCatalogElement): SiteCatalogElement {
-        val rootdoc = ManageSites.asyncGetDocument(element.link)
+    override fun getFullElement(element: SiteCatalogElement): SiteCatalogElement {
+        val rootdoc = ManageSites.getDocument(element.link)
         val doc = rootdoc.select("div.leftContent")
 
         // Список авторов
@@ -122,7 +120,7 @@ class Allhentai : SiteCatalog {
             }
             element.dateId = dateId.toString().toInt()
         } catch (ex: NullPointerException) {
-            val doc = ManageSites.asyncGetDocument(element.link).select("div.leftContent")
+            val doc = ManageSites.getDocument(element.link).select("div.leftContent")
             val matcher3 = Pattern.compile("\\d+")
                     .matcher(doc.select(".mangaSettings div[id*=user_rate]").first().id())
             if (matcher3.find()) {
@@ -138,12 +136,12 @@ class Allhentai : SiteCatalog {
     }
 
     override fun getCatalog(context: CoroutineContext) = produce(context) {
-        var docLocal: Document = ManageSites.asyncGetDocument(siteCatalog)
+        var docLocal: Document = ManageSites.getDocument(siteCatalog)
 
         fun isGetNext() = async(context) {
             val next = docLocal.select(".pagination > a.nextLink").attr("href")
             if (next.isNotEmpty()) {
-                docLocal = ManageSites.asyncGetDocument(host + next)
+                docLocal = ManageSites.getDocument(host + next)
                 true
             } else
                 false
@@ -161,51 +159,24 @@ class Allhentai : SiteCatalog {
     }
 
     ///
-    override fun asyncGetChapters(context: CoroutineContext,
-                                  element: SiteCatalogElement,
-                                  path: String) = produce(context) {
-        ManageSites.asyncGetDocument(element.link)
-                .select(".cTable")
-                .select("tr")
-                .map { it.select("td[align]").text() to it.select("a") }
-                .filterNot { (_, it) -> it.attr("href").contains("forum") }
-                .filter { (_, it) -> it.text().isNotEmpty() }
-                .map { (date, select) ->
-                    val link = select.attr("href")
-                    Chapter(manga = element.name,
-                            name = select.text(),
-                            date = date,
-                            site = if (link.contains(host)) link else host + link,
-                            path = "$path/$name")
-                }
-                .onEach { send(it) }
-    }
+    override fun chapters(manga: Manga) =
+            ManageSites.getDocument(manga.site)
+                    .select(".cTable")
+                    .select("tr")
+                    .map { it.select("td[align]").text() to it.select("a") }
+                    .filterNot { (_, it) -> it.attr("href").contains("forum") }
+                    .filter { (_, it) -> it.text().isNotEmpty() }
+                    .map { (date, select) ->
+                        val link = select.attr("href")
+                        Chapter(manga = manga.unic,
+                                name = select.text(),
+                                date = date,
+                                site = if (link.contains(host)) link else host + link,
+                                path = "${manga.path}/$name")
+                    }
 
-    override fun getChapters(element: Manga): Observable<Chapter> {
-        return Observable.create<Document> { go ->
-            go.onNext(ManageSites.getDocument(element.site))
-            go.onCompleted()
-        }
-                .observeOn(Schedulers.computation())
-                .map { it!!.select(".cTable") }
-                .flatMap { Observable.from(it!!.select("tr")) }
-                .filter { it.select("a").text() != "" }
-                .map {
-                    val name = it.select("a").text()
-                    var link = it.select("a").attr("href")
-                    if (!link.contains(host))
-                        link = host + link
-                    Chapter(manga = element.unic,
-                            name = name,
-                            date = it.select("td[align]").text(),
-                            site = link,
-                            path = "${element.path}/$name"
-                    )
-                }
-                .subscribeOn(Schedulers.io())
-    }
 
-    override fun asyncGetPages(item: DownloadItem): List<String> {
+    override fun pages(item: DownloadItem): List<String> {
         var list = listOf<String>()
         // Создаю папку/папки по указанному пути
         createDirs(getFullPath(item.path))
@@ -228,38 +199,5 @@ class Allhentai : SiteCatalog {
 
         }
         return list
-    }
-
-    override fun getPages(observable: Observable<DownloadItem>): Observable<List<String>> {
-        return observable
-                .observeOn(Schedulers.io())
-                // Создаю папку/папки по указанному пути
-                .filter { createDirs(getFullPath(it.path)) }
-                // С помощью okhttp получаю содержимое страницы и отдаю его на парсинг в jsoup
-                .map {
-                    ManageSites.getDocument(it.link)
-                }
-                .observeOn(Schedulers.computation())
-                // с помощью регулярных выражений ищу нужные данные
-                .map { Pattern.compile("var pictures.+").matcher(it.body().html()) }
-                // если данные найдены то продолжаю
-                .filter { it.find() }
-                // избавляюсь от ненужного
-                .map {
-                    it.group()
-                            .removeSuffix(";")
-                            .removePrefix("var pictures = ")
-                }
-                .map {
-                    val json = JSONArray(it)
-
-                    val list = mutableListOf<String>()
-
-                    repeat(json.length()) { index ->
-                        list.add(json.getJSONObject(index).getString("url"))
-                    }
-
-                    list
-                }
     }
 }

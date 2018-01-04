@@ -70,7 +70,7 @@ class DownloadTask(val downloadItem: DownloadItem,
         if (isCancelled)
             return downloadItem.downloadSize
 
-        val pages = ManageSites.getPages(downloadItem)
+        val pages = ManageSites.pages(downloadItem)
         downloadItem.totalPages = pages.size
 
         if (isCancelled)

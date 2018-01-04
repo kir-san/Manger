@@ -9,6 +9,9 @@
     <string name="main_check_app_ver_close">Закрыть</string>
     <string name="main_check_app_ver_go_to">Перейти на 4pda.ru</string>
     <string name="main_check_app_ver_error">Произошла ошибка при поиске обновлений, возможно у вас интернет отключен</string>
+    <string name="main_check_new_manga_find" tools:ignore="UnusedResources">Найдена новая манга</string>
+    <string name="main_check_new_manga_go_to" tools:ignore="UnusedResources">Перейти</string>
+    <string name="main_check_new_manga_no_dirs" tools:ignore="UnusedResources">Нет папки local в папке Manger/manga, она будет создана автоматически</string>
 
     <!-- AddManga -->
     <string name="add_manga_title">Редактор манги</string>
@@ -65,6 +68,14 @@
     <string name="viewer_menu_is_swipe">Свайпы по экрану</string>
     <string name="viewer_menu_is_key">Кнопки громкости</string>
 
+    <!-- FirstRun -->
+    <string name="first_run_text" tools:ignore="UnusedResources">Это первый запуск приложения надо бы кое-чего настроить</string>
+    <string name="first_run_help" tools:ignore="UnusedResources">Первым делом обновите каталоги из соответствующего пункта меню и ищите себе мангу которую хотите почитать</string>
+    <string name="first_run_exit" tools:ignore="UnusedResources">Выйти</string>
+    <string name="first_run_next" tools:ignore="UnusedResources">Дальше</string>
+    <string name="first_run_okay" tools:ignore="UnusedResources">Готово</string>
+    <string name="first_run_storage" tools:ignore="UnusedResources">Выберете где хранить мангу:</string>
+    <string name="first_run_exit_text">Двойное нажатие закроет приложение</string>
 
     <!-- MainMenu -->
     <string name="main_menu_library">Библиотека</string>
@@ -110,6 +121,7 @@
     <string name="library_popupmenu_delete_message">Вы действительно хотите удалить эту мангу</string>
     <string name="library_popupmenu_delete_title">Внимание!!!</string>
     <string name="library_popupmenu_delete_ok">Конечно</string>
+    <string name="library_popupmenu_delete_ok_with_files">Конечно, c файлами</string>
     <string name="library_popupmenu_delete_no">Никогда</string>
     <string name="library_popupmenu_set_category">Сменить категорию</string>
     <string name="library_popupmenu_select">Выделить</string>

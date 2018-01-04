@@ -10,6 +10,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import com.san.kir.manger.App.Companion.context
 import com.san.kir.manger.Extending.BaseActivity
+import com.san.kir.manger.Extending.dialogs.DeleteReadChaptersDialog
 import com.san.kir.manger.R
 import com.san.kir.manger.components.Main.Main
 import com.san.kir.manger.room.DAO.getSizeAndIsNew
@@ -131,7 +132,7 @@ class StorageDialogView : AnkoComponent<StorageDialogFragment> {
             readSize?.text = context.getString(R.string.storage_item_read_size,
                                                formatDouble(item?.sizeRead))
             readSizeAction?.onClick {
-                StorageUtils.deleteReadChapters(readSizeAction!!.context, manga) {
+                DeleteReadChaptersDialog(readSizeAction!!.context, manga) {
                     updateStorageItem(item)
                 }
             }

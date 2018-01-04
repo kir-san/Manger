@@ -70,7 +70,7 @@ class CategoryRecyclerPresenter : RecyclerPresenter() {
                 update(*loadMangaWhereCategory(old).onEach { it.categories = cat.name }.toTypedArray())
                 catDao.update(cat)
             }
-        swapItems()
+//        swapItems()
     }
 
     fun remove(cat: Category) {

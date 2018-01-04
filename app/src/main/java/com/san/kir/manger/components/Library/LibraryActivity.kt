@@ -13,47 +13,43 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.PopupWindow
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.instance
 import com.san.kir.manger.App.Companion.context
 import com.san.kir.manger.Extending.Views.showAlways
 import com.san.kir.manger.Extending.Views.showIfRoom
+import com.san.kir.manger.Extending.dialogs.SortCategoryDialog
 import com.san.kir.manger.R
 import com.san.kir.manger.components.Drawer.DrawerActivity
 import com.san.kir.manger.components.Main.Main
 import com.san.kir.manger.components.Parsing.ManageSites
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.utils.ActionModeControl
-import com.san.kir.manger.utils.MangaUpdater
-import com.san.kir.manger.utils.SortLibraryUtil
-import kotlinx.coroutines.experimental.CommonPool
+import com.san.kir.manger.utils.MangaUpdaterService
 import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.alert
-import org.jetbrains.anko.checkBox
-import org.jetbrains.anko.customView
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.include
-import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.padding
-import org.jetbrains.anko.radioButton
-import org.jetbrains.anko.radioGroup
-import org.jetbrains.anko.sdk25.coroutines.onCheckedChange
 import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.startService
 import org.jetbrains.anko.support.v4.onPageChangeListener
 import org.jetbrains.anko.support.v4.viewPager
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.verticalLayout
-import org.jetbrains.anko.wrapContent
 
 class LibraryActivity : DrawerActivity(), ActionMode.Callback {
 
-    // Получаем список категорий
     private val mCategory: List<Category> get() = Main.db.categoryDao.loadCategories()
     private val updateApp = ManageSites.UpdateApp(this)
-    private lateinit var currentAdapter: LibraryItemsAdapter
+    private lateinit var currentAdapter: LibraryItemsRecyclerPresenter
     private lateinit var viewPager: ViewPager
-    val pagerAdapter by lazy { LibraryPageAdapter(this) }
+    private val pagerAdapter by lazy { LibraryPageAdapter(injector) }
 
     var actionMode = ActionModeControl(this)
 
@@ -64,6 +60,10 @@ class LibraryActivity : DrawerActivity(), ActionMode.Callback {
             viewPager = this
         }
 
+    override fun provideOverridingModule() = Kodein.Module {
+        bind<LibraryActivity>() with instance(this@LibraryActivity)
+    }
+
     @SuppressLint("MissingSuperCall")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,8 +72,6 @@ class LibraryActivity : DrawerActivity(), ActionMode.Callback {
 
     override fun onResume() {
         super.onResume()
-        pagerAdapter.update()
-
         launch(UI) {
             delay(500)
             currentAdapter = pagerAdapter.adapters[0]
@@ -122,7 +120,7 @@ class LibraryActivity : DrawerActivity(), ActionMode.Callback {
         when (item.itemId) {
             0 -> updateCurrent()
             1 -> updateAll()
-            2 -> sortCurrent()
+            2 -> SortCategoryDialog(this, currentAdapter.cat)
             3 -> updateApp.checkNewVersion(true)
         }
         return super.onOptionsItemSelected(item)
@@ -170,7 +168,6 @@ class LibraryActivity : DrawerActivity(), ActionMode.Callback {
                                 textSize = 18f
                                 onClick {
                                     currentAdapter.moveToCategory(cat.name)
-                                    pagerAdapter.update()
                                     dismiss()
                                     actionMode.finish()
                                 }
@@ -210,84 +207,37 @@ class LibraryActivity : DrawerActivity(), ActionMode.Callback {
     }
 
     fun onListItemSelect(position: Int) = launch(UI) {
-        currentAdapter.toggleSelection(position) // Переключить выбран элемент или нет
+        currentAdapter.toggleSelection(position)
 
-        val hasCheckedItems = currentAdapter.getSelectedCount() > 0 // Проверка есть ли выделенные элементы элементы
+        val hasCheckedItems = currentAdapter.selectedCount > 0
 
-        // Если есть выделенные элементы и экшнМод не включен
         if (hasCheckedItems && actionMode.hasFinish()) {
-            actionMode.start(this@LibraryActivity) // Включить экшнМод
-        } else if (!hasCheckedItems && !actionMode.hasFinish()) { // Если все наоборот
-            actionMode.finish() // Завершить работу экшнМода
+            actionMode.start(this@LibraryActivity)
+        } else if (!hasCheckedItems && !actionMode.hasFinish()) {
+            actionMode.finish()
         }
 
-        // Вывод в заголовок количество выделенных элементов
         actionMode.setTitle(actionTitle())
     }
 
-    private fun sortCurrent() {
-        // получение текущей категории
-        val cat = currentAdapter.cat
-        alert {
-            titleResource = R.string.library_menu_order_title
-
-            customView {
-                verticalLayout {
-                    lparams(width = matchParent, height = wrapContent) {
-                        padding = dip(16)
-                    }
-
-                    radioGroup {
-                        radioButton {
-                            setText(R.string.library_sort_dialog_add)
-                            isChecked = cat.typeSort == SortLibraryUtil.add
-                            onClick { cat.typeSort = SortLibraryUtil.add }
-                        }
-
-                        radioButton {
-                            setText(R.string.library_sort_dialog_abc)
-                            isChecked = cat.typeSort == SortLibraryUtil.abc
-                            onClick { cat.typeSort = SortLibraryUtil.abc }
-                        }
-                    }
-
-                    checkBox {
-                        setText(R.string.library_sort_dialog_reverse)
-                        isChecked = cat.isReverseSort
-                        onCheckedChange { _, b -> cat.isReverseSort = b }
-                    }
-                }
-            }
-
-            positiveButton("Изменить") {
-                // изменить порядок в адаптере
-                currentAdapter.changeOrder(SortLibraryUtil.toType(cat.typeSort), cat.isReverseSort)
-            }
-            negativeButton("Я передумал") {}
-        }.show()
-    }
-
-    private fun updateCurrent() = launch(CommonPool) {
-        // получаем список манги в текущей странице и обновляем их
-        currentAdapter.getCatalog().forEach {
-            MangaUpdater.addTask(it)
+    private fun updateCurrent() = async {
+        currentAdapter.catalog.forEach {
+            startService<MangaUpdaterService>("manga" to it)
         }
     }
 
-    private fun updateAll() = launch(CommonPool) {
-        // обновление всей манги
+    private fun updateAll() = async {
         Main.db.mangaDao.loadAllManga().forEach {
-            MangaUpdater.addTask(it)
+            startService<MangaUpdaterService>("manga" to it)
         }
     }
 
-    // Заголовок для экшнМода, вынесен из-за повторов и большой длинны
     private fun actionTitle(): String {
         return resources
                 .getQuantityString(
                         R.plurals.list_chapters_action_selected,
-                        currentAdapter.getSelectedCount(),
-                        currentAdapter.getSelectedCount()
+                        currentAdapter.selectedCount,
+                        currentAdapter.selectedCount
                 )
     }
 }

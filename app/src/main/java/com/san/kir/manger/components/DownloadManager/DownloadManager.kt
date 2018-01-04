@@ -83,7 +83,7 @@ class DownloadManager(private val context: Context) : Thread() {
     }
 
     private fun broadcastAddTask(item: DownloadItem, isInterrupt: Boolean = false) {
-        val intent = Intent("DownloadChapters")
+        val intent = Intent(action)
         intent.putExtra(IndexConstants.TYPE,
                         IndexConstants.OperationIndex.ADD)
         intent.putExtra(IndexConstants.ITEM, item)
@@ -110,7 +110,7 @@ class DownloadManager(private val context: Context) : Thread() {
             downloadingTasks -= task
             taskQueue.remove(task)
 
-            val intent = Intent("DownloadChapters")
+            val intent = Intent(action)
             intent.putExtra(IndexConstants.TYPE,
                             IndexConstants.OperationIndex.PAUSE)
             intent.putExtra(IndexConstants.ITEM, task.downloadItem)
@@ -124,7 +124,7 @@ class DownloadManager(private val context: Context) : Thread() {
         if (downloadingTasks.contains(task)) {
             downloadingTasks -= task
 
-            val intent = Intent("DownloadChapters")
+            val intent = Intent(action)
             intent.putExtra(IndexConstants.TYPE,
                             IndexConstants.OperationIndex.COMPLETE)
             intent.putExtra(IndexConstants.ITEM, task.downloadItem)

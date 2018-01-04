@@ -1,18 +1,17 @@
 package com.san.kir.manger.components.SitesCatalog
 
 import android.graphics.Typeface
+import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.RelativeLayout
 import android.widget.TextView
-import com.san.kir.manger.EventBus.Binder
-import com.san.kir.manger.Extending.AnkoExtend.textView
-import com.san.kir.manger.Extending.AnkoExtend.visibleOrGone
 import com.san.kir.manger.R
 import com.san.kir.manger.components.CatalogForOneSite.CatalogForOneSiteActivity
 import com.san.kir.manger.components.CatalogForOneSite.SiteCatalogElementViewModel
 import com.san.kir.manger.components.Main.Main
-import com.san.kir.manger.components.Parsing.EmptySiteCatalog
 import com.san.kir.manger.components.Parsing.ManageSites
-import com.san.kir.manger.components.Parsing.SiteCatalog
 import com.san.kir.manger.picasso.Picasso
 import com.san.kir.manger.room.DAO.update
 import com.san.kir.manger.room.models.Site
@@ -40,28 +39,22 @@ import org.jetbrains.anko.textView
 import org.jetbrains.anko.wrapContent
 
 class SiteCatalogItemView : RecyclerViewAdapterFactory.AnkoView<Site>() {
-
     private object _id {
         val logo = ID.generate()
     }
 
-    var site: SiteCatalog = EmptySiteCatalog()
-    lateinit var name: TextView
-    val link = Binder("")
-    val volume = Binder(0 to 0)
-    val isInit = Binder(false)
-    val error = Binder(false)
+    private lateinit var root: RelativeLayout
+    private lateinit var name: TextView
+    private lateinit var link: TextView
+    private lateinit var icon: ImageView
+    private lateinit var volume: TextView
+    private lateinit var isInit: ProgressBar
+    private lateinit var isError: ImageView
 
     override fun createView(ui: AnkoContext<ViewGroup>) = with(ui) {
         relativeLayout {
             lparams(width = matchParent, height = dip(55))
-            isClickable
-            onClick {
-                if (site.ID > -1)
-                    startActivity<CatalogForOneSiteActivity>("id" to site.ID)
-            }
 
-            // Название
             name = textView {
                 textSize = 16f
                 setTypeface(typeface, Typeface.BOLD)
@@ -71,79 +64,72 @@ class SiteCatalogItemView : RecyclerViewAdapterFactory.AnkoView<Site>() {
                 rightOf(_id.logo)
             }
 
-            // сайт
-            textView(link) {}.lparams(width = wrapContent, height = wrapContent) {
+            link = textView {}.lparams(width = wrapContent, height = wrapContent) {
                 alignParentBottom()
                 margin = dip(6)
                 rightOf(_id.logo)
             }
 
-            // иконка
-            imageView {
+            icon = imageView {
                 id = _id.logo
-                link.bind {
-                    if (it.isNotEmpty())
-                        Picasso.with(this@with.ctx)
-                                .load("http://www.google.com/s2/favicons?domain=$it")
-                                .error(com.san.kir.manger.R.drawable.ic_error)
-                                .into(this)
-                }
             }.lparams(width = dip(50), height = dip(50)) {
                 centerVertically()
                 leftMargin = dip(5)
             }
 
-            // Количество манги
-            textView {
-                volume.bind { (oldVolume, volume) ->
-                    text = context.getString(com.san.kir.manger.R.string.site_volume,
-                                             oldVolume,
-                                             volume - oldVolume)
-                }
-            }.lparams(width = wrapContent, height = wrapContent) {
+            volume = textView {}.lparams(width = wrapContent, height = wrapContent) {
                 alignParentRight()
                 centerVertically()
                 margin = dip(4)
             }
 
-            // прогресс бар
-            progressBar {
+            isInit = progressBar {
                 isIndeterminate = true
-                visibleOrGone(isInit)
+                visibility = View.GONE
             }.lparams(width = dip(12), height = dip(12)) {
                 alignParentTop()
                 alignParentEnd()
                 margin = dip(4)
             }
 
-            // Оповещение об ошибке
-            imageView {
+            isError = imageView {
+                visibility = View.GONE
                 setImageResource(R.drawable.unknown)
-                visibleOrGone(error)
             }.lparams(width = dip(12), height = dip(12)) {
                 alignParentTop()
                 alignParentEnd()
                 margin = dip(4)
             }
 
+            root = this
         }
     }
 
     override fun bind(item: Site, isSelected: Boolean, position: Int) {
+        root.onClick {
+            root.context.startActivity<CatalogForOneSiteActivity>("id" to item.siteID)
+        }
+
+        name.text = item.name
+        link.text = item.host
+
+        if (item.host.isNotEmpty())
+            Picasso.with(root.context)
+                    .load("http://www.google.com/s2/favicons?domain=${item.host}")
+                    .error(com.san.kir.manger.R.drawable.ic_error)
+                    .into(icon)
+
+        volume.text = root.context.getString(com.san.kir.manger.R.string.site_volume,
+                                             item.oldVolume,
+                                             item.volume - item.oldVolume)
         async(UI) {
             try {
-                site = ManageSites.CATALOG_SITES[item.siteID]
-                name.text = site.name
-                link.item = site.host
-
-                volume.item = item.oldVolume to item.volume
-
+                val site = ManageSites.CATALOG_SITES[item.siteID]
                 if (!site.isInit) {
-                    error.item = false
-                    isInit.item = true
+                    isError.visibility = View.GONE
+                    isInit.visibility = View.VISIBLE
                     async {
                         site.init()
-
                         // Находим в базе данных наш сайт
                         with(Main.db.siteDao) {
                             loadSite(site.name)?.let {
@@ -160,10 +146,12 @@ class SiteCatalogItemView : RecyclerViewAdapterFactory.AnkoView<Site>() {
                 }
             } catch (e: Exception) {
                 log(e.toString())
-                error.item = true
+                isError.visibility = View.VISIBLE
             } finally {
-                volume.item = item.oldVolume to item.volume
-                isInit.item = false
+                volume.text = root.context.getString(com.san.kir.manger.R.string.site_volume,
+                                                     item.oldVolume,
+                                                     item.volume - item.oldVolume)
+                isInit.visibility = View.GONE
             }
         }
     }

@@ -1,9 +1,11 @@
 package com.san.kir.manger.components.ListChapters
 
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
@@ -25,7 +27,7 @@ import com.san.kir.manger.components.Main.Main
 import com.san.kir.manger.room.DAO.ChapterFilter
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.utils.ActionModeControl
-import com.san.kir.manger.utils.MangaUpdater
+import com.san.kir.manger.utils.MangaUpdaterService
 import com.san.kir.manger.utils.log
 import com.san.kir.manger.utils.sPrefListChapters
 import kotlinx.coroutines.experimental.android.UI
@@ -35,6 +37,7 @@ import org.jetbrains.anko.cancelButton
 import org.jetbrains.anko.longToast
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.setContentView
+import org.jetbrains.anko.startService
 
 @SuppressLint("MissingSuperCall")
 class ListChaptersActivity : BaseActivity(), ActionMode.Callback {
@@ -61,6 +64,30 @@ class ListChaptersActivity : BaseActivity(), ActionMode.Callback {
         }
     }
     lateinit var downloadManager: DownloadManager
+    private val receiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent) {
+            if (intent.action == MangaUpdaterService.action) {
+                val manga = intent.getParcelableExtra<Manga>(MangaUpdaterService.ITEM)
+                val isFoundNew = intent.getBooleanExtra(MangaUpdaterService.IS_FOUND_NEW, false)
+                val countNew = intent.getIntExtra(MangaUpdaterService.COUNT_NEW, 0)
+
+                if (manga.unic == this@ListChaptersActivity.manga.unic) { // Если совпадает манга
+                    if (countNew == -1) // Если произошла ошибка ошибках
+                        longToast(R.string.list_chapters_message_error)
+                    else
+                        if (!isFoundNew) // Если ничего не нашлось
+                            longToast(R.string.list_chapters_message_no_found)
+                        else { // Если нашлость, вывести сообщение с количеством
+                            longToast(getString(R.string.list_chapters_message_count_new,
+                                                countNew))
+                            // Обновить список
+                        }
+
+                    view.isAction.item = false // Скрыть прогрессБар
+                }
+            }
+        }
+    }
 
     override fun provideOverridingModule() = Kodein.Module {
         bind<ListChaptersActivity>() with instance(this@ListChaptersActivity)
@@ -73,6 +100,9 @@ class ListChaptersActivity : BaseActivity(), ActionMode.Callback {
         super.onCreate(savedInstanceState)
         view.setContentView(this)
 
+        val intentFilter = IntentFilter().apply { addAction(MangaUpdaterService.action) }
+        registerReceiver(receiver, intentFilter)
+
         manga = mangas.loadManga(intent.getStringExtra("manga_unic"))
         title = manga.name
 
@@ -80,8 +110,6 @@ class ListChaptersActivity : BaseActivity(), ActionMode.Callback {
         bindService(intent, connection, Context.BIND_AUTO_CREATE)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        MangaUpdater.bus.register()
     }
 
     override fun onResume() {
@@ -96,26 +124,8 @@ class ListChaptersActivity : BaseActivity(), ActionMode.Callback {
         }
 
         // Если в данный момент ведется поиск новых глав для данной манги
-        if (MangaUpdater.contains(manga))
+        if (MangaUpdaterService.contains(manga))
             view.isAction.item = true // Показать прогрессБар
-
-        // Реакция на сообщения от поиска новых глав
-        MangaUpdater.bus.onEvent { (manga, isFoundNew, countNew) ->
-            if (manga.unic == this.manga.unic) { // Если совпадает манга
-                if (countNew == -1) // Если произошла ошибка ошибках
-                    longToast(R.string.list_chapters_message_error)
-                else
-                    if (!isFoundNew) // Если ничего не нашлось
-                        longToast(R.string.list_chapters_message_no_found)
-                    else { // Если нашлость, вывести сообщение с количеством
-                        longToast(getString(R.string.list_chapters_message_count_new,
-                                            countNew))
-                        // Обновить список
-                    }
-
-                view.isAction.item = false // Скрыть прогрессБар
-            }
-        }
     }
 
     // id группы меню для экшнМода
@@ -259,7 +269,7 @@ class ListChaptersActivity : BaseActivity(), ActionMode.Callback {
             android.R.id.home -> onBackPressed() // Назад при нажатию стрелку
             0 -> { // Проверка на наличие новых глав
                 view.isAction.item = true // Показать прогрессБар
-                MangaUpdater.addTask(manga) // Добавить мангу для проверки новых глав
+                startService<MangaUpdaterService>("manga" to manga)
             }
             1 -> adapter.downloadNextNotReadChapter()
             2 -> adapter.downloadAllNotReadChapters()
@@ -278,12 +288,12 @@ class ListChaptersActivity : BaseActivity(), ActionMode.Callback {
     }
 
     override fun onDestroy() {
-        MangaUpdater.bus.unregister() // Отписка
         super.onDestroy()
         if (bound) {
             unbindService(connection)
             bound = false
         }
+        unregisterReceiver(receiver)
     }
 
     fun onListItemSelect(position: Int) = launch(UI) {

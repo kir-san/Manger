@@ -17,7 +17,7 @@ import com.san.kir.manger.App.Companion.context
 import com.san.kir.manger.R
 import com.san.kir.manger.components.AddManga.AddMangaActivity
 import com.san.kir.manger.components.Main.Main
-import com.san.kir.manger.picasso.Callback
+import com.san.kir.manger.photoview.onError
 import com.san.kir.manger.picasso.NetworkPolicy
 import com.san.kir.manger.picasso.Picasso
 import com.san.kir.manger.room.DAO.delete
@@ -74,13 +74,11 @@ class StorageItemView(injector: KodeinInjector) : RecyclerViewAdapterFactory.Ank
             backgroundColor = Color.parseColor("#FFF4F2F2")
             padding = dip(2)
 
-            // лого
             logo = imageView {
                 id = _id.logo
                 scaleType = ImageView.ScaleType.FIT_XY
             }.lparams(width = dip(80), height = matchParent)
 
-            // Название
             name = textView {
                 id = _id.name
                 textSize = 20f
@@ -89,7 +87,6 @@ class StorageItemView(injector: KodeinInjector) : RecyclerViewAdapterFactory.Ank
                 maxLines = 1
             }.lparams(width = matchParent) { rightOf(_id.logo) }
 
-            // Размер папки
             sizeText = textView {
                 textSize = 16f
                 padding = dip(2)
@@ -98,7 +95,6 @@ class StorageItemView(injector: KodeinInjector) : RecyclerViewAdapterFactory.Ank
                 rightOf(_id.logo)
             }
 
-            // Индикатор отсутствия в базе
             isExists = textView(R.string.storage_not_in_bd) {
                 textSize = 16f
                 padding = dip(2)
@@ -167,18 +163,6 @@ class StorageItemView(injector: KodeinInjector) : RecyclerViewAdapterFactory.Ank
                         percent.text = context.getString(R.string.storage_manga_item_size_percent,
                                                          Math.round(item.sizeFull / size * 100))
                 })
-    }
-
-    private fun onError(action: () -> Unit): Callback {
-        return object : Callback {
-            override fun onSuccess() {
-
-            }
-
-            override fun onError(e: java.lang.Exception?) {
-                action()
-            }
-        }
     }
 
     private fun View.menuOfActions(manga: Manga?,

@@ -25,11 +25,9 @@ import org.jetbrains.anko.browse
 import org.jetbrains.anko.longToast
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import rx.Observable
 import java.nio.charset.Charset
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
-import kotlin.coroutines.experimental.CoroutineContext
 
 object ManageSites {
 
@@ -55,35 +53,13 @@ object ManageSites {
         return client.newCall(request).execute()
     }
 
-    fun getDocument(url: String): Document =// Закоментированна так специально, на будущее
-//        val response = openLink(url)
-//        val body = response.body()
-//        val string = body.bytes().toString(Charset.forName("UTF-8"))
+    fun getDocument(url: String): Document =
             Jsoup.parse(openLink(url).body()?.bytes()?.toString(Charset.forName("UTF-8")))
 
-    suspend fun asyncOpenLink(url: String): Response {
-        val request = Request.Builder().url(url).build()
-        return client.newCall(request).execute()
-    }
 
-    suspend fun asyncGetDocument(url: String): Document {
-        val response = asyncOpenLink(url)
-        return Jsoup.parse(response.body()?.bytes()?.toString(Charset.forName("UTF-8")))
-    }
-
-
-    fun asyncGetChapters(context: CoroutineContext,
-                         element: SiteCatalogElement,
-                         path: String) =
-            CATALOG_SITES[element.siteId].asyncGetChapters(context, element, path)
-
-
-    fun getOnlineChapters(element: Manga): Observable<Chapter>? {
-        CATALOG_SITES.forEach {
-            if (element.host == it.host)
-                return it.getChapters(element)
-        }
-        return null
+    fun chapters(manga: Manga): List<Chapter>? {
+        val site = CATALOG_SITES.firstOrNull { manga.host == it.host }
+        return site?.chapters(manga)
     }
 
     // Загрузка полной информации для элемента в каталоге
@@ -93,9 +69,9 @@ object ManageSites {
 
 
     // Получение страниц для главы
-    fun getPages(item: DownloadItem) = CATALOG_SITES
+    fun pages(item: DownloadItem) = CATALOG_SITES
             .first { item.link.contains(it.catalogName) }
-            .asyncGetPages(item)
+            .pages(item)
 
     private val url = "http://4pda.ru/forum/index.php?showtopic=772886&st=0#entry53336845"
 
@@ -103,7 +79,7 @@ object ManageSites {
         // функция проверки новой версии приложения на сайте 4pda.ru
         fun checkNewVersion(user: Boolean = false) = launch(CommonPool) {
             try {
-                val doc = asyncGetDocument(url)
+                val doc = getDocument(url)
                 val matcher = Pattern.compile("[0-9]\\.[0-9]\\.[0-9]")
                         .matcher(doc.select("#post-53336845 span > b").text())
                 if (matcher.find()) {

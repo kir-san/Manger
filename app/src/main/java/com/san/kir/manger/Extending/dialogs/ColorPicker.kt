@@ -1,4 +1,4 @@
-package com.san.kir.manger.Extending.Views
+package com.san.kir.manger.Extending.dialogs
 
 import android.content.Context
 import android.graphics.Color

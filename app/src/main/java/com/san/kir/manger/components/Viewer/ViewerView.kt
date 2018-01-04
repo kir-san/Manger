@@ -2,12 +2,12 @@ package com.san.kir.manger.components.Viewer
 
 import android.graphics.Color
 import android.support.v4.content.ContextCompat
-import android.view.View
 import android.widget.ImageView.ScaleType.CENTER_CROP
 import com.san.kir.manger.EventBus.Binder
 import com.san.kir.manger.Extending.AnkoExtend.bind
 import com.san.kir.manger.Extending.AnkoExtend.goneOrVisible
 import com.san.kir.manger.Extending.AnkoExtend.specialViewPager
+import com.san.kir.manger.Extending.AnkoExtend.visibleOrInvisible
 import com.san.kir.manger.R
 import com.san.kir.manger.R.drawable
 import com.san.kir.manger.R.string
@@ -41,7 +41,7 @@ import org.jetbrains.anko.wrapContent
 
 
 class ViewerView(private val act: ViewerActivity) : AnkoComponent<ViewerActivity> {
-    private object _id { // id элементов
+    private object _id {
         val progressBar = ID.generate()
         val bottomBar = ID.generate()
         val chapters = ID.generate()
@@ -49,9 +49,9 @@ class ViewerView(private val act: ViewerActivity) : AnkoComponent<ViewerActivity
         val next = ID.generate()
     }
 
-    var maxChapters = -1 // Количество глав доступных для чтения
-    val progressChapters = Binder(-1) // Текущая глава
-    val max = Binder(0) // Количество страниц в главе
+    var maxChapters = -1
+    val progressChapters = Binder(-1)
+    val max = Binder(0)
 
     override fun createView(ui: AnkoContext<ViewerActivity>) = with(ui) {
 
@@ -64,45 +64,33 @@ class ViewerView(private val act: ViewerActivity) : AnkoComponent<ViewerActivity
 
             horizontalProgressBar {
                 id = _id.progressBar
-
-                // Установка своего прогрессБара
                 progressDrawable = ContextCompat.getDrawable(this@with.ctx,
                                                              drawable.activity_viewer_progressbar)
-                incrementProgressBy(1) // Увеличение прогресса по одному
-
-                bind(this@ViewerView.max) { max = it } // Установка максимального значения
-                bind(act.progress) { progress = it } // Установка текущего значения
-                // Переключение режима видимости
+                incrementProgressBy(1)
+                bind(this@ViewerView.max) { max = it }
+                bind(act.progress) { progress = it }
                 goneOrVisible(act.isBottomBar)
             }.lparams(width = matchParent, height = dip(2)) {
                 alignParentTop()
             }
 
             relativeLayout {
-                // Нижний бар
                 lparams {
                     width = matchParent
-                    // Переключение видимости, путем смены высоты элемента
-                    // сделано так, ибо по другому не работает
                     height = actionBarSize
                     bind(act.isBottomBar) { height = if (it) actionBarSize else 0 }
                     alignParentBottom()
                 }
-
                 id = _id.bottomBar
-
                 backgroundColor = Color.parseColor("#ff212121")
 
                 seekBar {
-                    bind(this@ViewerView.max) { max = it } // Установка максимального значения
-                    bind(act.progress) { progress = it } // Установка текущего значения
+                    bind(this@ViewerView.max) { max = it }
+                    bind(act.progress) { progress = it }
 
                     onSeekBarChangeListener {
-                        // При изменении текущего значения
                         var _progress = 0
-                        // При изменении прогресса присвоить во временную переменную
                         onProgressChanged { _, progress, _ -> _progress = progress }
-                        // Если изменения закончились изменить progress
                         onStopTrackingTouch { act.progress.item = _progress }
                     }
                 }.lparams(width = wrapContent, height = wrapContent) {
@@ -113,29 +101,21 @@ class ViewerView(private val act: ViewerActivity) : AnkoComponent<ViewerActivity
                 }
 
                 textView {
-                    // Отображение прогресса чтения страниц в текстовом виде
                     padding = dip(6)
-
                     textColor = Color.WHITE
-
-                    // Обновление статуса
                     bind(act.progress) { progress ->
                         text = resources
                                 .getString(string.viewer_pages_text, progress, max.item)
                     }
                 }.lparams(width = wrapContent, height = wrapContent) {
-                    rightOf(_id.prev) // От кнопки слева
-                    leftOf(_id.chapters) // до текста справа
+                    rightOf(_id.prev)
+                    leftOf(_id.chapters)
                 }
 
-
                 textView {
-                    // Отображние статуса прочитанных глав в текстовом виде
                     id = _id.chapters
-
                     padding = dip(6)
                     textColor = Color.WHITE
-                    // Обновить статус
                     bind(progressChapters) { progressChapters ->
                         text = resources.getString(string.viewer_chapters_text,
                                                    progressChapters,
@@ -147,20 +127,12 @@ class ViewerView(private val act: ViewerActivity) : AnkoComponent<ViewerActivity
 
 
                 imageButton {
-                    // Кнопка перелючения на предыдущию страницу
                     id = _id.prev
-
                     backgroundColor = Color.parseColor("#00ffffff")
                     scaleType = CENTER_CROP
                     imageResource = R.drawable.ic_previous_white
-
-                    bind(act.isPrev) {
-                        // Переключения видимости
-                        visibility =
-                                if (it) View.VISIBLE
-                                else View.INVISIBLE
-                    }
-                    onClick { act.prevChapter() } // Нажатие на кнопку - переключение
+                    visibleOrInvisible(act.isPrev)
+                    onClick { act.prevChapter() }
                 }.lparams(width = buttonSize, height = buttonSize) {
                     alignParentLeft()
                     centerInParent()
@@ -168,22 +140,13 @@ class ViewerView(private val act: ViewerActivity) : AnkoComponent<ViewerActivity
                     rightMargin = leftMargin
                 }
 
-
                 imageButton {
-                    // Кнопка перелючения на следущую страницу
                     id = _id.next
-
                     backgroundColor = Color.parseColor("#00ffffff")
                     scaleType = CENTER_CROP
                     imageResource = R.drawable.ic_next_white
-
-                    bind(act.isNext) {
-                        // Переключения видимости
-                        visibility =
-                                if (it) View.VISIBLE
-                                else View.INVISIBLE
-                    }
-                    onClick { act.nextChapter() } // Нажатие на кнопку - переключение
+                    visibleOrInvisible(act.isNext)
+                    onClick { act.nextChapter() }
                 }.lparams(width = buttonSize, height = buttonSize) {
                     alignParentRight()
                     centerInParent()
@@ -195,20 +158,18 @@ class ViewerView(private val act: ViewerActivity) : AnkoComponent<ViewerActivity
 
             specialViewPager {
                 id = ID.generate()
-                // Виджет просмотра картинок
                 lparams(width = matchParent, height = matchParent) {
-                    below(_id.progressBar) // Ниже прогрессБара
-                    above(_id.bottomBar) // Выше нижнего бара
+                    below(_id.progressBar)
+                    above(_id.bottomBar)
                 }
 
-                // При изменении страницы, изменить переменную progress
                 onPageChangeListener { onPageSelected { position -> act.progress.item = position } }
-                bind(act.progress) { currentItem = it } // Установка текущей страницы
+                bind(act.progress) { currentItem = it }
                 act.adapter.bind {
                     adapter = it
                     currentItem = act.progress.item
-                } // Установка адаптера
-                act.isSwipeControl.bind { setLocked(!it) } // Переключения блокировки листания
+                }
+                act.isSwipeControl.bind { setLocked(!it) }
             }
 
         }

@@ -6,14 +6,14 @@ import android.widget.Spinner
 import com.san.kir.manger.Extending.AnkoExtend.photoView
 import com.san.kir.manger.Extending.AnkoExtend.typeText
 import com.san.kir.manger.Extending.AnkoExtend.typeTextMultiLine
-import com.san.kir.manger.Extending.Views.ColorPicker
+import com.san.kir.manger.Extending.dialogs.ColorPicker
 import com.san.kir.manger.R.string
 import com.san.kir.manger.components.Main.Main
 import com.san.kir.manger.photoview.PhotoView
 import com.san.kir.manger.photoview.onError
 import com.san.kir.manger.picasso.NetworkPolicy.OFFLINE
 import com.san.kir.manger.picasso.Picasso
-import com.san.kir.manger.room.DAO.toStringList
+import com.san.kir.manger.room.DAO.categoryNames
 import com.san.kir.manger.room.models.Manga
 import org.jetbrains.anko.AnkoComponent
 import org.jetbrains.anko.AnkoContext
@@ -126,10 +126,10 @@ class AddMangaView : AnkoComponent<AddMangaActivity> {
 
         categories.adapter = ArrayAdapter<String>(categories.context,
                                                   android.R.layout.simple_spinner_item,
-                                                  toStringList(categoryDao.loadCategories())).apply {
+                                                  categoryDao.categoryNames()).apply {
             setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
-        categories.setSelection(toStringList(categoryDao.loadCategories()).indexOf(manga.categories))
+        categories.setSelection(categoryDao.categoryNames().indexOf(manga.categories))
 
         genres.setText(manga.genres)
         path.setText(manga.path)

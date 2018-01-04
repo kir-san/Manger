@@ -12,6 +12,11 @@ abstract class CategoryDao: BaseDao<Category> {
 
     @Query("SELECT * FROM `categories` ORDER BY `order`")
     abstract fun loadLiveCategories(): LiveData<List<Category>>
+
+    @Query("SELECT * FROM `categories` WHERE `name` IS :arg0")
+    abstract fun loadLiveCategory(name: String): LiveData<Category>
 }
 
-fun toStringList(categories: List<Category>) = categories.map { it.name }
+fun CategoryDao.categoryNames() = loadCategories().map { it.name }
+
+

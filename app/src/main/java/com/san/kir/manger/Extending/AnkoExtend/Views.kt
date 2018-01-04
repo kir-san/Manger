@@ -41,8 +41,8 @@ fun <T> bind(binder: Binder<T>,
              binding: suspend (T) -> Unit) = binder.bind(context, binding)
 
 
-inline fun ViewManager.squareRelativeLayout(theme: Int = 0, init: _SquareRelativeLayout.() -> Unit)
-        = ankoView(::_SquareRelativeLayout, theme) {
+inline fun ViewManager.squareFrameLayout(theme: Int = 0, init: _SquareFrameLayout.() -> Unit)
+        = ankoView(::_SquareFrameLayout, theme) {
     init()
 }
 

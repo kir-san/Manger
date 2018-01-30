@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer
 import android.support.v7.widget.RecyclerView
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.instance
+import com.san.kir.manger.components.DownloadManager.DownloadService
 import com.san.kir.manger.components.Main.Main
 import com.san.kir.manger.room.DAO.clearHistory
 import com.san.kir.manger.room.DAO.clearHistoryDownload
@@ -11,9 +12,11 @@ import com.san.kir.manger.room.DAO.clearHistoryRead
 import com.san.kir.manger.room.DAO.downloadNewChapters
 import com.san.kir.manger.room.DAO.hasNewChapters
 import com.san.kir.manger.room.DAO.loadPagedLatestChapters
+import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.startService
 
 class LatestChaptersRecyclerPresenter(injector: KodeinInjector): RecyclerPresenter() {
     private val adapter = RecyclerViewAdapterFactory
@@ -32,7 +35,12 @@ class LatestChaptersRecyclerPresenter(injector: KodeinInjector): RecyclerPresent
     suspend fun hasNewChapters() = latest.hasNewChapters().await()
 
     fun downloadNewChapters() = launch {
-        latest.downloadNewChapters().await()
+        latest.downloadNewChapters().await().onEach {chapter ->
+            val item = DownloadItem(name = chapter.manga + " " + chapter.name,
+                                    link = chapter.site,
+                                    path = chapter.path)
+            act.startService<DownloadService>("item" to item)
+        }
         adapter.notifyDataSetChanged()
     }
 

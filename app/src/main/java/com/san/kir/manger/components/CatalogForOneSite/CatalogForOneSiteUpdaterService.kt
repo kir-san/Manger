@@ -21,13 +21,13 @@ import org.jetbrains.anko.notificationManager
 
 class CatalogForOneSiteUpdaterService : IntentService(TAG) {
     companion object {
-        val ACTION_CATALOGUPDATERSERVICE = "kir.san.manger.CatalogForOneSiteUpdaterService.UPDATE"
-        val ACTION_CANCELALL = "kir.san.manger.CatalogForOneSiteUpdaterService.CANCELLALL"
+        const val ACTION_CATALOGUPDATERSERVICE = "kir.san.manger.CatalogForOneSiteUpdaterService.UPDATE"
+        const val ACTION_CANCELALL = "kir.san.manger.CatalogForOneSiteUpdaterService.CANCELLALL"
 
-        val EXTRA_KEY_OUT = "EXTRA_OUT"
+        const val EXTRA_KEY_OUT = "EXTRA_OUT"
 
-        private val channelId = "CatalogUpdaterId"
-        private val TAG = "CatalogForOneSiteUpdaterService"
+        private const val channelId = "CatalogUpdaterId"
+        private const val TAG = "CatalogForOneSiteUpdaterService"
         private var taskCounter = listOf<Int>()
         fun isContain(id: Int) = taskCounter.contains(id)
     }

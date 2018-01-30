@@ -115,6 +115,8 @@
     <!-- Library -->
     <string name="library_sort_dialog_add">По дате добавления</string>
     <string name="library_sort_dialog_abc">В алфавитном порядке</string>
+    <string name="library_sort_dialog_pop">По частоте использования</string>
+    <string name="library_sort_dialog_man">Моя настройка</string>
     <string name="library_popupmenu_about">Свойства</string>
     <string name="library_popupmenu_delete">Удалить</string>
     <string name="library_popupmenu_storage">Используемая память</string>
@@ -138,6 +140,7 @@
     <string name="library_menu_reload_all">Обновить все</string>
     <string name="library_menu_order">Порядок</string>
     <string name="library_menu_order_title">Настройки порядка в библиотеке</string>
+    <string name="library_menu_customize_my_order">Настроить мой порядок</string>
     <string name="library_menu_update">Поиск обновлений приложения</string>
     <string name="library_action_move_to_category">Переместить в категорию</string>
     <string name="library_action_remove">Удалить</string>
@@ -211,5 +214,11 @@
     <string name="title_activity_settings" tools:ignore="UnusedResources">Settings</string>
     <string name="todo">TODO</string>
 
+    <!--CategoryDialog-->
+    <string name="category_dialog_span_text">Количество столбцов: %d</string>
+    <string name="category_dialog_large_cells">Крупные ячейки</string>
+    <string name="category_dialog_small_cells">Мелкие ячейки</string>
+    <string name="category_dialog_positive">Изменить</string>
+    <string name="category_dialog_negative">Я передумал</string>
 
 </resources>

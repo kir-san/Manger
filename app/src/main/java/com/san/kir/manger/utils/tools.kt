@@ -185,11 +185,15 @@ fun delFiles(filesPath: List<String>): ResultDeleting {
 object SortLibraryUtil {
     val add = "add"
     val abc = "abc"
+    val pop = "pop"
+    val man = "man"
 
     fun toType(type: String): SortLibrary {
         return when (type) {
             add -> SortLibrary.AddTime
             abc -> SortLibrary.AbcSort
+            pop -> SortLibrary.Populate
+            man -> SortLibrary.Manual
             else -> SortLibrary.AddTime
         }
     }
@@ -198,6 +202,8 @@ object SortLibraryUtil {
         return when (type) {
             SortLibrary.AddTime -> add
             SortLibrary.AbcSort -> abc
+            SortLibrary.Populate -> pop
+            SortLibrary.Manual -> man
         }
     }
 }

@@ -10,30 +10,35 @@ import android.view.ViewGroup
 import org.jetbrains.anko.AnkoComponent
 import org.jetbrains.anko.AnkoContext
 
+typealias ItemMove<T> = RecyclerViewAdapterFactory.DragableRecyclerViewAdapter<T>.(fromPosition: Int, toPosition: Int) -> Unit
+
 object RecyclerViewAdapterFactory {
     fun <T> createSimple(view: () -> AnkoView<T>) =
-            RecyclerViewAdapter(view)
+        RecyclerViewAdapter(view)
 
-    fun <T> createDragable(view: () -> AnkoView<T>,
-                           itemMove: (DragableRecyclerViewAdapter<T>.(fromPosition: Int, toPosition: Int) -> Unit)?) =
-            DragableRecyclerViewAdapter(view, itemMove)
+    fun <T> createDragable(
+        view: () -> AnkoView<T>,
+        itemMove: ItemMove<T>?
+    ) = DragableRecyclerViewAdapter(view, itemMove)
 
-    fun <T> createPaging(view: () -> AnkoView<T>,
-                         areItemsTheSame: (oldItem: T, newItem: T) -> Boolean,
-                         areContentsTheSame: (oldItem: T, newItem: T) -> Boolean) =
-            RecyclerPagingAdapter(view, object : DiffCallback<T>() {
-                override fun areItemsTheSame(oldItem: T, newItem: T): Boolean {
-                    return areItemsTheSame(oldItem, newItem)
-                }
+    fun <T> createPaging(
+        view: () -> AnkoView<T>,
+        areItemsTheSame: (oldItem: T, newItem: T) -> Boolean,
+        areContentsTheSame: (oldItem: T, newItem: T) -> Boolean
+    ) = RecyclerPagingAdapter(view, object : DiffCallback<T>() {
+        override fun areItemsTheSame(oldItem: T, newItem: T): Boolean {
+            return areItemsTheSame(oldItem, newItem)
+        }
 
-                override fun areContentsTheSame(oldItem: T, newItem: T): Boolean {
-                    return areContentsTheSame(oldItem, newItem)
-                }
-            })
+        override fun areContentsTheSame(oldItem: T, newItem: T): Boolean {
+            return areContentsTheSame(oldItem, newItem)
+        }
+    })
 
-    open class DragableRecyclerViewAdapter<T>(private val view: () -> AnkoView<T>,
-                                              private val itemMove: (DragableRecyclerViewAdapter<T>.(fromPosition: Int, toPosition: Int) -> Unit)?)
-        : RecyclerView.Adapter<ViewHolder<T>>(), ItemTouchHelperAdapter {
+    open class DragableRecyclerViewAdapter<T>(
+        private val view: () -> AnkoView<T>,
+        private val itemMove: ItemMove<T>?
+    ) : RecyclerView.Adapter<ViewHolder<T>>(), ItemTouchHelperAdapter {
         var selectedItems = BooleanArray(0)
             private set
         var items: List<T> = listOf()
@@ -59,8 +64,8 @@ object RecyclerViewAdapterFactory {
         }
     }
 
-    class RecyclerViewAdapter<T>(view: () -> AnkoView<T>)
-        : DragableRecyclerViewAdapter<T>(view, null) {
+    class RecyclerViewAdapter<T>(view: () -> AnkoView<T>) :
+        DragableRecyclerViewAdapter<T>(view, null) {
         init {
 //            setHasStableIds(true)
         }
@@ -70,9 +75,10 @@ object RecyclerViewAdapterFactory {
     }
 
     // Адаптер для использования с paging library
-    class RecyclerPagingAdapter<T>(val view: () -> AnkoView<T>,
-                                   diffCallback: DiffCallback<T>)
-        : PagedListAdapter<T, ViewHolder<T>>(diffCallback) {
+    class RecyclerPagingAdapter<T>(
+        val view: () -> AnkoView<T>,
+        diffCallback: DiffCallback<T>
+    ) : PagedListAdapter<T, ViewHolder<T>>(diffCallback) {
         init {
             setHasStableIds(true)
         }
@@ -91,9 +97,9 @@ object RecyclerViewAdapterFactory {
         override fun getItemViewType(position: Int) = position
     }
 
-    class ViewHolder<in T>(val view: AnkoView<T>, parent: ViewGroup)
-        : RecyclerView.ViewHolder(view.createView(parent)),
-          ItemTouchHelperViewHolder {
+    class ViewHolder<in T>(val view: AnkoView<T>, parent: ViewGroup) :
+        RecyclerView.ViewHolder(view.createView(parent)),
+        ItemTouchHelperViewHolder {
         fun bind(item: T?, isSelected: Boolean) {
             item?.let { view.bind(it, isSelected, adapterPosition) }
         }

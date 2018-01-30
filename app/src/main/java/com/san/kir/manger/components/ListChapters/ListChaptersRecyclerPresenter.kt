@@ -97,10 +97,12 @@ class ListChaptersRecyclerPresenter(val injector: KodeinInjector) : RecyclerPres
     fun downloadNextNotReadChapter() = async(UI) {
         val job = async {
             val chapter = dao.loadChaptersNotReadAsc(manga.unic)
-                    .first { it.action == CHAPTER_STATUS.DOWNLOADABLE }
-            val item = DownloadItem(name = chapter.manga + " " + chapter.name,
-                                    link = chapter.site,
-                                    path = chapter.path)
+                .first { it.action == CHAPTER_STATUS.DOWNLOADABLE }
+            val item = DownloadItem(
+                name = chapter.manga + " " + chapter.name,
+                link = chapter.site,
+                path = chapter.path
+            )
             act.startService<DownloadService>("item" to item)
         }
 
@@ -112,14 +114,16 @@ class ListChaptersRecyclerPresenter(val injector: KodeinInjector) : RecyclerPres
     fun downloadAllNotReadChapters() = async(UI) {
         val job = async {
             dao.loadChaptersNotReadAsc(manga.unic)
-                    .filter { it.action == CHAPTER_STATUS.DOWNLOADABLE }
-                    .onEach { chapter ->
-                        val item = DownloadItem(name = chapter.manga + " " + chapter.name,
-                                                link = chapter.site,
-                                                path = chapter.path)
-                        act.startService<DownloadService>("item" to item)
-                    }
-                    .size
+                .filter { it.action == CHAPTER_STATUS.DOWNLOADABLE }
+                .onEach { chapter ->
+                    val item = DownloadItem(
+                        name = chapter.manga + " " + chapter.name,
+                        link = chapter.site,
+                        path = chapter.path
+                    )
+                    act.startService<DownloadService>("item" to item)
+                }
+                .size
         }
 
         val count = job.await()
@@ -135,14 +139,16 @@ class ListChaptersRecyclerPresenter(val injector: KodeinInjector) : RecyclerPres
     fun downloadAllChapters() = async(UI) {
         val job = async {
             dao.loadChaptersAllAsc(manga.unic)
-                    .filter { it.action == CHAPTER_STATUS.DOWNLOADABLE }
-                    .onEach { chapter ->
-                        val item = DownloadItem(name = chapter.manga + " " + chapter.name,
-                                                link = chapter.site,
-                                                path = chapter.path)
-                        act.startService<DownloadService>("item" to item)
-                    }
-                    .size
+                .filter { it.action == CHAPTER_STATUS.DOWNLOADABLE }
+                .onEach { chapter ->
+                    val item = DownloadItem(
+                        name = chapter.manga + " " + chapter.name,
+                        link = chapter.site,
+                        path = chapter.path
+                    )
+                    act.startService<DownloadService>("item" to item)
+                }
+                .size
         }
 
         val count = job.await()
@@ -171,14 +177,14 @@ class ListChaptersRecyclerPresenter(val injector: KodeinInjector) : RecyclerPres
         }
     }
 
-    fun selectAll() = async(UI) {
+    fun selectAll() =
         repeat(adapter.itemCount) { i ->
             adapter.selectedItems[i] = true
             adapter.notifyItemChanged(i)
         }
-    }
 
-    fun selectPrev() = async(UI) {
+
+    fun selectPrev() {
         // Выделить предидущие элементы
         val selectedSize = adapter.selectedItems.filter { it }.size
         if (selectedSize == 1) { // Работает только для одного выделенного элемента
@@ -195,7 +201,7 @@ class ListChaptersRecyclerPresenter(val injector: KodeinInjector) : RecyclerPres
         }
     }
 
-    fun selectNext() = async(UI) {
+    fun selectNext() {
         val selectedSize = adapter.selectedItems.filter { it }.size
         if (selectedSize == 1) { // Работает только для одного выделенного элемента
             adapter.selectedItems.forEachIndexed { index, b ->

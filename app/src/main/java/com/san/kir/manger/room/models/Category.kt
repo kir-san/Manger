@@ -1,5 +1,6 @@
 package com.san.kir.manger.room.models
 
+import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
 
@@ -11,6 +12,13 @@ class Category {
     var isVisible = true
     var typeSort = ""
     var isReverseSort = false
+    var spanPortrait = 2
+    var spanLandscape = 3
+
+    @ColumnInfo(name = "isListPortrait")
+    var isLargePortrait = true
+    @ColumnInfo(name = "isListLandscape")
+    var isLargeLandscape = true
 
     constructor()
     constructor(name: String, order: Int) {

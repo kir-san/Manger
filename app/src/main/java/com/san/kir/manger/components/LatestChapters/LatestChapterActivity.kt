@@ -61,8 +61,10 @@ class LatestChapterActivity : DrawerActivity() {
             horizontalProgressBar {
                 isIndeterminate = true
                 visibleOrGone(isAction)
-                progressDrawable = ContextCompat.getDrawable(this@LatestChapterActivity,
-                                                             R.drawable.storage_progressbar)
+                progressDrawable = ContextCompat.getDrawable(
+                    this@LatestChapterActivity,
+                    R.drawable.storage_progressbar
+                )
             }.lparams(width = matchParent, height = dip(10))
             recyclerView {
                 lparams(width = matchParent, height = matchParent)
@@ -83,15 +85,15 @@ class LatestChapterActivity : DrawerActivity() {
         bindService(intent, connection, Context.BIND_AUTO_CREATE)
 
         Main.db.latestChapterDao
-                .loadPagedLatestChapters()
-                .observe(this, Observer {
-                    it?.let {
-                        if (it.size > 0)
-                            title = getString(R.string.main_menu_latest_count, it.size)
-                        else
-                            setTitle(R.string.main_menu_latest)
-                    }
-                })
+            .loadPagedLatestChapters()
+            .observe(this, Observer {
+                it?.let {
+                    if (it.size > 0)
+                        title = getString(R.string.main_menu_latest_count, it.size)
+                    else
+                        setTitle(R.string.main_menu_latest)
+                }
+            })
     }
 
     @SuppressLint("MissingSuperCall")

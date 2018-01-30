@@ -18,7 +18,6 @@ class LibraryPageAdapter(private val injector: KodeinInjector) : PagerAdapter() 
     init {
         if (categories.isNotEmpty())
             categories.forEach { cat ->
-                // то каждой категории, которая видима создаем страницу в адаптере страниц
                 if (cat.isVisible) {
                     val view = LibraryPageView(cat, injector) // создаем страницу
                     // адаптер храним отдельно

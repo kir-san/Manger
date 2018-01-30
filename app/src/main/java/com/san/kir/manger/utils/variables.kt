@@ -36,5 +36,7 @@ val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale("en"))
 
 enum class SortLibrary {
     AddTime,
-    AbcSort
+    AbcSort,
+    Populate,
+    Manual
 }

@@ -34,7 +34,6 @@ fun LatestChapterDao.clearHistory() = async {
 fun LatestChapterDao.downloadNewChapters() = async {
     load().filter { !it.isRead.await() }
             .filter { it.action == CHAPTER_STATUS.DOWNLOADABLE }
-//            .onEach { ChaptersDownloader.addTask(it) }
 }
 
 fun LatestChapterDao.hasNewChapters() = async {

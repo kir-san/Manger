@@ -41,7 +41,7 @@ import com.san.kir.manger.utils.DIR
 abstract class RoomDB : RoomDatabase() {
     companion object {
         val NAME = "${DIR.PROFILE}/profile.db"
-        const val VERSION = 22
+        const val VERSION = 24
     }
 
     abstract val siteDao: SiteDao
@@ -121,6 +121,18 @@ abstract class RoomDB : RoomDatabase() {
                 migrate(21, 22) {
                     it.execSQL("DROP TABLE IF EXISTS `downloads`")
                     it.execSQL("CREATE TABLE IF NOT EXISTS `downloads` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `link` TEXT NOT NULL, `path` TEXT NOT NULL, `totalPages` INTEGER NOT NULL, `downloadPages` INTEGER NOT NULL, `totalSize` INTEGER NOT NULL, `downloadSize` INTEGER NOT NULL, `totalTime` INTEGER NOT NULL, `status` INTEGER NOT NULL, `order` INTEGER NOT NULL)")
+                },
+                migrate(22, 23) {
+                    it.execSQL("ALTER TABLE categories RENAME TO tmp_categories")
+                    it.execSQL("CREATE TABLE `categories` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `order` INTEGER NOT NULL, `isVisible` INTEGER NOT NULL, `typeSort` TEXT NOT NULL, `isReverseSort` INTEGER NOT NULL, `spanPortrait` INTEGER NOT NULL DEFAULT 2, 'spanLandscape' INTEGER NOT NULL DEFAULT 3, `isListPortrait` INTEGER NOT NULL DEFAULT 1, `isListLandscape` INTEGER NOT NULL DEFAULT 1)")
+                    it.execSQL("INSERT INTO `categories`(`id`,`name`,`order`,`isVisible`,`typeSort`,`isReverseSort`) SELECT `id`,`name`,`order`,`isVisible`,`typeSort`,`isReverseSort` FROM tmp_categories")
+                    it.execSQL("DROP TABLE tmp_categories")
+                },
+                migrate(23, 24) {
+                    it.execSQL("ALTER TABLE manga RENAME TO tmp_manga")
+                    it.execSQL("CREATE TABLE `manga` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `unic` TEXT NOT NULL, `host` TEXT NOT NULL, `name` TEXT NOT NULL, `authors` TEXT NOT NULL, `logo` TEXT NOT NULL, `about` TEXT NOT NULL, `categories` TEXT NOT NULL, `genres` TEXT NOT NULL, `path` TEXT NOT NULL, `status` TEXT NOT NULL, `site` TEXT NOT NULL, `color` INTEGER NOT NULL, `populate` INTEGER NOT NULL DEFAULT 0, `order` INTEGER NOT NULL DEFAULT 0)")
+                    it.execSQL("INSERT INTO manga(id, unic, host, name, authors, logo, about, categories, genres, path, status, site, color) SELECT id, unic, host, name, authors, logo, about, categories, genres, path, status, site, color FROM tmp_manga")
+                    it.execSQL("DROP TABLE tmp_manga")
                 }
         )
     }

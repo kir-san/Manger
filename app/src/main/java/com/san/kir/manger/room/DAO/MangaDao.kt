@@ -25,7 +25,6 @@ interface MangaDao : BaseDao<Manga> {
     @Query("SELECT * FROM manga WHERE categories IS :arg0")
     fun loadMangaWhereCategoryNotAll(category: String): List<Manga>
 
-
     @Query("SELECT * FROM manga ORDER BY id ASC")
     fun loadMangaAddTimeAsc(): LiveData<List<Manga>>
 
@@ -38,6 +37,15 @@ interface MangaDao : BaseDao<Manga> {
     @Query("SELECT * FROM manga ORDER BY name DESC")
     fun loadMangaAbcSortDesc(): LiveData<List<Manga>>
 
+    @Query("SELECT * FROM manga ORDER BY populate DESC")
+    fun loadMangaPopulateAsc(): LiveData<List<Manga>>
+
+    @Query("SELECT * FROM manga ORDER BY populate ASC")
+    fun loadMangaPopulateDesc(): LiveData<List<Manga>>
+
+    @Query("SELECT * FROM manga ORDER BY `order` ASC")
+    fun loadMangaManualAsc(): LiveData<List<Manga>>
+
     @Query("SELECT * FROM manga WHERE categories IS :arg0 ORDER BY id ASC")
     fun loadMangaWithCategoryAddTimeAsc(category: String): LiveData<List<Manga>>
 
@@ -47,9 +55,17 @@ interface MangaDao : BaseDao<Manga> {
     @Query("SELECT * FROM manga WHERE categories IS :arg0 ORDER BY name ASC")
     fun loadMangaWithCategoryAbcSortAsc(category: String): LiveData<List<Manga>>
 
-    @Query("SELECT * FROM manga WHERE categories IS :arg0 ORDER BY name DESC")
+    @Query("SELECT * FROM manga WHERE categories IS :arg0 ORDER BY populate DESC")
     fun loadMangaWithCategoryAbcSortDesc(category: String): LiveData<List<Manga>>
 
+    @Query("SELECT * FROM manga WHERE categories IS :arg0 ORDER BY populate DESC")
+    fun loadMangaWithCategoryPopulateAsc(category: String): LiveData<List<Manga>>
+
+    @Query("SELECT * FROM manga WHERE categories IS :arg0 ORDER BY name ASC")
+    fun loadMangaWithCategoryPopulateDesc(category: String): LiveData<List<Manga>>
+
+    @Query("SELECT * FROM manga WHERE categories IS :arg0 ORDER BY `order` ASC")
+    fun loadMangaWithCategoryManualAsc(category: String): LiveData<List<Manga>>
 }
 
 fun MangaDao.getFromPath(shortPath: String) =
@@ -74,6 +90,9 @@ fun MangaDao.loadMangas(cat: Category, filter: MangaFilter): LiveData<List<Manga
             MangaFilter.ABC_SORT_ASC -> loadMangaAddTimeDesc()
             MangaFilter.ADD_TIME_DESC -> loadMangaAbcSortAsc()
             MangaFilter.ABC_SORT_DESC -> loadMangaAbcSortDesc()
+            MangaFilter.POPULATE_ASC -> loadMangaPopulateAsc()
+            MangaFilter.POPULATE_DESC -> loadMangaPopulateDesc()
+            MangaFilter.MANUAL -> loadMangaManualAsc()
         }
     } else {
         when (filter) {
@@ -81,6 +100,9 @@ fun MangaDao.loadMangas(cat: Category, filter: MangaFilter): LiveData<List<Manga
             MangaFilter.ABC_SORT_ASC -> loadMangaWithCategoryAbcSortAsc(cat.name)
             MangaFilter.ADD_TIME_DESC -> loadMangaWithCategoryAddTimeDesc(cat.name)
             MangaFilter.ABC_SORT_DESC -> loadMangaWithCategoryAbcSortDesc(cat.name)
+            MangaFilter.POPULATE_ASC -> loadMangaWithCategoryPopulateAsc(cat.name)
+            MangaFilter.POPULATE_DESC -> loadMangaWithCategoryPopulateDesc(cat.name)
+            MangaFilter.MANUAL -> loadMangaWithCategoryManualAsc(cat.name)
         }
     }
 }
@@ -102,12 +124,15 @@ fun Category.toFilter(): MangaFilter {
         type == SortLibrary.AddTime && isReverseSort -> MangaFilter.ADD_TIME_DESC
         type == SortLibrary.AbcSort && !isReverseSort -> MangaFilter.ABC_SORT_ASC
         type == SortLibrary.AbcSort && isReverseSort -> MangaFilter.ABC_SORT_DESC
+        type == SortLibrary.Populate && !isReverseSort -> MangaFilter.POPULATE_ASC
+        type == SortLibrary.Populate && isReverseSort -> MangaFilter.POPULATE_DESC
+        type == SortLibrary.Manual -> MangaFilter.MANUAL
         else -> MangaFilter.ADD_TIME_ASC
     }
 }
 
 fun Category.updateFilter(filter: MangaFilter): Category {
-    when(filter) {
+    when (filter) {
         MangaFilter.ADD_TIME_ASC -> {
             typeSort = SortLibraryUtil.toString(SortLibrary.AddTime)
             isReverseSort = false
@@ -124,23 +149,19 @@ fun Category.updateFilter(filter: MangaFilter): Category {
             typeSort = SortLibraryUtil.toString(SortLibrary.AbcSort)
             isReverseSort = true
         }
+        MangaFilter.POPULATE_ASC -> TODO()
+        MangaFilter.POPULATE_DESC -> TODO()
+        MangaFilter.MANUAL -> TODO()
     }
     return this
 }
 
 enum class MangaFilter {
-    ADD_TIME_ASC {
-        override fun inverse() = ADD_TIME_DESC
-    },
-    ABC_SORT_ASC {
-        override fun inverse() = ABC_SORT_DESC
-    },
-    ADD_TIME_DESC {
-        override fun inverse() = ADD_TIME_ASC
-    },
-    ABC_SORT_DESC {
-        override fun inverse() = ABC_SORT_ASC
-    };
-
-    abstract fun inverse(): MangaFilter
+    ADD_TIME_ASC,
+    ABC_SORT_ASC,
+    ADD_TIME_DESC,
+    ABC_SORT_DESC,
+    POPULATE_ASC,
+    POPULATE_DESC,
+    MANUAL
 }

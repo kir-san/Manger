@@ -27,6 +27,7 @@ import com.san.kir.manger.components.Parsing.ManageSites
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.utils.ActionModeControl
 import com.san.kir.manger.utils.MangaUpdaterService
+import com.san.kir.manger.utils.SortLibraryUtil
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.delay
@@ -34,6 +35,7 @@ import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.include
+import org.jetbrains.anko.longToast
 import org.jetbrains.anko.padding
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.startService
@@ -50,6 +52,8 @@ class LibraryActivity : DrawerActivity(), ActionMode.Callback {
     private lateinit var currentAdapter: LibraryItemsRecyclerPresenter
     private lateinit var viewPager: ViewPager
     private val pagerAdapter by lazy { LibraryPageAdapter(injector) }
+
+    var isCustomizeMyOrder = false
 
     var actionMode = ActionModeControl(this)
 
@@ -72,10 +76,16 @@ class LibraryActivity : DrawerActivity(), ActionMode.Callback {
 
     override fun onResume() {
         super.onResume()
+        currentAdapter = pagerAdapter.adapters[0]
         launch(UI) {
             delay(500)
-            currentAdapter = pagerAdapter.adapters[0]
-            title = getString(R.string.main_menu_library_count, currentAdapter.itemCount)
+            try {
+                currentAdapter = pagerAdapter.adapters[0]
+                invalidateOptionsMenu()
+                title = getString(R.string.main_menu_library_count, currentAdapter.itemCount)
+            } catch (ex: IndexOutOfBoundsException) {
+                longToast("Все категории скрыты?")
+            }
         }
 
         viewPager.onPageChangeListener {
@@ -83,16 +93,20 @@ class LibraryActivity : DrawerActivity(), ActionMode.Callback {
 
             onPageSelected {
                 currentAdapter = pagerAdapter.adapters[it]
-                title = getString(R.string.main_menu_library_count,
-                                  currentAdapter.itemCount)
+                invalidateOptionsMenu()
+                title = getString(
+                    R.string.main_menu_library_count,
+                    currentAdapter.itemCount
+                )
 
-                if (actionMode.hasFinish()) {
-                    index = it
-                } else
+                if (!actionMode.hasFinish() || isCustomizeMyOrder) {
                     if (it != index) {
                         toast("Не надо лезть к другим")
                         viewPager.currentItem = index
                     }
+                } else {
+                    index = it
+                }
             }
         }
     }
@@ -103,17 +117,28 @@ class LibraryActivity : DrawerActivity(), ActionMode.Callback {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // обновить мангу с текущей страницы
         menu.add(0, 0, 0, R.string.library_menu_reload)
-                .showAlways().setIcon(R.drawable.ic_update)
-        // обновить всю имеющуюся мангу
+            .showAlways().setIcon(R.drawable.ic_update)
         menu.add(1, 1, 1, R.string.library_menu_reload_all)
-        // меню порядка пунктов в библиотеке
         menu.add(2, 2, 2, R.string.library_menu_order)
-        // поиск обновлений приложения
-        menu.add(3, 3, 3, R.string.library_menu_update)
+        menu.add(2, 4, 3, R.string.library_menu_customize_my_order)
+        menu.add(3, 3, 4, R.string.library_menu_update)
+        menu.add(0, 5, 5, "Завершить")
+            .showAlways().setIcon(R.drawable.ic_action_close)
 
         return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        menu.findItem(0).isVisible = !isCustomizeMyOrder
+        menu.findItem(1).isVisible = !isCustomizeMyOrder
+        menu.findItem(2).isVisible = !isCustomizeMyOrder
+        menu.findItem(3).isVisible = !isCustomizeMyOrder
+        menu.findItem(4).isVisible =
+                if (isCustomizeMyOrder) false
+                else currentAdapter.cat.typeSort == SortLibraryUtil.man
+        menu.findItem(5).isVisible = isCustomizeMyOrder
+        return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -122,34 +147,40 @@ class LibraryActivity : DrawerActivity(), ActionMode.Callback {
             1 -> updateAll()
             2 -> SortCategoryDialog(this, currentAdapter.cat)
             3 -> updateApp.checkNewVersion(true)
+            4 -> {
+                isCustomizeMyOrder = true
+                invalidateOptionsMenu()
+                currentAdapter.customizeOn()
+            }
+            5 -> {
+                currentAdapter.customizeOff()
+                isCustomizeMyOrder = false
+                invalidateOptionsMenu()
+            }
         }
         return super.onOptionsItemSelected(item)
     }
 
     private object _id {
-        val moveToCategory = 1
-        val delete = 2
-        val selectAll = 3
+        const val moveToCategory = 1
+        const val delete = 2
+        const val selectAll = 3
     }
 
     override fun onCreateActionMode(mode: ActionMode, menu: Menu?): Boolean {
-//        index = mView.viewPager.currentItem
         supportActionBar?.hide()
         mode.menu.apply {
-            // Выделить всю мангу
             add(1, _id.selectAll, 0, R.string.action_select_all)
-                    .showAlways()
-                    .setIcon(R.drawable.ic_action_all_white)
+                .showAlways()
+                .setIcon(R.drawable.ic_action_all_white)
 
-            // Перенести в указанную категорию
             add(1, _id.moveToCategory, 0, R.string.library_action_move_to_category)
-                    .showIfRoom()
-                    .setIcon(R.drawable.ic_arrow_forward_white)
+                .showIfRoom()
+                .setIcon(R.drawable.ic_arrow_forward_white)
 
-            // Удалить вабранную мангу
             add(1, _id.delete, 0, R.string.library_action_remove)
-                    .showIfRoom()
-                    .setIcon(R.drawable.ic_action_delete_white)
+                .showIfRoom()
+                .setIcon(R.drawable.ic_action_delete_white)
         }
         return true
     }
@@ -201,9 +232,12 @@ class LibraryActivity : DrawerActivity(), ActionMode.Callback {
     }
 
     override fun onDestroyActionMode(mode: ActionMode?) {
-        currentAdapter.removeSelection()
         actionMode.clear()
-        supportActionBar?.show()
+        async(UI) {
+            currentAdapter.removeSelection()
+            delay(800)
+            supportActionBar?.show()
+        }
     }
 
     fun onListItemSelect(position: Int) = launch(UI) {
@@ -234,10 +268,10 @@ class LibraryActivity : DrawerActivity(), ActionMode.Callback {
 
     private fun actionTitle(): String {
         return resources
-                .getQuantityString(
-                        R.plurals.list_chapters_action_selected,
-                        currentAdapter.selectedCount,
-                        currentAdapter.selectedCount
-                )
+            .getQuantityString(
+                R.plurals.list_chapters_action_selected,
+                currentAdapter.selectedCount,
+                currentAdapter.selectedCount
+            )
     }
 }

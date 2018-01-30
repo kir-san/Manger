@@ -21,6 +21,8 @@ class Manga : Parcelable {
     var status = ""
     var site = ""
     var color = 0
+    var populate = 0
+    var order = 0
 
     constructor()
     constructor(id: Long = 0,
@@ -36,6 +38,8 @@ class Manga : Parcelable {
                 status: String = "",
                 site: String = "",
                 color: Int = 0,
+                populate: Int = 0,
+                order: Int = 0,
                 authorsList: List<String> = listOf(),
                 categoriesList: List<String> = listOf(),
                 genresList: List<String> = listOf()) : this() {
@@ -52,6 +56,8 @@ class Manga : Parcelable {
         this.status = status
         this.site = site
         this.color = color
+        this.populate = populate
+        this.order = order
 
         if (!authorsList.isEmpty())
             this.authorsList = authorsList
@@ -76,7 +82,10 @@ class Manga : Parcelable {
             parcel.readString(),
             parcel.readString(),
             parcel.readString(),
-            parcel.readInt())
+            parcel.readInt(),
+            parcel.readInt(),
+            parcel.readInt()
+    )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeLong(id)
@@ -92,6 +101,8 @@ class Manga : Parcelable {
         parcel.writeString(status)
         parcel.writeString(site)
         parcel.writeInt(color)
+        parcel.writeInt(populate)
+        parcel.writeInt(order)
     }
 
     override fun describeContents(): Int {

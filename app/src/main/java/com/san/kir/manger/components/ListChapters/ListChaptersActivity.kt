@@ -25,6 +25,7 @@ import com.san.kir.manger.components.DownloadManager.DownloadManager
 import com.san.kir.manger.components.DownloadManager.DownloadService
 import com.san.kir.manger.components.Main.Main
 import com.san.kir.manger.room.DAO.ChapterFilter
+import com.san.kir.manger.room.DAO.update
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.utils.ActionModeControl
 import com.san.kir.manger.utils.MangaUpdaterService
@@ -65,25 +66,31 @@ class ListChaptersActivity : BaseActivity(), ActionMode.Callback {
     }
     lateinit var downloadManager: DownloadManager
     private val receiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent) {
-            if (intent.action == MangaUpdaterService.action) {
-                val manga = intent.getParcelableExtra<Manga>(MangaUpdaterService.ITEM)
-                val isFoundNew = intent.getBooleanExtra(MangaUpdaterService.IS_FOUND_NEW, false)
-                val countNew = intent.getIntExtra(MangaUpdaterService.COUNT_NEW, 0)
+        override fun onReceive(context: Context?, intent: Intent?) {
+            intent?.let {
+                if (intent.action == MangaUpdaterService.actionGet) {
+                    val manga = intent.getStringExtra(MangaUpdaterService.ITEM_NAME)
+                    val isFoundNew = intent.getBooleanExtra(MangaUpdaterService.IS_FOUND_NEW, false)
+                    val countNew = intent.getIntExtra(MangaUpdaterService.COUNT_NEW, 0)
 
-                if (manga.unic == this@ListChaptersActivity.manga.unic) { // Если совпадает манга
-                    if (countNew == -1) // Если произошла ошибка ошибках
-                        longToast(R.string.list_chapters_message_error)
-                    else
-                        if (!isFoundNew) // Если ничего не нашлось
-                            longToast(R.string.list_chapters_message_no_found)
-                        else { // Если нашлость, вывести сообщение с количеством
-                            longToast(getString(R.string.list_chapters_message_count_new,
-                                                countNew))
-                            // Обновить список
-                        }
+                    if (manga == this@ListChaptersActivity.manga.unic) { // Если совпадает манга
+                        if (countNew == -1) // Если произошла ошибка ошибках
+                            longToast(R.string.list_chapters_message_error)
+                        else
+                            if (!isFoundNew) // Если ничего не нашлось
+                                longToast(R.string.list_chapters_message_no_found)
+                            else { // Если нашлость, вывести сообщение с количеством
+                                longToast(
+                                    getString(
+                                        R.string.list_chapters_message_count_new,
+                                        countNew
+                                    )
+                                )
+                                // Обновить список
+                            }
 
-                    view.isAction.item = false // Скрыть прогрессБар
+                        view.isAction.item = false // Скрыть прогрессБар
+                    }
                 }
             }
         }
@@ -100,10 +107,13 @@ class ListChaptersActivity : BaseActivity(), ActionMode.Callback {
         super.onCreate(savedInstanceState)
         view.setContentView(this)
 
-        val intentFilter = IntentFilter().apply { addAction(MangaUpdaterService.action) }
+        val intentFilter = IntentFilter().apply { addAction(MangaUpdaterService.actionGet) }
         registerReceiver(receiver, intentFilter)
 
         manga = mangas.loadManga(intent.getStringExtra("manga_unic"))
+        manga.populate += 1
+        mangas.update(manga)
+
         title = manga.name
 
         val intent = Intent(this, DownloadService::class.java)
@@ -133,54 +143,54 @@ class ListChaptersActivity : BaseActivity(), ActionMode.Callback {
 
     // id пунктов меню для экшнМода
     private object id {
-        val selectAll = 1
-        val delete = 2
-        val download = 3
-        val setRead = 4
-        val setNotRead = 5
-        val selectPrev = 6
-        val selectNext = 7
-        val fullDelete = 8
+        const val selectAll = 1
+        const val delete = 2
+        const val download = 3
+        const val setRead = 4
+        const val setNotRead = 5
+        const val selectPrev = 6
+        const val selectNext = 7
+        const val fullDelete = 8
     }
 
     override fun onCreateActionMode(mode: ActionMode, menu: Menu?): Boolean {
         // Выделить все
         mode.menu.add(groupId, id.selectAll, id.selectAll, R.string.action_select_all)
-                .setIcon(R.drawable.ic_action_all_white)
-                .showAlways()
+            .setIcon(R.drawable.ic_action_all_white)
+            .showAlways()
 //                .isChecked = false
 
         // Удалить выделенное
         mode.menu.add(groupId, id.delete, 100, R.string.action_delete)
-                .setIcon(R.drawable.ic_action_delete_white)
-                .showIfRoom()
+            .setIcon(R.drawable.ic_action_delete_white)
+            .showIfRoom()
 
         // Скачать выделенное
         mode.menu.add(groupId, id.download, 100, R.string.action_set_download)
-                .setIcon(R.drawable.ic_action_download_white)
-                .showIfRoom()
+            .setIcon(R.drawable.ic_action_download_white)
+            .showIfRoom()
 
         // Сделать прочитанными
         mode.menu.add(groupId, id.setRead, 100, R.string.action_set_read)
-                .showNever()
+            .showNever()
 
         // Сделать не прочитанными
         mode.menu.add(groupId, id.setNotRead, 100, R.string.action_set_not_read)
-                .showNever()
+            .showNever()
 
         // Выделить предыдущие
         mode.menu.add(groupId, id.selectPrev, 101, R.string.action_select_prev)
-                .showNever()
-                .isEnabled = false
+            .showNever()
+            .isEnabled = false
 
         // Выделить предыдущие
         mode.menu.add(groupId, id.selectNext, 102, R.string.action_select_next)
-                .showNever()
-                .isEnabled = false
+            .showNever()
+            .isEnabled = false
 
         // Полностью удалить главы
         mode.menu.add(groupId, id.fullDelete, 102, R.string.action_full_delete)
-                .showNever()
+            .showNever()
 
         return true
     }
@@ -251,8 +261,8 @@ class ListChaptersActivity : BaseActivity(), ActionMode.Callback {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menu!!.add(0, 0, 0, R.string.list_chapters_option_update) // Поиск новых глав
-                .showAlways()
-                .setIcon(R.drawable.ic_action_update_white)
+            .showAlways()
+            .setIcon(R.drawable.ic_action_update_white)
 
         // Быстрая загрузка глав
         menu.add(0, 1, 1, "Скачать следующую")
@@ -282,9 +292,9 @@ class ListChaptersActivity : BaseActivity(), ActionMode.Callback {
         super.onPause()
         // Сохранение настроек
         getSharedPreferences(sPrefListChapters, MODE_PRIVATE)
-                .edit()
-                .putString(filterStatus, view.filterState)
-                .apply()
+            .edit()
+            .putString(filterStatus, view.filterState)
+            .apply()
     }
 
     override fun onDestroy() {
@@ -312,10 +322,10 @@ class ListChaptersActivity : BaseActivity(), ActionMode.Callback {
 
     private fun actionTitle(): String {
         return resources
-                .getQuantityString(
-                        R.plurals.list_chapters_action_selected,
-                        adapter.selectedCount,
-                        adapter.selectedCount
-                )
+            .getQuantityString(
+                R.plurals.list_chapters_action_selected,
+                adapter.selectedCount,
+                adapter.selectedCount
+            )
     }
 }

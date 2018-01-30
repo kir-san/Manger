@@ -56,7 +56,7 @@ class ColorPicker(context: Context, oldColor: Int? = null, onOk: (Int) -> Unit) 
                     }.lparams(matchParent) { margin = dip(10) }
                     seekBar {
                         max = MAX
-                        progress = red
+                        progress = green
                         onSeekBarChangeListener {
                             onProgressChanged { _, progress, _ ->
                                 green = progress
@@ -66,7 +66,7 @@ class ColorPicker(context: Context, oldColor: Int? = null, onOk: (Int) -> Unit) 
                     }.lparams(matchParent) { margin = dip(10) }
                     seekBar {
                         max = MAX
-                        progress = red
+                        progress = blue
                         onSeekBarChangeListener {
                             onProgressChanged { _, progress, _ ->
                                 blue = progress

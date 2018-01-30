@@ -13,15 +13,12 @@ import com.san.kir.manger.room.DAO.MangaFilter
 import com.san.kir.manger.room.DAO.loadMangas
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.utils.ID
-import com.san.kir.manger.utils.NAME_LAND_SPAN
-import com.san.kir.manger.utils.NAME_PORT_SPAN
 import org.jetbrains.anko.AnkoComponent
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.below
 import org.jetbrains.anko.button
 import org.jetbrains.anko.centerHorizontally
 import org.jetbrains.anko.centerInParent
-import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.recyclerview.v7.recyclerView
 import org.jetbrains.anko.relativeLayout
@@ -30,11 +27,16 @@ import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.wrapContent
 
-class LibraryPageView(val category: Category,
-                      val injector: KodeinInjector) : AnkoComponent<LibraryActivity> {
+class LibraryPageView(
+    val category: Category,
+    val injector: KodeinInjector
+) : AnkoComponent<LibraryActivity> {
     private object _id {
         val text = ID.generate()
     }
+
+    private var span = 0
+    private var isLarge = true
 
     private val act: LibraryActivity by injector.instance()
     val adapter = LibraryItemsRecyclerPresenter(category, injector)
@@ -43,10 +45,8 @@ class LibraryPageView(val category: Category,
 
     override fun createView(ui: AnkoContext<LibraryActivity>) = with(ui) {
         val portrait = ctx.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-        val span = this.ctx.defaultSharedPreferences.getString(
-                if (portrait) NAME_PORT_SPAN else NAME_LAND_SPAN,
-                if (portrait) "2" else "3"
-        ).toInt()
+        span = if (portrait) category.spanPortrait else category.spanLandscape
+        isLarge = if (portrait) category.isLargePortrait else category.isLargeLandscape
 
         relativeLayout {
             lparams(width = matchParent, height = matchParent)
@@ -58,11 +58,11 @@ class LibraryPageView(val category: Category,
                 setText(R.string.library_help)
 
                 Main.db.mangaDao
-                        .loadMangas(category, MangaFilter.ADD_TIME_ASC)
-                        .observe(act, Observer {
-                            if (it != null)
-                                visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
-                        })
+                    .loadMangas(category, MangaFilter.ADD_TIME_ASC)
+                    .observe(act, Observer {
+                        if (it != null)
+                            visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
+                    })
             }.lparams(width = matchParent, height = wrapContent) {
                 centerInParent()
             }
@@ -74,11 +74,11 @@ class LibraryPageView(val category: Category,
 
                 onClick { startActivity<Main>("launch" to "catalog") }
                 Main.db.mangaDao
-                        .loadMangas(category, MangaFilter.ADD_TIME_ASC)
-                        .observe(act, Observer {
-                            if (it != null)
-                                visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
-                        })
+                    .loadMangas(category, MangaFilter.ADD_TIME_ASC)
+                    .observe(act, Observer {
+                        if (it != null)
+                            visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
+                    })
             }.lparams(width = wrapContent, height = wrapContent) {
                 centerHorizontally()
                 below(_id.text)
@@ -88,8 +88,23 @@ class LibraryPageView(val category: Category,
             recyclerView {
                 lparams(width = matchParent, height = matchParent)
                 setHasFixedSize(true)
+                Main.db.categoryDao.loadLiveCategory(category.name)
+                    .observe(act, Observer {
+                        it?.let {
+                            val newSpan = if (portrait) it.spanPortrait else it.spanLandscape
+                            val newIsLarge =
+                                if (portrait) it.isLargePortrait else it.isLargeLandscape
+
+                            if (span != newSpan || isLarge != newIsLarge) {
+                                span = newSpan
+                                isLarge = newIsLarge
+                                layoutManager = GridLayoutManager(this@with.ctx, span)
+                                this@LibraryPageView.adapter.intoIsList(this, isLarge)
+                            }
+                        }
+                    })
                 layoutManager = GridLayoutManager(this@with.ctx, span)
-                this@LibraryPageView.adapter.into(this)
+                this@LibraryPageView.adapter.intoIsList(this, isLarge)
             }
         }
     }

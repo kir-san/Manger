@@ -121,6 +121,8 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
     override fun onDestroy() {
         super.onDestroy()
 
+        stopForeground(false)
+
         catalog?.invokeOnCompletion {
             val responseIntent = Intent()
             responseIntent.putExtra(EXTRA_KEY_OUT, -2)
@@ -143,7 +145,6 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
 
         catalog?.cancel()
         taskCounter = emptyList()
-        stopForeground(false)
         stopSelf()
     }
 }

@@ -114,12 +114,16 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
                 }
             } catch (e: Exception) {
                 isError = true
+            } finally {
+
             }
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
+
+        stopForeground(false)
 
         catalog?.invokeOnCompletion {
             val responseIntent = Intent()
@@ -143,7 +147,6 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
 
         catalog?.cancel()
         taskCounter = emptyList()
-        stopForeground(false)
         stopSelf()
     }
 }

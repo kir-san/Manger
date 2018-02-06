@@ -5,8 +5,6 @@ import android.content.res.Configuration
 import android.support.v7.widget.GridLayoutManager
 import android.view.Gravity
 import android.view.View
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.instance
 import com.san.kir.manger.R
 import com.san.kir.manger.components.Main.Main
 import com.san.kir.manger.room.DAO.MangaFilter
@@ -29,7 +27,7 @@ import org.jetbrains.anko.wrapContent
 
 class LibraryPageView(
     val category: Category,
-    val injector: KodeinInjector
+    val act: LibraryActivity
 ) : AnkoComponent<LibraryActivity> {
     private object _id {
         val text = ID.generate()
@@ -38,8 +36,7 @@ class LibraryPageView(
     private var span = 0
     private var isLarge = true
 
-    private val act: LibraryActivity by injector.instance()
-    val adapter = LibraryItemsRecyclerPresenter(category, injector)
+    val adapter = LibraryItemsRecyclerPresenter(category, act)
 
     fun createView(act: LibraryActivity) = createView(AnkoContext.create(act, act))
 

@@ -10,9 +10,6 @@ import android.os.Bundle
 import android.os.IBinder
 import android.view.View
 import android.widget.LinearLayout
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.instance
 import com.san.kir.manger.R
 import com.san.kir.manger.components.Drawer.DrawerActivity
 import com.san.kir.manger.components.Main.Main
@@ -52,12 +49,8 @@ class DownloadManagerActivity : DrawerActivity() {
     }
     lateinit var downloadManager: DownloadManager
 
-    override fun provideOverridingModule() = Kodein.Module {
-        bind<DownloadManagerActivity>() with instance(this@DownloadManagerActivity)
-    }
-
     override val LinearLayout.customView: View
-        get() = DownloadManagerView(injector).view(this@customView)
+        get() = DownloadManagerView(this@DownloadManagerActivity).view(this@customView)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

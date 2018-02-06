@@ -6,7 +6,6 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import com.github.salomonbrys.kodein.KodeinInjector
 import com.san.kir.manger.Extending.AnkoExtend.squareFrameLayout
 import com.san.kir.manger.R
 import com.san.kir.manger.room.models.Category
@@ -24,9 +23,9 @@ import org.jetbrains.anko.textView
 import org.jetbrains.anko.wrapContent
 
 class LibraryLargeItemView(
-    injector: KodeinInjector,
+    activity: LibraryActivity,
     cat: Category
-) : LibraryItemView(injector, cat) {
+) : LibraryItemView(activity, cat) {
     override fun createView(ui: AnkoContext<ViewGroup>) = with(ui) {
         squareFrameLayout {
             lparams(width = matchParent, height = wrapContent) {

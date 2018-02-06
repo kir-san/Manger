@@ -13,8 +13,6 @@ import android.support.v7.widget.Toolbar
 import android.view.Gravity
 import android.view.View
 import android.widget.TextView
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.instance
 import com.san.kir.manger.EventBus.Binder
 import com.san.kir.manger.EventBus.negative
 import com.san.kir.manger.EventBus.positive
@@ -55,23 +53,22 @@ import org.jetbrains.anko.textColor
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.wrapContent
 
-class CatalogForOneSiteView(inj: KodeinInjector,
-                            private val adapter: CatalogForOneSiteRecyclerPresenter) : AnkoComponent<CatalogForOneSiteActivity> {
+class CatalogForOneSiteView(
+    private val  act: CatalogForOneSiteActivity,
+    private val presenter: CatalogForOneSiteRecyclerPresenter
+) : AnkoComponent<CatalogForOneSiteActivity> {
     private object _id {
         val appbar = ID.generate()
         val bottom = ID.generate()
         val progressbar = ID.generate()
     }
 
-    private val filterAdapterList: List<CatalogFilter> by inj.instance()
-    private val act: CatalogForOneSiteActivity by inj.instance()
-
-    lateinit var drawer_layout: DrawerLayout
+    lateinit var drawerLayout: DrawerLayout
     lateinit var toolbar: Toolbar
     lateinit var swipe: SwipeRefreshLayout
 
-    // Переключатели сортировок
     val isAction = Binder(false)
+    // Переключатели сортировок
     private val date = Binder(true)
     private val name = Binder(false)
     private val pop = Binder(false)
@@ -80,16 +77,17 @@ class CatalogForOneSiteView(inj: KodeinInjector,
     init {
         sortIndicator.bind {
             // переключение порядка сортировки
-            adapter.changeOrder(isReversed = it)
+            presenter.changeOrder(isReversed = it)
         }
 
     }
 
     override fun createView(ui: AnkoContext<CatalogForOneSiteActivity>) = with(ui) {
         // Адаптер с данными для фильтрации
-        val pagerAdapter = CatalogForOneSiteFilterPagesAdapter(this.ctx, filterAdapterList)
+        val pagerAdapter =
+            CatalogForOneSiteFilterPagesAdapter(this.ctx, presenter.filterAdapterList)
 
-        drawer_layout = drawerLayout {
+        drawerLayout {
             lparams(width = matchParent, height = matchParent)
             fitsSystemWindows = true
 
@@ -112,8 +110,10 @@ class CatalogForOneSiteView(inj: KodeinInjector,
                     id = _id.progressbar
                     isIndeterminate = true
                     visibleOrGone(isAction)
-                    progressDrawable = ContextCompat.getDrawable(this@with.ctx,
-                                                                 R.drawable.storage_progressbar)
+                    progressDrawable = ContextCompat.getDrawable(
+                        this@with.ctx,
+                        R.drawable.storage_progressbar
+                    )
                 }.lparams(width = matchParent, height = dip(10)) {
                     below(_id.appbar)
                 }
@@ -122,7 +122,7 @@ class CatalogForOneSiteView(inj: KodeinInjector,
                     // Список
                     include<RecyclerView>(R.layout.recycler_view) {
                         layoutManager = LinearLayoutManager(this@with.ctx)
-                        this@CatalogForOneSiteView.adapter.into(this)
+                        this@CatalogForOneSiteView.presenter.into(this)
                     }
                 }.lparams(width = matchParent, height = matchParent) {
                     below(_id.progressbar)
@@ -167,9 +167,9 @@ class CatalogForOneSiteView(inj: KodeinInjector,
                                 name.positive()
                                 date.negative()
                                 pop.negative()
-                                adapter.changeOrder(sortType = NAME)
+                                presenter.changeOrder(sortType = NAME)
                             }
-                            name.bind { textColor = toogleColor(it) }
+                            name.bind { textColor = toggleColor(it) }
                         }
 
                         // Сортировка по дате
@@ -178,9 +178,9 @@ class CatalogForOneSiteView(inj: KodeinInjector,
                                 date.positive()
                                 name.negative()
                                 pop.negative()
-                                adapter.changeOrder(sortType = DATE)
+                                presenter.changeOrder(sortType = DATE)
                             }
-                            date.bind { textColor = toogleColor(it) }
+                            date.bind { textColor = toggleColor(it) }
                         }
 
                         // Сортировка по популярности
@@ -189,17 +189,19 @@ class CatalogForOneSiteView(inj: KodeinInjector,
                                 pop.positive()
                                 date.negative()
                                 name.negative()
-                                adapter.changeOrder(sortType = POP)
+                                presenter.changeOrder(sortType = POP)
                             }
-                            pop.bind { textColor = toogleColor(it) }
+                            pop.bind { textColor = toggleColor(it) }
                         }
 
                     }.applyRecursively { view ->
                         when (view) {
                         // Применение одинаковых параметров для всех текстов
                             is TextView -> {
-                                view.lparams(width = wrapContent,
-                                             height = wrapContent) { weight = 1f }
+                                view.lparams(
+                                    width = wrapContent,
+                                    height = wrapContent
+                                ) { weight = 1f }
                                 view.isClickable = true
                                 view.padding = dip(8)
                                 view.textSize = 16f
@@ -221,22 +223,26 @@ class CatalogForOneSiteView(inj: KodeinInjector,
                 gravity = GravityCompat.START
             }
 
-            val toggle = object : ActionBarDrawerToggle(act, this, toolbar,
-                                                        R.string.navigation_drawer_open,
-                                                        R.string.navigation_drawer_close) {
+            val toggle = object : ActionBarDrawerToggle(
+                act, this, toolbar,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close
+            ) {
                 override fun onDrawerClosed(drawerView: View?) {
                     super.onDrawerClosed(drawerView)
-                    act.title = "${act.mOldTitle}: ${adapter.changeOrder(filters = pagerAdapter.adapters)}"
+                    act.title =
+                            "${act.mOldTitle}: ${presenter.changeOrder(filters = pagerAdapter.adapters)}"
                 }
 
             }
             toggle.drawerArrowDrawable = toggle.drawerArrowDrawable.apply { color = Color.WHITE }
             addDrawerListener(toggle)
             toggle.syncState()
+
+            drawerLayout = this
         }
-        drawer_layout
     }
 
     // Переключает цвет текста
-    private fun toogleColor(isVisible: Boolean): Int = if (isVisible) Color.WHITE else Color.GRAY
+    private fun toggleColor(isVisible: Boolean): Int = if (isVisible) Color.WHITE else Color.GRAY
 }

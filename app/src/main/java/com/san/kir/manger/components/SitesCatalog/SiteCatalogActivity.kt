@@ -1,15 +1,11 @@
 package com.san.kir.manger.components.SitesCatalog
 
-import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.instance
 import com.san.kir.manger.Extending.Views.showAlways
 import com.san.kir.manger.Extending.Views.showNever
 import com.san.kir.manger.R
@@ -20,7 +16,7 @@ import org.jetbrains.anko.include
 import org.jetbrains.anko.startService
 
 class SiteCatalogActivity : DrawerActivity() {
-    private val adapter = SiteCatalogRecyclerPresenter(injector)
+    private val adapter = SiteCatalogRecyclerPresenter(this)
 
     override val LinearLayout.customView: View
         get() = include<RecyclerView>(R.layout.recycler_view) {
@@ -28,15 +24,8 @@ class SiteCatalogActivity : DrawerActivity() {
             this@SiteCatalogActivity.adapter.into(this)
         }
 
-    override fun provideOverridingModule() = Kodein.Module {
-        bind<SiteCatalogActivity>() with instance(this@SiteCatalogActivity)
-    }
-
-    /* перезаписанные функции */
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        // установить меню из фрагмента
+    override fun onResume() {
+        super.onResume()
         setTitle(R.string.main_menu_catalogs)
         adapter.updateSitesInfo()
     }
@@ -52,7 +41,7 @@ class SiteCatalogActivity : DrawerActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            0 -> adapter.updateSitesInfo()
+            0 -> adapter.update()
             1 -> updateCatalogs()
         }
         return true

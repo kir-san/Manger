@@ -8,9 +8,9 @@ import android.view.ViewManager
 import android.widget.EditText
 import android.widget.RadioButton
 import android.widget.TextView
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.san.kir.manger.EventBus.Binder
 import com.san.kir.manger.Extending.Views.SpecialViewPager
-import com.san.kir.manger.photoview.PhotoView
 import com.san.kir.manger.utils.ID
 import kotlinx.coroutines.experimental.CoroutineScope
 import kotlinx.coroutines.experimental.android.UI
@@ -25,38 +25,41 @@ import org.jetbrains.anko.textView
 import org.jetbrains.anko.topPadding
 import kotlin.coroutines.experimental.CoroutineContext
 
-inline fun ViewManager.specialViewPager(theme: Int = 0, init: SpecialViewPager.() -> Unit)
-        = ankoView(::SpecialViewPager, theme) {
-    init()
-}
+inline fun ViewManager.specialViewPager(theme: Int = 0, init: SpecialViewPager.() -> Unit) =
+    ankoView(::SpecialViewPager, theme) {
+        init()
+    }
 
-inline fun ViewManager.photoView(theme: Int = 0, init: PhotoView.() -> Unit)
-        = ankoView(::PhotoView, theme) {
-    init()
-}
-
-
-fun <T> bind(binder: Binder<T>,
-             context: CoroutineContext = UI,
-             binding: suspend (T) -> Unit) = binder.bind(context, binding)
+inline fun ViewManager.bigImageView(init: SubsamplingScaleImageView.() -> Unit) =
+    ankoView(::SubsamplingScaleImageView, 0) {
+        init()
+    }
 
 
-inline fun ViewManager.squareFrameLayout(theme: Int = 0, init: _SquareFrameLayout.() -> Unit)
-        = ankoView(::_SquareFrameLayout, theme) {
-    init()
-}
+fun <T> bind(
+    binder: Binder<T>,
+    context: CoroutineContext = UI,
+    binding: suspend (T) -> Unit
+) = binder.bind(context, binding)
 
-inline fun ViewManager.expandableFrameLayout(theme: Int = 0,
-                                             init: _ExpandableFrameLayout.() -> Unit)
-        = ankoView(::_ExpandableFrameLayout, theme) {
+
+inline fun ViewManager.squareFrameLayout(theme: Int = 0, init: _SquareFrameLayout.() -> Unit) =
+    ankoView(::_SquareFrameLayout, theme) {
+        init()
+    }
+
+inline fun ViewManager.expandableFrameLayout(
+    theme: Int = 0,
+    init: _ExpandableFrameLayout.() -> Unit
+) = ankoView(::_ExpandableFrameLayout, theme) {
     init()
 }
 
 inline fun ViewManager.textView(text: Binder<String>, init: TextView.() -> Unit) =
-        textView {
-            init()
-            text.bind { setText(it) }
-        }
+    textView {
+        init()
+        text.bind { setText(it) }
+    }
 
 fun ViewManager.labelView(text: String) = textView(text) {
     textSize = 10f
@@ -87,7 +90,6 @@ fun EditText.typeTextMultiLine(): EditText {
 }
 
 
-fun ViewManager.editText(text: Binder<String>) = editText(text) {}
 inline fun ViewManager.editText(text: Binder<String>, init: EditText.() -> Unit): EditText {
     return editText {
         text.bind { setText(it) }
@@ -95,9 +97,11 @@ inline fun ViewManager.editText(text: Binder<String>, init: EditText.() -> Unit)
     }
 }
 
-fun ViewManager.radioButton(id: Int = ID.generate(),
-                            text: Int,
-                            init: RadioButton.() -> Unit): RadioButton {
+fun ViewManager.radioButton(
+    id: Int = ID.generate(),
+    text: Int,
+    init: RadioButton.() -> Unit
+): RadioButton {
     return radioButton {
         this.id = id
         if (text != 0) setText(text)
@@ -105,9 +109,11 @@ fun ViewManager.radioButton(id: Int = ID.generate(),
     }
 }
 
-fun AlertBuilder<*>.positiveButton(buttonText: String,
-                                   context: CoroutineContext = UI,
-                                   handler: suspend CoroutineScope.(dialog: DialogInterface) -> Unit) {
+fun AlertBuilder<*>.positiveButton(
+    buttonText: String,
+    context: CoroutineContext = UI,
+    handler: suspend CoroutineScope.(dialog: DialogInterface) -> Unit
+) {
     positiveButton(buttonText) { launch(context) { handler(it) } }
 }
 
@@ -120,12 +126,6 @@ fun View.visibleOrGone(isVisible: Binder<Boolean>) {
 fun View.goneOrVisible(isGone: Binder<Boolean>) {
     isGone.bind {
         visibility = if (it) View.GONE else View.VISIBLE
-    }
-}
-
-fun View.invisibleOrVisible(isInvisible: Binder<Boolean>) {
-    isInvisible.bind {
-        visibility = if (it) View.INVISIBLE else View.VISIBLE
     }
 }
 

@@ -93,7 +93,7 @@ open class ReadmangaTemplate : SiteCatalog {
         if (elem.select("span.mangaCompleted").text().isNotEmpty())
             element.statusEdition = "Выпуск завершен"
         else if (elem.select("span.mangaSingle").text().isNotEmpty() and (element.volume > 0))
-            element.statusEdition = "Выпуск завершен"
+            element.statusEdition = "Сингл"
 
         element.statusTranslate = "Перевод продолжается"
         if (elem.select("span.mangaTranslationCompleted").text().isNotEmpty()) {

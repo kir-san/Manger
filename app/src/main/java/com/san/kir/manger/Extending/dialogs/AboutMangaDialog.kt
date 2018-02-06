@@ -7,13 +7,13 @@ import com.san.kir.manger.Extending.AnkoExtend.labelView
 import com.san.kir.manger.Extending.AnkoExtend.textViewBold15Size
 import com.san.kir.manger.R
 import com.san.kir.manger.components.AddManga.AddMangaActivity
-import com.san.kir.manger.photoview.onError
-import com.san.kir.manger.picasso.NetworkPolicy
-import com.san.kir.manger.picasso.Picasso
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.utils.formatDouble
 import com.san.kir.manger.utils.getFullPath
 import com.san.kir.manger.utils.lengthMb
+import com.san.kir.manger.utils.onError
+import com.squareup.picasso.NetworkPolicy
+import com.squareup.picasso.Picasso
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import org.jetbrains.anko.alert
@@ -40,8 +40,10 @@ class AboutMangaDialog(context: Context, manga: Manga) {
                     lparams(width = matchParent, height = matchParent)
                     scrollView {
                         verticalLayout {
-                            lparams(width = matchParent,
-                                    height = matchParent) {
+                            lparams(
+                                width = matchParent,
+                                height = matchParent
+                            ) {
                                 margin = dip(10)
                             }
                             padding = dip(10)
@@ -69,9 +71,12 @@ class AboutMangaDialog(context: Context, manga: Manga) {
                                 async {
                                     val size = getFullPath(manga.path).lengthMb
                                     async(UI) {
-                                        text = context.getString(R.string.library_page_item_size,
-                                                                      formatDouble(
-                                                                              size))
+                                        text = context.getString(
+                                            R.string.library_page_item_size,
+                                            formatDouble(
+                                                size
+                                            )
+                                        )
                                     }
                                 }
                             }
@@ -91,18 +96,20 @@ class AboutMangaDialog(context: Context, manga: Manga) {
                                 scaleType = ImageView.ScaleType.FIT_CENTER
                                 if (manga.logo.isNotEmpty())
                                     Picasso.with(context)
-                                            .load(manga.logo)
-                                            .networkPolicy(NetworkPolicy.OFFLINE)
-                                            .into(this, onError {
-                                                Picasso.with(context)
-                                                        .load(manga.logo)
-                                                        .error(manga.color)
-                                                        .into(this@imageView)
-                                            })
+                                        .load(manga.logo)
+                                        .networkPolicy(NetworkPolicy.OFFLINE)
+                                        .into(this, onError {
+                                            Picasso.with(context)
+                                                .load(manga.logo)
+                                                .error(manga.color)
+                                                .into(this@imageView)
+                                        })
                                 else
                                     backgroundResource = manga.color
-                            }.lparams(width = matchParent,
-                                      height = dip(400))
+                            }.lparams(
+                                width = matchParent,
+                                height = dip(400)
+                            )
                         }
                     }
                 }

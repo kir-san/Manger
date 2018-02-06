@@ -15,6 +15,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.san.kir.manger.EventBus.Binder
+import com.san.kir.manger.EventBus.negative
+import com.san.kir.manger.EventBus.positive
 import com.san.kir.manger.Extending.AnkoExtend.radioButton
 import com.san.kir.manger.Extending.BaseActivity
 import com.san.kir.manger.Extending.Views.showAlways
@@ -35,7 +37,6 @@ import org.jetbrains.anko.setContentView
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.verticalLayout
 import java.util.*
-import kotlin.properties.Delegates.notNull
 import kotlin.properties.Delegates.observable
 
 class ViewerActivity : BaseActivity() {
@@ -49,12 +50,15 @@ class ViewerActivity : BaseActivity() {
         private var MANGA = "mangaName"
         private var CHAPTER = "chapterName"
         private var PAGE = "pagePostition"
+
+        var LEFT_PART_SCREEN = 0 // Левая часть экрана
+        var RIGHT_PART_SCREEN = 0 // Правая часть экрана
     }
 
     val chapters = Main.db.chapterDao
 
-    val progress = Binder(0) // Текущая страница, которую в данный момент читают
-    val isBottomBar = Binder(true) // Отображение нижнего бара
+
+
     var timer: Timer? = null // Таймер
     var isBar by observable(true) { _, old, new ->
         if (old != new) {
@@ -63,41 +67,31 @@ class ViewerActivity : BaseActivity() {
 
             if (!new) {
                 supportActionBar!!.hide() //Скрыть бар сверху
-                isBottomBar.item = false // Скрыть нижний бар
+                presenter.isBottomBar.negative() // Скрыть нижний бар
                 timer?.cancel() // Отменить таймер
                 timer = null // Убрать таймер
             } else {
                 supportActionBar!!.show() // Показать бар сверху
                 timer?.schedule(object : TimerTask() {
                     override fun run() {
-                        isBottomBar.item = true // Показать нижний бар
+                        presenter.isBottomBar.positive()// Показать нижний бар
                     }
                 }, 300) // после 3 секунд
             }
         }
     } // Отображение обоих баров
 
-
-    val isNext = Binder(true) // Есть ли следующая глава
-    val isPrev = Binder(true) // Есть ли предыдущая глава
-
     val adapter: Binder<ViewerPageAdapter?> = Binder(null) // Адаптер для читалки
-
-    var LEFT_PART_SCREEN = 0 // Левая часть экрана
-    var RIGHT_PART_SCREEN = 0 // Правая часть экрана
 
     // Режимы листания страниц
     var isTapControl = false // Нажатия на экран
-    var isSwipeControl = Binder(true) // Свайпы
     private var isKeyControl = false // Кнопки громкости
 
-    private var CHAPTERS: ChaptersList by notNull() // Менеджер глав и страниц
-
     private var mangaName = ""
-    private var chapterName = ""
-    private var pagePostition = -1
+    var chapterName = ""
 
-    private val view = ViewerView(this)
+    val presenter by lazy { ViewPagePresenter(this) }
+    private val view by lazy { ViewerView( presenter) }
 
     /* Перезаписанные функции */
     @SuppressLint("MissingSuperCall", "RestrictedApi")
@@ -108,28 +102,26 @@ class ViewerActivity : BaseActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // Кнопка назад в верхнем баре
         supportActionBar?.setShowHideAnimationEnabled(true) // Анимация скрытия, сокрытия
 
+        var pagePosition = -1
+
         getSharedPreferences(sPrefViewer, MODE_PRIVATE).apply {
             if (contains(MANGA)) mangaName = getString(MANGA, "")
             if (contains(CHAPTER)) chapterName = getString(CHAPTER, "")
-            if (contains(PAGE)) pagePostition = getInt(PAGE, -1)
+            if (contains(PAGE)) pagePosition = getInt(PAGE, -1)
         }
 
         if (isFirstRun) // Проверка на уникальность запуска
             intent.apply {
-                //            log = getStringExtra("manga_name")
-//            log = getStringExtra("chapter")
-//            log = getIntExtra("page_position", 0).toString()
                 mangaName = getStringExtra("manga_name")
                 chapterName = getStringExtra("chapter")
-                pagePostition = getIntExtra("page_position", 0)
+                pagePosition = getIntExtra("page_position", 0)
                 isFirstRun = false
             }
 
         title = chapterName // Смена заголвка
 
         // Создание менеджера
-        CHAPTERS = ChaptersList(mangaName, chapterName, pagePostition, this)
-
+        presenter.configManager(mangaName, chapterName, pagePosition)
     }
 
     override fun onResume() {
@@ -140,8 +132,6 @@ class ViewerActivity : BaseActivity() {
         LEFT_PART_SCREEN = point.x / 3 // Установка данных
         RIGHT_PART_SCREEN = point.x * 2 / 3 // Установка данных
 
-        adapter.item = ViewerPageAdapter(supportFragmentManager,
-                                         CHAPTERS.page.list) // Создание адаптера
         // Загрузка настроек
         getSharedPreferences(sPrefViewer, MODE_PRIVATE).apply {
             if (contains(ORIENTATION)) {
@@ -149,34 +139,21 @@ class ViewerActivity : BaseActivity() {
                 isBar = getBoolean(SAVE_IS_SHOW_BAR, true)
                 isTapControl = getBoolean(CONTROL_TAP, false)
                 isKeyControl = getBoolean(CONTROL_KEY, false)
-                isSwipeControl.item = getBoolean(CONTROL_SWIPE, true)
+                presenter.isSwipeControl.item = getBoolean(CONTROL_SWIPE, true)
             }
         }
-
-        view.max.item = CHAPTERS.page.max // Установка значения
-        progress.item =
-                if (CHAPTERS.page.position <= 0) 1 // Если полученная позиция не больше нуля, то присвоить значение 1
-                else CHAPTERS.page.position // Иначе то что есть
-
-        // При изменении прогресса, отдать новое значение в менеджер
-        progress.bind { pos -> CHAPTERS.page.position = pos }
-
-        view.maxChapters = CHAPTERS.chapter.max // Установка значения
-        view.progressChapters.item = CHAPTERS.chapter.position // Установка значения
-
-        checkButton() // проверка и установка видимости
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         // Установка режима во весь экрана без верхней строки и навигационных кнопок
         if (hasFocus) { // Срабатывает только если был получен фокус
-                window.decorView.systemUiVisibility =
-                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                                View.SYSTEM_UI_FLAG_FULLSCREEN or
-                                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            window.decorView.systemUiVisibility =
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                    View.SYSTEM_UI_FLAG_FULLSCREEN or
+                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         }
     }
 
@@ -184,8 +161,8 @@ class ViewerActivity : BaseActivity() {
         // Переключение слайдов с помощью клавиш громкости
         if (isKeyControl) {
             when (keyCode) {
-                KeyEvent.KEYCODE_VOLUME_DOWN -> progress.item += 1
-                KeyEvent.KEYCODE_VOLUME_UP -> progress.item -= 1
+                KeyEvent.KEYCODE_VOLUME_DOWN -> presenter.nextPage()
+                KeyEvent.KEYCODE_VOLUME_UP -> presenter.prevPage()
             }
         }
         if (keyCode == KeyEvent.KEYCODE_MENU) {
@@ -214,14 +191,14 @@ class ViewerActivity : BaseActivity() {
         getSharedPreferences(sPrefViewer, MODE_PRIVATE).apply {
             edit().apply {
                 putInt(ORIENTATION, requestedOrientation)
-                putBoolean(SAVE_IS_SHOW_BAR, isBottomBar.item)
+                putBoolean(SAVE_IS_SHOW_BAR, presenter.isBottomBar.item)
                 putBoolean(CONTROL_TAP, isTapControl)
-                putBoolean(CONTROL_SWIPE, isSwipeControl.item)
+                putBoolean(CONTROL_SWIPE, presenter.isSwipeControl.item)
                 putBoolean(CONTROL_KEY, isKeyControl)
 
                 putString(MANGA, mangaName)
                 putString(CHAPTER, chapterName)
-                putInt(PAGE, progress.item)
+                putInt(PAGE, presenter.progressPages.item)
             }.apply()
         }
     }
@@ -230,30 +207,6 @@ class ViewerActivity : BaseActivity() {
     override fun onDestroy() {
         super.onDestroy()
         adapter.close()
-    }
-
-    /* Функции */
-    // Предыдущая глава
-    fun prevChapter() {
-        CHAPTERS.chapter.prev // Переключение главы
-        initChapter()
-    }
-
-    // Следующая глава
-    fun nextChapter() {
-        CHAPTERS.chapter.next // Переключение главы
-        initChapter()
-    }
-
-    /* Приватные функции */
-    private fun initChapter() {
-        adapter.item = ViewerPageAdapter(supportFragmentManager, CHAPTERS.page.list)
-        progress.item = 1
-        view.max.item = CHAPTERS.page.max
-        view.progressChapters.item = CHAPTERS.chapter.position
-        checkButton()
-        chapterName = CHAPTERS.chapter.current.name // Сохранение данных
-        title = chapterName // Смена заголовка
     }
 
     // Меню для упраиления настройками
@@ -277,7 +230,9 @@ class ViewerActivity : BaseActivity() {
                         lparams(width = matchParent) { weight = 1f }
 
                         // Заголовок
-                        textView(text = R.string.viewer_menu_orientation).lparams { gravity = Gravity.CENTER }
+                        textView(text = R.string.viewer_menu_orientation).lparams {
+                            gravity = Gravity.CENTER
+                        }
 
                         // Портретная
                         radioButton(id = portN, text = R.string.viewer_menu_orientation_portrait) {
@@ -285,20 +240,26 @@ class ViewerActivity : BaseActivity() {
                         }
 
                         // Портретная обратная
-                        radioButton(id = portR,
-                                    text = R.string.viewer_menu_orientation_portrait_reverse) {
+                        radioButton(
+                            id = portR,
+                            text = R.string.viewer_menu_orientation_portrait_reverse
+                        ) {
                             isChecked = requestedOrientation == SCREEN_ORIENTATION_REVERSE_PORTRAIT
                         }
 
                         // Ландшафтная
-                        radioButton(id = landN,
-                                    text = R.string.viewer_menu_orientation_landscape) {
+                        radioButton(
+                            id = landN,
+                            text = R.string.viewer_menu_orientation_landscape
+                        ) {
                             isChecked = requestedOrientation == SCREEN_ORIENTATION_LANDSCAPE
                         }
 
                         // Ландшафтная обратная
-                        radioButton(id = landR,
-                                    text = R.string.viewer_menu_orientation_landscape_reverse) {
+                        radioButton(
+                            id = landR,
+                            text = R.string.viewer_menu_orientation_landscape_reverse
+                        ) {
                             isChecked = requestedOrientation == SCREEN_ORIENTATION_REVERSE_LANDSCAPE
                         }
 
@@ -324,7 +285,9 @@ class ViewerActivity : BaseActivity() {
                         lparams(width = matchParent) { weight = 1f }
 
                         // Заголовок
-                        textView(text = R.string.viewer_menu_control).lparams { gravity = Gravity.CENTER }
+                        textView(text = R.string.viewer_menu_control).lparams {
+                            gravity = Gravity.CENTER
+                        }
 
                         // Тапы по экрану
                         checkBox(text = R.string.viewer_menu_is_tap) {
@@ -334,8 +297,8 @@ class ViewerActivity : BaseActivity() {
 
                         // Свайпы по экрану
                         checkBox(text = R.string.viewer_menu_is_swipe) {
-                            isChecked = isSwipeControl.item
-                            onCheckedChange { _, b -> isSwipeControl.item = b }
+                            isChecked = presenter.isSwipeControl.item
+                            onCheckedChange { _, b -> presenter.isSwipeControl.item = b }
                         }
 
                         // Кнопки громкости
@@ -352,11 +315,5 @@ class ViewerActivity : BaseActivity() {
             negativeButton("Отменить") {}
 
         }.show()
-    }
-
-    // Проверка видимости кнопок переключения глав
-    private fun checkButton() {
-        isPrev.item = CHAPTERS.page.list.first().name == "prev"
-        isNext.item = CHAPTERS.page.list.last().name == "next"
     }
 }

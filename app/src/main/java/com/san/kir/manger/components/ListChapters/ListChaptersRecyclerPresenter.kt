@@ -1,8 +1,6 @@
 package com.san.kir.manger.components.ListChapters
 
 import android.support.v7.widget.RecyclerView
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.instance
 import com.san.kir.manger.R
 import com.san.kir.manger.components.DownloadManager.DownloadService
 import com.san.kir.manger.components.Main.Main
@@ -24,10 +22,9 @@ import org.jetbrains.anko.startService
 import org.jetbrains.anko.toast
 
 
-class ListChaptersRecyclerPresenter(val injector: KodeinInjector) : RecyclerPresenter() {
-    private val act: ListChaptersActivity by injector.instance()
+class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPresenter() {
     private val dao = Main.db.chapterDao
-    private var adapter = RecyclerViewAdapterFactory.createSimple { ListChaptersItemView(injector) }
+    private var adapter = RecyclerViewAdapterFactory.createSimple { ListChaptersItemView(act) }
     private var manga: Manga = Manga()
     private var backupCatalog = listOf<Chapter>()
 

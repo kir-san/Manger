@@ -7,14 +7,9 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.instance
 import com.san.kir.manger.Extending.dialogs.LibraryItemMenu
 import com.san.kir.manger.components.ListChapters.ListChaptersActivity
 import com.san.kir.manger.components.Main.Main
-import com.san.kir.manger.photoview.onError
-import com.san.kir.manger.picasso.NetworkPolicy
-import com.san.kir.manger.picasso.Picasso
 import com.san.kir.manger.room.DAO.count
 import com.san.kir.manger.room.DAO.countNotRead
 import com.san.kir.manger.room.models.Category
@@ -23,6 +18,9 @@ import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.NAME_SHOW_CATEGORY
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.getDrawableCompat
+import com.san.kir.manger.utils.onError
+import com.squareup.picasso.NetworkPolicy
+import com.squareup.picasso.Picasso
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.customView
@@ -34,11 +32,10 @@ import org.jetbrains.anko.textView
 import org.jetbrains.anko.verticalLayout
 
 abstract class LibraryItemView(
-    injector: KodeinInjector,
+    val act: LibraryActivity,
     private val cat: Category
 ) : RecyclerViewAdapterFactory.AnkoView<Manga>() {
     val chapters = Main.db.chapterDao
-    val act: LibraryActivity by injector.instance()
     lateinit var root: FrameLayout
     lateinit var name: TextView
     lateinit var logo: ImageView
@@ -125,4 +122,5 @@ abstract class LibraryItemView(
             category.visibility = View.VISIBLE
         }
     }
+
 }

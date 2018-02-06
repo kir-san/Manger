@@ -2,8 +2,6 @@ package com.san.kir.manger.components.LatestChapters
 
 import android.arch.lifecycle.Observer
 import android.support.v7.widget.RecyclerView
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.instance
 import com.san.kir.manger.components.DownloadManager.DownloadService
 import com.san.kir.manger.components.Main.Main
 import com.san.kir.manger.room.DAO.clearHistory
@@ -18,12 +16,12 @@ import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.startService
 
-class LatestChaptersRecyclerPresenter(injector: KodeinInjector): RecyclerPresenter() {
+class LatestChaptersRecyclerPresenter(private val act: LatestChapterActivity) :
+    RecyclerPresenter() {
     private val adapter = RecyclerViewAdapterFactory
-            .createPaging({ LatestChaptersItemView(injector) },
-                          { oldItem, newItem -> oldItem.id == newItem.id },
-                          { oldItem, newItem -> oldItem == newItem })
-    private val act: LatestChapterActivity by injector.instance()
+        .createPaging({ LatestChaptersItemView(act) },
+                      { oldItem, newItem -> oldItem.id == newItem.id },
+                      { oldItem, newItem -> oldItem == newItem })
     private val latest = Main.db.latestChapterDao
 
     override fun into(recyclerView: RecyclerView) {
@@ -35,10 +33,12 @@ class LatestChaptersRecyclerPresenter(injector: KodeinInjector): RecyclerPresent
     suspend fun hasNewChapters() = latest.hasNewChapters().await()
 
     fun downloadNewChapters() = launch {
-        latest.downloadNewChapters().await().onEach {chapter ->
-            val item = DownloadItem(name = chapter.manga + " " + chapter.name,
-                                    link = chapter.site,
-                                    path = chapter.path)
+        latest.downloadNewChapters().await().onEach { chapter ->
+            val item = DownloadItem(
+                name = chapter.manga + " " + chapter.name,
+                link = chapter.site,
+                path = chapter.path
+            )
             act.startService<DownloadService>("item" to item)
         }
         adapter.notifyDataSetChanged()

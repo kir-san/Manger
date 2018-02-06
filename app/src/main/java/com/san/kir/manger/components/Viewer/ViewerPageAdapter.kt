@@ -6,8 +6,13 @@ import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
 import java.io.File
 
-class ViewerPageAdapter(fm: FragmentManager, private val list: List<File>) :
+class ViewerPageAdapter(fm: FragmentManager, private var list: List<File> = listOf()) :
         FragmentStatePagerAdapter(fm) {
+
+    fun setList(list: List<File>) {
+        this.list = list
+        notifyDataSetChanged()
+    }
 
     // Получение нужного элемента взависимости от позиции
     override fun getItem(position: Int): Fragment {

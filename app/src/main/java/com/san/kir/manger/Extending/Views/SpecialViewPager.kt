@@ -39,7 +39,4 @@ class SpecialViewPager : ViewPager {
         this.isLocked = isLocked
     }
 
-    override fun performClick(): Boolean {
-        return super.performClick()
-    }
 }

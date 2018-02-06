@@ -1,6 +1,0 @@
-Этот код не мой
-вот ссылка на оригинал
-https://github.com/chrisbanes/PhotoView
-
-Скопировал его себе, чтобы убрать строку из-за которой была ошибка.
- -> PhotoView -> onDetachedFromWindow -> mAttacher = null

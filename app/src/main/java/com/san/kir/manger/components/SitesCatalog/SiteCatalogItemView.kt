@@ -12,12 +12,12 @@ import com.san.kir.manger.components.CatalogForOneSite.CatalogForOneSiteActivity
 import com.san.kir.manger.components.CatalogForOneSite.SiteCatalogElementViewModel
 import com.san.kir.manger.components.Main.Main
 import com.san.kir.manger.components.Parsing.ManageSites
-import com.san.kir.manger.picasso.Picasso
 import com.san.kir.manger.room.DAO.update
 import com.san.kir.manger.room.models.Site
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.log
+import com.squareup.picasso.Picasso
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import org.jetbrains.anko.AnkoContext

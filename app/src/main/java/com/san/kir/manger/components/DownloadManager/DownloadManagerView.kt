@@ -10,8 +10,6 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.instance
 import com.san.kir.manger.Extending.AnkoExtend.expandableFrameLayout
 import com.san.kir.manger.Extending.Views.ExpandableFrameLayout
 import com.san.kir.manger.R
@@ -37,9 +35,8 @@ import org.jetbrains.anko.textView
 import org.jetbrains.anko.verticalLayout
 import org.jetbrains.anko.wrapContent
 
-class DownloadManagerView(private val injector: KodeinInjector) {
+class DownloadManagerView(private val act: DownloadManagerActivity) {
 
-    private val act: DownloadManagerActivity by injector.instance()
     private val downloadManager by lazy { act.downloadManager }
     private val dao = Main.db.downloadDao
 
@@ -66,7 +63,7 @@ class DownloadManagerView(private val injector: KodeinInjector) {
                 // Загружаемые
                 expandBlock(loadColor,
                             { loads.observe(act, Observer { text = loadText(it?.size) }) },
-                            loadingAdapter(injector)) {
+                            loadingAdapter(act)) {
                     stopBtn {
                         downloadManager.pauseAllTask()
                     }
@@ -75,7 +72,7 @@ class DownloadManagerView(private val injector: KodeinInjector) {
                 // Приостановленные
                 expandBlock(pauseColor,
                             { pause.observe(act, Observer { text = pauseText(it?.size) }) },
-                            pauseAdapter(injector)) {
+                            pauseAdapter(act)) {
                     startBtn {
                         dao.loadItems()
                                 .filter { it.status == DownloadStatus.pause }
@@ -91,7 +88,7 @@ class DownloadManagerView(private val injector: KodeinInjector) {
                 // Остановленные с ошибкой
                 expandBlock(errorColor,
                             { errors.observe(act, Observer { text = errorText(it?.size) }) },
-                            errorAdapter(injector)) {
+                            errorAdapter(act)) {
                     startBtn {
                         dao.loadItems()
                                 .filter { it.status == DownloadStatus.error }
@@ -107,7 +104,7 @@ class DownloadManagerView(private val injector: KodeinInjector) {
                 // Завершенные
                 expandBlock(completeColor,
                             { complete.observe(act, Observer { text = completeText(it?.size) }) },
-                            completeAdapter(injector)) {
+                            completeAdapter(act)) {
                     deleteBtn {
                         dao.loadItems()
                                 .filter { it.status == DownloadStatus.completed }

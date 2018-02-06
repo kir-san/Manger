@@ -12,10 +12,6 @@ import android.os.IBinder
 import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.instance
-import com.github.salomonbrys.kodein.singleton
 import com.san.kir.manger.Extending.BaseActivity
 import com.san.kir.manger.Extending.Views.showAlways
 import com.san.kir.manger.Extending.Views.showIfRoom
@@ -46,8 +42,8 @@ class ListChaptersActivity : BaseActivity(), ActionMode.Callback {
         private const val filterStatus = "filteringStatus"
     }
 
-    private val actionMode: ActionModeControl by instance()
-    private val adapter = ListChaptersRecyclerPresenter(injector)
+    val actionMode by lazy { ActionModeControl(this) }
+    private val adapter = ListChaptersRecyclerPresenter(this)
     private val view = ListChapterView(adapter)
     private val mangas = Main.db.mangaDao
     private lateinit var manga: Manga
@@ -93,13 +89,6 @@ class ListChaptersActivity : BaseActivity(), ActionMode.Callback {
                     }
                 }
             }
-        }
-    }
-
-    override fun provideOverridingModule() = Kodein.Module {
-        bind<ListChaptersActivity>() with instance(this@ListChaptersActivity)
-        bind<ActionModeControl>() with singleton {
-            ActionModeControl(this@ListChaptersActivity)
         }
     }
 

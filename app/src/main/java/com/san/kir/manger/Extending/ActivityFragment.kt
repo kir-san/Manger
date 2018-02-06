@@ -1,7 +1,7 @@
 package com.san.kir.manger.Extending
 
-import com.github.salomonbrys.kodein.android.KodeinAppCompatActivity
+import android.support.v7.app.AppCompatActivity
 
 
-abstract class BaseActivity : KodeinAppCompatActivity()
+abstract class BaseActivity : AppCompatActivity()
 

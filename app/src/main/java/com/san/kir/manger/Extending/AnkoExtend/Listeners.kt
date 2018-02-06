@@ -5,14 +5,21 @@ import android.support.v7.widget.RecyclerView
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 
-fun com.san.kir.manger.photoview.IPhotoView.onDoubleTapListener(init: __IPhotoView_OnDoubleTapListener.() -> Unit) {
+
+fun SubsamplingScaleImageView.onDoubleTapListener(init: __IPhotoView_OnDoubleTapListener.() -> Unit) {
     val listener = __IPhotoView_OnDoubleTapListener()
     listener.init()
-    setOnDoubleTapListener(listener)
+
+    val gestureDetector = GestureDetector(this.context, listener)
+
+    setOnTouchListener { _, event ->
+        gestureDetector.onTouchEvent(event)
+    }
 }
 
-class __IPhotoView_OnDoubleTapListener : android.view.GestureDetector.OnDoubleTapListener {
+class __IPhotoView_OnDoubleTapListener : android.view.GestureDetector.SimpleOnGestureListener() {
     private var _onDoubleTap: ((android.view.MotionEvent) -> Boolean)? = null
     private var _onDoubleTapEvent: ((android.view.MotionEvent) -> Boolean)? = null
     private var _onSingleTapConfirmed: ((android.view.MotionEvent) -> Boolean)? = null

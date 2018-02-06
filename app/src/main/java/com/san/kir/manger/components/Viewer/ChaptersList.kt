@@ -10,10 +10,12 @@ import java.io.File
 import java.util.*
 
 // Свой класс для управления страницами и главами
-class ChaptersList(mangaName: String,
-                   chapter: String,
-                   position_page: Int,
-                   val act: ViewerActivity) {
+class ChaptersList(
+    mangaName: String,
+    chapter: String,
+    position_page: Int
+//    val act: ViewerActivity
+) {
     var page = PageObject
     var chapter = ChapterObject
 
@@ -50,36 +52,34 @@ class ChaptersList(mangaName: String,
         val max: Int // Общее количество глав
             get() = m.list_chapter.size
 
-        val current: Chapter // Текущая глава (не позиция)
+        val current: Chapter // Текущая глава
             get() = m.list_chapter[m.position_chapter]
 
-        val next: Boolean // переключение на следующую главу
-            get () {
-                if (m.position_chapter < m.list_chapter.size) { // если глава не последняя
-                    m.position_chapter++ // увеличить
-                    if (!PageObject.updateList()) { // Обновить список страниц, если не получилось
-                        m.position_chapter-- // уменьшить
-                        PageObject.updateList() // Обновить список страниц
-                        return false
-                    }
-                    return true
-                }
-                return false
-            }
-
-        val prev: Boolean // переключение на предыдущию главу
-            get () {
-                if (m.position_chapter > 0) { // если глава не первая
+        fun next(): Boolean { // переключение на следующую главу
+            if (m.position_chapter < m.list_chapter.size) { // если глава не последняя
+                m.position_chapter++ // увеличить
+                if (!PageObject.updateList()) { // Обновить список страниц, если не получилось
                     m.position_chapter-- // уменьшить
-                    if (!PageObject.updateList()) { // Обновить список страниц, если не получилось
-                        m.position_chapter++ // увеличить
-                        PageObject.updateList() // Обновить список страниц
-                        return false
-                    }
-                    return true
+                    PageObject.updateList() // Обновить список страниц
+                    return false
                 }
-                return false
+                return true
             }
+            return false
+        }
+
+        fun prev(): Boolean { // переключение на предыдущию главу
+            if (m.position_chapter > 0) { // если глава не первая
+                m.position_chapter-- // уменьшить
+                if (!PageObject.updateList()) { // Обновить список страниц, если не получилось
+                    m.position_chapter++ // увеличить
+                    PageObject.updateList() // Обновить список страниц
+                    return false
+                }
+                return true
+            }
+            return false
+        }
     }
 
     object PageObject { // группа для страниц
@@ -96,15 +96,15 @@ class ChaptersList(mangaName: String,
         val list: List<File> // формирование списка страниц
             get() {
                 val list = m.list_page // копируем имеющийся список
-                if (ChapterObject.prev) { // Если есть главы до этой
+                if (ChapterObject.prev()) { // Если есть главы до этой
                     list.add(0, File("prev")) // Добавить в начало специальный файл указатель
-                    ChapterObject.next // вернуть главу обратно
+                    ChapterObject.next() // вернуть главу обратно
                 } else  // если нет
                     list.add(0, File("none")) // Добавить в начало другой файл указатель
 
-                if (ChapterObject.next) { // Если есть главы после этой
+                if (ChapterObject.next()) { // Если есть главы после этой
                     list.add(File("next")) // Добавить в конец специальный файл указатель
-                    ChapterObject.prev // вернуть главу обратно
+                    ChapterObject.prev() // вернуть главу обратно
                 } else // если нет
                     list.add(File("none")) // Добавить в конец другой файл указатель
 
@@ -131,12 +131,12 @@ class ChaptersList(mangaName: String,
         fun updateList(): Boolean { // Обновить список страниц
             try {
                 m.list_page = getFullPath(ChapterObject.current.path) // Получить все файлы из папки
-                        .listFiles { file, s ->
-                            // фильтруем список
-                            val fin = File(file, s) // получаем каждый файл отдельно
-                            // если это файл и он является картинкой, то пропустить в список
-                            fin.isFile && (fin.extension in extensions)
-                        }.toMutableList()
+                    .listFiles { file, s ->
+                        // фильтруем список
+                        val fin = File(file, s) // получаем каждый файл отдельно
+                        // если это файл и он является картинкой, то пропустить в список
+                        fin.isFile && (fin.extension in extensions)
+                    }.toMutableList()
             } catch (ex: Exception) {
                 return false
             }

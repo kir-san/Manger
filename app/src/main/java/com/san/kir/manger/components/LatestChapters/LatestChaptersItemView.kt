@@ -11,8 +11,6 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.instance
 import com.san.kir.manger.R
 import com.san.kir.manger.components.DownloadManager.DownloadService
 import com.san.kir.manger.components.Main.Main
@@ -52,7 +50,7 @@ import org.jetbrains.anko.toast
 import org.jetbrains.anko.wrapContent
 import java.io.IOException
 
-class LatestChaptersItemView(inj: KodeinInjector) :
+class LatestChaptersItemView(private val act: LatestChapterActivity) :
         RecyclerViewAdapterFactory.AnkoView<LatestChapter>() {
     private object _id { // id элементов для связи между собой
         val date = ID.generate()
@@ -60,7 +58,6 @@ class LatestChaptersItemView(inj: KodeinInjector) :
         val limit = ID.generate()
     }
 
-    private val act: LatestChapterActivity by inj.instance()
     private val downloadManager by lazy { act.downloadManager }
 
     private var isDownload = false

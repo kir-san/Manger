@@ -12,16 +12,15 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.instance
 import com.san.kir.manger.EventBus.negative
 import com.san.kir.manger.EventBus.positive
 import com.san.kir.manger.Extending.BaseActivity
 import com.san.kir.manger.Extending.Views.showAlways
 import com.san.kir.manger.Extending.Views.showNever
 import com.san.kir.manger.R
+import com.san.kir.manger.components.Main.Main
 import com.san.kir.manger.components.Parsing.ManageSites
+import com.san.kir.manger.room.DAO.update
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.appcompat.v7.coroutines.onQueryTextListener
 import org.jetbrains.anko.find
@@ -41,12 +40,12 @@ class CatalogForOneSiteActivity : BaseActivity() {
     // Сохраняем название окна
     val mOldTitle: CharSequence by lazy { title }
 
-    private val adapter = CatalogForOneSiteRecyclerPresenter(injector)
-    private val view = CatalogForOneSiteView(injector, adapter)
+    private val adapter = CatalogForOneSiteRecyclerPresenter()
+    private val view = CatalogForOneSiteView(this, adapter)
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent) {
             val id = intent.getIntExtra(CatalogForOneSiteUpdaterService.EXTRA_KEY_OUT, -1)
-            if (id != -1 && id == mSite.ID)
+            if (id != -1 && id == mSite.ID || id == -2)
                 updateCatalog()
         }
     }
@@ -58,8 +57,6 @@ class CatalogForOneSiteActivity : BaseActivity() {
         // Если id сайта не существует, то выйти из активити
         if (mSite.ID < 0)
             onBackPressed()
-
-
 
         view.setContentView(this)
         // Присвоение адаптера
@@ -75,7 +72,6 @@ class CatalogForOneSiteActivity : BaseActivity() {
         // регистрируем BroadcastReceiver
         val intentFilter = IntentFilter(
                 CatalogForOneSiteUpdaterService.ACTION_CATALOGUPDATERSERVICE)
-        intentFilter.addCategory(Intent.CATEGORY_DEFAULT)
 
         registerReceiver(receiver, intentFilter)
     }
@@ -87,8 +83,14 @@ class CatalogForOneSiteActivity : BaseActivity() {
                             // Изменяем заголовок окна
                             title = "$mOldTitle: $size"
 
-                            // Закрываем окно
+                            // Убираем прогрессБар
                             view.isAction.negative()
+
+                            val s = Main.db.siteDao.loadSite(mSite.name)
+                            if (s != null) {
+                                s.oldVolume = size
+                                Main.db.siteDao.update(s)
+                            }
                         })
     }
 
@@ -96,10 +98,6 @@ class CatalogForOneSiteActivity : BaseActivity() {
     override fun onDestroy() {
         unregisterReceiver(receiver)
         super.onDestroy()
-    }
-
-    override fun provideOverridingModule() = Kodein.Module {
-        bind<CatalogForOneSiteActivity>() with instance(this@CatalogForOneSiteActivity)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -138,8 +136,8 @@ class CatalogForOneSiteActivity : BaseActivity() {
 
     override fun onBackPressed() {
         // Если открыто боковое меню, то сперва закрыть его
-        if (view.drawer_layout.isDrawerOpen(GravityCompat.START)) {
-            view.drawer_layout.closeDrawer(GravityCompat.START)
+        if (view.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            view.drawerLayout.closeDrawer(GravityCompat.START)
         } else {
             super.onBackPressed()
         }

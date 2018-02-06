@@ -3,8 +3,6 @@ package com.san.kir.manger.components.Viewer
 import android.graphics.Color
 import android.support.v4.content.ContextCompat
 import android.widget.ImageView.ScaleType.CENTER_CROP
-import com.san.kir.manger.EventBus.Binder
-import com.san.kir.manger.Extending.AnkoExtend.bind
 import com.san.kir.manger.Extending.AnkoExtend.goneOrVisible
 import com.san.kir.manger.Extending.AnkoExtend.specialViewPager
 import com.san.kir.manger.Extending.AnkoExtend.visibleOrInvisible
@@ -40,7 +38,9 @@ import org.jetbrains.anko.textView
 import org.jetbrains.anko.wrapContent
 
 
-class ViewerView(private val act: ViewerActivity) : AnkoComponent<ViewerActivity> {
+class ViewerView(
+    private val presenter: ViewPagePresenter
+) : AnkoComponent<ViewerActivity> {
     private object _id {
         val progressBar = ID.generate()
         val bottomBar = ID.generate()
@@ -48,10 +48,6 @@ class ViewerView(private val act: ViewerActivity) : AnkoComponent<ViewerActivity
         val prev = ID.generate()
         val next = ID.generate()
     }
-
-    var maxChapters = -1
-    val progressChapters = Binder(-1)
-    val max = Binder(0)
 
     override fun createView(ui: AnkoContext<ViewerActivity>) = with(ui) {
 
@@ -64,12 +60,14 @@ class ViewerView(private val act: ViewerActivity) : AnkoComponent<ViewerActivity
 
             horizontalProgressBar {
                 id = _id.progressBar
-                progressDrawable = ContextCompat.getDrawable(this@with.ctx,
-                                                             drawable.activity_viewer_progressbar)
+                progressDrawable = ContextCompat.getDrawable(
+                    this@with.ctx,
+                    drawable.activity_viewer_progressbar
+                )
                 incrementProgressBy(1)
-                bind(this@ViewerView.max) { max = it }
-                bind(act.progress) { progress = it }
-                goneOrVisible(act.isBottomBar)
+                presenter.max.bind { max = it }
+                presenter.progressPages.bind { progress = it }
+                goneOrVisible(presenter.isBottomBar)
             }.lparams(width = matchParent, height = dip(2)) {
                 alignParentTop()
             }
@@ -78,20 +76,20 @@ class ViewerView(private val act: ViewerActivity) : AnkoComponent<ViewerActivity
                 lparams {
                     width = matchParent
                     height = actionBarSize
-                    bind(act.isBottomBar) { height = if (it) actionBarSize else 0 }
+                    presenter.isBottomBar.bind { height = if (it) actionBarSize else 0 }
                     alignParentBottom()
                 }
                 id = _id.bottomBar
                 backgroundColor = Color.parseColor("#ff212121")
 
                 seekBar {
-                    bind(this@ViewerView.max) { max = it }
-                    bind(act.progress) { progress = it }
+                    presenter.max.bind { max = it }
+                    presenter.progressPages.bind { progress = it }
 
                     onSeekBarChangeListener {
                         var _progress = 0
                         onProgressChanged { _, progress, _ -> _progress = progress }
-                        onStopTrackingTouch { act.progress.item = _progress }
+                        onStopTrackingTouch { presenter.progressPages.item = _progress }
                     }
                 }.lparams(width = wrapContent, height = wrapContent) {
                     alignParentBottom()
@@ -103,9 +101,9 @@ class ViewerView(private val act: ViewerActivity) : AnkoComponent<ViewerActivity
                 textView {
                     padding = dip(6)
                     textColor = Color.WHITE
-                    bind(act.progress) { progress ->
+                    presenter.progressPages.bind { progress ->
                         text = resources
-                                .getString(string.viewer_pages_text, progress, max.item)
+                            .getString(string.viewer_pages_text, progress, presenter.max.item)
                     }
                 }.lparams(width = wrapContent, height = wrapContent) {
                     rightOf(_id.prev)
@@ -116,10 +114,12 @@ class ViewerView(private val act: ViewerActivity) : AnkoComponent<ViewerActivity
                     id = _id.chapters
                     padding = dip(6)
                     textColor = Color.WHITE
-                    bind(progressChapters) { progressChapters ->
-                        text = resources.getString(string.viewer_chapters_text,
-                                                   progressChapters,
-                                                   maxChapters)
+                    presenter.progressChapters.bind { progressChapters ->
+                        text = resources.getString(
+                            string.viewer_chapters_text,
+                            progressChapters,
+                            presenter.maxChapters
+                        )
                     }
                 }.lparams(width = wrapContent, height = wrapContent) {
                     leftOf(_id.next) // Слева от кнопки
@@ -131,8 +131,8 @@ class ViewerView(private val act: ViewerActivity) : AnkoComponent<ViewerActivity
                     backgroundColor = Color.parseColor("#00ffffff")
                     scaleType = CENTER_CROP
                     imageResource = R.drawable.ic_previous_white
-                    visibleOrInvisible(act.isPrev)
-                    onClick { act.prevChapter() }
+                    visibleOrInvisible(presenter.isPrev)
+                    onClick { presenter.prevChapter() }
                 }.lparams(width = buttonSize, height = buttonSize) {
                     alignParentLeft()
                     centerInParent()
@@ -145,8 +145,8 @@ class ViewerView(private val act: ViewerActivity) : AnkoComponent<ViewerActivity
                     backgroundColor = Color.parseColor("#00ffffff")
                     scaleType = CENTER_CROP
                     imageResource = R.drawable.ic_next_white
-                    visibleOrInvisible(act.isNext)
-                    onClick { act.nextChapter() }
+                    visibleOrInvisible(presenter.isNext)
+                    onClick { presenter.nextChapter() }
                 }.lparams(width = buttonSize, height = buttonSize) {
                     alignParentRight()
                     centerInParent()
@@ -162,14 +162,13 @@ class ViewerView(private val act: ViewerActivity) : AnkoComponent<ViewerActivity
                     below(_id.progressBar)
                     above(_id.bottomBar)
                 }
-
-                onPageChangeListener { onPageSelected { position -> act.progress.item = position } }
-                bind(act.progress) { currentItem = it }
-                act.adapter.bind {
-                    adapter = it
-                    currentItem = act.progress.item
+                onPageChangeListener {
+                    onPageSelected { position -> presenter.progressPages.item = position }
                 }
-                act.isSwipeControl.bind { setLocked(!it) }
+                presenter.progressPages.bind { currentItem = it }
+
+                presenter.into(this)
+                presenter.isSwipeControl.bind { setLocked(!it) }
             }
 
         }

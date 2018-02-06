@@ -4,8 +4,6 @@ import android.arch.lifecycle.Observer
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.instance
 import com.san.kir.manger.components.Main.Main
 import com.san.kir.manger.room.DAO.MangaFilter
 import com.san.kir.manger.room.DAO.loadMangas
@@ -20,9 +18,8 @@ import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.SimpleItemTouchHelperCallback
 import java.util.*
 
-class LibraryItemsRecyclerPresenter(val cat: Category, private val injector: KodeinInjector) :
+class LibraryItemsRecyclerPresenter(val cat: Category, private val act: LibraryActivity) :
     RecyclerPresenter() {
-    private val act: LibraryActivity by injector.instance()
     private val mangas = Main.db.mangaDao
     private val categories = Main.db.categoryDao
     private lateinit var adapter: RecyclerViewAdapterFactory.DragableRecyclerViewAdapter<Manga>
@@ -39,11 +36,11 @@ class LibraryItemsRecyclerPresenter(val cat: Category, private val injector: Kod
     fun intoIsList(recyclerView: RecyclerView, isLarge: Boolean) {
         adapter = if (isLarge) {
             RecyclerViewAdapterFactory
-                .createDragable(view = { LibraryLargeItemView(injector, cat) }, itemMove = itemMove)
+                .createDragable(view = { LibraryLargeItemView(act, cat) }, itemMove = itemMove)
         } else {
             RecyclerViewAdapterFactory
                 .createDragable(
-                    view = { LibrarySmallItemView(injector, cat) }, itemMove = itemMove
+                    view = { LibrarySmallItemView(act, cat) }, itemMove = itemMove
                 )
         }
         into(recyclerView)

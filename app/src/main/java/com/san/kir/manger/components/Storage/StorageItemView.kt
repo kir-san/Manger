@@ -11,15 +11,10 @@ import android.widget.PopupMenu
 import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.instance
 import com.san.kir.manger.App.Companion.context
 import com.san.kir.manger.R
 import com.san.kir.manger.components.AddManga.AddMangaActivity
 import com.san.kir.manger.components.Main.Main
-import com.san.kir.manger.photoview.onError
-import com.san.kir.manger.picasso.NetworkPolicy
-import com.san.kir.manger.picasso.Picasso
 import com.san.kir.manger.room.DAO.delete
 import com.san.kir.manger.room.DAO.getFromPath
 import com.san.kir.manger.room.DAO.loadAllSize
@@ -29,6 +24,9 @@ import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.formatDouble
 import com.san.kir.manger.utils.getFullPath
+import com.san.kir.manger.utils.onError
+import com.squareup.picasso.NetworkPolicy
+import com.squareup.picasso.Picasso
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.alignParentBottom
@@ -51,8 +49,8 @@ import org.jetbrains.anko.textView
 import org.jetbrains.anko.wrapContent
 import kotlin.math.roundToInt
 
-class StorageItemView(injector: KodeinInjector) : RecyclerViewAdapterFactory.AnkoView<Storage>() {
-    private val act: StorageActivity by injector.instance()
+class StorageItemView(private val act: StorageActivity) :
+    RecyclerViewAdapterFactory.AnkoView<Storage>() {
     private val mangas = Main.db.mangaDao
     private val storage = Main.db.storageDao
 
@@ -104,8 +102,10 @@ class StorageItemView(injector: KodeinInjector) : RecyclerViewAdapterFactory.Ank
             }
 
             progressBar = horizontalProgressBar {
-                progressDrawable = ContextCompat.getDrawable(this@with.ctx,
-                                                             R.drawable.storage_progressbar)
+                progressDrawable = ContextCompat.getDrawable(
+                    this@with.ctx,
+                    R.drawable.storage_progressbar
+                )
                 horizontalPadding = dip(3)
             }.lparams(height = dip(22), width = matchParent) {
                 alignParentBottom()
@@ -134,42 +134,52 @@ class StorageItemView(injector: KodeinInjector) : RecyclerViewAdapterFactory.Ank
         if (manga != null) {
             if (manga.logo.isNotEmpty())
                 Picasso.with(logo.context)
-                        .load(manga.logo)
-                        .networkPolicy(NetworkPolicy.OFFLINE)
-                        .into(logo, onError {
-                            Picasso.with(logo.context)
-                                    .load(manga.logo)
-                                    .into(logo, onError {
-                                        logo.backgroundColor = Color.TRANSPARENT
-                                    })
-                        })
+                    .load(manga.logo)
+                    .networkPolicy(NetworkPolicy.OFFLINE)
+                    .into(logo, onError {
+                        Picasso.with(logo.context)
+                            .load(manga.logo)
+                            .into(logo, onError {
+                                logo.backgroundColor = Color.TRANSPARENT
+                            })
+                    })
             else
                 logo.backgroundResource = manga.color
         } else logo.visibility = View.INVISIBLE
 
         name.text = item.name
-        sizeText.text = context.getString(R.string.storage_manga_item_size_text,
-                                          formatDouble(item.sizeFull))
+        sizeText.text = context.getString(
+            R.string.storage_manga_item_size_text,
+            formatDouble(item.sizeFull)
+        )
         isExists.visibility = if (manga == null) View.VISIBLE else View.GONE
 
         Main.db.storageDao
-                .loadAllSize()
-                .observe(act, Observer {
-                    val size = it?.roundToInt() ?: 0
-                    progressBar.max = size
-                    progressBar.progress = item.sizeFull.roundToInt()
-                    progressBar.secondaryProgress = item.sizeRead.roundToInt()
-                    if (size != 0)
-                        percent.text = context.getString(R.string.storage_manga_item_size_percent,
-                                                         Math.round(item.sizeFull / size * 100))
-                })
+            .loadAllSize()
+            .observe(act, Observer {
+                val size = it?.roundToInt() ?: 0
+                progressBar.max = size
+                progressBar.progress = item.sizeFull.roundToInt()
+                progressBar.secondaryProgress = item.sizeRead.roundToInt()
+                if (size != 0)
+                    percent.text = context.getString(
+                        R.string.storage_manga_item_size_percent,
+                        Math.round(item.sizeFull / size * 100)
+                    )
+            })
     }
 
-    private fun View.menuOfActions(manga: Manga?,
-                                   item: Storage) {
-        with(PopupMenu(context,
-                       this,
-                       Gravity.END)) {
+    private fun View.menuOfActions(
+        manga: Manga?,
+        item: Storage
+    ) {
+        with(
+            PopupMenu(
+                context,
+                this,
+                Gravity.END
+            )
+        ) {
             if (manga != null) {
                 menu.add(0, 0, 0, "Подробнее")
             } else {

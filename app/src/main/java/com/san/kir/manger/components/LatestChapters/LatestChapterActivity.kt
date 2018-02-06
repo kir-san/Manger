@@ -14,9 +14,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.instance
 import com.san.kir.manger.EventBus.Binder
 import com.san.kir.manger.EventBus.negative
 import com.san.kir.manger.EventBus.positive
@@ -38,7 +35,7 @@ import org.jetbrains.anko.recyclerview.v7.recyclerView
 import org.jetbrains.anko.verticalLayout
 
 class LatestChapterActivity : DrawerActivity() {
-    private val _adapter = LatestChaptersRecyclerPresenter(injector)
+    private val _adapter = LatestChaptersRecyclerPresenter(this)
     private val isAction = Binder(false)
 
     private var bound = false
@@ -72,11 +69,6 @@ class LatestChapterActivity : DrawerActivity() {
                 _adapter.into(this)
             }
         }
-
-
-    override fun provideOverridingModule() = Kodein.Module {
-        bind<LatestChapterActivity>() with instance(this@LatestChapterActivity)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

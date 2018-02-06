@@ -6,9 +6,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.instance
 import com.san.kir.manger.R
 import com.san.kir.manger.components.Drawer.DrawerActivity
 import com.san.kir.manger.room.models.Category
@@ -45,10 +42,6 @@ class CategoryActivity : DrawerActivity() {
                 topMargin = dip(2)
             }
         }
-
-    override fun provideOverridingModule() = Kodein.Module {
-        bind<CategoryActivity>() with instance(this@CategoryActivity)
-    }
 
     @SuppressLint("MissingSuperCall")
     override fun onCreate(savedInstanceState: Bundle?) {

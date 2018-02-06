@@ -6,8 +6,6 @@ import android.widget.ImageButton
 import android.widget.ImageView.ScaleType.CENTER_CROP
 import android.widget.ProgressBar
 import android.widget.TextView
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.instance
 import com.san.kir.manger.R
 import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.utils.ID
@@ -218,7 +216,7 @@ import org.jetbrains.anko.wrapContent
     }
 }*/
 
-class DownloadLoadingItemView(injector: KodeinInjector) :
+class DownloadLoadingItemView(private val act: DownloadManagerActivity) :
         RecyclerViewAdapterFactory.AnkoView<DownloadItem>() {
     private object _id {
         val cancel = ID.generate()
@@ -228,7 +226,6 @@ class DownloadLoadingItemView(injector: KodeinInjector) :
         val bar = ID.generate()
     }
 
-    private val act: DownloadManagerActivity by injector.instance()
     private val downloadManage by lazy { act.downloadManager }
 
     private lateinit var name: TextView

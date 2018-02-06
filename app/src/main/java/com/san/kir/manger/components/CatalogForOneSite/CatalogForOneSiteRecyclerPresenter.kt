@@ -1,8 +1,6 @@
 package com.san.kir.manger.components.CatalogForOneSite
 
 import android.support.v7.widget.RecyclerView
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.instance
 import com.san.kir.manger.room.models.SiteCatalogElement
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
@@ -13,7 +11,8 @@ import kotlinx.coroutines.experimental.launch
 
 typealias onStart = () -> Unit
 typealias onEnd = (Int) -> Unit
-class CatalogForOneSiteRecyclerPresenter(injector: KodeinInjector) : RecyclerPresenter() {
+
+class CatalogForOneSiteRecyclerPresenter : RecyclerPresenter() {
 
     companion object {
         val DATE = 0
@@ -22,7 +21,12 @@ class CatalogForOneSiteRecyclerPresenter(injector: KodeinInjector) : RecyclerPre
     }
 
     private val adapter = RecyclerViewAdapterFactory.createSimple { CatalogForOneSiteItemView() }
-    private val filterAdapterList: List<CatalogFilter> by injector.instance()
+    val filterAdapterList = listOf(
+        CatalogFilter("Жанры", FilterAdapter()),
+        CatalogFilter("Тип манги", FilterAdapter()),
+        CatalogFilter("Статус манги", FilterAdapter()),
+        CatalogFilter("Авторы", FilterAdapter())
+    )
     private var isReversed = false // Сохранение информации о порядке сортировки
     private var sortType = DATE // Сохранение информации о типе сортировки
     private var searchText = "" // Сохранение информации о поисковом запросе
@@ -40,16 +44,18 @@ class CatalogForOneSiteRecyclerPresenter(injector: KodeinInjector) : RecyclerPre
             backupCatalog = adapter.items
 
             changeOrder()
-
             async {
                 adapter.items.forEach { item ->
                     filterAdapterList[0].adapter.addAll(item.genres)
                     filterAdapterList[1].adapter.add(item.type)
+                    filterAdapterList[2].adapter.add(item.statusEdition)
+                    filterAdapterList[3].adapter.addAll(item.authors)
                 }
             }.await()
 
-            filterAdapterList[0].adapter.finishAdd()
-            filterAdapterList[1].adapter.finishAdd()
+            filterAdapterList.forEach {
+                it.adapter.finishAdd()
+            }
 
         } catch (e: Exception) {
             log("setSite send exception: $e")
@@ -63,10 +69,12 @@ class CatalogForOneSiteRecyclerPresenter(injector: KodeinInjector) : RecyclerPre
         adapter.notifyDataSetChanged()
     }
 
-    fun changeOrder(sortType: Int = this.sortType,
-                    isReversed: Boolean = this.isReversed,
-                    searchText: String = this.searchText,
-                    filters: List<FilterAdapter> = this.filters): Int {
+    fun changeOrder(
+        sortType: Int = this.sortType,
+        isReversed: Boolean = this.isReversed,
+        searchText: String = this.searchText,
+        filters: List<FilterAdapter> = this.filters
+    ): Int {
         var list = backupCatalog
 
         // Обработка поискового запроса
@@ -78,12 +86,20 @@ class CatalogForOneSiteRecyclerPresenter(injector: KodeinInjector) : RecyclerPre
         if (!filters.all { it.getSelected().isEmpty() }) {
             val genres = filters[0].getSelected()
             val types = filters[1].getSelected()
+            val statuses = filters[2].getSelected()
+            val authors = filters[3].getSelected()
 
             if (genres.isNotEmpty())
                 list = list.filter { it.genres.containsAll(genres) }
 
             if (types.isNotEmpty())
                 list = list.filter { types.contains(it.type) }
+
+            if (statuses.isNotEmpty())
+                list = list.filter { statuses.contains(it.statusEdition) }
+
+            if (authors.isNotEmpty())
+                list = list.filter { it.authors.containsAll(authors) }
         }
 
         // Обработка сортировки

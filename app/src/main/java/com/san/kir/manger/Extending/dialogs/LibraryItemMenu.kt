@@ -17,7 +17,6 @@ class LibraryItemMenu(context: Context,
                       act: LibraryActivity,
                       position: Int) {
     private val mangas = Main.db.mangaDao
-    private val categories = Main.db.categoryDao
 
     init {
         PopupMenu(context, anchor).apply {

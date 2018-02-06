@@ -4,8 +4,6 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.instance
 import com.san.kir.manger.components.Main.Main
 import com.san.kir.manger.room.DAO.DownloadDao
 import com.san.kir.manger.room.DAO.delete
@@ -14,40 +12,39 @@ import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 
 
-fun loadingAdapter(injector: KodeinInjector): DownloadManagerRecyclerPresenter {
-    return DownloadManagerRecyclerPresenter(injector,
+fun loadingAdapter(act: DownloadManagerActivity): DownloadManagerRecyclerPresenter {
+    return DownloadManagerRecyclerPresenter(act,
                                             { loadLoadingDownloads() },
-                                            { DownloadLoadingItemView(injector) },
+                                            { DownloadLoadingItemView(act) },
                                             false)
 }
 
-fun pauseAdapter(injector: KodeinInjector): DownloadManagerRecyclerPresenter {
-    return DownloadManagerRecyclerPresenter(injector,
+fun pauseAdapter(act: DownloadManagerActivity): DownloadManagerRecyclerPresenter {
+    return DownloadManagerRecyclerPresenter(act,
                                             { loadPauseDownloads() },
                                             { DownloadPauseItemView() })
 }
 
-fun errorAdapter(injector: KodeinInjector): DownloadManagerRecyclerPresenter {
-    return DownloadManagerRecyclerPresenter(injector,
+fun errorAdapter(act: DownloadManagerActivity): DownloadManagerRecyclerPresenter {
+    return DownloadManagerRecyclerPresenter(act,
                                             { loadErrorDownloads() },
                                             { DownloadErrorItemView() })
 }
 
-fun completeAdapter(injector: KodeinInjector): DownloadManagerRecyclerPresenter {
-    return DownloadManagerRecyclerPresenter(injector,
+fun completeAdapter(act: DownloadManagerActivity): DownloadManagerRecyclerPresenter {
+    return DownloadManagerRecyclerPresenter(act,
                                             { loadCompleteDownloads() },
                                             { DownloadCompleteItemView() })
 }
 
 
-class DownloadManagerRecyclerPresenter(injector: KodeinInjector,
+class DownloadManagerRecyclerPresenter(private val act: DownloadManagerActivity,
                                        private val pagedList: DownloadDao.() -> LiveData<List<DownloadItem>>,
                                        view: () -> RecyclerViewAdapterFactory.AnkoView<DownloadItem>,
                                        private val isSwiped: Boolean = true) :
         RecyclerPresenter(), DownloadListener {
     private val adapter = RecyclerViewAdapterFactory
             .createSimple(view = view)
-    private val act: DownloadManagerActivity by injector.instance()
     private val dao = Main.db.downloadDao
 
     override fun into(recyclerView: RecyclerView) {

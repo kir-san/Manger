@@ -2,25 +2,25 @@ package com.san.kir.manger.components.AddManga
 
 import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Spinner
-import com.san.kir.manger.Extending.AnkoExtend.photoView
 import com.san.kir.manger.Extending.AnkoExtend.typeText
 import com.san.kir.manger.Extending.AnkoExtend.typeTextMultiLine
 import com.san.kir.manger.Extending.dialogs.ColorPicker
 import com.san.kir.manger.R.string
 import com.san.kir.manger.components.Main.Main
-import com.san.kir.manger.photoview.PhotoView
-import com.san.kir.manger.photoview.onError
-import com.san.kir.manger.picasso.NetworkPolicy.OFFLINE
-import com.san.kir.manger.picasso.Picasso
 import com.san.kir.manger.room.DAO.categoryNames
 import com.san.kir.manger.room.models.Manga
+import com.san.kir.manger.utils.onError
+import com.squareup.picasso.NetworkPolicy
+import com.squareup.picasso.Picasso
 import org.jetbrains.anko.AnkoComponent
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.backgroundResource
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.editText
+import org.jetbrains.anko.imageView
 import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.scrollView
@@ -49,9 +49,9 @@ class AddMangaView : AnkoComponent<AddMangaActivity> {
     private lateinit var path: EditText
     private lateinit var status: Spinner
     private lateinit var site: EditText
-    private lateinit var color: PhotoView
+    private lateinit var color: ImageView
     private lateinit var logoText: EditText
-    private lateinit var logo: PhotoView
+    private lateinit var logo: ImageView
 
     fun createView(parent: AddMangaActivity) = createView(AnkoContext.create(parent, parent))
 
@@ -104,14 +104,14 @@ class AddMangaView : AnkoComponent<AddMangaActivity> {
                             .lparams(width = matchParent, height = wrapContent)
 
                     textView(text = string.add_manga_color)
-                    color = photoView {
+                    color = imageView {
                         backgroundResource = android.R.color.holo_blue_bright
                     }.lparams(width = matchParent, height = dip(40))
 
                     textView(text = string.add_manga_logo)
                     logoText = editText().typeText()
                             .lparams(width = matchParent, height = wrapContent)
-                    logo = photoView {
+                    logo = imageView {
                     }.lparams(width = matchParent, height = dip(350))
                 }
             }
@@ -162,7 +162,7 @@ class AddMangaView : AnkoComponent<AddMangaActivity> {
         } else
             Picasso.with(logo.context)
                     .load(manga.logo)
-                    .networkPolicy(OFFLINE)
+                    .networkPolicy(NetworkPolicy.OFFLINE)
                     .into(logo, onError {
                         Picasso.with(logo.context)
                                 .load(manga.logo)

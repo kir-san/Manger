@@ -9,6 +9,7 @@ import com.san.kir.manger.components.Main.Main
 import com.san.kir.manger.components.Parsing.ManageSites
 import com.san.kir.manger.components.SitesCatalog.SiteCatalogActivity
 import com.san.kir.manger.room.DAO.contain
+import com.san.kir.manger.room.DAO.update
 import com.san.kir.manger.room.models.SiteCatalogElement
 import com.san.kir.manger.utils.ID
 import kotlinx.coroutines.experimental.CommonPool
@@ -21,7 +22,8 @@ import org.jetbrains.anko.notificationManager
 
 class CatalogForOneSiteUpdaterService : IntentService(TAG) {
     companion object {
-        const val ACTION_CATALOGUPDATERSERVICE = "kir.san.manger.CatalogForOneSiteUpdaterService.UPDATE"
+        const val ACTION_CATALOGUPDATERSERVICE =
+            "kir.san.manger.CatalogForOneSiteUpdaterService.UPDATE"
         const val ACTION_CANCELALL = "kir.san.manger.CatalogForOneSiteUpdaterService.CANCELLALL"
 
         const val EXTRA_KEY_OUT = "EXTRA_OUT"
@@ -42,10 +44,11 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
         val intent = intentFor<CatalogForOneSiteUpdaterService>().setAction(ACTION_CANCELALL)
         val cancelAll = PendingIntent.getService(this, 0, intent, 0)
         NotificationCompat
-                .Action
-                .Builder(R.drawable.ic_cancel, "Отменить все", cancelAll)
-                .build()
+            .Action
+            .Builder(R.drawable.ic_cancel, "Отменить все", cancelAll)
+            .build()
     }
+    private var isError = false
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         if (intent.action == ACTION_CANCELALL) {
@@ -56,63 +59,91 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
     }
 
 
-    override fun onHandleIntent(intent: Intent) = runBlocking(CommonPool) {
-        val site = ManageSites.CATALOG_SITES[intent.getIntExtra("id", -1)]
-        val siteDb = Main.db.siteDao.loadSite(site.name)
+    override fun onHandleIntent(intent: Intent) {
+        runBlocking(CommonPool) {
+            try {
+                val site = ManageSites.CATALOG_SITES[intent.getIntExtra("id", -1)]
+                val siteDb = Main.db.siteDao.loadSite(site.name)
 
-        with(NotificationCompat.Builder(this@CatalogForOneSiteUpdaterService, channelId)) {
-            setSmallIcon(R.drawable.ic_notify_updater)
-            setContentTitle("Обновление каталогов: ${taskCounter.size} шт.")
-            setContentText("Подготовка каталога ${site.name} к загрузке")
-            notificationManager.notify(notificationId, build())
-        }
+                with(NotificationCompat.Builder(this@CatalogForOneSiteUpdaterService, channelId)) {
+                    setSmallIcon(R.drawable.ic_notify_updater)
+                    setContentTitle("Обновление каталогов: ${taskCounter.size} шт.")
+                    setContentText("Подготовка каталога ${site.name} к загрузке")
+                    startForeground(notificationId, build())
+                }
 
-        val viewModel = SiteCatalogElementViewModel.setSiteId(site.ID)
-        viewModel.clearDb()
-        var counter = 0
+                val viewModel = SiteCatalogElementViewModel.setSiteId(site.ID)
+                viewModel.clearDb()
+                var counter = 0
 
-        site.init()
+                site.init()
 
+                val loadContext = newFixedThreadPoolContext(2, "LoadContext")
+                catalog = site.getCatalog(loadContext)
+                catalog?.consumeEach { newElement ->
+                    newElement.isAdded = Main.db.mangaDao.contain(newElement)
+                    viewModel.insert(newElement)
+                    counter++
+                    with(
+                        NotificationCompat.Builder(
+                            this@CatalogForOneSiteUpdaterService,
+                            channelId
+                        )
+                    ) {
+                        setSmallIcon(R.drawable.ic_notify_updater)
+                        setContentTitle("Обновление ${taskCounter.size} шт")
+                        setContentText("${siteDb?.name}  ${((counter.toFloat() / site.volume.toFloat()) * 100).toInt()}%")
+                        setProgress(site.volume, counter, false)
+                        addAction(actionCancelAll)
+                        startForeground(notificationId, build())
+                    }
+                }
 
-        val loadContext = newFixedThreadPoolContext(2, "LoadContext")
-        catalog = site.getCatalog(loadContext)
-        catalog?.consumeEach { newElement ->
-            newElement.isAdded = Main.db.mangaDao.contain(newElement)
-            viewModel.insert(newElement)
-            counter++
-            with(NotificationCompat.Builder(this@CatalogForOneSiteUpdaterService, channelId)) {
-                setSmallIcon(R.drawable.ic_notify_updater)
-                setContentTitle("Обновление ${taskCounter.size} шт")
-                setContentText("${siteDb?.name}  ${((counter.toFloat() / site.volume.toFloat()) * 100).toInt()}%")
-                setProgress(site.volume, counter, false)
-                addAction(actionCancelAll)
-                notificationManager.notify(notificationId, build())
+                siteDb?.oldVolume = counter
+                Main.db.siteDao.update(siteDb)
+
+                catalog?.isActive?.let {
+                    if (it) {
+                        val responseIntent = Intent()
+                        responseIntent.putExtra(EXTRA_KEY_OUT, site.ID)
+                        responseIntent.action = ACTION_CATALOGUPDATERSERVICE
+                        sendBroadcast(responseIntent)
+
+                        taskCounter -= site.ID
+                    }
+                }
+            } catch (e: Exception) {
+                isError = true
             }
         }
-
-        taskCounter -= site.ID
-
-        val responseIntent = Intent()
-        responseIntent.action = ACTION_CATALOGUPDATERSERVICE
-        responseIntent.addCategory(Intent.CATEGORY_DEFAULT)
-        sendBroadcast(responseIntent)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        catalog?.cancel()
-        taskCounter = emptyList()
-        with(NotificationCompat.Builder(this@CatalogForOneSiteUpdaterService, channelId)) {
-            setSmallIcon(R.drawable.ic_notify_updater)
-            setContentTitle("Обновление каталогов завершенно")
-            setContentText("")
-            setContentIntent(actionGoToCatalogs)
-            notificationManager.notify(notificationId, build())
+
+        catalog?.invokeOnCompletion {
+            val responseIntent = Intent()
+            responseIntent.putExtra(EXTRA_KEY_OUT, -2)
+            responseIntent.action = ACTION_CATALOGUPDATERSERVICE
+
+            sendBroadcast(responseIntent)
+
+            with(NotificationCompat.Builder(this@CatalogForOneSiteUpdaterService, channelId)) {
+                setSmallIcon(R.drawable.ic_notify_updater)
+                setContentTitle("Обновление каталогов завершенно")
+                setContentText("")
+                if (isError) {
+                    setContentTitle("Обновление каталогов завершенно с ошибкой")
+                    setContentText("Проверьте подключение к интернету")
+                }
+                setContentIntent(actionGoToCatalogs)
+                notificationManager.notify(notificationId, build())
+            }
         }
 
-        val responseIntent = Intent()
-        responseIntent.action = ACTION_CATALOGUPDATERSERVICE
-        responseIntent.addCategory(Intent.CATEGORY_DEFAULT)
-        sendBroadcast(responseIntent)
+        catalog?.cancel()
+        taskCounter = emptyList()
+        stopForeground(false)
+        stopSelf()
     }
 }

@@ -13,9 +13,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.PopupWindow
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.instance
 import com.san.kir.manger.App.Companion.context
 import com.san.kir.manger.Extending.Views.showAlways
 import com.san.kir.manger.Extending.Views.showIfRoom
@@ -51,7 +48,7 @@ class LibraryActivity : DrawerActivity(), ActionMode.Callback {
     private val updateApp = ManageSites.UpdateApp(this)
     private lateinit var currentAdapter: LibraryItemsRecyclerPresenter
     private lateinit var viewPager: ViewPager
-    private val pagerAdapter by lazy { LibraryPageAdapter(injector) }
+    private val pagerAdapter by lazy { LibraryPageAdapter(this) }
 
     var isCustomizeMyOrder = false
 
@@ -63,10 +60,6 @@ class LibraryActivity : DrawerActivity(), ActionMode.Callback {
             adapter = pagerAdapter
             viewPager = this
         }
-
-    override fun provideOverridingModule() = Kodein.Module {
-        bind<LibraryActivity>() with instance(this@LibraryActivity)
-    }
 
     @SuppressLint("MissingSuperCall")
     override fun onCreate(savedInstanceState: Bundle?) {

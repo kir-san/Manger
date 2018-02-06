@@ -10,6 +10,7 @@ import android.util.LruCache
 import android.view.View
 import com.san.kir.manger.room.models.Chapter
 import com.san.kir.manger.room.models.LatestChapter
+import com.squareup.picasso.Callback
 import java.io.File
 import java.text.DecimalFormat
 
@@ -211,3 +212,15 @@ object SortLibraryUtil {
 fun formatDouble(value: Double?) = DecimalFormat("#0.00").format(value)
 
 fun bytesToMbytes(value: Long) = value.toDouble() / (1024.0 * 1024.0)
+
+fun onError(function: () -> Unit): Callback {
+    return object : Callback {
+        override fun onSuccess() {
+
+        }
+
+        override fun onError() {
+            function.invoke()
+        }
+    }
+}

@@ -3,6 +3,8 @@ package com.san.kir.manger.components.Parsing.Sites
 import com.san.kir.manger.components.Main.Main
 import com.san.kir.manger.components.Parsing.ManageSites
 import com.san.kir.manger.components.Parsing.SiteCatalog
+import com.san.kir.manger.components.Parsing.Status
+import com.san.kir.manger.components.Parsing.Translate
 import com.san.kir.manger.room.models.Chapter
 import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.room.models.Manga
@@ -56,18 +58,29 @@ open class MangachanTemplate : SiteCatalog {
         val mangakas = elem.select("a[href*=mangaka]")
         element.authors = mangakas.filter { it != mangakas.last() }.map { it.text() }
 
-        val matcher = Pattern.compile("[А-Яа-я]+ [А-Яа-я]+")
-                .matcher(elem.select(".manga_row3 .item2").html())
-        if (matcher.find())
-            element.statusEdition =
-                    if (matcher.group().contains("перевод", true)) "cингл"
-                    else matcher.group()
 
-        element.statusTranslate = elem.select(".manga_row3 span").text()
-                .removeSurrounding(" ").split(",").last()
+        var s = elem.select(".manga_row3 .item2").html()
+        element.statusEdition =
+                when {
+                    s.contains(Status.COMPLETE, true) -> Status.COMPLETE
+                    s.contains(Status.NOT_COMPLETE, true) -> Status.NOT_COMPLETE
+                    s.contains(Status.SINGLE, true) -> Status.SINGLE
+                    else -> {
+                        Status.UNKNOWN
+                    }
+                }
+
+//        val text = elem.select(".manga_row3 span").html()
+        s = elem.select(".manga_row3 .item2").toString()
+        element.statusTranslate = when {
+            s.contains(Translate.COMPLETE, true) -> Translate.COMPLETE
+            s.contains(Translate.NOT_COMPLETE, true) -> Translate.NOT_COMPLETE
+            s.contains(Translate.FREEZE, true) -> Translate.FREEZE
+            else -> Translate.UNKNOWN
+        }
 
         val matcher2 = Pattern.compile("\\d+")
-                .matcher(elem.select(".manga_row3 b").text())
+            .matcher(elem.select(".manga_row3 b").text())
         if (matcher2.find())
             element.volume = matcher2.group().toInt()
 
@@ -80,7 +93,7 @@ open class MangachanTemplate : SiteCatalog {
         element.populate = elem.select("div.manga_images font b").text().toInt()
 
         val matcher3 = Pattern.compile("\\d+")
-                .matcher(elem.select(".manga_row4 .row4_left .user_link_short").first().id())
+            .matcher(elem.select(".manga_row4 .row4_left .user_link_short").first().id())
         if (matcher3.find())
             element.dateId = matcher3.group().toInt()
 
@@ -109,21 +122,23 @@ open class MangachanTemplate : SiteCatalog {
     }
 
     override fun chapters(manga: Manga) =
-            ManageSites.getDocument(manga.site)
-                    .select(".table_cha")
-                    .select("tr")
-                    .filter { it.select("a").text().isNotEmpty() }
-                    .map {
-                        var name = it.select("a").text()
-                        val pat = Pattern.compile("v.+").matcher(name)
-                        if (pat.find())
-                            name = pat.group()
-                        Chapter(manga = manga.unic,
-                                name = name,
-                                date = it.select(".date").text(),
-                                site = host + it.select("a").attr("href"),
-                                path = "${manga.path}/$name")
-                    }
+        ManageSites.getDocument(manga.site)
+            .select(".table_cha")
+            .select("tr")
+            .filter { it.select("a").text().isNotEmpty() }
+            .map {
+                var name = it.select("a").text()
+                val pat = Pattern.compile("v.+").matcher(name)
+                if (pat.find())
+                    name = pat.group()
+                Chapter(
+                    manga = manga.unic,
+                    name = name,
+                    date = it.select(".date").text(),
+                    site = host + it.select("a").attr("href"),
+                    path = "${manga.path}/$name"
+                )
+            }
 
 
     override fun pages(item: DownloadItem): List<String> {
@@ -138,8 +153,8 @@ open class MangachanTemplate : SiteCatalog {
         if (pat.find()) {
             // избавляюсь от ненужного и разделяю строку в список и отправляю
             list = pat.group().removeSuffix(",]")
-                    .removePrefix("\"fullimg\":[")
-                    .split(",")
+                .removePrefix("\"fullimg\":[")
+                .split(",")
         }
         return list
     }

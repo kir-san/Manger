@@ -11,8 +11,6 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.instance
 import com.san.kir.manger.R
 import com.san.kir.manger.components.DownloadManager.DownloadService
 import com.san.kir.manger.components.Main.Main
@@ -22,7 +20,6 @@ import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.room.models.DownloadStatus
 import com.san.kir.manger.room.models.action
 import com.san.kir.manger.room.models.countPages
-import com.san.kir.manger.utils.ActionModeControl
 import com.san.kir.manger.utils.CHAPTER_STATUS
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
@@ -30,7 +27,6 @@ import com.san.kir.manger.utils.delChapters
 import com.san.kir.manger.utils.getFullPath
 import com.san.kir.manger.utils.isFirstRun
 import com.san.kir.manger.utils.isNotEmptyDirectory
-import com.san.kir.manger.utils.log
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import org.jetbrains.anko.AnkoContext
@@ -60,15 +56,14 @@ import org.jetbrains.anko.toast
 import org.jetbrains.anko.wrapContent
 import java.io.IOException
 
-class ListChaptersItemView(inj: KodeinInjector) : RecyclerViewAdapterFactory.AnkoView<Chapter>() {
+class ListChaptersItemView(private val act: ListChaptersActivity) : RecyclerViewAdapterFactory.AnkoView<Chapter>() {
     private object _id { // id элементов для связи между собой
         val date = ID.generate()
         val name = ID.generate()
         val limit = ID.generate()
     }
 
-    private val actionMode: ActionModeControl by inj.instance()
-    private val act: ListChaptersActivity by inj.instance()
+    private val actionMode = act.actionMode
     private val downloadManager by lazy { act.downloadManager }
 
     private var isDownload = false
@@ -310,7 +305,6 @@ class ListChaptersItemView(inj: KodeinInjector) : RecyclerViewAdapterFactory.Ank
         Main.db.downloadDao
                 .loadLivedItem(item.site)
                 .observe(act, Observer {
-                    log("d: $it")
                     changeVisiblesAndActions(it, item)
                 })
     }

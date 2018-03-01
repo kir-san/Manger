@@ -53,7 +53,7 @@
     <!-- Viewer -->
     <string name="viewer_chapters_text">Главы: %1$d/%2$d</string>
     <string name="viewer_pages_text">Страницы: %1$d/%2$d</string>
-    <string name="viewer_page_next_text">Для перехода на следующию главу нажмите на экран</string>
+    <string name="viewer_page_next_text">Для перехода на следующую главу нажмите на экран</string>
     <string name="viewer_page_prev_text">Для перехода на предыдущую главу нажмите на экран</string>
     <string name="viewer_page_none_next_text">Увы но еще одной главы нет, мне очень жаль.</string>
     <string name="viewer_page_none_prev_text">Эта самая первая глава, ничего первее быть не должно</string>
@@ -183,8 +183,8 @@
     <string name="action_set_download">Скачать</string>
     <string name="action_set_read">Пометить прочитаными</string>
     <string name="action_set_not_read">Пометить не прочитаными</string>
-    <string name="action_select_prev">Выбрать предыдущие</string>
-    <string name="action_select_next">Выбрать следующие</string>
+    <string name="action_select_prev">Выбрать все ниже</string>
+    <string name="action_select_next">Выбрать все выше</string>
     <string name="action_full_delete">Удалить из базы данных</string>
 
     <!--DownloadManager-->
@@ -194,25 +194,33 @@
     <string name="download_item_final_size_with_min_and_sec">%1$s Мб за %2$d мин и %3$d сек</string>
     <string name="download_item_progress_percent">%d %%</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-
-
-    <string name="fab_menu_local_manga" tools:ignore="UnusedResources">Локальное хранилище</string>
-
-    <string name="pref_temp">Настройки приложения</string>
-
-    <string name="site_volume">Объем: %1$d + %2$d</string>
-
-    <string name="ic_action_all" tools:ignore="UnusedResources">readAll</string>
-    <string name="ic_action_read" tools:ignore="UnusedResources">readVisible</string>
-    <string name="ic_action_not_read" tools:ignore="UnusedResources">notRead</string>
-    <string name="ic_action_name" tools:ignore="UnusedResources">sort</string>
-
-    <string name="name">Автор: Kir San</string>
-    <string name="email">provakator-30@mail.ru</string>
-    <string name="title_activity_settings" tools:ignore="UnusedResources">Settings</string>
-    <string name="todo">TODO</string>
+    <!--DownloadService-->
+    <string name="download_service_queue">Очередь: %d</string>
+    <string name="download_service_complete_title">Загрузка завершена</string>
+    <string name="download_service_complete_title_error">Загрузка прервана c ошибкой</string>
+    <string name="download_service_complete_title_paused">Загрузка прервана</string>
+    <string name="download_service_complete_text">Приятного чтения</string>
+    <string name="download_service_complete_text_error">Ни одна глава не скачалась</string>
+    <string name="download_service_complete_text_paused">Все загрузки были приостановленны</string>
+    <string name="download_service_pause_all">Приостановить все</string>
+    <string name="download_service_complete_time_sec">Скачано %1$s Мб за %2$d сек</string>
+    <string name="download_service_complete_time_min_sec">%1$s Мб за %2$d мин и %3$d сек</string>
+    <plurals name="download_service_complete_without_error">
+        <item quantity="one">%d глава скачалась без ошибок</item>
+        <item quantity="few">%d главы скачались без ошибок</item>
+        <item quantity="many">%d глав скачалось без ошибок</item>
+        <item quantity="other">%d глав скачалось без ошибок</item>
+    </plurals>
+    <plurals name="download_service_complete_with_error_start">
+        <item quantity="one">%d глава скачалась</item>
+        <item quantity="few">%d главы скачались</item>
+        <item quantity="many">%d глав скачалось</item>
+        <item quantity="other">%d глав скачалось</item>
+    </plurals>
+    <plurals name="download_service_complete_with_error_end">
+        <item quantity="one">c %d ошибкой</item>
+        <item quantity="other">с %d ошибками</item>
+    </plurals>
 
     <!--CategoryDialog-->
     <string name="category_dialog_span_text">Количество столбцов: %d</string>
@@ -220,5 +228,18 @@
     <string name="category_dialog_small_cells">Мелкие ячейки</string>
     <string name="category_dialog_positive">Изменить</string>
     <string name="category_dialog_negative">Я передумал</string>
+
+    <!-- OTHER -->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="pref_temp">Настройки приложения</string>
+
+    <string name="site_volume">Объем: %1$d + %2$d</string>
+
+    <string name="name">Автор: Kir San</string>
+    <string name="email">provakator-30@mail.ru</string>
+
+    <string name="todo">TODO</string>
 
 </resources>

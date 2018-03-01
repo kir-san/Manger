@@ -16,10 +16,10 @@ import com.san.kir.manger.utils.SortLibraryUtil
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.checkBox
 import org.jetbrains.anko.customView
+import org.jetbrains.anko.design.textInputEditText
+import org.jetbrains.anko.design.textInputLayout
 import org.jetbrains.anko.dip
-import org.jetbrains.anko.editText
 import org.jetbrains.anko.leftPadding
-import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.padding
 import org.jetbrains.anko.radioButton
 import org.jetbrains.anko.radioGroup
@@ -55,24 +55,27 @@ class CategoryEditDialog(
                     verticalLayout {
                         padding = dip(16)
 
-                        editText(cat.name) {
-                            isEnabled = !isAll
-                            typeText()
-                            hint = "Введите название"
-                            textChangedListener {
-                                onTextChanged { text, _, _, _ ->
-                                    text?.let {
-                                        cat.name = it.toString()
-                                        validate.item = when {
-                                            text.length < 3 -> "Слишком коротко"
-                                            oldName == it.toString() -> "Старое имя"
-                                            catList.contains(it.toString()) -> "Название занято"
-                                            else -> ""
+                        textInputLayout {
+                            textInputEditText {
+                                setText(cat.name)
+                                isEnabled = !isAll
+                                typeText()
+                                hint = "Введите название"
+                                textChangedListener {
+                                    onTextChanged { text, _, _, _ ->
+                                        text?.let {
+                                            cat.name = it.toString()
+                                            validate.item = when {
+                                                text.length < 3 -> "Слишком коротко"
+                                                oldName == it.toString() -> "Старое имя"
+                                                catList.contains(it.toString()) -> "Название занято"
+                                                else -> ""
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }.lparams(width = matchParent)
+                        }
 
                         textView(validate) {
                             textColor = Color.RED

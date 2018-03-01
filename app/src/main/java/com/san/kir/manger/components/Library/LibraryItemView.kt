@@ -63,7 +63,7 @@ abstract class LibraryItemView(
         if (item.color != 0) {
             try {
                 val drawableCompat = root.context.getDrawableCompat(item.color).apply {
-                    alpha = 210
+                    this?.alpha = 210
                 }
                 name.background = drawableCompat
                 notReadChapters.background = drawableCompat

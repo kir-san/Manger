@@ -7,6 +7,7 @@ import android.view.Gravity
 import android.view.View
 import com.san.kir.manger.R
 import com.san.kir.manger.components.Main.Main
+import com.san.kir.manger.components.SitesCatalog.SiteCatalogActivity
 import com.san.kir.manger.room.DAO.MangaFilter
 import com.san.kir.manger.room.DAO.loadMangas
 import com.san.kir.manger.room.models.Category
@@ -69,7 +70,7 @@ class LibraryPageView(
                 setText(R.string.library_help_go)
                 visibility = View.GONE
 
-                onClick { startActivity<Main>("launch" to "catalog") }
+                onClick { startActivity<SiteCatalogActivity>() }
                 Main.db.mangaDao
                     .loadMangas(category, MangaFilter.ADD_TIME_ASC)
                     .observe(act, Observer {

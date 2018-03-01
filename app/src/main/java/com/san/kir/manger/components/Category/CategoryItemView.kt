@@ -32,8 +32,6 @@ class CategoryItemView(private val adapter: CategoryRecyclerPresenter)
         val delete = ID.generate()
     }
 
-    private var _category = Category()
-
     private lateinit var root: RelativeLayout
     private lateinit var name: TextView
     private lateinit var visibleBtn: ImageView
@@ -98,7 +96,7 @@ class CategoryItemView(private val adapter: CategoryRecyclerPresenter)
         }
 
         deleteBtn.invisibleOrVisible(item.name == CATEGORY_ALL)
-        if (item.name != CATEGORY_ALL) {
+        if (item.name == CATEGORY_ALL) {
             deleteBtn.isClickable = false
         } else {
             deleteBtn.onClick {

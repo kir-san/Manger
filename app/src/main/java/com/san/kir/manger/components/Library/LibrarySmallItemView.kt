@@ -20,7 +20,6 @@ import org.jetbrains.anko.padding
 import org.jetbrains.anko.progressBar
 import org.jetbrains.anko.textColor
 import org.jetbrains.anko.textView
-import org.jetbrains.anko.verticalLayout
 import org.jetbrains.anko.wrapContent
 
 class LibrarySmallItemView(
@@ -29,7 +28,7 @@ class LibrarySmallItemView(
 ) : LibraryItemView(activity, cat) {
     override fun createView(ui: AnkoContext<ViewGroup>) = with(ui) {
         frameLayout {
-            lparams(width = matchParent, height = dip(80)) {
+            lparams(width = matchParent, height = dip(75)) {
                 margin = dip(2)
             }
 
@@ -43,25 +42,29 @@ class LibrarySmallItemView(
                 margin = dip(2)
             }
 
-            verticalLayout {
-                name = textView {
-                    backgroundColor = colorBackground
-                    maxLines = 1
-                    typeface = Typeface.DEFAULT_BOLD
-                    padding = dip(4)
-                }.lparams(width = matchParent, height = wrapContent)
+            name = textView {
+                backgroundColor = colorBackground
+                maxLines = 1
+                typeface = Typeface.DEFAULT_BOLD
+                padding = dip(4)
+            }.lparams(width = matchParent, height = wrapContent) {
+                gravity = Gravity.TOP or Gravity.START
+            }
 
-                category = textView {
-                    backgroundColor = Color.BLACK
-                    textColor = Color.WHITE
-                    visibility = View.INVISIBLE
-                    padding = dip(4)
-                }.lparams(width = wrapContent, height = wrapContent)
+            category = textView {
+                backgroundColor = Color.BLACK
+                textColor = Color.WHITE
+                visibility = View.INVISIBLE
+                padding = dip(4)
+            }.lparams(width = wrapContent, height = wrapContent) {
+                gravity = Gravity.CENTER_VERTICAL or Gravity.START
+            }
 
-                notReadChapters = textView {
-                    backgroundColor = colorBackground
-                    padding = dip(4)
-                }.lparams(width = wrapContent, height = wrapContent)
+            notReadChapters = textView {
+                backgroundColor = colorBackground
+                padding = dip(4)
+            }.lparams(width = wrapContent, height = wrapContent) {
+                gravity = Gravity.BOTTOM or Gravity.START
             }
 
             selected = imageView {

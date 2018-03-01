@@ -94,7 +94,7 @@ class ViewerActivity : BaseActivity() {
     private val view by lazy { ViewerView( presenter) }
 
     /* Перезаписанные функции */
-    @SuppressLint("MissingSuperCall", "RestrictedApi")
+    @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         view.setContentView(this) // Установка разметки
@@ -203,7 +203,6 @@ class ViewerActivity : BaseActivity() {
         }
     }
 
-    @SuppressLint("MissingSuperCall")
     override fun onDestroy() {
         super.onDestroy()
         adapter.close()

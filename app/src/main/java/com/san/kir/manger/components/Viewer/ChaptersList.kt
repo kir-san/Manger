@@ -152,7 +152,5 @@ class ChaptersList(
             }
             return true
         }
-
-
     }
 }

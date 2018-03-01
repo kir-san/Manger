@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.support.v4.content.ContextCompat
 import android.view.Gravity
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -49,8 +50,14 @@ class StorageDialogView : AnkoComponent<StorageDialogFragment> {
     private var readSize: TextView? = null
     private var readSizeAction: LinearLayout? = null
 
-    fun createView(parent: StorageDialogFragment) =
-            createView(AnkoContext.create(parent.context, parent))
+    fun createView(parent: StorageDialogFragment): View {
+        val ctx = parent.context
+        return if (ctx != null) {
+            createView(AnkoContext.create(ctx, parent))
+        } else {
+            View(ctx)
+        }
+    }
 
     override fun createView(ui: AnkoContext<StorageDialogFragment>) = with(ui) {
         verticalLayout {

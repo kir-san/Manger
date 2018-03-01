@@ -116,8 +116,8 @@ abstract class LibraryItemView(
                 if (isSelected) Color.parseColor("#af34b5e4")
                 else Color.TRANSPARENT
 
-        val isMain = cat.name == CATEGORY_ALL
-        if (isMain && root.context.defaultSharedPreferences.getBoolean(NAME_SHOW_CATEGORY, true)) {
+        if (cat.name == CATEGORY_ALL &&
+            root.context.defaultSharedPreferences.getBoolean(NAME_SHOW_CATEGORY, true)) {
             category.text = item.categories
             category.visibility = View.VISIBLE
         }

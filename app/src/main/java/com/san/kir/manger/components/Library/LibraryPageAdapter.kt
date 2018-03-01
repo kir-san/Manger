@@ -25,7 +25,7 @@ class LibraryPageAdapter(private val act: LibraryActivity) : PagerAdapter() {
             }
     }
 
-    override fun instantiateItem(container: ViewGroup, position: Int): Any? {
+    override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val v = pagers[position].view
         (container as ViewPager).addView(v, position)
         return v
@@ -33,7 +33,7 @@ class LibraryPageAdapter(private val act: LibraryActivity) : PagerAdapter() {
 
     override fun destroyItem(container: ViewGroup,
                              position: Int,
-                             `object`: Any?) = (container as ViewPager).removeView(`object` as View?)
+                             `object`: Any) = (container as ViewPager).removeView(`object` as View)
 
     override fun isViewFromObject(view: View, `object`: Any) = view == `object`
 

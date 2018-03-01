@@ -12,10 +12,10 @@ import android.view.View
 import android.view.animation.Interpolator
 import android.widget.FrameLayout
 import android.widget.LinearLayout
-import com.san.kir.manger.Extending.Views.ExpandableFrameLayout.State.Companion.COLLAPSED
-import com.san.kir.manger.Extending.Views.ExpandableFrameLayout.State.Companion.COLLAPSING
-import com.san.kir.manger.Extending.Views.ExpandableFrameLayout.State.Companion.EXPANDED
-import com.san.kir.manger.Extending.Views.ExpandableFrameLayout.State.Companion.EXPANDING
+import com.san.kir.manger.Extending.Views.ExpandableFrameLayout.State.COLLAPSED
+import com.san.kir.manger.Extending.Views.ExpandableFrameLayout.State.COLLAPSING
+import com.san.kir.manger.Extending.Views.ExpandableFrameLayout.State.EXPANDED
+import com.san.kir.manger.Extending.Views.ExpandableFrameLayout.State.EXPANDING
 
 
 open class ExpandableFrameLayout(context: Context, attrs: AttributeSet? = null) :
@@ -25,11 +25,7 @@ open class ExpandableFrameLayout(context: Context, attrs: AttributeSet? = null) 
     private var parallax: Float = 0.toFloat()
     private var expansion: Float = 0.toFloat()
     private var orientation: Int = 1
-    /**
-     * Get expansion state
-     *
-     * @return one of [State]
-     */
+
     var state: Int = 0
         private set
 
@@ -38,20 +34,15 @@ open class ExpandableFrameLayout(context: Context, attrs: AttributeSet? = null) 
 
     private var listener: OnExpansionUpdateListener? = null
 
-    /**
-     * Convenience method - same as calling setExpanded(expanded, true)
-     */
     var isExpanded: Boolean
         get() = state == EXPANDING || state == EXPANDED
         set(expand) = setExpanded(expand, true)
 
-    interface State {
-        companion object {
-            val COLLAPSED = 0
-            val COLLAPSING = 1
-            val EXPANDING = 2
-            val EXPANDED = 3
-        }
+    object State {
+        const val COLLAPSED = 0
+        const val COLLAPSING = 1
+        const val EXPANDING = 2
+        const val EXPANDED = 3
     }
 
     override fun onSaveInstanceState(): Parcelable? {
@@ -88,14 +79,15 @@ open class ExpandableFrameLayout(context: Context, attrs: AttributeSet? = null) 
         val expansionDelta = size - Math.round(size * expansion)
         if (parallax > 0) {
             val parallaxDelta = expansionDelta * parallax
-            for (i in 0 until childCount) {
-                val child = getChildAt(i)
-                if (orientation == HORIZONTAL) {
-                    child.translationX = parallaxDelta
-                } else {
-                    child.translationY = -parallaxDelta
+            (0 until childCount)
+                .map { getChildAt(it) }
+                .forEach {
+                    if (orientation == HORIZONTAL) {
+                        it.translationX = parallaxDelta
+                    } else {
+                        it.translationY = -parallaxDelta
+                    }
                 }
-            }
         }
 
         if (orientation == HORIZONTAL) {
@@ -216,16 +208,11 @@ open class ExpandableFrameLayout(context: Context, attrs: AttributeSet? = null) 
     }
 
     interface OnExpansionUpdateListener {
-        /**
-         * Callback for expansion updates
-         *
-         * @param expansionFraction Value between 0 (collapsed) and 1 (expanded) representing the the expansion progress
-         * @param state             One of [State] repesenting the current expansion state
-         */
         fun onExpansionUpdate(expansionFraction: Float, state: Int)
     }
 
-    private inner class ExpansionListener(private val targetExpansion: Int) : Animator.AnimatorListener {
+    private inner class ExpansionListener(private val targetExpansion: Int) :
+        Animator.AnimatorListener {
         private var canceled: Boolean = false
 
         override fun onAnimationStart(animation: Animator) {
@@ -248,12 +235,12 @@ open class ExpandableFrameLayout(context: Context, attrs: AttributeSet? = null) 
 
     companion object {
 
-        val KEY_SUPER_STATE = "super_state"
-        val KEY_EXPANSION = "expansion"
+        const val KEY_SUPER_STATE = "super_state"
+        const val KEY_EXPANSION = "expansion"
 
-        val HORIZONTAL = 0
-        val VERTICAL = 1
+        const val HORIZONTAL = 0
+        const val VERTICAL = 1
 
-        private val DEFAULT_DURATION = 300
+        private const val DEFAULT_DURATION = 300
     }
 }

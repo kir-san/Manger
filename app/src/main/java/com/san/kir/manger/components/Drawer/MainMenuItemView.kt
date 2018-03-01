@@ -51,8 +51,6 @@ class MainMenuItemView(private val act: BaseActivity) : RecyclerViewAdapterFacto
     override fun bind(item: MainMenuItem, isSelected: Boolean, position: Int) {
         name.text = item.name
         type.setCounter(item.type)
-
-//        isVisible.item = item.isVisible
     }
 
     private fun TextView.setCounter(type: MainMenuType) {

@@ -44,6 +44,7 @@ class CatalogForOneSiteRecyclerPresenter : RecyclerPresenter() {
             backupCatalog = adapter.items
 
             changeOrder()
+
             async {
                 adapter.items.forEach { item ->
                     filterAdapterList[0].adapter.addAll(item.genres)

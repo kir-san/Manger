@@ -24,7 +24,6 @@ import com.san.kir.manger.components.SitesCatalog.SiteCatalogActivity
 import com.san.kir.manger.components.Storage.StorageActivity
 import com.san.kir.manger.room.DAO.MainMenuType
 import com.san.kir.manger.room.DAO.update
-import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.SimpleItemTouchHelperCallback
 import com.san.kir.manger.utils.getDrawableCompat
@@ -52,10 +51,6 @@ import org.jetbrains.anko.wrapContent
 import java.util.*
 
 class DrawerView(private val act: BaseActivity) {
-    object _id {
-        val fragment = ID.generate()
-    }
-
     private val mAdapter = RecyclerViewAdapterFactory
             .createDragable({ MainMenuItemView(act) },
                             { fromPosition, toPosition ->
@@ -171,7 +166,6 @@ class DrawerView(private val act: BaseActivity) {
     }
 
     private fun showScreen(position: Int) {
-        log("showScreen(${mAdapter.items[position].type})")
         when (mAdapter.items[position].type) {
             MainMenuType.Library -> act.startActivity<LibraryActivity>()
             MainMenuType.Storage -> act.startActivity<StorageActivity>()

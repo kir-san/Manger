@@ -14,7 +14,6 @@ abstract class DrawerActivity : BaseActivity() {
 
     abstract val LinearLayout.customView: View
 
-    @SuppressLint("MissingSuperCall")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mView.createView(this) {

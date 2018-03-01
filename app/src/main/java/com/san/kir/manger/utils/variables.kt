@@ -20,10 +20,8 @@ object DIR {
 // Настройки
 const val CATEGORY_ALL = "Все"
 
+// Переключение отображения названия категории в библиотеке
 const val NAME_SHOW_CATEGORY = "show_category"
-
-const val NAME_PORT_SPAN = "portrait_span"
-const val NAME_LAND_SPAN = "landscape_span"
 
 val sPrefViewer = "ViewerActivity"
 val sPrefListChapters = "ListChaptersActivity"

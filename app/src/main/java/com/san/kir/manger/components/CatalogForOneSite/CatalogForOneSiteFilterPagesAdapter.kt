@@ -39,7 +39,7 @@ class CatalogForOneSiteFilterPagesAdapter(private val ctx: Context,
 
     override fun destroyItem(container: ViewGroup,
                              position: Int,
-                             `object`: Any?) = (container as ViewPager).removeView(`object` as View?)
+                             `object`: Any) = (container as ViewPager).removeView(`object` as View)
 
 
     override fun isViewFromObject(view: View, `object`: Any) = view == `object`

@@ -114,6 +114,8 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
                 }
             } catch (e: Exception) {
                 isError = true
+            } finally {
+
             }
         }
     }

@@ -14,6 +14,9 @@ import com.san.kir.manger.Extending.AnkoExtend.bigImageView
 import com.san.kir.manger.Extending.AnkoExtend.bind
 import com.san.kir.manger.Extending.AnkoExtend.onDoubleTapListener
 import com.san.kir.manger.R
+import com.san.kir.manger.utils.convertImagesToPng
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
 import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.scrollView
@@ -25,7 +28,7 @@ import java.io.File
 
 class ViewerPageFragment : Fragment() {
     companion object {
-        private val File_name = "file_name"
+        private const val File_name = "file_name"
         // Инициализация фрагмента с изображением
         fun newInitstate(file: File): ViewerPageFragment {
             val set = Bundle()
@@ -43,17 +46,17 @@ class ViewerPageFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // При создании фрагмента получить файл
-        mFile = File(arguments.getString(File_name))
+        mFile = File(arguments?.getString(File_name))
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         // создание разметки
         val act = activity as ViewerActivity
-        return context.linearLayout {
+        return context?.linearLayout {
             // Корень
             lparams(width = matchParent, height = matchParent)
 
@@ -75,7 +78,13 @@ class ViewerPageFragment : Fragment() {
                 bigImageView {
                     lparams(width = matchParent, height = matchParent)
 
-                    setImage(ImageSource.uri(Uri.fromFile(mFile)))
+                    async {
+                        if (mFile.extension in arrayOf("gif", "webp"))
+                            mFile = convertImagesToPng(mFile)
+                        async(UI) {
+                            setImage(ImageSource.uri(Uri.fromFile(mFile)))
+                        }
+                    }
 
                     onDoubleTapListener {
                         // Переопределение одиночного нажатия
@@ -133,8 +142,8 @@ class ViewerPagerPrevFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        return context.readyLayout(
+    ): View? {
+        return context?.readyLayout(
             activity as ViewerActivity,
             R.string.viewer_page_prev_text,
             { it.presenter.prevChapter() }
@@ -148,8 +157,8 @@ class ViewerPagerNextFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        return context.readyLayout(
+    ): View? {
+        return context?.readyLayout(
             activity as ViewerActivity,
             R.string.viewer_page_next_text,
             { it.presenter.nextChapter() }
@@ -160,11 +169,11 @@ class ViewerPagerNextFragment : Fragment() {
 // Фрагмент для последней страницы если есть нет предыдущей главы
 class ViewerPageNoneNextFragment : Fragment() {
     override fun onCreateView(
-        inflater: LayoutInflater?,
+        inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return context.readyLayout(activity as ViewerActivity,
+        return context?.readyLayout(activity as ViewerActivity,
                                    R.string.viewer_page_none_next_text,
                                    { it.presenter.prevPage() })
     }
@@ -173,11 +182,11 @@ class ViewerPageNoneNextFragment : Fragment() {
 // Фрагмент для первой страницы если есть нет предыдущей главы
 class ViewerPageNonePrevFragment : Fragment() {
     override fun onCreateView(
-        inflater: LayoutInflater?,
+        inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return context.readyLayout(activity as ViewerActivity,
+        return context?.readyLayout(activity as ViewerActivity,
                                    R.string.viewer_page_none_prev_text,
                                    { it.presenter.nextPage() })
     }

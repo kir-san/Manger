@@ -2,6 +2,7 @@ package com.san.kir.manger.utils
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.os.Environment
 import android.support.v4.content.ContextCompat
@@ -12,6 +13,7 @@ import com.san.kir.manger.room.models.Chapter
 import com.san.kir.manger.room.models.LatestChapter
 import com.squareup.picasso.Callback
 import java.io.File
+import java.io.FileOutputStream
 import java.text.DecimalFormat
 
 object ID {
@@ -68,7 +70,11 @@ fun getShortPath(path: File): String = getShortPath(path.path)
 
 fun getFullPath(path: String): File = File(Environment.getExternalStorageDirectory(), path)
 
-val extensions = listOf("png", "jpg", "webp")
+val extensions = listOf("png", "jpg", "webp", "gif")
+
+fun checkExtension(fileName: String): Boolean {
+    return extensions.any { fileName.toLowerCase().endsWith(it) }
+}
 
 fun getMangaLogo(shortPath: String): String = getMangaLogo(getFullPath(shortPath))
 fun getMangaLogo(path: File): String {
@@ -120,8 +126,7 @@ fun getChapters(path: File,
 
 fun getCountPagesForChapterInMemory(shortPath: String): Int {
     val listFiles = getFullPath(shortPath).ifExists?.listFiles { _, s ->
-        (s.toLowerCase().endsWith(".png") || s.toLowerCase().endsWith(".jpg") || s.toLowerCase().endsWith(
-                ".webp"))
+        checkExtension(s)
     }
     return listFiles?.size ?: 0
 }
@@ -147,11 +152,11 @@ fun Any.log(msg: String) {
 }
 
 
-fun Context.getDrawableCompat(layoutRes: Int): Drawable {
+fun Context.getDrawableCompat(layoutRes: Int): Drawable? {
     return ContextCompat.getDrawable(this, layoutRes)
 }
 
-fun View.getDrawableCompat(layoutRes: Int): Drawable {
+fun View.getDrawableCompat(layoutRes: Int): Drawable? {
     return context.getDrawableCompat(layoutRes)
 }
 
@@ -223,4 +228,27 @@ fun onError(function: () -> Unit): Callback {
             function.invoke()
         }
     }
+}
+
+fun convertImagesToPng(image: File): File {
+    val b = BitmapFactory.decodeFile(image.path)
+
+    val png = File(image.parentFile, "${image.nameWithoutExtension}.png"
+    )
+
+    log = if (png.createNewFile()) {
+        ("png created ${png.path}")
+    } else {
+        ("png not created ${png.path}")
+    }
+
+    val stream = FileOutputStream(png.absoluteFile)
+    b.compress(Bitmap.CompressFormat.PNG, 100, stream)
+    stream.close()
+    log = if (image.delete()) {
+        ("oldFile deleted ${image.path}")
+    } else {
+        ("oldFile not deleted ${image.path}")
+    }
+    return png
 }

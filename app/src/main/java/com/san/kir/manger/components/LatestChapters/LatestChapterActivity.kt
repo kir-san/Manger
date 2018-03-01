@@ -20,7 +20,7 @@ import com.san.kir.manger.EventBus.positive
 import com.san.kir.manger.Extending.AnkoExtend.visibleOrGone
 import com.san.kir.manger.Extending.Views.showNever
 import com.san.kir.manger.R
-import com.san.kir.manger.components.DownloadManager.DownloadManager
+import com.san.kir.manger.components.DownloadManager.ChapterLoader
 import com.san.kir.manger.components.DownloadManager.DownloadService
 import com.san.kir.manger.components.Drawer.DrawerActivity
 import com.san.kir.manger.components.Main.Main
@@ -47,11 +47,11 @@ class LatestChapterActivity : DrawerActivity() {
 
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             downloadManager =
-                    (service as DownloadService.LocalBinder).service.downloadManager
+                    (service as DownloadService.LocalBinder).chapterLoader
             bound = true
         }
     }
-    lateinit var downloadManager: DownloadManager
+    lateinit var downloadManager: ChapterLoader
 
     override val LinearLayout.customView: View
         get() = verticalLayout {

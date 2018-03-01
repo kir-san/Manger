@@ -1,7 +1,6 @@
 package com.san.kir.manger.components.Main
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.arch.persistence.room.Room
 import android.content.ComponentName
 import android.content.Context
@@ -22,7 +21,6 @@ import com.san.kir.manger.room.DAO.insert
 import com.san.kir.manger.room.DAO.update
 import com.san.kir.manger.room.RoomDB
 import com.san.kir.manger.room.models.Category
-import com.san.kir.manger.room.models.DownloadStatus
 import com.san.kir.manger.room.models.MainMenuItem
 import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.DIR
@@ -30,7 +28,6 @@ import com.san.kir.manger.utils.NAME_SHOW_CATEGORY
 import com.san.kir.manger.utils.createDirs
 import com.san.kir.manger.utils.getFullPath
 import com.san.kir.manger.utils.log
-import kotlinx.coroutines.experimental.async
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.longToast
 import org.jetbrains.anko.startActivity
@@ -54,28 +51,15 @@ class Main : BaseActivity() {
 
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             val downloadManager =
-                    (service as DownloadService.LocalBinder).service.downloadManager
+                    (service as DownloadService.LocalBinder).chapterLoader
             bound = true
 
-            async {
-                val dao = Main.db.downloadDao
-                dao.loadItems().filter {
-                    it.status == DownloadStatus.loading ||
-                            it.status == DownloadStatus.unknown
-                }.forEach {
-                    if (!downloadManager.hasTask(it)) {
-                        log("$it")
-                        it.status = DownloadStatus.pause
-                        dao.update(it)
-                    }
-                }
-            }
+            downloadManager.pausedAllIfNotDownloading()
         }
     }
 
-    val updateApp = ManageSites.UpdateApp(this)
+    private val updateApp = ManageSites.UpdateApp(this)
 
-    @SuppressLint("MissingSuperCall")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -93,13 +77,10 @@ class Main : BaseActivity() {
                 edit().putBoolean(NAME_SHOW_CATEGORY, true).apply()
         }
 
-        updateApp.checkNewVersion()
-
         val intent = Intent(this, DownloadService::class.java)
         bindService(intent, connection, Context.BIND_AUTO_CREATE)
     }
 
-    @SuppressLint("MissingSuperCall")
     override fun onDestroy() {
         super.onDestroy()
         if (bound) {
@@ -123,6 +104,7 @@ class Main : BaseActivity() {
     private fun init() {
         createNeedFolders()
         createAndInitializeDb()
+        updateApp.checkNewVersion()
 
         startActivity<LibraryActivity>()
     }

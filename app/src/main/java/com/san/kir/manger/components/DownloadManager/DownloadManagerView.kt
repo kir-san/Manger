@@ -28,7 +28,6 @@ import org.jetbrains.anko.okButton
 import org.jetbrains.anko.padding
 import org.jetbrains.anko.recyclerview.v7.recyclerView
 import org.jetbrains.anko.sdk25.coroutines.onClick
-import org.jetbrains.anko.startService
 import org.jetbrains.anko.support.v4.nestedScrollView
 import org.jetbrains.anko.textAppearance
 import org.jetbrains.anko.textView
@@ -61,22 +60,21 @@ class DownloadManagerView(private val act: DownloadManagerActivity) {
         nestedScrollView {
             verticalLayout {
                 // Загружаемые
-                expandBlock(loadColor,
-                            { loads.observe(act, Observer { text = loadText(it?.size) }) },
-                            loadingAdapter(act)) {
+                expandBlock(color = loadColor,
+                            isExpand = true,
+                            init = { loads.observe(act, Observer { text = loadText(it?.size) }) },
+                            adapter = loadingAdapter(act)) {
                     stopBtn {
-                        downloadManager.pauseAllTask()
+                        downloadManager.pauseAll()
                     }
                 }
 
                 // Приостановленные
-                expandBlock(pauseColor,
-                            { pause.observe(act, Observer { text = pauseText(it?.size) }) },
-                            pauseAdapter(act)) {
+                expandBlock(color = pauseColor,
+                            init = { pause.observe(act, Observer { text = pauseText(it?.size) }) },
+                            adapter = pauseAdapter(act)) {
                     startBtn {
-                        dao.loadItems()
-                                .filter { it.status == DownloadStatus.pause }
-                                .forEach { act.startService<DownloadService>("item" to it) }
+                        downloadManager.startAll()
                     }
                     deleteBtn {
                         dao.loadItems()
@@ -86,13 +84,11 @@ class DownloadManagerView(private val act: DownloadManagerActivity) {
                 }
 
                 // Остановленные с ошибкой
-                expandBlock(errorColor,
-                            { errors.observe(act, Observer { text = errorText(it?.size) }) },
-                            errorAdapter(act)) {
+                expandBlock(color = errorColor,
+                            init = { errors.observe(act, Observer { text = errorText(it?.size) }) },
+                            adapter = errorAdapter(act)) {
                     startBtn {
-                        dao.loadItems()
-                                .filter { it.status == DownloadStatus.error }
-                                .forEach { act.startService<DownloadService>("item" to it) }
+                        downloadManager.startAll()
                     }
                     deleteBtn {
                         dao.loadItems()
@@ -102,9 +98,9 @@ class DownloadManagerView(private val act: DownloadManagerActivity) {
                 }
 
                 // Завершенные
-                expandBlock(completeColor,
-                            { complete.observe(act, Observer { text = completeText(it?.size) }) },
-                            completeAdapter(act)) {
+                expandBlock(color = completeColor,
+                            init = { complete.observe(act, Observer { text = completeText(it?.size) }) },
+                            adapter = completeAdapter(act)) {
                     deleteBtn {
                         dao.loadItems()
                                 .filter { it.status == DownloadStatus.completed }
@@ -116,6 +112,7 @@ class DownloadManagerView(private val act: DownloadManagerActivity) {
     }
 
     private fun ViewManager.expandBlock(color: String,
+                                        isExpand: Boolean = false,
                                         init: TextView.() -> Unit,
                                         adapter: DownloadManagerRecyclerPresenter,
                                         function: FrameLayout.() -> Unit) {
@@ -137,7 +134,7 @@ class DownloadManagerView(private val act: DownloadManagerActivity) {
                 function()
             }
             expand = expandableFrameLayout {
-                isExpanded = false
+                isExpanded = isExpand
                 duration = 300
                 setParallax(0.5F)
                 recyclerView {

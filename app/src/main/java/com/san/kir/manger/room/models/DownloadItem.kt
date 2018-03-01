@@ -18,7 +18,8 @@ data class DownloadItem(
         var downloadSize: Long = 0,
         var totalTime: Long = 0,
         var status: Int = DownloadStatus.unknown,
-        var order: Int = 0) : Parcelable {
+        var order: Long = 0) : Parcelable {
+
         constructor(parcel: Parcel) : this(
                 parcel.readLong(),
                 parcel.readString(),
@@ -30,7 +31,7 @@ data class DownloadItem(
                 parcel.readLong(),
                 parcel.readLong(),
                 parcel.readInt(),
-                parcel.readInt())
+                parcel.readLong())
 
         override fun writeToParcel(parcel: Parcel, flags: Int) {
                 parcel.writeLong(id)
@@ -43,7 +44,7 @@ data class DownloadItem(
                 parcel.writeLong(downloadSize)
                 parcel.writeLong(totalTime)
                 parcel.writeInt(status)
-                parcel.writeInt(order)
+                parcel.writeLong(order)
         }
 
         override fun describeContents(): Int {
@@ -63,11 +64,12 @@ data class DownloadItem(
 }
 
 object DownloadStatus {
-        val unknown = 0
-        val loading = 1
-        val pause = 2
-        val error = 3
-        val completed = 4
+        const val unknown = 0
+        const val loading = 1
+        const val pause = 2
+        const val error = 3
+        const val completed = 4
+        const val queued = 5
 }
 
 fun Chapter.toDownloadItem() = DownloadItem(name = manga + " " + name,

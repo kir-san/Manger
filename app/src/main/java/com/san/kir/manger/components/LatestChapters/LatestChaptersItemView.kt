@@ -12,7 +12,6 @@ import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.san.kir.manger.R
-import com.san.kir.manger.components.DownloadManager.DownloadService
 import com.san.kir.manger.components.Main.Main
 import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.room.models.DownloadStatus
@@ -44,7 +43,6 @@ import org.jetbrains.anko.padding
 import org.jetbrains.anko.progressBar
 import org.jetbrains.anko.relativeLayout
 import org.jetbrains.anko.sdk25.coroutines.onClick
-import org.jetbrains.anko.startService
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.wrapContent
@@ -241,7 +239,7 @@ class LatestChaptersItemView(private val act: LatestChapterActivity) :
             val item = DownloadItem(name = chapter.manga + " " + chapter.name,
                                     link = chapter.site,
                                     path = chapter.path)
-            act.startService<DownloadService>("item" to item)
+            act.downloadManager.addOrStart(item)
         }
 
 //        root.onClick {
@@ -289,23 +287,24 @@ class LatestChaptersItemView(private val act: LatestChapterActivity) :
     private fun changeVisiblesAndActions(item: DownloadItem?, chapter: LatestChapter) {
         item?.let {
             when (it.status) {
+                DownloadStatus.queued,
                 DownloadStatus.loading -> {
                     enableDownload()
                     progressDownload(it.downloadPages, it.totalPages)
                     limit.onClick {
-                        downloadManager.pauseTask(item)
+                        downloadManager.pause(item)
                     }
                 }
                 DownloadStatus.pause -> {
                     pauseDownload()
                     limit.onClick {
-                        act.startService<DownloadService>("item" to item)
+                        downloadManager.start(item)
                     }
                 }
                 DownloadStatus.error -> {
                     pauseDownload()
                     limit.onClick {
-                        act.startService<DownloadService>("item" to item)
+                        downloadManager.retry(item)
                     }
                 }
                 DownloadStatus.completed -> {

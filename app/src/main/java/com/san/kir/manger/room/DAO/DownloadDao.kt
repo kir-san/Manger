@@ -7,7 +7,9 @@ import com.san.kir.manger.room.models.DownloadItem
 
 @Dao
 interface DownloadDao : BaseDao<DownloadItem> {
-    @Query("SELECT * FROM downloads WHERE status IS 1")
+    @Query("SELECT * FROM `downloads` " +
+                   "WHERE `status` IS '1' OR `status` IS '5'" +
+                   "ORDER BY `status`, `order`")
     fun loadLoadingDownloads(): LiveData<List<DownloadItem>>
 
     @Query("SELECT * FROM downloads WHERE status IS 2")
@@ -18,6 +20,9 @@ interface DownloadDao : BaseDao<DownloadItem> {
 
     @Query("SELECT * FROM downloads WHERE status IS 4")
     fun loadCompleteDownloads(): LiveData<List<DownloadItem>>
+
+    @Query("SELECT * FROM `downloads` WHERE `status` IS '5' ORDER BY `order`")
+    fun getQueuedDownloads(): List<DownloadItem>
 
     @Query("SELECT * FROM downloads")
     fun loadItems(): List<DownloadItem>

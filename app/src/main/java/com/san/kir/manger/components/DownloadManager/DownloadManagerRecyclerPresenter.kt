@@ -22,13 +22,13 @@ fun loadingAdapter(act: DownloadManagerActivity): DownloadManagerRecyclerPresent
 fun pauseAdapter(act: DownloadManagerActivity): DownloadManagerRecyclerPresenter {
     return DownloadManagerRecyclerPresenter(act,
                                             { loadPauseDownloads() },
-                                            { DownloadPauseItemView() })
+                                            { DownloadPauseItemView(act) })
 }
 
 fun errorAdapter(act: DownloadManagerActivity): DownloadManagerRecyclerPresenter {
     return DownloadManagerRecyclerPresenter(act,
                                             { loadErrorDownloads() },
-                                            { DownloadErrorItemView() })
+                                            { DownloadErrorItemView(act) })
 }
 
 fun completeAdapter(act: DownloadManagerActivity): DownloadManagerRecyclerPresenter {

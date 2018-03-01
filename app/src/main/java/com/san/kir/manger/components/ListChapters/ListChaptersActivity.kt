@@ -17,7 +17,7 @@ import com.san.kir.manger.Extending.Views.showAlways
 import com.san.kir.manger.Extending.Views.showIfRoom
 import com.san.kir.manger.Extending.Views.showNever
 import com.san.kir.manger.R
-import com.san.kir.manger.components.DownloadManager.DownloadManager
+import com.san.kir.manger.components.DownloadManager.ChapterLoader
 import com.san.kir.manger.components.DownloadManager.DownloadService
 import com.san.kir.manger.components.Main.Main
 import com.san.kir.manger.room.DAO.ChapterFilter
@@ -56,11 +56,11 @@ class ListChaptersActivity : BaseActivity(), ActionMode.Callback {
 
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             downloadManager =
-                    (service as DownloadService.LocalBinder).service.downloadManager
+                    (service as DownloadService.LocalBinder).chapterLoader
             bound = true
         }
     }
-    lateinit var downloadManager: DownloadManager
+    lateinit var downloadManager: ChapterLoader
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             intent?.let {

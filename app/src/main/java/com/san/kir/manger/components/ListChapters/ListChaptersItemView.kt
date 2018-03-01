@@ -12,7 +12,6 @@ import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.san.kir.manger.R
-import com.san.kir.manger.components.DownloadManager.DownloadService
 import com.san.kir.manger.components.Main.Main
 import com.san.kir.manger.components.Viewer.ViewerActivity
 import com.san.kir.manger.room.models.Chapter
@@ -27,6 +26,7 @@ import com.san.kir.manger.utils.delChapters
 import com.san.kir.manger.utils.getFullPath
 import com.san.kir.manger.utils.isFirstRun
 import com.san.kir.manger.utils.isNotEmptyDirectory
+import com.san.kir.manger.utils.log
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import org.jetbrains.anko.AnkoContext
@@ -50,13 +50,13 @@ import org.jetbrains.anko.relativeLayout
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.sdk25.coroutines.onLongClick
 import org.jetbrains.anko.startActivity
-import org.jetbrains.anko.startService
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.wrapContent
 import java.io.IOException
 
-class ListChaptersItemView(private val act: ListChaptersActivity) : RecyclerViewAdapterFactory.AnkoView<Chapter>() {
+class ListChaptersItemView(private val act: ListChaptersActivity) :
+    RecyclerViewAdapterFactory.AnkoView<Chapter>() {
     private object _id { // id элементов для связи между собой
         val date = ID.generate()
         val name = ID.generate()
@@ -249,10 +249,12 @@ class ListChaptersItemView(private val act: ListChaptersActivity) : RecyclerView
 
         downloadBtn.onClick {
             enableDownload()
-            val item = DownloadItem(name = chapter.manga + " " + chapter.name,
-                                    link = chapter.site,
-                                    path = chapter.path)
-            act.startService<DownloadService>("item" to item)
+            val item = DownloadItem(
+                name = chapter.manga + " " + chapter.name,
+                link = chapter.site,
+                path = chapter.path
+            )
+            act.downloadManager.addOrStart(item)
         }
 
         root.onClick {
@@ -264,9 +266,10 @@ class ListChaptersItemView(private val act: ListChaptersActivity) : RecyclerView
                     if (getFullPath(chapter.path).isNotEmptyDirectory) {
                         isFirstRun = true
                         act.startActivity<ViewerActivity>(
-                                "manga_name" to chapter.manga,
-                                "chapter" to chapter.name,
-                                "page_position" to chapter.progress)
+                            "manga_name" to chapter.manga,
+                            "chapter" to chapter.name,
+                            "page_position" to chapter.progress
+                        )
                     } else // Иначе показать сообщение
                         act.longToast(R.string.list_chapters_open_not_exists)
                 }
@@ -280,9 +283,11 @@ class ListChaptersItemView(private val act: ListChaptersActivity) : RecyclerView
     }
 
     private fun updateStatus(chapter: Chapter) = async(UI) {
-        status.text = act.resources.getString(R.string.list_chapters_read,
-                                              chapter.progress,
-                                              chapter.countPages)
+        status.text = act.resources.getString(
+            R.string.list_chapters_read,
+            chapter.progress,
+            chapter.countPages
+        )
     }
 
     // Привязка значений
@@ -303,33 +308,36 @@ class ListChaptersItemView(private val act: ListChaptersActivity) : RecyclerView
         percentProgress.backgroundColor = color
 
         Main.db.downloadDao
-                .loadLivedItem(item.site)
-                .observe(act, Observer {
-                    changeVisiblesAndActions(it, item)
-                })
+            .loadLivedItem(item.site)
+            .observe(act, Observer {
+                changeVisiblesAndActions(it, item)
+            })
     }
 
     private fun changeVisiblesAndActions(item: DownloadItem?, chapter: Chapter) {
-        item?.let {
-            when (it.status) {
+        item?.let {download ->
+            log("download item: ${download.name}")
+            log("download status: ${download.status}")
+            when (download.status) {
+                DownloadStatus.queued,
                 DownloadStatus.loading -> {
                     enableDownload()
-                    progressDownload(it.downloadPages, it.totalPages)
+                    progressDownload(download.downloadPages, download.totalPages)
                     limit.onClick {
-                        downloadManager.pauseTask(item)
+                        downloadManager.pause(download)
                     }
                 }
                 DownloadStatus.pause -> {
                     pauseDownload()
                     limit.onClick {
-                        act.startService<DownloadService>("item" to item)
+                        downloadManager.start(download)
                     }
                     updateStatus(chapter)
                 }
                 DownloadStatus.error -> {
                     pauseDownload()
                     limit.onClick {
-                        act.startService<DownloadService>("item" to item)
+                        downloadManager.retry(download)
                     }
                     updateStatus(chapter)
                 }

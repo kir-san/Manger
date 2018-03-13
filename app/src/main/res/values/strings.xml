@@ -26,6 +26,14 @@
     <string name="add_manga_site">Ссылка</string>
     <string name="add_manga_color">Цвет элемента</string>
     <string name="add_manga_logo">Логотип</string>
+    <string name="add_manga_dialog_changed_category">Категория выбрана: %s</string>
+    <string name="add_manga_dialog_created_folder">Создаю папки для манги</string>
+    <string name="add_manga_dialog_added_manga">Новая манга добавлена в библиотеку</string>
+    <string name="add_manga_dialog_search_chapters">Поиск глав для манги</string>
+    <string name="add_manga_dialog_save_chapters">Сохранение найденных глав</string>
+    <string name="add_manga_dialog_all_complete">Все работы завершены успешно</string>
+    <string name="add_manga_dialog_error">Во время работы произошла ошибка, проверьте подключение к интеренету</string>
+    <string name="add_manga_close_btn">Закрыть</string>
 
     <!-- CatalogForOneSite -->
     <string name="catalog_for_one_site_prefix_volume">Глав %d</string>
@@ -36,15 +44,11 @@
     <string name="catalog_for_one_site_pop">Популярность</string>
     <string name="catalog_for_one_site_types" tools:ignore="UnusedResources">Типы</string>
     <string name="catalog_for_one_site_genres" tools:ignore="UnusedResources">Жанры</string>
-    <string name="catalog_for_one_site_load_data">Загрузка данных</string>
-    <string name="catalog_for_one_site_load_cancel">Загрузка отменена</string>
     <string name="catalog_for_one_site_search">Поиск</string>
     <string name="catalog_for_one_site_update">Обновить</string>
     <string name="catalog_for_one_site_redownload" tools:ignore="UnusedResources">Перекачать</string>
     <string name="catalog_for_one_site_filters" tools:ignore="UnusedResources">Фильтры</string>
     <string name="catalog_for_one_site_update_all">Обновить все</string>
-    <string name="catalog_for_one_site_on_error_load">Произошла ошибка при загрузке каталогов, возможно у вас интернет отключен</string>
-    <string name="catalog_for_one_site_progress_title">Получение списка глав</string>
     <string name="catalog_fot_one_site_warning">Внимание</string>
     <string name="catalog_fot_one_site_redownload_text">Нужно ваше согласие на обновление каталога</string>
     <string name="catalog_fot_one_site_redownload_ok">Согласен</string>
@@ -67,6 +71,11 @@
     <string name="viewer_menu_is_tap">Тапы по экрану</string>
     <string name="viewer_menu_is_swipe">Свайпы по экрану</string>
     <string name="viewer_menu_is_key">Кнопки громкости</string>
+    <string name="viewer_page_error">При загрузке произошла ошибка</string>
+    <string name="viewer_page_error_data">
+        Размер файла %1$d Мб
+        Размер страницы %2$d x %3$d
+    </string>
 
     <!-- FirstRun -->
     <string name="first_run_text" tools:ignore="UnusedResources">Это первый запуск приложения надо бы кое-чего настроить</string>
@@ -89,25 +98,18 @@
     <string name="main_menu_latest">Обновления</string>
     <string name="main_menu_latest_count">Обновления: %d</string>
     <string name="main_menu_settings">Настройки</string>
-    <string name="main_menu_default">Default</string>
+    <string name="main_menu_item_catalogs">%1$d - %2$d</string>
 
     <!-- Storage -->
     <string name="storage_local" tools:ignore="UnusedResources">Локальное хранилище</string>
-    <string name="storage_title">Хранилище</string>
     <string name="storage_title_size">Хранилище: %s Мб</string>
     <string name="storage_list_item_size" tools:ignore="UnusedResources">Размер: %s Мб</string>
     <string name="storage_list_item_new" tools:ignore="UnusedResources">Новая</string>
-    <string name="storage_popmenu_add">Добавить</string>
-    <string name="storage_popmenu_del_read_chapters">Удалить прочитанные главы</string>
-    <string name="storage_option_menu_toggle">Смена отображения</string>
     <string name="storage_not_in_bd">Нет в базе</string>
     <string name="storage_item_all_s">Всего занято: вычисление…</string>
     <string name="storage_item_all_size">Всего занято: %s Мб</string>
     <string name="storage_item_manga_size">Занято этой мангой: %s Мб</string>
     <string name="storage_item_read_size">Прочитанное в этой манге: %s Мб</string>
-    <string name="storage_main_item_size_text">Место в памяти: %d Мб</string>
-    <string name="storage_main_item_folder_count">Содержит папок: %d</string>
-    <string name="storage_main_item_size_percent">%d %%</string>
     <string name="storage_manga_item_size_text">Использовано: %s Мб</string>
     <string name="storage_manga_item_size_percent">%d %%</string>
 
@@ -142,6 +144,7 @@
     <string name="library_menu_order_title">Настройки порядка в библиотеке</string>
     <string name="library_menu_customize_my_order">Настроить мой порядок</string>
     <string name="library_menu_update">Поиск обновлений приложения</string>
+    <string name="library_menu_close">Завершить</string>
     <string name="library_action_move_to_category">Переместить в категорию</string>
     <string name="library_action_remove">Удалить</string>
     <string name="library_action_remove_title">Вы действительно хотите удалить</string>
@@ -149,6 +152,8 @@
     <string name="library_action_remove_yes_with_files">Да, вместе с файлами</string>
     <string name="library_action_remove_no">Нет, не хочу</string>
     <string name="library_page_item_size">%s Мб</string>
+    <string name="library_selection_mode_message_taboo">Не надо лезть к другим</string>
+    <string name="library_error_hide_categories">Все категории скрыты?</string>
 
 
     <!-- ListChapters -->
@@ -172,12 +177,16 @@
     <string name="list_chapters_delete_not_delete">Удалить не получилось</string>
     <string name="list_chapters_delete_okay_delete">Глава была удалена без возвратно</string>
     <string name="list_chapters_delete_error">При удалении главы произошла не предвиденная ошибка</string>
-    <string name="list_chapters_download_cancel">Нажми два раза и отмени загрузку</string>
     <string name="list_chapters_download_progress">%d%%</string>
     <string name="list_chapters_selection_del_ok">У вас нет больше этих глав</string>
     <string name="list_chapters_selection_del_error">Нельзя удалить то чего нет</string>
     <string name="list_chapters_selection_load_ok">Качаю главы. Их всего %d</string>
     <string name="list_chapters_selection_load_error">Все было скачано раньше</string>
+    <string name="list_chapters_download_next">Скачать следующую</string>
+    <string name="list_chapters_download_not_read">Скачать непрочитанное</string>
+    <string name="list_chapters_download_all">Скачать все</string>
+    <string name="list_chapters_change_sort">Изменить сортировку</string>
+    <string name="list_chapters_search_duplicates">Поиск дубликатов</string>
     <string name="action_select_all">Выбрать все</string>
     <string name="action_delete">Удалить</string>
     <string name="action_set_download">Скачать</string>
@@ -186,6 +195,8 @@
     <string name="action_select_prev">Выбрать все ниже</string>
     <string name="action_select_next">Выбрать все выше</string>
     <string name="action_full_delete">Удалить из базы данных</string>
+    <string name="action_full_delete_title">Внимание!!!</string>
+    <string name="action_full_delete_message">Данное действие приведет к удалению глав из базы данных. Все файлы и папки будут не тронуты, но приложение больше не будет видеть эти главы. Рекомендуется использовать это при появлении копий существующих глав. За один раз удаляет небольшое количество глав.</string>
 
     <!--DownloadManager-->
     <string name="download_item_progress_text">Загруженно %1$d из %2$d</string>
@@ -229,6 +240,14 @@
     <string name="category_dialog_positive">Изменить</string>
     <string name="category_dialog_negative">Я передумал</string>
 
+    <!-- Manga Status -->
+    <string name="manga_status_unknown">Не выбрано</string>
+    <string name="manga_status_continue">Выпуск продолжается</string>
+    <string name="manga_status_complete">Выпуск завершен</string>
+
+    <!-- Category All -->
+    <string name="category_all">Все</string>
+
     <!-- OTHER -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -239,7 +258,5 @@
 
     <string name="name">Автор: Kir San</string>
     <string name="email">provakator-30@mail.ru</string>
-
-    <string name="todo">TODO</string>
 
 </resources>

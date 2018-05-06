@@ -1,23 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-                  xmlns:tools="http://schemas.android.com/tools">
-    <PreferenceCategory
-        android:title="@string/pref_temp"/>
-    <PreferenceCategory
-        android:title="Настройка сетки библиотеки">
-        <ListPreference
-            android:key="portrait_span"
-            android:title="Портретный режим"/>
-        <ListPreference
-            android:key="landscape_span"
-            android:title="Ландшафтный режим"/>
-    </PreferenceCategory>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
         android:title="Настройки библиотеки">
         <CheckBoxPreference
-            android:title="Отображение категории"
             android:key="show_category"
             android:summary="Отображение названия категории у каждой манги в категории 'Все'"
+            android:title="Отображение категории"
             />
     </PreferenceCategory>
 </PreferenceScreen>

@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
   <string name="app_name"
           translatable="false">Manger
   </string>
@@ -9,9 +9,6 @@
     <string name="main_check_app_ver_close">Закрыть</string>
     <string name="main_check_app_ver_go_to">Перейти на 4pda.ru</string>
     <string name="main_check_app_ver_error">Произошла ошибка при поиске обновлений, возможно у вас интернет отключен</string>
-    <string name="main_check_new_manga_find" tools:ignore="UnusedResources">Найдена новая манга</string>
-    <string name="main_check_new_manga_go_to" tools:ignore="UnusedResources">Перейти</string>
-    <string name="main_check_new_manga_no_dirs" tools:ignore="UnusedResources">Нет папки local в папке Manger/manga, она будет создана автоматически</string>
 
     <!-- AddManga -->
     <string name="add_manga_title">Редактор манги</string>
@@ -37,17 +34,12 @@
 
     <!-- CatalogForOneSite -->
     <string name="catalog_for_one_site_prefix_volume">Глав %d</string>
-    <string name="catalog_for_one_site_load_ok" tools:ignore="UnusedResources">Манга %s успешно добавлена</string>
     <string name="catalog_for_one_site_selector_item">Выберете в какую категорию добавить</string>
     <string name="catalog_for_one_site_name">Название</string>
     <string name="catalog_for_one_site_date">Дата</string>
     <string name="catalog_for_one_site_pop">Популярность</string>
-    <string name="catalog_for_one_site_types" tools:ignore="UnusedResources">Типы</string>
-    <string name="catalog_for_one_site_genres" tools:ignore="UnusedResources">Жанры</string>
     <string name="catalog_for_one_site_search">Поиск</string>
     <string name="catalog_for_one_site_update">Обновить</string>
-    <string name="catalog_for_one_site_redownload" tools:ignore="UnusedResources">Перекачать</string>
-    <string name="catalog_for_one_site_filters" tools:ignore="UnusedResources">Фильтры</string>
     <string name="catalog_for_one_site_update_all">Обновить все</string>
     <string name="catalog_fot_one_site_warning">Внимание</string>
     <string name="catalog_fot_one_site_redownload_text">Нужно ваше согласие на обновление каталога</string>
@@ -78,12 +70,6 @@
     </string>
 
     <!-- FirstRun -->
-    <string name="first_run_text" tools:ignore="UnusedResources">Это первый запуск приложения надо бы кое-чего настроить</string>
-    <string name="first_run_help" tools:ignore="UnusedResources">Первым делом обновите каталоги из соответствующего пункта меню и ищите себе мангу которую хотите почитать</string>
-    <string name="first_run_exit" tools:ignore="UnusedResources">Выйти</string>
-    <string name="first_run_next" tools:ignore="UnusedResources">Дальше</string>
-    <string name="first_run_okay" tools:ignore="UnusedResources">Готово</string>
-    <string name="first_run_storage" tools:ignore="UnusedResources">Выберете где хранить мангу:</string>
     <string name="first_run_exit_text">Двойное нажатие закроет приложение</string>
 
     <!-- MainMenu -->
@@ -99,12 +85,10 @@
     <string name="main_menu_latest_count">Обновления: %d</string>
     <string name="main_menu_settings">Настройки</string>
     <string name="main_menu_item_catalogs">%1$d - %2$d</string>
+    <string name="main_menu_schedule">Расписание</string>
 
     <!-- Storage -->
-    <string name="storage_local" tools:ignore="UnusedResources">Локальное хранилище</string>
     <string name="storage_title_size">Хранилище: %s Мб</string>
-    <string name="storage_list_item_size" tools:ignore="UnusedResources">Размер: %s Мб</string>
-    <string name="storage_list_item_new" tools:ignore="UnusedResources">Новая</string>
     <string name="storage_not_in_bd">Нет в базе</string>
     <string name="storage_item_all_s">Всего занято: вычисление…</string>
     <string name="storage_item_all_size">Всего занято: %s Мб</string>
@@ -112,7 +96,12 @@
     <string name="storage_item_read_size">Прочитанное в этой манге: %s Мб</string>
     <string name="storage_manga_item_size_text">Использовано: %s Мб</string>
     <string name="storage_manga_item_size_percent">%d %%</string>
-
+    <plurals name="storage_subtitle">
+        <item quantity="one">В %d манге</item>
+        <item quantity="few">В %d мангах</item>
+        <item quantity="many">В %d мангах</item>
+        <item quantity="other">В %d мангах</item>
+    </plurals>
 
     <!-- Library -->
     <string name="library_sort_dialog_add">По дате добавления</string>
@@ -197,6 +186,13 @@
     <string name="action_full_delete">Удалить из базы данных</string>
     <string name="action_full_delete_title">Внимание!!!</string>
     <string name="action_full_delete_message">Данное действие приведет к удалению глав из базы данных. Все файлы и папки будут не тронуты, но приложение больше не будет видеть эти главы. Рекомендуется использовать это при появлении копий существующих глав. За один раз удаляет небольшое количество глав.</string>
+    <string name="list_chapters_is_update">Разрешить обновления</string>
+
+    <!--SearchDuplicate-->
+    <string name="duplicate_dialog_nothing_title">Ничего не найдено</string>
+    <string name="duplicate_dialog_nothing_close">Закрыть</string>
+    <string name="duplicate_dialog_title">Для %d гл. найдены дубликаты</string>
+    <string name="duplicate_dialog_message">Хотите избываться от дубликатов?</string>
 
     <!--DownloadManager-->
     <string name="download_item_progress_text">Загруженно %1$d из %2$d</string>
@@ -204,6 +200,7 @@
     <string name="download_item_final_size_with_sec">%1$s Мб за %2$d сек</string>
     <string name="download_item_final_size_with_min_and_sec">%1$s Мб за %2$d мин и %3$d сек</string>
     <string name="download_item_progress_percent">%d %%</string>
+    <string name="download_activity_subtitle">Останов.: %1$d  Заверш.: %2$d</string>
 
     <!--DownloadService-->
     <string name="download_service_queue">Очередь: %d</string>
@@ -247,6 +244,36 @@
 
     <!-- Category All -->
     <string name="category_all">Все</string>
+
+    <!--AvailableUpdate-->
+    <string name="available_update_name">Разрешенные к обновлению</string>
+    <string name="available_update_category_name">Категория %s</string>
+
+    <!--PlannedTask-->
+    <string name="planned_task_name">Запланированные задачи</string>
+    <string name="planned_period_day">День</string>
+    <string name="planned_period_week">Неделя</string>
+    <string name="planned_type_manga">Манга</string>
+    <string name="planned_type_group">Группа</string>
+    <string name="planned_type_category">Категория</string>
+    <string name="planned_week_monday">пн</string>
+    <string name="planned_week_tuesday">вт</string>
+    <string name="planned_week_wednesday">ср</string>
+    <string name="planned_week_thursday">чт</string>
+    <string name="planned_week_friday">пт</string>
+    <string name="planned_week_saturday">сб</string>
+    <string name="planned_week_sunday">вс</string>
+
+    <!--MangaUpdateService-->
+    <string name="manga_update_action_cancel_all">Отменить все</string>
+    <string name="manga_update_action_download_new">Скачать новое</string>
+    <string name="manga_update_notify_update_ready">Обновление завершено</string>
+    <string name="manga_update_notify_checked_manga">Проверенно манг: %d</string>
+    <string name="manga_update_notify_checked_one_manga">Проверенна манга: %s</string>
+    <string name="manga_update_notify_new_founded">Новых глав: %d</string>
+    <string name="manga_update_notify_founded_with_error">С ошибкой: %d</string>
+    <string name="manga_update_notify_searching">Поиск новых глав</string>
+    <string name="manga_update_notify_remained">Осталось: %d</string>
 
     <!-- OTHER -->
     <string name="navigation_drawer_open">Open navigation drawer</string>

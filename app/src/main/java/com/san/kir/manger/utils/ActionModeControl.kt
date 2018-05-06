@@ -1,10 +1,10 @@
 package com.san.kir.manger.utils
 
 import android.view.ActionMode
-import com.san.kir.manger.Extending.BaseActivity
+import com.san.kir.manger.extending.BaseActivity
 
 class ActionModeControl(private val act: BaseActivity) {
-    var actionMode: ActionMode? = null
+    private var actionMode: ActionMode? = null
 
     fun finish() {
         actionMode?.finish()
@@ -15,7 +15,7 @@ class ActionModeControl(private val act: BaseActivity) {
     }
 
     fun clear() {
-        actionMode = null // ЗаNULLить переменную
+        actionMode = null
     }
 
     fun hasFinish() = actionMode == null

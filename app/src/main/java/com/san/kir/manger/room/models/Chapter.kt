@@ -2,7 +2,7 @@ package com.san.kir.manger.room.models
 
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
-import com.san.kir.manger.utils.CHAPTER_STATUS
+import com.san.kir.manger.utils.ChapterStatus
 import com.san.kir.manger.utils.dateFormat
 import com.san.kir.manger.utils.getCountPagesForChapterInMemory
 import com.san.kir.manger.utils.getFullPath
@@ -45,12 +45,12 @@ val Chapter.action: Int get() {  // Определение доступного 
     getFullPath(path).apply {
         when {
         // если ссылка есть и если папка пуста или папки нет, то можно скачать
-            site.isNotEmpty() && (isEmptyDirectory || !exists()) -> return CHAPTER_STATUS.DOWNLOADABLE
+            site.isNotEmpty() && (isEmptyDirectory || !exists()) -> return ChapterStatus.DOWNLOADABLE
         // если папка непустая, то статус соответствует удалению
-            !isEmptyDirectory -> return CHAPTER_STATUS.DELETE
+            !isEmptyDirectory -> return ChapterStatus.DELETE
         // папка не существет и ссылки на загрузку нет, то больше ничего не сделаешь
-            !exists() and site.isEmpty() -> return CHAPTER_STATUS.NOT_LOADED
+            !exists() and site.isEmpty() -> return ChapterStatus.NOT_LOADED
         }
     }
-    return CHAPTER_STATUS.UNKNOW // такого быть не должно, но если случится дайте знать
+    return ChapterStatus.UNKNOWN // такого быть не должно, но если случится дайте знать
 }

@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable
 import android.os.Environment
 import android.support.v4.content.ContextCompat
 import android.util.Log
-import android.util.LruCache
 import android.view.View
 import com.san.kir.manger.room.models.Chapter
 import com.san.kir.manger.room.models.LatestChapter
@@ -17,10 +16,10 @@ import java.io.FileOutputStream
 import java.text.DecimalFormat
 
 object ID {
-    private var _count = 1
+    private var count = 1
 
     fun generate(): Int {
-        return _count++
+        return count++
     }
 }
 
@@ -41,7 +40,7 @@ fun folderSize(directory: File): Long {
 }
 
 val File.lengthMb: Double
-    get() = bytesToMbytes(folderSize(this))
+    get() = bytesToMb(folderSize(this))
 
 val File.ifExists: File?
     get() = if (this.exists()) this else null
@@ -64,9 +63,10 @@ val File.isNotEmptyDirectory: Boolean
 
 
 fun getShortPath(path: String) =
-        if (path.isNotEmpty()) Regex("/${DIR.ROOT}.+").find(path)!!.value else path
+    if (path.isNotEmpty()) Regex("/${DIR.ROOT}.+").find(path)!!.value else path
 
-fun getShortPath(path: File): String = getShortPath(path.path)
+val File.shortPath: String
+    get() = getShortPath(path)
 
 fun getFullPath(path: String): File = File(Environment.getExternalStorageDirectory(), path)
 
@@ -78,13 +78,13 @@ fun checkExtension(fileName: String): Boolean {
 
 fun getMangaLogo(shortPath: String): String = getMangaLogo(getFullPath(shortPath))
 fun getMangaLogo(path: File): String {
-    val templist = path.listFiles { file, s ->
+    val tempList = path.listFiles { file, s ->
         val fin = File(file, s)
         fin.isFile and (fin.extension in extensions)
     }
     return try {
-        if (templist.isNotEmpty())
-            templist[0].path
+        if (tempList.isNotEmpty())
+            tempList[0].path
         else
             getMangaLogo(path.listFiles { file, s -> File(file, s).isDirectory }[0])
     } catch (ex: Exception) {
@@ -92,8 +92,10 @@ fun getMangaLogo(path: File): String {
     }
 }
 
-fun getChapters(path: File,
-                readyList: ArrayList<String> = arrayListOf()): ArrayList<String> {
+fun getChapters(
+    path: File,
+    readyList: ArrayList<String> = arrayListOf()
+): ArrayList<String> {
 
     fun isContainImg(): Boolean {
         val list = path.listFiles()
@@ -160,12 +162,6 @@ fun View.getDrawableCompat(layoutRes: Int): Drawable? {
     return context.getDrawableCompat(layoutRes)
 }
 
-val cache = object : LruCache<String, Bitmap>(3) {
-//    override fun sizeOf(key: String?, value: Bitmap): Int {
-//        return value.byteCount / 1024
-//    }
-}
-
 data class ResultDeleting(val current: Int, val max: Int)
 
 fun delChapters(vararg chapters: Chapter): ResultDeleting {
@@ -189,10 +185,10 @@ fun delFiles(filesPath: List<String>): ResultDeleting {
 }
 
 object SortLibraryUtil {
-    val add = "add"
-    val abc = "abc"
-    val pop = "pop"
-    val man = "man"
+    const val add = "add"
+    const val abc = "abc"
+    const val pop = "pop"
+    const val man = "man"
 
     fun toType(type: String): SortLibrary {
         return when (type) {
@@ -214,9 +210,9 @@ object SortLibraryUtil {
     }
 }
 
-fun formatDouble(value: Double?) = DecimalFormat("#0.00").format(value)
+fun formatDouble(value: Double?): String = DecimalFormat("#0.00").format(value)
 
-fun bytesToMbytes(value: Long) = value.toDouble() / (1024.0 * 1024.0)
+fun bytesToMb(value: Long) = value.toDouble() / (1024.0 * 1024.0)
 
 fun onError(function: () -> Unit): Callback {
     return object : Callback {
@@ -233,7 +229,9 @@ fun onError(function: () -> Unit): Callback {
 fun convertImagesToPng(image: File): File {
     val b = BitmapFactory.decodeFile(image.path)
 
-    val png = File(image.parentFile, "${image.nameWithoutExtension}.png"
+    val png = File(
+        image.parentFile,
+        "${image.nameWithoutExtension}.png"
     )
 
     log = if (png.createNewFile()) {
@@ -245,10 +243,12 @@ fun convertImagesToPng(image: File): File {
     val stream = FileOutputStream(png.absoluteFile)
     b.compress(Bitmap.CompressFormat.PNG, 100, stream)
     stream.close()
+
     log = if (image.delete()) {
         ("oldFile deleted ${image.path}")
     } else {
         ("oldFile not deleted ${image.path}")
     }
+
     return png
 }

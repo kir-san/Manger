@@ -1,8 +1,13 @@
 package com.san.kir.manger.utils
 
+import android.annotation.SuppressLint
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
+import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.IBinder
@@ -11,16 +16,16 @@ import android.os.Message
 import android.support.annotation.WorkerThread
 import android.support.v4.app.NotificationCompat
 import com.san.kir.manger.R
-import com.san.kir.manger.components.DownloadManager.DownloadService
-import com.san.kir.manger.components.LatestChapters.LatestChapterActivity
-import com.san.kir.manger.components.Main.Main
-import com.san.kir.manger.components.Parsing.ManageSites
-import com.san.kir.manger.room.DAO.downloadNewChapters
-import com.san.kir.manger.room.DAO.insert
+import com.san.kir.manger.components.downloadManager.DownloadService
+import com.san.kir.manger.components.latestChapters.LatestChapterActivity
+import com.san.kir.manger.components.listChapters.SearchDuplicate
+import com.san.kir.manger.components.main.Main
+import com.san.kir.manger.components.parsing.ManageSites
+import com.san.kir.manger.room.dao.downloadNewChapters
 import com.san.kir.manger.room.models.Chapter
-import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.room.models.LatestChapter
 import com.san.kir.manger.room.models.Manga
+import com.san.kir.manger.room.models.toDownloadItem
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
 import org.jetbrains.anko.intentFor
@@ -29,12 +34,12 @@ import org.jetbrains.anko.startService
 
 class MangaUpdaterService : Service() {
     companion object {
-        const val ACTION_CANCELALL = "kir.san.manger.MangaUpdaterService.CANCELALL"
-        const val ACTION_DOWNLOADNEW = "kir.san.manger.MangaUpdaterService.DOWNLOADNEW"
+        const val ACTION_CANCEL_ALL = "kir.san.manger.MangaUpdaterService.CANCEL_ALL"
+        const val ACTION_DOWNLOAD_NEW = "kir.san.manger.MangaUpdaterService.DOWNLOAD_NEW"
         const val actionGet = "MangaUpdaterActionGet"
         const val actionSend = "MangaUpdaterActionSend"
 
-        const val ITEM_NAME = "unic"
+        const val ITEM_NAME = "mangaName"
         const val IS_FOUND_NEW = "isFoundNew"
         const val COUNT_NEW = "countNew"
 
@@ -60,30 +65,40 @@ class MangaUpdaterService : Service() {
         PendingIntent.getActivity(this, 0, intent, 0)
     }
     private val actionCancelAll by lazy {
-        val intent = intentFor<MangaUpdaterService>().setAction(ACTION_CANCELALL)
-        val cancellAll = PendingIntent.getService(this, 0, intent, 0)
+        val intent = intentFor<MangaUpdaterService>().setAction(ACTION_CANCEL_ALL)
+        val cancelAll = PendingIntent.getService(this, 0, intent, 0)
         NotificationCompat
             .Action
-            .Builder(R.drawable.ic_cancel, "Отменить все", cancellAll)
+            .Builder(
+                R.drawable.ic_cancel,
+                getString(R.string.manga_update_action_cancel_all),
+                cancelAll
+            )
             .build()
     }
     private val actionDownloadNew by lazy {
-        val intent = intentFor<MangaUpdaterService>().setAction(ACTION_DOWNLOADNEW)
+        val intent = intentFor<MangaUpdaterService>().setAction(ACTION_DOWNLOAD_NEW)
         val downloadNew = PendingIntent.getService(this, 0, intent, 0)
         NotificationCompat
             .Action
-            .Builder(R.drawable.ic_action_download_white, "Скачать новое", downloadNew)
+            .Builder(
+                R.drawable.ic_action_download_white,
+                getString(R.string.manga_update_action_download_new),
+                downloadNew
+            )
             .build()
     }
 
     private var progress = 0 // Прогресс проверенных манг
     private var error = 0 // Счетчик закончившихся с ошибкой
     private var fullCountNew = 0 // Количество новых глав
+    private var mangaName = ""
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
 
+    @SuppressLint("InlinedApi")
     override fun onCreate() {
         super.onCreate()
 
@@ -96,25 +111,44 @@ class MangaUpdaterService : Service() {
 
         mServiceLopper = thread.looper
         mServiceHandler = ServiceHandler(mServiceLopper, this)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (notificationManager.getNotificationChannel(channelId) == null) {
+                val importance = NotificationManager.IMPORTANCE_DEFAULT
+
+                NotificationChannel(channelId, TAG, importance).apply {
+                    description = "MangaUpdateServiceDescription"
+                    enableLights(false)
+                    enableVibration(false)
+                    notificationManager.createNotificationChannel(this)
+                }
+            }
+            startForeground(notificationId, Notification())
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
             when (intent.action) {
-                ACTION_CANCELALL -> stopSelf()
-                ACTION_DOWNLOADNEW -> downloadNew()
+                ACTION_CANCEL_ALL -> stopSelf()
+                ACTION_DOWNLOAD_NEW -> downloadNew()
                 else -> {
                     val task = intent.getParcelableExtra<Manga>("manga")
-                    taskCounter += task
 
-                    val intentSend = Intent(actionSend)
-                    intentSend.putExtra(ITEM_NAME, task.unic)
-                    sendBroadcast(intentSend)
+                    if (task.isUpdate) {
+                        taskCounter += task
 
-                    val msg = mServiceHandler.obtainMessage()
-                    msg.arg1 = startId
-                    msg.obj = task
-                    mServiceHandler.sendMessage(msg)
+                        val intentSend = Intent(actionSend)
+                        intentSend.putExtra(ITEM_NAME, task.unic)
+                        sendBroadcast(intentSend)
+
+                        val msg = mServiceHandler.obtainMessage()
+                        msg.arg1 = startId
+                        msg.obj = task
+                        mServiceHandler.sendMessage(msg)
+                    } else {
+
+                    }
                 }
             }
         }
@@ -124,12 +158,7 @@ class MangaUpdaterService : Service() {
 
     private fun downloadNew() = async {
         Main.db.latestChapterDao.downloadNewChapters().await().onEach { chapter ->
-            val item = DownloadItem(
-                name = chapter.manga + " " + chapter.name,
-                link = chapter.site,
-                path = chapter.path
-            )
-            startService<DownloadService>("item" to item)
+            startService<DownloadService>("item" to chapter.toDownloadItem())
         }
     }
 
@@ -137,7 +166,7 @@ class MangaUpdaterService : Service() {
         mServiceLopper.quit()
 
         val builder = NotificationCompat.Builder(this, channelId)
-            .setContentTitle("Обновление завершено")
+            .setContentTitle(getString(R.string.manga_update_notify_update_ready))
             .setSmallIcon(R.drawable.ic_notify_updater)
             .setContentIntent(actionGoToLatest)
 
@@ -147,9 +176,14 @@ class MangaUpdaterService : Service() {
 
 
         val notify = NotificationCompat.InboxStyle(builder)
-            .addLine("Проверенно манг было: $progress")
-            .addLine("Найдено новых глав: $fullCountNew")
-            .addLine("С ошибкой проверенно: $error")
+            .addLine(
+                if (progress > 1)
+                    getString(R.string.manga_update_notify_checked_manga, progress)
+                else
+                    getString(R.string.manga_update_notify_checked_one_manga, mangaName)
+            )
+            .addLine(getString(R.string.manga_update_notify_new_founded, fullCountNew))
+            .addLine(getString(R.string.manga_update_notify_founded_with_error, error))
             .build()
         notificationManager.notify(notificationId, notify)
     }
@@ -161,31 +195,32 @@ class MangaUpdaterService : Service() {
             try {
                 val notify = NotificationCompat.InboxStyle(
                     NotificationCompat.Builder(this@MangaUpdaterService, channelId)
-                        .setContentTitle("Поиск новых глав")
+                        .setContentTitle(getString(R.string.manga_update_notify_searching))
                         .setSmallIcon(R.drawable.ic_notify_updater)
                         .addAction(actionCancelAll)
                         .setContentText(manga.name)
                 )
                     .addLine(manga.name)
-                    .addLine("Осталось: ${taskCounter.size}")
+                    .addLine(getString(R.string.manga_update_notify_remained, taskCounter.size))
                     .build()
 
                 notificationManager.notify(notificationId, notify)
+
+                mangaName = manga.name
 
                 val oldChapters = chapters.loadChapters(manga.unic)
                 var newChapters = listOf<Chapter>()
 
                 ManageSites.chapters(manga)?.let { new ->
-                    new.forEach { chapter ->
-                        if (oldChapters.isNotEmpty()) {
-                            if (oldChapters.none { oldChapter ->
-                                    chapter.site == oldChapter.site
-                                }) {
+                    if (oldChapters.isEmpty()) {
+                        newChapters = new
+                    } else {
+                        new.forEach { chapter ->
+                            if (oldChapters.none { oldChapter -> chapter.site == oldChapter.site }) {
                                 newChapters += chapter
                             }
                         }
                     }
-
                 }
 
                 if (newChapters.isNotEmpty()) {
@@ -193,12 +228,18 @@ class MangaUpdaterService : Service() {
                         chapters.insert(it)
                         latestChapters.insert(LatestChapter(it))
                     }
+                    val oldSize = oldChapters.size
 
-                    countNew = newChapters.size
+                    SearchDuplicate.silentRemoveDuplicate(manga).await()
+
+                    val newSize = chapters.loadChapters(manga.unic).size
+
+                    countNew = newSize - oldSize
                 }
             } catch (ex: Exception) {
+                ex.printStackTrace()
                 error++
-                countNew = -1
+                countNew = 0
             } finally {
                 progress++
                 fullCountNew += countNew

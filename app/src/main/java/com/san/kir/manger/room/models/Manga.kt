@@ -1,48 +1,79 @@
 package com.san.kir.manger.room.models
 
+import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
 import android.os.Parcel
 import android.os.Parcelable
 
-@Entity(tableName = "manga")
-class Manga : Parcelable {
+@Entity(tableName = MangaColumn.tableName)
+class Manga() : Parcelable {
     @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = MangaColumn.id)
     var id: Long = 0
+    @ColumnInfo(name = MangaColumn.unic)
     var unic = ""
     var host = ""
+    @ColumnInfo(name = MangaColumn.name)
     var name = ""
     var authors = ""
     var logo = ""
     var about = ""
+    @ColumnInfo(name = MangaColumn.categories)
     var categories = ""
     var genres = ""
     var path = ""
     var status = ""
     var site = ""
     var color = 0
+    @ColumnInfo(name = MangaColumn.populate)
     var populate = 0
+    @ColumnInfo(name = MangaColumn.order)
     var order = 0
+    var isAlternativeSort = true
+    var isUpdate = true
 
-    constructor()
-    constructor(id: Long = 0,
-                unic: String = "",
-                host: String = "",
-                name: String = "",
-                authors: String = "",
-                logo: String = "",
-                about: String = "",
-                categories: String = "",
-                genres: String = "",
-                path: String = "",
-                status: String = "",
-                site: String = "",
-                color: Int = 0,
-                populate: Int = 0,
-                order: Int = 0,
-                authorsList: List<String> = listOf(),
-                categoriesList: List<String> = listOf(),
-                genresList: List<String> = listOf()) : this() {
+    constructor(parcel: Parcel) : this() {
+        id = parcel.readLong()
+        unic = parcel.readString()
+        host = parcel.readString()
+        name = parcel.readString()
+        authors = parcel.readString()
+        logo = parcel.readString()
+        about = parcel.readString()
+        categories = parcel.readString()
+        genres = parcel.readString()
+        path = parcel.readString()
+        status = parcel.readString()
+        site = parcel.readString()
+        color = parcel.readInt()
+        populate = parcel.readInt()
+        order = parcel.readInt()
+        isAlternativeSort = parcel.readByte() != 0.toByte()
+        isUpdate = parcel.readByte() != 0.toByte()
+    }
+
+    constructor(
+        id: Long = 0,
+        unic: String = "",
+        host: String = "",
+        name: String = "",
+        authors: String = "",
+        logo: String = "",
+        about: String = "",
+        categories: String = "",
+        genres: String = "",
+        path: String = "",
+        status: String = "",
+        site: String = "",
+        color: Int = 0,
+        populate: Int = 0,
+        order: Int = 0,
+        authorsList: List<String> = listOf(),
+        categoriesList: List<String> = listOf(),
+        genresList: List<String> = listOf(),
+        isUpdate: Boolean = true
+    ) : this() {
         this.id = id
         this.unic = unic
         this.host = host
@@ -58,6 +89,7 @@ class Manga : Parcelable {
         this.color = color
         this.populate = populate
         this.order = order
+        this.isUpdate = isUpdate
 
         if (!authorsList.isEmpty())
             this.authorsList = authorsList
@@ -68,24 +100,6 @@ class Manga : Parcelable {
         if (!genresList.isEmpty())
             this.genresList = genresList
     }
-
-    constructor(parcel: Parcel) : this(
-            parcel.readLong(),
-            parcel.readString(),
-            parcel.readString(),
-            parcel.readString(),
-            parcel.readString(),
-            parcel.readString(),
-            parcel.readString(),
-            parcel.readString(),
-            parcel.readString(),
-            parcel.readString(),
-            parcel.readString(),
-            parcel.readString(),
-            parcel.readInt(),
-            parcel.readInt(),
-            parcel.readInt()
-    )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeLong(id)
@@ -103,22 +117,17 @@ class Manga : Parcelable {
         parcel.writeInt(color)
         parcel.writeInt(populate)
         parcel.writeInt(order)
+        parcel.writeByte(if (isAlternativeSort) 1 else 0)
+        parcel.writeByte(if (isUpdate) 1 else 0)
     }
 
-    override fun describeContents(): Int {
-        return 0
-    }
+    override fun describeContents() = 0
 
     companion object CREATOR : Parcelable.Creator<Manga> {
-        override fun createFromParcel(parcel: Parcel): Manga {
-            return Manga(parcel)
-        }
+        override fun createFromParcel(parcel: Parcel) = Manga(parcel)
 
-        override fun newArray(size: Int): Array<Manga?> {
-            return arrayOfNulls(size)
-        }
+        override fun newArray(size: Int): Array<Manga?> = arrayOfNulls(size)
     }
-
 }
 
 var Manga.authorsList: List<String>
@@ -139,65 +148,12 @@ var Manga.genresList: List<String>
         genres = value.toString().removeSurrounding("[", "]")
     }
 
-
-/*
-
-async {
-            channelTask.consumeEach { downloadItem ->
-                log("start work with size of task ${taskCounter.size}")
-                try {
-                                        val pages = ManageSites.getPages(downloadItem)
-                    downloadItem.maxPages = pages.count()
-                    downloads.update(downloadItem)
-
-                    log("before drop = ${pages.count()}")
-                    log("this progress = ${downloadItem.progressPages}")
-                    val drop = pages.drop(downloadItem.progressPages)
-                    log("after drop = ${drop.count()}")
-                    drop.forEach {
-                        // из ссылки получаю имя для файла
-                        val pat = Pattern.compile("[a-z0-9._-]+\\.[a-z]{3,4}")
-                                .matcher(it.removeSurrounding("\"", "\""))
-                        var name = ""
-                        while (pat.find())
-                            name = pat.group()
-
-                        ManageSites.openLink(it)
-                                .downloadTo(File(getFullPath(downloadItem.path), name))
-                        downloadItem.progressPages++
-                        log("this progress = ${downloadItem.progressPages}")
-                        downloads.update(downloadItem)
-                    }
-
-                    downloadItem.isCompleted = true
-                    downloads.update(downloadItem)
-                } catch (ex: Exception) {
-                    downloadItem.isError = true
-                    downloads.update(downloadItem)
-                    ex.printStackTrace()
-                } finally {
-                    taskCounter -= downloadItem
-                    log("end work with size of task ${taskCounter.size}")
-                }
-                if (!channelTask.iterator().hasNext()) {
-                    log("hasNext task is false")
-                    channelTask.close()
-                    log("channel task is closed")
-                }
-            }
-        }
-
-
-
-
-        async {
-            val item = intent.getParcelableExtra<DownloadItem>("item")
-            log("add task is ${item.name}")
-            channelTask.send(item)
-            item.isError = false
-            item.isStoped = false
-            downloads.update(item)
-            taskCounter += item
-        }
-
-*/
+object MangaColumn {
+    const val tableName = "manga"
+    const val id = "id"
+    const val unic = "unic"
+    const val name = "name"
+    const val categories = "categories"
+    const val populate = "populate"
+    const val order = "order"
+}

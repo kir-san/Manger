@@ -4,12 +4,12 @@ import android.arch.persistence.room.Database
 import android.arch.persistence.room.RoomDatabase
 import android.arch.persistence.room.TypeConverters
 import android.arch.persistence.room.migration.Migration
-import com.san.kir.manger.room.DAO.SiteCatalogDao
-import com.san.kir.manger.room.TypeConverters.ListStringConverter
+import com.san.kir.manger.room.dao.SiteCatalogDao
 import com.san.kir.manger.room.models.SiteCatalogElement
+import com.san.kir.manger.room.typeConverters.ListStringConverter
 import com.san.kir.manger.utils.DIR
 
-@Database(entities = arrayOf(SiteCatalogElement::class),
+@Database(entities = [(SiteCatalogElement::class)],
           version = CatalogDb.VERSION,
           exportSchema = false)
 @TypeConverters(ListStringConverter::class)
@@ -21,7 +21,7 @@ abstract class CatalogDb : RoomDatabase() {
 
     abstract val dao: SiteCatalogDao
 
-    object migrate {
+    object Migrate {
         val migrations: Array<Migration> = arrayOf()
     }
 }

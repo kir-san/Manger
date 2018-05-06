@@ -9,7 +9,7 @@ import kotlin.properties.Delegates
 
 class SimpleItemTouchHelperCallback(adapter: ItemTouchHelperAdapter) : ItemTouchHelper.Callback() {
 
-    val ALPHA_FULL: Float = 1f
+    private val alphaFull: Float = 1f
     private var mAdapter: ItemTouchHelperAdapter by Delegates.notNull()
 
     init {
@@ -60,7 +60,7 @@ class SimpleItemTouchHelperCallback(adapter: ItemTouchHelperAdapter) : ItemTouch
                              actionState: Int,
                              isCurrentlyActive: Boolean) {
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-            val alpha: Float = ALPHA_FULL - Math.abs(dX) / viewHolder!!.itemView.width.toFloat()
+            val alpha: Float = alphaFull - Math.abs(dX) / viewHolder!!.itemView.width.toFloat()
             viewHolder.itemView.alpha = alpha
             viewHolder.itemView.translationX = dX
         } else
@@ -78,7 +78,7 @@ class SimpleItemTouchHelperCallback(adapter: ItemTouchHelperAdapter) : ItemTouch
 
     override fun clearView(recyclerView: RecyclerView?, viewHolder: RecyclerView.ViewHolder?) {
         super.clearView(recyclerView, viewHolder)
-        viewHolder!!.itemView.alpha = ALPHA_FULL
+        viewHolder!!.itemView.alpha = alphaFull
         if (viewHolder is ItemTouchHelperViewHolder) {
             viewHolder.onItemClear()
         }

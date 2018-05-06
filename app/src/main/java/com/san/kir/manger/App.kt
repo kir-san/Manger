@@ -5,6 +5,8 @@ import android.database.DatabaseErrorHandler
 import android.database.sqlite.SQLiteDatabase
 import android.os.Environment
 import android.support.v7.app.AppCompatDelegate
+import com.evernote.android.job.JobManager
+import com.san.kir.manger.components.schedule.ScheduleJob
 import com.san.kir.manger.room.RoomDB
 import com.san.kir.manger.utils.log
 import java.io.File
@@ -18,6 +20,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
 
+        JobManager.create(this).addJobCreator { ScheduleJob(it) }
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         context = this
         exCacheDir = externalCacheDir
@@ -25,10 +28,10 @@ class App : Application() {
     }
 
     override fun getDatabasePath(name: String?): File {
-        val dbfile = File(Environment.getExternalStorageDirectory(), name)
-        if (!dbfile.parentFile.exists())
-            dbfile.parentFile.mkdirs()
-        return dbfile
+        val dbFile = File(Environment.getExternalStorageDirectory(), name)
+        if (!dbFile.parentFile.exists())
+            dbFile.parentFile.mkdirs()
+        return dbFile
     }
 
     override fun openOrCreateDatabase(

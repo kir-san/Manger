@@ -1,0 +1,289 @@
+package com.san.kir.manger.components.schedule
+
+import android.support.v7.app.AlertDialog
+import android.support.v7.widget.LinearLayoutManager
+import android.view.View
+import android.view.ViewManager
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.TimePicker
+import collections.forEach
+import com.san.kir.manger.R
+import com.san.kir.manger.components.main.Main
+import com.san.kir.manger.eventBus.Binder
+import com.san.kir.manger.extending.BaseActivity
+import com.san.kir.manger.extending.ankoExtend.labelView
+import com.san.kir.manger.extending.ankoExtend.textViewBold15Size
+import com.san.kir.manger.extending.ankoExtend.visibleOrGone
+import com.san.kir.manger.room.models.PlannedPeriod
+import com.san.kir.manger.room.models.PlannedTask
+import com.san.kir.manger.room.models.PlannedType
+import com.san.kir.manger.room.models.PlannedWeek
+import com.san.kir.manger.room.models.mangaList
+import com.san.kir.manger.utils.AnkoActivityComponent
+import com.san.kir.manger.utils.ID
+import com.san.kir.manger.utils.RecyclerViewAdapterFactory
+import org.jetbrains.anko.AnkoContext
+import org.jetbrains.anko.dip
+import org.jetbrains.anko.editText
+import org.jetbrains.anko.linearLayout
+import org.jetbrains.anko.matchParent
+import org.jetbrains.anko.padding
+import org.jetbrains.anko.radioButton
+import org.jetbrains.anko.radioGroup
+import org.jetbrains.anko.recyclerview.v7.recyclerView
+import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.support.v4.nestedScrollView
+import org.jetbrains.anko.textColorResource
+import org.jetbrains.anko.textView
+import org.jetbrains.anko.timePicker
+import org.jetbrains.anko.verticalLayout
+
+class AddEditPlannedTaskView : AnkoActivityComponent() {
+    private val listManga = Main.db.mangaDao.loadAllManga().filter { it.isUpdate }
+    private val listMangaName = listManga.map { it.name }.toTypedArray()
+    private val listMangaUnic = listManga.map { it.unic }.toTypedArray()
+
+    private val categoryList = Main.db.categoryDao.loadCategories().map { it.name }.toTypedArray()
+
+    private var _task = PlannedTask()
+
+    private var unic = ""
+
+    private val groupContent = RecyclerViewAdapterFactory.createSimple2<String> {
+        lateinit var name: TextView
+        createView {
+            textViewBold15Size {
+                name = this
+                padding = dip(1)
+            }
+        }
+
+        bind { item, _, _ ->
+            name.text = item
+        }
+    }
+
+    private val typeBinder = Binder(PlannedType.MANGA)
+    private val periodBinder = Binder(PlannedPeriod.DAY)
+    private val dayOfWeekBinder = Binder(0)
+
+    private lateinit var mangaName: TextView
+    private lateinit var groupName: EditText
+    private lateinit var groupNothing: TextView
+    private lateinit var categoryName: TextView
+    private lateinit var timePicker: TimePicker
+
+    override fun createView(ui: AnkoContext<BaseActivity>) = with(ui) {
+        linearLayout {
+            lparams(width = matchParent)
+
+            nestedScrollView {
+                lparams(width = matchParent)
+
+                verticalLayout {
+                    lparams(width = matchParent) {
+                        marginStart = dip(5)
+                        marginEnd = dip(5)
+                    }
+
+
+                    labelView("Тип обновления").lparams { topMargin = dip(5) }
+                    radioGroup {
+                        id = ID.generate()
+                        PlannedType.map.forEach { (t, v) ->
+                            radioButton {
+                                id = ID.generate()
+                                text = t
+                                typeBinder.bind {
+                                    isChecked = it == v
+                                }
+                                onClick { typeBinder.item = v }
+                            }
+                        }
+                    }
+
+
+                    verticalLayout {
+                        typeBinder.bind { type -> visibleOrGone(type == PlannedType.MANGA) }
+                        labelView("Выбрать мангу").lparams {
+                            topMargin = dip(5)
+                        }
+                        mangaName = textViewBold15Size { }
+                        btnChange {
+                            singleChoiceList(listMangaName, mangaName.text) { name, index ->
+                                mangaName.text = name
+                                unic = listMangaUnic[index]
+                            }
+                        }
+                    }
+//
+//
+                    verticalLayout {
+                        typeBinder.bind { type -> visibleOrGone(type == PlannedType.GROUP) }
+                        labelView("Название группы").lparams {
+                            topMargin = dip(5)
+                        }
+                        groupName = editText()
+
+                        labelView("Настроить группу").lparams {
+                            topMargin = dip(5)
+                        }
+                        groupNothing = textViewBold15Size("Ничего не выбрано")
+                        recyclerView {
+                            adapter = groupContent
+                            layoutManager = LinearLayoutManager(context)
+                            setHasFixedSize(true)
+                        }
+                        btnChange {
+                            multiChoiceList(listMangaName, groupContent.items) {
+                                groupContent.items = it
+                                groupContent.notifyDataSetChanged()
+                                groupNothing.visibleOrGone(it.isEmpty())
+                            }
+                        }
+                    }
+//
+//
+                    verticalLayout {
+                        typeBinder.bind { type -> visibleOrGone(type == PlannedType.CATEGORY) }
+                        labelView("Выбрать категорию").lparams {
+                            topMargin = dip(5)
+                        }
+                        categoryName = textViewBold15Size("")
+                        btnChange {
+                            singleChoiceList(categoryList, categoryName.text) { cat, _ ->
+                                categoryName.text = cat
+                            }
+                        }
+                    }
+
+
+                    labelView("Период повтора").lparams { topMargin = dip(5) }
+                    radioGroup {
+                        id = ID.generate()
+                        PlannedPeriod.map.forEach { (p, v) ->
+                            radioButton {
+                                id = ID.generate()
+                                text = p
+                                periodBinder.bind {
+                                    isChecked = it == v
+                                }
+                                onClick { periodBinder.item = v }
+                            }
+                        }
+                    }
+
+
+                    verticalLayout {
+                        periodBinder.bind { visibleOrGone(it == PlannedPeriod.WEEK) }
+                        labelView("Выбрать день").lparams {
+                            topMargin = dip(5)
+                        }
+                        radioGroup {
+                            id = ID.generate()
+                            PlannedWeek.map.forEach { (d, v) ->
+                                radioButton {
+                                    id = ID.generate()
+                                    text = d
+                                    dayOfWeekBinder.bind {
+                                        isChecked = it == v
+                                    }
+                                    onClick { dayOfWeekBinder.item = v }
+                                }
+                            }
+                        }
+                    }
+
+
+                    labelView("Выбрать время").lparams { topMargin = dip(5) }
+                    timePicker = timePicker {
+                        setIs24HourView(true)
+                    }
+                }
+            }
+        }
+    }
+
+    fun setTask(task: PlannedTask) {
+        _task = task
+        typeBinder.item = task.type
+
+        unic = task.manga
+        val position = listMangaUnic.indexOf(task.manga)
+        mangaName.text = if (position == -1) "Ничего не выбрано"
+        else listMangaName[position]
+
+        groupName.setText(task.groupName)
+
+        groupContent.items = task.mangaList
+        groupContent.notifyDataSetChanged()
+
+        categoryName.text = if (task.category.isEmpty()) "Категория не выбрана" else task.category
+        periodBinder.item = task.period
+        dayOfWeekBinder.item = task.dayOfWeek
+
+        timePicker.currentHour = task.hour
+        timePicker.currentMinute = task.minute
+    }
+
+    fun getTask() = _task.apply {
+        type = typeBinder.item
+        manga = unic
+        this.groupName = this@AddEditPlannedTaskView.groupName.text.toString()
+        mangaList = this@AddEditPlannedTaskView.groupContent.items
+        category = categoryName.text.toString()
+        period = periodBinder.item
+        dayOfWeek = dayOfWeekBinder.item
+
+        hour = timePicker.currentHour
+        minute = timePicker.currentMinute
+    }
+
+    private fun View.singleChoiceList(
+        data: Array<String>,
+        value: CharSequence,
+        action: (String, Int) -> Unit
+    ) {
+        AlertDialog.Builder(context).apply {
+            val position = data.indexOf(value)
+            setSingleChoiceItems(data, position, null)
+            setPositiveButton("Готово") { d, _ ->
+                val checkedPosition =
+                    (d as AlertDialog).listView.checkedItemPosition
+                action.invoke(data[checkedPosition], checkedPosition)
+            }
+            show()
+        }
+    }
+
+    private fun View.multiChoiceList(
+        data: Array<String>,
+        value: List<String>,
+        action: (List<String>) -> Unit
+    ) {
+        AlertDialog.Builder(context).apply {
+            val chk =
+                data.map { value.contains(it) }.toBooleanArray()
+            setMultiChoiceItems(data, chk, null)
+            setPositiveButton("Готово") { d, _ ->
+                val positions =
+                    (d as AlertDialog).listView.checkedItemPositions
+                var prepare = listOf<String>()
+                positions.forEach { i, b ->
+                    if (b) prepare += data[i]
+                }
+                action.invoke(prepare)
+            }
+            show()
+        }
+    }
+
+    private fun ViewManager.btnChange(action: TextView.() -> Unit) = textView("Изменить") {
+        textColorResource = R.color.colorAccent
+        textSize = 16f
+        onClick {
+            action()
+        }
+    }
+}

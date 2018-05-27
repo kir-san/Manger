@@ -25,7 +25,6 @@ import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.delChapters
 import com.san.kir.manger.utils.getFullPath
-import com.san.kir.manger.utils.isFirstRun
 import com.san.kir.manger.utils.isNotEmptyDirectory
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
@@ -259,11 +258,9 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
                     act.toast(R.string.list_chapters_open_is_download)
                 else {
                     if (getFullPath(chapter.path).isNotEmptyDirectory) {
-                        isFirstRun = true
                         act.startActivity<ViewerActivity>(
                             "manga_name" to chapter.manga,
-                            "chapter" to chapter.name,
-                            "page_position" to chapter.progress
+                            "chapter" to chapter.name
                         )
                     } else // Иначе показать сообщение
                         act.longToast(R.string.list_chapters_open_not_exists)

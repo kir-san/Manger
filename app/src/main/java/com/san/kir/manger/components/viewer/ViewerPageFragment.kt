@@ -12,7 +12,6 @@ import com.davemorrissey.labs.subscaleview.ImageSource
 import com.san.kir.manger.R
 import com.san.kir.manger.eventBus.Binder
 import com.san.kir.manger.extending.ankoExtend.bigImageView
-import com.san.kir.manger.extending.ankoExtend.bind
 import com.san.kir.manger.extending.ankoExtend.goneOrVisible
 import com.san.kir.manger.extending.ankoExtend.onDoubleTapListener
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
@@ -64,7 +63,7 @@ class ViewerPageFragment : Fragment() {
                 visibility = View.GONE
                 textView(R.string.viewer_page_error)
                 textView {
-                    bind(errorData) { (size, width, height) ->
+                    errorData.bind { (size, width, height) ->
                         text = context.getString(
                             R.string.viewer_page_error_data,
                             size,

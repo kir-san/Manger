@@ -25,8 +25,8 @@ class ViewPagePresenter(private val act: ViewerActivity) {
         this.viewPager = viewPager
     }
 
-    fun configManager(mangaName: String, chapterName: String, pagePosition: Int) {
-        manager = ChaptersList(mangaName, chapterName, pagePosition)
+    fun configManager(mangaName: String, chapterName: String) {
+        manager = ChaptersList(mangaName, chapterName)
         adapter.setList(manager.page.list)
         viewPager.currentItem = progressPages.item
         max.item = manager.page.max

@@ -10,16 +10,23 @@ import android.view.ViewGroup
 import org.jetbrains.anko.AnkoComponent
 import org.jetbrains.anko.AnkoContext
 
-typealias ItemMove<T> = RecyclerViewAdapterFactory.DragableRecyclerViewAdapter<T>.(fromPosition: Int, toPosition: Int) -> Unit
+typealias ItemMove<T> = RecyclerViewAdapterFactory.DraggableRecyclerViewAdapter<T>.(fromPosition: Int, toPosition: Int) -> Unit
+typealias BindAction<T> = (T, Boolean, Int) -> Unit
 
 object RecyclerViewAdapterFactory {
     fun <T> createSimple(view: () -> AnkoView<T>) =
         RecyclerViewAdapter(view)
 
-    fun <T> createDragable(
+    fun <T> createSimple2(init: SimpleAnkoView<T>.() -> Unit): RecyclerViewAdapter<T> {
+        val view = SimpleAnkoView<T>()
+        view.init()
+        return createSimple { view }
+    }
+
+    fun <T> createDraggable(
         view: () -> AnkoView<T>,
         itemMove: ItemMove<T>?
-    ) = DragableRecyclerViewAdapter(view, itemMove)
+    ) = DraggableRecyclerViewAdapter(view, itemMove)
 
     fun <T> createPaging(
         view: () -> AnkoView<T>,
@@ -35,7 +42,7 @@ object RecyclerViewAdapterFactory {
         }
     })
 
-    open class DragableRecyclerViewAdapter<T>(
+    open class DraggableRecyclerViewAdapter<T>(
         private val view: () -> AnkoView<T>,
         private val itemMove: ItemMove<T>?
     ) : RecyclerView.Adapter<ViewHolder<T>>(), ItemTouchHelperAdapter {
@@ -65,7 +72,7 @@ object RecyclerViewAdapterFactory {
     }
 
     class RecyclerViewAdapter<T>(view: () -> AnkoView<T>) :
-        DragableRecyclerViewAdapter<T>(view, null) {
+        DraggableRecyclerViewAdapter<T>(view, null) {
         init {
 //            setHasStableIds(true)
         }
@@ -120,6 +127,30 @@ object RecyclerViewAdapterFactory {
         }
 
         abstract fun bind(item: T, isSelected: Boolean, position: Int)
+    }
+
+    class SimpleAnkoView<T> : AnkoView<T>() {
+        private lateinit var _createViewAction: (AnkoContext<ViewGroup>.() -> View)
+        private lateinit var _bindAction: BindAction<T>
+
+        fun createView(action: AnkoContext<ViewGroup>.() -> View) {
+            _createViewAction = action
+        }
+
+        override fun createView(ui: AnkoContext<ViewGroup>): View {
+            return with(ui) {
+                _createViewAction()
+            }
+        }
+
+        fun bind(action: BindAction<T>) {
+            _bindAction = action
+        }
+
+        override fun bind(item: T, isSelected: Boolean, position: Int) {
+            _bindAction.invoke(item, isSelected, position)
+        }
+
     }
 }
 

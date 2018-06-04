@@ -16,6 +16,7 @@ import com.san.kir.manger.extending.ankoExtend.goneOrVisible
 import com.san.kir.manger.extending.ankoExtend.onDoubleTapListener
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
 import com.san.kir.manger.utils.convertImagesToPng
+import com.san.kir.manger.utils.log
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import org.jetbrains.anko.linearLayout
@@ -32,6 +33,7 @@ class ViewerPageFragment : Fragment() {
         private const val File_name = "file_name"
 
         fun newInstance(file: File): ViewerPageFragment {
+            log("file = ${file}")
             val set = Bundle()
             set.putString(File_name, file.absolutePath)
             val frag = ViewerPageFragment()
@@ -82,11 +84,18 @@ class ViewerPageFragment : Fragment() {
                 bigImageView {
                     lparams(width = matchParent, height = matchParent)
 
-                    async {
-                        if (mFile.extension in arrayOf("gif", "webp"))
-                            mFile = convertImagesToPng(mFile)
-                        async(UI) {
-                            setImage(ImageSource.uri(Uri.fromFile(mFile)))
+                    async(UI) {
+                        try {
+                            log = "mFile = $mFile"
+                            val img = async {
+                                if (mFile.extension in arrayOf("gif", "webp"))
+                                    convertImagesToPng(mFile)
+                                else
+                                    mFile
+                            }
+                            setImage(ImageSource.uri(Uri.fromFile(img.await())))
+                        } catch (e: Exception) {
+                            e.printStackTrace()
                         }
                     }
 

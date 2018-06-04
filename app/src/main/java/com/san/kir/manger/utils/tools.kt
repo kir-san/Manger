@@ -195,7 +195,6 @@ object SortLibraryUtil {
             add -> SortLibrary.AddTime
             abc -> SortLibrary.AbcSort
             pop -> SortLibrary.Populate
-            man -> SortLibrary.Manual
             else -> SortLibrary.AddTime
         }
     }
@@ -205,7 +204,6 @@ object SortLibraryUtil {
             SortLibrary.AddTime -> add
             SortLibrary.AbcSort -> abc
             SortLibrary.Populate -> pop
-            SortLibrary.Manual -> man
         }
     }
 }

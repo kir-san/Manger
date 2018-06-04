@@ -1,8 +1,11 @@
 package com.san.kir.manger.components.viewer
 
+import android.os.Parcelable
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
+import android.support.v4.view.PagerAdapter
+import com.san.kir.manger.utils.log
 import java.io.File
 
 class ViewerPageAdapter(fm: FragmentManager) :
@@ -28,14 +31,22 @@ class ViewerPageAdapter(fm: FragmentManager) :
                 if (list[position].name == "next") ViewerPagerNextFragment()
                 else ViewerPageNoneNextFragment()
         // Если нет ни первого, ни второго
-            else -> ViewerPageFragment.newInstance(list[position])
+            else -> {
+                log("position = ${position}")
+                log("list[position = ${list[position]}")
+                ViewerPageFragment.newInstance(list[position])
+            }
         }
 
     }
 
     override fun getCount() = list.size
 
-//    override fun saveState(): Parcelable? {
-//        return null // Помогло избавиться от ошибки
-//    }
+    override fun saveState(): Parcelable? {
+        return null // Помогло избавиться от ошибки
+    }
+
+    override fun getItemPosition(`object`: Any?): Int {
+        return PagerAdapter.POSITION_NONE
+    }
 }

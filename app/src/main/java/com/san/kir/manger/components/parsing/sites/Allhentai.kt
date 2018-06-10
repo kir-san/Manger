@@ -34,11 +34,11 @@ class Allhentai : SiteCatalog {
         if (!isInit) {
             val doc = ManageSites.getDocument(host)
             doc.select(".rightContent h5")
-                    .filter { it.text() == "У нас сейчас" }
-                    .map { it.parent().select("li") }
-                    .map { it.first().text() }
-                    .map { it.split(" ").component4().toInt() }
-                    .forEach { volume = it }
+                .filter { it.text() == "У нас сейчас" }
+                .map { it.parent().select("li") }
+                .map { it.first().text() }
+                .map { it.split(" ").component4().toInt() }
+                .forEach { volume = it }
             isInit = true
         }
         return this
@@ -50,10 +50,12 @@ class Allhentai : SiteCatalog {
         val doc = rootDoc.select("div.leftContent")
 
         // Список авторов
-        element.authors = doc.select(".mangaSettings .elementList a[href*=author]").map { it.text() }
+        element.authors =
+                doc.select(".mangaSettings .elementList a[href*=author]").map { it.text() }
 
         // Количество глав
-        val volume = doc.select(".cTable tr").filter { !it.select("a").attr("href").contains("forum") }.size - 1
+        val volume =
+            doc.select(".cTable tr").filter { !it.select("a").attr("href").contains("forum") }.size - 1
         element.volume = if (volume < 0) 0 else volume
 
         // Краткое описание
@@ -113,7 +115,7 @@ class Allhentai : SiteCatalog {
         // Порядок в базе данных
         try {
             val matcher3 = Pattern.compile("\\d+")
-                    .matcher(elem.select(".screenshot").first().attr("rel"))
+                .matcher(elem.select(".screenshot").first().attr("rel"))
             val dateId = StringBuilder()
             while (matcher3.find()) {
                 dateId.append(matcher3.group())
@@ -122,7 +124,7 @@ class Allhentai : SiteCatalog {
         } catch (ex: NullPointerException) {
             val doc = ManageSites.getDocument(element.link).select("div.leftContent")
             val matcher3 = Pattern.compile("\\d+")
-                    .matcher(doc.select(".mangaSettings div[id*=user_rate]").first().id())
+                .matcher(doc.select(".mangaSettings div[id*=user_rate]").first().id())
             if (matcher3.find()) {
                 element.dateId = matcher3.group().toInt()
             }
@@ -160,20 +162,22 @@ class Allhentai : SiteCatalog {
 
     ///
     override fun chapters(manga: Manga) =
-            ManageSites.getDocument(manga.site)
-                    .select(".cTable")
-                    .select("tr")
-                    .map { it.select("td[align]").text() to it.select("a") }
-                    .filterNot { (_, it) -> it.attr("href").contains("forum") }
-                    .filter { (_, it) -> it.text().isNotEmpty() }
-                    .map { (date, select) ->
-                        val link = select.attr("href")
-                        Chapter(manga = manga.unic,
-                                name = select.text(),
-                                date = date,
-                                site = if (link.contains(host)) link else host + link,
-                                path = "${manga.path}/$name")
-                    }
+        ManageSites.getDocument(manga.site)
+            .select(".cTable")
+            .select("tr")
+            .map { it.select("td[align]").text() to it.select("a") }
+            .filterNot { (_, it) -> it.attr("href").contains("forum") }
+            .filter { (_, it) -> it.text().isNotEmpty() }
+            .map { (date, select) ->
+                val link = select.attr("href")
+                Chapter(
+                    manga = manga.unic,
+                    name = select.text(),
+                    date = date,
+                    site = if (link.contains(host)) link else host + link,
+                    path = "${manga.path}/${select.text()}"
+                )
+            }
 
 
     override fun pages(item: DownloadItem): List<String> {
@@ -188,8 +192,8 @@ class Allhentai : SiteCatalog {
         if (pat.find()) {
             // избавляюсь от ненужного и разделяю строку в список и отправляю
             val data = pat.group()
-                    .removeSuffix(";")
-                    .removePrefix("var pictures = ")
+                .removeSuffix(";")
+                .removePrefix("var pictures = ")
             val json = JSONArray(data)
 
             repeat(json.length()) { index ->

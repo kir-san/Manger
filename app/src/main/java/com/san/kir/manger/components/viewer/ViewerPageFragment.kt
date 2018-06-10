@@ -19,8 +19,12 @@ import com.san.kir.manger.utils.convertImagesToPng
 import com.san.kir.manger.utils.log
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
+import org.jetbrains.anko.alignParentBottom
+import org.jetbrains.anko.button
+import org.jetbrains.anko.centerHorizontally
 import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.matchParent
+import org.jetbrains.anko.relativeLayout
 import org.jetbrains.anko.scrollView
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.sp
@@ -133,7 +137,7 @@ private fun Context.readyLayout(
     textRes: Int,
     onTap: (ViewerActivity) -> Unit
 ): View = with(this) {
-    verticalLayout {
+    relativeLayout {
         // Корень
         lparams(width = matchParent, height = matchParent)
 
@@ -146,6 +150,15 @@ private fun Context.readyLayout(
                 onTap(viewer) // Выполнить свое действие при нажатии на экран
             }
         }.lparams(width = matchParent, height = matchParent)
+
+        button("Закончить чтение") {
+            onClick {
+                viewer.onBackPressed()
+            }
+        }.lparams {
+            alignParentBottom()
+            centerHorizontally()
+        }
     }
 }
 

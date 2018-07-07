@@ -170,7 +170,6 @@ class ViewerView(
                 presenter.progressPages.bind { currentItem = it }
                 presenter.isSwipeControl.bind { setLocked(!it) }
             }
-
         }
     }
 }

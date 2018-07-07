@@ -37,7 +37,7 @@ class ViewerPageFragment : Fragment() {
         private const val File_name = "file_name"
 
         fun newInstance(file: File): ViewerPageFragment {
-            log("file = ${file}")
+            log("file = $file")
             val set = Bundle()
             set.putString(File_name, file.absolutePath)
             val frag = ViewerPageFragment()
@@ -151,7 +151,7 @@ private fun Context.readyLayout(
             }
         }.lparams(width = matchParent, height = matchParent)
 
-        button("Закончить чтение") {
+        button(R.string.viewer_page_close) {
             onClick {
                 viewer.onBackPressed()
             }

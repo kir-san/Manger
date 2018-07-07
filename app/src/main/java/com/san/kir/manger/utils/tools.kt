@@ -188,7 +188,6 @@ object SortLibraryUtil {
     const val add = "add"
     const val abc = "abc"
     const val pop = "pop"
-    const val man = "man"
 
     fun toType(type: String): SortLibrary {
         return when (type) {
@@ -233,9 +232,9 @@ fun convertImagesToPng(image: File): File {
     )
 
     log = if (png.createNewFile()) {
-        ("png created ${png.path}")
+        "png created ${png.path}"
     } else {
-        ("png not created ${png.path}")
+        "png not created ${png.path}"
     }
 
     val stream = FileOutputStream(png.absoluteFile)
@@ -243,9 +242,9 @@ fun convertImagesToPng(image: File): File {
     stream.close()
 
     log = if (image.delete()) {
-        ("oldFile deleted ${image.path}")
+        "oldFile deleted ${image.path}"
     } else {
-        ("oldFile not deleted ${image.path}")
+        "oldFile not deleted ${image.path}"
     }
 
     return png

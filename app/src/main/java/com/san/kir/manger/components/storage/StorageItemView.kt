@@ -131,7 +131,7 @@ class StorageItemView(private val act: StorageActivity) :
     override fun bind(item: Storage, isSelected: Boolean, position: Int) {
         async(UI) {
             val context = root.context
-            val manga = async {mangaDao.getFromPath(item.path)}.await()
+            val manga = async { mangaDao.getFromPath(item.path) }.await()
 
             root.onClick { it?.menuOfActions(manga, item) }
 
@@ -179,10 +179,10 @@ class StorageItemView(private val act: StorageActivity) :
     private fun View.menuOfActions(manga: Manga?, item: Storage) {
         with(PopupMenu(context, this, Gravity.END)) {
             if (manga != null) {
-                menu.add(0, 0, 0, "Подробнее")
+                menu.add(0, 0, 0, R.string.storage_item_menu_detail)
             } else {
-                menu.add(0, 1, 0, "Добавить в библиотеку")
-                menu.add(0, 2, 0, "Удалить совсем")
+                menu.add(0, 1, 0, R.string.storage_item_menu_add)
+                menu.add(0, 2, 0, R.string.storage_item_menu_full_delete)
             }
 
             setOnMenuItemClickListener {
@@ -198,12 +198,12 @@ class StorageItemView(private val act: StorageActivity) :
                     }
                     2 -> {
                         context.alert {
-                            message = "Вы действительно хотите удалить?"
-                            positiveButton("Да, конечно") {
+                            messageResource = R.string.storage_item_alert_message
+                            positiveButton(R.string.storage_item_alert_positive) {
                                 getFullPath(item.path).deleteRecursively()
                                 storage.deleteAsync(item)
                             }
-                            negativeButton("Нет") {}
+                            negativeButton(R.string.storage_item_alert_negative) {}
                             show()
                         }
                     }

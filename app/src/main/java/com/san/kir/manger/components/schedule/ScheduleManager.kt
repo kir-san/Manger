@@ -4,6 +4,7 @@ import android.app.AlarmManager
 import android.content.Context
 import com.evernote.android.job.JobManager
 import com.evernote.android.job.JobRequest
+import com.san.kir.manger.R
 import com.san.kir.manger.room.models.PlannedPeriod
 import com.san.kir.manger.room.models.PlannedTask
 import com.san.kir.manger.room.models.PlannedType
@@ -48,15 +49,26 @@ class ScheduleManager(private val context: Context) {
         if (tasks >= 1) {
             when (plannedTask.type) {
                 PlannedType.MANGA ->
-                    context.longToast("Было отменено обновление манги ${plannedTask.manga}")
+                    context.longToast(
+                        context.getString(R.string.schedule_manager_cancel_manga, plannedTask.manga)
+                    )
                 PlannedType.CATEGORY ->
-                    context.longToast("Было отменено обновление сатегории ${plannedTask.category}")
+                    context.longToast(
+                        context.getString(
+                            R.string.schedule_manager_cancel_category,
+                            plannedTask.category
+                        )
+                    )
                 PlannedType.GROUP ->
-                    context.longToast("Было отменено обновление группы ${plannedTask.groupName}")
+                    context.longToast(
+                        context.getString(
+                            R.string.schedule_manager_cancel_group,
+                            plannedTask.groupName
+                        )
+                    )
                 else ->
                     log("Тип не соответсвует действительности")
             }
         }
-        log("canceled tasks = $tasks")
     }
 }

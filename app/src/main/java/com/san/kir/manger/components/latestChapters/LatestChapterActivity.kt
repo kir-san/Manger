@@ -95,11 +95,11 @@ class LatestChapterActivity : DrawerActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val item = menu.add(0, 0, 0, "Скачать новое").showNever()
+        val item = menu.add(0, 0, 0, R.string.latest_chapter_download_new).showNever()
         launch(UI) { item.isEnabled = _adapter.hasNewChapters() }
-        menu.add(1, 1, 1, "Очистить").showNever()
-        menu.add(1, 2, 2, "Очистить прочитанное").showNever()
-        menu.add(1, 3, 3, "Очистить скачанное").showNever()
+        menu.add(1, 1, 1, R.string.latest_chapter_clean).showNever()
+        menu.add(1, 2, 2, R.string.latest_chapter_clean_read).showNever()
+        menu.add(1, 3, 3, R.string.latest_chapter_download_clean_download).showNever()
         return super.onCreateOptionsMenu(menu)
     }
 

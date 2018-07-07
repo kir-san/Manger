@@ -163,7 +163,7 @@ class DownloadManagerItemView(private val act: DownloadManagerActivity) :
             val isLoadOrQueue = item.status == DownloadStatus.queued
                     || item.status == DownloadStatus.loading
             async(UI) {
-                name.text = "${item.manga} ${item.name}"
+                name.text = context.getString(R.string.download_item_name, item.manga, item.name)
 
                 startBtn.invisibleOrVisible(item.status != DownloadStatus.pause)
                 retryBtn.visibleOrGone(item.status == DownloadStatus.error)
@@ -232,7 +232,8 @@ class DownloadManagerItemView(private val act: DownloadManagerActivity) :
                         formatDouble(bytesToMb(item.downloadSize))
                     )
                     async(UI) {
-                        progressText.text = "$pages   $size"
+                        progressText.text =
+                                context.getString(R.string.download_item_progress, pages, size)
                     }
                 }
             }

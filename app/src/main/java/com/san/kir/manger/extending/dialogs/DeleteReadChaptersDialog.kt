@@ -15,6 +15,7 @@ import org.jetbrains.anko.dip
 import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.padding
 import org.jetbrains.anko.progressBar
+import org.jetbrains.anko.textResource
 import org.jetbrains.anko.textView
 
 class DeleteReadChaptersDialog(context: Context, manga: Manga, function: (() -> Unit)? = null) {
@@ -32,24 +33,33 @@ class DeleteReadChaptersDialog(context: Context, manga: Manga, function: (() -> 
                             padding = dip(16)
                             val progress = progressBar()
                             val message = textView {
-                                text = "Удаление..."
+                                textResource =
+                                        R.string.library_popupmenu_delete_read_chapters_deleting
                                 padding = dip(10)
                             }.lparams { gravity = Gravity.CENTER }
 
                             task = async {
-                                val chapters = Main.db.chapterDao.loadChapters(manga.unic).filter { it.isRead }
+                                val chapters =
+                                    Main.db.chapterDao.loadChapters(manga.unic).filter { it.isRead }
                                 val size = chapters.size
 
                                 if (size == 0) {
-                                    post { message.text = "Удалять нечего" }
+                                    post {
+                                        message.textResource =
+                                                R.string.library_popupmenu_delete_read_chapters_delete_nothing
+                                    }
                                 } else {
-                                    post { message.text = "Удаляю..." }
+                                    post {
+                                        message.textResource =
+                                                R.string.library_popupmenu_delete_read_chapters_delete
+                                    }
                                     delChapters(chapters)
                                 }
 
                                 post {
                                     progress.visibility = View.GONE
-                                    message.text = "Готово"
+                                    message.textResource =
+                                            R.string.library_popupmenu_delete_read_chapters_ready
                                     function?.invoke()
                                 }
                             }

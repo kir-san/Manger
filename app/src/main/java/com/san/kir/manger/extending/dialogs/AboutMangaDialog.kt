@@ -51,26 +51,26 @@ class AboutMangaDialog(context: Context, manga: Manga) {
                             }
                             padding = dip(10)
 
-                            labelView("Название")
+                            labelView(R.string.about_manga_dialog_name)
                             textViewBold15Size(manga.name)
 
-                            labelView("Категория")
+                            labelView(R.string.about_manga_dialog_category)
                             textViewBold15Size(manga.categories)
 
-                            labelView("Авторы")
+                            labelView(R.string.about_manga_dialog_authors)
                             textViewBold15Size(manga.authors)
 
-                            labelView("Статус выпуска")
+                            labelView(R.string.about_manga_dialog_status_edition)
                             textViewBold15Size(manga.status)
 
-                            labelView("Жанры")
+                            labelView(R.string.about_manga_dialog_genres)
                             textViewBold15Size(manga.genres)
 
-                            labelView("Место хранения")
+                            labelView(R.string.about_manga_dialog_storage)
                             textViewBold15Size(manga.path)
 
-                            labelView("Текущий объем")
-                            textViewBold15Size(text = "Считаю2s...") {
+                            labelView(R.string.about_manga_dialog_volume)
+                            textViewBold15Size(R.string.about_manga_dialog_calculate) {
                                 async {
                                     val size = getFullPath(manga.path).lengthMb
                                     async(UI) {
@@ -84,17 +84,17 @@ class AboutMangaDialog(context: Context, manga: Manga) {
                                 }
                             }
 
-                            labelView("Ссылка на источник")
+                            labelView(R.string.about_manga_dialog_link)
                             textViewBold15Size(manga.site) {
                                 isClickable = true
                                 textColor = Color.BLUE
                                 onClick { context.browse(manga.site) }
                             }
 
-                            labelView("Описание")
+                            labelView(R.string.about_manga_dialog_about)
                             textViewBold15Size(manga.about)
 
-                            labelView("Лого")
+                            labelView(R.string.about_manga_dialog_logo)
                             imageView {
                                 scaleType = ImageView.ScaleType.FIT_CENTER
                                 if (manga.logo.isNotEmpty())
@@ -120,8 +120,8 @@ class AboutMangaDialog(context: Context, manga: Manga) {
                     }
                 }
             }
-            positiveButton("Закрыть") { }
-            negativeButton("Редактировать") {
+            positiveButton(R.string.about_manga_dialog_close) { }
+            negativeButton(R.string.about_manga_dialog_edit) {
                 context.startActivity<AddMangaActivity>(MangaColumn.unic to manga.unic)
             }
         }.show()

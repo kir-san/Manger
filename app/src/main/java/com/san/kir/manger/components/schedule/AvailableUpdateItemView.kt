@@ -82,5 +82,4 @@ class AvailableUpdateItemView : RecyclerViewAdapterFactory.AnkoView<Manga>() {
             }
         }
     }
-
 }

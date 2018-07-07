@@ -7,6 +7,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import com.san.kir.manger.R
 import com.san.kir.manger.components.listChapters.ListChaptersActivity
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.extending.dialogs.LibraryItemMenu
@@ -107,9 +108,9 @@ abstract class LibraryItemView(
                 root.context.alert {
                     this.customView {
                         verticalLayout {
-                            textView("Всего глав: $count")
-                            textView("Непрочитанно: $countNotRead")
-                            textView("Прочитанно: ${count - countNotRead}")
+                            textView(context.getString(R.string.library_all_chapters, count))
+                            textView(context.getString(R.string.library_not_read_chapters, countNotRead))
+                            textView(context.getString(R.string.library_read_chapters, count - countNotRead))
                         }
                     }
                 }.show()

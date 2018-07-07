@@ -104,8 +104,8 @@ class AddMangaView : AnkoActivityComponent() {
                     site = editText().typeText()
                         .lparams(width = matchParent, height = wrapContent)
 
-                    textView(text = "Обновление манги")
-                    isUpdate = checkBox("Разрешить?").lparams(
+                    textView(text = R.string.add_manga_update)
+                    isUpdate = checkBox(R.string.add_manga_update_available).lparams(
                         width = matchParent,
                         height = wrapContent
                     )

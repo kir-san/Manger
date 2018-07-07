@@ -23,8 +23,8 @@ android {
         applicationId "com.san.kir.manger"
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 201
-        versionName "2.0.1"
+        versionCode 202
+        versionName "2.0.2"
         vectorDrawables.useSupportLibrary = true
         setProperty("archivesBaseName", "Manger $versionName")
     }

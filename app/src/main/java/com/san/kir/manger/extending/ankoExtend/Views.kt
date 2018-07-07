@@ -55,8 +55,21 @@ fun ViewManager.labelView(text: String, init: TextView.() -> Unit = {}) = textVi
     topPadding = dip(5)
     init()
 }
+fun ViewManager.labelView(text: Int, init: TextView.() -> Unit = {}) = textView(text) {
+    textSize = 13.5f
+    bottomPadding = 0
+    topPadding = dip(5)
+    init()
+}
 
 fun ViewManager.textViewBold15Size(text: String = "", init: TextView.() -> Unit = {}): TextView {
+    return textView(text) {
+        textSize = 15f
+        setTypeface(typeface, Typeface.BOLD)
+        init()
+    }
+}
+fun ViewManager.textViewBold15Size(text: Int, init: TextView.() -> Unit = {}): TextView {
     return textView(text) {
         textSize = 15f
         setTypeface(typeface, Typeface.BOLD)
@@ -89,6 +102,14 @@ fun ViewManager.radioButton(
 
 fun AlertBuilder<*>.positiveButton(
     buttonText: String,
+    context: CoroutineContext = UI,
+    handler: suspend CoroutineScope.(dialog: DialogInterface) -> Unit
+) {
+    positiveButton(buttonText) { launch(context) { handler(it) } }
+}
+
+fun AlertBuilder<*>.positiveButton(
+    buttonText: Int,
     context: CoroutineContext = UI,
     handler: suspend CoroutineScope.(dialog: DialogInterface) -> Unit
 ) {

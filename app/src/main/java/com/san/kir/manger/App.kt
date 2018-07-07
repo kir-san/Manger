@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatDelegate
 import com.evernote.android.job.JobManager
 import com.san.kir.manger.components.schedule.ScheduleJob
 import com.san.kir.manger.room.RoomDB
-import com.san.kir.manger.utils.log
 import java.io.File
 
 class App : Application() {
@@ -63,7 +62,6 @@ class App : Application() {
             val profile = getDatabasePath(RoomDB.NAME)
             if (data.exists() && !profile.exists()) {
                 data.copyTo(profile)
-                log("Ready copy from data to profile")
             }
         }
     }

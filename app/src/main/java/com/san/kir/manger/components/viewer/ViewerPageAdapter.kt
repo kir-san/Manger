@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.view.PagerAdapter
-import com.san.kir.manger.utils.log
 import java.io.File
 
 class ViewerPageAdapter(fm: FragmentManager) :
@@ -32,8 +31,6 @@ class ViewerPageAdapter(fm: FragmentManager) :
                 else ViewerPageNoneNextFragment()
         // Если нет ни первого, ни второго
             else -> {
-                log("position = ${position}")
-                log("list[position = ${list[position]}")
                 ViewerPageFragment.newInstance(list[position])
             }
         }

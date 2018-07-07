@@ -96,24 +96,64 @@ class DownloadManagerActivity : DrawerActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menu.add(OptionId.defaultGroupId, OptionId.parallel, 0, "Паралельная загрузка")
+        menu.add(
+            OptionId.defaultGroupId,
+            OptionId.parallel,
+            0,
+            R.string.download_activity_option_parallel
+        )
             .isCheckable = true
-        menu.add(OptionId.defaultGroupId, OptionId.isRetry, 0, "Повторять при ошибке")
+        menu.add(
+            OptionId.defaultGroupId,
+            OptionId.isRetry,
+            0,
+            R.string.download_activity_option_error_retry
+        )
             .isCheckable = true
-        menu.add(OptionId.defaultGroupId, OptionId.start, 0, "Продолжить")
+        menu.add(
+            OptionId.defaultGroupId,
+            OptionId.start,
+            0,
+            R.string.download_activity_option_start
+        )
             .showAlways()
             .setIcon(R.drawable.ic_start_white)
-        menu.add(OptionId.defaultGroupId, OptionId.stop, 0, "Приостановить")
+        menu.add(OptionId.defaultGroupId, OptionId.stop, 0, R.string.download_activity_option_stop)
             .showAlways()
             .setIcon(R.drawable.ic_stop_white)
-        menu.add(OptionId.defaultGroupId, OptionId.retry, 0, "Повторить")
+        menu.add(
+            OptionId.defaultGroupId,
+            OptionId.retry,
+            0,
+            R.string.download_activity_option_retry
+        )
             .showAlways()
             .setIcon(R.drawable.ic_update)
-        menu.addSubMenu("Очистить").apply {
-            add(OptionId.clearGroupId, OptionId.clearAll, 0, "Очистить все")
-            add(OptionId.clearGroupId, OptionId.clearCompleted, 0, "Очистить завершенные")
-            add(OptionId.clearGroupId, OptionId.clearPaused, 0, "Очистить приостановленные")
-            add(OptionId.clearGroupId, OptionId.clearError, 0, "Очистить с ошибкой")
+        menu.addSubMenu(R.string.download_activity_option_submenu_clean).apply {
+            add(
+                OptionId.clearGroupId,
+                OptionId.clearAll,
+                0,
+                R.string.download_activity_option_submenu_clean_all
+            )
+            add(
+                OptionId.clearGroupId,
+                OptionId.clearCompleted,
+                0,
+                R.string.download_activity_option_submenu_clean_completed
+            )
+            add(
+                OptionId.clearGroupId,
+                OptionId.clearPaused,
+                0,
+                R.string.download_activity_option_submenu_clean_paused
+            )
+            add(
+                OptionId.clearGroupId,
+                OptionId.clearError,
+                0,
+                R.string.download_activity_option_submenu_clean_error
+            )
         }
         return super.onCreateOptionsMenu(menu)
     }

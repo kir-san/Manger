@@ -34,7 +34,7 @@ class SiteCatalogActivity : DrawerActivity() {
         menu.add(0, 0, 0, R.string.catalog_for_one_site_update_all)
                 .showAlways()
                 .setIcon(R.drawable.ic_update)
-        menu.add(0, 1, 0, "Обновить содержимое каталогов")
+        menu.add(0, 1, 0, R.string.catalog_for_one_site_update_catalog_contain)
                 .showNever()
         return super.onCreateOptionsMenu(menu)
     }

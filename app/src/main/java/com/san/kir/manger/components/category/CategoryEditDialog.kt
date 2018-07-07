@@ -49,7 +49,9 @@ class CategoryEditDialog(
 
     init {
         context.alert {
-            title = if (oldName.isEmpty()) "Создание категории" else "Настройка категории"
+            titleResource =
+                    if (oldName.isEmpty()) R.string.category_dialog_title_create
+                    else R.string.category_dialog_title_edit
             customView {
                 nestedScrollView {
                     verticalLayout {
@@ -60,15 +62,17 @@ class CategoryEditDialog(
                                 setText(cat.name)
                                 isEnabled = !isAll
                                 typeText()
-                                hint = "Введите название"
+                                setHint(R.string.category_dialog_hint)
                                 textChangedListener {
                                     onTextChanged { text, _, _, _ ->
                                         text?.let {
                                             cat.name = it.toString()
                                             validate.item = when {
-                                                text.length < 3 -> "Слишком коротко"
-                                                oldName == it.toString() -> "Старое имя"
-                                                catList.contains(it.toString()) -> "Название занято"
+                                                text.length < 3 -> context.getString(R.string.category_dialog_validate_length)
+                                                oldName == it.toString() -> context.getString(R.string.category_dialog_validate_equal)
+                                                catList.contains(it.toString()) -> context.getString(
+                                                    R.string.category_dialog_validate_contain
+                                                )
                                                 else -> ""
                                             }
                                         }
@@ -128,7 +132,7 @@ class CategoryEditDialog(
 
                         space().lparams(height = dip(10))
 
-                        textView("Портретная ориентация")
+                        textView(R.string.category_dialog_portrait)
 
                         space().lparams(height = dip(5))
 
@@ -179,7 +183,7 @@ class CategoryEditDialog(
 
                         space().lparams(height = dip(10))
 
-                        textView("Ландшафтная ориентация")
+                        textView(R.string.category_dialog_landscape)
 
                         space().lparams(height = dip(5))
 
@@ -229,24 +233,20 @@ class CategoryEditDialog(
                     }
                 }
             }
-            positiveButton(if (oldName.isEmpty()) "Создать" else "Изменить") {
+            positiveButton(if (oldName.isEmpty()) R.string.category_dialog_create else R.string.category_dialog_edit) {
                 if (validate.item != "") {
                     if (oldName.isEmpty()) {
-                        context.toast("Категория не была создана")
+                        context.toast(R.string.category_dialog_not_create)
                         return@positiveButton
                     }
-
                     if (cat.name != oldName) {
                         cat.name = oldName
-                        context.toast("Имя не прошло проверку, сохранено старое")
+                        context.toast(R.string.category_dialog_save_old_name)
                     }
                 }
-
                 action(cat)
-
             }
-            negativeButton("Я передумал") {}
+            negativeButton(R.string.category_dialog_cancel) {}
         }.show()
-
     }
 }

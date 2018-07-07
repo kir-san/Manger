@@ -1,16 +1,19 @@
 package com.san.kir.manger.components.parsing
 
+import com.san.kir.manger.App
+import com.san.kir.manger.R
+
 
 object Status {
-    const val COMPLETE = "Выпуск завершен"
-    const val NOT_COMPLETE = "Выпуск продолжается"
-    const val SINGLE = "Сингл"
-    const val UNKNOWN = "Неизвестно"
+    val COMPLETE: String = App.context.getString(R.string.status_complete)
+    val NOT_COMPLETE: String = App.context.getString(R.string.status_not_complete)
+     val SINGLE: String = App.context.getString(R.string.status_single)
+     val UNKNOWN: String = App.context.getString(R.string.status_unknown)
 }
 
 object Translate {
-    const val COMPLETE = "Перевод завершен"
-    const val NOT_COMPLETE = "Перевод продолжается"
-    const val FREEZE = "Перевод заморожен"
-    const val UNKNOWN = "Неизвестно"
+     val COMPLETE: String = App.context.getString(R.string.translate_complete)
+     val NOT_COMPLETE: String = App.context.getString(R.string.translate_not_complete)
+     val FREEZE: String = App.context.getString(R.string.translate_freeze)
+     val UNKNOWN: String = App.context.getString(R.string.translate_unknown)
 }

@@ -26,8 +26,8 @@ import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.wrapContent
 
-class CategoryItemView(private val adapter: CategoryRecyclerPresenter)
-    : RecyclerViewAdapterFactory.AnkoView<Category>() {
+class CategoryItemView(private val adapter: CategoryRecyclerPresenter) :
+    RecyclerViewAdapterFactory.AnkoView<Category>() {
     private object Id {
         val delete = ID.generate()
     }
@@ -100,11 +100,11 @@ class CategoryItemView(private val adapter: CategoryRecyclerPresenter)
             deleteBtn.isClickable = false
         } else {
             deleteBtn.onClick {
-                root.context.alert(message = "Вы действительно хотите удалить?") {
-                    positiveButton("Да") {
+                root.context.alert(R.string.category_item_question_delete) {
+                    positiveButton(R.string.category_item_question_delete_yes) {
                         adapter.remove(item)
                     }
-                    negativeButton("Нет") { }
+                    negativeButton(R.string.category_item_question_delete_no) { }
                 }.show()
             }
         }

@@ -174,7 +174,6 @@ class MangaUpdaterService : Service() {
             builder.addAction(actionDownloadNew)
         }
 
-
         val notify = NotificationCompat.InboxStyle(builder)
             .addLine(
                 if (progress > 1)
@@ -218,6 +217,11 @@ class MangaUpdaterService : Service() {
                         new.forEach { chapter ->
                             if (oldChapters.none { oldChapter -> chapter.site == oldChapter.site }) {
                                 newChapters += chapter
+                            } else {
+                                val tempChapter = oldChapters
+                                    .first { oldChapter -> chapter.site == oldChapter.site }
+                                tempChapter.path = chapter.path
+                                chapters.update(tempChapter)
                             }
                         }
                     }

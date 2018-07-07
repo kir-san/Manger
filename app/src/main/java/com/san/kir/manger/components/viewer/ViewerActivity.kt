@@ -22,7 +22,6 @@ import com.san.kir.manger.eventBus.positive
 import com.san.kir.manger.extending.BaseActivity
 import com.san.kir.manger.extending.ankoExtend.radioButton
 import com.san.kir.manger.extending.views.showAlways
-import com.san.kir.manger.utils.log
 import com.san.kir.manger.utils.sPrefViewer
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.checkBox
@@ -87,7 +86,6 @@ class ViewerActivity : BaseActivity() {
     val presenter by lazy { ViewPagePresenter(this) }
     private val view by lazy { ViewerView(presenter) }
 
-    /* Перезаписанные функции */
     @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -129,7 +127,6 @@ class ViewerActivity : BaseActivity() {
             }
         }
 
-        log("создание ")
         presenter.configManager(mangaName, chapterName)
     }
 
@@ -293,10 +290,10 @@ class ViewerActivity : BaseActivity() {
                     }
                 }
             }
-            positiveButton("Применить") {
+            positiveButton(R.string.viewer_menu_apply) {
                 requestedOrientation = orientation
             }
-            negativeButton("Отменить") {}
+            negativeButton(R.string.viewer_menu_cancel) {}
 
         }.show()
     }

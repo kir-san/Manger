@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.widget.RelativeLayout
 import android.widget.Switch
 import android.widget.TextView
+import com.san.kir.manger.R
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.room.dao.updateAsync
 import com.san.kir.manger.room.models.PlannedAddEdit
@@ -84,52 +85,38 @@ class PlannedTaskItemView(act: ScheduleActivity) :
 
         when (item.type) {
             PlannedType.MANGA -> {
-                name.text = "Манга: ${item.manga}"
+                name.text = ctx.getString(R.string.planned_task_name_manga, item.manga)
             }
             PlannedType.CATEGORY -> {
-                name.text = "Категория: ${item.category}"
+                name.text = ctx.getString(R.string.planned_task_name_category, item.category)
             }
             PlannedType.GROUP -> {
-                name.text = "Группа: ${item.groupName}"
+                name.text = ctx.getString(R.string.planned_task_name_group, item.groupName)
             }
         }
 
-        if (item.period == PlannedPeriod.DAY)
-            updateText.text =
-                    "Обновляется раз в день в ${item.hour}:${String.format("%02d", item.minute)}"
-        else {
-            updateText.text = when (item.dayOfWeek) {
-                Calendar.MONDAY -> "Обновляется каждый понедельник в ${item.hour}:${String.format(
-                    "%02d",
-                    item.minute
-                )}"
-                Calendar.TUESDAY -> "Обновляется каждый вторник в ${item.hour}:${String.format(
-                    "%02d",
-                    item.minute
-                )}"
-                Calendar.WEDNESDAY -> "Обновляется каждую среду в ${item.hour}:${String.format(
-                    "%02d",
-                    item.minute
-                )}"
-                Calendar.THURSDAY -> "Обновляется каждый четверг в ${item.hour}:${String.format(
-                    "%02d",
-                    item.minute
-                )}"
-                Calendar.FRIDAY -> "Обновляется каждую пятницу в ${item.hour}:${String.format(
-                    "%02d",
-                    item.minute
-                )}"
-                Calendar.SATURDAY -> "Обновляется каждую субботу в ${item.hour}:${String.format(
-                    "%02d",
-                    item.minute
-                )}"
-                Calendar.SUNDAY -> "Обновляется каждое воскресение в ${item.hour}:${String.format(
-                    "%02d",
-                    item.minute
-                )}"
-                else -> "Черт знает когда оно обновляется"
+        val dayText: String =
+            if (item.period == PlannedPeriod.DAY) {
+                ctx.getString(R.string.planned_task_update_text_day)
+            } else {
+                when (item.dayOfWeek) {
+                    Calendar.MONDAY -> ctx.getString(R.string.planned_task_update_text_monday)
+                    Calendar.TUESDAY -> ctx.getString(R.string.planned_task_update_text_tuesday)
+                    Calendar.WEDNESDAY -> ctx.getString(R.string.planned_task_update_text_wednesday)
+                    Calendar.THURSDAY -> ctx.getString(R.string.planned_task_update_text_thursday)
+                    Calendar.FRIDAY -> ctx.getString(R.string.planned_task_update_text_friday)
+                    Calendar.SATURDAY -> ctx.getString(R.string.planned_task_update_text_saturday)
+                    Calendar.SUNDAY -> ctx.getString(R.string.planned_task_update_text_sunday)
+                    else -> ctx.getString(R.string.planned_task_update_text_unknown)
+                }
             }
-        }
+        updateText.text =
+                ctx.getString(
+                    R.string.planned_task_update_text_template,
+                    dayText,
+                    item.hour,
+                    String.format("%02d", item.minute)
+                )
 
         switch.isChecked = item.isEnabled
         switch.onClick {

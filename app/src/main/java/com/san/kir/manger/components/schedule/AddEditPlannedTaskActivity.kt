@@ -3,6 +3,7 @@ package com.san.kir.manger.components.schedule
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import com.san.kir.manger.R
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.extending.BaseActivity
 import com.san.kir.manger.extending.views.showAlways
@@ -24,12 +25,12 @@ class AddEditPlannedTaskActivity : BaseActivity() {
 
         when {
             intent.hasExtra(PlannedAddEdit.add) -> {
-                title = "Создание задачи"
+                setTitle(R.string.planned_task_title_create)
                 isEditMode = false
                 mView.setTask(PlannedTask())
             }
             intent.hasExtra(PlannedAddEdit.edit) -> {
-                title = "Редактирование задачи"
+                setTitle(R.string.planned_task_title_change)
                 isEditMode = true
                 mView.setTask(intent.getParcelableExtra(PlannedAddEdit.edit))
             }
@@ -39,7 +40,7 @@ class AddEditPlannedTaskActivity : BaseActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menu.add(0, 1, 1, "Готово").showAlways()
+        menu.add(0, 1, 1, R.string.planned_task_button_ready).showAlways()
         return true
     }
 

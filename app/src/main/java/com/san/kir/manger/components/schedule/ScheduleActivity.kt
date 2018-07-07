@@ -25,7 +25,7 @@ class ScheduleActivity : DrawerActivity() {
         }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menu.add(0, 0, 0, "Добавить")
+        menu.add(0, 0, 0, R.string.schedule_activity_menu_add)
             .setIcon(R.drawable.ic_add_white)
             .showAlways()
         return super.onCreateOptionsMenu(menu)

@@ -3,7 +3,6 @@ package com.san.kir.manger.components.listChapters
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.room.models.Chapter
 import com.san.kir.manger.room.models.Manga
-import com.san.kir.manger.utils.log
 import kotlinx.coroutines.experimental.async
 
 object SearchDuplicate {
@@ -24,7 +23,6 @@ object SearchDuplicate {
             list -= chapter
             list.forEach { current ->
                 if (current.name == chapter.name) {
-                    log("chapter ${chapter.name} is duplicate name")
                     duplicateList += current
                     hasDuplicate = true
                 }

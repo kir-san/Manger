@@ -5,6 +5,7 @@ import android.arch.persistence.room.Room
 import android.content.pm.PackageManager
 import android.os.Bundle
 import com.san.kir.manger.App
+import com.san.kir.manger.R
 import com.san.kir.manger.components.library.LibraryActivity
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.extending.BaseActivity
@@ -92,7 +93,7 @@ class Main : BaseActivity() {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 init()
             } else {
-                longToast("Без этого разрешения от приложения мало толку")
+                longToast(R.string.main_permission_error)
                 finishAffinity()
             }
     }

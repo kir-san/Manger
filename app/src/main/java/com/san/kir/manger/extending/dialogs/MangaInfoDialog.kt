@@ -70,28 +70,28 @@ class MangaInfoDialog(
                             }
                             padding = dip(10)
 
-                            labelView("Название")
+                            labelView(R.string.manga_info_dialog_name)
                             name = text()
 
-                            labelView("Авторы")
+                            labelView(R.string.manga_info_dialog_authors)
                             authors = text()
 
-                            labelView("Тип")
+                            labelView(R.string.manga_info_dialog_type)
                             type = text()
 
-                            labelView("Статус выпуска")
+                            labelView(R.string.manga_info_dialog_status_edition)
                             statusEdition = text()
 
-                            labelView("Объем")
+                            labelView(R.string.manga_info_dialog_volume)
                             volume = text()
 
-                            labelView("Статус перевода")
+                            labelView(R.string.manga_info_dialog_status_translate)
                             statusTranslate = text()
 
-                            labelView("Жанры")
+                            labelView(R.string.manga_info_dialog_genres)
                             genres = text()
 
-                            labelView("Ссылка на источник")
+                            labelView(R.string.manga_info_dialog_link)
                             link = textView {
                                 textSize = 15f
                                 setTypeface(typeface, Typeface.BOLD)
@@ -99,7 +99,7 @@ class MangaInfoDialog(
                                 onClick { ctx.browse(item.link) }
                             }
 
-                            labelView("Описание")
+                            labelView(R.string.manga_info_dialog_about)
                             about = text()
                         }
                     }
@@ -108,12 +108,12 @@ class MangaInfoDialog(
             }
 
             if (!item.isAdded)
-                positiveButton("Добавить", UI) {
+                positiveButton(R.string.manga_info_dialog_add, UI) {
                     AddMangaDialog(context, item) {
                         onFinish()
                     }
                 }
-            negativeButton("Закрыть") {}
+            negativeButton(R.string.manga_info_dialog_close) {}
         }.show()
     }
 
@@ -135,7 +135,6 @@ class MangaInfoDialog(
     private fun updateInfo(element: SiteCatalogElement) = async(UI) {
         try {
             updateProgress.visibility = View.VISIBLE
-
             bind(ManageSites.getFullElement(element).await())
         } finally {
             updateProgress.visibility = View.GONE

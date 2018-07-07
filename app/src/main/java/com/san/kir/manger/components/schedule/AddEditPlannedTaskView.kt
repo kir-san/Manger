@@ -35,6 +35,7 @@ import org.jetbrains.anko.recyclerview.v7.recyclerView
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.support.v4.nestedScrollView
 import org.jetbrains.anko.textColorResource
+import org.jetbrains.anko.textResource
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.timePicker
 import org.jetbrains.anko.verticalLayout
@@ -87,8 +88,7 @@ class AddEditPlannedTaskView : AnkoActivityComponent() {
                         marginEnd = dip(5)
                     }
 
-
-                    labelView("Тип обновления").lparams { topMargin = dip(5) }
+                    labelView(R.string.planned_task_type_of_update).lparams { topMargin = dip(5) }
                     radioGroup {
                         id = ID.generate()
                         PlannedType.map.forEach { (t, v) ->
@@ -103,10 +103,9 @@ class AddEditPlannedTaskView : AnkoActivityComponent() {
                         }
                     }
 
-
                     verticalLayout {
                         typeBinder.bind { type -> visibleOrGone(type == PlannedType.MANGA) }
-                        labelView("Выбрать мангу").lparams {
+                        labelView(R.string.planned_task_change_manga).lparams {
                             topMargin = dip(5)
                         }
                         mangaName = textViewBold15Size { }
@@ -118,18 +117,17 @@ class AddEditPlannedTaskView : AnkoActivityComponent() {
                         }
                     }
 //
-//
                     verticalLayout {
                         typeBinder.bind { type -> visibleOrGone(type == PlannedType.GROUP) }
-                        labelView("Название группы").lparams {
+                        labelView(R.string.planned_task_name_of_group).lparams {
                             topMargin = dip(5)
                         }
                         groupName = editText()
 
-                        labelView("Настроить группу").lparams {
+                        labelView(R.string.planned_task_option_of_group).lparams {
                             topMargin = dip(5)
                         }
-                        groupNothing = textViewBold15Size("Ничего не выбрано")
+                        groupNothing = textViewBold15Size(R.string.planned_task_group_unknown)
                         recyclerView {
                             adapter = groupContent
                             layoutManager = LinearLayoutManager(context)
@@ -144,10 +142,9 @@ class AddEditPlannedTaskView : AnkoActivityComponent() {
                         }
                     }
 //
-//
                     verticalLayout {
                         typeBinder.bind { type -> visibleOrGone(type == PlannedType.CATEGORY) }
-                        labelView("Выбрать категорию").lparams {
+                        labelView(R.string.planned_task_change_category).lparams {
                             topMargin = dip(5)
                         }
                         categoryName = textViewBold15Size("")
@@ -158,8 +155,7 @@ class AddEditPlannedTaskView : AnkoActivityComponent() {
                         }
                     }
 
-
-                    labelView("Период повтора").lparams { topMargin = dip(5) }
+                    labelView(R.string.planned_task_repeat).lparams { topMargin = dip(5) }
                     radioGroup {
                         id = ID.generate()
                         PlannedPeriod.map.forEach { (p, v) ->
@@ -174,10 +170,9 @@ class AddEditPlannedTaskView : AnkoActivityComponent() {
                         }
                     }
 
-
                     verticalLayout {
                         periodBinder.bind { visibleOrGone(it == PlannedPeriod.WEEK) }
-                        labelView("Выбрать день").lparams {
+                        labelView(R.string.planned_task_change_day).lparams {
                             topMargin = dip(5)
                         }
                         radioGroup {
@@ -195,8 +190,7 @@ class AddEditPlannedTaskView : AnkoActivityComponent() {
                         }
                     }
 
-
-                    labelView("Выбрать время").lparams { topMargin = dip(5) }
+                    labelView(R.string.planned_task_change_time).lparams { topMargin = dip(5) }
                     timePicker = timePicker {
                         setIs24HourView(true)
                     }
@@ -211,15 +205,20 @@ class AddEditPlannedTaskView : AnkoActivityComponent() {
 
         unic = task.manga
         val position = listMangaUnic.indexOf(task.manga)
-        mangaName.text = if (position == -1) "Ничего не выбрано"
-        else listMangaName[position]
+        if (position == -1)
+            mangaName.textResource = R.string.planned_task_manga_unknown
+        else
+            mangaName.text = listMangaName[position]
 
         groupName.setText(task.groupName)
 
         groupContent.items = task.mangaList
         groupContent.notifyDataSetChanged()
 
-        categoryName.text = if (task.category.isEmpty()) "Категория не выбрана" else task.category
+        if (task.category.isEmpty())
+            categoryName.textResource = R.string.planned_task_category_unknown
+        else
+            categoryName.text = task.category
         periodBinder.item = task.period
         dayOfWeekBinder.item = task.dayOfWeek
 
@@ -248,7 +247,7 @@ class AddEditPlannedTaskView : AnkoActivityComponent() {
         AlertDialog.Builder(context).apply {
             val position = data.indexOf(value)
             setSingleChoiceItems(data, position, null)
-            setPositiveButton("Готово") { d, _ ->
+            setPositiveButton(R.string.planned_task_button_ready) { d, _ ->
                 val checkedPosition =
                     (d as AlertDialog).listView.checkedItemPosition
                 action.invoke(data[checkedPosition], checkedPosition)
@@ -266,7 +265,7 @@ class AddEditPlannedTaskView : AnkoActivityComponent() {
             val chk =
                 data.map { value.contains(it) }.toBooleanArray()
             setMultiChoiceItems(data, chk, null)
-            setPositiveButton("Готово") { d, _ ->
+            setPositiveButton(R.string.planned_task_button_ready) { d, _ ->
                 val positions =
                     (d as AlertDialog).listView.checkedItemPositions
                 var prepare = listOf<String>()
@@ -279,11 +278,12 @@ class AddEditPlannedTaskView : AnkoActivityComponent() {
         }
     }
 
-    private fun ViewManager.btnChange(action: TextView.() -> Unit) = textView("Изменить") {
-        textColorResource = R.color.colorAccent
-        textSize = 16f
-        onClick {
-            action()
+    private fun ViewManager.btnChange(action: TextView.() -> Unit) =
+        textView(R.string.planned_task_change) {
+            textColorResource = R.color.colorAccent
+            textSize = 16f
+            onClick {
+                action()
+            }
         }
-    }
 }

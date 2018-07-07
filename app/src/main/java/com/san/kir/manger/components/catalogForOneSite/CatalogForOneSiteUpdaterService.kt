@@ -51,7 +51,11 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
         val cancelAll = PendingIntent.getService(this, 0, intent, 0)
         NotificationCompat
             .Action
-            .Builder(R.drawable.ic_cancel, "Отменить все", cancelAll)
+            .Builder(
+                R.drawable.ic_cancel,
+                getString(R.string.catalog_fos_service_action_cancel_all),
+                cancelAll
+            )
             .build()
     }
     private var isError = false
@@ -88,8 +92,10 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
 
                 with(NotificationCompat.Builder(this@CatalogForOneSiteUpdaterService, channelId)) {
                     setSmallIcon(R.drawable.ic_notify_updater)
-                    setContentTitle("Обновление каталогов: ${taskCounter.size} шт.")
-                    setContentText("Подготовка каталога ${site.name} к загрузке")
+                    setContentTitle(
+                        getString(R.string.catalog_fos_service_notify_title, taskCounter.size)
+                    )
+                    setContentText(getString(R.string.catalog_fos_service_notify_text, site.name))
                     startForeground(notificationId, build())
                 }
 
@@ -112,7 +118,9 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
                         )
                     ) {
                         setSmallIcon(R.drawable.ic_notify_updater)
-                        setContentTitle("Обновление ${taskCounter.size} шт")
+                        setContentTitle(
+                            getString(R.string.catalog_fos_service_notify_title_2, taskCounter.size)
+                        )
                         setContentText("${siteDb?.name}  ${((counter.toFloat() / site.volume.toFloat()) * 100).toInt()}%")
                         setProgress(site.volume, counter, false)
                         addAction(actionCancelAll)
@@ -155,11 +163,11 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
 
             with(NotificationCompat.Builder(this@CatalogForOneSiteUpdaterService, channelId)) {
                 setSmallIcon(R.drawable.ic_notify_updater)
-                setContentTitle("Обновление каталогов завершенно")
+                setContentTitle(getString(R.string.catalog_fos_service_notify_complete))
                 setContentText("")
                 if (isError) {
-                    setContentTitle("Обновление каталогов завершенно с ошибкой")
-                    setContentText("Проверьте подключение к интернету")
+                    setContentTitle(getString(R.string.catalog_fos_service_notify_error_title))
+                    setContentText(getString(R.string.catalog_fos_service_notify_error_text))
                 }
                 setContentIntent(actionGoToCatalogs)
                 notificationManager.notify(notificationId, build())

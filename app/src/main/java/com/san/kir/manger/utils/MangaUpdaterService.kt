@@ -49,8 +49,9 @@ class MangaUpdaterService : Service() {
             taskCounter.any { it.unic == manga.unic }
 
         private var taskCounter = listOf<Manga>()
-        private val notificationId = ID.generate()
     }
+
+    private var notificationId = ID.generate()
 
     private val chapters = Main.db.chapterDao
     private val latestChapters = Main.db.latestChapterDao
@@ -101,6 +102,8 @@ class MangaUpdaterService : Service() {
     @SuppressLint("InlinedApi")
     override fun onCreate() {
         super.onCreate()
+
+        notificationId = ID.generate()
 
         progress = 0
         fullCountNew = 0
@@ -185,6 +188,8 @@ class MangaUpdaterService : Service() {
             .addLine(getString(R.string.manga_update_notify_founded_with_error, error))
             .build()
         notificationManager.notify(notificationId, notify)
+
+        stopSelf()
     }
 
     @WorkerThread

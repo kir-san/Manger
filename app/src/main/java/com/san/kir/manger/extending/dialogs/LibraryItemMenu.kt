@@ -22,7 +22,6 @@ class LibraryItemMenu(context: Context,
         PopupMenu(context, anchor).apply {
             val about = menu.add(R.string.library_popupmenu_about)
             val setCat = menu.add(R.string.library_popupmenu_set_category)
-            val deleteRead = menu.add(R.string.library_popupmenu_delete_read_chapters)
             val storage = menu.add(R.string.library_popupmenu_storage)
             val delete = menu.add(R.string.library_popupmenu_delete)
             val select = menu.add(R.string.library_popupmenu_select)
@@ -50,7 +49,6 @@ class LibraryItemMenu(context: Context,
                             show(act.supportFragmentManager, "storage")
                         }
                     }
-                    deleteRead -> DeleteReadChaptersDialog(context, manga)
                     else -> return@setOnMenuItemClickListener false
                 }
                 return@setOnMenuItemClickListener true

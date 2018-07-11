@@ -6,6 +6,7 @@ import android.graphics.Typeface
 import android.support.v4.content.ContextCompat
 import android.view.Gravity
 import android.view.View
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -27,6 +28,7 @@ import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.backgroundResource
 import org.jetbrains.anko.bottomPadding
 import org.jetbrains.anko.dip
+import org.jetbrains.anko.horizontalMargin
 import org.jetbrains.anko.horizontalProgressBar
 import org.jetbrains.anko.imageView
 import org.jetbrains.anko.leftPadding
@@ -34,6 +36,7 @@ import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.padding
 import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.textResource
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.verticalLayout
 import org.jetbrains.anko.wrapContent
@@ -71,8 +74,10 @@ class StorageDialogView : AnkoComponent<StorageDialogFragment> {
 
             progressBar = horizontalProgressBar {
                 padding = dip(4)
-                progressDrawable = ContextCompat.getDrawable(this@with.ctx,
-                                                             R.drawable.storage_progressbar)
+                progressDrawable = ContextCompat.getDrawable(
+                    this@with.ctx,
+                    R.drawable.storage_progressbar
+                )
             }.lparams(height = dip(50), width = matchParent)
 
             // Строка с отображением всего занятого места
@@ -80,10 +85,10 @@ class StorageDialogView : AnkoComponent<StorageDialogFragment> {
                 lparams(width = matchParent, height = dip(30))
                 padding = dip(4)
                 imageView { backgroundColor = Color.LTGRAY }
-                        .lparams(width = dip(50), height = dip(28))
+                    .lparams(width = dip(50), height = dip(28))
 
                 allSize = textView(R.string.storage_item_all_s) { leftPadding = dip(4) }
-                        .lparams { gravity = Gravity.CENTER_VERTICAL }
+                    .lparams { gravity = Gravity.CENTER_VERTICAL }
             }
 
             // Строка с отображением занятого места выбранной манги
@@ -91,26 +96,39 @@ class StorageDialogView : AnkoComponent<StorageDialogFragment> {
                 lparams(width = matchParent, height = dip(30))
                 padding = dip(4)
                 imageView { backgroundColor = Color.parseColor("#FFFF4081") }
-                        .lparams(width = dip(50), height = dip(28))
+                    .lparams(width = dip(50), height = dip(28))
 
                 mangaSize = textView { leftPadding = dip(4) }
-                        .lparams { gravity = Gravity.CENTER_VERTICAL }
+                    .lparams { gravity = Gravity.CENTER_VERTICAL }
             }
 
-            // Строка с отображение зянятого места прочитанных глав выбранной манги, и возможностью
-            // удалить эти прочитанные главы
+            // Строка с отображение зянятого места прочитанных глав выбранной манги
             linearLayout {
                 lparams(width = matchParent, height = dip(30))
                 padding = dip(4)
                 imageView { backgroundColor = Color.parseColor("#222e7a") }
-                        .lparams(width = dip(50), height = dip(28))
+                    .lparams(width = dip(50), height = dip(28))
 
                 readSize = textView { leftPadding = dip(4) }
-                        .lparams { gravity = Gravity.CENTER_VERTICAL }
+                    .lparams { gravity = Gravity.CENTER_VERTICAL }
+            }
 
+            // Очистка прочитанных глав
+            linearLayout {
+                lparams(width = matchParent, height = dip(34))
+                padding = dip(4)
                 imageView {
                     backgroundResource = R.drawable.ic_action_delete_black
+                    scaleType = ImageView.ScaleType.FIT_CENTER
+                }.lparams(width = dip(30), height = dip(30)) {
+                    horizontalMargin = dip(10)
                 }
+
+                textView {
+                    leftPadding = dip(4)
+                    textResource = R.string.library_popupmenu_delete_read_chapters
+                }.lparams { gravity = Gravity.CENTER_VERTICAL }
+
                 readSizeAction = this
             }
         }
@@ -119,13 +137,15 @@ class StorageDialogView : AnkoComponent<StorageDialogFragment> {
     fun bind(manga: Manga, act: BaseActivity) {
         var dir: Storage? = null
         storage.loadAllSize()
-                .observe(act, Observer {
-                    allSize?.text = context.getString(R.string.storage_item_all_size,
-                                                      formatDouble(it))
-                    progressBar?.max = it?.roundToInt() ?: 0
-                    progressBar?.progress = dir?.sizeFull?.roundToInt() ?: 0
-                    progressBar?.secondaryProgress = dir?.sizeRead?.roundToInt() ?: 0
-                })
+            .observe(act, Observer {
+                allSize?.text = context.getString(
+                    R.string.storage_item_all_size,
+                    formatDouble(it)
+                )
+                progressBar?.max = it?.roundToInt() ?: 0
+                progressBar?.progress = dir?.sizeFull?.roundToInt() ?: 0
+                progressBar?.secondaryProgress = dir?.sizeRead?.roundToInt() ?: 0
+            })
 
         storage.loadLivedStorageItem(manga.path).observe(act, Observer { item ->
             if (dir == null && item != null) {
@@ -133,10 +153,14 @@ class StorageDialogView : AnkoComponent<StorageDialogFragment> {
             }
 
             name?.text = manga.name
-            mangaSize?.text = context.getString(R.string.storage_item_manga_size,
-                                                formatDouble(item?.sizeFull))
-            readSize?.text = context.getString(R.string.storage_item_read_size,
-                                               formatDouble(item?.sizeRead))
+            mangaSize?.text = context.getString(
+                R.string.storage_item_manga_size,
+                formatDouble(item?.sizeFull)
+            )
+            readSize?.text = context.getString(
+                R.string.storage_item_read_size,
+                formatDouble(item?.sizeRead)
+            )
             readSizeAction?.onClick {
                 DeleteReadChaptersDialog(readSizeAction!!.context, manga) {
                     updateStorageItem(item)

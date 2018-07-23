@@ -18,6 +18,7 @@ import com.san.kir.manger.room.dao.loadMangas
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.utils.AnkoActivityComponent
 import com.san.kir.manger.utils.ID
+import com.san.kir.manger.utils.log
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
@@ -84,6 +85,7 @@ class LibraryPageView(
         btn.setText(R.string.library_help_go)
 
         btn.onClick {
+            log("start activity")
             btn.context.startActivity<SiteCatalogActivity>()
         }
 
@@ -96,6 +98,7 @@ class LibraryPageView(
                     launch(UI) {
                         text.visibleOrGone(isVisible)
                         btn.visibleOrGone(isVisible)
+                        recyclerView.visibleOrGone(isVisible.not())
                     }
                 }
             })

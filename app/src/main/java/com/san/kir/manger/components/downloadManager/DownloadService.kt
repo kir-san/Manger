@@ -54,7 +54,7 @@ class DownloadService : Service(), DownloadListener {
         NotificationCompat
             .Action
             .Builder(
-                R.drawable.ic_stop_white,
+                R.drawable.ic_notification_stop,
                 getString(R.string.download_service_pause_all),
                 pauseAll
             )
@@ -157,7 +157,7 @@ class DownloadService : Service(), DownloadListener {
     private fun sendStartNotification(item: DownloadItem) {
         if (queueCount == 1) {
             with(NotificationCompat.Builder(this, channelId)) {
-                setSmallIcon(R.drawable.ic_action_download_white)
+                setSmallIcon(R.drawable.ic_notification_download)
                 setContentTitle(getString(R.string.download_service_queue, queueCount))
                 setContentText(item.name)
                 setProgress(0, 0, true)
@@ -170,7 +170,7 @@ class DownloadService : Service(), DownloadListener {
 
     private fun sendProgressNotification(item: DownloadItem) {
         with(NotificationCompat.Builder(this, channelId)) {
-            setSmallIcon(R.drawable.ic_action_download_white)
+            setSmallIcon(R.drawable.ic_notification_download)
             setContentTitle(getString(R.string.download_service_queue, queueCount))
             setContentText(item.name)
             setProgress(item.totalPages, item.downloadPages, false)
@@ -184,7 +184,7 @@ class DownloadService : Service(), DownloadListener {
         when {
             errorCount > 0 &&
                     errorCount == totalCount -> NotificationCompat.Builder(this, channelId).apply {
-                setSmallIcon(R.drawable.ic_action_download_white)
+                setSmallIcon(R.drawable.ic_notification_download)
                 setContentTitle(getString(R.string.download_service_complete_title_error))
                 setContentText(getString(R.string.download_service_complete_text_error))
                 setContentIntent(actionGoToDownloads)
@@ -196,7 +196,7 @@ class DownloadService : Service(), DownloadListener {
             queueCount == 0 &&
                     totalCount > 0 -> {
                 val builder = NotificationCompat.Builder(this, channelId).apply {
-                    setSmallIcon(R.drawable.ic_action_download_white)
+                    setSmallIcon(R.drawable.ic_notification_download)
                     setContentTitle(getString(R.string.download_service_complete_title))
                     setContentText(getString(R.string.download_service_complete_text))
                     setContentIntent(actionGoToDownloads)
@@ -212,7 +212,7 @@ class DownloadService : Service(), DownloadListener {
             }
             queueCount == 0 &&
                     totalCount == 0 -> NotificationCompat.Builder(this, channelId).apply {
-                setSmallIcon(R.drawable.ic_action_download_white)
+                setSmallIcon(R.drawable.ic_notification_download)
                 setContentTitle(getString(R.string.download_service_complete_title_paused))
                 setContentText(getString(R.string.download_service_complete_text_paused))
                 setContentIntent(actionGoToDownloads)
@@ -221,7 +221,6 @@ class DownloadService : Service(), DownloadListener {
                 notificationManager.notify(notificationId, build())
                 clearCounters()
             }
-
         }
     }
 

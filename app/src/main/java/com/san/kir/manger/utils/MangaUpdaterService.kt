@@ -71,7 +71,7 @@ class MangaUpdaterService : Service() {
         NotificationCompat
             .Action
             .Builder(
-                R.drawable.ic_cancel,
+                R.drawable.ic_notification_cancel,
                 getString(R.string.manga_update_action_cancel_all),
                 cancelAll
             )
@@ -83,7 +83,7 @@ class MangaUpdaterService : Service() {
         NotificationCompat
             .Action
             .Builder(
-                R.drawable.ic_action_download_white,
+                R.drawable.ic_notification_download,
                 getString(R.string.manga_update_action_download_new),
                 downloadNew
             )
@@ -170,7 +170,7 @@ class MangaUpdaterService : Service() {
 
         val builder = NotificationCompat.Builder(this, channelId)
             .setContentTitle(getString(R.string.manga_update_notify_update_ready))
-            .setSmallIcon(R.drawable.ic_notify_updater)
+            .setSmallIcon(R.drawable.ic_notification_update)
             .setContentIntent(actionGoToLatest)
 
         if (fullCountNew != 0) {
@@ -200,7 +200,7 @@ class MangaUpdaterService : Service() {
                 val notify = NotificationCompat.InboxStyle(
                     NotificationCompat.Builder(this@MangaUpdaterService, channelId)
                         .setContentTitle(getString(R.string.manga_update_notify_searching))
-                        .setSmallIcon(R.drawable.ic_notify_updater)
+                        .setSmallIcon(R.drawable.ic_notification_update)
                         .addAction(actionCancelAll)
                         .setContentText(manga.name)
                 )

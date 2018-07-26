@@ -52,7 +52,7 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
         NotificationCompat
             .Action
             .Builder(
-                R.drawable.ic_cancel,
+                R.drawable.ic_notification_cancel,
                 getString(R.string.catalog_fos_service_action_cancel_all),
                 cancelAll
             )
@@ -91,7 +91,7 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
                 val siteDb = Main.db.siteDao.loadSite(site.name)
 
                 with(NotificationCompat.Builder(this@CatalogForOneSiteUpdaterService, channelId)) {
-                    setSmallIcon(R.drawable.ic_notify_updater)
+                    setSmallIcon(R.drawable.ic_notification_update)
                     setContentTitle(
                         getString(R.string.catalog_fos_service_notify_title, taskCounter.size)
                     )
@@ -117,7 +117,7 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
                             channelId
                         )
                     ) {
-                        setSmallIcon(R.drawable.ic_notify_updater)
+                        setSmallIcon(R.drawable.ic_notification_update)
                         setContentTitle(
                             getString(R.string.catalog_fos_service_notify_title_2, taskCounter.size)
                         )
@@ -142,7 +142,9 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
                     }
                 }
             } catch (e: Exception) {
+                e.printStackTrace()
                 isError = true
+                stopSelf()
             } finally {
 
             }
@@ -162,7 +164,7 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
             sendBroadcast(responseIntent)
 
             with(NotificationCompat.Builder(this@CatalogForOneSiteUpdaterService, channelId)) {
-                setSmallIcon(R.drawable.ic_notify_updater)
+                setSmallIcon(R.drawable.ic_notification_update)
                 setContentTitle(getString(R.string.catalog_fos_service_notify_complete))
                 setContentText("")
                 if (isError) {

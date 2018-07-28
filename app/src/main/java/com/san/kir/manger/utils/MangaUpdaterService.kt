@@ -13,8 +13,10 @@ import android.os.HandlerThread
 import android.os.IBinder
 import android.os.Looper
 import android.os.Message
+import android.support.annotation.RequiresApi
 import android.support.annotation.WorkerThread
 import android.support.v4.app.NotificationCompat
+import android.support.v4.app.NotificationCompat.PRIORITY_MIN
 import com.san.kir.manger.R
 import com.san.kir.manger.components.downloadManager.DownloadService
 import com.san.kir.manger.components.latestChapters.LatestChapterActivity
@@ -44,7 +46,7 @@ class MangaUpdaterService : Service() {
         const val COUNT_NEW = "countNew"
 
         private const val TAG = "MangaUpdaterService"
-        private const val channelId = "MangaUpdaterId"
+
         fun contains(manga: Manga) =
             taskCounter.any { it.unic == manga.unic }
 
@@ -52,7 +54,7 @@ class MangaUpdaterService : Service() {
     }
 
     private var notificationId = ID.generate()
-
+    private var channelId = ""
     private val chapters = Main.db.chapterDao
     private val latestChapters = Main.db.latestChapterDao
 
@@ -116,18 +118,28 @@ class MangaUpdaterService : Service() {
         mServiceHandler = ServiceHandler(mServiceLopper, this)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (notificationManager.getNotificationChannel(channelId) == null) {
-                val importance = NotificationManager.IMPORTANCE_DEFAULT
-
-                NotificationChannel(channelId, TAG, importance).apply {
-                    description = "MangaUpdateServiceDescription"
-                    enableLights(false)
-                    enableVibration(false)
-                    notificationManager.createNotificationChannel(this)
-                }
-            }
-            startForeground(notificationId, Notification())
+            createNotificationChannel()
+            val notificationBuilder = NotificationCompat.Builder(this, channelId )
+            val notification = notificationBuilder.setOngoing(true)
+                .setSmallIcon(R.mipmap.icon_launcher)
+                .setPriority(PRIORITY_MIN)
+                .setCategory(Notification.CATEGORY_SERVICE)
+                .build()
+            startForeground(notificationId, notification)
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createNotificationChannel(){
+        val channelId = "MangaUpdaterChannelId"
+        val channelName = TAG
+        val chan = NotificationChannel(channelId,
+                                       channelName,
+                                       NotificationManager.IMPORTANCE_DEFAULT)
+        chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
+
+        notificationManager.createNotificationChannel(chan)
+        this.channelId = channelId
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

@@ -99,7 +99,7 @@ class LatestChapterActivity : DrawerActivity() {
         launch(UI) { item.isEnabled = _adapter.hasNewChapters() }
         menu.add(1, 1, 1, R.string.latest_chapter_clean).showNever()
         menu.add(1, 2, 2, R.string.latest_chapter_clean_read).showNever()
-        menu.add(1, 3, 3, R.string.latest_chapter_download_clean_download).showNever()
+        menu.add(1, 3, 3, R.string.latest_chapter_clean_download).showNever()
         return super.onCreateOptionsMenu(menu)
     }
 

@@ -20,6 +20,6 @@ class StorageRecyclerPresenter(private val act: StorageActivity) : RecyclerPrese
         super.into(recyclerView)
         recyclerView.adapter = this.adapter
         storage.loadPagedStorageItems()
-            .observe(act, Observer { launch(UI) { adapter.setList(it) } })
+            .observe(act, Observer { launch(UI) { adapter.submitList(it) } })
     }
 }

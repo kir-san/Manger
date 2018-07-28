@@ -1,7 +1,6 @@
 package com.san.kir.manger.eventBus
 
 import android.util.SparseArray
-import collections.forEach
 import com.san.kir.manger.utils.ID
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Deferred
@@ -10,6 +9,7 @@ import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.collections.forEach
 import kotlin.coroutines.experimental.CoroutineContext
 
 /*

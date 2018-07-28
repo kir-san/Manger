@@ -2,7 +2,7 @@ package com.san.kir.manger.utils
 
 import android.arch.paging.PagedListAdapter
 import android.graphics.Color
-import android.support.v7.recyclerview.extensions.DiffCallback
+import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.util.SparseBooleanArray
 import android.view.View
@@ -32,7 +32,7 @@ object RecyclerViewAdapterFactory {
         view: () -> AnkoView<T>,
         areItemsTheSame: (oldItem: T, newItem: T) -> Boolean,
         areContentsTheSame: (oldItem: T, newItem: T) -> Boolean
-    ) = RecyclerPagingAdapter(view, object : DiffCallback<T>() {
+    ) = RecyclerPagingAdapter(view, object : DiffUtil.ItemCallback<T>() {
         override fun areItemsTheSame(oldItem: T, newItem: T): Boolean {
             return areItemsTheSame(oldItem, newItem)
         }
@@ -84,7 +84,7 @@ object RecyclerViewAdapterFactory {
     // Адаптер для использования с paging library
     class RecyclerPagingAdapter<T>(
         val view: () -> AnkoView<T>,
-        diffCallback: DiffCallback<T>
+        diffCallback: DiffUtil.ItemCallback<T>
     ) : PagedListAdapter<T, ViewHolder<T>>(diffCallback) {
         init {
             setHasStableIds(true)

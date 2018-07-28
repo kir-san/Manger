@@ -18,9 +18,7 @@ import com.san.kir.manger.room.dao.loadMangas
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.utils.AnkoActivityComponent
 import com.san.kir.manger.utils.ID
-import com.san.kir.manger.utils.log
 import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.below
@@ -85,7 +83,6 @@ class LibraryPageView(
         btn.setText(R.string.library_help_go)
 
         btn.onClick {
-            log("start activity")
             btn.context.startActivity<SiteCatalogActivity>()
         }
 
@@ -104,15 +101,12 @@ class LibraryPageView(
             })
 
         val portrait =
-            async { act.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT }
-        span =
-                async {
-                    if (portrait.await()) category.spanPortrait else category.spanLandscape
-                }.await()
-        isLarge =
-                async {
-                    if (portrait.await()) category.isLargePortrait else category.isLargeLandscape
-                }.await()
+            act.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
+        span = if (portrait) category.spanPortrait else category.spanLandscape
+
+        isLarge = if (portrait) category.isLargePortrait else category.isLargeLandscape
+
 
         recyclerView.layoutManager = GridLayoutManager(act, span)
         adapter.intoIsList(recyclerView, isLarge)
@@ -122,9 +116,8 @@ class LibraryPageView(
             .observe(act, Observer {
                 launch {
                     it?.let {
-                        val newSpan = if (portrait.await()) it.spanPortrait else it.spanLandscape
-                        val newIsLarge =
-                            if (portrait.await()) it.isLargePortrait else it.isLargeLandscape
+                        val newSpan = if (portrait) it.spanPortrait else it.spanLandscape
+                        val newIsLarge = if (portrait) it.isLargePortrait else it.isLargeLandscape
 
                         if (span != newSpan || isLarge != newIsLarge) {
                             span = newSpan
@@ -137,6 +130,5 @@ class LibraryPageView(
                     }
                 }
             })
-
     }
 }

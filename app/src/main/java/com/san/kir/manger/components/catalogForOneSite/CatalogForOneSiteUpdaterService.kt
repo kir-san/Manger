@@ -17,7 +17,7 @@ import com.san.kir.manger.room.dao.updateAsync
 import com.san.kir.manger.room.models.SiteCatalogElement
 import com.san.kir.manger.utils.ID
 import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.channels.ProducerJob
+import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.newFixedThreadPoolContext
 import kotlinx.coroutines.experimental.runBlocking
@@ -40,7 +40,7 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
         fun isContain(id: Int) = taskCounter.contains(id)
     }
 
-    private var catalog: ProducerJob<SiteCatalogElement>? = null
+    private var catalog: ReceiveChannel<SiteCatalogElement>? = null
     private val notificationId = ID.generate()
     private val actionGoToCatalogs by lazy {
         val intent = intentFor<SiteCatalogActivity>()
@@ -131,16 +131,15 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
                 siteDb?.oldVolume = counter
                 Main.db.siteDao.updateAsync(siteDb)
 
-                catalog?.isActive?.let {
-                    if (it) {
-                        val responseIntent = Intent()
-                        responseIntent.putExtra(EXTRA_KEY_OUT, site.id)
-                        responseIntent.action = ACTION_CATALOG_UPDATER_SERVICE
-                        sendBroadcast(responseIntent)
 
-                        taskCounter -= site.id
-                    }
-                }
+                val responseIntent = Intent()
+                responseIntent.putExtra(EXTRA_KEY_OUT, site.id)
+                responseIntent.action = ACTION_CATALOG_UPDATER_SERVICE
+                sendBroadcast(responseIntent)
+
+                taskCounter -= site.id
+
+
             } catch (e: Exception) {
                 e.printStackTrace()
                 isError = true
@@ -156,24 +155,22 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
 
         stopForeground(false)
 
-        catalog?.invokeOnCompletion {
-            val responseIntent = Intent()
-            responseIntent.putExtra(EXTRA_KEY_OUT, -2)
-            responseIntent.action = ACTION_CATALOG_UPDATER_SERVICE
+        val responseIntent = Intent()
+        responseIntent.putExtra(EXTRA_KEY_OUT, -2)
+        responseIntent.action = ACTION_CATALOG_UPDATER_SERVICE
 
-            sendBroadcast(responseIntent)
+        sendBroadcast(responseIntent)
 
-            with(NotificationCompat.Builder(this@CatalogForOneSiteUpdaterService, channelId)) {
-                setSmallIcon(R.drawable.ic_notification_update)
-                setContentTitle(getString(R.string.catalog_fos_service_notify_complete))
-                setContentText("")
-                if (isError) {
-                    setContentTitle(getString(R.string.catalog_fos_service_notify_error_title))
-                    setContentText(getString(R.string.catalog_fos_service_notify_error_text))
-                }
-                setContentIntent(actionGoToCatalogs)
-                notificationManager.notify(notificationId, build())
+        with(NotificationCompat.Builder(this@CatalogForOneSiteUpdaterService, channelId)) {
+            setSmallIcon(R.drawable.ic_notification_update)
+            setContentTitle(getString(R.string.catalog_fos_service_notify_complete))
+            setContentText("")
+            if (isError) {
+                setContentTitle(getString(R.string.catalog_fos_service_notify_error_title))
+                setContentText(getString(R.string.catalog_fos_service_notify_error_text))
             }
+            setContentIntent(actionGoToCatalogs)
+            notificationManager.notify(notificationId, build())
         }
 
         catalog?.cancel()

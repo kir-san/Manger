@@ -68,25 +68,25 @@ class CatalogForOneSiteActivity : BaseActivity() {
 
         // регистрируем BroadcastReceiver
         val intentFilter = IntentFilter(
-                CatalogForOneSiteUpdaterService.ACTION_CATALOG_UPDATER_SERVICE)
+            CatalogForOneSiteUpdaterService.ACTION_CATALOG_UPDATER_SERVICE
+        )
 
         registerReceiver(receiver, intentFilter)
     }
 
     private fun updateCatalog() {
-        adapter.setSite(mSite.id,
-                        { size ->
-                            // Изменяем заголовок окна
-                            title = "$mOldTitle: $size"
+        adapter.setSite(mSite.id) { size ->
+            // Изменяем заголовок окна
+            title = "$mOldTitle: $size"
 
-                            // Убираем прогрессБар
-                            view.isAction.negative()
+            // Убираем прогрессБар
+            view.isAction.negative()
 
-                            Main.db.siteDao.loadSite(mSite.name)?.let {
-                                it.oldVolume = size
-                                Main.db.siteDao.updateAsync(it)
-                            }
-                        })
+            Main.db.siteDao.loadSite(mSite.name)?.let {
+                it.oldVolume = size
+                Main.db.siteDao.updateAsync(it)
+            }
+        }
     }
 
     override fun onDestroy() {
@@ -98,8 +98,8 @@ class CatalogForOneSiteActivity : BaseActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         // Текстовое поле для поиска по названию
         menu!!.add(R.string.catalog_for_one_site_search)
-                .showAlways()
-                .actionView = SearchView(this).apply {
+            .showAlways()
+            .actionView = SearchView(this).apply {
             setButton(R.drawable.ic_action_search)
             setCloseButton(R.drawable.ic_action_close)
             setTextColor(Color.WHITE)
@@ -114,7 +114,7 @@ class CatalogForOneSiteActivity : BaseActivity() {
 
         // Обновление каталога
         menu.add(0, 0, 2, R.string.catalog_for_one_site_update)
-                .showNever()
+            .showNever()
 
         return super.onCreateOptionsMenu(menu)
     }

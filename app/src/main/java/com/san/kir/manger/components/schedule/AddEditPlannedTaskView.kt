@@ -7,7 +7,6 @@ import android.view.ViewManager
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.TimePicker
-import collections.forEach
 import com.san.kir.manger.R
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.eventBus.Binder
@@ -24,6 +23,7 @@ import com.san.kir.manger.utils.AnkoActivityComponent
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import org.jetbrains.anko.AnkoContext
+import org.jetbrains.anko.collections.forEach
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.editText
 import org.jetbrains.anko.linearLayout

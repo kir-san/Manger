@@ -17,14 +17,14 @@ android {
         }
     }
 
-    compileSdkVersion 26
+    compileSdkVersion 27
     buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "com.san.kir.manger"
         minSdkVersion 19
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 202
-        versionName "2.0.2"
+        versionName "2.0.3"
         vectorDrawables.useSupportLibrary = true
         setProperty("archivesBaseName", "Manger $versionName")
     }
@@ -33,9 +33,9 @@ android {
             ext.enableCrashlytics = false
         }
         release {
-//            shrinkResources true
-//            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            shrinkResources true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.realese
             zipAlignEnabled = true
         }
@@ -43,30 +43,40 @@ android {
 }
 
 dependencies {
+    def support_version = "27.1.1"
+    def coroutines_version = "0.23.4"
+    def anko_version = "0.10.5"
+    def lifecycle_version = "1.1.1"
+    def room_version = "1.1.1"
+    def paging_version = "1.0.0"
+
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support:design:26.1.0'
-    implementation 'com.android.support:recyclerview-v7:26.1.0'
-    implementation 'com.android.support:preference-v7:26.1.0'
+    implementation "com.android.support:appcompat-v7:$support_version"
+    implementation "com.android.support:design:$support_version"
+    implementation "com.android.support:recyclerview-v7:$support_version"
+    implementation "com.android.support:preference-v7:$support_version"
 //    implementation 'com.android.support:support-v4:26.1.0'
-    implementation 'com.android.support:support-vector-drawable:26.1.0'
+    implementation "com.android.support:support-vector-drawable:$support_version"
 //    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation "com.android.support:exifinterface:$support_version"
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.19.3'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.19.3'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
-    implementation "org.jetbrains.anko:anko:0.10.4"
-    implementation 'org.jetbrains.anko:anko-appcompat-v7:0.10.4'
-    implementation 'org.jetbrains.anko:anko-design:0.10.4'
-    implementation 'org.jetbrains.anko:anko-recyclerview-v7:0.10.4'
+    implementation "org.jetbrains.anko:anko:$anko_version"
+    implementation "org.jetbrains.anko:anko-appcompat-v7:$anko_version"
+    implementation "org.jetbrains.anko:anko-design:$anko_version"
+    implementation "org.jetbrains.anko:anko-recyclerview-v7:$anko_version"
 
-//    implementation "android.arch.lifecycle:runtime:1.0.3"
-    implementation 'android.arch.lifecycle:livedata:1.1.0'
-    kapt "android.arch.lifecycle:compiler:1.1.0"
-    implementation 'android.arch.persistence.room:runtime:1.0.0'
-    kapt "android.arch.persistence.room:compiler:1.0.0"
-    implementation "android.arch.paging:runtime:1.0.0-alpha5"
+    implementation "android.arch.lifecycle:livedata:$lifecycle_version"
+    kapt "android.arch.lifecycle:compiler:$lifecycle_version"
+
+    implementation "android.arch.persistence.room:runtime:$room_version"
+    kapt "android.arch.persistence.room:compiler:$room_version"
+
+    implementation "android.arch.paging:runtime:$paging_version"
 
     implementation 'com.squareup.picasso:picasso:2.5.2'
 

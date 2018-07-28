@@ -22,7 +22,7 @@ class SiteCatalogRecyclerPresenter(private val act: SiteCatalogActivity) : Recyc
     override fun into(recyclerView: RecyclerView) {
         super.into(recyclerView)
         recyclerView.adapter = adapter
-        dao.loadPagedSites().observe(act, Observer(adapter::setList))
+        dao.loadPagedSites().observe(act, Observer(adapter::submitList))
     }
 
     fun update() {

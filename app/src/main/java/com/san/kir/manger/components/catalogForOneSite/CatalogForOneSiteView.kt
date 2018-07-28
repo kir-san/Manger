@@ -228,7 +228,7 @@ class CatalogForOneSiteView(
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close
             ) {
-                override fun onDrawerClosed(drawerView: View?) {
+                override fun onDrawerClosed(drawerView: View) {
                     super.onDrawerClosed(drawerView)
                     act.title =
                             "${act.mOldTitle}: ${presenter.changeOrder(filters = pagerAdapter.adapters)}"

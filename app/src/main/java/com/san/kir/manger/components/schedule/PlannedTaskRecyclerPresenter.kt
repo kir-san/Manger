@@ -7,7 +7,7 @@ import com.san.kir.manger.room.dao.loadPagedPlannedTasks
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.launch
 
 class PlannedTaskRecyclerPresenter(private val act: ScheduleActivity) : RecyclerPresenter() {
     private val adapter = RecyclerViewAdapterFactory
@@ -20,8 +20,8 @@ class PlannedTaskRecyclerPresenter(private val act: ScheduleActivity) : Recycler
         recycler.adapter = adapter
         Main.db.plannedDao.loadPagedPlannedTasks()
             .observe(act, Observer { it ->
-                async(UI) {
-                    adapter.setList(it)
+                launch(UI) {
+                    adapter.submitList(it)
                 }
             })
     }

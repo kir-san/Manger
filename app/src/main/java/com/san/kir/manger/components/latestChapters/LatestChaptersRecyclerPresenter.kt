@@ -14,7 +14,6 @@ import com.san.kir.manger.room.models.toDownloadItem
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
 
 class LatestChaptersRecyclerPresenter(private val act: LatestChapterActivity) :
@@ -29,7 +28,7 @@ class LatestChaptersRecyclerPresenter(private val act: LatestChapterActivity) :
         super.into(recyclerView)
         recycler.adapter = adapter
         latestChapterDao.loadPagedLatestChapters()
-            .observe(act, Observer { async(UI) { adapter.setList(it) } })
+            .observe(act, Observer { launch(UI) { adapter.submitList(it) } })
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
             0,
             ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT

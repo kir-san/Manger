@@ -6,15 +6,19 @@ import android.graphics.Typeface
 import android.view.Gravity
 import android.view.View
 import android.view.ViewManager
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
-import com.san.kir.manger.App.Companion.context
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.extending.ankoExtend.labelView
 import com.san.kir.manger.extending.ankoExtend.positiveButton
+import com.san.kir.manger.extending.ankoExtend.visibleOrGone
 import com.san.kir.manger.room.models.SiteCatalogElement
 import com.san.kir.manger.utils.listStrToString
+import com.squareup.picasso.Callback
+import com.squareup.picasso.NetworkPolicy
+import com.squareup.picasso.Picasso
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import org.jetbrains.anko.alert
@@ -23,6 +27,7 @@ import org.jetbrains.anko.customView
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.frameLayout
 import org.jetbrains.anko.horizontalProgressBar
+import org.jetbrains.anko.imageView
 import org.jetbrains.anko.margin
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.padding
@@ -34,7 +39,7 @@ import org.jetbrains.anko.verticalLayout
 import org.jetbrains.anko.wrapContent
 
 class MangaInfoDialog(
-    context: Context,
+    private val context: Context,
     item: SiteCatalogElement,
     private val onFinish: () -> Unit
 ) {
@@ -48,6 +53,8 @@ class MangaInfoDialog(
     private lateinit var genres: TextView
     private lateinit var link: TextView
     private lateinit var about: TextView
+    private lateinit var logo: ImageView
+    private lateinit var logoLoadText: TextView
 
     init {
         updateInfo(item)
@@ -101,6 +108,12 @@ class MangaInfoDialog(
 
                             labelView(R.string.manga_info_dialog_about)
                             about = text()
+
+                            labelView("Лого")
+                            logoLoadText = text()
+                            logo = imageView {
+                                visibleOrGone(false)
+                            }
                         }
                     }
                     bind(item)
@@ -130,6 +143,36 @@ class MangaInfoDialog(
         genres.text = listStrToString(element.genres)
         link.text = element.link
         about.text = element.about
+        logoLoadText.text = "Загрузка..."
+
+        if (element.logo.isNotEmpty())
+            Picasso.with(context)
+                .load(element.logo)
+                .networkPolicy(NetworkPolicy.OFFLINE)
+                .into(logo, object : Callback {
+                    override fun onSuccess() {
+                        logoLoadText.visibleOrGone(false)
+                        logo.visibleOrGone(true)
+                    }
+
+                    override fun onError() {
+                        Picasso.with(context)
+                            .load(element.logo)
+                            .into(logo, object : Callback {
+                                override fun onSuccess() {
+                                    logoLoadText.visibleOrGone(false)
+                                    logo.visibleOrGone(true)
+                                }
+
+                                override fun onError() {
+                                    logoLoadText.text = "Не удалось загрузить картинку"
+                                    logoLoadText.visibleOrGone(true)
+                                }
+                            })
+                    }
+                })
+        else
+            logoLoadText.text = "Картинки то нет"
     }
 
     private fun updateInfo(element: SiteCatalogElement) = async(UI) {

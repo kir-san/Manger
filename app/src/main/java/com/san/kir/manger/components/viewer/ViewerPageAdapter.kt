@@ -43,7 +43,7 @@ class ViewerPageAdapter(fm: FragmentManager) :
         return null // Помогло избавиться от ошибки
     }
 
-    override fun getItemPosition(`object`: Any?): Int {
+    override fun getItemPosition(`object`: Any): Int {
         return PagerAdapter.POSITION_NONE
     }
 }

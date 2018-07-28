@@ -11,7 +11,7 @@ import com.san.kir.manger.utils.createDirs
 import com.san.kir.manger.utils.getFullPath
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.channels.produce
-import kotlinx.coroutines.experimental.run
+import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.sync.Mutex
 import kotlinx.coroutines.experimental.sync.withLock
 import org.json.JSONArray
@@ -151,7 +151,7 @@ class Allhentai : SiteCatalog {
 
         do {
             docLocal.select("div.pageBlock .cTable td[style]").forEach { element ->
-                run(context) {
+                launch(context) {
                     send(simpleParseElement(element))
                 }
             }

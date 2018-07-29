@@ -13,11 +13,9 @@ import com.san.kir.manger.room.models.MangaColumn
 import com.san.kir.manger.utils.formatDouble
 import com.san.kir.manger.utils.getFullPath
 import com.san.kir.manger.utils.lengthMb
-import com.san.kir.manger.utils.onError
-import com.squareup.picasso.NetworkPolicy
-import com.squareup.picasso.Picasso
+import com.san.kir.manger.utils.loadImage
 import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.backgroundResource
@@ -71,9 +69,9 @@ class AboutMangaDialog(context: Context, manga: Manga) {
 
                             labelView(R.string.about_manga_dialog_volume)
                             textViewBold15Size(R.string.about_manga_dialog_calculate) {
-                                async {
+                                launch {
                                     val size = getFullPath(manga.path).lengthMb
-                                    async(UI) {
+                                    launch(UI) {
                                         text = context.getString(
                                             R.string.library_page_item_size,
                                             formatDouble(
@@ -98,14 +96,9 @@ class AboutMangaDialog(context: Context, manga: Manga) {
                             imageView {
                                 scaleType = ImageView.ScaleType.FIT_CENTER
                                 if (manga.logo.isNotEmpty())
-                                    Picasso.with(context)
-                                        .load(manga.logo)
-                                        .networkPolicy(NetworkPolicy.OFFLINE)
-                                        .into(this, onError {
-                                            Picasso.with(context)
-                                                .load(manga.logo)
-                                                .into(this@imageView)
-                                        })
+                                    loadImage(manga.logo) {
+                                        into(this@imageView)
+                                    }
                                 else
                                     try {
                                         backgroundResource = manga.color

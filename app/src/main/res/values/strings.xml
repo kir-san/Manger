@@ -78,8 +78,12 @@
     <string name="manga_info_dialog_genres">Жанры</string>
     <string name="manga_info_dialog_link">Ссылка на источник</string>
     <string name="manga_info_dialog_about">Описание</string>
+    <string name="manga_info_dialog_logo">Лого</string>
     <string name="manga_info_dialog_add">Добавить</string>
     <string name="manga_info_dialog_close">Закрыть</string>
+    <string name="manga_info_dialog_loading">Загрузка…</string>
+    <string name="manga_info_dialog_loading_failed">Не удалось загрузить картинку</string>
+    <string name="manga_info_dialog_not_image">Картинки то нет</string>
 
 
     <!-- CatalogForOneSiteService -->

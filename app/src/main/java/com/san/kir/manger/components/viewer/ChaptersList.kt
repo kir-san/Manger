@@ -4,7 +4,7 @@ package com.san.kir.manger.components.viewer
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.room.dao.updateAsync
 import com.san.kir.manger.room.models.Chapter
-import com.san.kir.manger.utils.extensions
+import com.san.kir.manger.utils.imageExtensions
 import com.san.kir.manger.utils.getFullPath
 import com.san.kir.manger.utils.isEmptyDirectory
 import java.io.File
@@ -132,7 +132,7 @@ class ChaptersList(
                     // фильтруем список
                     val fin = File(file, s) // получаем каждый файл отдельно
                     // если это файл и он является картинкой, то пропустить в список
-                    fin.isFile && (fin.extension in extensions)
+                    fin.isFile && (fin.extension in imageExtensions)
                 }.isNotEmpty()
         }
 
@@ -143,7 +143,7 @@ class ChaptersList(
                             // фильтруем список
                             val fin = File(file, s) // получаем каждый файл отдельно
                             // если это файл и он является картинкой, то пропустить в список
-                            fin.isFile && (fin.extension in extensions)
+                            fin.isFile && (fin.extension in imageExtensions)
                         }.toMutableList()
             try {
                 // Сортируем список, своим способом

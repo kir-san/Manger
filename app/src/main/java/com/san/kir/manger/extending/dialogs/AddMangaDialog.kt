@@ -19,7 +19,7 @@ import com.san.kir.manger.utils.MangaUpdaterService
 import com.san.kir.manger.utils.createDirs
 import com.san.kir.manger.utils.getFullPath
 import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.customView
 import org.jetbrains.anko.dip
@@ -41,7 +41,7 @@ class AddMangaDialog(
     private val onFinish: () -> Unit
 ) {
     init {
-        async(UI) {
+        launch(UI) {
             val categories = Main.db.categoryDao.categoryNames()
 
             context.selector(
@@ -110,7 +110,7 @@ class AddMangaDialog(
                 }
             }
         }.show()
-        async(UI) {
+        launch(UI) {
             try {
                 val pat = Pattern.compile("[a-z/0-9]+-").matcher(element.shotLink)
                 if (pat.find())

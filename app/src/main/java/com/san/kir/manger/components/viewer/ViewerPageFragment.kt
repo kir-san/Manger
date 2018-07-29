@@ -19,6 +19,7 @@ import com.san.kir.manger.utils.convertImagesToPng
 import com.san.kir.manger.utils.log
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.alignParentBottom
 import org.jetbrains.anko.button
 import org.jetbrains.anko.centerHorizontally
@@ -88,7 +89,7 @@ class ViewerPageFragment : Fragment() {
                 bigImageView {
                     lparams(width = matchParent, height = matchParent)
 
-                    async(UI) {
+                    launch(UI) {
                         try {
                             log = "mFile = $mFile"
                             val img = async {
@@ -171,9 +172,8 @@ class ViewerPagerPrevFragment : Fragment() {
     ): View? {
         return context?.readyLayout(
             activity as ViewerActivity,
-            R.string.viewer_page_prev_text,
-            { it.presenter.prevChapter() }
-        )
+            R.string.viewer_page_prev_text
+        ) { it.presenter.prevChapter() }
     }
 }
 
@@ -186,9 +186,8 @@ class ViewerPagerNextFragment : Fragment() {
     ): View? {
         return context?.readyLayout(
             activity as ViewerActivity,
-            R.string.viewer_page_next_text,
-            { it.presenter.nextChapter() }
-        )
+            R.string.viewer_page_next_text
+        ) { it.presenter.nextChapter() }
     }
 }
 
@@ -200,8 +199,8 @@ class ViewerPageNoneNextFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         return context?.readyLayout(activity as ViewerActivity,
-                                    R.string.viewer_page_none_next_text,
-                                    { it.presenter.prevPage() })
+                                    R.string.viewer_page_none_next_text
+        ) { it.presenter.prevPage() }
     }
 }
 
@@ -213,7 +212,7 @@ class ViewerPageNonePrevFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         return context?.readyLayout(activity as ViewerActivity,
-                                    R.string.viewer_page_none_prev_text,
-                                    { it.presenter.nextPage() })
+                                    R.string.viewer_page_none_prev_text
+        ) { it.presenter.nextPage() }
     }
 }

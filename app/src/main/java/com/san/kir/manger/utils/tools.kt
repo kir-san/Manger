@@ -10,7 +10,6 @@ import android.util.Log
 import android.view.View
 import com.san.kir.manger.room.models.Chapter
 import com.san.kir.manger.room.models.LatestChapter
-import com.squareup.picasso.Callback
 import java.io.File
 import java.io.FileOutputStream
 import java.text.DecimalFormat
@@ -70,17 +69,17 @@ val File.shortPath: String
 
 fun getFullPath(path: String): File = File(Environment.getExternalStorageDirectory(), path)
 
-val extensions = listOf("png", "jpg", "webp", "gif")
+val imageExtensions = listOf("png", "jpg", "webp", "gif")
 
 fun checkExtension(fileName: String): Boolean {
-    return extensions.any { fileName.toLowerCase().endsWith(it) }
+    return imageExtensions.any { fileName.toLowerCase().endsWith(it) }
 }
 
 fun getMangaLogo(shortPath: String): String = getMangaLogo(getFullPath(shortPath))
 fun getMangaLogo(path: File): String {
     val tempList = path.listFiles { file, s ->
         val fin = File(file, s)
-        fin.isFile and (fin.extension in extensions)
+        fin.isFile and (fin.extension in imageExtensions)
     }
     return try {
         if (tempList.isNotEmpty())
@@ -105,7 +104,7 @@ fun getChapters(
             var imgCount = 0
             var dirCount = 0
             for (file in list) {
-                if (file.isFile and (file.extension in extensions))
+                if (file.isFile and (file.extension in imageExtensions))
                     imgCount++
                 else if (file.isDirectory)
                     dirCount++
@@ -210,18 +209,6 @@ object SortLibraryUtil {
 fun formatDouble(value: Double?): String = DecimalFormat("#0.00").format(value)
 
 fun bytesToMb(value: Long) = value.toDouble() / (1024.0 * 1024.0)
-
-fun onError(function: () -> Unit): Callback {
-    return object : Callback {
-        override fun onSuccess() {
-
-        }
-
-        override fun onError() {
-            function.invoke()
-        }
-    }
-}
 
 fun convertImagesToPng(image: File): File {
     val b = BitmapFactory.decodeFile(image.path)

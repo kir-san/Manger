@@ -127,7 +127,7 @@ class LibraryActivity : DrawerActivity() {
 
         override fun onDestroyActionMode(mode: ActionMode?) {
             actionMode.clear()
-            async(UI) {
+            launch(UI) {
                 currentAdapter?.removeSelection()
                 delay(800)
                 supportActionBar?.show()

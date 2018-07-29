@@ -16,9 +16,7 @@ import com.san.kir.manger.extending.ankoExtend.positiveButton
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
 import com.san.kir.manger.room.models.SiteCatalogElement
 import com.san.kir.manger.utils.listStrToString
-import com.squareup.picasso.Callback
-import com.squareup.picasso.NetworkPolicy
-import com.squareup.picasso.Picasso
+import com.san.kir.manger.utils.loadImage
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import org.jetbrains.anko.alert
@@ -34,6 +32,7 @@ import org.jetbrains.anko.padding
 import org.jetbrains.anko.scrollView
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.textColor
+import org.jetbrains.anko.textResource
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.verticalLayout
 import org.jetbrains.anko.wrapContent
@@ -109,7 +108,7 @@ class MangaInfoDialog(
                             labelView(R.string.manga_info_dialog_about)
                             about = text()
 
-                            labelView("Лого")
+                            labelView(R.string.manga_info_dialog_logo)
                             logoLoadText = text()
                             logo = imageView {
                                 visibleOrGone(false)
@@ -143,36 +142,23 @@ class MangaInfoDialog(
         genres.text = listStrToString(element.genres)
         link.text = element.link
         about.text = element.about
-        logoLoadText.text = "Загрузка..."
+        logoLoadText.textResource = R.string.manga_info_dialog_loading
 
-        if (element.logo.isNotEmpty())
-            Picasso.with(context)
-                .load(element.logo)
-                .networkPolicy(NetworkPolicy.OFFLINE)
-                .into(logo, object : Callback {
-                    override fun onSuccess() {
-                        logoLoadText.visibleOrGone(false)
-                        logo.visibleOrGone(true)
-                    }
-
-                    override fun onError() {
-                        Picasso.with(context)
-                            .load(element.logo)
-                            .into(logo, object : Callback {
-                                override fun onSuccess() {
-                                    logoLoadText.visibleOrGone(false)
-                                    logo.visibleOrGone(true)
-                                }
-
-                                override fun onError() {
-                                    logoLoadText.text = "Не удалось загрузить картинку"
-                                    logoLoadText.visibleOrGone(true)
-                                }
-                            })
-                    }
-                })
+        if (element.logo.isNotEmpty()) {
+            loadImage(element.logo) {
+                onSuccess {
+                    logoLoadText.visibleOrGone(false)
+                    logo.visibleOrGone(true)
+                }
+                onError {
+                    logoLoadText.textResource = R.string.manga_info_dialog_loading_failed
+                    logoLoadText.visibleOrGone(true)
+                }
+                into(logo)
+            }
+        }
         else
-            logoLoadText.text = "Картинки то нет"
+            logoLoadText.textResource = R.string.manga_info_dialog_not_image
     }
 
     private fun updateInfo(element: SiteCatalogElement) = async(UI) {

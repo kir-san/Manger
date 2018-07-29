@@ -18,11 +18,9 @@ import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.bytesToMb
 import com.san.kir.manger.utils.formatDouble
-import com.san.kir.manger.utils.onError
-import com.squareup.picasso.NetworkPolicy
-import com.squareup.picasso.Picasso
+import com.san.kir.manger.utils.loadImage
 import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.alignParentEnd
 import org.jetbrains.anko.alignParentStart
@@ -159,10 +157,10 @@ class DownloadManagerItemView(private val act: DownloadManagerActivity) :
 
     override fun bind(item: DownloadItem, isSelected: Boolean, position: Int) {
         val context = name.context
-        async {
+        launch {
             val isLoadOrQueue = item.status == DownloadStatus.queued
                     || item.status == DownloadStatus.loading
-            async(UI) {
+            launch(UI) {
                 name.text = context.getString(R.string.download_item_name, item.manga, item.name)
 
                 startBtn.invisibleOrVisible(item.status != DownloadStatus.pause)
@@ -199,7 +197,7 @@ class DownloadManagerItemView(private val act: DownloadManagerActivity) :
                 DownloadStatus.completed -> {
                     val totalTime = item.totalTime / 1000
                     if (totalTime < 60) {
-                        async(UI) {
+                        launch(UI) {
                             progressText.text =
                                     context.getString(
                                         R.string.download_item_final_size_with_sec,
@@ -210,7 +208,7 @@ class DownloadManagerItemView(private val act: DownloadManagerActivity) :
                     } else {
                         val mins = totalTime / 60
                         val secs = totalTime % 60
-                        async(UI) {
+                        launch(UI) {
                             progressText.text =
                                     context.getString(
                                         R.string.download_item_final_size_with_min_and_sec,
@@ -231,7 +229,7 @@ class DownloadManagerItemView(private val act: DownloadManagerActivity) :
                         R.string.download_item_progress_size,
                         formatDouble(bytesToMb(item.downloadSize))
                     )
-                    async(UI) {
+                    launch(UI) {
                         progressText.text =
                                 context.getString(R.string.download_item_progress, pages, size)
                     }
@@ -239,17 +237,10 @@ class DownloadManagerItemView(private val act: DownloadManagerActivity) :
             }
 
         }
-        async(UI) {
+        launch(UI) {
             if (item.manga.isNotEmpty()) {
                 val manga = Main.db.mangaDao.loadManga(item.manga)
-                Picasso.with(context)
-                    .load(manga.logo)
-                    .networkPolicy(NetworkPolicy.OFFLINE)
-                    .into(logo, onError {
-                        Picasso.with(context)
-                            .load(manga.logo)
-                            .into(logo)
-                    })
+                loadImage(manga.logo).into(logo)
             }
         }
     }

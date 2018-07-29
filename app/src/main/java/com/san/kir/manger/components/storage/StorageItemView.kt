@@ -16,7 +16,6 @@ import com.san.kir.manger.components.addManga.AddMangaActivity
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.extending.ankoExtend.roundedImageView
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
-import com.san.kir.manger.room.dao.deleteAsync
 import com.san.kir.manger.room.dao.getFromPath
 import com.san.kir.manger.room.dao.loadAllSize
 import com.san.kir.manger.room.models.Manga
@@ -24,18 +23,13 @@ import com.san.kir.manger.room.models.Storage
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.formatDouble
-import com.san.kir.manger.utils.getFullPath
-import com.san.kir.manger.utils.onError
-import com.squareup.picasso.NetworkPolicy
-import com.squareup.picasso.Picasso
+import com.san.kir.manger.utils.loadImage
 import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.alignParentBottom
 import org.jetbrains.anko.alignParentEnd
-import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.below
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.horizontalPadding
@@ -54,7 +48,6 @@ import kotlin.math.roundToInt
 class StorageItemView(private val act: StorageActivity) :
     RecyclerViewAdapterFactory.AnkoView<Storage>() {
     private val mangaDao = Main.db.mangaDao
-    private val storage = Main.db.storageDao
 
     private object Id {
         val name = ID.generate()
@@ -129,24 +122,18 @@ class StorageItemView(private val act: StorageActivity) :
     }
 
     override fun bind(item: Storage, isSelected: Boolean, position: Int) {
-        async(UI) {
+        launch(UI) {
             val context = root.context
-            val manga = async { mangaDao.getFromPath(item.path) }.await()
+            val manga = mangaDao.getFromPath(item.path)
 
             root.onClick { it?.menuOfActions(manga, item) }
 
             if (manga != null) {
                 if (manga.logo.isNotEmpty())
-                    Picasso.with(logo.context)
-                        .load(manga.logo)
-                        .networkPolicy(NetworkPolicy.OFFLINE)
-                        .into(logo, onError {
-                            Picasso.with(logo.context)
-                                .load(manga.logo)
-                                .into(logo, onError {
-                                    logo.backgroundColor = Color.TRANSPARENT
-                                })
-                        })
+                    loadImage(manga.logo) {
+                        errorColor(Color.TRANSPARENT)
+                        into(logo)
+                    }
             } else logo.visibility = View.INVISIBLE
 
             name.text = item.name
@@ -200,8 +187,7 @@ class StorageItemView(private val act: StorageActivity) :
                         context.alert {
                             messageResource = R.string.storage_item_alert_message
                             positiveButton(R.string.storage_item_alert_positive) {
-                                getFullPath(item.path).deleteRecursively()
-                                storage.deleteAsync(item)
+
                             }
                             negativeButton(R.string.storage_item_alert_negative) {}
                             show()

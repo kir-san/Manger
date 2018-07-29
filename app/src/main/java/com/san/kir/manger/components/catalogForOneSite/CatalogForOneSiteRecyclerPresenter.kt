@@ -5,11 +5,13 @@ import com.san.kir.manger.room.models.SiteCatalogElement
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.log
+import kotlinx.coroutines.experimental.DefaultDispatcher
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.experimental.withContext
 import kotlin.system.measureTimeMillis
 
 typealias onEnd = (Int) -> Unit
@@ -39,9 +41,9 @@ class CatalogForOneSiteRecyclerPresenter : RecyclerPresenter() {
         mainJob = async(UI) {
             val time = measureTimeMillis {
                 try {
-                    adapter.items = async {
+                    adapter.items = withContext(DefaultDispatcher) {
                         SiteCatalogElementViewModel.setSiteId(siteId).items()
-                    }.await()
+                    }
                     backupCatalog = adapter.items
 
                     changeOrder()
@@ -87,7 +89,7 @@ class CatalogForOneSiteRecyclerPresenter : RecyclerPresenter() {
     }
 
     fun close() {
-        runBlocking{
+        runBlocking {
             mainJob.cancel()
         }
     }

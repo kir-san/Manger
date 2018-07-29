@@ -17,11 +17,10 @@ import com.san.kir.manger.extending.dialogs.ColorPicker
 import com.san.kir.manger.room.dao.categoryNames
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.utils.AnkoActivityComponent
-import com.san.kir.manger.utils.onError
-import com.squareup.picasso.NetworkPolicy
-import com.squareup.picasso.Picasso
+import com.san.kir.manger.utils.loadImage
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.backgroundColor
+import org.jetbrains.anko.backgroundColorResource
 import org.jetbrains.anko.backgroundResource
 import org.jetbrains.anko.checkBox
 import org.jetbrains.anko.dip
@@ -180,18 +179,16 @@ class AddMangaView : AnkoActivityComponent() {
                 logo.backgroundColor = manga.color
             }
         } else
-            Picasso.with(logo.context)
-                .load(manga.logo)
-                .networkPolicy(NetworkPolicy.OFFLINE)
-                .into(logo, onError {
-                    Picasso.with(logo.context)
-                        .load(manga.logo)
-                        .error(
-                            if (manga.color != 0) manga.color
-                            else android.R.color.holo_green_dark
-                        )
-                        .into(logo)
-                })
+            loadImage(manga.logo) {
+                onError {
+                    if (manga.color != 0) {
+                        logo.backgroundColor = manga.color
+                    } else {
+                        logo.backgroundColorResource = android.R.color.holo_green_dark
+                    }
+                }
+                into(logo)
+            }
     }
 
     fun getManga(): Manga {

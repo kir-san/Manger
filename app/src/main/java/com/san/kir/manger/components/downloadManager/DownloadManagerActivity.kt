@@ -22,6 +22,7 @@ import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.PrefDownload
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.launch
 
 class DownloadManagerActivity : DrawerActivity() {
     private val dao = Main.db.downloadDao
@@ -190,28 +191,28 @@ class DownloadManagerActivity : DrawerActivity() {
             OptionId.start -> downloadManager.startAll()
             OptionId.retry -> downloadManager.retryAll()
             OptionId.clearCompleted -> {
-                async {
+                launch {
                     dao.loadItems()
                         .filter { it.status == DownloadStatus.completed }
                         .forEach { dao.delete(it) }
                 }
             }
             OptionId.clearPaused -> {
-                async {
+                launch {
                     dao.loadItems()
                         .filter { it.status == DownloadStatus.pause }
                         .forEach { dao.delete(it) }
                 }
             }
             OptionId.clearError -> {
-                async {
+                launch {
                     dao.loadItems()
                         .filter { it.status == DownloadStatus.error }
                         .forEach { dao.delete(it) }
                 }
             }
             OptionId.clearAll -> {
-                async {
+                launch {
                     dao.loadItems()
                         .filter {
                             it.status == DownloadStatus.completed

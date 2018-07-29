@@ -13,9 +13,11 @@ import com.san.kir.manger.utils.ChapterStatus
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.delChapters
+import kotlinx.coroutines.experimental.DefaultDispatcher
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.withContext
 import org.jetbrains.anko.startService
 import org.jetbrains.anko.toast
 import java.util.regex.Pattern
@@ -46,36 +48,36 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
     }
 
     fun changeSort(alternative: Boolean) = async {
-        adapter.items = async {
-            if (alternative) {
-                dao.loadChapters(manga.unic).sortedWith(Comparator { arg1, arg2 ->
-                    val reg = Pattern.compile("\\d+")
-                    val matcher1 = reg.matcher(arg1.name)
-                    val matcher2 = reg.matcher(arg2.name)
+        adapter.items = withContext(DefaultDispatcher) {
+        if (alternative) {
+            dao.loadChapters(manga.unic).sortedWith(Comparator { arg1, arg2 ->
+                val reg = Pattern.compile("\\d+")
+                val matcher1 = reg.matcher(arg1.name)
+                val matcher2 = reg.matcher(arg2.name)
 
-                    var numbers1 = listOf<String>()
-                    var numbers2 = listOf<String>()
+                var numbers1 = listOf<String>()
+                var numbers2 = listOf<String>()
 
-                    while (matcher1.find()) {
-                        numbers1 += matcher1.group()
-                    }
+                while (matcher1.find()) {
+                    numbers1 += matcher1.group()
+                }
 
-                    while (matcher2.find()) {
-                        numbers2 += matcher2.group()
-                    }
+                while (matcher2.find()) {
+                    numbers2 += matcher2.group()
+                }
 
-                    val prepare1 = String.format("%04d", numbers1[1].toInt(10))
-                    val prepare2 = String.format("%04d", numbers2[1].toInt(10))
+                val prepare1 = String.format("%04d", numbers1[1].toInt(10))
+                val prepare2 = String.format("%04d", numbers2[1].toInt(10))
 
-                    val finishNumber1 = "${numbers1.first()}$prepare1".toInt(10)
-                    val finishNumber2 = "${numbers2.first()}$prepare2".toInt(10)
+                val finishNumber1 = "${numbers1.first()}$prepare1".toInt(10)
+                val finishNumber2 = "${numbers2.first()}$prepare2".toInt(10)
 
-                    finishNumber1 - finishNumber2
-                })
-            } else {
-                dao.loadChapters(manga.unic)
-            }
-        }.await()
+                finishNumber1 - finishNumber2
+            })
+        } else {
+            dao.loadChapters(manga.unic)
+        }
+    }
         backupCatalog = adapter.items
 
         changeOrder(filter)

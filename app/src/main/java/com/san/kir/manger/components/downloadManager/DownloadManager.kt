@@ -88,12 +88,6 @@ class DownloadManager(private val concurrentLimit: Int) : Closeable {
         }
     }
 
-    fun isWork(): Boolean {
-        synchronized(lock) {
-            return downloadCounter != 0
-        }
-    }
-
     fun changeConcurrentPages(concurrent: Int) {
         synchronized(lock) {
             concurrentPages = concurrent

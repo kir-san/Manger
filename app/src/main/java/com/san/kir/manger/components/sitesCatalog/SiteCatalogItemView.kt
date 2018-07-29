@@ -16,10 +16,11 @@ import com.san.kir.manger.room.dao.updateAsync
 import com.san.kir.manger.room.models.Site
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
+import com.san.kir.manger.utils.loadImage
 import com.san.kir.manger.utils.log
-import com.squareup.picasso.Picasso
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.alignParentBottom
 import org.jetbrains.anko.alignParentEnd
@@ -113,16 +114,17 @@ class SiteCatalogItemView : RecyclerViewAdapterFactory.AnkoView<Site>() {
         name.text = item.name
         link.text = item.host
 
-        if (item.host.isNotEmpty())
-            Picasso.with(root.context)
-                    .load("http://www.google.com/s2/favicons?domain=${item.host}")
-                    .error(com.san.kir.manger.R.drawable.ic_error)
-                    .into(icon)
+        if (item.host.isNotEmpty()) {
+            loadImage("http://www.google.com/s2/favicons?domain=${item.host}") {
+                errorResId(com.san.kir.manger.R.drawable.ic_error)
+                into(icon)
+            }
+        }
 
         volume.text = root.context.getString(com.san.kir.manger.R.string.site_volume,
                                              item.oldVolume,
                                              item.volume - item.oldVolume)
-        async(UI) {
+        launch(UI) {
             try {
                 val site = ManageSites.CATALOG_SITES[item.siteID]
                 if (!site.isInit) {

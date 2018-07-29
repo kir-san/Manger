@@ -14,7 +14,7 @@ import com.san.kir.manger.room.models.SiteCatalogElement
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.listStrToString
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.alignParentBottom
 import org.jetbrains.anko.alignParentRight
@@ -111,7 +111,7 @@ class CatalogForOneSiteItemView : RecyclerViewAdapterFactory.AnkoView<SiteCatalo
 
         addBtn.onClick { AddMangaDialog(root.context, item, onAddManga) }
 
-        async {
+        launch {
             val isContain = Main.db.mangaDao.contain(item)
             if (item.isAdded != isContain) {
                 item.isAdded = isContain

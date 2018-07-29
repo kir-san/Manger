@@ -25,6 +25,7 @@ import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.delChapters
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.alignParentBottom
@@ -250,7 +251,7 @@ class LatestChaptersItemView(private val act: LatestChapterActivity) :
         disableDownload(item)
         initializeOnClicks(item)
 
-        async(UI) {
+        launch(UI) {
             val color = when {
                 item.isRead.await() -> Color.parseColor("#a5a2a2")
                 else -> Color.parseColor("#FFF4F2F2")

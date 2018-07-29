@@ -20,9 +20,7 @@ import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.NAME_SHOW_CATEGORY
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.getDrawableCompat
-import com.san.kir.manger.utils.onError
-import com.squareup.picasso.NetworkPolicy
-import com.squareup.picasso.Picasso
+import com.san.kir.manger.utils.loadImage
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.alert
@@ -51,10 +49,10 @@ abstract class LibraryItemView(
     override fun bind(item: Manga, isSelected: Boolean, position: Int) {
         launch(UI) {
             root.onClick {
-                    if (act.actionMode.hasFinish())
-                        root.context.startActivity<ListChaptersActivity>(MangaColumn.unic to item.unic)
-                    else
-                        act.onListItemSelect(position)
+                if (act.actionMode.hasFinish())
+                    root.context.startActivity<ListChaptersActivity>(MangaColumn.unic to item.unic)
+                else
+                    act.onListItemSelect(position)
             }
 
             root.onLongClick { view ->
@@ -85,17 +83,11 @@ abstract class LibraryItemView(
                 }
             }
 
-            if (item.logo.isNotEmpty())
-                Picasso.with(root.context)
-                    .load(item.logo)
-                    .networkPolicy(NetworkPolicy.OFFLINE)
-                    .into(logo, onError {
-                        Picasso.with(root.context)
-                            .load(item.logo)
-                            .into(logo, onError {
-                                logo.backgroundColor = item.color
-                            })
-                    })
+            if (item.logo.isNotEmpty()) {
+                loadImage(item.logo) {
+                    into(logo)
+                }
+            }
 
             val countNotRead = chapters.countNotRead(item.unic)
             val count = chapters.count(item.unic)
@@ -109,8 +101,18 @@ abstract class LibraryItemView(
                     this.customView {
                         verticalLayout {
                             textView(context.getString(R.string.library_all_chapters, count))
-                            textView(context.getString(R.string.library_not_read_chapters, countNotRead))
-                            textView(context.getString(R.string.library_read_chapters, count - countNotRead))
+                            textView(
+                                context.getString(
+                                    R.string.library_not_read_chapters,
+                                    countNotRead
+                                )
+                            )
+                            textView(
+                                context.getString(
+                                    R.string.library_read_chapters,
+                                    count - countNotRead
+                                )
+                            )
                         }
                     }
                 }.show()

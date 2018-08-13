@@ -29,6 +29,7 @@
     <string name="add_manga_update_available">Разрешить?</string>
     <string name="add_manga_dialog_changed_category">Категория выбрана: %s</string>
     <string name="add_manga_dialog_created_folder">Создаю папки для манги</string>
+    <string name="add_manga_dialog_update_manga">Обновляю информацию о манге</string>
     <string name="add_manga_dialog_added_manga">Новая манга добавлена в библиотеку</string>
     <string name="add_manga_dialog_search_chapters">Поиск глав для манги</string>
     <string name="add_manga_dialog_save_chapters">Сохранение найденных глав</string>

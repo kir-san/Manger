@@ -4,11 +4,13 @@ import android.content.Context
 import android.graphics.Color
 import android.view.Gravity
 import android.view.View
+import android.view.ViewManager
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.san.kir.manger.App
 import com.san.kir.manger.R
 import com.san.kir.manger.components.main.Main
+import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.room.dao.categoryNames
 import com.san.kir.manger.room.dao.insertAsync
 import com.san.kir.manger.room.models.MangaColumn
@@ -75,35 +77,20 @@ class AddMangaDialog(
                         textResource = R.string.add_manga_dialog_created_folder
                         padding = dip(5)
                     }
-                    added = textView {
-                        textResource = R.string.add_manga_dialog_added_manga
-                        visibility = View.GONE
+                    textView(R.string.add_manga_dialog_update_manga) {
                         padding = dip(5)
                     }
-                    searching = textView {
-                        textResource = R.string.add_manga_dialog_search_chapters
-                        padding = dip(5)
-                        visibility = View.GONE
-                    }
-                    allReady = textView {
-                        textResource = R.string.add_manga_dialog_all_complete
-                        padding = dip(5)
-                        visibility = View.GONE
-                    }
-                    error = textView {
-                        padding = dip(5)
-                        textResource = R.string.add_manga_dialog_error
-                        visibility = View.GONE
+                    added = hideTextView(R.string.add_manga_dialog_added_manga)
+                    searching = hideTextView(R.string.add_manga_dialog_search_chapters)
+                    allReady = hideTextView(R.string.add_manga_dialog_all_complete)
+                    error = hideTextView(R.string.add_manga_dialog_error) {
                         textColor = Color.RED
                     }
                     progressBar = horizontalProgressBar {
                         isIndeterminate = true
                     }
-                    okBtn = textView {
-                        textResource = R.string.add_manga_close_btn
+                    okBtn = hideTextView(R.string.add_manga_close_btn) {
                         textColor = Color.parseColor("#FFFF4081")
-                        visibility = View.GONE
-                        padding = dip(5)
                     }.lparams(width = wrapContent, height = wrapContent) {
                         gravity = Gravity.END
                     }
@@ -119,9 +106,11 @@ class AddMangaDialog(
                 val path = "${DIR.MANGA}/${element.catalogName}/${element.shotLink}"
                 createDirs(getFullPath(path))
 
-                val manga = element.toManga(category = category, path = path)
+                val updatingElement = ManageSites.getFullElement(element).await()
 
+                val manga = updatingElement.toManga(category = category, path = path)
                 Main.db.mangaDao.insertAsync(manga)
+
                 added?.visibility = View.VISIBLE
                 searching?.visibility = View.VISIBLE
 
@@ -140,4 +129,10 @@ class AddMangaDialog(
             }
         }
     }
+
+    private fun ViewManager.hideTextView(id: Int, init: (TextView.() -> Unit)? = null) =
+            textView(id) {
+                visibility = View.GONE
+                padding = dip(5)
+            }
 }

@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import com.san.kir.manger.App
 import com.san.kir.manger.R
+import com.san.kir.manger.components.downloadManager.DownloadService
 import com.san.kir.manger.components.library.LibraryActivity
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.extending.BaseActivity
@@ -26,6 +27,7 @@ import com.san.kir.manger.utils.getFullPath
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.longToast
 import org.jetbrains.anko.startActivity
+import org.jetbrains.anko.startService
 
 
 class Main : BaseActivity() {
@@ -103,6 +105,7 @@ class Main : BaseActivity() {
         createAndInitializeDb()
         updateApp.checkNewVersion()
 
+        startService<DownloadService>()
         startActivity<LibraryActivity>()
     }
 

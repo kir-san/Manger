@@ -9,7 +9,6 @@ import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.room.models.SiteCatalogElement
 import com.san.kir.manger.utils.createDirs
 import com.san.kir.manger.utils.getFullPath
-import com.san.kir.manger.utils.log
 import kotlinx.coroutines.experimental.channels.produce
 import org.json.JSONArray
 import org.jsoup.nodes.Document
@@ -101,13 +100,12 @@ open class ReadmangaTemplate : SiteCatalog {
             element.statusEdition = "Выпуск завершен"
         }
 
-        element.logo = elem.select(".img a").select("img").attr("src")
+        element.logo = elem.select(".img a").select("img").attr("data-original")
 
         element.dateId = elem.select(".chapters span.bookmark-menu").attr("data-id").toInt()
 
         try {
             element.populate = elem.select(".desc .tile-info p.small").first().ownText().toInt()
-            log = "watches " + element.populate
         } catch (ex: Throwable) {
             element.populate = 0
         }

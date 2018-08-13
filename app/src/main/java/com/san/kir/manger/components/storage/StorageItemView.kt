@@ -16,6 +16,7 @@ import com.san.kir.manger.components.addManga.AddMangaActivity
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.extending.ankoExtend.roundedImageView
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
+import com.san.kir.manger.room.dao.deleteAsync
 import com.san.kir.manger.room.dao.getFromPath
 import com.san.kir.manger.room.dao.loadAllSize
 import com.san.kir.manger.room.models.Manga
@@ -23,7 +24,9 @@ import com.san.kir.manger.room.models.Storage
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.formatDouble
+import com.san.kir.manger.utils.getFullPath
 import com.san.kir.manger.utils.loadImage
+import com.san.kir.manger.utils.log
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.AnkoContext
@@ -48,6 +51,7 @@ import kotlin.math.roundToInt
 class StorageItemView(private val act: StorageActivity) :
     RecyclerViewAdapterFactory.AnkoView<Storage>() {
     private val mangaDao = Main.db.mangaDao
+    private val storage = Main.db.storageDao
 
     private object Id {
         val name = ID.generate()
@@ -187,9 +191,12 @@ class StorageItemView(private val act: StorageActivity) :
                         context.alert {
                             messageResource = R.string.storage_item_alert_message
                             positiveButton(R.string.storage_item_alert_positive) {
-
+                                getFullPath(item.path).deleteRecursively()
+                                storage.deleteAsync(item)
                             }
-                            negativeButton(R.string.storage_item_alert_negative) {}
+                            negativeButton(R.string.storage_item_alert_negative) {
+                                log("")
+                            }
                             show()
                         }
                     }

@@ -9,13 +9,16 @@ import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.components.storage.StorageDialogFragment
 import com.san.kir.manger.room.dao.removeWithChapters
 import com.san.kir.manger.room.models.Manga
+import com.san.kir.manger.utils.log
 import org.jetbrains.anko.alert
 
-class LibraryItemMenu(context: Context,
-                      anchor: View?,
-                      manga: Manga,
-                      act: LibraryActivity,
-                      position: Int) {
+class LibraryItemMenu(
+    context: Context,
+    anchor: View?,
+    manga: Manga,
+    act: LibraryActivity,
+    position: Int
+) {
     private val mangaDao = Main.db.mangaDao
 
     init {
@@ -30,12 +33,16 @@ class LibraryItemMenu(context: Context,
                 when (it) {
                     about -> AboutMangaDialog(context, manga)
                     delete -> {
-                        context.alert(R.string.library_popupmenu_delete_message,
-                                      R.string.library_popupmenu_delete_title) {
+                        context.alert(
+                            R.string.library_popupmenu_delete_message,
+                            R.string.library_popupmenu_delete_title
+                        ) {
                             positiveButton(R.string.library_popupmenu_delete_ok) {
                                 mangaDao.removeWithChapters(manga)
                             }
-                            neutralPressed(R.string.library_popupmenu_delete_no) {}
+                            neutralPressed(R.string.library_popupmenu_delete_no) {
+                                log("")
+                            }
                             negativeButton(R.string.library_popupmenu_delete_ok_with_files) {
                                 mangaDao.removeWithChapters(manga, true)
                             }

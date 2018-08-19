@@ -13,11 +13,9 @@ import com.san.kir.manger.utils.ChapterStatus
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.delChapters
-import kotlinx.coroutines.experimental.DefaultDispatcher
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.withContext
 import org.jetbrains.anko.startService
 import org.jetbrains.anko.toast
 import java.util.regex.Pattern
@@ -48,8 +46,7 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
     }
 
     fun changeSort(alternative: Boolean) = async {
-        adapter.items = withContext(DefaultDispatcher) {
-        if (alternative) {
+        adapter.items = if (alternative) {
             dao.loadChapters(manga.unic).sortedWith(Comparator { arg1, arg2 ->
                 val reg = Pattern.compile("\\d+")
                 val matcher1 = reg.matcher(arg1.name)
@@ -66,8 +63,20 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
                     numbers2 += matcher2.group()
                 }
 
-                val prepare1 = String.format("%04d", numbers1[1].toInt(10))
-                val prepare2 = String.format("%04d", numbers2[1].toInt(10))
+                val prepareNumber1 = when (numbers1.size) {
+                    2 -> numbers1[1].toInt(10)
+                    1 -> numbers1[0].toInt(10)
+                    else -> 0
+                }
+
+                val prepareNumber2 = when (numbers2.size) {
+                    2 -> numbers2[1].toInt(10)
+                    1 -> numbers2[0].toInt(10)
+                    else -> 0
+                }
+
+                val prepare1 = String.format("%04d", prepareNumber1)
+                val prepare2 = String.format("%04d", prepareNumber2)
 
                 val finishNumber1 = "${numbers1.first()}$prepare1".toInt(10)
                 val finishNumber2 = "${numbers2.first()}$prepare2".toInt(10)
@@ -77,7 +86,7 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
         } else {
             dao.loadChapters(manga.unic)
         }
-    }
+
         backupCatalog = adapter.items
 
         changeOrder(filter)

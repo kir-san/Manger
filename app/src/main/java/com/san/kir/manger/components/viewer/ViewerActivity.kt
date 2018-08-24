@@ -16,7 +16,6 @@ import android.view.MenuItem
 import android.view.View
 import com.san.kir.manger.R
 import com.san.kir.manger.components.main.Main
-import com.san.kir.manger.eventBus.Binder
 import com.san.kir.manger.eventBus.negative
 import com.san.kir.manger.eventBus.positive
 import com.san.kir.manger.extending.BaseActivity
@@ -74,7 +73,7 @@ class ViewerActivity : BaseActivity() {
         }
     } // Отображение обоих баров
 
-    val adapter: Binder<ViewerPageAdapter?> = Binder(null) // Адаптер для читалки
+//    val adapter: Binder<ViewerPageAdapter?> = Binder(null) // Адаптер для читалки
 
     // Режимы листания страниц
     var isTapControl = false // Нажатия на экран
@@ -83,7 +82,7 @@ class ViewerActivity : BaseActivity() {
     private var mangaName = ""
     var chapterName = ""
 
-    val presenter by lazy { ViewPagePresenter(this) }
+    val presenter by lazy { ViewerPresenter(this) }
     private val view by lazy { ViewerView(presenter) }
 
     @SuppressLint("RestrictedApi")
@@ -185,10 +184,10 @@ class ViewerActivity : BaseActivity() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        adapter.close()
-    }
+//    override fun onDestroy() {
+//        super.onDestroy()
+////        adapter.close()
+//    }
 
     // Меню для упраиления настройками
     private fun openMenu() {
@@ -216,38 +215,30 @@ class ViewerActivity : BaseActivity() {
                         }
 
                         // Портретная
-                        radioButton(id = portN, text = R.string.viewer_menu_orientation_portrait) {
-                            isChecked = requestedOrientation == SCREEN_ORIENTATION_PORTRAIT
-                        }
+                        radioButton(portN, R.string.viewer_menu_orientation_portrait)
 
                         // Портретная обратная
-                        radioButton(
-                            id = portR,
-                            text = R.string.viewer_menu_orientation_portrait_reverse
-                        ) {
-                            isChecked = requestedOrientation == SCREEN_ORIENTATION_REVERSE_PORTRAIT
-                        }
+                        radioButton(portR, R.string.viewer_menu_orientation_portrait_reverse)
 
                         // Ландшафтная
-                        radioButton(
-                            id = landN,
-                            text = R.string.viewer_menu_orientation_landscape
-                        ) {
-                            isChecked = requestedOrientation == SCREEN_ORIENTATION_LANDSCAPE
-                        }
+                        radioButton(landN, R.string.viewer_menu_orientation_landscape)
 
                         // Ландшафтная обратная
-                        radioButton(
-                            id = landR,
-                            text = R.string.viewer_menu_orientation_landscape_reverse
-                        ) {
-                            isChecked = requestedOrientation == SCREEN_ORIENTATION_REVERSE_LANDSCAPE
-                        }
+                        radioButton(landR, R.string.viewer_menu_orientation_landscape_reverse)
 
                         // Автоматическая
-                        radioButton(id = auto, text = R.string.viewer_menu_orientation_auto) {
-                            isChecked = requestedOrientation == SCREEN_ORIENTATION_SENSOR
-                        }
+                        radioButton(auto, R.string.viewer_menu_orientation_auto)
+
+                        check(
+                            when (requestedOrientation) {
+                                SCREEN_ORIENTATION_PORTRAIT -> portN
+                                SCREEN_ORIENTATION_REVERSE_PORTRAIT -> portR
+                                SCREEN_ORIENTATION_LANDSCAPE -> landN
+                                SCREEN_ORIENTATION_REVERSE_LANDSCAPE -> landR
+                                SCREEN_ORIENTATION_SENSOR -> auto
+                                else -> auto
+                            }
+                        )
 
                         // Действия на изменение выбора
                         onCheckedChange { _, i ->

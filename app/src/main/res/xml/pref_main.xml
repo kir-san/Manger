@@ -8,4 +8,16 @@
             android:title="Отображение категории"
             />
     </PreferenceCategory>
+
+    <PreferenceCategory android:title="Настройки читалки">
+        <ListPreference
+            android:defaultValue="horizontal"
+            android:entries="@array/pref_reader_direction_of_scrolling_array"
+            android:entryValues="@array/pref_reader_direction_of_scrolling_values"
+            android:key="directionScroll"
+            android:summary="Горизонтально или вертикально будут перелистываться страницы при чтении"
+            android:title="Направление листания"
+            />
+    </PreferenceCategory>
+
 </PreferenceScreen>

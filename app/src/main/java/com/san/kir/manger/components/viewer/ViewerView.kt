@@ -2,12 +2,15 @@ package com.san.kir.manger.components.viewer
 
 import android.graphics.Color
 import android.support.v4.content.ContextCompat
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.PagerSnapHelper
 import android.widget.ImageView.ScaleType.CENTER_CROP
 import com.san.kir.manger.R
 import com.san.kir.manger.R.drawable
 import com.san.kir.manger.R.string
 import com.san.kir.manger.extending.ankoExtend.goneOrVisible
-import com.san.kir.manger.extending.ankoExtend.specialViewPager
+import com.san.kir.manger.extending.ankoExtend.onScroll
+import com.san.kir.manger.extending.ankoExtend.specialRecyclerView
 import com.san.kir.manger.extending.ankoExtend.visibleOrInvisible
 import com.san.kir.manger.utils.ID
 import org.jetbrains.anko.AnkoComponent
@@ -20,6 +23,7 @@ import org.jetbrains.anko.alignParentTop
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.below
 import org.jetbrains.anko.centerInParent
+import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.horizontalProgressBar
 import org.jetbrains.anko.imageButton
@@ -32,15 +36,12 @@ import org.jetbrains.anko.rightOf
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.sdk25.coroutines.onSeekBarChangeListener
 import org.jetbrains.anko.seekBar
-import org.jetbrains.anko.support.v4.onPageChangeListener
 import org.jetbrains.anko.textColor
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.wrapContent
 
 
-class ViewerView(
-    private val presenter: ViewPagePresenter
-) : AnkoComponent<ViewerActivity> {
+class ViewerView(private val presenter: ViewerPresenter) : AnkoComponent<ViewerActivity> {
     private object Id {
         val progressBar = ID.generate()
         val bottomBar = ID.generate()
@@ -50,7 +51,6 @@ class ViewerView(
     }
 
     override fun createView(ui: AnkoContext<ViewerActivity>) = with(ui) {
-
         val actionBarSize = dip(50) // Размер бара снизу
         val buttonSize = dip(40) // Размер кнопок
 
@@ -156,19 +156,34 @@ class ViewerView(
 
             }
 
-            specialViewPager {
+            specialRecyclerView {
                 id = ID.generate()
-                lparams(width = matchParent, height = matchParent) {
-                    below(Id.progressBar)
-                    above(Id.bottomBar)
+
+                var orientation: Int = LinearLayoutManager.HORIZONTAL
+                defaultSharedPreferences.apply {
+                    orientation = when (getString("directionScroll", "horizontal")) {
+                        "horizontal" -> LinearLayoutManager.HORIZONTAL
+                        else -> LinearLayoutManager.VERTICAL
+                    }
                 }
-                onPageChangeListener {
-                    onPageSelected { position -> presenter.progressPages.item = position }
-                }
+                val lManager =
+                    LinearLayoutManager(this.context, orientation, false)
+                layoutManager = lManager
+
+                PagerSnapHelper().attachToRecyclerView(this)
                 presenter.into(this)
 
-                presenter.progressPages.bind { currentItem = it }
+                presenter.progressPages.bind { layoutManager.scrollToPosition(it) }
                 presenter.isSwipeControl.bind { setLocked(!it) }
+
+                onScroll {
+                    presenter.progressPages.item = lManager.findFirstVisibleItemPosition()
+                }
+
+
+            }.lparams(width = matchParent, height = matchParent) {
+                below(Id.progressBar)
+                above(Id.bottomBar)
             }
         }
     }

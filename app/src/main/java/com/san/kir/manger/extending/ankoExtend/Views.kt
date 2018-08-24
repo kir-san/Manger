@@ -11,7 +11,7 @@ import android.widget.TextView
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.san.kir.manger.eventBus.Binder
 import com.san.kir.manger.extending.views.RoundedImageView
-import com.san.kir.manger.extending.views.SpecialViewPager
+import com.san.kir.manger.extending.views.SpecialRecyclerView
 import com.san.kir.manger.utils.ID
 import kotlinx.coroutines.experimental.CoroutineScope
 import kotlinx.coroutines.experimental.android.UI
@@ -25,10 +25,8 @@ import org.jetbrains.anko.textView
 import org.jetbrains.anko.topPadding
 import kotlin.coroutines.experimental.CoroutineContext
 
-inline fun ViewManager.specialViewPager(theme: Int = 0, init: SpecialViewPager.() -> Unit) =
-    ankoView(::SpecialViewPager, theme) {
-        init()
-    }
+inline fun ViewManager.specialRecyclerView(init: SpecialRecyclerView.() -> Unit) =
+    ankoView(::SpecialRecyclerView, 0, init)
 
 inline fun ViewManager.bigImageView(init: SubsamplingScaleImageView.() -> Unit) =
     ankoView(::SubsamplingScaleImageView, 0) {
@@ -49,12 +47,6 @@ inline fun ViewManager.textView(text: Binder<String>, init: TextView.() -> Unit)
         text.bind { setText(it) }
     }
 
-fun ViewManager.labelView(text: String, init: TextView.() -> Unit = {}) = textView(text) {
-    textSize = 13.5f
-    bottomPadding = 0
-    topPadding = dip(5)
-    init()
-}
 fun ViewManager.labelView(text: Int, init: TextView.() -> Unit = {}) = textView(text) {
     textSize = 13.5f
     bottomPadding = 0
@@ -69,6 +61,7 @@ fun ViewManager.textViewBold15Size(text: String = "", init: TextView.() -> Unit 
         init()
     }
 }
+
 fun ViewManager.textViewBold15Size(text: Int, init: TextView.() -> Unit = {}): TextView {
     return textView(text) {
         textSize = 15f
@@ -88,15 +81,10 @@ fun EditText.typeTextMultiLine(): EditText {
 }
 
 
-fun ViewManager.radioButton(
-    id: Int = ID.generate(),
-    text: Int,
-    init: RadioButton.() -> Unit
-): RadioButton {
+fun ViewManager.radioButton(id: Int = ID.generate(), text: Int): RadioButton {
     return radioButton {
         this.id = id
-        if (text != 0) setText(text)
-        init()
+        setText(text)
     }
 }
 

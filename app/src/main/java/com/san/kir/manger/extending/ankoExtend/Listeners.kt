@@ -85,14 +85,24 @@ fun RecyclerView.onClick(click: (View, Int) -> Unit) {
     addOnItemTouchListener(RecyclerViewTouchListeners(context, this, listener))
 }
 
-fun RecyclerView.onLongClick(longClick: (View, Int) -> Unit) {
-    val listener = object : ClickListener {
-        override fun onClick(view: View, position: Int) {
+fun RecyclerView.onScroll(scroll: () -> Unit) {
+    addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        var mScrolled = false
+
+        override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
+            super.onScrollStateChanged(recyclerView, newState)
+            if (newState == RecyclerView.SCROLL_STATE_IDLE && mScrolled) {
+                mScrolled = false
+                scroll.invoke()
+            }
         }
 
-        override fun onLongClick(view: View, position: Int) {
-            longClick.invoke(view, position)
+        override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+            if (dx != 0 || dy != 0) {
+                mScrolled = true
+            }
         }
-    }
-    addOnItemTouchListener(RecyclerViewTouchListeners(context, this, listener))
+    })
 }
+
+

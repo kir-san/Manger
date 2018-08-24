@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pref_reader_direction_of_scrolling_array">
+        <item>Горизонтально</item>
+        <item>Вериткально</item>
+    </string-array>
+
+    <string-array name="pref_reader_direction_of_scrolling_values">
+        <item>horizontal</item>
+        <item>vertical</item>
+    </string-array>
+</resources>

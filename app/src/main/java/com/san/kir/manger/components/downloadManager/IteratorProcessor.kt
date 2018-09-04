@@ -6,7 +6,8 @@ import com.san.kir.manger.room.models.DownloadItem
 
 class IteratorProcessor(
     private val handler: Handler,
-    private val manager: DownloadManager
+    private val manager: DownloadManager,
+    private val networkManager: NetworkManager
 ) {
     private val priorityQueueIntervalInMilliseconds = 500L
     private val dbManager = Main.db.downloadDao
@@ -26,8 +27,8 @@ class IteratorProcessor(
         if (iterator.hasNext()) {
             while (iterator.hasNext() && manager.canAccommodateNewDownload()) {
                 val download = iterator.next()
-
-                manager.start(download)
+                if (networkManager.isAvailable())
+                    manager.start(download)
             }
         }
         stop()

@@ -5,7 +5,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.os.Binder
 import android.os.Build
@@ -14,9 +13,9 @@ import android.support.v4.app.NotificationCompat
 import com.san.kir.manger.R
 import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.utils.ID
-import com.san.kir.manger.utils.PrefDownload
 import com.san.kir.manger.utils.bytesToMb
 import com.san.kir.manger.utils.formatDouble
+import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.notificationManager
 
@@ -30,14 +29,24 @@ class DownloadService : Service(), DownloadListener {
     }
 
     private val downloadManager by lazy {
-        ChapterLoader().also {
+        ChapterLoader(applicationContext).also {
             it.addListener(this, this)
-            getSharedPreferences(PrefDownload.mainName, Context.MODE_PRIVATE).apply {
-                val concurrent = getInt(PrefDownload.concurrent, 4)
-                it.setConcurrentPages(concurrent)
+            defaultSharedPreferences.apply {
+                val concurrentKey = getString(R.string.settings_downloader_parallel_key)
+                val concurrentDefault =
+                    getString(R.string.settings_downloader_parallel_default) == "true"
+                val isParallel = getBoolean(concurrentKey, concurrentDefault)
+                it.setConcurrentPages(if (isParallel) 4 else 1)
 
-                val isRetry = getBoolean(PrefDownload.isRetry, false)
+                val retryKey = getString(R.string.settings_downloader_retry_key)
+                val retryDefault = getString(R.string.settings_downloader_retry_default) == "true"
+                val isRetry = getBoolean(retryKey, retryDefault)
                 it.setRetryOnError(isRetry)
+
+                val wifiKey = getString(R.string.settings_downloader_wifi_only_key)
+                val wifiDefault = getString(R.string.settings_downloader_wifi_only_default) == "true"
+                val isWifi = getBoolean(wifiKey, wifiDefault)
+                it.isWifiOnly(isWifi)
             }
         }
     }

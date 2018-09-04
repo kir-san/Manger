@@ -1,5 +1,6 @@
 package com.san.kir.manger.components.downloadManager
 
+import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
@@ -7,7 +8,7 @@ import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.room.models.DownloadStatus
 
-class ChapterLoader {
+class ChapterLoader(context: Context) {
     private val lock = Object()
 
     private val uiHandler = Handler(Looper.getMainLooper())
@@ -18,8 +19,9 @@ class ChapterLoader {
     }
 
     private val listeners = ListenerProvider()
+    private val networkManager = NetworkManager(context)
     private val downloadManager = DownloadManager(1)
-    private val iteratorProcessor = IteratorProcessor(handler, downloadManager)
+    private val iteratorProcessor = IteratorProcessor(handler, downloadManager, networkManager)
     private val dbManager = Main.db.downloadDao
 
     init {
@@ -44,6 +46,10 @@ class ChapterLoader {
 
                     uiHandler.post {
                         listeners.mainListener.onQueued(task)
+                    }
+
+                    if (!networkManager.isAvailable()) {
+                        pause(task)
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -103,6 +109,10 @@ class ChapterLoader {
 
                     uiHandler.post {
                         listeners.mainListener.onQueued(task)
+                    }
+
+                    if (!networkManager.isAvailable()) {
+                        pause(task)
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -263,6 +273,14 @@ class ChapterLoader {
         }
     }
 
+    fun isWifiOnly(isWifi: Boolean) {
+        val oldValue = networkManager.isWifi
+        networkManager.isWifi = isWifi
+        if (oldValue != isWifi && isWifi && !networkManager.isAvailable()) {
+            pauseAll()
+        }
+
+    }
 
     private fun isDownloading(id: Long): Boolean {
         return downloadManager.contains(id)

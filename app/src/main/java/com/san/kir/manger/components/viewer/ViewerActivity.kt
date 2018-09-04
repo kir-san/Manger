@@ -9,91 +9,76 @@ import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR
 import android.graphics.Point
 import android.os.Bundle
-import android.view.Gravity
 import android.view.KeyEvent
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.san.kir.manger.R
 import com.san.kir.manger.components.main.Main
-import com.san.kir.manger.eventBus.Binder
 import com.san.kir.manger.eventBus.negative
 import com.san.kir.manger.eventBus.positive
-import com.san.kir.manger.extending.BaseActivity
-import com.san.kir.manger.extending.ankoExtend.radioButton
-import com.san.kir.manger.extending.views.showAlways
-import com.san.kir.manger.utils.sPrefViewer
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.checkBox
-import org.jetbrains.anko.customView
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.linearLayout
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.padding
-import org.jetbrains.anko.radioGroup
-import org.jetbrains.anko.sdk25.coroutines.onCheckedChange
+import com.san.kir.manger.extending.ThemedActionBarActivity
+import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.setContentView
-import org.jetbrains.anko.textView
-import org.jetbrains.anko.verticalLayout
-import java.util.*
 import kotlin.properties.Delegates.observable
 
-class ViewerActivity : BaseActivity() {
+class ViewerActivity : ThemedActionBarActivity() {
     companion object { // константы для сохранения настроек
-        private const val SAVE_IS_SHOW_BAR = "isShowBar"
-        private const val ORIENTATION = "orientation"
-        private const val CONTROL_TAP = "tap"
-        private const val CONTROL_SWIPE = "swipe"
-        private const val CONTROL_KEY = "key"
-
         var LEFT_PART_SCREEN = 0 // Левая часть экрана
         var RIGHT_PART_SCREEN = 0 // Правая часть экрана
     }
 
     val chapters = Main.db.chapterDao
 
-    private var timer: Timer? = null // Таймер
     var isBar by observable(true) { _, old, new ->
         if (old != new) {
-            if (timer == null) // Если таймера нет
-                timer = Timer() // создать
-
             if (!new) {
                 supportActionBar!!.hide() //Скрыть бар сверху
                 presenter.isBottomBar.negative() // Скрыть нижний бар
-                timer?.cancel() // Отменить таймер
-                timer = null // Убрать таймер
             } else {
                 supportActionBar!!.show() // Показать бар сверху
-                timer?.schedule(object : TimerTask() {
-                    override fun run() {
-                        presenter.isBottomBar.positive()// Показать нижний бар
-                    }
-                }, 300) // после 3 секунд
+                presenter.isBottomBar.positive()// Показать нижний бар
             }
         }
-    } // Отображение обоих баров
-
-    val adapter: Binder<ViewerPageAdapter?> = Binder(null) // Адаптер для читалки
+    }
 
     // Режимы листания страниц
     var isTapControl = false // Нажатия на экран
     private var isKeyControl = false // Кнопки громкости
 
-    private var mangaName = ""
     var chapterName = ""
+    private var mangaName = ""
 
-    val presenter by lazy { ViewPagePresenter(this) }
+    val presenter by lazy { ViewerPresenter(this) }
     private val view by lazy { ViewerView(presenter) }
 
     @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        getSharedPreferences(sPrefViewer, MODE_PRIVATE).apply {
-            if (contains(ORIENTATION)) {
-                requestedOrientation = getInt(ORIENTATION, SCREEN_ORIENTATION_SENSOR)
+        defaultSharedPreferences.apply {
+            val orientationKey = getString(R.string.settings_viewer_orientation_key)
+            val orientationDefault = getString(R.string.settings_viewer_orientation_default)
+
+            requestedOrientation = when (getString(orientationKey, orientationDefault)) {
+                getString(R.string.settings_viewer_orientation_auto) -> SCREEN_ORIENTATION_PORTRAIT
+                getString(R.string.settings_viewer_orientation_port) -> SCREEN_ORIENTATION_REVERSE_PORTRAIT
+                getString(R.string.settings_viewer_orientation_port_rev) -> SCREEN_ORIENTATION_LANDSCAPE
+                getString(R.string.settings_viewer_orientation_land) -> SCREEN_ORIENTATION_REVERSE_LANDSCAPE
+                getString(R.string.settings_viewer_orientation_land_rev) -> SCREEN_ORIENTATION_SENSOR
+                else -> SCREEN_ORIENTATION_SENSOR
             }
+
+            val controlKey = getString(R.string.settings_viewer_control_key)
+            val controlDefault = resources.getStringArray(R.array.settings_viewer_control_default)
+
+            getStringSet(controlKey, controlDefault.toSet()).forEach {
+                when (it) {
+                    getString(R.string.settings_viewer_control_taps) -> isTapControl = true
+                    getString(R.string.settings_viewer_control_swipes) -> presenter.isSwipeControl.positive()
+                    getString(R.string.settings_viewer_control_keys) -> isKeyControl = true
+                }
+            }
+
         }
 
         view.setContentView(this) // Установка разметки
@@ -118,13 +103,10 @@ class ViewerActivity : BaseActivity() {
         RIGHT_PART_SCREEN = point.x * 2 / 3 // Установка данных
 
         // Загрузка настроек
-        getSharedPreferences(sPrefViewer, MODE_PRIVATE).apply {
-            if (contains(ORIENTATION)) {
-                isBar = getBoolean(SAVE_IS_SHOW_BAR, true)
-                isTapControl = getBoolean(CONTROL_TAP, false)
-                isKeyControl = getBoolean(CONTROL_KEY, false)
-                presenter.isSwipeControl.item = getBoolean(CONTROL_SWIPE, true)
-            }
+        defaultSharedPreferences.apply {
+            val key = getString(R.string.settings_viewer_show_bar_key)
+            val default = getString(R.string.settings_viewer_show_bar_default) == "true"
+            isBar = getBoolean(key, default)
         }
 
         presenter.configManager(mangaName, chapterName)
@@ -151,150 +133,20 @@ class ViewerActivity : BaseActivity() {
                 KeyEvent.KEYCODE_VOLUME_UP -> presenter.prevPage()
             }
         }
-        if (keyCode == KeyEvent.KEYCODE_MENU) {
-            openMenu()
-        }
         return super.onKeyDown(keyCode, event)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Кнопка для включения своего меню
-        menu.add(0, 0, 0, "").setIcon(R.drawable.dots_vertical).showAlways()
-        return true
-    }
-
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item!!.itemId) {
-            id.home -> onBackPressed()
-            0 -> openMenu()
-        }
+        if (item!!.itemId == id.home) onBackPressed()
         return super.onOptionsItemSelected(item)
     }
 
     override fun onPause() {
         super.onPause()
         // Сохранение настроек
-        getSharedPreferences(sPrefViewer, MODE_PRIVATE).apply {
-            edit().apply {
-                putInt(ORIENTATION, requestedOrientation)
-                putBoolean(SAVE_IS_SHOW_BAR, presenter.isBottomBar.item)
-                putBoolean(CONTROL_TAP, isTapControl)
-                putBoolean(CONTROL_SWIPE, presenter.isSwipeControl.item)
-                putBoolean(CONTROL_KEY, isKeyControl)
-            }.apply()
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        adapter.close()
-    }
-
-    // Меню для упраиления настройками
-    private fun openMenu() {
-        // id элементов меню
-        val portN = 0
-        val portR = 1
-        val landN = 2
-        val landR = 3
-        val auto = 4
-
-        var orientation = requestedOrientation // Сохраняем значение ориентации
-        alert {
-            customView {
-                // Свое оформление для диалога
-                linearLayout {
-                    lparams(width = matchParent, height = matchParent)
-                    padding = dip(4)
-
-                    radioGroup {
-                        lparams(width = matchParent) { weight = 1f }
-
-                        // Заголовок
-                        textView(text = R.string.viewer_menu_orientation).lparams {
-                            gravity = Gravity.CENTER
-                        }
-
-                        // Портретная
-                        radioButton(id = portN, text = R.string.viewer_menu_orientation_portrait) {
-                            isChecked = requestedOrientation == SCREEN_ORIENTATION_PORTRAIT
-                        }
-
-                        // Портретная обратная
-                        radioButton(
-                            id = portR,
-                            text = R.string.viewer_menu_orientation_portrait_reverse
-                        ) {
-                            isChecked = requestedOrientation == SCREEN_ORIENTATION_REVERSE_PORTRAIT
-                        }
-
-                        // Ландшафтная
-                        radioButton(
-                            id = landN,
-                            text = R.string.viewer_menu_orientation_landscape
-                        ) {
-                            isChecked = requestedOrientation == SCREEN_ORIENTATION_LANDSCAPE
-                        }
-
-                        // Ландшафтная обратная
-                        radioButton(
-                            id = landR,
-                            text = R.string.viewer_menu_orientation_landscape_reverse
-                        ) {
-                            isChecked = requestedOrientation == SCREEN_ORIENTATION_REVERSE_LANDSCAPE
-                        }
-
-                        // Автоматическая
-                        radioButton(id = auto, text = R.string.viewer_menu_orientation_auto) {
-                            isChecked = requestedOrientation == SCREEN_ORIENTATION_SENSOR
-                        }
-
-                        // Действия на изменение выбора
-                        onCheckedChange { _, i ->
-                            orientation = when (i) { // Присвоение выбора в переменную
-                                portN -> SCREEN_ORIENTATION_PORTRAIT
-                                portR -> SCREEN_ORIENTATION_REVERSE_PORTRAIT
-                                landN -> SCREEN_ORIENTATION_LANDSCAPE
-                                landR -> SCREEN_ORIENTATION_REVERSE_LANDSCAPE
-                                auto -> SCREEN_ORIENTATION_SENSOR
-                                else -> SCREEN_ORIENTATION_SENSOR
-                            }
-                        }
-                    }
-
-                    verticalLayout {
-                        lparams(width = matchParent) { weight = 1f }
-
-                        // Заголовок
-                        textView(text = R.string.viewer_menu_control).lparams {
-                            gravity = Gravity.CENTER
-                        }
-
-                        // Тапы по экрану
-                        checkBox(text = R.string.viewer_menu_is_tap) {
-                            isChecked = isTapControl
-                            onCheckedChange { _, b -> isTapControl = b }
-                        }
-
-                        // Свайпы по экрану
-                        checkBox(text = R.string.viewer_menu_is_swipe) {
-                            isChecked = presenter.isSwipeControl.item
-                            onCheckedChange { _, b -> presenter.isSwipeControl.item = b }
-                        }
-
-                        // Кнопки громкости
-                        checkBox(text = R.string.viewer_menu_is_key) {
-                            isChecked = isKeyControl
-                            onCheckedChange { _, b -> isKeyControl = b }
-                        }
-                    }
-                }
-            }
-            positiveButton(R.string.viewer_menu_apply) {
-                requestedOrientation = orientation
-            }
-            negativeButton(R.string.viewer_menu_cancel) {}
-
-        }.show()
+        defaultSharedPreferences
+            .edit()
+            .putBoolean(getString(R.string.settings_viewer_show_bar_key), isBar)
+            .apply()
     }
 }

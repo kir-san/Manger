@@ -20,10 +20,6 @@ object DIR {
 // Настройки
 val CATEGORY_ALL: String = App.context.getString(R.string.category_all)
 
-// Переключение отображения названия категории в библиотеке
-const val NAME_SHOW_CATEGORY = "show_category"
-
-const val sPrefViewer = "ViewerActivity"
 const val sPrefListChapters = "ListChaptersActivity"
 
 object PrefDownload {

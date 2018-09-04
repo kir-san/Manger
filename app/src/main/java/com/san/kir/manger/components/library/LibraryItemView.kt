@@ -17,7 +17,6 @@ import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.room.models.MangaColumn
 import com.san.kir.manger.utils.CATEGORY_ALL
-import com.san.kir.manger.utils.NAME_SHOW_CATEGORY
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.getDrawableCompat
 import com.san.kir.manger.utils.loadImage
@@ -48,28 +47,29 @@ abstract class LibraryItemView(
 
     override fun bind(item: Manga, isSelected: Boolean, position: Int) {
         launch(UI) {
+            val context = root.context
             root.onClick {
                 if (act.actionMode.hasFinish())
-                    root.context.startActivity<ListChaptersActivity>(MangaColumn.unic to item.unic)
+                    context.startActivity<ListChaptersActivity>(MangaColumn.unic to item.unic)
                 else
                     act.onListItemSelect(position)
             }
 
             root.onLongClick { view ->
                 if (act.actionMode.hasFinish())
-                    LibraryItemMenu(root.context, view, item, act, position)
+                    LibraryItemMenu(context, view, item, act, position)
             }
 
             name.text = item.name
 
             if (item.color != 0) {
                 try {
-                    val drawableCompat = root.context.getDrawableCompat(item.color).apply {
+                    val drawableCompat = context.getDrawableCompat(item.color).apply {
                         this?.alpha = 210
                     }
                     name.background = drawableCompat
                     notReadChapters.background = drawableCompat
-                    root.background = root.context.getDrawableCompat(item.color)
+                    root.background = context.getDrawableCompat(item.color)
                 } catch (ex: Resources.NotFoundException) {
                     val newColor = Color.argb(
                         210,
@@ -92,12 +92,12 @@ abstract class LibraryItemView(
             val countNotRead = chapters.countNotRead(item.unic)
             val count = chapters.count(item.unic)
 
-            notReadChapters.text = root.context.getString(
+            notReadChapters.text = context.getString(
                 com.san.kir.manger.R.string.library_page_item_read_status,
                 countNotRead
             )
             notReadChapters.onClick {
-                root.context.alert {
+                context.alert {
                     this.customView {
                         verticalLayout {
                             textView(context.getString(R.string.library_all_chapters, count))
@@ -122,8 +122,12 @@ abstract class LibraryItemView(
                     if (isSelected) Color.parseColor("#af34b5e4")
                     else Color.TRANSPARENT
 
-            if (cat.name == CATEGORY_ALL &&
-                root.context.defaultSharedPreferences.getBoolean(NAME_SHOW_CATEGORY, true)) {
+
+            val key = context.getString(R.string.settings_library_show_category_key)
+            val default =
+                context.getString(R.string.settings_library_show_category_default) == "true"
+            val isShow = context.defaultSharedPreferences.getBoolean(key, default)
+            if (cat.name == CATEGORY_ALL && isShow) {
                 category.text = item.categories
                 category.visibility = View.VISIBLE
             }

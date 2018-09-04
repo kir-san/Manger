@@ -105,15 +105,7 @@
     <string name="viewer_page_none_prev_text">Эта самая первая глава, ничего первее быть не должно</string>
     <string name="viewer_page_close">Закончить чтение</string>
     <string name="viewer_menu_orientation">Ориентация</string>
-    <string name="viewer_menu_orientation_portrait">Портретная</string>
-    <string name="viewer_menu_orientation_portrait_reverse">Портретная обратная</string>
-    <string name="viewer_menu_orientation_landscape">Ландшафтная</string>
-    <string name="viewer_menu_orientation_landscape_reverse">Ландшафтная обратная</string>
-    <string name="viewer_menu_orientation_auto">Автоматическая</string>
     <string name="viewer_menu_control">Управление</string>
-    <string name="viewer_menu_is_tap">Тапы по экрану</string>
-    <string name="viewer_menu_is_swipe">Свайпы по экрану</string>
-    <string name="viewer_menu_is_key">Кнопки громкости</string>
     <string name="viewer_menu_apply">Применить</string>
     <string name="viewer_menu_cancel">Отменить</string>
     <string name="viewer_page_error">При загрузке произошла ошибка</string>
@@ -371,6 +363,7 @@
     <string name="planned_type_manga">Манга</string>
     <string name="planned_type_group">Группа</string>
     <string name="planned_type_category">Категория</string>
+    <string name="planned_type_catalog">Каталог</string>
     <string name="planned_week_monday">пн</string>
     <string name="planned_week_tuesday">вт</string>
     <string name="planned_week_wednesday">ср</string>
@@ -395,6 +388,7 @@
     <string name="schedule_manager_cancel_manga">Было отменено обновление манги %s</string>
     <string name="schedule_manager_cancel_category">Было отменено обновление категории %s</string>
     <string name="schedule_manager_cancel_group">Было отменено обновление группы %s</string>
+    <string name="schedule_manager_cancel_catalog">Было отменено обновление каталога %s</string>
     <string name="schedule_activity_menu_add">Добавить</string>
 
     <!--Planned Task-->
@@ -405,7 +399,9 @@
     <string name="planned_task_group_unknown">Ничего не выбрано</string>
     <string name="planned_task_manga_unknown">Ничего не выбрано</string>
     <string name="planned_task_category_unknown">Категория не выбрана</string>
+    <string name="planned_task_catalog_unknown">Каталог не выбран</string>
     <string name="planned_task_change_category">Выбрать категорию</string>
+    <string name="planned_task_change_catalog">Выбрать каталог</string>
     <string name="planned_task_repeat">Период повтора</string>
     <string name="planned_task_change_day">Выбрать день</string>
     <string name="planned_task_change_time">Выбрать время</string>
@@ -415,6 +411,7 @@
     <string name="planned_task_title_change">Редактирование задачи</string>
     <string name="planned_task_name_manga">Манга: %s</string>
     <string name="planned_task_name_category">Категория: %s</string>
+    <string name="planned_task_name_catalog">Каталог: %s</string>
     <string name="planned_task_name_group">Группа: %s</string>
     <string name="planned_task_update_text_template">Обновляется %1$s в %2$d:%3$s</string>
     <string name="planned_task_update_text_day">раз в день</string>
@@ -438,5 +435,91 @@
 
     <string name="name">Автор: Kir San</string>
     <string name="email">provakator-30@mail.ru</string>
+
+    <!-- Preference -->
+
+    <string name="settings_app_dark_theme_default">false</string>
+    <string name="settings_app_dark_theme_key">dark_theme</string>
+    <string name="settings_app_dark_theme_summary">Смена цветового оформления на темное</string>
+    <string name="settings_app_dark_theme_title">Темная тема</string>
+
+
+    <string name="settings_library_title">Настройки библиотеки</string>
+
+    <string name="settings_library_show_category_default">true</string>
+    <string name="settings_library_show_category_key">show_category</string>
+    <string name="settings_library_show_category_summary">Отображение названия категории у каждой манги в категории \'Все'</string>
+    <string name="settings_library_show_category_title">Отображение категории</string>
+
+
+    <string name="settings_viewer_title">Настройки читалки</string>
+
+    <string name="settings_viewer_orientation_default">@string/settings_viewer_orientation_auto</string>
+    <string name="settings_viewer_orientation_key">viewer_orientation</string>
+    <string name="settings_viewer_orientation_summary">Выбранная ориентация экрана будет использоваться при чтении манги</string>
+    <string name="settings_viewer_orientation_title">Ориентация</string>
+    <string name="settings_viewer_orientation_port">port</string>
+    <string name="settings_viewer_orientation_port_rev">port_rev</string>
+    <string name="settings_viewer_orientation_land">land</string>
+    <string name="settings_viewer_orientation_land_rev">land_rev</string>
+    <string name="settings_viewer_orientation_auto">auto</string>
+    <string-array name="settings_viewer_orientation_array">
+        <item>Портретная</item>
+        <item>Портретная обратная</item>
+        <item>Ландшафтная</item>
+        <item>Ландшафтная обратная</item>
+        <item>Автоматическая</item>
+    </string-array>
+    <string-array name="settings_viewer_orientation_values">
+        <item>@string/settings_viewer_orientation_port</item>
+        <item>@string/settings_viewer_orientation_port_rev</item>
+        <item>@string/settings_viewer_orientation_land</item>
+        <item>@string/settings_viewer_orientation_land_rev</item>
+        <item>@string/settings_viewer_orientation_auto</item>
+    </string-array>
+
+    <string-array name="settings_viewer_control_default">
+        <item>@string/settings_viewer_control_swipes</item>
+    </string-array>
+    <string name="settings_viewer_control_key">viewer_control</string>
+    <string name="settings_viewer_control_summary">Выбор способа перелистывания страниц</string>
+    <string name="settings_viewer_control_title">Управление</string>
+    <string name="settings_viewer_control_taps">taps</string>
+    <string name="settings_viewer_control_swipes">swipes</string>
+    <string name="settings_viewer_control_keys">keys</string>
+    <string-array name="settings_viewer_control_array">
+        <item>Тапы по экрану</item>
+        <item>Свайпы по экрану</item>
+        <item>Кнопки громкости</item>
+    </string-array>
+    <string-array name="settings_viewer_control_values">
+        <item>@string/settings_viewer_control_taps</item>
+        <item>@string/settings_viewer_control_swipes</item>
+        <item>@string/settings_viewer_control_keys</item>
+    </string-array>
+
+
+    <string name="settings_viewer_show_bar_default">true</string>
+    <string name="settings_viewer_show_bar_key">show_bar</string>
+    <string name="settings_viewer_show_bar_summary">Отображение панелей с информацией. Двойное нажатие по центру экрана дублирует эту настройку</string>
+    <string name="settings_viewer_show_bar_title">Отображение панелей</string>
+
+
+    <string name="settings_downloader_title">Настройки загрузчика</string>
+
+  <string name="settings_downloader_parallel_default">true</string>
+  <string name="settings_downloader_parallel_key">downloader_parallel</string>
+  <string name="settings_downloader_parallel_summary">Загрузка нескольких странниц одновременно. Ускорение загрузки</string>
+  <string name="settings_downloader_parallel_title">Параллельная загрузка</string>
+
+  <string name="settings_downloader_retry_default">false</string>
+  <string name="settings_downloader_retry_key">downloader_retry</string>
+  <string name="settings_downloader_retry_summary">Перезапуск загрузок если произошла ошибка при загрузке</string>
+  <string name="settings_downloader_retry_title">Повторять при ошибке</string>
+
+  <string name="settings_downloader_wifi_only_default">false</string>
+  <string name="settings_downloader_wifi_only_key">downloader_wifi_only</string>
+  <string name="settings_downloader_wifi_only_summary">Загружать главы только с помощью Wi-Fi</string>
+  <string name="settings_downloader_wifi_only_title">Только Wi-Fi</string>
 
 </resources>

@@ -23,6 +23,9 @@ interface MangaDao : BaseDao<Manga> {
     @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.unic}` IS :unic")
     fun loadManga(unic: String): Manga
 
+    @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.unic}` IS :unic")
+    fun loadMangaOrNull(unic: String): Manga?
+
     @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.categories}` IS :category")
     fun loadMangaWhereCategoryNotAll(category: String): List<Manga>
 

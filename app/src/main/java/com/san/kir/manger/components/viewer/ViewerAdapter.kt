@@ -1,59 +1,48 @@
 package com.san.kir.manger.components.viewer
 
-import android.support.v7.widget.RecyclerView
-import android.view.ViewGroup
-import org.jetbrains.anko.AnkoContext
+import android.os.Parcelable
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentManager
+import android.support.v4.app.FragmentStatePagerAdapter
+import android.support.v4.view.PagerAdapter
 import java.io.File
 
-open class ViewerAdapter(private val act: ViewerActivity) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    var items: List<File> = listOf()
+class ViewerAdapter(fm: FragmentManager) :
+    FragmentStatePagerAdapter(fm) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when (viewType) {
-            ItemType.firstWithPrev -> OtherViewHolder(FirstWithPrevItemView(act), parent)
-            ItemType.firstNonePrev -> OtherViewHolder(FirstNonePrevItemView(act), parent)
-            ItemType.lastWithNext -> OtherViewHolder(LastWithNextItemView(act), parent)
-            ItemType.lastNoneNext -> OtherViewHolder(LastNoneNextItemView(act), parent)
-            else -> ViewerAdapter.PageViewHolder(PageItemView(act), parent)
-        }
+    private var items: List<File> = listOf()
+
+    fun setList(list: List<File>) {
+        this.items = list
+        notifyDataSetChanged()
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as? PageViewHolder)?.view?.bind(items[position])
-    }
-
-    override fun getItemCount() = items.size
-
-    override fun getItemViewType(position: Int): Int {
+    // Получение нужного элемента взависимости от позиции
+    override fun getItem(position: Int): Fragment {
         return when (position) {
             0 ->
                 if (items.first().name == "prev")
-                    ItemType.firstWithPrev
+                    ViewerPagerPrevFragment()
                 else
-                    ItemType.firstNonePrev
+                    ViewerPageNonePrevFragment()
             items.lastIndex ->
                 if (items.last().name == "next")
-                    ItemType.lastWithNext
+                    ViewerPagerNextFragment()
                 else
-                    ItemType.lastNoneNext
+                    ViewerPageNoneNextFragment()
 
-            else -> ItemType.page
+            else -> ViewerPageFragment.newInstance(items[position])
         }
     }
 
-    class PageViewHolder(val view: PageItemView, parent: ViewGroup) :
-        RecyclerView.ViewHolder(view.createView(AnkoContext.create(parent.context, parent)))
+    override fun getCount() = items.size
 
-    class OtherViewHolder(view: OtherItemView, parent: ViewGroup) :
-        RecyclerView.ViewHolder(view.createView(AnkoContext.create(parent.context, parent)))
-}
+    override fun saveState(): Parcelable? {
+        return null // Помогло избавиться от ошибки
+    }
 
-private object ItemType {
-    const val firstWithPrev = 0
-    const val firstNonePrev = 1
-    const val lastWithNext = 2
-    const val lastNoneNext = 3
-    const val page = 4
+    override fun getItemPosition(`object`: Any): Int {
+        return PagerAdapter.POSITION_NONE
+    }
 }
 

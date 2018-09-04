@@ -1,14 +1,15 @@
 package com.san.kir.manger.components.viewer
 
-import android.support.v7.widget.RecyclerView
 import com.san.kir.manger.eventBus.Binder
-import com.san.kir.manger.utils.RecyclerPresenter
+import com.san.kir.manger.extending.views.SpecialViewPager
 
 
-class ViewerPresenter(private val act: ViewerActivity) : RecyclerPresenter() {
+class ViewerPresenter(private val act: ViewerActivity) {
 
-    private var adapter = ViewerAdapter(act)
+    private var adapter = ViewerAdapter(act.supportFragmentManager)
     private lateinit var manager: ChaptersList // Менеджер глав и страниц
+    private lateinit var viewPager: SpecialViewPager
+
 
     val progressChapters = Binder(-1)
     val progressPages = Binder(0) // Текущая страница, которую в данный момент читают
@@ -22,15 +23,15 @@ class ViewerPresenter(private val act: ViewerActivity) : RecyclerPresenter() {
 
     var isSwipeControl = Binder(true) // Свайпы
 
-    override fun into(recyclerView: RecyclerView) {
-        super.into(recyclerView)
-        recycler.adapter = this.adapter
+    fun into(viewPager: SpecialViewPager) {
+        viewPager.adapter = adapter
+        this.viewPager = viewPager
     }
 
     fun configManager(mangaName: String, chapterName: String) {
         manager = ChaptersList(mangaName, chapterName)
-        adapter.items = manager.page.list
-//        viewPager.currentItem = progressPages.item
+        adapter.setList(manager.page.list)
+        viewPager.currentItem = progressPages.item
         max.item = manager.page.max
         maxChapters = manager.chapter.max
         progressPages.item =
@@ -66,8 +67,8 @@ class ViewerPresenter(private val act: ViewerActivity) : RecyclerPresenter() {
     }
 
     private fun initChapter() {
-        adapter.items = manager.page.list
-//        viewPager.currentItem = progressPages.item
+        adapter.setList(manager.page.list)
+        viewPager.currentItem = progressPages.item
         progressPages.item = 1
         max.item = manager.page.max
         progressChapters.item = manager.chapter.position

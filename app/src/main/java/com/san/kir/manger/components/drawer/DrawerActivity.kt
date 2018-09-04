@@ -12,7 +12,7 @@ import org.jetbrains.anko.toast
 abstract class DrawerActivity : BaseActivity() {
     private val mView by lazy { DrawerView(this) }
 
-    abstract val LinearLayout.view: View
+    abstract val LinearLayout.customView: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -24,7 +24,7 @@ abstract class DrawerActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         mView.createView(this) {
-            view
+            customView
         }
     }
 

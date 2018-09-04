@@ -85,24 +85,4 @@ fun RecyclerView.onClick(click: (View, Int) -> Unit) {
     addOnItemTouchListener(RecyclerViewTouchListeners(context, this, listener))
 }
 
-fun RecyclerView.onScroll(scroll: () -> Unit) {
-    addOnScrollListener(object : RecyclerView.OnScrollListener() {
-        var mScrolled = false
-
-        override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
-            super.onScrollStateChanged(recyclerView, newState)
-            if (newState == RecyclerView.SCROLL_STATE_IDLE && mScrolled) {
-                mScrolled = false
-                scroll.invoke()
-            }
-        }
-
-        override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
-            if (dx != 0 || dy != 0) {
-                mScrolled = true
-            }
-        }
-    })
-}
-
 

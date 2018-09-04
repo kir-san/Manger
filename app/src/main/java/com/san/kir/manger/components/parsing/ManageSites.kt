@@ -1,5 +1,6 @@
 package com.san.kir.manger.components.parsing
 
+import android.content.Context
 import com.san.kir.manger.BuildConfig
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.sites.Allhentai
@@ -8,7 +9,6 @@ import com.san.kir.manger.components.parsing.sites.Mangachan
 import com.san.kir.manger.components.parsing.sites.Mintmanga
 import com.san.kir.manger.components.parsing.sites.Readmanga
 import com.san.kir.manger.components.parsing.sites.Selfmanga
-import com.san.kir.manger.extending.BaseActivity
 import com.san.kir.manger.room.models.Chapter
 import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.room.models.Manga
@@ -75,7 +75,7 @@ object ManageSites {
 
     private const val url = "http://4pda.ru/forum/index.php?showtopic=772886&st=0#entry53336845"
 
-    class UpdateApp(private val act: BaseActivity) {
+    class UpdateApp(private val context: Context) {
         // функция проверки новой версии приложения на сайте 4pda.ru
         fun checkNewVersion(user: Boolean = false) = launch(CommonPool) {
             try {
@@ -86,27 +86,27 @@ object ManageSites {
                     val version = matcher.group()
                     var message = ""
                     if (version != BuildConfig.VERSION_NAME)
-                        message = act.getString(R.string.main_check_app_ver_find,
-                                                version,
-                                                BuildConfig.VERSION_NAME)
+                        message = context.getString(R.string.main_check_app_ver_find,
+                                                    version,
+                                                    BuildConfig.VERSION_NAME)
                     else
                         if (user)
-                            message = act.getString(R.string.main_check_app_ver_no_find)
+                            message = context.getString(R.string.main_check_app_ver_no_find)
 
                     if (message.isNotEmpty())
                         launch(UI) {
-                            act.alert {
+                            context.alert {
                                 this.message = message
                                 positiveButton(R.string.main_check_app_ver_close) {}
                                 negativeButton(R.string.main_check_app_ver_go_to) {
-                                    act.browse(url)
+                                    context.browse(url)
                                 }
                             }.show()
                         }
                 }
             } catch (ex: Throwable) {
                 launch(UI) {
-                    act.longToast(R.string.main_check_app_ver_error)
+                    context.longToast(R.string.main_check_app_ver_error)
                 }
             }
         }

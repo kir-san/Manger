@@ -23,7 +23,6 @@ class App : Application() {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         context = this
         exCacheDir = externalCacheDir
-
     }
 
     override fun getDatabasePath(name: String?): File {

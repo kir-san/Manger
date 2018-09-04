@@ -50,11 +50,8 @@ class LibraryItemsRecyclerPresenter(val cat: Category, private val act: LibraryA
         recycler.adapter = adapter
         categories.loadLiveCategory(cat.name)
             .observe(act, Observer {
-                launch(UI) {
-
-                    it?.let {
-                        changeOrder(it.toFilter())
-                    }
+                it?.let {
+                    changeOrder(it.toFilter())
                 }
             })
     }

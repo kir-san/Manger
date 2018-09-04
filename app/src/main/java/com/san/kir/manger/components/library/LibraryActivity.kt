@@ -1,5 +1,6 @@
 package com.san.kir.manger.components.library
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.graphics.PorterDuff.Mode.ADD
 import android.os.Bundle
@@ -50,7 +51,6 @@ import org.jetbrains.anko.verticalLayout
 import org.jetbrains.anko.wrapContent
 
 class LibraryActivity : DrawerActivity() {
-
     private val mCategory: List<Category> get() = Main.db.categoryDao.loadCategories()
     private val updateApp = ManageSites.UpdateApp(this)
     private var currentAdapter: LibraryItemsRecyclerPresenter? = null
@@ -139,7 +139,10 @@ class LibraryActivity : DrawerActivity() {
     var actionMode = ActionModeControl(this)
 
     override val LinearLayout.customView: View
+        @SuppressLint("ResourceType")
         get() = verticalLayout {
+            this.id = 1
+
             horizontalProgressBar {
                 isIndeterminate = true
                 visibleOrGone(isAction)
@@ -213,7 +216,6 @@ class LibraryActivity : DrawerActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menu.add(0, 0, 0, R.string.library_menu_reload)
-            .showAlways().setIcon(R.drawable.ic_update)
         menu.add(1, 1, 1, R.string.library_menu_reload_all)
         menu.add(2, 2, 2, R.string.library_menu_order)
         menu.add(3, 3, 4, R.string.library_menu_update)

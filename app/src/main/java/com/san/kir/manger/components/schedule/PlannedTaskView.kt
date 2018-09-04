@@ -11,7 +11,7 @@ class PlannedTaskView(private val act: ScheduleActivity) : AnkoActivityComponent
     override fun createView(ui: AnkoContext<BaseActivity>) = with(ui) {
         recyclerView {
             lparams(width = matchParent, height = matchParent)
-//            setHasFixedSize(true)
+            setHasFixedSize(true)
             layoutManager = LinearLayoutManager(act)
             PlannedTaskRecyclerPresenter(act).into(this)
         }

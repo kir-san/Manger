@@ -21,10 +21,8 @@ import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.room.models.MainMenuItem
 import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.DIR
-import com.san.kir.manger.utils.NAME_SHOW_CATEGORY
 import com.san.kir.manger.utils.createDirs
 import com.san.kir.manger.utils.getFullPath
-import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.longToast
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.startService
@@ -39,23 +37,8 @@ class Main : BaseActivity() {
                 .build()
         }
     }
-    /*private var bound = false
-    private val connection = object : ServiceConnection {
-        override fun onServiceDisconnected(name: ComponentName?) {
-            log("onServiceDisconnected()")
-            bound = false
-        }
 
-        override fun onServiceConnected(name: ComponentName, service: IBinder) {
-            val downloadManager =
-                    (service as DownloadService.LocalBinder).chapterLoader
-            bound = true
-
-//            downloadManager.pausedAllIfNotDownloading()
-        }
-    }*/
-
-    private val updateApp = ManageSites.UpdateApp(this)
+    private val updateApp by lazy { ManageSites.UpdateApp(applicationContext) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,24 +50,7 @@ class Main : BaseActivity() {
         } else {
             init()
         }
-
-        // Востановление настроек приложения
-        with(defaultSharedPreferences) {
-            if (!contains(NAME_SHOW_CATEGORY))
-                edit().putBoolean(NAME_SHOW_CATEGORY, true).apply()
-        }
-
-//        val intent = Intent(this, DownloadService::class.java)
-//        bindService(intent, connection, Context.BIND_AUTO_CREATE)
     }
-
-    /*override fun onDestroy() {
-        super.onDestroy()
-        if (bound) {
-            unbindService(connection)
-            bound = false
-        }
-    }*/
 
     override fun onRequestPermissionsResult(
         requestCode: Int,

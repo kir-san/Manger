@@ -4,7 +4,6 @@ import android.graphics.Color
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.Gravity
-import android.view.View
 import android.view.ViewManager
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -93,12 +92,8 @@ class ListChapterView(private val adapterPresenter: ListChaptersRecyclerPresente
                 // Бар внизу экрана с кнопками сортировки и фильтрации
                 linearLayout {
                     id = Id.bottomBar
-
                     backgroundColor = Color.parseColor("#ff212121")
-
-                    isVisibleBottom.bind {
-                        visibility = if (it) View.VISIBLE else View.GONE
-                    }
+                    visibleOrGone(isVisibleBottom)
 
                     // Кнопка переключения порядка сортировки
                     btn {
@@ -174,8 +169,8 @@ class ListChapterView(private val adapterPresenter: ListChaptersRecyclerPresente
             backgroundColor = backColor
             layoutParams = LinearLayout.LayoutParams(dip(buttonSize), dip(buttonSize)).apply {
                 gravity = Gravity.CENTER_VERTICAL
-                leftMargin = dip(10)
-                rightMargin = dip(10)
+                leftMargin = dip(12)
+                rightMargin = dip(12)
             }
         }
     }

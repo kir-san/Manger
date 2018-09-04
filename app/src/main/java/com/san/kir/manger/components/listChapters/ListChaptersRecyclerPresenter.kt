@@ -13,6 +13,7 @@ import com.san.kir.manger.utils.ChapterStatus
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.delChapters
+import com.san.kir.manger.utils.log
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
@@ -46,62 +47,73 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
     }
 
     fun changeSort(alternative: Boolean) = async {
-        adapter.items = if (alternative) {
-            dao.loadChapters(manga.unic).sortedWith(Comparator { arg1, arg2 ->
-                val reg = Pattern.compile("\\d+")
-                val matcher1 = reg.matcher(arg1.name)
-                val matcher2 = reg.matcher(arg2.name)
+        try {
+            val loadChapters = dao.loadChapters(manga.unic)
+            log("loadChapters = ${loadChapters.size}")
+            adapter.items = if (alternative) {
+                loadChapters.sortedWith(Comparator { arg1, arg2 ->
+                    val reg = Pattern.compile("\\d+")
+                    val matcher1 = reg.matcher(arg1.name)
+                    val matcher2 = reg.matcher(arg2.name)
 
-                var numbers1 = listOf<String>()
-                var numbers2 = listOf<String>()
+                    var numbers1 = listOf<String>()
+                    var numbers2 = listOf<String>()
 
-                while (matcher1.find()) {
-                    numbers1 += matcher1.group()
-                }
+                    while (matcher1.find()) {
+                        numbers1 += matcher1.group()
+                    }
 
-                while (matcher2.find()) {
-                    numbers2 += matcher2.group()
-                }
+                    while (matcher2.find()) {
+                        numbers2 += matcher2.group()
+                    }
 
-                val prepareNumber1 = when (numbers1.size) {
-                    2 -> numbers1[1].toInt(10)
-                    1 -> numbers1[0].toInt(10)
-                    else -> 0
-                }
+                    val prepareNumber1 = when (numbers1.size) {
+                        2 -> numbers1[1].toInt(10)
+                        1 -> numbers1[0].toInt(10)
+                        else -> 0
+                    }
 
-                val prepareNumber2 = when (numbers2.size) {
-                    2 -> numbers2[1].toInt(10)
-                    1 -> numbers2[0].toInt(10)
-                    else -> 0
-                }
+                    val prepareNumber2 = when (numbers2.size) {
+                        2 -> numbers2[1].toInt(10)
+                        1 -> numbers2[0].toInt(10)
+                        else -> 0
+                    }
 
-                val prepare1 = String.format("%04d", prepareNumber1)
-                val prepare2 = String.format("%04d", prepareNumber2)
+                    val prepare1 = String.format("%04d", prepareNumber1)
+                    val prepare2 = String.format("%04d", prepareNumber2)
 
-                val finishNumber1 = "${numbers1.first()}$prepare1".toInt(10)
-                val finishNumber2 = "${numbers2.first()}$prepare2".toInt(10)
+                    val finishNumber1 = "${numbers1.first()}$prepare1".toInt(10)
+                    val finishNumber2 = "${numbers2.first()}$prepare2".toInt(10)
 
-                finishNumber1 - finishNumber2
-            })
-        } else {
-            dao.loadChapters(manga.unic)
+                    finishNumber1 - finishNumber2
+                })
+            } else {
+                loadChapters
+            }
+            log("adapter.items.size = ${adapter.items.size}")
+        } catch (ex: Exception) {
+            ex.printStackTrace()
         }
-
         backupCatalog = adapter.items
 
         changeOrder(filter)
+
     }
 
     private var filter = ChapterFilter.NOT_READ_DESC
     fun changeOrder(filter: ChapterFilter) = async {
-        this@ListChaptersRecyclerPresenter.filter = filter
-        adapter.items = when (filter) {
-            ChapterFilter.ALL_READ_ASC -> backupCatalog
-            ChapterFilter.NOT_READ_ASC -> backupCatalog.filter { !it.isRead }
-            ChapterFilter.IS_READ_ASC -> backupCatalog.filter { it.isRead }
-            ChapterFilter.ALL_READ_DESC -> backupCatalog.reversed()
-            ChapterFilter.NOT_READ_DESC -> backupCatalog.filter { !it.isRead }.reversed()
-            ChapterFilter.IS_READ_DESC -> backupCatalog.filter { it.isRead }.reversed()
+        try {
+            this@ListChaptersRecyclerPresenter.filter = filter
+            adapter.items = when (filter) {
+                ChapterFilter.ALL_READ_ASC -> backupCatalog
+                ChapterFilter.NOT_READ_ASC -> backupCatalog.filter { !it.isRead }
+                ChapterFilter.IS_READ_ASC -> backupCatalog.filter { it.isRead }
+                ChapterFilter.ALL_READ_DESC -> backupCatalog.reversed()
+                ChapterFilter.NOT_READ_DESC -> backupCatalog.filter { !it.isRead }.reversed()
+                ChapterFilter.IS_READ_DESC -> backupCatalog.filter { it.isRead }.reversed()
+            }
+        } catch (ex: Exception) {
+            ex.printStackTrace()
         }
         async(UI) {
             adapter.notifyDataSetChanged()

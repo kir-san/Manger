@@ -12,7 +12,6 @@ import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import kotlinx.coroutines.experimental.withContext
-import kotlin.system.measureTimeMillis
 
 typealias onEnd = (Int) -> Unit
 
@@ -39,52 +38,50 @@ class CatalogForOneSiteRecyclerPresenter : RecyclerPresenter() {
     private var mainJob = Job()
     fun setSite(siteId: Int, end: onEnd? = null) {
         mainJob = async(UI) {
-            val time = measureTimeMillis {
-                try {
-                    adapter.items = withContext(DefaultDispatcher) {
-                        SiteCatalogElementViewModel.setSiteId(siteId).items()
-                    }
-                    backupCatalog = adapter.items
-
-                    changeOrder()
-
-                    var jobs = listOf<Job>()
-
-                    jobs += launch {
-                        adapter.items.forEach { item ->
-                            filterAdapterList[0].adapter.add(*item.genres.toTypedArray())
-                        }
-                    }
-                    jobs += launch {
-                        adapter.items.forEach { item ->
-                            filterAdapterList[1].adapter.add(item.type)
-                        }
-                    }
-                    jobs += launch {
-                        adapter.items.forEach { item ->
-                            filterAdapterList[2].adapter.add(item.statusEdition)
-                        }
-                    }
-                    jobs += launch {
-                        adapter.items.forEach { item ->
-                            filterAdapterList[3].adapter.add(*item.authors.toTypedArray())
-                        }
-                    }
-
-                    jobs.forEach { it.join() }
-
-                    filterAdapterList.forEach {
-                        it.adapter.finishAdd()
-                    }
-
-                } catch (e: Exception) {
-                    log("setSite send exception: $e")
-                } finally {
-                    end?.invoke(adapter.itemCount)
-
+            try {
+                adapter.items = withContext(DefaultDispatcher) {
+                    SiteCatalogElementViewModel.setSiteId(siteId).items()
                 }
+                backupCatalog = adapter.items
+
+                changeOrder()
+
+                var jobs = listOf<Job>()
+
+                jobs += launch {
+                    adapter.items.forEach { item ->
+                        filterAdapterList[0].adapter.add(*item.genres.toTypedArray())
+                    }
+                }
+                jobs += launch {
+                    adapter.items.forEach { item ->
+                        filterAdapterList[1].adapter.add(item.type)
+                    }
+                }
+                jobs += launch {
+                    adapter.items.forEach { item ->
+                        filterAdapterList[2].adapter.add(item.statusEdition)
+                    }
+                }
+                jobs += launch {
+                    adapter.items.forEach { item ->
+                        filterAdapterList[3].adapter.add(*item.authors.toTypedArray())
+                    }
+                }
+
+                jobs.forEach { it.join() }
+
+                filterAdapterList.forEach {
+                    it.adapter.finishAdd()
+                }
+
+            } catch (e: Exception) {
+                log("setSite send exception: $e")
+                setSite(siteId, end)
+            } finally {
+                end?.invoke(adapter.itemCount)
+
             }
-            log("$siteId finished in $time")
         }
     }
 

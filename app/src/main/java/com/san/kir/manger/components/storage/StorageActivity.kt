@@ -43,7 +43,7 @@ class StorageActivity : DrawerActivity() {
         }
     }
 
-    override val LinearLayout.customView: View
+    override val LinearLayout.view: View
         get() = recyclerView {
             layoutManager = LinearLayoutManager(context)
             setHasFixedSize(true)

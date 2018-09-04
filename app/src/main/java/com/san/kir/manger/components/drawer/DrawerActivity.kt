@@ -6,17 +6,25 @@ import android.view.View
 import android.widget.LinearLayout
 import com.san.kir.manger.R
 import com.san.kir.manger.extending.BaseActivity
+import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.toast
 
 abstract class DrawerActivity : BaseActivity() {
     private val mView by lazy { DrawerView(this) }
 
-    abstract val LinearLayout.customView: View
+    abstract val LinearLayout.view: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        val key = getString(R.string.settings_app_dark_theme_key)
+        val default = getString(R.string.settings_app_dark_theme_default) == "true"
+        val isDark = defaultSharedPreferences.getBoolean(key, default)
+        setTheme(if (isDark) R.style.AppThemeDark else R.style.AppTheme)
+
         super.onCreate(savedInstanceState)
+
         mView.createView(this) {
-            customView
+            view
         }
     }
 

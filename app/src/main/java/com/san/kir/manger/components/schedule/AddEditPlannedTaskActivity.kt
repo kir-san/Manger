@@ -5,7 +5,7 @@ import android.view.Menu
 import android.view.MenuItem
 import com.san.kir.manger.R
 import com.san.kir.manger.components.main.Main
-import com.san.kir.manger.extending.BaseActivity
+import com.san.kir.manger.extending.ThemedActionBarActivity
 import com.san.kir.manger.extending.views.showAlways
 import com.san.kir.manger.room.dao.insertAsync
 import com.san.kir.manger.room.dao.updateAsync
@@ -13,7 +13,7 @@ import com.san.kir.manger.room.models.PlannedAddEdit
 import com.san.kir.manger.room.models.PlannedTask
 import org.jetbrains.anko.setContentView
 
-class AddEditPlannedTaskActivity : BaseActivity() {
+class AddEditPlannedTaskActivity : ThemedActionBarActivity() {
 
     private val mView = AddEditPlannedTaskView()
     private var isEditMode = false

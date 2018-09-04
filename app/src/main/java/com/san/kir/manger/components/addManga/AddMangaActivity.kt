@@ -7,7 +7,7 @@ import android.view.MenuItem
 import com.san.kir.manger.R
 import com.san.kir.manger.R.string
 import com.san.kir.manger.components.main.Main
-import com.san.kir.manger.extending.BaseActivity
+import com.san.kir.manger.extending.ThemedActionBarActivity
 import com.san.kir.manger.extending.views.showAlways
 import com.san.kir.manger.room.dao.insertAsync
 import com.san.kir.manger.room.dao.updateAsync
@@ -23,7 +23,7 @@ import com.san.kir.manger.utils.shortPath
 import org.jetbrains.anko.setContentView
 import java.io.File
 
-class AddMangaActivity : BaseActivity() {
+class AddMangaActivity : ThemedActionBarActivity() {
     private var isEditMode = false
 
     private var mOldCat = ""

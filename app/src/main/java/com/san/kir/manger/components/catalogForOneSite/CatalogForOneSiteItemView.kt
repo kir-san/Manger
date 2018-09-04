@@ -34,7 +34,6 @@ import org.jetbrains.anko.margin
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.relativeLayout
 import org.jetbrains.anko.sdk25.coroutines.onClick
-import org.jetbrains.anko.textColor
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.wrapContent
 
@@ -60,7 +59,6 @@ class CatalogForOneSiteItemView : RecyclerViewAdapterFactory.AnkoView<SiteCatalo
             name = textView {
                 maxLines = 1
                 textSize = 16f
-                textColor = Color.BLACK
             }.lparams(width = matchParent, height = wrapContent) {
                 margin = dip(4)
                 leftOf(Id.add)
@@ -108,15 +106,15 @@ class CatalogForOneSiteItemView : RecyclerViewAdapterFactory.AnkoView<SiteCatalo
     override fun bind(item: SiteCatalogElement, isSelected: Boolean, position: Int) {
         val onAddManga = fun() {
             addBtn.visibility = View.INVISIBLE
-            root.backgroundColor = Color.DKGRAY
+            root.backgroundColor = Color.parseColor("#a5a2a2")
             item.isAdded = true
             SiteCatalogElementViewModel.update(item)
         }
 
         root.backgroundColor = when {
-            item.isAdded -> Color.DKGRAY
-            position % 2 != 0 -> Color.LTGRAY
-            else -> Color.WHITE
+            item.isAdded -> Color.parseColor("#a5a2a2")
+//            position % 2 != 0 -> Color.LTGRAY
+            else -> Color.TRANSPARENT
         }
 
         root.onClick { MangaInfoDialog(root.context, item, onAddManga) }

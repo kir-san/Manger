@@ -294,7 +294,7 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
         val color = when {
             isSelected -> Color.parseColor("#9934b5e4")
             item.isRead -> Color.parseColor("#a5a2a2")
-            else -> Color.parseColor("#FFF4F2F2")
+            else -> Color.TRANSPARENT
         }
         root.backgroundColor = color
         percentProgress.backgroundColor = color

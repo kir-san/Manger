@@ -254,7 +254,7 @@ class LatestChaptersItemView(private val act: LatestChapterActivity) :
         launch(UI) {
             val color = when {
                 item.isRead.await() -> Color.parseColor("#a5a2a2")
-                else -> Color.parseColor("#FFF4F2F2")
+                else -> Color.TRANSPARENT
             }
             root.backgroundColor = color
             percent.backgroundColor = color

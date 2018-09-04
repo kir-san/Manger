@@ -16,15 +16,16 @@ import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.eventBus.negative
 import com.san.kir.manger.extending.BaseActivity
+import com.san.kir.manger.extending.ankoExtend.startForegroundService
 import com.san.kir.manger.extending.views.showAlways
 import com.san.kir.manger.extending.views.showNever
 import com.san.kir.manger.room.dao.updateAsync
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.appcompat.v7.coroutines.onQueryTextListener
+import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.find
 import org.jetbrains.anko.imageResource
 import org.jetbrains.anko.setContentView
-import org.jetbrains.anko.startService
 import org.jetbrains.anko.support.v4.onRefresh
 import org.jetbrains.anko.textColor
 
@@ -50,6 +51,12 @@ class CatalogForOneSiteActivity : BaseActivity() {
 
     /* перезаписанные функции */
     override fun onCreate(savedInstanceState: android.os.Bundle?) {
+
+        val key = getString(R.string.settings_app_dark_theme_key)
+        val default = getString(R.string.settings_app_dark_theme_default) == "true"
+        val isDark = defaultSharedPreferences.getBoolean(key, default)
+        setTheme(if (isDark) R.style.AppThemeDark else R.style.AppTheme)
+
         super.onCreate(savedInstanceState)
         // Если id сайта не существует, то выйти из активити
         if (mSite.id < 0)
@@ -146,7 +153,7 @@ class CatalogForOneSiteActivity : BaseActivity() {
             messageResource = R.string.catalog_fot_one_site_redownload_text
             positiveButton(R.string.catalog_fot_one_site_redownload_ok) {
                 if (!CatalogForOneSiteUpdaterService.isContain(mSite.id))
-                    startService<CatalogForOneSiteUpdaterService>("id" to mSite.id)
+                    startForegroundService<CatalogForOneSiteUpdaterService>("id" to mSite.id)
             }
             negativeButton(getString(R.string.catalog_fot_one_site_redownload_cancel)) {}
         }.show()

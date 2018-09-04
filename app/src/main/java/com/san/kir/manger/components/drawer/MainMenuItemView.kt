@@ -1,7 +1,6 @@
 package com.san.kir.manger.components.drawer
 
 import android.arch.lifecycle.Observer
-import android.graphics.Color
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.TextView
@@ -20,7 +19,6 @@ import com.san.kir.manger.utils.formatDouble
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.AnkoContext
-import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.frameLayout
 import org.jetbrains.anko.matchParent
@@ -41,7 +39,6 @@ class MainMenuItemView(private val act: BaseActivity) :
 
             type = textView {
                 textSize = 17.5f
-                backgroundColor = Color.LTGRAY
                 padding = dip(4)
             }.lparams {
                 gravity = Gravity.CENTER_VERTICAL or Gravity.END

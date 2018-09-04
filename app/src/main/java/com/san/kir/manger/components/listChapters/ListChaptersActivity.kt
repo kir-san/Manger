@@ -16,7 +16,7 @@ import com.san.kir.manger.components.downloadManager.DownloadService
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.eventBus.negative
 import com.san.kir.manger.eventBus.positive
-import com.san.kir.manger.extending.BaseActivity
+import com.san.kir.manger.extending.ThemedActionBarActivity
 import com.san.kir.manger.extending.views.showAlways
 import com.san.kir.manger.room.dao.ChapterFilter
 import com.san.kir.manger.room.dao.updateAsync
@@ -33,7 +33,7 @@ import org.jetbrains.anko.longToast
 import org.jetbrains.anko.setContentView
 import org.jetbrains.anko.startService
 
-class ListChaptersActivity : BaseActivity() {
+class ListChaptersActivity : ThemedActionBarActivity() {
     private val actionCallback by lazy { ListChaptersActionCallback(adapter, this) }
     private val filterStatus = "filteringStatus"
     private val connection = object : ServiceConnection {

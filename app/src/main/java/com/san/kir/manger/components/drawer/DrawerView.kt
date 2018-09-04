@@ -84,10 +84,11 @@ class DrawerView(private val act: BaseActivity) {
                     lparams(width = matchParent, height = matchParent)
 
                     appBarLayout {
-                        lparams(width = matchParent, height = wrapContent)
+
                         toolbar = toolbar {
                             lparams(width = matchParent, height = wrapContent)
-                            backgroundColor = Color.parseColor("#ff212121") // material_grey_900
+                            backgroundColor =
+                                    Color.parseColor("#ff212121") // material_grey_900
                             setTitleTextColor(Color.WHITE)
                             overflowIcon = getDrawableCompat(R.drawable.dots_vertical)
                             act.setSupportActionBar(this)
@@ -106,7 +107,9 @@ class DrawerView(private val act: BaseActivity) {
 
                             linearLayout {
                                 // Иконка приложения
-                                imageView { backgroundResource = R.mipmap.ic_launcher_foreground }
+                                imageView {
+                                    backgroundResource = R.mipmap.ic_launcher_foreground
+                                }
 
                                 // Название приложения
                                 textView(text = R.string.app_name) {

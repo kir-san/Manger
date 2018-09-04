@@ -46,7 +46,7 @@ import com.san.kir.manger.utils.DIR
 abstract class RoomDB : RoomDatabase() {
     companion object {
         const val NAME = "${DIR.PROFILE}/profile.db"
-        const val VERSION = 28
+        const val VERSION = 29
     }
 
     abstract val siteDao: SiteDao

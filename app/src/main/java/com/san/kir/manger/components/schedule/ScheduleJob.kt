@@ -1,6 +1,7 @@
 package com.san.kir.manger.components.schedule
 
 import com.evernote.android.job.Job
+import com.san.kir.manger.components.catalogForOneSite.CatalogForOneSiteUpdaterService
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.extending.ankoExtend.startForegroundService
 import com.san.kir.manger.room.dao.loadMangaWhereCategory
@@ -36,6 +37,11 @@ class ScheduleJob(private val tag: String) : Job() {
                         context.startForegroundService<MangaUpdaterService>(MangaColumn.tableName to manga)
                     }
                     ScheduleManager(context).add(task)
+                }
+                PlannedType.CATALOG -> {
+                    val catalog = Main.db.siteDao.loadSite(task.catalog)
+                    if (catalog != null && !CatalogForOneSiteUpdaterService.isContain(catalog.siteID))
+                        context.startForegroundService<CatalogForOneSiteUpdaterService>("id" to catalog.siteID)
                 }
                 else -> {
                     log("Тип не соответсвует действительности")

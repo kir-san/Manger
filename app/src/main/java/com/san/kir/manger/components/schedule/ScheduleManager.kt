@@ -66,6 +66,13 @@ class ScheduleManager(private val context: Context) {
                             plannedTask.groupName
                         )
                     )
+                PlannedType.CATALOG ->
+                    context.longToast(
+                        context.getString(
+                            R.string.schedule_manager_cancel_catalog,
+                            plannedTask.catalog
+                        )
+                    )
                 else ->
                     log("Тип не соответсвует действительности")
             }

@@ -46,6 +46,7 @@ class AddEditPlannedTaskView : AnkoActivityComponent() {
     private val listMangaUnic = listManga.map { it.unic }.toTypedArray()
 
     private val categoryList = Main.db.categoryDao.loadCategories().map { it.name }.toTypedArray()
+    private val catalogList = Main.db.siteDao.loadAllSites().map { it.name }.toTypedArray()
 
     private var _task = PlannedTask()
 
@@ -73,6 +74,7 @@ class AddEditPlannedTaskView : AnkoActivityComponent() {
     private lateinit var groupName: EditText
     private lateinit var groupNothing: TextView
     private lateinit var categoryName: TextView
+    private lateinit var catalogName: TextView
     private lateinit var timePicker: TimePicker
 
     override fun createView(ui: AnkoContext<BaseActivity>) = with(ui) {
@@ -155,6 +157,19 @@ class AddEditPlannedTaskView : AnkoActivityComponent() {
                         }
                     }
 
+                    verticalLayout {
+                        typeBinder.bind { type -> visibleOrGone(type == PlannedType.CATALOG) }
+                        labelView(R.string.planned_task_change_catalog).lparams {
+                            topMargin = dip(5)
+                        }
+                        catalogName = textViewBold15Size("")
+                        btnChange {
+                            singleChoiceList(catalogList, catalogName.text) { cat, _ ->
+                                catalogName.text = cat
+                            }
+                        }
+                    }
+
                     labelView(R.string.planned_task_repeat).lparams { topMargin = dip(5) }
                     radioGroup {
                         id = ID.generate()
@@ -219,6 +234,12 @@ class AddEditPlannedTaskView : AnkoActivityComponent() {
             categoryName.textResource = R.string.planned_task_category_unknown
         else
             categoryName.text = task.category
+
+        if (task.catalog.isEmpty())
+            catalogName.textResource = R.string.planned_task_catalog_unknown
+        else
+            catalogName.text = task.catalog
+
         periodBinder.item = task.period
         dayOfWeekBinder.item = task.dayOfWeek
 
@@ -232,6 +253,7 @@ class AddEditPlannedTaskView : AnkoActivityComponent() {
         this.groupName = this@AddEditPlannedTaskView.groupName.text.toString()
         mangaList = this@AddEditPlannedTaskView.groupContent.items
         category = categoryName.text.toString()
+        catalog = catalogName.text.toString()
         period = periodBinder.item
         dayOfWeek = dayOfWeekBinder.item
 

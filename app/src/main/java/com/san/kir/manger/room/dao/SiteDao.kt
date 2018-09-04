@@ -11,6 +11,8 @@ interface SiteDao : BaseDao<Site> {
     @Query("SELECT * FROM sites")
     fun loadSites(): DataSource.Factory<Int, Site>
 
+    @Query("SELECT * FROM sites")
+    fun loadAllSites(): List<Site>
 
     @Query("SELECT * FROM sites WHERE name is :name")
     fun loadSite(name: String): Site?

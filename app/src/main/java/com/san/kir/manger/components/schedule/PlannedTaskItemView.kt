@@ -93,6 +93,9 @@ class PlannedTaskItemView(act: ScheduleActivity) :
             PlannedType.GROUP -> {
                 name.text = ctx.getString(R.string.planned_task_name_group, item.groupName)
             }
+            PlannedType.CATALOG -> {
+                name.text = ctx.getString(R.string.planned_task_name_catalog, item.catalog)
+            }
         }
 
         val dayText: String =

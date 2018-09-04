@@ -22,6 +22,8 @@ class PlannedTask() : Parcelable {
     var groupContent = ""
     @ColumnInfo(name = PlannedTaskColumn.category)
     var category = ""
+    @ColumnInfo(name = PlannedTaskColumn.catalog)
+    var catalog = ""
     @ColumnInfo(name = PlannedTaskColumn.type)
     var type = PlannedType.MANGA
     @ColumnInfo(name = PlannedTaskColumn.isEnabled)
@@ -45,6 +47,7 @@ class PlannedTask() : Parcelable {
         groupName = parcel.readString()
         groupContent = parcel.readString()
         category = parcel.readString()
+        catalog = parcel.readString()
         type = parcel.readInt()
         isEnabled = parcel.readByte() != 0.toByte()
         period = parcel.readInt()
@@ -61,6 +64,7 @@ class PlannedTask() : Parcelable {
         parcel.writeString(groupName)
         parcel.writeString(groupContent)
         parcel.writeString(category)
+        parcel.writeString(catalog)
         parcel.writeInt(type)
         parcel.writeByte(if (isEnabled) 1 else 0)
         parcel.writeInt(period)
@@ -71,13 +75,20 @@ class PlannedTask() : Parcelable {
         parcel.writeString(errorMessage)
     }
 
-    override fun describeContents() = 0
+    override fun describeContents(): Int {
+        return 0
+    }
 
     companion object CREATOR : Parcelable.Creator<PlannedTask> {
-        override fun createFromParcel(parcel: Parcel) = PlannedTask(parcel)
+        override fun createFromParcel(parcel: Parcel): PlannedTask {
+            return PlannedTask(parcel)
+        }
 
-        override fun newArray(size: Int): Array<PlannedTask?> = arrayOfNulls(size)
+        override fun newArray(size: Int): Array<PlannedTask?> {
+            return arrayOfNulls(size)
+        }
     }
+
 }
 
 var PlannedTask.mangaList: List<String>
@@ -90,11 +101,13 @@ object PlannedType {
     const val MANGA = 1
     const val GROUP = 2
     const val CATEGORY = 3
+    const val CATALOG = 4
 
     val map = mapOf(
         App.context.getString(R.string.planned_type_manga) to MANGA,
         App.context.getString(R.string.planned_type_group) to GROUP,
-        App.context.getString(R.string.planned_type_category) to CATEGORY
+        App.context.getString(R.string.planned_type_category) to CATEGORY,
+        App.context.getString(R.string.planned_type_catalog) to CATALOG
     )
 }
 
@@ -116,6 +129,7 @@ object PlannedTaskColumn {
     const val groupName = "group_name"
     const val groupContent = "group_content"
     const val category = "category"
+    const val catalog = "catalog"
     const val type = "type"
     const val isEnabled = "is_enabled"
     const val period = "period"

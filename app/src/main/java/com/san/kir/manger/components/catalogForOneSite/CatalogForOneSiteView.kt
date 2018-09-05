@@ -12,14 +12,15 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.view.Gravity
 import android.view.View
-import android.widget.TextView
+import android.view.ViewManager
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.LinearLayout
 import com.san.kir.manger.R
 import com.san.kir.manger.components.catalogForOneSite.CatalogForOneSiteRecyclerPresenter.Companion.DATE
 import com.san.kir.manger.components.catalogForOneSite.CatalogForOneSiteRecyclerPresenter.Companion.NAME
 import com.san.kir.manger.components.catalogForOneSite.CatalogForOneSiteRecyclerPresenter.Companion.POP
 import com.san.kir.manger.eventBus.Binder
-import com.san.kir.manger.eventBus.negative
-import com.san.kir.manger.eventBus.positive
 import com.san.kir.manger.eventBus.toggle
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
 import com.san.kir.manger.utils.ID
@@ -29,7 +30,6 @@ import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.above
 import org.jetbrains.anko.alignParentBottom
 import org.jetbrains.anko.appcompat.v7.toolbar
-import org.jetbrains.anko.applyRecursively
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.backgroundResource
 import org.jetbrains.anko.below
@@ -40,21 +40,17 @@ import org.jetbrains.anko.horizontalProgressBar
 import org.jetbrains.anko.imageButton
 import org.jetbrains.anko.include
 import org.jetbrains.anko.linearLayout
-import org.jetbrains.anko.lines
-import org.jetbrains.anko.margin
 import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.padding
 import org.jetbrains.anko.relativeLayout
 import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.space
 import org.jetbrains.anko.support.v4.drawerLayout
 import org.jetbrains.anko.support.v4.swipeRefreshLayout
 import org.jetbrains.anko.support.v4.viewPager
-import org.jetbrains.anko.textColor
-import org.jetbrains.anko.textView
 import org.jetbrains.anko.wrapContent
 
 class CatalogForOneSiteView(
-    private val  act: CatalogForOneSiteActivity,
+    private val act: CatalogForOneSiteActivity,
     private val presenter: CatalogForOneSiteRecyclerPresenter
 ) : AnkoComponent<CatalogForOneSiteActivity> {
     private object Id {
@@ -68,10 +64,9 @@ class CatalogForOneSiteView(
     lateinit var swipe: SwipeRefreshLayout
 
     val isAction = Binder(true)
-    // Переключатели сортировок
-    private val date = Binder(true)
-    private val name = Binder(false)
-    private val pop = Binder(false)
+    private val sort = Binder(DATE) { sortType ->
+        presenter.changeOrder(sortType = sortType)
+    }
     private val sortIndicator = Binder(false)
 
     init {
@@ -134,82 +129,68 @@ class CatalogForOneSiteView(
                 linearLayout {
                     id = Id.bottom
                     backgroundColor = Color.parseColor("#ff212121") // material_grey_900
+                    gravity = Gravity.CENTER_HORIZONTAL
 
                     // переключение порядка сортировки
-                    imageButton {
-                        backgroundColor = Color.parseColor("#00ffffff")
-                        onClick {
-                            // переключение режима сортировки
-                            sortIndicator.toggle()
-                        }
-
+                    btn {
+                        onClick { sortIndicator.toggle() }
                         sortIndicator.bind {
-                            // Переключение иконки сортировки
                             backgroundResource =
                                     if (it) R.drawable.ic_sort_21
                                     else R.drawable.ic_sort_12
                         }
-
-                    }.lparams(width = dip(30), height = dip(30)) {
-                        margin = dip(6)
                     }
 
-                    // Группа кнопок
-                    linearLayout {
-                        lparams(width = 0, height = matchParent) {
-                            weight = 1f
-                        }
-                        gravity = Gravity.CENTER
+                    space { }.lparams(width = dip(34))
 
+                    btn {
                         // Сортировка по названию
-                        textView(text = com.san.kir.manger.R.string.catalog_for_one_site_name) {
-                            onClick {
-                                name.positive()
-                                date.negative()
-                                pop.negative()
-                                presenter.changeOrder(sortType = NAME)
-                            }
-                            name.bind { textColor = toggleColor(it) }
+                        onClick {
+                            sort.item = NAME
                         }
-
-                        // Сортировка по дате
-                        textView(text = com.san.kir.manger.R.string.catalog_for_one_site_date) {
-                            onClick {
-                                date.positive()
-                                name.negative()
-                                pop.negative()
-                                presenter.changeOrder(sortType = DATE)
-                            }
-                            date.bind { textColor = toggleColor(it) }
-                        }
-
-                        // Сортировка по популярности
-                        textView(text = com.san.kir.manger.R.string.catalog_for_one_site_pop) {
-                            onClick {
-                                pop.positive()
-                                date.negative()
-                                name.negative()
-                                presenter.changeOrder(sortType = POP)
-                            }
-                            pop.bind { textColor = toggleColor(it) }
-                        }
-
-                    }.applyRecursively { view ->
-                        when (view) {
-                        // Применение одинаковых параметров для всех текстов
-                            is TextView -> {
-                                view.lparams(
-                                    width = wrapContent,
-                                    height = wrapContent
-                                ) { weight = 1f }
-                                view.isClickable = true
-                                view.padding = dip(8)
-                                view.textSize = 16f
-                                view.lines = 1
-                            }
+                        sort.bind { sortType ->
+                            backgroundResource =
+                                    if (sortType == NAME) R.drawable.ic_abc_blue
+                                    else R.drawable.ic_abc_white
                         }
                     }
-                }.lparams(width = matchParent, height = wrapContent) {
+
+                    btn {
+                        // Сортировка по дате
+                        onClick {
+                            sort.item = DATE
+                        }
+                        sort.bind { sortType ->
+                            backgroundResource =
+                                    if (sortType == DATE) R.drawable.ic_date_range_blue
+                                    else R.drawable.ic_date_range_white
+                        }
+                    }
+
+                    btn {
+                        // Сортировка по популярности
+                        onClick {
+                            sort.item = POP
+                        }
+                        sort.bind { sortType ->
+                            backgroundResource =
+                                    if (sortType == POP) R.drawable.ic_rate_blue
+                                    else R.drawable.ic_rate_white
+                        }
+                    }
+
+                    space { }.lparams(width = dip(34))
+
+                    btn {
+                        // Сортировка по популярности
+                        onClick {
+                            act.reloadCatalogDialog()
+                        }
+                        backgroundResource = R.drawable.ic_update
+
+                    }
+
+                }.lparams(width = matchParent, height = dip(50)) {
                     alignParentBottom()
                 }
             }
@@ -245,4 +226,19 @@ class CatalogForOneSiteView(
 
     // Переключает цвет текста
     private fun toggleColor(isVisible: Boolean): Int = if (isVisible) Color.WHITE else Color.GRAY
+
+    private fun ViewManager.btn(action: ImageButton.() -> Unit): ImageButton {
+//        val backColor = Color.parseColor("#00ffffff") // Цвет заднего фона
+        val buttonSize = 38 // Размер кнопок
+        return imageButton {
+            action()
+            scaleType = ImageView.ScaleType.CENTER
+//            backgroundColor = backColor
+            layoutParams = LinearLayout.LayoutParams(dip(buttonSize), dip(buttonSize)).apply {
+                gravity = Gravity.CENTER_VERTICAL
+                leftMargin = dip(12)
+                rightMargin = dip(12)
+            }
+        }
+    }
 }

@@ -29,6 +29,7 @@ import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.relativeLayout
 import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.space
 import org.jetbrains.anko.verticalLayout
 import org.jetbrains.anko.wrapContent
 
@@ -93,6 +94,7 @@ class ListChapterView(private val adapterPresenter: ListChaptersRecyclerPresente
                 linearLayout {
                     id = Id.bottomBar
                     backgroundColor = Color.parseColor("#ff212121")
+                    gravity = Gravity.CENTER_HORIZONTAL
                     visibleOrGone(isVisibleBottom)
 
                     // Кнопка переключения порядка сортировки
@@ -108,49 +110,44 @@ class ListChapterView(private val adapterPresenter: ListChaptersRecyclerPresente
                         }
                     }
 
-                    // Блок кнопок переключения сортировки
-                    linearLayout {
-                        lparams(width = matchParent, height = actionBarSize)
+                    space { }.lparams(width = dip(34))
 
-                        backgroundColor = Color.parseColor("#ff212121")
-                        gravity = Gravity.CENTER_HORIZONTAL
-
-                        // Кнопка включения отображения всех глав
-                        btn {
-                            onClick { filterIndicator.item = _filterState.allRead }
-                            filterIndicator.bind {
-                                backgroundResource =
-                                        if (it == _filterState.allRead) R.drawable.ic_action_all_blue
-                                        else R.drawable.ic_action_all_white
-                            }
-                        }
-
-                        // Кнопка включения отображения только прочитанных глав
-                        btn {
-                            onClick { filterIndicator.item = _filterState.isRead }
-                            filterIndicator.bind {
-                                backgroundResource =
-                                        if (it == _filterState.isRead) R.drawable.ic_action_read_blue
-                                        else R.drawable.ic_action_read_white
-                            }
-                        }
-
-                        // Кнопка включения отображения только не прочитанных глав
-                        btn {
-                            onClick { filterIndicator.item = _filterState.notRead }
-                            filterIndicator.bind {
-                                backgroundResource =
-                                        if (it == _filterState.notRead) R.drawable.ic_action_not_read_blue
-                                        else R.drawable.ic_action_not_read_white
-                            }
+                    // Кнопка включения отображения всех глав
+                    btn {
+                        onClick { filterIndicator.item = _filterState.allRead }
+                        filterIndicator.bind {
+                            backgroundResource =
+                                    if (it == _filterState.allRead) R.drawable.ic_action_all_blue
+                                    else R.drawable.ic_action_all_white
                         }
                     }
+
+                    // Кнопка включения отображения только прочитанных глав
+                    btn {
+                        onClick { filterIndicator.item = _filterState.isRead }
+                        filterIndicator.bind {
+                            backgroundResource =
+                                    if (it == _filterState.isRead) R.drawable.ic_action_read_blue
+                                    else R.drawable.ic_action_read_white
+                        }
+                    }
+
+                    // Кнопка включения отображения только не прочитанных глав
+                    btn {
+                        onClick { filterIndicator.item = _filterState.notRead }
+                        filterIndicator.bind {
+                            backgroundResource =
+                                    if (it == _filterState.notRead) R.drawable.ic_action_not_read_blue
+                                    else R.drawable.ic_action_not_read_white
+                        }
+                    }
+
                 }.lparams(width = matchParent, height = actionBarSize) { alignParentBottom() }
 
                 // Виджет списка глав (используется такой способ, так как по другому скроллБар не работает)
                 include<RecyclerView>(R.layout.recycler_view) {
                     layoutManager = LinearLayoutManager(ctx)
-                    adapterPresenter.into(this)
+                    this@ListChapterView.adapterPresenter.into(this)
                 }.lparams(width = matchParent, height = matchParent) {
                     below(Id.progressBar) // Начинается от прогрессБара
                     above(Id.bottomBar) // Заканчивается на нижнем меню

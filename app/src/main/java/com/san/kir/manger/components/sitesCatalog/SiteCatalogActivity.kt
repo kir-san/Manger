@@ -10,7 +10,6 @@ import com.san.kir.manger.R
 import com.san.kir.manger.components.catalogForOneSite.CatalogForOneSiteUpdaterService
 import com.san.kir.manger.components.drawer.DrawerActivity
 import com.san.kir.manger.components.parsing.ManageSites
-import com.san.kir.manger.extending.views.showAlways
 import com.san.kir.manger.extending.views.showNever
 import org.jetbrains.anko.include
 import org.jetbrains.anko.startService
@@ -32,8 +31,6 @@ class SiteCatalogActivity : DrawerActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menu.add(0, 0, 0, R.string.catalog_for_one_site_update_all)
-                .showAlways()
-                .setIcon(R.drawable.ic_update)
         menu.add(0, 1, 0, R.string.catalog_for_one_site_update_catalog_contain)
                 .showNever()
         return super.onCreateOptionsMenu(menu)

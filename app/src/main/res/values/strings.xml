@@ -61,7 +61,7 @@
     <string name="catalog_for_one_site_pop">Популярность</string>
     <string name="catalog_for_one_site_search">Поиск</string>
     <string name="catalog_for_one_site_update">Обновить</string>
-    <string name="catalog_for_one_site_update_all">Обновить все</string>
+    <string name="catalog_for_one_site_update_all">Обновить данные сайтов</string>
     <string name="catalog_for_one_site_update_catalog_contain">Обновить содержимое катологов</string>
     <string name="catalog_fot_one_site_warning">Внимание</string>
     <string name="catalog_fot_one_site_redownload_text">Нужно ваше согласие на обновление каталога</string>
@@ -507,19 +507,19 @@
 
     <string name="settings_downloader_title">Настройки загрузчика</string>
 
-  <string name="settings_downloader_parallel_default">true</string>
-  <string name="settings_downloader_parallel_key">downloader_parallel</string>
-  <string name="settings_downloader_parallel_summary">Загрузка нескольких странниц одновременно. Ускорение загрузки</string>
-  <string name="settings_downloader_parallel_title">Параллельная загрузка</string>
+    <string name="settings_downloader_parallel_default">true</string>
+    <string name="settings_downloader_parallel_key">downloader_parallel</string>
+    <string name="settings_downloader_parallel_summary">Загрузка нескольких странниц одновременно. Ускорение загрузки</string>
+    <string name="settings_downloader_parallel_title">Параллельная загрузка</string>
 
-  <string name="settings_downloader_retry_default">false</string>
-  <string name="settings_downloader_retry_key">downloader_retry</string>
-  <string name="settings_downloader_retry_summary">Перезапуск загрузок если произошла ошибка при загрузке</string>
-  <string name="settings_downloader_retry_title">Повторять при ошибке</string>
+    <string name="settings_downloader_retry_default">false</string>
+    <string name="settings_downloader_retry_key">downloader_retry</string>
+    <string name="settings_downloader_retry_summary">Перезапуск загрузок если произошла ошибка при загрузке</string>
+    <string name="settings_downloader_retry_title">Повторять при ошибке</string>
 
-  <string name="settings_downloader_wifi_only_default">false</string>
-  <string name="settings_downloader_wifi_only_key">downloader_wifi_only</string>
-  <string name="settings_downloader_wifi_only_summary">Загружать главы только с помощью Wi-Fi</string>
-  <string name="settings_downloader_wifi_only_title">Только Wi-Fi</string>
+    <string name="settings_downloader_wifi_only_default">false</string>
+    <string name="settings_downloader_wifi_only_key">downloader_wifi_only</string>
+    <string name="settings_downloader_wifi_only_summary">Загружать главы только с помощью Wi-Fi</string>
+    <string name="settings_downloader_wifi_only_title">Только Wi-Fi</string>
 
 </resources>

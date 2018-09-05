@@ -56,13 +56,13 @@ interface MangaDao : BaseDao<Manga> {
     @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.categories}` IS :category ORDER BY `${MangaColumn.name}` ASC")
     fun loadMangaWithCategoryAbcSortAsc(category: String): LiveData<List<Manga>>
 
-    @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.categories}` IS :category ORDER BY `${MangaColumn.populate}` DESC")
+    @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.categories}` IS :category ORDER BY `${MangaColumn.name}` DESC")
     fun loadMangaWithCategoryAbcSortDesc(category: String): LiveData<List<Manga>>
 
     @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.categories}` IS :category ORDER BY `${MangaColumn.populate}` DESC")
     fun loadMangaWithCategoryPopulateAsc(category: String): LiveData<List<Manga>>
 
-    @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.categories}` IS :category ORDER BY `${MangaColumn.name}` ASC")
+    @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.categories}` IS :category ORDER BY `${MangaColumn.populate}` ASC")
     fun loadMangaWithCategoryPopulateDesc(category: String): LiveData<List<Manga>>
 }
 
@@ -84,8 +84,8 @@ fun MangaDao.loadMangas(cat: Category, filter: MangaFilter): LiveData<List<Manga
     return if (cat.name == CATEGORY_ALL) {
         when (filter) {
             MangaFilter.ADD_TIME_ASC -> loadMangaAddTimeAsc()
-            MangaFilter.ABC_SORT_ASC -> loadMangaAddTimeDesc()
-            MangaFilter.ADD_TIME_DESC -> loadMangaAbcSortAsc()
+            MangaFilter.ADD_TIME_DESC -> loadMangaAddTimeDesc()
+            MangaFilter.ABC_SORT_ASC -> loadMangaAbcSortAsc()
             MangaFilter.ABC_SORT_DESC -> loadMangaAbcSortDesc()
             MangaFilter.POPULATE_ASC -> loadMangaPopulateAsc()
             MangaFilter.POPULATE_DESC -> loadMangaPopulateDesc()

@@ -24,7 +24,6 @@ import org.jetbrains.anko.centerHorizontally
 import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.relativeLayout
-import org.jetbrains.anko.scrollView
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.sp
 import org.jetbrains.anko.textView
@@ -79,8 +78,7 @@ class ViewerPageFragment : Fragment() {
                 visibleOrGone(isError)
             }
 
-            scrollView {
-                // Корень
+            linearLayout {
                 lparams(width = matchParent, height = matchParent)
 
                 bigImageView {
@@ -99,30 +97,32 @@ class ViewerPageFragment : Fragment() {
                             e.printStackTrace()
                         }
                     }
-
-                    onDoubleTapListener {
-                        // Переопределение одиночного нажатия
-                        onSingleTapConfirmed {
-                            if (act.isTapControl) // Включен ли режим управления нажатиями на экран
-                                if (it.x < ViewerActivity.LEFT_PART_SCREEN) // Нажатие на левую часть экрана
-                                    act.presenter.prevPage() // Предыдущая страница
-                                else if (it.x > ViewerActivity.RIGHT_PART_SCREEN) // Нажатие на правую часть
-                                    act.presenter.nextPage() // Следущая страница
-                            true
-                        }
-                        // Переопределение двойного нажатия
-                        // и заодно отключается зум по двойному нажатию
-                        onDoubleTap {
-                            // Если нажатие по центральной части
-                            if (it.x > ViewerActivity.LEFT_PART_SCREEN && it.x < ViewerActivity.RIGHT_PART_SCREEN)
-                            // Переключение видимости баров
-                                act.isBar = !act.isBar
-                            true
-                        }
-                    }
+                    tapListener(act)
                 }
-
                 goneOrVisible(isError)
+            }
+        }
+    }
+
+    private fun View.tapListener(act: ViewerActivity) {
+        onDoubleTapListener {
+            // Переопределение одиночного нажатия
+            onSingleTapConfirmed {
+                if (act.isTapControl) // Включен ли режим управления нажатиями на экран
+                    if (it.x < ViewerActivity.LEFT_PART_SCREEN) // Нажатие на левую часть экрана
+                        act.presenter.prevPage() // Предыдущая страница
+                    else if (it.x > ViewerActivity.RIGHT_PART_SCREEN) // Нажатие на правую часть
+                        act.presenter.nextPage() // Следущая страница
+                true
+            }
+            // Переопределение двойного нажатия
+            // и заодно отключается зум по двойному нажатию
+            onDoubleTap {
+                // Если нажатие по центральной части
+                if (it.x > ViewerActivity.LEFT_PART_SCREEN && it.x < ViewerActivity.RIGHT_PART_SCREEN)
+                // Переключение видимости баров
+                    act.isBar = !act.isBar
+                true
             }
         }
     }

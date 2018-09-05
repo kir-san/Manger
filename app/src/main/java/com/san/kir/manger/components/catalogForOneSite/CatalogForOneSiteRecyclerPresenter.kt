@@ -75,12 +75,10 @@ class CatalogForOneSiteRecyclerPresenter : RecyclerPresenter() {
                     it.adapter.finishAdd()
                 }
 
+                end?.invoke(adapter.itemCount)
             } catch (e: Exception) {
                 log("setSite send exception: $e")
                 setSite(siteId, end)
-            } finally {
-                end?.invoke(adapter.itemCount)
-
             }
         }
     }

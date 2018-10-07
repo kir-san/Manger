@@ -51,6 +51,8 @@ class ViewerActivity : ThemedActionBarActivity() {
     val presenter by lazy { ViewerPresenter(this) }
     private val view by lazy { ViewerView(presenter) }
 
+    private var defaultOrientation = 0
+
     @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,12 +61,13 @@ class ViewerActivity : ThemedActionBarActivity() {
             val orientationKey = getString(R.string.settings_viewer_orientation_key)
             val orientationDefault = getString(R.string.settings_viewer_orientation_default)
 
+            defaultOrientation = requestedOrientation
             requestedOrientation = when (getString(orientationKey, orientationDefault)) {
-                getString(R.string.settings_viewer_orientation_auto) -> SCREEN_ORIENTATION_PORTRAIT
-                getString(R.string.settings_viewer_orientation_port) -> SCREEN_ORIENTATION_REVERSE_PORTRAIT
-                getString(R.string.settings_viewer_orientation_port_rev) -> SCREEN_ORIENTATION_LANDSCAPE
-                getString(R.string.settings_viewer_orientation_land) -> SCREEN_ORIENTATION_REVERSE_LANDSCAPE
-                getString(R.string.settings_viewer_orientation_land_rev) -> SCREEN_ORIENTATION_SENSOR
+                getString(R.string.settings_viewer_orientation_auto) -> SCREEN_ORIENTATION_SENSOR
+                getString(R.string.settings_viewer_orientation_port) -> SCREEN_ORIENTATION_PORTRAIT
+                getString(R.string.settings_viewer_orientation_port_rev) -> SCREEN_ORIENTATION_REVERSE_PORTRAIT
+                getString(R.string.settings_viewer_orientation_land) -> SCREEN_ORIENTATION_LANDSCAPE
+                getString(R.string.settings_viewer_orientation_land_rev) -> SCREEN_ORIENTATION_REVERSE_LANDSCAPE
                 else -> SCREEN_ORIENTATION_SENSOR
             }
 
@@ -148,5 +151,10 @@ class ViewerActivity : ThemedActionBarActivity() {
             .edit()
             .putBoolean(getString(R.string.settings_viewer_show_bar_key), isBar)
             .apply()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        requestedOrientation = defaultOrientation
     }
 }

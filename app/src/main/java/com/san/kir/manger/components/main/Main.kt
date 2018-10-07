@@ -9,6 +9,7 @@ import com.san.kir.manger.R
 import com.san.kir.manger.components.downloadManager.DownloadService
 import com.san.kir.manger.components.library.LibraryActivity
 import com.san.kir.manger.components.parsing.ManageSites
+import com.san.kir.manger.components.schedule.ScheduleManager
 import com.san.kir.manger.extending.BaseActivity
 import com.san.kir.manger.extending.ankoExtend.compatCheckSelfPermission
 import com.san.kir.manger.extending.ankoExtend.compatRequestPermissions
@@ -70,9 +71,15 @@ class Main : BaseActivity() {
         createNeedFolders()
         createAndInitializeDb()
         updateApp.checkNewVersion()
+        restoreSchedule()
 
         startService<DownloadService>()
         startActivity<LibraryActivity>()
+    }
+
+    private fun restoreSchedule() {
+        val man = ScheduleManager(this)
+        db.plannedDao.loadPTasks().filter { it.isEnabled }.forEach { man.add(it) }
     }
 
     private fun createNeedFolders() = DIR.ALL.forEach { dir -> createDirs(getFullPath(dir)) }

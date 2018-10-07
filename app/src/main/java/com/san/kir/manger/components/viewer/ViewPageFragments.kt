@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.davemorrissey.labs.subscaleview.ImageSource
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.san.kir.manger.R
 import com.san.kir.manger.eventBus.Binder
 import com.san.kir.manger.extending.ankoExtend.bigImageView
@@ -93,36 +94,33 @@ class ViewerPageFragment : Fragment() {
                                     mFile
                             }
                             setImage(ImageSource.uri(Uri.fromFile(img.await())))
+                            setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_START)
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
                     }
-                    tapListener(act)
+                    onDoubleTapListener {
+                        // Переопределение одиночного нажатия
+                        onSingleTapConfirmed {
+                            if (act.isTapControl) // Включен ли режим управления нажатиями на экран
+                                if (it.x < ViewerActivity.LEFT_PART_SCREEN) // Нажатие на левую часть экрана
+                                    act.presenter.prevPage() // Предыдущая страница
+                                else if (it.x > ViewerActivity.RIGHT_PART_SCREEN) // Нажатие на правую часть
+                                    act.presenter.nextPage() // Следущая страница
+                            true
+                        }
+                        // Переопределение двойного нажатия
+                        // и заодно отключается зум по двойному нажатию
+                        onDoubleTap {
+                            // Если нажатие по центральной части
+                            if (it.x > ViewerActivity.LEFT_PART_SCREEN && it.x < ViewerActivity.RIGHT_PART_SCREEN)
+                            // Переключение видимости баров
+                                act.isBar = !act.isBar
+                            true
+                        }
+                    }
                 }
                 goneOrVisible(isError)
-            }
-        }
-    }
-
-    private fun View.tapListener(act: ViewerActivity) {
-        onDoubleTapListener {
-            // Переопределение одиночного нажатия
-            onSingleTapConfirmed {
-                if (act.isTapControl) // Включен ли режим управления нажатиями на экран
-                    if (it.x < ViewerActivity.LEFT_PART_SCREEN) // Нажатие на левую часть экрана
-                        act.presenter.prevPage() // Предыдущая страница
-                    else if (it.x > ViewerActivity.RIGHT_PART_SCREEN) // Нажатие на правую часть
-                        act.presenter.nextPage() // Следущая страница
-                true
-            }
-            // Переопределение двойного нажатия
-            // и заодно отключается зум по двойному нажатию
-            onDoubleTap {
-                // Если нажатие по центральной части
-                if (it.x > ViewerActivity.LEFT_PART_SCREEN && it.x < ViewerActivity.RIGHT_PART_SCREEN)
-                // Переключение видимости баров
-                    act.isBar = !act.isBar
-                true
             }
         }
     }

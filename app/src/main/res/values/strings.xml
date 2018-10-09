@@ -3,6 +3,10 @@
           translatable="false">Manger
   </string>
 
+  <string name="app_name_version"
+          translatable="false">Manger: %s
+  </string>
+
     <!-- Main Activity -->
     <string name="main_check_app_ver_find">Найденная версия: %1$s.\nТекущая версия: %2$s</string>
     <string name="main_check_app_ver_no_find">У вас установленна актуальная версия</string>
@@ -131,6 +135,7 @@
     <string name="main_menu_settings">Настройки</string>
     <string name="main_menu_item_catalogs">%1$d - %2$d</string>
     <string name="main_menu_schedule">Расписание</string>
+    <string name="main_menu_statistic">Статистика</string>
 
     <!-- Storage -->
     <string name="storage_title_size">Хранилище: %s Мб</string>

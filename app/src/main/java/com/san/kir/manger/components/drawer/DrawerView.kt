@@ -37,7 +37,6 @@ import org.jetbrains.anko.design.navigationView
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.imageView
 import org.jetbrains.anko.leftPadding
-import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.padding
 import org.jetbrains.anko.recyclerview.v7.recyclerView
@@ -45,6 +44,7 @@ import org.jetbrains.anko.rightPadding
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.support.v4.drawerLayout
 import org.jetbrains.anko.textView
+import org.jetbrains.anko.themedLinearLayout
 import org.jetbrains.anko.topPadding
 import org.jetbrains.anko.verticalLayout
 import org.jetbrains.anko.wrapContent
@@ -100,38 +100,40 @@ class DrawerView(private val act: BaseActivity) {
 
                 navigationView {
                     verticalLayout {
-                        verticalLayout(R.style.ThemeOverlay_AppCompat_Dark) {
+                        themedLinearLayout(R.style.ThemeOverlay_AppCompat_Dark) {
                             lparams(width = matchParent, height = wrapContent)
                             backgroundColor = Color.parseColor("#ff212121") // material_grey_900
-                            padding = dip(16)
+                            padding = dip(6)
 
-                            linearLayout {
-                                // Иконка приложения
-                                imageView {
-                                    backgroundResource = R.mipmap.ic_launcher_foreground
+                            // Иконка приложения
+                            imageView {
+                                backgroundResource = R.mipmap.ic_launcher_foreground
+                            }
+
+                            verticalLayout {
+                                lparams {
+                                    gravity = Gravity.CENTER
                                 }
 
                                 // Название приложения
-                                textView(text = R.string.app_name) {
-                                    gravity = Gravity.CENTER_VERTICAL
+                                textView {
+                                    text = context.getString(
+                                        R.string.app_name_version,
+                                        BuildConfig.VERSION_NAME
+                                    )
                                     leftPadding = dip(10)
                                     rightPadding = dip(10)
                                     textSize = 16f
                                 }.lparams(width = wrapContent, height = matchParent)
 
-                                // Текущая версия приложения
-                                textView(text = BuildConfig.VERSION_NAME) {
-                                    gravity = Gravity.CENTER_VERTICAL
-                                }.lparams(width = wrapContent, height = matchParent) {
-                                    topMargin = dip(5)
+                                // Имя автора, точнее никнейм
+                                textView(text = R.string.name) {
+                                    leftPadding = dip(10)
+                                    rightPadding = dip(10)
+                                    topPadding = dip(9)
                                 }
+
                             }
-
-                            // Имя автора, точнее никнейм
-                            textView(text = R.string.name) { topPadding = dip(10) }
-
-                            // емайл адрес
-                            textView(text = R.string.email)
                         }
 
                         recyclerView {
@@ -176,6 +178,7 @@ class DrawerView(private val act: BaseActivity) {
             MainMenuType.Latest -> act.startActivity<LatestChapterActivity>()
             MainMenuType.Settings -> act.startActivity<SettingActivity>()
             MainMenuType.Schedule -> act.startActivity<ScheduleActivity>()
+            MainMenuType.Statistic -> TODO()
             MainMenuType.Default -> TODO()
         }
 

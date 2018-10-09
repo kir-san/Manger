@@ -33,7 +33,7 @@ class MainMenuItemView(private val act: BaseActivity) :
     override fun createView(ui: AnkoContext<ViewGroup>) = with(ui) {
         frameLayout {
             lparams(width = matchParent)
-            padding = dip(10)
+            padding = dip(9)
 
             name = textView { textSize = 17.5f }.lparams { gravity = Gravity.CENTER_VERTICAL }
 

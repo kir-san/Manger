@@ -16,6 +16,7 @@ import com.san.kir.manger.components.addManga.AddMangaActivity
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.extending.ankoExtend.roundedImageView
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
+import com.san.kir.manger.extending.ankoExtend.visibleOrInvisible
 import com.san.kir.manger.room.dao.deleteAsync
 import com.san.kir.manger.room.dao.getFromPath
 import com.san.kir.manger.room.dao.loadAllSize
@@ -37,6 +38,7 @@ import org.jetbrains.anko.below
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.horizontalPadding
 import org.jetbrains.anko.horizontalProgressBar
+import org.jetbrains.anko.leftPadding
 import org.jetbrains.anko.margin
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.padding
@@ -89,6 +91,7 @@ class StorageItemView(private val act: StorageActivity) :
             sizeText = textView {
                 textSize = 15f
                 padding = dip(2)
+                leftPadding = dip(5)
             }.lparams {
                 below(Id.name)
                 rightOf(Id.logo)
@@ -132,13 +135,12 @@ class StorageItemView(private val act: StorageActivity) :
 
             root.onClick { it?.menuOfActions(manga, item) }
 
-            if (manga != null) {
-                if (manga.logo.isNotEmpty())
-                    loadImage(manga.logo) {
-                        errorColor(Color.TRANSPARENT)
-                        into(logo)
-                    }
-            } else logo.visibility = View.INVISIBLE
+            if (manga != null && manga.logo.isNotEmpty()) {
+                loadImage(manga.logo) {
+                    errorColor(Color.TRANSPARENT)
+                    into(logo)
+                }
+            } else logo.visibleOrInvisible(false)
 
             name.text = item.name
             sizeText.text = context.getString(
@@ -168,42 +170,38 @@ class StorageItemView(private val act: StorageActivity) :
     }
 
     private fun View.menuOfActions(manga: Manga?, item: Storage) {
-        with(PopupMenu(context, this, Gravity.END)) {
-            if (manga != null) {
-                menu.add(0, 0, 0, R.string.storage_item_menu_detail)
-            } else {
+        if (manga != null) {
+            StorageDialogFragment().apply {
+                bind(manga, act)
+                show(act.supportFragmentManager, "storage")
+            }
+        } else
+            with(PopupMenu(context, this, Gravity.END)) {
                 menu.add(0, 1, 0, R.string.storage_item_menu_add)
                 menu.add(0, 2, 0, R.string.storage_item_menu_full_delete)
-            }
 
-            setOnMenuItemClickListener {
-                when (it.itemId) {
-                    0 -> {
-                        StorageDialogFragment().apply {
-                            bind(manga!!, act)
-                            show(act.supportFragmentManager, "storage")
+                setOnMenuItemClickListener {
+                    when (it.itemId) {
+                        1 -> {
+                            context.startActivity<AddMangaActivity>(Storage::class.java.canonicalName to item)
+                        }
+                        2 -> {
+                            context.alert {
+                                messageResource = R.string.storage_item_alert_message
+                                positiveButton(R.string.storage_item_alert_positive) {
+                                    getFullPath(item.path).deleteRecursively()
+                                    storage.deleteAsync(item)
+                                }
+                                negativeButton(R.string.storage_item_alert_negative) {
+                                    log("")
+                                }
+                                show()
+                            }
                         }
                     }
-                    1 -> {
-                        context.startActivity<AddMangaActivity>(Storage::class.java.canonicalName to item)
-                    }
-                    2 -> {
-                        context.alert {
-                            messageResource = R.string.storage_item_alert_message
-                            positiveButton(R.string.storage_item_alert_positive) {
-                                getFullPath(item.path).deleteRecursively()
-                                storage.deleteAsync(item)
-                            }
-                            negativeButton(R.string.storage_item_alert_negative) {
-                                log("")
-                            }
-                            show()
-                        }
-                    }
+                    return@setOnMenuItemClickListener true
                 }
-                return@setOnMenuItemClickListener true
+                show()
             }
-            show()
-        }
     }
 }

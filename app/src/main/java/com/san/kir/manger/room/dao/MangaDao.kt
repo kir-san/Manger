@@ -78,7 +78,7 @@ fun MangaDao.loadMangaWhereCategory(category: String) =
         loadMangaWhereCategoryNotAll(category)
 
 fun MangaDao.contain(item: SiteCatalogElement) =
-    loadAllManga().any { it.host == item.host && it.unic == item.name }
+    loadAllManga().any { it.site == item.link }
 
 fun MangaDao.loadMangas(cat: Category, filter: MangaFilter): LiveData<List<Manga>> {
     return if (cat.name == CATEGORY_ALL) {

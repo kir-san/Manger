@@ -22,7 +22,6 @@ import com.san.kir.manger.eventBus.Binder
 import com.san.kir.manger.eventBus.negative
 import com.san.kir.manger.eventBus.positive
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
-import com.san.kir.manger.extending.dialogs.SortCategoryDialog
 import com.san.kir.manger.extending.views.showAlways
 import com.san.kir.manger.extending.views.showIfRoom
 import com.san.kir.manger.room.models.Category
@@ -52,7 +51,7 @@ import org.jetbrains.anko.wrapContent
 
 class LibraryActivity : DrawerActivity() {
     private val mCategory: List<Category> get() = Main.db.categoryDao.loadCategories()
-    private val updateApp = ManageSites.UpdateApp(this)
+    private val updateApp by lazy { ManageSites.UpdateApp(this) }
     private var currentAdapter: LibraryItemsRecyclerPresenter? = null
     private lateinit var viewPager: ViewPager
     private val pagerAdapter by lazy { LibraryPageAdapter(this) }
@@ -217,7 +216,7 @@ class LibraryActivity : DrawerActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menu.add(0, 0, 0, R.string.library_menu_reload)
         menu.add(1, 1, 1, R.string.library_menu_reload_all)
-        menu.add(2, 2, 2, R.string.library_menu_order)
+//        menu.add(2, 2, 2, R.string.library_menu_order)
         menu.add(3, 3, 4, R.string.library_menu_update)
         return super.onCreateOptionsMenu(menu)
     }
@@ -226,7 +225,7 @@ class LibraryActivity : DrawerActivity() {
         when (item.itemId) {
             0 -> updateCurrent()
             1 -> updateAll()
-            2 -> SortCategoryDialog(this, currentAdapter?.cat!!)
+//            2 -> SortCategoryDialog(this, currentAdapter?.cat!!)
             3 -> updateApp.checkNewVersion(true)
         }
         return super.onOptionsItemSelected(item)

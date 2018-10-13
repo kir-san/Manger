@@ -85,6 +85,14 @@
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
             android:windowSoftInputMode="stateHidden"
             />
+        <activity
+            android:name=".components.statistics.StatisticActivity"
+            android:theme="@style/AppTheme"
+            />
+        <activity
+            android:name=".components.statistics.StatisticItemActivity"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            />
 
         <service
             android:name=".components.catalogForOneSite.CatalogForOneSiteUpdaterService"

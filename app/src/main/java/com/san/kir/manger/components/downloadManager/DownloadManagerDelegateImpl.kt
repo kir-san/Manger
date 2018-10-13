@@ -64,6 +64,12 @@ class DownloadManagerDelegateImpl(
         try {
             item.status = DownloadStatus.completed
             dbManager.update(item)
+
+            val stat = Main.db.statisticDao.loadItem(item.manga)
+            stat.downloadSize += item.totalSize
+            stat.downloadTime += item.totalTime
+            Main.db.statisticDao.update(stat)
+
             uiHandler.post {
                 listener.onCompleted(item)
             }

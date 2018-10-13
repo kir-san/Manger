@@ -20,6 +20,7 @@ import com.san.kir.manger.room.dao.updateAsync
 import com.san.kir.manger.room.migrations.migrations
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.room.models.MainMenuItem
+import com.san.kir.manger.room.models.MangaStatistic
 import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.DIR
 import com.san.kir.manger.utils.createDirs
@@ -85,9 +86,27 @@ class Main : BaseActivity() {
     private fun createNeedFolders() = DIR.ALL.forEach { dir -> createDirs(getFullPath(dir)) }
 
     private fun createAndInitializeDb() {
-        if (db.categoryDao.loadCategories().isEmpty())
-            db.categoryDao.insertAsync(Category(CATEGORY_ALL, 0))
+        insertCategoryAll()
+        insertMenuItems()
+        insertMangaIntoStatistic()
+    }
 
+    private fun insertMangaIntoStatistic() {
+        if (db.statisticDao.loadItems().isEmpty()) {
+            db.mangaDao.loadAllManga().forEach { manga ->
+                db.statisticDao.insertAsync(MangaStatistic(manga = manga.unic))
+            }
+        } else {
+            val stats = db.statisticDao.loadItems()
+            val new = db.mangaDao.loadAllManga()
+                .filter { manga -> !stats.any { it.manga == manga.unic } }
+            if (new.isNotEmpty()) {
+                new.forEach { db.statisticDao.insertAsync(MangaStatistic(manga = it.unic)) }
+            }
+        }
+    }
+
+    private fun insertMenuItems() {
         if (db.mainMenuDao.loadItems().isEmpty()) {
             MainMenuType.values()
                 .filter { it != MainMenuType.Default }
@@ -97,16 +116,18 @@ class Main : BaseActivity() {
                     )
                 }
         } else {
-            if (db.mainMenuDao
-                    .loadItems()
-                    .none { it.type == MainMenuType.Schedule }) {
-                db.mainMenuDao.insertAsync(
-                    MainMenuItem(
-                        getString(MainMenuType.Schedule.stringId()),
-                        100,
-                        MainMenuType.Schedule
+            val items = db.mainMenuDao.loadItems()
+            MainMenuType.values().filter { type ->
+                items.none { it.type == type }
+            }.forEach {
+                if (it != MainMenuType.Default)
+                    db.mainMenuDao.insertAsync(
+                        MainMenuItem(
+                            getString(it.stringId()),
+                            100,
+                            it
+                        )
                     )
-                )
             }
 
             db.mainMenuDao
@@ -116,6 +137,11 @@ class Main : BaseActivity() {
                     db.mainMenuDao.updateAsync(item)
                 }
         }
+    }
+
+    private fun insertCategoryAll() {
+        if (db.categoryDao.loadCategories().isEmpty())
+            db.categoryDao.insertAsync(Category(CATEGORY_ALL, 0))
     }
 }
 

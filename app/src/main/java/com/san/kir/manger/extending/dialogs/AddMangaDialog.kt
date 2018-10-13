@@ -14,6 +14,7 @@ import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.room.dao.categoryNames
 import com.san.kir.manger.room.dao.insertAsync
 import com.san.kir.manger.room.models.MangaColumn
+import com.san.kir.manger.room.models.MangaStatistic
 import com.san.kir.manger.room.models.SiteCatalogElement
 import com.san.kir.manger.room.models.toManga
 import com.san.kir.manger.utils.DIR
@@ -111,6 +112,8 @@ class AddMangaDialog(
                 val manga = updatingElement.toManga(category = category, path = path)
                 Main.db.mangaDao.insertAsync(manga)
 
+                Main.db.statisticDao.insertAsync(MangaStatistic(manga = manga.unic))
+
                 added?.visibility = View.VISIBLE
                 searching?.visibility = View.VISIBLE
 
@@ -131,8 +134,8 @@ class AddMangaDialog(
     }
 
     private fun ViewManager.hideTextView(id: Int, init: (TextView.() -> Unit)? = null) =
-            textView(id) {
-                visibility = View.GONE
-                padding = dip(5)
-            }
+        textView(id) {
+            visibility = View.GONE
+            padding = dip(5)
+        }
 }

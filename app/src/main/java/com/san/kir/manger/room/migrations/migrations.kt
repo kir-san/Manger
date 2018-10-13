@@ -3,6 +3,7 @@ package com.san.kir.manger.room.migrations
 import android.arch.persistence.db.SupportSQLiteDatabase
 import android.arch.persistence.room.migration.Migration
 import com.san.kir.manger.room.models.DownloadColumn
+import com.san.kir.manger.room.models.MangaStatisticColumn
 import com.san.kir.manger.room.models.PlannedTaskColumn
 
 
@@ -391,5 +392,21 @@ val migrations: Array<Migration> = arrayOf(
                     "`${PlannedTaskColumn.addedTime}`, " +
                     "`${PlannedTaskColumn.errorMessage}` " +
                     "FROM tmp_${PlannedTaskColumn.tableName}",
-            "DROP TABLE tmp_${PlannedTaskColumn.tableName}")
+            "DROP TABLE tmp_${PlannedTaskColumn.tableName}"
+    ),
+    migrate(29, 30,
+            "CREATE TABLE IF NOT EXISTS `${MangaStatisticColumn.tableName}` (" +
+                    "`${MangaStatisticColumn.id}` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                    "`${MangaStatisticColumn.manga}` TEXT NOT NULL, " +
+                    "`${MangaStatisticColumn.allChapters}` INTEGER NOT NULL, " +
+                    "`${MangaStatisticColumn.lastChapters}` INTEGER NOT NULL, " +
+                    "`${MangaStatisticColumn.allPages}` INTEGER NOT NULL, " +
+                    "`${MangaStatisticColumn.lastPages}` INTEGER NOT NULL, " +
+                    "`${MangaStatisticColumn.allTime}` INTEGER NOT NULL, " +
+                    "`${MangaStatisticColumn.lastTime}` INTEGER NOT NULL, " +
+                    "`${MangaStatisticColumn.maxSpeed}` INTEGER NOT NULL, " +
+                    "`${MangaStatisticColumn.downloadSize}` INTEGER NOT NULL, " +
+                    "`${MangaStatisticColumn.downloadTime}` INTEGER NOT NULL, " +
+                    "`${MangaStatisticColumn.openedTimes}` INTEGER NOT NULL)"
+    )
 )

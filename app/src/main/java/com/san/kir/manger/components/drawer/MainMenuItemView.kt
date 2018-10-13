@@ -100,6 +100,11 @@ class MainMenuItemView(private val act: BaseActivity) :
                     .loadPagedPlannedTasks()
                     .observe(act, Observer { text = it?.size.toString() })
             }
+            MainMenuType.Statistic -> {
+                /*Main.db.statisticDao
+                    .loadPagedStatisticItems()
+                    .observe(act, Observer { text = "0" })*/
+            }
             MainMenuType.Settings -> text = "^_^"
             MainMenuType.Default -> text = ""
         }

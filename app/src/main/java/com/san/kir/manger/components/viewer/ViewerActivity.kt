@@ -17,8 +17,11 @@ import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.eventBus.negative
 import com.san.kir.manger.eventBus.positive
 import com.san.kir.manger.extending.ThemedActionBarActivity
+import com.san.kir.manger.room.dao.updateAsync
+import com.san.kir.manger.utils.log
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.setContentView
+import kotlin.math.max
 import kotlin.properties.Delegates.observable
 
 class ViewerActivity : ThemedActionBarActivity() {
@@ -52,11 +55,12 @@ class ViewerActivity : ThemedActionBarActivity() {
     private val view by lazy { ViewerView(presenter) }
 
     private var defaultOrientation = 0
+    private var readTime = 0L
 
     @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        log("onCreate")
         defaultSharedPreferences.apply {
             val orientationKey = getString(R.string.settings_viewer_orientation_key)
             val orientationDefault = getString(R.string.settings_viewer_orientation_default)
@@ -95,10 +99,12 @@ class ViewerActivity : ThemedActionBarActivity() {
         }
 
         title = chapterName // Смена заголвка
+        readTime = System.currentTimeMillis()
     }
 
     override fun onResume() {
         super.onResume()
+        log("onResume")
 
         val point = Point() // Хранилище для данных экрана
         windowManager.defaultDisplay.getSize(point) // Сохранение данных в хранилище
@@ -146,6 +152,7 @@ class ViewerActivity : ThemedActionBarActivity() {
 
     override fun onPause() {
         super.onPause()
+        log("onPause")
         // Сохранение настроек
         defaultSharedPreferences
             .edit()
@@ -155,6 +162,17 @@ class ViewerActivity : ThemedActionBarActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        requestedOrientation = defaultOrientation
+        log("onDestroy")
+        val time = (System.currentTimeMillis() - readTime) / 1000
+        if (time > 0) {
+            val stats = Main.db.statisticDao.loadItem(mangaName)
+            stats.lastTime = time
+            stats.allTime += time
+            stats.maxSpeed = max(stats.maxSpeed, (stats.lastPages / (time.toFloat() / 60)).toInt())
+
+            stats.openedTimes += 1
+            Main.db.statisticDao.updateAsync(stats)
+        }
+
     }
 }

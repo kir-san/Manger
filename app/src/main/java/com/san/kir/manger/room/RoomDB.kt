@@ -11,6 +11,7 @@ import com.san.kir.manger.room.dao.MainMenuDao
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.dao.PlannedDao
 import com.san.kir.manger.room.dao.SiteDao
+import com.san.kir.manger.room.dao.StatisticDao
 import com.san.kir.manger.room.dao.StorageDao
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.room.models.Chapter
@@ -18,6 +19,7 @@ import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.room.models.LatestChapter
 import com.san.kir.manger.room.models.MainMenuItem
 import com.san.kir.manger.room.models.Manga
+import com.san.kir.manger.room.models.MangaStatistic
 import com.san.kir.manger.room.models.PlannedTask
 import com.san.kir.manger.room.models.Site
 import com.san.kir.manger.room.models.Storage
@@ -35,7 +37,9 @@ import com.san.kir.manger.utils.DIR
         (MainMenuItem::class),
         (LatestChapter::class),
         (DownloadItem::class),
-        (PlannedTask::class)],
+        (PlannedTask::class),
+        (MangaStatistic::class)
+    ],
     version = RoomDB.VERSION,
     exportSchema = false
 )
@@ -46,7 +50,7 @@ import com.san.kir.manger.utils.DIR
 abstract class RoomDB : RoomDatabase() {
     companion object {
         const val NAME = "${DIR.PROFILE}/profile.db"
-        const val VERSION = 29
+        const val VERSION = 30
     }
 
     abstract val siteDao: SiteDao
@@ -58,4 +62,5 @@ abstract class RoomDB : RoomDatabase() {
     abstract val downloadDao: DownloadDao
     abstract val mainMenuDao: MainMenuDao
     abstract val latestChapterDao: LatestChapterDao
+    abstract val statisticDao: StatisticDao
 }

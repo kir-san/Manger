@@ -2,10 +2,13 @@ package com.san.kir.manger.components.viewer
 
 
 import com.san.kir.manger.components.main.Main
+import com.san.kir.manger.components.viewer.ChaptersList.Helper.chapterDao
+import com.san.kir.manger.components.viewer.ChaptersList.Helper.positionStat
 import com.san.kir.manger.room.dao.updateAsync
 import com.san.kir.manger.room.models.Chapter
-import com.san.kir.manger.utils.imageExtensions
+import com.san.kir.manger.room.models.MangaStatistic
 import com.san.kir.manger.utils.getFullPath
+import com.san.kir.manger.utils.imageExtensions
 import com.san.kir.manger.utils.isEmptyDirectory
 import java.io.File
 import java.util.*
@@ -21,13 +24,18 @@ class ChaptersList(
 
     init {
         Helper.list_chapter.clear() // Очистить список
-        Helper.list_chapter.addAll(Main.db.chapterDao.loadChapters(mangaName)) // Получение глав
+        Helper.list_chapter.addAll(chapterDao.loadChapters(mangaName)) // Получение глав
         Helper.position_chapter = findChapterPosition(chapter) // Установка текущей главы
         PageObject.updateList() // Получение списка страниц для главы
         PageObject.position = when { // Установка текущей страницы
             ChapterObject.current.progress <= 0 -> 0 // Если не больше 0, то ноль
             else -> ChapterObject.current.progress // Иначе как есть
         }
+        positionStat = PageObject.position
+        Helper.stats = Helper.statisticDao.loadItem(mangaName)
+        Helper.stats.lastChapters = 0
+        Helper.stats.lastPages = 0
+        Helper.statisticDao.updateAsync(Helper.stats)
     }
 
     private fun findChapterPosition(chapter: String): Int { // Позиции главы, по названию главы
@@ -37,12 +45,15 @@ class ChaptersList(
     }
 
     object Helper { // маленький объект
-        var chapters = Main.db.chapterDao
+        val chapterDao = Main.db.chapterDao
+        val statisticDao = Main.db.statisticDao
         val reg = Regex("\\d+") // шаблон
         val list_chapter: MutableList<Chapter> = mutableListOf() // Список глав
         var position_chapter = 0 // текущая глава
         var position_page = 0 // текущая страница
+        var stats = MangaStatistic()
         var list_page = mutableListOf<File>() // Список страниц
+        var positionStat = 0
     }
 
     object ChapterObject { // группа для глав
@@ -59,6 +70,9 @@ class ChaptersList(
             if (hasNext()) {
                 Helper.position_chapter++
                 PageObject.updateList()
+                Helper.stats.lastChapters++
+                Helper.stats.allChapters++
+                Helper.statisticDao.updateAsync(Helper.stats)
             }
         }
 
@@ -112,13 +126,21 @@ class ChaptersList(
                     p = max
                     // Сделать главу прочитанной
                     ChapterObject.current.isRead = true
-                    Helper.chapters.updateAsync(ChapterObject.current)
+                    Helper.chapterDao.updateAsync(ChapterObject.current)
                 }
                 pos > max -> return // Если больше максимального значения, ничего не делать
             }
             // Обновить позицию
             ChapterObject.current.progress = p
-            Helper.chapters.updateAsync(ChapterObject.current)
+            Helper.chapterDao.updateAsync(ChapterObject.current)
+
+            if (pos > positionStat) {
+                val diff = pos - positionStat
+                Helper.stats.lastPages += diff
+                Helper.stats.allPages += diff
+                Helper.statisticDao.updateAsync(Helper.stats)
+                positionStat = pos
+            }
         }
 
         fun hasUpdateList(): Boolean {
@@ -172,6 +194,8 @@ class ChaptersList(
                 tempList.add(File("next")) // Добавить в конец специальный файл указатель
             } else // если нет
                 tempList.add(File("none")) // Добавить в конец другой файл указатель
+
+            positionStat = 1
 
             list = tempList
         }

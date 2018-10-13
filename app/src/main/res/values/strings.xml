@@ -3,8 +3,8 @@
           translatable="false">Manger
   </string>
 
-  <string name="app_name_version"
-          translatable="false">Manger: %s
+    <string name="app_name_version"
+            translatable="false">Manger: %s
   </string>
 
     <!-- Main Activity -->
@@ -267,8 +267,7 @@
     <!--DownloadManager-->
     <string name="download_item_progress_text">Загруженно %1$d из %2$d</string>
     <string name="download_item_progress_size">%s Мб</string>
-    <string name="download_item_final_size_with_sec">%1$s Мб за %2$d сек</string>
-    <string name="download_item_final_size_with_min_and_sec">%1$s Мб за %2$d мин и %3$d сек</string>
+    <string name="download_item_final_size_with_time">%1$s Мб за %2$s</string>
     <string name="download_item_progress_percent">%d %%</string>
     <string name="download_item_name">%1$s %2$s</string>
     <string name="download_item_progress">%1$s  %2$s</string>
@@ -429,6 +428,46 @@
     <string name="planned_task_update_text_sunday">каждое воскресение</string>
     <string name="planned_task_update_text_unknown">Черт знает когда оно обновляется</string>
 
+    <!-- Statistic -->
+    <string name="statistic_subtitle">За: %s</string>
+    <string name="statistic_item_full_last_session">Последняя сессия</string>
+    <string name="statistic_item_full_all">Общее</string>
+    <string name="statistic_item_full_max_speed">Максимальная скорость чтения %1$d %2$s в минуту</string>
+    <string name="statistic_item_full_download_data">Загруженно %1$d МБ за %2$s</string>
+    <string name="statistic_item_full_reading_times">Читали %1$d %2$s</string>
+    <string name="statistic_item_full_for_time_nothing">За %s ничего не прочитано</string>
+    <string name="statistic_item_full_for_time_with_pages">За %1$s прочитано %2$d %3$s</string>
+    <string name="statistic_item_full_for_time_with_pages_chapters">За %1$s прочитано %2$d %3$s в %4$d %5$s</string>
+    <string name="statistic_item_full_speed_reading">Скорость чтения %1$d %2$s в минуту</string>
+    <string name="statistic_item_full_speed_nothing">Скорость чтения никакая</string>
+    <string name="statistic_item_full_average_speed_reading">Средняя скорость чтения %1$d %2$s в минуту</string>
+    <string name="statistic_item_full_average_speed_nothing">Средняя скорость чтения никакая</string>
+    <string name="statistic_item_full_session_time_pages">Каждая сессия чтения длится в среднем %1$s по %2$d %3$s</string>
+    <string name="statistic_item_full_session_time_pages_chapters">Каждая сессия чтения длится в среднем %1$s по %2$d %3$s в %4$d %5$s</string>
+    <plurals name="statistic_item_full_pages">
+        <item quantity="one">страница</item>
+        <item quantity="few">страницы</item>
+        <item quantity="many">страниц</item>
+        <item quantity="other">страниц</item>
+    </plurals>
+    <plurals name="statistic_item_full_chapters">
+        <item quantity="one">главе</item>
+        <item quantity="few">главах</item>
+        <item quantity="many">главах</item>
+        <item quantity="other">главах</item>
+    </plurals>
+    <plurals name="statistic_item_full_times">
+        <item quantity="one">раз</item>
+        <item quantity="few">раза</item>
+        <item quantity="many">раз</item>
+        <item quantity="other">раз</item>
+    </plurals>
+
+    <!-- Time Format -->
+    <string name="time_format_seconds">%d сек</string>
+    <string name="time_format_minutes">%d мин </string>
+    <string name="time_format_hours">%d ч </string>
+    <string name="time_format_days">%d д </string>
 
     <!-- OTHER -->
     <string name="navigation_drawer_open">Open navigation drawer</string>

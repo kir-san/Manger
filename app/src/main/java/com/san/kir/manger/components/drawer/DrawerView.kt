@@ -20,6 +20,7 @@ import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.components.schedule.ScheduleActivity
 import com.san.kir.manger.components.settings.SettingActivity
 import com.san.kir.manger.components.sitesCatalog.SiteCatalogActivity
+import com.san.kir.manger.components.statistics.StatisticActivity
 import com.san.kir.manger.components.storage.StorageActivity
 import com.san.kir.manger.extending.BaseActivity
 import com.san.kir.manger.extending.ankoExtend.onClick
@@ -178,7 +179,7 @@ class DrawerView(private val act: BaseActivity) {
             MainMenuType.Latest -> act.startActivity<LatestChapterActivity>()
             MainMenuType.Settings -> act.startActivity<SettingActivity>()
             MainMenuType.Schedule -> act.startActivity<ScheduleActivity>()
-            MainMenuType.Statistic -> TODO()
+            MainMenuType.Statistic -> act.startActivity<StatisticActivity>()
             MainMenuType.Default -> TODO()
         }
 

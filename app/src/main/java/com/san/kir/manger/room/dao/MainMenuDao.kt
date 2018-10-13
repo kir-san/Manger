@@ -36,6 +36,9 @@ enum class MainMenuType {
     Schedule {
         override fun stringId() = R.string.main_menu_schedule
     },
+    Statistic {
+        override fun stringId() = R.string.main_menu_statistic
+    },
     Default {
         override fun stringId() = R.string.main_menu_storage
     };

@@ -224,9 +224,6 @@ class CatalogForOneSiteView(
         }
     }
 
-    // Переключает цвет текста
-    private fun toggleColor(isVisible: Boolean): Int = if (isVisible) Color.WHITE else Color.GRAY
-
     private fun ViewManager.btn(action: ImageButton.() -> Unit): ImageButton {
 //        val backColor = Color.parseColor("#00ffffff") // Цвет заднего фона
         val buttonSize = 38 // Размер кнопок

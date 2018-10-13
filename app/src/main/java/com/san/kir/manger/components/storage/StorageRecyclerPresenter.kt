@@ -14,12 +14,11 @@ class StorageRecyclerPresenter(private val act: StorageActivity) : RecyclerPrese
         .createPaging({ StorageItemView(act) },
                       { oldItem, newItem -> oldItem.id == newItem.id },
                       { oldItem, newItem -> oldItem == newItem })
-    private val storage = Main.db.storageDao
 
     override fun into(recyclerView: RecyclerView) {
         super.into(recyclerView)
         recyclerView.adapter = this.adapter
-        storage.loadPagedStorageItems()
+        Main.db.storageDao.loadPagedStorageItems()
             .observe(act, Observer { launch(UI) { adapter.submitList(it) } })
     }
 }

@@ -16,6 +16,7 @@ import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.room.models.DownloadStatus
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
+import com.san.kir.manger.utils.TimeFormat
 import com.san.kir.manger.utils.bytesToMb
 import com.san.kir.manger.utils.formatDouble
 import com.san.kir.manger.utils.loadImage
@@ -195,28 +196,15 @@ class DownloadManagerItemView(private val act: DownloadManagerActivity) :
 
             when (item.status) {
                 DownloadStatus.completed -> {
-                    val totalTime = item.totalTime / 1000
-                    if (totalTime < 60) {
-                        launch(UI) {
-                            progressText.text =
-                                    context.getString(
-                                        R.string.download_item_final_size_with_sec,
-                                        formatDouble(bytesToMb(item.downloadSize)),
-                                        totalTime
-                                    )
-                        }
-                    } else {
-                        val mins = totalTime / 60
-                        val secs = totalTime % 60
-                        launch(UI) {
-                            progressText.text =
-                                    context.getString(
-                                        R.string.download_item_final_size_with_min_and_sec,
-                                        formatDouble(bytesToMb(item.downloadSize)),
-                                        mins,
-                                        secs
-                                    )
-                        }
+                    val time = TimeFormat(item.totalTime / 1000)
+
+                    launch(UI) {
+                        progressText.text =
+                                context.getString(
+                                    R.string.download_item_final_size_with_time,
+                                    formatDouble(bytesToMb(item.downloadSize)),
+                                    time.toString(context)
+                                )
                     }
                 }
                 else -> {

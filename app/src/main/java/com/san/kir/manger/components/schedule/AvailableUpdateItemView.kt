@@ -5,12 +5,14 @@ import android.widget.Switch
 import android.widget.TextView
 import com.san.kir.manger.R
 import com.san.kir.manger.components.main.Main
+import com.san.kir.manger.extending.ankoExtend.onCheckedChange
 import com.san.kir.manger.room.dao.updateAsync
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.alignParentEnd
 import org.jetbrains.anko.alignParentStart
@@ -20,7 +22,6 @@ import org.jetbrains.anko.dip
 import org.jetbrains.anko.horizontalMargin
 import org.jetbrains.anko.margin
 import org.jetbrains.anko.relativeLayout
-import org.jetbrains.anko.sdk25.coroutines.onCheckedChange
 import org.jetbrains.anko.startOf
 import org.jetbrains.anko.switch
 import org.jetbrains.anko.textView
@@ -68,7 +69,7 @@ class AvailableUpdateItemView : RecyclerViewAdapterFactory.AnkoView<Manga>() {
     }
 
     override fun bind(item: Manga, isSelected: Boolean, position: Int) {
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             manga.text = item.name
             category.text = category.context.getString(
                 R.string.available_update_category_name,

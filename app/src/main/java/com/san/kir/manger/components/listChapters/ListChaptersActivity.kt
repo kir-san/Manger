@@ -27,8 +27,9 @@ import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.MangaUpdaterService
 import com.san.kir.manger.utils.log
 import com.san.kir.manger.utils.sPrefListChapters
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.longToast
 import org.jetbrains.anko.setContentView
 import org.jetbrains.anko.startService
@@ -111,7 +112,7 @@ class ListChaptersActivity : ThemedActionBarActivity() {
         // Загрузка настроек
         getSharedPreferences(sPrefListChapters, MODE_PRIVATE).apply {
             if (contains(filterStatus)) {
-                val filterString = getString(filterStatus, ChapterFilter.ALL_READ_ASC.name)
+                val filterString: String = getString(filterStatus, ChapterFilter.ALL_READ_ASC.name)!!
                 adapter.setManga(manga, ChapterFilter.valueOf(filterString)).invokeOnCompletion {
                     view.isUpdate.negative()
                 }
@@ -204,7 +205,7 @@ class ListChaptersActivity : ThemedActionBarActivity() {
         unregisterReceiver(receiver)
     }
 
-    fun onListItemSelect(position: Int) = launch(UI) {
+    fun onListItemSelect(position: Int) = GlobalScope.launch(Dispatchers.Main) {
         adapter.toggleSelection(position) // Переключить выбран элемент или нет
         // Если есть выделенные элементы и экшнМод не включен
         if (adapter.selectedCount > 0 && actionMode.hasFinish()) {

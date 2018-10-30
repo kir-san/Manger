@@ -6,13 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
+import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.utils.ID
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.checkBox
 import org.jetbrains.anko.find
 import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.lines
-import org.jetbrains.anko.sdk25.coroutines.onCheckedChange
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.textView
 
 class FilterAdapter : RecyclerView.Adapter<FilterAdapter.ViewHolder>() {
@@ -61,13 +63,15 @@ class FilterAdapter : RecyclerView.Adapter<FilterAdapter.ViewHolder>() {
             this.name.text = name
             this.check.isChecked = isCheck
 
-            check.onCheckedChange { _, b ->
-                if (b) {
-                    selected.put(adapterPosition, true)
-                    selectedName.add(name)
-                } else {
-                    selected.delete(adapterPosition)
-                    selectedName.remove(name)
+            check.setOnCheckedChangeListener { _, b ->
+                GlobalScope.launch(Dispatchers.Default) {
+                    if (b) {
+                        selected.put(adapterPosition, true)
+                        selectedName.add(name)
+                    } else {
+                        selected.delete(adapterPosition)
+                        selectedName.remove(name)
+                    }
                 }
             }
         }

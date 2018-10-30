@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.view.Gravity
 import com.san.kir.manger.eventBus.Binder
+import com.san.kir.manger.extending.ankoExtend.onSeekBarChangeListener
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.customView
@@ -13,7 +14,6 @@ import org.jetbrains.anko.margin
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.okButton
-import org.jetbrains.anko.sdk25.coroutines.onSeekBarChangeListener
 import org.jetbrains.anko.seekBar
 import org.jetbrains.anko.verticalLayout
 

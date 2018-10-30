@@ -5,13 +5,13 @@ import com.san.kir.manger.room.models.SiteCatalogElement
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.log
-import kotlinx.coroutines.experimental.DefaultDispatcher
-import kotlinx.coroutines.experimental.Job
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.runBlocking
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 typealias onEnd = (Int) -> Unit
 
@@ -37,9 +37,9 @@ class CatalogForOneSiteRecyclerPresenter : RecyclerPresenter() {
     private var backupCatalog = listOf<SiteCatalogElement>()
     private var mainJob = Job()
     fun setSite(siteId: Int, end: onEnd? = null) {
-        mainJob = async(UI) {
+        mainJob = GlobalScope.async(Dispatchers.Main) {
             try {
-                adapter.items = withContext(DefaultDispatcher) {
+                adapter.items = withContext(Dispatchers.Default) {
                     SiteCatalogElementViewModel.setSiteId(siteId).items()
                 }
                 backupCatalog = adapter.items
@@ -48,22 +48,22 @@ class CatalogForOneSiteRecyclerPresenter : RecyclerPresenter() {
 
                 var jobs = listOf<Job>()
 
-                jobs += launch {
+                jobs += launch(Dispatchers.Default) {
                     adapter.items.forEach { item ->
                         filterAdapterList[0].adapter.add(*item.genres.toTypedArray())
                     }
                 }
-                jobs += launch {
+                jobs += launch(Dispatchers.Default) {
                     adapter.items.forEach { item ->
                         filterAdapterList[1].adapter.add(item.type)
                     }
                 }
-                jobs += launch {
+                jobs += launch(Dispatchers.Default) {
                     adapter.items.forEach { item ->
                         filterAdapterList[2].adapter.add(item.statusEdition)
                     }
                 }
-                jobs += launch {
+                jobs += launch(Dispatchers.Default) {
                     adapter.items.forEach { item ->
                         filterAdapterList[3].adapter.add(*item.authors.toTypedArray())
                     }
@@ -89,7 +89,7 @@ class CatalogForOneSiteRecyclerPresenter : RecyclerPresenter() {
         }
     }
 
-    private fun swapItems(newCatalog: List<SiteCatalogElement>) = launch(UI) {
+    private fun swapItems(newCatalog: List<SiteCatalogElement>) = GlobalScope.launch(Dispatchers.Main) {
         adapter.items = newCatalog
         adapter.notifyDataSetChanged()
     }

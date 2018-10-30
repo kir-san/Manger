@@ -8,13 +8,13 @@ import android.view.View
 import android.widget.LinearLayout
 import com.san.kir.manger.R
 import com.san.kir.manger.components.drawer.DrawerActivity
+import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.room.models.Category
 import org.jetbrains.anko.design.floatingActionButton
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.frameLayout
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.recyclerview.v7.recyclerView
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.wrapContent
 
 class CategoryActivity : DrawerActivity() {

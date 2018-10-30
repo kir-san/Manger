@@ -6,8 +6,9 @@ import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.room.dao.loadPagedPlannedTasks
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class PlannedTaskRecyclerPresenter(private val act: ScheduleActivity) : RecyclerPresenter() {
     private val adapter = RecyclerViewAdapterFactory
@@ -20,7 +21,7 @@ class PlannedTaskRecyclerPresenter(private val act: ScheduleActivity) : Recycler
         recycler.adapter = adapter
         Main.db.plannedDao.loadPagedPlannedTasks()
             .observe(act, Observer { it ->
-                launch(UI) {
+                GlobalScope.launch(Dispatchers.Main) {
                     adapter.submitList(it)
                 }
             })

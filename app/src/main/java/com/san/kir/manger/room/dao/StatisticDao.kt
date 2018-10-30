@@ -29,5 +29,5 @@ fun StatisticDao.loadPagedStatisticItems() =
     LivePagedListBuilder(loadPagedItems(), 20).build()
 
 fun StatisticDao.loadAllTime(): LiveData<Long> =
-    Transformations.map(loadLivedItems()) { it.sumByLong { it.allTime } }
+    Transformations.map(loadLivedItems()) { list -> list.sumByLong { it.allTime } }
 

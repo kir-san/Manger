@@ -11,6 +11,7 @@ import com.san.kir.manger.R
 import com.san.kir.manger.R.string
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.extending.BaseActivity
+import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.ankoExtend.typeText
 import com.san.kir.manger.extending.ankoExtend.typeTextMultiLine
 import com.san.kir.manger.extending.dialogs.ColorPicker
@@ -29,7 +30,6 @@ import org.jetbrains.anko.imageView
 import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.scrollView
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.spinner
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.verticalLayout
@@ -165,9 +165,9 @@ class AddMangaView : AnkoActivityComponent() {
         }
         _manga.color = manga.color
         color.onClick {
-            ColorPicker(color.context, _manga.color) {
-                _manga.color = it
-                color.backgroundColor = it
+            ColorPicker(color.context, _manga.color) { newColor ->
+                _manga.color = newColor
+                color.backgroundColor = newColor
             }
         }
 

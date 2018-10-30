@@ -12,14 +12,17 @@ import com.san.kir.manger.R
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.components.sitesCatalog.SiteCatalogActivity
 import com.san.kir.manger.extending.BaseActivity
+import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
 import com.san.kir.manger.room.dao.MangaFilter
 import com.san.kir.manger.room.dao.loadMangas
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.utils.AnkoActivityComponent
 import com.san.kir.manger.utils.ID
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.below
 import org.jetbrains.anko.button
@@ -28,7 +31,6 @@ import org.jetbrains.anko.centerInParent
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.recyclerview.v7.recyclerView
 import org.jetbrains.anko.relativeLayout
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.textView
 
@@ -78,7 +80,7 @@ class LibraryPageView(
         }
     }
 
-    private fun bind() = launch(UI) {
+    private fun bind() = GlobalScope.launch(Dispatchers.Main) {
         text.setText(R.string.library_help)
         btn.setText(R.string.library_help_go)
 
@@ -89,10 +91,10 @@ class LibraryPageView(
         Main.db.mangaDao
             .loadMangas(category, MangaFilter.ADD_TIME_ASC)
             .observe(act, Observer {
-                launch {
+                GlobalScope.launch(Dispatchers.Default) {
                     val isVisible = it != null && it.isEmpty()
 
-                    launch(UI) {
+                    withContext(Dispatchers.Main) {
                         text.visibleOrGone(isVisible)
                         btn.visibleOrGone(isVisible)
                         recyclerView.visibleOrGone(isVisible.not())
@@ -113,16 +115,16 @@ class LibraryPageView(
 
         Main.db.categoryDao
             .loadLiveCategory(category.name)
-            .observe(act, Observer {
-                launch {
-                    it?.let {
+            .observe(act, Observer { cat ->
+                GlobalScope.launch(Dispatchers.Default) {
+                    cat?.let {
                         val newSpan = if (portrait) it.spanPortrait else it.spanLandscape
                         val newIsLarge = if (portrait) it.isLargePortrait else it.isLargeLandscape
 
                         if (span != newSpan || isLarge != newIsLarge) {
                             span = newSpan
                             isLarge = newIsLarge
-                            launch(UI) {
+                            withContext(Dispatchers.Main) {
                                 recyclerView.layoutManager = GridLayoutManager(act, span)
                                 adapter.intoIsList(recyclerView, isLarge)
                             }

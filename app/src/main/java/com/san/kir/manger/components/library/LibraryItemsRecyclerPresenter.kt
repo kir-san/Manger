@@ -14,8 +14,10 @@ import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.utils.ItemMove
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 
 class LibraryItemsRecyclerPresenter(val cat: Category, private val act: LibraryActivity) :
@@ -49,8 +51,8 @@ class LibraryItemsRecyclerPresenter(val cat: Category, private val act: LibraryA
         super.into(recyclerView)
         recycler.adapter = adapter
         categories.loadLiveCategory(cat.name)
-            .observe(act, Observer {
-                it?.let {
+            .observe(act, Observer { category ->
+                category?.let {
                     changeOrder(it.toFilter())
                 }
             })
@@ -60,9 +62,9 @@ class LibraryItemsRecyclerPresenter(val cat: Category, private val act: LibraryA
     private fun changeOrder(filter: MangaFilter) {
         mFilter = filter
         mangaDao.loadMangas(cat, filter).removeObservers(act)
-        mangaDao.loadMangas(cat, filter).observe(act, Observer {
-            launch {
-                it?.let {
+        mangaDao.loadMangas(cat, filter).observe(act, Observer { list ->
+            GlobalScope.launch {
+                list?.let {
                     val old = adapter.items
                     val new = it
                     val result = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
@@ -81,7 +83,7 @@ class LibraryItemsRecyclerPresenter(val cat: Category, private val act: LibraryA
                     })
 
                     adapter.items = new
-                    launch(UI) {
+                    withContext(Dispatchers.Main) {
                         result.dispatchUpdatesTo(adapter)
                     }
                 }

@@ -1,5 +1,6 @@
 package com.san.kir.manger.extending.views
 
+import android.view.Menu
 import android.view.MenuItem
 
 fun MenuItem.showAlways(): MenuItem {
@@ -13,3 +14,5 @@ fun MenuItem.showIfRoom(): MenuItem {
 fun MenuItem.showNever(): MenuItem {
     return this.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER)
 }
+
+fun Menu.add(itemId: Int, titleRes: Int): MenuItem = add(0, itemId, 0, titleRes)

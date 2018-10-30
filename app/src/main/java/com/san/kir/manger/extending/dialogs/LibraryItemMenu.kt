@@ -29,8 +29,8 @@ class LibraryItemMenu(
             val delete = menu.add(R.string.library_popupmenu_delete)
             val select = menu.add(R.string.library_popupmenu_select)
 
-            setOnMenuItemClickListener {
-                when (it) {
+            setOnMenuItemClickListener { menuItem ->
+                when (menuItem) {
                     about -> AboutMangaDialog(context, manga)
                     delete -> {
                         context.alert(

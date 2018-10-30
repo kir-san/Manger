@@ -14,6 +14,7 @@ import com.san.kir.manger.App.Companion.context
 import com.san.kir.manger.R
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.extending.BaseActivity
+import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.dialogs.DeleteReadChaptersDialog
 import com.san.kir.manger.room.dao.getSizeAndIsNew
 import com.san.kir.manger.room.dao.loadAllSize
@@ -21,7 +22,9 @@ import com.san.kir.manger.room.dao.loadLivedStorageItem
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.room.models.Storage
 import com.san.kir.manger.utils.formatDouble
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.AnkoComponent
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.backgroundColor
@@ -35,7 +38,6 @@ import org.jetbrains.anko.leftPadding
 import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.padding
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.textResource
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.verticalLayout
@@ -170,7 +172,7 @@ class StorageDialogView : AnkoComponent<StorageDialogFragment> {
         })
     }
 
-    private fun updateStorageItem(dir: Storage?) = async {
+    private fun updateStorageItem(dir: Storage?) = GlobalScope.launch(Dispatchers.Default) {
         dir?.let { storage.update(it.getSizeAndIsNew()) }
     }
 }

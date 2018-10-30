@@ -16,8 +16,9 @@ import com.san.kir.manger.room.dao.updateStorageItems
 import com.san.kir.manger.room.models.MainMenuItem
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.formatDouble
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.frameLayout
@@ -47,7 +48,7 @@ class MainMenuItemView(private val act: BaseActivity) :
     }
 
     override fun bind(item: MainMenuItem, isSelected: Boolean, position: Int) {
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             name.text = item.name
             type.setCounter(item.type)
         }
@@ -79,10 +80,10 @@ class MainMenuItemView(private val act: BaseActivity) :
             MainMenuType.Catalogs -> {
                 Main.db.siteDao
                     .loadPagedSites()
-                    .observe(act, Observer {
+                    .observe(act, Observer { list ->
                         text = context.getString(R.string.main_menu_item_catalogs,
-                                                 it?.size,
-                                                 it?.sumBy { it.volume })
+                                                 list?.size,
+                                                 list?.sumBy { it.volume })
                     })
             }
             MainMenuType.Downloader -> {

@@ -12,7 +12,9 @@ import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.SortLibrary
 import com.san.kir.manger.utils.SortLibraryUtil
 import com.san.kir.manger.utils.getFullPath
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.io.File
 
 @Dao
@@ -102,17 +104,18 @@ fun MangaDao.loadMangas(cat: Category, filter: MangaFilter): LiveData<List<Manga
     }
 }
 
-fun MangaDao.removeWithChapters(manga: Manga, withFiles: Boolean = false) = async {
-    delete(manga)
+fun MangaDao.removeWithChapters(manga: Manga, withFiles: Boolean = false) =
+    GlobalScope.launch(Dispatchers.Default) {
+        delete(manga)
 
-    Main.db.chapterDao.removeChapters(manga.unic)
+        Main.db.chapterDao.removeChapters(manga.unic)
 
-    Main.db.latestChapterDao.removeChapters(manga.unic)
+        Main.db.latestChapterDao.removeChapters(manga.unic)
 
-    if (withFiles) {
-        getFullPath(manga.path).deleteRecursively()
+        if (withFiles) {
+            getFullPath(manga.path).deleteRecursively()
+        }
     }
-}
 
 fun Category.toFilter(): MangaFilter {
     return when (SortLibraryUtil.toType(typeSort)) {

@@ -2,15 +2,14 @@ package com.san.kir.manger.eventBus
 
 import android.util.SparseArray
 import com.san.kir.manger.utils.ID
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.Deferred
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.channels.Channel
-import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.collections.forEach
-import kotlin.coroutines.experimental.CoroutineContext
+import kotlin.coroutines.CoroutineContext
 
 /*
 * Придумал Lewis Rhine
@@ -18,13 +17,17 @@ import kotlin.coroutines.experimental.CoroutineContext
 *
 * Я переработал для использования с корутинами
 * */
-data class Action<in T>(val context: CoroutineContext,
-                        val action: suspend (T) -> Unit)
+data class Action<in T>(
+    val context: CoroutineContext,
+    val action: suspend (T) -> Unit
+)
 
 class Binder<T>(initValue: T) {
 
-    constructor(initValue: T, context: CoroutineContext = UI,
-                binding: suspend (item: T) -> Unit) : this(initValue) {
+    constructor(
+        initValue: T, context: CoroutineContext = Dispatchers.Main,
+        binding: suspend (item: T) -> Unit
+    ) : this(initValue) {
         bind(context, binding)
     }
 
@@ -35,23 +38,23 @@ class Binder<T>(initValue: T) {
     var item: T
         get() = _item
         set(value) {
-                _item = value
-                launch(CommonPool) {
-                    _channel.send(_item)
-                }
+            _item = value
+            GlobalScope.launch(Dispatchers.Default) {
+                _channel.send(_item)
+            }
         }
 
     var asyncItem: Deferred<T>
-        get() = async { _channel.receive() }
+        get() = GlobalScope.async { _channel.receive() }
         set(value) {
-            launch {
+            GlobalScope.launch {
                 item = value.await()
             }
         }
 
     init {
-        launch {
-            _channel.consumeEach { new ->
+        GlobalScope.launch {
+            for (new in _channel) {
                 _bound.forEach { _, it ->
                     launch(it.context) {
                         it.action(new)
@@ -63,11 +66,13 @@ class Binder<T>(initValue: T) {
 
     fun bind(action: Action<T>) {
         _bound.append(ID.generate(), action)
-        launch(action.context) { action.action.invoke(_item) }
+        GlobalScope.launch(action.context) { action.action.invoke(_item) }
     }
 
-    fun bind(context: CoroutineContext = UI,
-             binding: suspend (item: T) -> Unit) {
+    fun bind(
+        context: CoroutineContext = Dispatchers.Main,
+        binding: suspend (item: T) -> Unit
+    ) {
         bind(Action(context, binding))
     }
 
@@ -77,7 +82,7 @@ class Binder<T>(initValue: T) {
             _bound.removeAt(value)
     }
 
-    fun unBind(context: CoroutineContext = UI, binding: suspend (item: T) -> Unit) {
+    fun unBind(context: CoroutineContext = Dispatchers.Main, binding: suspend (item: T) -> Unit) {
         unBind(Action(context, binding))
     }
 

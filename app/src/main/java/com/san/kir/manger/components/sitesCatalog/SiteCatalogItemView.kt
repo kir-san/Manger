@@ -12,15 +12,17 @@ import com.san.kir.manger.components.catalogForOneSite.CatalogForOneSiteActivity
 import com.san.kir.manger.components.catalogForOneSite.SiteCatalogElementViewModel
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.components.parsing.ManageSites
+import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.room.dao.updateAsync
 import com.san.kir.manger.room.models.Site
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.loadImage
 import com.san.kir.manger.utils.log
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.alignParentBottom
 import org.jetbrains.anko.alignParentEnd
@@ -34,7 +36,6 @@ import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.progressBar
 import org.jetbrains.anko.relativeLayout
 import org.jetbrains.anko.rightOf
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.wrapContent
@@ -124,13 +125,13 @@ class SiteCatalogItemView : RecyclerViewAdapterFactory.AnkoView<Site>() {
         volume.text = root.context.getString(com.san.kir.manger.R.string.site_volume,
                                              item.oldVolume,
                                              item.volume - item.oldVolume)
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             try {
                 val site = ManageSites.CATALOG_SITES[item.siteID]
                 if (!site.isInit) {
                     isError.visibility = View.GONE
                     isInit.visibility = View.VISIBLE
-                    async {
+                    withContext(Dispatchers.Default) {
                         site.init()
                         // Находим в базе данных наш сайт
                         with(Main.db.siteDao) {
@@ -144,7 +145,7 @@ class SiteCatalogItemView : RecyclerViewAdapterFactory.AnkoView<Site>() {
                                 updateAsync(it)
                             }
                         }
-                    }.join()
+                    }
                 }
             } catch (e: Exception) {
                 log(e.toString())

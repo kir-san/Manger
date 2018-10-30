@@ -16,11 +16,11 @@ import com.san.kir.manger.room.dao.contain
 import com.san.kir.manger.room.dao.updateAsync
 import com.san.kir.manger.room.models.SiteCatalogElement
 import com.san.kir.manger.utils.ID
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.channels.ReceiveChannel
-import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.newFixedThreadPoolContext
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.newFixedThreadPoolContext
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.notificationManager
 
@@ -85,7 +85,7 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
 
 
     override fun onHandleIntent(intent: Intent) {
-        runBlocking(CommonPool) {
+        runBlocking(Dispatchers.Default) {
             try {
                 val site = ManageSites.CATALOG_SITES[intent.getIntExtra("id", -1)]
                 val siteDb = Main.db.siteDao.loadSite(site.name)

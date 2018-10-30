@@ -4,6 +4,9 @@ import android.content.Context
 import android.content.res.Configuration
 import com.san.kir.manger.R
 import com.san.kir.manger.components.main.Main
+import com.san.kir.manger.extending.ankoExtend.onCheckedChange
+import com.san.kir.manger.extending.ankoExtend.onClick
+import com.san.kir.manger.extending.ankoExtend.onSeekBarChangeListener
 import com.san.kir.manger.room.dao.updateAsync
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.utils.ID
@@ -17,9 +20,6 @@ import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.padding
 import org.jetbrains.anko.radioButton
 import org.jetbrains.anko.radioGroup
-import org.jetbrains.anko.sdk25.coroutines.onCheckedChange
-import org.jetbrains.anko.sdk25.coroutines.onClick
-import org.jetbrains.anko.sdk25.coroutines.onSeekBarChangeListener
 import org.jetbrains.anko.seekBar
 import org.jetbrains.anko.space
 import org.jetbrains.anko.support.v4.nestedScrollView
@@ -113,7 +113,6 @@ class SortCategoryDialog(context: Context, category: Category) {
                             else category.spanLandscape
 
                             max = if (portrait) 5 else 7
-
                             onSeekBarChangeListener {
                                 onProgressChanged { _, i, _ ->
                                     if (i < 1) {

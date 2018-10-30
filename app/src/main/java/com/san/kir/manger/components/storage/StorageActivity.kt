@@ -11,33 +11,36 @@ import com.san.kir.manger.components.drawer.DrawerActivity
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.room.models.Storage
 import com.san.kir.manger.utils.formatDouble
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.recyclerview.v7.recyclerView
 
 class StorageActivity : DrawerActivity() {
 
     private val titleObserver by lazy {
-        Observer<List<Storage>> {
-            it?.let {
-                val size = async {
+        Observer<List<Storage>> { list ->
+            list?.let { it ->
+                GlobalScope.launch(Dispatchers.Default) {
                     val sum = it.sumByDouble { it.sizeFull }
-                    getString(R.string.storage_title_size, formatDouble(sum))
-                }
+                    val size = getString(R.string.storage_title_size, formatDouble(sum))
 
-                val length = async {
-                    Html.fromHtml(
+                    val length = Html.fromHtml(
                         "<font color='#FFFFFF'>${
-                        resources.getQuantityString(R.plurals.storage_subtitle, it.size, it.size)
+                        resources.getQuantityString(
+                            R.plurals.storage_subtitle,
+                            it.size,
+                            it.size
+                        )
                         }</font>"
                     )
-                }
 
-                launch(UI) {
-                    supportActionBar?.title = size.await()
-                    supportActionBar?.subtitle = length.await()
+                    withContext(Dispatchers.Main) {
+                        supportActionBar?.title = size
+                        supportActionBar?.subtitle = length
+                    }
                 }
             }
         }

@@ -7,6 +7,9 @@ import android.view.View
 import com.san.kir.manger.R
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.eventBus.Binder
+import com.san.kir.manger.extending.ankoExtend.onClick
+import com.san.kir.manger.extending.ankoExtend.onSeekBarChangeListener
+import com.san.kir.manger.extending.ankoExtend.textChangedListener
 import com.san.kir.manger.extending.ankoExtend.textView
 import com.san.kir.manger.extending.ankoExtend.typeText
 import com.san.kir.manger.room.models.Category
@@ -23,10 +26,6 @@ import org.jetbrains.anko.leftPadding
 import org.jetbrains.anko.padding
 import org.jetbrains.anko.radioButton
 import org.jetbrains.anko.radioGroup
-import org.jetbrains.anko.sdk25.coroutines.onCheckedChange
-import org.jetbrains.anko.sdk25.coroutines.onClick
-import org.jetbrains.anko.sdk25.coroutines.onSeekBarChangeListener
-import org.jetbrains.anko.sdk25.coroutines.textChangedListener
 import org.jetbrains.anko.seekBar
 import org.jetbrains.anko.space
 import org.jetbrains.anko.support.v4.nestedScrollView
@@ -119,7 +118,7 @@ class CategoryEditDialog(
                         checkBox {
                             setText(R.string.library_sort_dialog_reverse)
                             isChecked = cat.isReverseSort
-                            onCheckedChange { _, b -> cat.isReverseSort = b }
+                            setOnCheckedChangeListener { _, b -> cat.isReverseSort = b }
                         }
 
                         space().lparams(height = dip(10))
@@ -127,7 +126,7 @@ class CategoryEditDialog(
                         checkBox {
                             setText(R.string.library_sort_dialog_visible)
                             isChecked = !cat.isVisible
-                            onCheckedChange { _, b -> cat.isVisible = !b }
+                            setOnCheckedChangeListener { _, b -> cat.isVisible = !b }
                         }
 
                         space().lparams(height = dip(10))
@@ -143,7 +142,7 @@ class CategoryEditDialog(
                                 if (isChecked) R.string.category_dialog_large_cells
                                 else R.string.category_dialog_small_cells
                             )
-                            onCheckedChange { _, b ->
+                            setOnCheckedChangeListener { _, b ->
                                 cat.isLargePortrait = b
                                 setText(
                                     if (b) R.string.category_dialog_large_cells
@@ -193,7 +192,7 @@ class CategoryEditDialog(
                                 if (isChecked) R.string.category_dialog_large_cells
                                 else R.string.category_dialog_small_cells
                             )
-                            onCheckedChange { _, b ->
+                            setOnCheckedChangeListener { _, b ->
                                 cat.isLargeLandscape = b
                                 setText(
                                     if (b) R.string.category_dialog_large_cells

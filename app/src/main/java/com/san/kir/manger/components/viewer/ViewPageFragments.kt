@@ -1,5 +1,6 @@
 package com.san.kir.manger.components.viewer
 
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -13,19 +14,20 @@ import com.san.kir.manger.R
 import com.san.kir.manger.eventBus.Binder
 import com.san.kir.manger.extending.ankoExtend.bigImageView
 import com.san.kir.manger.extending.ankoExtend.goneOrVisible
+import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.ankoExtend.onDoubleTapListener
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
 import com.san.kir.manger.utils.convertImagesToPng
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.alignParentBottom
 import org.jetbrains.anko.button
 import org.jetbrains.anko.centerHorizontally
 import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.relativeLayout
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.sp
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.verticalLayout
@@ -85,7 +87,7 @@ class ViewerPageFragment : Fragment() {
                 bigImageView {
                     lparams(width = matchParent, height = matchParent)
 
-                    launch(UI) {
+                    GlobalScope.launch(Dispatchers.Main) {
                         try {
                             val img = async {
                                 if (mFile.extension in arrayOf("gif", "webp"))
@@ -94,7 +96,10 @@ class ViewerPageFragment : Fragment() {
                                     mFile
                             }
                             setImage(ImageSource.uri(Uri.fromFile(img.await())))
-                            setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_START)
+                            when(resources.configuration.orientation) {
+                                Configuration.ORIENTATION_LANDSCAPE -> setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_START)
+                                Configuration.ORIENTATION_PORTRAIT -> setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CENTER_INSIDE)
+                            }
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }

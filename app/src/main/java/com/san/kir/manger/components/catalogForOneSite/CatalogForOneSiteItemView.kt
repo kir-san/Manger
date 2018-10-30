@@ -9,6 +9,7 @@ import android.widget.TextView
 import com.san.kir.manger.R
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.components.parsing.ManageSites
+import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.ankoExtend.visibleOrInvisible
 import com.san.kir.manger.extending.dialogs.AddMangaDialog
 import com.san.kir.manger.extending.dialogs.MangaInfoDialog
@@ -19,8 +20,9 @@ import com.san.kir.manger.room.models.genresList
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.listStrToString
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.alignParentBottom
 import org.jetbrains.anko.alignParentRight
@@ -33,7 +35,6 @@ import org.jetbrains.anko.longToast
 import org.jetbrains.anko.margin
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.relativeLayout
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.wrapContent
 
@@ -142,7 +143,7 @@ class CatalogForOneSiteItemView : RecyclerViewAdapterFactory.AnkoView<SiteCatalo
             updBtn.context.longToast("Информация о манге ${item.name} обновлена")
         }
 
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             val isContain = Main.db.mangaDao.contain(item)
             if (item.isAdded != isContain) {
                 item.isAdded = isContain

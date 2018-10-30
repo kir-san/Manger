@@ -25,7 +25,7 @@ class SimpleItemTouchHelperCallback(adapter: ItemTouchHelperAdapter) : ItemTouch
     }
 
     override fun getMovementFlags(recyclerView: RecyclerView,
-                                  viewHolder: RecyclerView.ViewHolder?): Int {
+                                  viewHolder: RecyclerView.ViewHolder): Int {
         return if (recyclerView.layoutManager is GridLayoutManager) {
             val dragFlags = ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
             val swipeFlags = 0
@@ -38,29 +38,29 @@ class SimpleItemTouchHelperCallback(adapter: ItemTouchHelperAdapter) : ItemTouch
         }
     }
 
-    override fun onMove(recyclerView: RecyclerView?,
-                        viewHolder: RecyclerView.ViewHolder?,
-                        target: RecyclerView.ViewHolder?): Boolean {
+    override fun onMove(recyclerView: RecyclerView,
+                        viewHolder: RecyclerView.ViewHolder,
+                        target: RecyclerView.ViewHolder): Boolean {
         log("onMove")
-        if (viewHolder!!.itemViewType != target!!.itemViewType)
+        if (viewHolder.itemViewType != target.itemViewType)
             return false
         mAdapter.onItemMove(viewHolder.adapterPosition, target.adapterPosition)
         return true
     }
 
-    override fun onSwiped(viewHolder: RecyclerView.ViewHolder?, direction: Int) {
+    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
 //        mAdapter.onItemDismiss(viewHolder!!.adapterPosition)
     }
 
-    override fun onChildDraw(c: Canvas?,
-                             recyclerView: RecyclerView?,
-                             viewHolder: RecyclerView.ViewHolder?,
+    override fun onChildDraw(c: Canvas,
+                             recyclerView: RecyclerView,
+                             viewHolder: RecyclerView.ViewHolder,
                              dX: Float,
                              dY: Float,
                              actionState: Int,
                              isCurrentlyActive: Boolean) {
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-            val alpha: Float = alphaFull - Math.abs(dX) / viewHolder!!.itemView.width.toFloat()
+            val alpha: Float = alphaFull - Math.abs(dX) / viewHolder.itemView.width.toFloat()
             viewHolder.itemView.alpha = alpha
             viewHolder.itemView.translationX = dX
         } else
@@ -76,9 +76,9 @@ class SimpleItemTouchHelperCallback(adapter: ItemTouchHelperAdapter) : ItemTouch
         super.onSelectedChanged(viewHolder, actionState)
     }
 
-    override fun clearView(recyclerView: RecyclerView?, viewHolder: RecyclerView.ViewHolder?) {
+    override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
         super.clearView(recyclerView, viewHolder)
-        viewHolder!!.itemView.alpha = alphaFull
+        viewHolder.itemView.alpha = alphaFull
         if (viewHolder is ItemTouchHelperViewHolder) {
             viewHolder.onItemClear()
         }

@@ -42,7 +42,7 @@ class SettingActivity : DrawerActivity(), SharedPreferences.OnSharedPreferenceCh
 
         setTitle(R.string.main_menu_settings)
 
-        fragmentManager.beginTransaction()
+        supportFragmentManager.beginTransaction()
                 .replace(content, PrefFragment())
                 .commit()
 

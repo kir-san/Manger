@@ -12,13 +12,15 @@ import android.widget.TextView
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.extending.ankoExtend.labelView
+import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.ankoExtend.positiveButton
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
 import com.san.kir.manger.room.models.SiteCatalogElement
 import com.san.kir.manger.utils.listStrToString
 import com.san.kir.manger.utils.loadImage
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.browse
 import org.jetbrains.anko.customView
@@ -30,7 +32,6 @@ import org.jetbrains.anko.margin
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.padding
 import org.jetbrains.anko.scrollView
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.textColor
 import org.jetbrains.anko.textResource
 import org.jetbrains.anko.textView
@@ -120,7 +121,7 @@ class MangaInfoDialog(
             }
 
             if (!item.isAdded)
-                positiveButton(R.string.manga_info_dialog_add, UI) {
+                positiveButton(R.string.manga_info_dialog_add, Dispatchers.Main) {
                     AddMangaDialog(context, item) {
                         onFinish()
                     }
@@ -161,7 +162,7 @@ class MangaInfoDialog(
             logoLoadText.textResource = R.string.manga_info_dialog_not_image
     }
 
-    private fun updateInfo(element: SiteCatalogElement) = async(UI) {
+    private fun updateInfo(element: SiteCatalogElement) = GlobalScope.launch(Dispatchers.Main) {
         try {
             updateProgress.visibility = View.VISIBLE
             bind(ManageSites.getFullElement(element).await())

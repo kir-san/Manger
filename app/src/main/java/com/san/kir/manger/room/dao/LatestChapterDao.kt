@@ -8,7 +8,9 @@ import com.san.kir.manger.room.models.LatestChapter
 import com.san.kir.manger.room.models.action
 import com.san.kir.manger.room.models.isRead
 import com.san.kir.manger.utils.ChapterStatus
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 @Dao
 interface LatestChapterDao : BaseDao<LatestChapter> {
@@ -28,27 +30,36 @@ interface LatestChapterDao : BaseDao<LatestChapter> {
 fun LatestChapterDao.removeChapters(manga: String) =
     delete(*loadChaptersWhereManga(manga).toTypedArray())
 
-fun LatestChapterDao.clearHistoryDownload() = async {
-    load().filter { it.action == ChapterStatus.DELETE }.forEach { deleteAsync(it) }
-}
+fun LatestChapterDao.clearHistoryDownload() =
+    GlobalScope.launch(Dispatchers.Default) {
+        load()
+            .filter { it.action == ChapterStatus.DELETE }
+            .forEach { deleteAsync(it) }
+    }
 
-fun LatestChapterDao.clearHistoryRead() = async {
-    load().filter { it.isRead.await() }.forEach { deleteAsync(it) }
-}
+fun LatestChapterDao.clearHistoryRead() =
+    GlobalScope.launch(Dispatchers.Default) {
+        load()
+            .filter { it.isRead() }.forEach { deleteAsync(it) }
+    }
 
-fun LatestChapterDao.clearHistory() = async {
-    load().forEach { deleteAsync(it) }
-}
+fun LatestChapterDao.clearHistory() =
+    GlobalScope.launch(Dispatchers.Default) {
+        load()
+            .forEach { deleteAsync(it) }
+    }
 
-fun LatestChapterDao.downloadNewChapters() = async {
-    load().filter { !it.isRead.await() }
+fun LatestChapterDao.downloadNewChapters() =
+    load()
+        .filter { !it.isRead() }
         .filter { it.action == ChapterStatus.DOWNLOADABLE }
-}
 
-fun LatestChapterDao.hasNewChapters() = async {
-    load().filter { !it.isRead.await() }
+
+fun LatestChapterDao.hasNewChapters() =
+    load()
+        .filter { !it.isRead() }
         .any { it.action == ChapterStatus.DOWNLOADABLE }
-}
+
 
 fun LatestChapterDao.loadPagedLatestChapters() =
     LivePagedListBuilder(loadLatestChapters(), 20).build()

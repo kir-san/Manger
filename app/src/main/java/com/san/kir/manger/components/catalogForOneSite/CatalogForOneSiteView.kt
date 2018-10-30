@@ -22,6 +22,7 @@ import com.san.kir.manger.components.catalogForOneSite.CatalogForOneSiteRecycler
 import com.san.kir.manger.components.catalogForOneSite.CatalogForOneSiteRecyclerPresenter.Companion.POP
 import com.san.kir.manger.eventBus.Binder
 import com.san.kir.manger.eventBus.toggle
+import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.getDrawableCompat
@@ -42,7 +43,6 @@ import org.jetbrains.anko.include
 import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.relativeLayout
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.space
 import org.jetbrains.anko.support.v4.drawerLayout
 import org.jetbrains.anko.support.v4.swipeRefreshLayout

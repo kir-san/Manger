@@ -13,6 +13,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import com.san.kir.manger.R
 import com.san.kir.manger.components.main.Main
+import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.room.models.DownloadStatus
 import com.san.kir.manger.room.models.LatestChapter
@@ -23,9 +24,9 @@ import com.san.kir.manger.utils.ChapterStatus
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.delChapters
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.alignParentBottom
@@ -44,14 +45,13 @@ import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.padding
 import org.jetbrains.anko.progressBar
 import org.jetbrains.anko.relativeLayout
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.wrapContent
 import java.io.IOException
 
 class LatestChaptersItemView(private val act: LatestChapterActivity) :
-        RecyclerViewAdapterFactory.AnkoView<LatestChapter>() {
+    RecyclerViewAdapterFactory.AnkoView<LatestChapter>() {
     private object Id { // id элементов для связи между собой
         val date = ID.generate()
         val name = ID.generate()
@@ -188,13 +188,13 @@ class LatestChaptersItemView(private val act: LatestChapterActivity) :
 
     private fun progressDownload(progress: Int, max: Int) {
         val current =
-                if (max == 0) max
-                else progress * 100 / max
+            if (max == 0) max
+            else progress * 100 / max
 
         percent.text = act.getString(R.string.list_chapters_download_progress, current)
     }
 
-    private fun disableDownload(chapter: LatestChapter) = async(UI) {
+    private fun disableDownload(chapter: LatestChapter) = GlobalScope.launch(Dispatchers.Main) {
         progressBar.visibility = View.GONE
         percent.visibility = View.GONE
         stop.visibility = View.GONE
@@ -251,9 +251,9 @@ class LatestChaptersItemView(private val act: LatestChapterActivity) :
         disableDownload(item)
         initializeOnClicks(item)
 
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             val color = when {
-                item.isRead.await() -> Color.parseColor("#a5a2a2")
+                item.isRead() -> Color.parseColor("#a5a2a2")
                 else -> Color.TRANSPARENT
             }
             root.backgroundColor = color
@@ -262,19 +262,19 @@ class LatestChaptersItemView(private val act: LatestChapterActivity) :
 
 
         Main.db.downloadDao
-                .loadLivedItem(item.site)
-                .observe(act, Observer {
-                    changeVisibilityAndActions(it, item)
-                })
+            .loadLivedItem(item.site)
+            .observe(act, Observer {
+                changeVisibilityAndActions(it, item)
+            })
     }
 
     private fun changeVisibilityAndActions(item: DownloadItem?, chapter: LatestChapter) {
-        item?.let {
-            when (it.status) {
+        item?.let { downloadItem ->
+            when (downloadItem.status) {
                 DownloadStatus.queued,
                 DownloadStatus.loading -> {
                     enableDownload()
-                    progressDownload(it.downloadPages, it.totalPages)
+                    progressDownload(downloadItem.downloadPages, downloadItem.totalPages)
                     limit.onClick {
                         downloadManager.pause(item)
                     }

@@ -10,9 +10,10 @@ import com.san.kir.manger.room.dao.deleteAsync
 import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 fun loadingAdapter(act: DownloadManagerActivity): DownloadManagerRecyclerPresenter {
@@ -49,11 +50,11 @@ class DownloadManagerRecyclerPresenter(
     override fun into(recyclerView: RecyclerView) {
         super.into(recyclerView)
         recyclerView.adapter = adapter
-        dao.pagedList().observe(act, Observer {
-            launch {
-                it?.let {
+        dao.pagedList().observe(act, Observer { items ->
+            GlobalScope.launch(Dispatchers.Default) {
+                items?.let {
                     adapter.items = it
-                    async(UI) {
+                    withContext(Dispatchers.Main) {
                         adapter.notifyDataSetChanged()
                     }
                 }
@@ -65,9 +66,9 @@ class DownloadManagerRecyclerPresenter(
                 ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
             ) {
                 override fun onMove(
-                    recyclerView: RecyclerView?,
-                    viewHolder: RecyclerView.ViewHolder?,
-                    target: RecyclerView.ViewHolder?
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
                 ): Boolean {
                     return false
                 }

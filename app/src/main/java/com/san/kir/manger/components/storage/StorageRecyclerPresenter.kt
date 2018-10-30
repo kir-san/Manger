@@ -6,8 +6,9 @@ import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.room.dao.loadPagedStorageItems
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class StorageRecyclerPresenter(private val act: StorageActivity) : RecyclerPresenter() {
     private var adapter = RecyclerViewAdapterFactory
@@ -19,6 +20,6 @@ class StorageRecyclerPresenter(private val act: StorageActivity) : RecyclerPrese
         super.into(recyclerView)
         recyclerView.adapter = this.adapter
         Main.db.storageDao.loadPagedStorageItems()
-            .observe(act, Observer { launch(UI) { adapter.submitList(it) } })
+            .observe(act, Observer { GlobalScope.launch(Dispatchers.Main) { adapter.submitList(it) } })
     }
 }

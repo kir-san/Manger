@@ -13,6 +13,7 @@ import android.widget.LinearLayout
 import com.san.kir.manger.R
 import com.san.kir.manger.extending.ankoExtend.isNetworkAvailable
 import com.san.kir.manger.extending.ankoExtend.isOnWifi
+import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.dialogs.ClearDownloadsMenu
 import com.san.kir.manger.utils.ID
 import org.jetbrains.anko.above
@@ -29,7 +30,6 @@ import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.recyclerview.v7.recyclerView
 import org.jetbrains.anko.relativeLayout
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.space
 import org.jetbrains.anko.support.v4.nestedScrollView
 import org.jetbrains.anko.verticalLayout
@@ -127,10 +127,10 @@ class DownloadManagerView(private val act: DownloadManagerActivity) {
             }
             when {
                 isWifi && !act.isOnWifi() -> {
-                    snack = indefiniteSnackbar(this@bind, "Вай вай! Не включен Wi-fi!")
+                    snack = this@bind.indefiniteSnackbar("Вай вай! Не включен Wi-fi!")
                 }
                 !act.isNetworkAvailable() -> {
-                    snack = indefiniteSnackbar(this@bind, "Нет доступа в интернет")
+                    snack = this@bind.indefiniteSnackbar("Нет доступа в интернет")
                 }
             }
 

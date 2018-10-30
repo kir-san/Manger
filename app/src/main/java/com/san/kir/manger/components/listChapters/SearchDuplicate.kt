@@ -3,10 +3,9 @@ package com.san.kir.manger.components.listChapters
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.room.models.Chapter
 import com.san.kir.manger.room.models.Manga
-import kotlinx.coroutines.experimental.async
 
 object SearchDuplicate {
-    fun silentRemoveDuplicate(manga: Manga) = async {
+    fun silentRemoveDuplicate(manga: Manga) {
         removeDuplicates(searchDuplicate(manga))
     }
 

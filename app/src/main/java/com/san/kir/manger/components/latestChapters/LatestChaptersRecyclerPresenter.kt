@@ -13,8 +13,9 @@ import com.san.kir.manger.room.dao.loadPagedLatestChapters
 import com.san.kir.manger.room.models.toDownloadItem
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class LatestChaptersRecyclerPresenter(private val act: LatestChapterActivity) :
     RecyclerPresenter() {
@@ -28,15 +29,15 @@ class LatestChaptersRecyclerPresenter(private val act: LatestChapterActivity) :
         super.into(recyclerView)
         recycler.adapter = adapter
         latestChapterDao.loadPagedLatestChapters()
-            .observe(act, Observer { launch(UI) { adapter.submitList(it) } })
+            .observe(act, Observer { GlobalScope.launch(Dispatchers.Main) { adapter.submitList(it) } })
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
             0,
             ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
         ) {
             override fun onMove(
-                recyclerView: RecyclerView?,
-                viewHolder: RecyclerView.ViewHolder?,
-                target: RecyclerView.ViewHolder?
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
             ) = false
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -46,10 +47,10 @@ class LatestChaptersRecyclerPresenter(private val act: LatestChapterActivity) :
         }).attachToRecyclerView(recyclerView)
     }
 
-    suspend fun hasNewChapters() = latestChapterDao.hasNewChapters().await()
+    fun hasNewChapters() = latestChapterDao.hasNewChapters()
 
-    fun downloadNewChapters() = launch {
-        latestChapterDao.downloadNewChapters().await().onEach { chapter ->
+    fun downloadNewChapters() = GlobalScope.launch {
+        latestChapterDao.downloadNewChapters().onEach { chapter ->
             act.downloadManager.addOrStart(chapter.toDownloadItem())
         }
         adapter.notifyDataSetChanged()

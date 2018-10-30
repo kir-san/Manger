@@ -22,12 +22,6 @@ val CATEGORY_ALL: String = App.context.getString(R.string.category_all)
 
 const val sPrefListChapters = "ListChaptersActivity"
 
-object PrefDownload {
-    const val mainName = "DownloadManager"
-    const val concurrent = "DownloadConcurrent"
-    const val isRetry = "RetryOnError"
-}
-
 
 // Логи
 const val TAG = "myLogs"

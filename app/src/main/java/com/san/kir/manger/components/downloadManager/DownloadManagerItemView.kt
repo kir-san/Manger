@@ -8,6 +8,7 @@ import android.widget.TextView
 import com.san.kir.manger.R
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.extending.ankoExtend.invisibleOrVisible
+import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.ankoExtend.roundedImageView
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
 import com.san.kir.manger.extending.ankoExtend.visibleOrInvisible
@@ -20,8 +21,10 @@ import com.san.kir.manger.utils.TimeFormat
 import com.san.kir.manger.utils.bytesToMb
 import com.san.kir.manger.utils.formatDouble
 import com.san.kir.manger.utils.loadImage
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.alignParentEnd
 import org.jetbrains.anko.alignParentStart
@@ -39,7 +42,6 @@ import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.padding
 import org.jetbrains.anko.relativeLayout
 import org.jetbrains.anko.sameBottom
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.startOf
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.wrapContent
@@ -158,10 +160,10 @@ class DownloadManagerItemView(private val act: DownloadManagerActivity) :
 
     override fun bind(item: DownloadItem, isSelected: Boolean, position: Int) {
         val context = name.context
-        launch {
+        GlobalScope.launch(Dispatchers.Default) {
             val isLoadOrQueue = item.status == DownloadStatus.queued
                     || item.status == DownloadStatus.loading
-            launch(UI) {
+            withContext(Dispatchers.Main) {
                 name.text = context.getString(R.string.download_item_name, item.manga, item.name)
 
                 startBtn.invisibleOrVisible(item.status != DownloadStatus.pause)
@@ -198,7 +200,7 @@ class DownloadManagerItemView(private val act: DownloadManagerActivity) :
                 DownloadStatus.completed -> {
                     val time = TimeFormat(item.totalTime / 1000)
 
-                    launch(UI) {
+                    withContext(Dispatchers.Main) {
                         progressText.text =
                                 context.getString(
                                     R.string.download_item_final_size_with_time,
@@ -217,7 +219,7 @@ class DownloadManagerItemView(private val act: DownloadManagerActivity) :
                         R.string.download_item_progress_size,
                         formatDouble(bytesToMb(item.downloadSize))
                     )
-                    launch(UI) {
+                    withContext(Dispatchers.Main) {
                         progressText.text =
                                 context.getString(R.string.download_item_progress, pages, size)
                     }
@@ -225,7 +227,7 @@ class DownloadManagerItemView(private val act: DownloadManagerActivity) :
             }
 
         }
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             val manga = Main.db.mangaDao.loadMangaOrNull(item.manga)
             if (manga != null) {
                 loadImage(manga.logo).into(logo)

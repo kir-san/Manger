@@ -1,7 +1,6 @@
 package com.san.kir.manger.extending.dialogs
 
 import android.content.Context
-import android.graphics.Color
 import android.view.Gravity
 import android.view.View
 import android.view.ViewManager
@@ -11,6 +10,7 @@ import com.san.kir.manger.App
 import com.san.kir.manger.R
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.components.parsing.ManageSites
+import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.room.dao.categoryNames
 import com.san.kir.manger.room.dao.insertAsync
 import com.san.kir.manger.room.models.MangaColumn
@@ -21,17 +21,16 @@ import com.san.kir.manger.utils.DIR
 import com.san.kir.manger.utils.MangaUpdaterService
 import com.san.kir.manger.utils.createDirs
 import com.san.kir.manger.utils.getFullPath
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.customView
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.horizontalProgressBar
 import org.jetbrains.anko.padding
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.selector
 import org.jetbrains.anko.startService
-import org.jetbrains.anko.textColor
 import org.jetbrains.anko.textResource
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.verticalLayout
@@ -44,7 +43,7 @@ class AddMangaDialog(
     private val onFinish: () -> Unit
 ) {
     init {
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             val categories = Main.db.categoryDao.categoryNames()
 
             context.selector(
@@ -84,21 +83,17 @@ class AddMangaDialog(
                     added = hideTextView(R.string.add_manga_dialog_added_manga)
                     searching = hideTextView(R.string.add_manga_dialog_search_chapters)
                     allReady = hideTextView(R.string.add_manga_dialog_all_complete)
-                    error = hideTextView(R.string.add_manga_dialog_error) {
-                        textColor = Color.RED
-                    }
+                    error = hideTextView(R.string.add_manga_dialog_error)
                     progressBar = horizontalProgressBar {
                         isIndeterminate = true
                     }
-                    okBtn = hideTextView(R.string.add_manga_close_btn) {
-                        textColor = Color.parseColor("#FFFF4081")
-                    }.lparams(width = wrapContent, height = wrapContent) {
+                    okBtn = hideTextView(R.string.add_manga_close_btn).lparams(width = wrapContent, height = wrapContent) {
                         gravity = Gravity.END
                     }
                 }
             }
         }.show()
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             try {
                 val pat = Pattern.compile("[a-z/0-9]+-").matcher(element.shotLink)
                 if (pat.find())
@@ -133,7 +128,7 @@ class AddMangaDialog(
         }
     }
 
-    private fun ViewManager.hideTextView(id: Int, init: (TextView.() -> Unit)? = null) =
+    private fun ViewManager.hideTextView(id: Int) =
         textView(id) {
             visibility = View.GONE
             padding = dip(5)

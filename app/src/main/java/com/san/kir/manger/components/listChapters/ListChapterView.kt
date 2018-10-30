@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import com.san.kir.manger.R
 import com.san.kir.manger.eventBus.Binder
+import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
 import com.san.kir.manger.room.dao.ChapterFilter
 import com.san.kir.manger.utils.ID
@@ -28,7 +29,6 @@ import org.jetbrains.anko.include
 import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.relativeLayout
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.space
 import org.jetbrains.anko.verticalLayout
 import org.jetbrains.anko.wrapContent

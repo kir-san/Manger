@@ -6,24 +6,22 @@ import android.text.InputType
 import android.view.View
 import android.view.ViewManager
 import android.widget.EditText
-import android.widget.RadioButton
 import android.widget.TextView
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.san.kir.manger.eventBus.Binder
 import com.san.kir.manger.extending.views.RoundedImageView
 import com.san.kir.manger.extending.views.SpecialViewPager
-import com.san.kir.manger.utils.ID
-import kotlinx.coroutines.experimental.CoroutineScope
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.AlertBuilder
 import org.jetbrains.anko.bottomPadding
 import org.jetbrains.anko.custom.ankoView
 import org.jetbrains.anko.dip
-import org.jetbrains.anko.radioButton
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.topPadding
-import kotlin.coroutines.experimental.CoroutineContext
+import kotlin.coroutines.CoroutineContext
 
 inline fun ViewManager.specialViewPager(theme: Int = 0, init: SpecialViewPager.() -> Unit) =
     ankoView(::SpecialViewPager, theme, init)
@@ -81,27 +79,20 @@ fun EditText.typeTextMultiLine(): EditText {
 }
 
 
-fun ViewManager.radioButton(id: Int = ID.generate(), text: Int): RadioButton {
-    return radioButton {
-        this.id = id
-        setText(text)
-    }
-}
-
 fun AlertBuilder<*>.positiveButton(
     buttonText: String,
-    context: CoroutineContext = UI,
+    context: CoroutineContext = Dispatchers.Main,
     handler: suspend CoroutineScope.(dialog: DialogInterface) -> Unit
 ) {
-    positiveButton(buttonText) { launch(context) { handler(it) } }
+    positiveButton(buttonText) { GlobalScope.launch(context) { handler(it) } }
 }
 
 fun AlertBuilder<*>.positiveButton(
     buttonText: Int,
-    context: CoroutineContext = UI,
+    context: CoroutineContext = Dispatchers.Main,
     handler: suspend CoroutineScope.(dialog: DialogInterface) -> Unit
 ) {
-    positiveButton(buttonText) { launch(context) { handler(it) } }
+    positiveButton(buttonText) { GlobalScope.launch(context) { handler(it) } }
 }
 
 fun View.visibleOrGone(isVisible: Binder<Boolean>) {

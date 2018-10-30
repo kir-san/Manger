@@ -7,6 +7,7 @@ import android.widget.Switch
 import android.widget.TextView
 import com.san.kir.manger.R
 import com.san.kir.manger.components.main.Main
+import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.room.dao.updateAsync
 import com.san.kir.manger.room.models.PlannedAddEdit
 import com.san.kir.manger.room.models.PlannedPeriod
@@ -24,7 +25,6 @@ import org.jetbrains.anko.leftOf
 import org.jetbrains.anko.lines
 import org.jetbrains.anko.margin
 import org.jetbrains.anko.relativeLayout
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.switch
 import org.jetbrains.anko.textView

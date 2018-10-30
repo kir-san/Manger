@@ -2,9 +2,10 @@ package com.san.kir.manger.components.library
 
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.utils.PreparePagerAdapter
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 // адаптер страниц
 class LibraryPageAdapter(private val act: LibraryActivity) : PreparePagerAdapter() {
@@ -12,11 +13,11 @@ class LibraryPageAdapter(private val act: LibraryActivity) : PreparePagerAdapter
     var adapters = listOf<LibraryItemsRecyclerPresenter>() // список адаптеров
 
     val init by lazy {
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             adapters = listOf()
             pagers = listOf()
             if (categories.isNotEmpty()) {
-                val prepare = async {
+                val prepare = withContext(Dispatchers.Default) {
                     categories
                         .filter { it.isVisible }
                         .map { cat ->
@@ -27,8 +28,8 @@ class LibraryPageAdapter(private val act: LibraryActivity) : PreparePagerAdapter
                         }.toMap()
                 }
 
-                adapters += prepare.await().keys.toList()
-                pagers += prepare.await().values.toList()
+                adapters += prepare.keys.toList()
+                pagers += prepare.values.toList()
 
                 notifyDataSetChanged()
             }

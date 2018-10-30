@@ -11,6 +11,8 @@ import com.san.kir.manger.R
 import com.san.kir.manger.R.drawable
 import com.san.kir.manger.R.string
 import com.san.kir.manger.extending.ankoExtend.goneOrVisible
+import com.san.kir.manger.extending.ankoExtend.onClick
+import com.san.kir.manger.extending.ankoExtend.onSeekBarChangeListener
 import com.san.kir.manger.extending.ankoExtend.specialViewPager
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
 import com.san.kir.manger.extending.ankoExtend.visibleOrInvisible
@@ -34,8 +36,6 @@ import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.padding
 import org.jetbrains.anko.relativeLayout
 import org.jetbrains.anko.rightOf
-import org.jetbrains.anko.sdk25.coroutines.onClick
-import org.jetbrains.anko.sdk25.coroutines.onSeekBarChangeListener
 import org.jetbrains.anko.seekBar
 import org.jetbrains.anko.support.v4.onPageChangeListener
 import org.jetbrains.anko.textColor
@@ -125,7 +125,6 @@ class ViewerView(private val presenter: ViewerPresenter) : AnkoComponent<ViewerA
                 }.lparams(width = wrapContent, height = wrapContent) {
                     leftOf(Id.next) // Слева от кнопки
                 }
-
 
                 imageButton {
                     id = Id.prev

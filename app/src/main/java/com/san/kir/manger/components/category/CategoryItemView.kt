@@ -7,6 +7,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import com.san.kir.manger.R
 import com.san.kir.manger.extending.ankoExtend.invisibleOrVisible
+import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.ID
@@ -22,7 +23,6 @@ import org.jetbrains.anko.imageView
 import org.jetbrains.anko.leftOf
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.relativeLayout
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.wrapContent
 

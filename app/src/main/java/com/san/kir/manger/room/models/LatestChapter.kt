@@ -7,7 +7,6 @@ import com.san.kir.manger.utils.ChapterStatus
 import com.san.kir.manger.utils.getFullPath
 import com.san.kir.manger.utils.isEmptyDirectory
 import com.san.kir.manger.utils.log
-import kotlinx.coroutines.experimental.async
 
 @Entity(tableName = "latestChapters")
 class LatestChapter {
@@ -29,27 +28,27 @@ class LatestChapter {
     }
 }
 
-val LatestChapter.isRead
-    get() = async {
-        try {
-            Main.db.chapterDao.loadChapters(manga)
-                    .first { it.name == name }
-                    .isRead
-        } catch (ex: NoSuchElementException) {
-            log("error on $manga $name")
-            false
-        }
+fun LatestChapter.isRead(): Boolean {
+    return try {
+        Main.db.chapterDao.loadChapters(manga)
+            .first { it.name == name }
+            .isRead
+    } catch (ex: NoSuchElementException) {
+        log("error on $manga $name")
+        false
     }
+}
+
 
 val LatestChapter.action: Int
     get() {  // Определение доступного действия для главы
         getFullPath(path).apply {
             when {
-            // если ссылка есть и если папка пуста или папки нет, то можно скачать
+                // если ссылка есть и если папка пуста или папки нет, то можно скачать
                 site.isNotEmpty() && (isEmptyDirectory || !exists()) -> return ChapterStatus.DOWNLOADABLE
-            // если папка непустая, то статус соответствует удалению
+                // если папка непустая, то статус соответствует удалению
                 !isEmptyDirectory -> return ChapterStatus.DELETE
-            // папка не существет и ссылки на загрузку нет, то больше ничего не сделаешь
+                // папка не существет и ссылки на загрузку нет, то больше ничего не сделаешь
                 !exists() and site.isEmpty() -> return ChapterStatus.NOT_LOADED
             }
         }

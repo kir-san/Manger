@@ -17,10 +17,11 @@ import com.san.kir.manger.App.Companion.context
 import com.san.kir.manger.R
 import com.san.kir.manger.components.drawer.DrawerActivity
 import com.san.kir.manger.components.main.Main
-import com.san.kir.manger.components.parsing.ManageSites
+import com.san.kir.manger.components.parsing.checkNewVersion
 import com.san.kir.manger.eventBus.Binder
 import com.san.kir.manger.eventBus.negative
 import com.san.kir.manger.eventBus.positive
+import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
 import com.san.kir.manger.extending.views.showAlways
 import com.san.kir.manger.extending.views.showIfRoom
@@ -29,10 +30,10 @@ import com.san.kir.manger.room.models.MangaColumn
 import com.san.kir.manger.utils.ActionModeControl
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.MangaUpdaterService
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.horizontalProgressBar
@@ -40,7 +41,6 @@ import org.jetbrains.anko.include
 import org.jetbrains.anko.longToast
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.padding
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.startService
 import org.jetbrains.anko.support.v4.onPageChangeListener
 import org.jetbrains.anko.support.v4.viewPager
@@ -51,7 +51,6 @@ import org.jetbrains.anko.wrapContent
 
 class LibraryActivity : DrawerActivity() {
     private val mCategory: List<Category> get() = Main.db.categoryDao.loadCategories()
-    private val updateApp by lazy { ManageSites.UpdateApp(this) }
     private var currentAdapter: LibraryItemsRecyclerPresenter? = null
     private lateinit var viewPager: ViewPager
     private val pagerAdapter by lazy { LibraryPageAdapter(this) }
@@ -126,7 +125,7 @@ class LibraryActivity : DrawerActivity() {
 
         override fun onDestroyActionMode(mode: ActionMode?) {
             actionMode.clear()
-            launch(UI) {
+            GlobalScope.launch(Dispatchers.Main) {
                 currentAdapter?.removeSelection()
                 delay(800)
                 supportActionBar?.show()
@@ -146,7 +145,9 @@ class LibraryActivity : DrawerActivity() {
                 isIndeterminate = true
                 visibleOrGone(isAction)
             }.lparams(width = matchParent, height = wrapContent)
+
             viewPager {
+                //                this.top
                 include<PagerTabStrip>(R.layout.page_tab_strip)
                 adapter = pagerAdapter
                 viewPager = this
@@ -162,7 +163,7 @@ class LibraryActivity : DrawerActivity() {
         super.onResume()
         isAction.positive()
         pagerAdapter.init.invokeOnCompletion {
-            launch(UI) {
+            GlobalScope.launch(Dispatchers.Main) {
                 try {
                     currentAdapter = pagerAdapter.adapters[0]
                     invalidateOptionsMenu()
@@ -187,7 +188,7 @@ class LibraryActivity : DrawerActivity() {
             var index = 0
 
             onPageSelected {
-                launch(UI) {
+                GlobalScope.launch(Dispatchers.Main) {
                     currentAdapter = pagerAdapter.adapters[it]
                     invalidateOptionsMenu()
                     title = getString(
@@ -206,6 +207,8 @@ class LibraryActivity : DrawerActivity() {
                 }
             }
         }
+
+        checkNewVersion(this)
     }
 
     override fun onPause() {
@@ -226,12 +229,12 @@ class LibraryActivity : DrawerActivity() {
             0 -> updateCurrent()
             1 -> updateAll()
 //            2 -> SortCategoryDialog(this, currentAdapter?.cat!!)
-            3 -> updateApp.checkNewVersion(true)
+            3 -> checkNewVersion(this, true)
         }
         return super.onOptionsItemSelected(item)
     }
 
-    fun onListItemSelect(position: Int) = launch(UI) {
+    fun onListItemSelect(position: Int) = GlobalScope.launch(Dispatchers.Main) {
         currentAdapter?.toggleSelection(position)
 
         val hasCheckedItems = currentAdapter?.selectedCount!! > 0
@@ -245,13 +248,13 @@ class LibraryActivity : DrawerActivity() {
         actionMode.setTitle(actionTitle())
     }
 
-    private fun updateCurrent() = async {
+    private fun updateCurrent() = GlobalScope.launch(Dispatchers.Main) {
         currentAdapter?.catalog?.forEach {
             startService<MangaUpdaterService>(MangaColumn.tableName to it)
         }
     }
 
-    private fun updateAll() = async {
+    private fun updateAll() = GlobalScope.launch(Dispatchers.Main) {
         Main.db.mangaDao.loadAllManga().forEach {
             startService<MangaUpdaterService>(MangaColumn.tableName to it)
         }

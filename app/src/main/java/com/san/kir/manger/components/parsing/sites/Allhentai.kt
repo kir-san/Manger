@@ -9,16 +9,16 @@ import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.room.models.SiteCatalogElement
 import com.san.kir.manger.utils.createDirs
 import com.san.kir.manger.utils.getFullPath
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.channels.produce
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.sync.Mutex
-import kotlinx.coroutines.experimental.sync.withLock
+import kotlinx.coroutines.ExecutorCoroutineDispatcher
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.channels.produce
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.json.JSONArray
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.util.regex.Pattern
-import kotlin.coroutines.experimental.CoroutineContext
 
 class Allhentai : SiteCatalog {
     override var isInit = false
@@ -137,12 +137,12 @@ class Allhentai : SiteCatalog {
         return element
     }
 
-    override fun getCatalog(context: CoroutineContext) = produce(context) {
+    override fun getCatalog(context: ExecutorCoroutineDispatcher) = GlobalScope.produce(context) {
         var docLocal: Document = ManageSites.getDocument(siteCatalog)
 
-        fun isGetNext() = async(context) {
+        fun isGetNext(): Boolean {
             val next = docLocal.select(".pagination > a.nextLink").attr("href")
-            if (next.isNotEmpty()) {
+            return if (next.isNotEmpty()) {
                 docLocal = ManageSites.getDocument(host + next)
                 true
             } else
@@ -155,7 +155,7 @@ class Allhentai : SiteCatalog {
                     send(simpleParseElement(element))
                 }
             }
-        } while (isGetNext().await())
+        } while (isGetNext())
 
         close()
     }

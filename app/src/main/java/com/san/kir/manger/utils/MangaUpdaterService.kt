@@ -28,8 +28,10 @@ import com.san.kir.manger.room.models.Chapter
 import com.san.kir.manger.room.models.LatestChapter
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.room.models.toDownloadItem
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.notificationManager
 import org.jetbrains.anko.startService
@@ -119,7 +121,7 @@ class MangaUpdaterService : Service() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel()
-            val notificationBuilder = NotificationCompat.Builder(this, channelId )
+            val notificationBuilder = NotificationCompat.Builder(this, channelId)
             val notification = notificationBuilder.setOngoing(true)
                 .setSmallIcon(R.mipmap.icon_launcher)
                 .setPriority(PRIORITY_MIN)
@@ -130,12 +132,14 @@ class MangaUpdaterService : Service() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun createNotificationChannel(){
+    private fun createNotificationChannel() {
         val channelId = "MangaUpdaterChannelId"
         val channelName = TAG
-        val chan = NotificationChannel(channelId,
-                                       channelName,
-                                       NotificationManager.IMPORTANCE_DEFAULT)
+        val chan = NotificationChannel(
+            channelId,
+            channelName,
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
         chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
 
         notificationManager.createNotificationChannel(chan)
@@ -171,8 +175,8 @@ class MangaUpdaterService : Service() {
         return super.onStartCommand(intent, flags, startId)
     }
 
-    private fun downloadNew() = async {
-        Main.db.latestChapterDao.downloadNewChapters().await().onEach { chapter ->
+    private fun downloadNew() = GlobalScope.launch(Dispatchers.Default) {
+        Main.db.latestChapterDao.downloadNewChapters().onEach { chapter ->
             startService<DownloadService>("item" to chapter.toDownloadItem())
         }
     }
@@ -206,7 +210,7 @@ class MangaUpdaterService : Service() {
 
     @WorkerThread
     fun onHandleIntent(manga: Manga) {
-        runBlocking {
+        runBlocking(Dispatchers.Default) {
             var countNew = 0
             try {
                 val notify = NotificationCompat.InboxStyle(
@@ -251,7 +255,7 @@ class MangaUpdaterService : Service() {
                     }
                     val oldSize = oldChapters.size
 
-                    SearchDuplicate.silentRemoveDuplicate(manga).await()
+                    SearchDuplicate.silentRemoveDuplicate(manga)
 
                     val newSize = chapters.loadChapters(manga.unic).size
 

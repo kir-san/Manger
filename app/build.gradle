@@ -17,12 +17,12 @@ android {
         }
     }
 
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "com.san.kir.manger"
         minSdkVersion 19
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 210
         versionName "2.1.0"
         vectorDrawables.useSupportLibrary = true
@@ -50,9 +50,9 @@ android {
 }
 
 dependencies {
-    def support_version = "27.1.1"
-    def coroutines_version = "0.23.4"
-    def anko_version = "0.10.5"
+    def support_version = "28.0.0"
+    def coroutines_version = "1.0.0-RC1"
+    def anko_version = "0.10.7"
     def lifecycle_version = "1.1.1"
     def room_version = "1.1.1"
     def paging_version = "1.0.0"
@@ -68,11 +68,14 @@ dependencies {
     implementation "com.android.support:support-vector-drawable:$support_version"
 //    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation "com.android.support:exifinterface:$support_version"
+    implementation "com.android.support:support-media-compat:$support_version"
+    implementation "com.android.support:support-v4:$support_version"
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
-    implementation "org.jetbrains.anko:anko:$anko_version"
+    implementation "org.jetbrains.anko:anko-commons:$anko_version"
+    implementation "org.jetbrains.anko:anko-sdk25:$anko_version"
     implementation "org.jetbrains.anko:anko-appcompat-v7:$anko_version"
     implementation "org.jetbrains.anko:anko-design:$anko_version"
     implementation "org.jetbrains.anko:anko-recyclerview-v7:$anko_version"
@@ -85,22 +88,20 @@ dependencies {
 
     implementation "android.arch.paging:runtime:$paging_version"
 
-//    implementation 'com.squareup.picasso:picasso:2.5.2'
-
-    implementation 'com.squareup.okhttp3:okhttp:3.9.1'
-    implementation 'org.jsoup:jsoup:1.8.3'
+    implementation 'com.squareup.okhttp3:okhttp:3.11.0'
+    implementation 'org.jsoup:jsoup:1.11.3'
 
     //Big Image Viewer
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.10.0'
 
-    implementation 'com.evernote:android-job:1.2.5'
+    implementation 'com.evernote:android-job:1.2.6'
     implementation 'com.google.android.gms:play-services-gcm:10.2.1'
 
 
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test:rules:1.0.2'
-    androidTestImplementation 'com.agoda.kakao:kakao:1.4.0'
+//    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+//    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+//    androidTestImplementation 'com.android.support.test:rules:1.0.2'
+//    androidTestImplementation 'com.agoda.kakao:kakao:1.4.0'
 }
 
 kapt {

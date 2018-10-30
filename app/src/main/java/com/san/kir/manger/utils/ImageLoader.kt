@@ -3,14 +3,17 @@ package com.san.kir.manger.utils
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import com.san.kir.manger.components.parsing.ManageSites
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.newFixedThreadPoolContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
 import okio.Okio
+import java.util.concurrent.Executors
 
 
 class ImageLoader(private val url: String) {
-    private val POOL = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors(), "bg")
+    private val POOL = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
+        .asCoroutineDispatcher()
 
     private var color = -1
     private var errorResId = -1
@@ -39,7 +42,7 @@ class ImageLoader(private val url: String) {
     }
 
     private fun load(target: ImageView) {
-        launch(POOL) {
+        GlobalScope.launch(POOL) {
             //        Получаем имя из url
             val name = getNameFromUrl(url)
 
@@ -48,7 +51,7 @@ class ImageLoader(private val url: String) {
 
             if (path.exists() && path.length() > 0) {
                 //        если файл есть, то отображаем его в imageView
-                launch(UI) {
+                launch(Dispatchers.Main) {
                     target.setImageDrawable(Drawable.createFromPath(path.absolutePath))
                     success?.invoke()
                 }
@@ -61,7 +64,7 @@ class ImageLoader(private val url: String) {
                         close()
                     }
                     //              и отображаем его в imageView
-                    launch(UI) {
+                    launch(Dispatchers.Main) {
                         target.setImageDrawable(Drawable.createFromPath(path.absolutePath))
                         success?.invoke()
                     }
@@ -70,18 +73,18 @@ class ImageLoader(private val url: String) {
 
                     if (errorResId != -1) {
                         //              если была указана картинка для ошибки указываем ее
-                        launch(UI) {
+                        launch(Dispatchers.Main) {
                             target.setImageResource(errorResId)
                         }
                     } else if (color != -1) {
                         //              если был указан цвет для ошибки, то устанавливаем цвет
-                        launch(UI) {
+                        launch(Dispatchers.Main) {
                             target.setBackgroundColor(color)
                         }
                     }
 
                     //              если ничего не было указано, то ничего не делаем
-                    launch(UI) {
+                    launch(Dispatchers.Main) {
                         error?.invoke()
                     }
                 }
@@ -100,6 +103,7 @@ class ImageLoader(private val url: String) {
     }
 }
 
+@Suppress("ClassName")
 object loadImage {
     operator fun invoke(url: String, init: ImageLoader.() -> Unit = {}) =
         ImageLoader(url).apply { init() }

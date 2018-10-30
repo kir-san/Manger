@@ -7,6 +7,7 @@ import android.widget.ImageView
 import com.san.kir.manger.R
 import com.san.kir.manger.components.addManga.AddMangaActivity
 import com.san.kir.manger.extending.ankoExtend.labelView
+import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.ankoExtend.textViewBold15Size
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.room.models.MangaColumn
@@ -14,8 +15,10 @@ import com.san.kir.manger.utils.formatDouble
 import com.san.kir.manger.utils.getFullPath
 import com.san.kir.manger.utils.lengthMb
 import com.san.kir.manger.utils.loadImage
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.backgroundResource
@@ -28,7 +31,6 @@ import org.jetbrains.anko.margin
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.padding
 import org.jetbrains.anko.scrollView
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.textColor
 import org.jetbrains.anko.verticalLayout
@@ -69,9 +71,9 @@ class AboutMangaDialog(context: Context, manga: Manga) {
 
                             labelView(R.string.about_manga_dialog_volume)
                             textViewBold15Size(R.string.about_manga_dialog_calculate) {
-                                launch {
+                                GlobalScope.launch(Dispatchers.Default) {
                                     val size = getFullPath(manga.path).lengthMb
-                                    launch(UI) {
+                                    withContext(Dispatchers.Main) {
                                         text = context.getString(
                                             R.string.library_page_item_size,
                                             formatDouble(

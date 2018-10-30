@@ -14,6 +14,8 @@ import android.widget.TextView
 import com.san.kir.manger.R
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.components.viewer.ViewerActivity
+import com.san.kir.manger.extending.ankoExtend.onClick
+import com.san.kir.manger.extending.ankoExtend.onLongClick
 import com.san.kir.manger.room.models.Chapter
 import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.room.models.DownloadStatus
@@ -26,8 +28,10 @@ import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.delChapters
 import com.san.kir.manger.utils.getFullPath
 import com.san.kir.manger.utils.isNotEmptyDirectory
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.alignParentBottom
@@ -46,8 +50,6 @@ import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.padding
 import org.jetbrains.anko.progressBar
 import org.jetbrains.anko.relativeLayout
-import org.jetbrains.anko.sdk25.coroutines.onClick
-import org.jetbrains.anko.sdk25.coroutines.onLongClick
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.toast
@@ -203,7 +205,7 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
         percentProgress.text = act.getString(R.string.list_chapters_download_progress, current)
     }
 
-    private fun disableDownload(chapter: Chapter) = async(UI) {
+    private fun disableDownload(chapter: Chapter) = GlobalScope.launch(Dispatchers.Main) {
         progressBar.visibility = View.GONE
         percentProgress.visibility = View.GONE
         stopBtn.visibility = View.GONE
@@ -274,7 +276,7 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
         }
     }
 
-    private fun updateStatus(chapter: Chapter) = async(UI) {
+    private fun updateStatus(chapter: Chapter) = GlobalScope.launch(Dispatchers.Main) {
         status.text = act.resources.getString(
             R.string.list_chapters_read,
             chapter.progress,

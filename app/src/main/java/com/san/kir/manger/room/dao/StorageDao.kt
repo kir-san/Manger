@@ -12,8 +12,10 @@ import com.san.kir.manger.utils.DIR
 import com.san.kir.manger.utils.getFullPath
 import com.san.kir.manger.utils.lengthMb
 import com.san.kir.manger.utils.shortPath
-import kotlinx.coroutines.experimental.Deferred
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 
 @Dao
 interface StorageDao : BaseDao<Storage> {
@@ -31,7 +33,7 @@ interface StorageDao : BaseDao<Storage> {
 }
 
 fun StorageDao.loadAllSize(): LiveData<Double> =
-    Transformations.map(loadLivedItems()) { it.sumByDouble { it.sizeFull } }
+    Transformations.map(loadLivedItems()) { list -> list.sumByDouble { it.sizeFull } }
 
 fun StorageDao.loadPagedStorageItems() =
     LivePagedListBuilder(loadPagedItems(), 20).build()
@@ -52,7 +54,7 @@ fun StorageDao.updateStorageItems() {
 }
 
 private val StorageDao.asyncUpdateStorageItems: Deferred<Any>
-    get() = async {
+    get() = GlobalScope.async(Dispatchers.Default) {
         val list = simpleLoadItems()
         val storageList = getFullPath(DIR.MANGA).listFiles()
         if (list.isEmpty() || storageList.size != list.size) {
@@ -80,11 +82,12 @@ fun Storage.getSizeAndIsNew(): Storage {
     val chapters = Main.db.chapterDao
 
     val file = getFullPath(path)
-    mangaDao.getFromPath(file).let {
+    mangaDao.getFromPath(file).let { manga ->
         sizeFull = file.lengthMb
-        isNew = it == null
-        sizeRead = it?.let {
+        isNew = manga == null
+        sizeRead = manga?.let { it ->
             chapters.loadChapters(it.unic)
+                .asSequence()
                 .filter { it.isRead }
                 .sumByDouble { getFullPath(it.path).lengthMb }
         } ?: 0.0

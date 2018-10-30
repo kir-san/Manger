@@ -8,7 +8,6 @@ import com.san.kir.manger.App
 import com.san.kir.manger.R
 import com.san.kir.manger.components.downloadManager.DownloadService
 import com.san.kir.manger.components.library.LibraryActivity
-import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.components.schedule.ScheduleManager
 import com.san.kir.manger.extending.BaseActivity
 import com.san.kir.manger.extending.ankoExtend.compatCheckSelfPermission
@@ -40,8 +39,6 @@ class Main : BaseActivity() {
         }
     }
 
-    private val updateApp by lazy { ManageSites.UpdateApp(applicationContext) }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -71,7 +68,6 @@ class Main : BaseActivity() {
     private fun init() {
         createNeedFolders()
         createAndInitializeDb()
-        updateApp.checkNewVersion()
         restoreSchedule()
 
         startService<DownloadService>()

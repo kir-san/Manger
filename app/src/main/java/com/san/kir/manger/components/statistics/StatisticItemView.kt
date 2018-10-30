@@ -11,6 +11,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import com.san.kir.manger.R
 import com.san.kir.manger.components.main.Main
+import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.ankoExtend.roundedImageView
 import com.san.kir.manger.extending.ankoExtend.visibleOrInvisible
 import com.san.kir.manger.room.dao.loadAllTime
@@ -19,8 +20,9 @@ import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.TimeFormat
 import com.san.kir.manger.utils.loadImage
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.alignParentBottom
 import org.jetbrains.anko.below
@@ -33,7 +35,6 @@ import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.padding
 import org.jetbrains.anko.relativeLayout
 import org.jetbrains.anko.rightOf
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.wrapContent
@@ -107,7 +108,7 @@ class StatisticItemView(private val act: StatisticActivity) :
     }
 
     override fun bind(item: MangaStatistic, isSelected: Boolean, position: Int) {
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             val context = root.context
             val manga = Main.db.mangaDao.loadMangaOrNull(item.manga)
 
@@ -132,7 +133,7 @@ class StatisticItemView(private val act: StatisticActivity) :
             Main.db.statisticDao
                 .loadAllTime()
                 .observe(act, Observer {
-                    launch(UI) {
+                    GlobalScope.launch(Dispatchers.Main) {
                         val i = it?.toInt() ?: 0
                         progressBar.max = i
                         progressBar.progress = item.allTime.toInt()
@@ -140,7 +141,7 @@ class StatisticItemView(private val act: StatisticActivity) :
                         if (i != 0) {
                             percent.text = context.getString(
                                 R.string.storage_manga_item_size_percent,
-                                Math.round((item.allTime / i * 100).toDouble())
+                                Math.round(item.allTime.toDouble() / i * 100)
                             )
                         }
                     }

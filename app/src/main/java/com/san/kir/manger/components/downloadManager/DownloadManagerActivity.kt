@@ -19,10 +19,10 @@ import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.eventBus.Binder
 import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.room.models.DownloadStatus
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
-
-
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class DownloadManagerActivity : DrawerActivity() {
     val dao = Main.db.downloadDao
@@ -43,37 +43,33 @@ class DownloadManagerActivity : DrawerActivity() {
             bound = true
         }
     }
-    private val titleObserver = Observer<List<DownloadItem>> {
-        it?.let { downloads ->
-            val loadingCount = async {
-                downloads.filter {
+    private val titleObserver = Observer<List<DownloadItem>> { item ->
+        item?.let { downloads ->
+            GlobalScope.launch(Dispatchers.Default) {
+                val loadingCount = downloads.filter {
                     it.status == DownloadStatus.queued ||
                             it.status == DownloadStatus.loading
                 }.size
-            }
-            val stoppedCount = async {
-                downloads.filter {
+                val stoppedCount = downloads.filter {
                     it.status == DownloadStatus.error ||
                             it.status == DownloadStatus.pause
                 }.size
-            }
-            val completedCount = async {
-                downloads.filter {
+                val completedCount = downloads.filter {
                     it.status == DownloadStatus.completed
                 }.size
-            }
 
-            async(UI) {
-                supportActionBar?.title =
-                        getString(R.string.main_menu_downloader_count, loadingCount.await())
-                supportActionBar?.subtitle =
-                        Html.fromHtml(
-                            "<font color='#FFFFFF'>${getString(
-                                R.string.download_activity_subtitle,
-                                stoppedCount.await(),
-                                completedCount.await()
-                            )}</font>"
-                        )
+                withContext(Dispatchers.Main) {
+                    supportActionBar?.title =
+                            getString(R.string.main_menu_downloader_count, loadingCount)
+                    supportActionBar?.subtitle =
+                            Html.fromHtml(
+                                "<font color='#FFFFFF'>${getString(
+                                    R.string.download_activity_subtitle,
+                                    stoppedCount,
+                                    completedCount
+                                )}</font>"
+                            )
+                }
             }
         }
     }

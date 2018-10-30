@@ -9,12 +9,13 @@ import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.room.models.SiteCatalogElement
 import com.san.kir.manger.utils.createDirs
 import com.san.kir.manger.utils.getFullPath
-import kotlinx.coroutines.experimental.channels.produce
+import kotlinx.coroutines.ExecutorCoroutineDispatcher
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.channels.produce
 import org.json.JSONArray
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.util.regex.Pattern
-import kotlin.coroutines.experimental.CoroutineContext
 
 open class ReadmangaTemplate : SiteCatalog {
     override var isInit = false
@@ -120,7 +121,7 @@ open class ReadmangaTemplate : SiteCatalog {
         return element
     }
 
-    override fun getCatalog(context: CoroutineContext) = produce(context) {
+    override fun getCatalog(context: ExecutorCoroutineDispatcher) = GlobalScope.produce(context) {
         var docLocal: Document = ManageSites.getDocument(siteCatalog)
 
         fun isGetNext(): Boolean {

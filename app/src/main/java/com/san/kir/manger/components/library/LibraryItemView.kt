@@ -10,6 +10,8 @@ import android.widget.TextView
 import com.san.kir.manger.R
 import com.san.kir.manger.components.listChapters.ListChaptersActivity
 import com.san.kir.manger.components.main.Main
+import com.san.kir.manger.extending.ankoExtend.onClick
+import com.san.kir.manger.extending.ankoExtend.onLongClick
 import com.san.kir.manger.extending.dialogs.LibraryItemMenu
 import com.san.kir.manger.room.dao.count
 import com.san.kir.manger.room.dao.countNotRead
@@ -20,14 +22,13 @@ import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.getDrawableCompat
 import com.san.kir.manger.utils.loadImage
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.customView
 import org.jetbrains.anko.defaultSharedPreferences
-import org.jetbrains.anko.sdk25.coroutines.onClick
-import org.jetbrains.anko.sdk25.coroutines.onLongClick
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.verticalLayout
@@ -46,7 +47,7 @@ abstract class LibraryItemView(
     lateinit var isUpdate: ProgressBar
 
     override fun bind(item: Manga, isSelected: Boolean, position: Int) {
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             val context = root.context
             root.onClick {
                 if (act.actionMode.hasFinish())

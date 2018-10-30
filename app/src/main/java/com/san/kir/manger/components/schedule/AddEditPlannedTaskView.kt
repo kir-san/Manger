@@ -12,6 +12,7 @@ import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.eventBus.Binder
 import com.san.kir.manger.extending.BaseActivity
 import com.san.kir.manger.extending.ankoExtend.labelView
+import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.ankoExtend.textViewBold15Size
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
 import com.san.kir.manger.room.models.PlannedPeriod
@@ -32,7 +33,6 @@ import org.jetbrains.anko.padding
 import org.jetbrains.anko.radioButton
 import org.jetbrains.anko.radioGroup
 import org.jetbrains.anko.recyclerview.v7.recyclerView
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.support.v4.nestedScrollView
 import org.jetbrains.anko.textColorResource
 import org.jetbrains.anko.textResource

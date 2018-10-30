@@ -14,6 +14,7 @@ import android.widget.TextView
 import com.san.kir.manger.R
 import com.san.kir.manger.components.addManga.AddMangaActivity
 import com.san.kir.manger.components.main.Main
+import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.ankoExtend.roundedImageView
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
 import com.san.kir.manger.extending.ankoExtend.visibleOrInvisible
@@ -28,8 +29,9 @@ import com.san.kir.manger.utils.formatDouble
 import com.san.kir.manger.utils.getFullPath
 import com.san.kir.manger.utils.loadImage
 import com.san.kir.manger.utils.log
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.alignParentBottom
@@ -44,7 +46,6 @@ import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.padding
 import org.jetbrains.anko.relativeLayout
 import org.jetbrains.anko.rightOf
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.wrapContent
@@ -129,7 +130,7 @@ class StorageItemView(private val act: StorageActivity) :
     }
 
     override fun bind(item: Storage, isSelected: Boolean, position: Int) {
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             val context = root.context
             val manga = mangaDao.getFromPath(item.path)
 
@@ -152,7 +153,7 @@ class StorageItemView(private val act: StorageActivity) :
             Main.db.storageDao
                 .loadAllSize()
                 .observe(act, Observer {
-                    launch(UI) {
+                    launch(Dispatchers.Main) {
                         val size = it?.roundToInt() ?: 0
                         progressBar.max = size
                         progressBar.progress = item.sizeFull.roundToInt()
@@ -180,8 +181,8 @@ class StorageItemView(private val act: StorageActivity) :
                 menu.add(0, 1, 0, R.string.storage_item_menu_add)
                 menu.add(0, 2, 0, R.string.storage_item_menu_full_delete)
 
-                setOnMenuItemClickListener {
-                    when (it.itemId) {
+                setOnMenuItemClickListener { menuItem ->
+                    when (menuItem.itemId) {
                         1 -> {
                             context.startActivity<AddMangaActivity>(Storage::class.java.canonicalName to item)
                         }

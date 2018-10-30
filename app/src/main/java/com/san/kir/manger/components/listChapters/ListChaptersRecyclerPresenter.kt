@@ -14,9 +14,11 @@ import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.delChapters
 import com.san.kir.manger.utils.log
-import kotlinx.coroutines.experimental.Deferred
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.startService
 import org.jetbrains.anko.toast
 import java.util.regex.Pattern
@@ -36,7 +38,7 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
     fun setManga(
         manga: Manga = this.manga,
         filter: ChapterFilter
-    ): Deferred<Deferred<Deferred<Unit>>> {
+    ): Job {
         this@ListChaptersRecyclerPresenter.manga = manga
         this@ListChaptersRecyclerPresenter.filter = filter
         return changeSort(manga.isAlternativeSort)
@@ -46,11 +48,11 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
         changeSort(manga.isAlternativeSort)
     }
 
-    fun changeSort(alternative: Boolean) = async {
+    fun changeSort(alternative: Boolean) = GlobalScope.launch(Dispatchers.Default) {
         try {
             val loadChapters = dao.loadChapters(manga.unic)
             log("loadChapters = ${loadChapters.size}")
-            adapter.items = if (alternative) {
+            backupCatalog = if (alternative) {
                 loadChapters.sortedWith(Comparator { arg1, arg2 ->
                     val reg = Pattern.compile("\\d+")
                     val matcher1 = reg.matcher(arg1.name)
@@ -90,18 +92,16 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
             } else {
                 loadChapters
             }
-            log("adapter.items.size = ${adapter.items.size}")
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
-        backupCatalog = adapter.items
+//        backupCatalog = adapter.items
 
         changeOrder(filter)
-
     }
 
     private var filter = ChapterFilter.NOT_READ_DESC
-    fun changeOrder(filter: ChapterFilter) = async {
+    fun changeOrder(filter: ChapterFilter) = GlobalScope.launch(Dispatchers.Default) {
         try {
             this@ListChaptersRecyclerPresenter.filter = filter
             adapter.items = when (filter) {
@@ -115,7 +115,7 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
-        async(UI) {
+        withContext(Dispatchers.Main) {
             adapter.notifyDataSetChanged()
         }
     }
@@ -127,7 +127,7 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
 
     val selectedCount get() = adapter.selectedItems.filter { it }.size
 
-    fun deleteSelectedItems() = async {
+    fun deleteSelectedItems() = GlobalScope.launch(Dispatchers.Default) {
         var count = 0
         forSelection { i ->
             val chapter = items[i]
@@ -136,7 +136,7 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
                 count++
             }
         }
-        async(UI) {
+        withContext(Dispatchers.Main) {
             if (count == 0) {
                 act.toast(R.string.list_chapters_selection_del_error)
             } else {
@@ -145,7 +145,7 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
         }
     }
 
-    fun downloadSelectedItems() = async {
+    fun downloadSelectedItems() = GlobalScope.launch(Dispatchers.Default) {
         forSelection { i ->
             val chapter = items[i]
             // для каждого выделенный элемент
@@ -156,29 +156,24 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
         }
     }
 
-    fun downloadNextNotReadChapter() = async(UI) {
-        val job = async {
-            val chapter = dao.loadChaptersNotReadAsc(manga.unic)
-                .first { it.action == ChapterStatus.DOWNLOADABLE }
-            act.startService<DownloadService>("item" to chapter.toDownloadItem())
-        }
+    fun downloadNextNotReadChapter() = GlobalScope.launch(Dispatchers.Default) {
+        val chapter = dao
+            .loadChaptersNotReadAsc(manga.unic)
+            .first { it.action == ChapterStatus.DOWNLOADABLE }
 
-        job.await()
+        act.startService<DownloadService>("item" to chapter.toDownloadItem())
 
         changeOrder(filter)
     }
 
-    fun downloadAllNotReadChapters() = async(UI) {
-        val job = async {
-            dao.loadChaptersNotReadAsc(manga.unic)
-                .filter { it.action == ChapterStatus.DOWNLOADABLE }
-                .onEach { chapter ->
-                    act.startService<DownloadService>("item" to chapter.toDownloadItem())
-                }
-                .size
-        }
-
-        val count = job.await()
+    fun downloadAllNotReadChapters() = GlobalScope.launch(Dispatchers.Default) {
+        val count =  dao
+            .loadChaptersNotReadAsc(manga.unic)
+            .filter { it.action == ChapterStatus.DOWNLOADABLE }
+            .onEach { chapter ->
+                act.startService<DownloadService>("item" to chapter.toDownloadItem())
+            }
+            .size
 
         if (count == 0)
             act.toast(R.string.list_chapters_selection_load_error)
@@ -188,17 +183,14 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
         changeOrder(filter)
     }
 
-    fun downloadAllChapters() = async(UI) {
-        val job = async {
-            dao.loadChaptersAllAsc(manga.unic)
-                .filter { it.action == ChapterStatus.DOWNLOADABLE }
-                .onEach { chapter ->
-                    act.startService<DownloadService>("item" to chapter.toDownloadItem())
-                }
-                .size
-        }
-
-        val count = job.await()
+    fun downloadAllChapters() = GlobalScope.launch(Dispatchers.Default) {
+        val count = dao
+            .loadChaptersAllAsc(manga.unic)
+            .filter { it.action == ChapterStatus.DOWNLOADABLE }
+            .onEach { chapter ->
+                act.startService<DownloadService>("item" to chapter.toDownloadItem())
+            }
+            .size
         if (count == 0)
             act.toast(R.string.list_chapters_selection_load_error)
         else
@@ -206,7 +198,7 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
         changeOrder(filter)
     }
 
-    fun setRead(isReading: Boolean) = async {
+    fun setRead(isReading: Boolean) = GlobalScope.launch(Dispatchers.Default) {
         forSelection { i ->
             // Для всех выделеных элементов
             items[i].let { chapter ->
@@ -217,7 +209,7 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
         changeOrder(filter)
     }
 
-    fun removeSelection() = async(UI) {
+    fun removeSelection() = GlobalScope.launch(Dispatchers.Main) {
         repeat(adapter.itemCount) { i ->
             adapter.selectedItems[i] = false
             adapter.notifyItemChanged(i)
@@ -263,7 +255,7 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
         }
     }
 
-    fun fullDeleteSelectedItems() = async {
+    fun fullDeleteSelectedItems() = GlobalScope.launch(Dispatchers.Default) {
         forSelection { i ->
             items[i].let { chapter ->
                 dao.delete(chapter)

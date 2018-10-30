@@ -24,8 +24,9 @@ import com.san.kir.manger.eventBus.positive
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
 import com.san.kir.manger.extending.views.showNever
 import com.san.kir.manger.room.dao.loadPagedLatestChapters
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.horizontalProgressBar
 import org.jetbrains.anko.matchParent
@@ -76,8 +77,8 @@ class LatestChapterActivity : DrawerActivity() {
 
         Main.db.latestChapterDao
             .loadPagedLatestChapters()
-            .observe(this, Observer {
-                it?.let {
+            .observe(this, Observer { list ->
+                list?.let {
                     if (it.size > 0)
                         title = getString(R.string.main_menu_latest_count, it.size)
                     else
@@ -95,12 +96,18 @@ class LatestChapterActivity : DrawerActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val item = menu.add(0, 0, 0, R.string.latest_chapter_download_new).showNever()
-        launch(UI) { item.isEnabled = _adapter.hasNewChapters() }
+        menu.add(0, 0, 0, R.string.latest_chapter_download_new).showNever()
         menu.add(1, 1, 1, R.string.latest_chapter_clean).showNever()
         menu.add(1, 2, 2, R.string.latest_chapter_clean_read).showNever()
         menu.add(1, 3, 3, R.string.latest_chapter_clean_download).showNever()
         return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        GlobalScope.launch(Dispatchers.Main) {
+            menu.getItem(0).isEnabled = _adapter.hasNewChapters()
+        }
+        return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

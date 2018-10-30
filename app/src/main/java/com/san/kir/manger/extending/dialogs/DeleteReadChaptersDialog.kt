@@ -7,8 +7,9 @@ import com.san.kir.manger.R
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.utils.delChapters
-import kotlinx.coroutines.experimental.Job
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.customView
 import org.jetbrains.anko.dip
@@ -38,9 +39,11 @@ class DeleteReadChaptersDialog(context: Context, manga: Manga, function: (() -> 
                                 padding = dip(10)
                             }.lparams { gravity = Gravity.CENTER }
 
-                            task = async {
-                                val chapters =
-                                    Main.db.chapterDao.loadChapters(manga.unic).filter { it.isRead }
+                            task = GlobalScope.async {
+                                val chapters = Main.db
+                                    .chapterDao
+                                    .loadChapters(manga.unic)
+                                    .filter { chapter -> chapter.isRead }
                                 val size = chapters.size
 
                                 if (size == 0) {

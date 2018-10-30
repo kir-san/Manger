@@ -7,6 +7,8 @@ import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR
+import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
 import android.graphics.Point
 import android.os.Bundle
 import android.view.KeyEvent
@@ -72,13 +74,15 @@ class ViewerActivity : ThemedActionBarActivity() {
                 getString(R.string.settings_viewer_orientation_port_rev) -> SCREEN_ORIENTATION_REVERSE_PORTRAIT
                 getString(R.string.settings_viewer_orientation_land) -> SCREEN_ORIENTATION_LANDSCAPE
                 getString(R.string.settings_viewer_orientation_land_rev) -> SCREEN_ORIENTATION_REVERSE_LANDSCAPE
+                getString(R.string.settings_viewer_orientation_auto_port) -> SCREEN_ORIENTATION_SENSOR_PORTRAIT
+                getString(R.string.settings_viewer_orientation_auto_land) -> SCREEN_ORIENTATION_SENSOR_LANDSCAPE
                 else -> SCREEN_ORIENTATION_SENSOR
             }
 
             val controlKey = getString(R.string.settings_viewer_control_key)
             val controlDefault = resources.getStringArray(R.array.settings_viewer_control_default)
 
-            getStringSet(controlKey, controlDefault.toSet()).forEach {
+            getStringSet(controlKey, controlDefault.toSet())?.forEach {
                 when (it) {
                     getString(R.string.settings_viewer_control_taps) -> isTapControl = true
                     getString(R.string.settings_viewer_control_swipes) -> presenter.isSwipeControl.positive()
@@ -167,10 +171,10 @@ class ViewerActivity : ThemedActionBarActivity() {
         if (time > 0) {
             val stats = Main.db.statisticDao.loadItem(mangaName)
             stats.lastTime = time
-            stats.allTime += time
+            stats.allTime = stats.allTime + time
             stats.maxSpeed = max(stats.maxSpeed, (stats.lastPages / (time.toFloat() / 60)).toInt())
 
-            stats.openedTimes += 1
+            stats.openedTimes = stats.openedTimes + 1
             Main.db.statisticDao.updateAsync(stats)
         }
 

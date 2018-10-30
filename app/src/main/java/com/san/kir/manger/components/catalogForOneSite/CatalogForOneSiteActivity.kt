@@ -16,11 +16,11 @@ import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.eventBus.negative
 import com.san.kir.manger.extending.BaseActivity
+import com.san.kir.manger.extending.ankoExtend.onQueryTextListener
 import com.san.kir.manger.extending.ankoExtend.startForegroundService
 import com.san.kir.manger.extending.views.showAlways
 import com.san.kir.manger.room.dao.updateAsync
 import org.jetbrains.anko.alert
-import org.jetbrains.anko.appcompat.v7.coroutines.onQueryTextListener
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.find
 import org.jetbrains.anko.imageResource
@@ -113,7 +113,6 @@ class CatalogForOneSiteActivity : BaseActivity() {
                 onQueryTextChange {
                     // Фильтрация при каждом изменении текста
                     adapter.changeOrder(searchText = it!!)
-                    true
                 }
             }
         }

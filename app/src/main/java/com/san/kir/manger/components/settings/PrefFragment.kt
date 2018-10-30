@@ -1,15 +1,11 @@
 package com.san.kir.manger.components.settings
 
 import android.os.Bundle
-import android.preference.PreferenceFragment
+import android.support.v7.preference.PreferenceFragmentCompat
 import com.san.kir.manger.R
 
-class PrefFragment : PreferenceFragment() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
+class PrefFragment : PreferenceFragmentCompat() {
+    override fun onCreatePreferences(p0: Bundle?, p1: String?) {
         addPreferencesFromResource(R.xml.pref_main)
-
-
     }
 }

@@ -9,6 +9,7 @@ import com.san.kir.manger.components.parsing.sites.Mangachan
 import com.san.kir.manger.components.parsing.sites.Mintmanga
 import com.san.kir.manger.components.parsing.sites.Readmanga
 import com.san.kir.manger.components.parsing.sites.Selfmanga
+import com.san.kir.manger.components.parsing.sites.Yaoichan
 import com.san.kir.manger.room.models.Chapter
 import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.room.models.Manga
@@ -43,7 +44,8 @@ object ManageSites {
         Mintmanga(),
         Selfmanga(),
         Henchan(),
-        Allhentai()
+        Allhentai(),
+        Yaoichan()
     )
 
     fun openLink(url: String): Response {

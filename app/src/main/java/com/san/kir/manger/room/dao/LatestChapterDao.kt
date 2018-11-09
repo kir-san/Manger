@@ -34,19 +34,19 @@ fun LatestChapterDao.clearHistoryDownload() =
     GlobalScope.launch(Dispatchers.Default) {
         load()
             .filter { it.action == ChapterStatus.DELETE }
-            .forEach { deleteAsync(it) }
+            .forEach { delete(it) }
     }
 
 fun LatestChapterDao.clearHistoryRead() =
     GlobalScope.launch(Dispatchers.Default) {
         load()
-            .filter { it.isRead() }.forEach { deleteAsync(it) }
+            .filter { it.isRead() }.forEach { delete(it) }
     }
 
 fun LatestChapterDao.clearHistory() =
     GlobalScope.launch(Dispatchers.Default) {
         load()
-            .forEach { deleteAsync(it) }
+            .forEach { delete(it) }
     }
 
 fun LatestChapterDao.downloadNewChapters() =

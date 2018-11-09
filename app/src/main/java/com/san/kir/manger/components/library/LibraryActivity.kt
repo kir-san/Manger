@@ -17,17 +17,18 @@ import com.san.kir.manger.App.Companion.context
 import com.san.kir.manger.R
 import com.san.kir.manger.components.drawer.DrawerActivity
 import com.san.kir.manger.components.main.Main
-import com.san.kir.manger.components.parsing.checkNewVersion
 import com.san.kir.manger.eventBus.Binder
 import com.san.kir.manger.eventBus.negative
 import com.san.kir.manger.eventBus.positive
 import com.san.kir.manger.extending.ankoExtend.onClick
+import com.san.kir.manger.extending.ankoExtend.startForegroundService
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
 import com.san.kir.manger.extending.views.showAlways
 import com.san.kir.manger.extending.views.showIfRoom
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.room.models.MangaColumn
 import com.san.kir.manger.utils.ActionModeControl
+import com.san.kir.manger.utils.AppUpdateService
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.MangaUpdaterService
 import kotlinx.coroutines.Dispatchers
@@ -208,7 +209,7 @@ class LibraryActivity : DrawerActivity() {
             }
         }
 
-        checkNewVersion(this)
+//        checkNewVersion(this)
     }
 
     override fun onPause() {
@@ -229,7 +230,7 @@ class LibraryActivity : DrawerActivity() {
             0 -> updateCurrent()
             1 -> updateAll()
 //            2 -> SortCategoryDialog(this, currentAdapter?.cat!!)
-            3 -> checkNewVersion(this, true)
+            3 -> startForegroundService<AppUpdateService>()
         }
         return super.onOptionsItemSelected(item)
     }

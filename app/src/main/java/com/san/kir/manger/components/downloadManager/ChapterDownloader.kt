@@ -100,8 +100,6 @@ class ChapterDownloader(private val task: DownloadItem, concurrent: Int) : Runna
         }
     }
 
-    private fun prepareUrl(url: String) = url.removeSurrounding("\"", "\"")
-
     private fun pageDownload(link: String, downloadPath: File) {
         if (interrupted) return
 
@@ -134,15 +132,6 @@ class ChapterDownloader(private val task: DownloadItem, concurrent: Int) : Runna
         }
     }
 
-    private fun nameFromUrl(url: String): String {
-        val pat = Pattern.compile("[a-z0-9._-]+\\.[a-z]{3,4}")
-            .matcher(url.removeSurrounding("\"", "\""))
-        var name = ""
-        while (pat.find())
-            name = pat.group()
-        return name
-    }
-
     private fun sizeOfPageFromUrl(link: String): Long {
         val url = URL(link)
         val urlConnection = url.openConnection()
@@ -155,6 +144,19 @@ class ChapterDownloader(private val task: DownloadItem, concurrent: Int) : Runna
         fun onProgress(item: DownloadItem)
         fun onError(item: DownloadItem, cause: Throwable?)
         fun onComplete(item: DownloadItem)
+    }
+
+    companion object {
+        fun nameFromUrl(url: String): String {
+            val pat = Pattern.compile("[a-z0-9._-]+\\.[a-z]{3,4}")
+                .matcher(url.removeSurrounding("\"", "\""))
+            var name = ""
+            while (pat.find())
+                name = pat.group()
+            return name
+        }
+
+        fun prepareUrl(url: String) = url.removeSurrounding("\"", "\"")
     }
 }
 

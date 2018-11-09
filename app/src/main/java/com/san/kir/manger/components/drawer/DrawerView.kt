@@ -25,10 +25,12 @@ import com.san.kir.manger.components.storage.StorageActivity
 import com.san.kir.manger.extending.BaseActivity
 import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.room.dao.MainMenuType
-import com.san.kir.manger.room.dao.updateAsync
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.SimpleItemTouchHelperCallback
 import com.san.kir.manger.utils.getDrawableCompat
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.AnkoContextImpl
 import org.jetbrains.anko.appcompat.v7.toolbar
 import org.jetbrains.anko.backgroundColor
@@ -61,11 +63,16 @@ class DrawerView(private val act: BaseActivity) {
                 items.forEachIndexed { index, item ->
                     item.order = index
                 }
-                Main.db.mainMenuDao.updateAsync(*items.toTypedArray())
+                Main.db.mainMenuDao.update(*items.toTypedArray())
             })
         .apply {
-            items = Main.db.mainMenuDao.loadItems()
-            notifyDataSetChanged()
+            act.launch(act.coroutineContext) {
+                items = Main.db.mainMenuDao.loadItems()
+
+                withContext(Dispatchers.Main) {
+                    notifyDataSetChanged()
+                }
+            }
         }
 
     private val mItemTouchHelper by lazy {

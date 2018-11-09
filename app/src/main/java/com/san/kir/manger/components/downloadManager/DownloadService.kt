@@ -29,7 +29,7 @@ class DownloadService : Service(), DownloadListener {
     }
 
     private val downloadManager by lazy {
-        ChapterLoader(applicationContext).also {
+        ChapterLoaderC(applicationContext).also {
             it.addListener(this, this)
             defaultSharedPreferences.apply {
                 val concurrentKey = getString(R.string.settings_downloader_parallel_key)
@@ -107,7 +107,7 @@ class DownloadService : Service(), DownloadListener {
     }
 
     override fun onBind(intent: Intent?): IBinder {
-        return LocalBinder(this.downloadManager)
+        return LocalBinderC(this.downloadManager)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -292,4 +292,5 @@ class DownloadService : Service(), DownloadListener {
     }
 
     class LocalBinder(val chapterLoader: ChapterLoader) : Binder()
+    class LocalBinderC(val chapterLoader: ChapterLoaderC) : Binder()
 }

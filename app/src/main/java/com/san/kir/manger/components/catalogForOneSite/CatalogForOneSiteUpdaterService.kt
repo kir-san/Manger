@@ -13,7 +13,6 @@ import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.components.sitesCatalog.SiteCatalogActivity
 import com.san.kir.manger.room.dao.contain
-import com.san.kir.manger.room.dao.updateAsync
 import com.san.kir.manger.room.models.SiteCatalogElement
 import com.san.kir.manger.utils.ID
 import kotlinx.coroutines.Dispatchers
@@ -129,8 +128,7 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
                 }
 
                 siteDb?.oldVolume = counter
-                Main.db.siteDao.updateAsync(siteDb)
-
+                Main.db.siteDao.update(siteDb)
 
                 val responseIntent = Intent()
                 responseIntent.putExtra(EXTRA_KEY_OUT, site.id)

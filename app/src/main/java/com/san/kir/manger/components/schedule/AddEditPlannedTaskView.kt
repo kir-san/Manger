@@ -15,6 +15,7 @@ import com.san.kir.manger.extending.ankoExtend.labelView
 import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.ankoExtend.textViewBold15Size
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
+import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.room.models.PlannedPeriod
 import com.san.kir.manger.room.models.PlannedTask
 import com.san.kir.manger.room.models.PlannedType
@@ -23,6 +24,8 @@ import com.san.kir.manger.room.models.mangaList
 import com.san.kir.manger.utils.AnkoActivityComponent
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.collections.forEach
 import org.jetbrains.anko.dip
@@ -40,13 +43,22 @@ import org.jetbrains.anko.textView
 import org.jetbrains.anko.timePicker
 import org.jetbrains.anko.verticalLayout
 
+//TODO переписать инициализацию данных
 class AddEditPlannedTaskView : AnkoActivityComponent() {
-    private val listManga = Main.db.mangaDao.loadAllManga().filter { it.isUpdate }
+    private lateinit var listManga: List<Manga>
+    private lateinit var categoryList: Array<String>
+    private lateinit var catalogList: Array<String>
+
+    init {
+        runBlocking(Dispatchers.Default) {
+            listManga = Main.db.mangaDao.loadAllManga().filter { it.isUpdate }
+            categoryList = Main.db.categoryDao.loadCategories().map { it.name }.toTypedArray()
+            catalogList = Main.db.siteDao.loadAllSites().map { it.name }.toTypedArray()
+        }
+    }
+
     private val listMangaName = listManga.map { it.name }.toTypedArray()
     private val listMangaUnic = listManga.map { it.unic }.toTypedArray()
-
-    private val categoryList = Main.db.categoryDao.loadCategories().map { it.name }.toTypedArray()
-    private val catalogList = Main.db.siteDao.loadAllSites().map { it.name }.toTypedArray()
 
     private var _task = PlannedTask()
 

@@ -18,7 +18,7 @@ import org.jetbrains.anko.recyclerview.v7.recyclerView
 import org.jetbrains.anko.wrapContent
 
 class CategoryActivity : DrawerActivity() {
-    private val _adapter = CategoryRecyclerPresenter()
+    private val _adapter = CategoryRecyclerPresenter(this)
 
     override val LinearLayout.customView: View
         get() = frameLayout {

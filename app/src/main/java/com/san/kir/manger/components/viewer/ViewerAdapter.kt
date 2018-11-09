@@ -5,14 +5,13 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.view.PagerAdapter
-import java.io.File
 
 class ViewerAdapter(fm: FragmentManager) :
     FragmentStatePagerAdapter(fm) {
 
-    private var items: List<File> = listOf()
+    private var items: List<Page> = listOf()
 
-    fun setList(list: List<File>) {
+    fun setList(list: List<Page>) {
         this.items = list
         notifyDataSetChanged()
     }
@@ -20,16 +19,18 @@ class ViewerAdapter(fm: FragmentManager) :
     // Получение нужного элемента взависимости от позиции
     override fun getItem(position: Int): Fragment {
         return when (position) {
-            0 ->
-                if (items.first().name == "prev")
+            0 -> {
+                if (items.first().link == "prev")
                     ViewerPagerPrevFragment()
                 else
                     ViewerPageNonePrevFragment()
-            items.lastIndex ->
-                if (items.last().name == "next")
+            }
+            items.lastIndex -> {
+                if (items.last().link == "next")
                     ViewerPagerNextFragment()
                 else
                     ViewerPageNoneNextFragment()
+            }
 
             else -> ViewerPageFragment.newInstance(items[position])
         }

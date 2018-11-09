@@ -14,7 +14,7 @@ import com.san.kir.manger.room.models.toDownloadItem
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class LatestChaptersRecyclerPresenter(private val act: LatestChapterActivity) :
@@ -27,9 +27,12 @@ class LatestChaptersRecyclerPresenter(private val act: LatestChapterActivity) :
 
     override fun into(recyclerView: RecyclerView) {
         super.into(recyclerView)
-        recycler.adapter = adapter
-        latestChapterDao.loadPagedLatestChapters()
-            .observe(act, Observer { GlobalScope.launch(Dispatchers.Main) { adapter.submitList(it) } })
+        act.launch(act.coroutineContext) {
+            recycler.adapter = adapter
+            latestChapterDao.loadPagedLatestChapters()
+                .observe(act, Observer { act.launch(Dispatchers.Main) { adapter.submitList(it) } })
+        }
+
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
             0,
             ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
@@ -47,9 +50,9 @@ class LatestChaptersRecyclerPresenter(private val act: LatestChapterActivity) :
         }).attachToRecyclerView(recyclerView)
     }
 
-    fun hasNewChapters() = latestChapterDao.hasNewChapters()
+    fun hasNewChapters() = act.async(act.coroutineContext) { latestChapterDao.hasNewChapters() }
 
-    fun downloadNewChapters() = GlobalScope.launch {
+    fun downloadNewChapters() = act.launch(act.coroutineContext) {
         latestChapterDao.downloadNewChapters().onEach { chapter ->
             act.downloadManager.addOrStart(chapter.toDownloadItem())
         }

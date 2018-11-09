@@ -4,9 +4,6 @@ import android.arch.persistence.room.Room
 import com.san.kir.manger.App
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.room.CatalogDb
-import com.san.kir.manger.room.dao.deleteAsync
-import com.san.kir.manger.room.dao.insertAsync
-import com.san.kir.manger.room.dao.updateAsync
 import com.san.kir.manger.room.models.SiteCatalogElement
 
 object SiteCatalogElementViewModel {
@@ -29,10 +26,10 @@ object SiteCatalogElementViewModel {
 
     fun items() = elements?.dao?.loadItems() ?: emptyList()
 
-    fun update(element: SiteCatalogElement) = elements?.dao?.updateAsync(element)
+    fun update(element: SiteCatalogElement) = elements?.dao?.update(element)
 
-    fun insert(element: SiteCatalogElement) = elements?.dao?.insertAsync(element)
+    fun insert(element: SiteCatalogElement) = elements?.dao?.insert(element)
 
-    fun clearDb() = elements?.dao?.let { it.deleteAsync(*it.loadItems().toTypedArray()) }
+    fun clearDb() = elements?.dao?.let { it.delete(*it.loadItems().toTypedArray()) }
 }
 

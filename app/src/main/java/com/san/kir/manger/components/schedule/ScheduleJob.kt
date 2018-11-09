@@ -8,6 +8,7 @@ import com.san.kir.manger.room.dao.loadMangaWhereCategory
 import com.san.kir.manger.room.models.MangaColumn
 import com.san.kir.manger.room.models.PlannedType
 import com.san.kir.manger.room.models.mangaList
+import com.san.kir.manger.utils.AppUpdateService
 import com.san.kir.manger.utils.MangaUpdaterService
 import com.san.kir.manger.utils.log
 
@@ -42,6 +43,9 @@ class ScheduleJob(private val tag: String) : Job() {
                     val catalog = Main.db.siteDao.loadSite(task.catalog)
                     if (catalog != null && !CatalogForOneSiteUpdaterService.isContain(catalog.siteID))
                         context.startForegroundService<CatalogForOneSiteUpdaterService>("id" to catalog.siteID)
+                }
+                PlannedType.APP -> {
+                    context.startForegroundService<AppUpdateService>()
                 }
                 else -> {
                     log("Тип не соответсвует действительности")

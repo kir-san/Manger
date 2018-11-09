@@ -11,11 +11,19 @@ import com.san.kir.manger.components.catalogForOneSite.CatalogForOneSiteUpdaterS
 import com.san.kir.manger.components.drawer.DrawerActivity
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.extending.views.showNever
+import kotlinx.coroutines.asCoroutineDispatcher
 import org.jetbrains.anko.include
 import org.jetbrains.anko.startService
+import java.util.concurrent.Executors
+import kotlin.coroutines.CoroutineContext
 
 class SiteCatalogActivity : DrawerActivity() {
-    private val adapter = SiteCatalogRecyclerPresenter(this)
+    val dispatcher: CoroutineContext by lazy {
+        Executors.newSingleThreadExecutor().asCoroutineDispatcher() + job
+    }
+    private val adapter by lazy {
+        SiteCatalogRecyclerPresenter(this)
+    }
 
     override val LinearLayout.customView: View
         get() = include<RecyclerView>(R.layout.recycler_view) {

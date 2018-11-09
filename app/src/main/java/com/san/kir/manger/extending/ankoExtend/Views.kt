@@ -123,6 +123,14 @@ fun View.goneOrVisible(isGone: Binder<Boolean>) {
     }
 }
 
+fun View.goneOrVisible(isVisible1: Binder<Boolean>, isVisible2: Binder<Boolean>) {
+    isVisible1.bind { arg1 ->
+        isVisible2.bind { arg2 ->
+            visibility = if (arg1 || arg2) View.GONE else View.VISIBLE
+        }
+    }
+}
+
 fun View.invisibleOrVisible(isInvisible: Boolean) {
     visibility = if (isInvisible) View.INVISIBLE else View.VISIBLE
 }

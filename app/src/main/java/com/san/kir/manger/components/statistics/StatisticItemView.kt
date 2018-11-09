@@ -21,8 +21,8 @@ import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.TimeFormat
 import com.san.kir.manger.utils.loadImage
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.alignParentBottom
 import org.jetbrains.anko.below
@@ -108,32 +108,34 @@ class StatisticItemView(private val act: StatisticActivity) :
     }
 
     override fun bind(item: MangaStatistic, isSelected: Boolean, position: Int) {
-        GlobalScope.launch(Dispatchers.Main) {
+        act.launch(act.coroutineContext) {
             val context = root.context
             val manga = Main.db.mangaDao.loadMangaOrNull(item.manga)
 
-            if (manga != null && manga.logo.isNotEmpty()) {
-                loadImage(manga.logo) {
-                    errorColor(Color.TRANSPARENT)
-                    into(logo)
+            withContext(Dispatchers.Main) {
+                if (manga != null && manga.logo.isNotEmpty()) {
+                    loadImage(manga.logo) {
+                        errorColor(Color.TRANSPARENT)
+                        into(logo)
+                    }
+                } else logo.visibleOrInvisible(false)
+
+                name.text = item.manga
+
+                timeText.text = context.getString(
+                    R.string.statistic_subtitle,
+                    TimeFormat(item.allTime).toString(context)
+                )
+
+                root.onClick {
+                    context.startActivity<StatisticItemActivity>("manga" to item.manga)
                 }
-            } else logo.visibleOrInvisible(false)
-
-            name.text = item.manga
-
-            timeText.text = context.getString(
-                R.string.statistic_subtitle,
-                TimeFormat(item.allTime).toString(context)
-            )
-
-            root.onClick {
-                context.startActivity<StatisticItemActivity>("manga" to item.manga)
             }
 
             Main.db.statisticDao
                 .loadAllTime()
                 .observe(act, Observer {
-                    GlobalScope.launch(Dispatchers.Main) {
+                    act.launch(Dispatchers.Main) {
                         val i = it?.toInt() ?: 0
                         progressBar.max = i
                         progressBar.progress = item.allTime.toInt()

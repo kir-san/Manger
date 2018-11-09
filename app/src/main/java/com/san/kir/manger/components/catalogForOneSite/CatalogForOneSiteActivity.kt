@@ -19,7 +19,6 @@ import com.san.kir.manger.extending.BaseActivity
 import com.san.kir.manger.extending.ankoExtend.onQueryTextListener
 import com.san.kir.manger.extending.ankoExtend.startForegroundService
 import com.san.kir.manger.extending.views.showAlways
-import com.san.kir.manger.room.dao.updateAsync
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.find
@@ -90,7 +89,7 @@ class CatalogForOneSiteActivity : BaseActivity() {
 
             Main.db.siteDao.loadSite(mSite.name)?.let {
                 it.oldVolume = size
-                Main.db.siteDao.updateAsync(it)
+                Main.db.siteDao.update(it)
             }
         }
     }

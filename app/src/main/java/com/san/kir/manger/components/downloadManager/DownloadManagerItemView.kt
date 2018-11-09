@@ -22,7 +22,6 @@ import com.san.kir.manger.utils.bytesToMb
 import com.san.kir.manger.utils.formatDouble
 import com.san.kir.manger.utils.loadImage
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.anko.AnkoContext
@@ -160,9 +159,10 @@ class DownloadManagerItemView(private val act: DownloadManagerActivity) :
 
     override fun bind(item: DownloadItem, isSelected: Boolean, position: Int) {
         val context = name.context
-        GlobalScope.launch(Dispatchers.Default) {
+        act.launch(act.coroutineContext) {
             val isLoadOrQueue = item.status == DownloadStatus.queued
                     || item.status == DownloadStatus.loading
+
             withContext(Dispatchers.Main) {
                 name.text = context.getString(R.string.download_item_name, item.manga, item.name)
 
@@ -226,8 +226,7 @@ class DownloadManagerItemView(private val act: DownloadManagerActivity) :
                 }
             }
 
-        }
-        GlobalScope.launch(Dispatchers.Main) {
+
             val manga = Main.db.mangaDao.loadMangaOrNull(item.manga)
             if (manga != null) {
                 loadImage(manga.logo).into(logo)

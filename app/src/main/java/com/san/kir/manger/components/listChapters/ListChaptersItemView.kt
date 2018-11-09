@@ -26,11 +26,8 @@ import com.san.kir.manger.utils.ChapterStatus
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.delChapters
-import com.san.kir.manger.utils.getFullPath
-import com.san.kir.manger.utils.isNotEmptyDirectory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.alert
@@ -259,13 +256,14 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
                 if (isDownload)
                     act.toast(R.string.list_chapters_open_is_download)
                 else {
-                    if (getFullPath(chapter.path).isNotEmptyDirectory) {
+                    if (chapter.pages.isNullOrEmpty() || chapter.pages.any { it.isBlank() }) {
+                        act.longToast(R.string.list_chapters_open_not_exists)
+                    } else {
                         act.startActivity<ViewerActivity>(
                             "manga_name" to chapter.manga,
                             "chapter" to chapter.name
                         )
-                    } else // Иначе показать сообщение
-                        act.longToast(R.string.list_chapters_open_not_exists)
+                    }
                 }
             else // Иначе выделить елемент
                 act.onListItemSelect(position)
@@ -280,6 +278,7 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
         status.text = act.resources.getString(
             R.string.list_chapters_read,
             chapter.progress,
+            chapter.pages.size,
             chapter.countPages
         )
     }

@@ -4,7 +4,6 @@ import android.content.Context
 import android.view.View
 import android.widget.PopupMenu
 import com.san.kir.manger.components.main.Main
-import com.san.kir.manger.room.dao.updateAsync
 import com.san.kir.manger.room.models.Manga
 
 class ChangeCategoryDialog(context: Context, anchor: View?, manga: Manga) {
@@ -18,7 +17,7 @@ class ChangeCategoryDialog(context: Context, anchor: View?, manga: Manga) {
             setOnMenuItemClickListener { item ->
                 manga.categories = mCat[item.itemId].name
 
-                Main.db.mangaDao.updateAsync(manga)
+                Main.db.mangaDao.update(manga)
                 dismiss()
                 return@setOnMenuItemClickListener true
             }

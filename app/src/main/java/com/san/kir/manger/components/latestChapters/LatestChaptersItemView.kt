@@ -27,6 +27,7 @@ import com.san.kir.manger.utils.delChapters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.alignParentBottom
@@ -251,13 +252,15 @@ class LatestChaptersItemView(private val act: LatestChapterActivity) :
         disableDownload(item)
         initializeOnClicks(item)
 
-        GlobalScope.launch(Dispatchers.Main) {
+        act.launch(act.coroutineContext) {
             val color = when {
                 item.isRead() -> Color.parseColor("#a5a2a2")
                 else -> Color.TRANSPARENT
             }
-            root.backgroundColor = color
-            percent.backgroundColor = color
+            withContext(Dispatchers.Main) {
+                root.backgroundColor = color
+                percent.backgroundColor = color
+            }
         }
 
 

@@ -12,13 +12,11 @@ import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.san.kir.manger.R
-import com.san.kir.manger.components.addManga.AddMangaActivity
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.ankoExtend.roundedImageView
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
 import com.san.kir.manger.extending.ankoExtend.visibleOrInvisible
-import com.san.kir.manger.room.dao.deleteAsync
 import com.san.kir.manger.room.dao.getFromPath
 import com.san.kir.manger.room.dao.loadAllSize
 import com.san.kir.manger.room.models.Manga
@@ -30,8 +28,8 @@ import com.san.kir.manger.utils.getFullPath
 import com.san.kir.manger.utils.loadImage
 import com.san.kir.manger.utils.log
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.alignParentBottom
@@ -46,7 +44,6 @@ import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.padding
 import org.jetbrains.anko.relativeLayout
 import org.jetbrains.anko.rightOf
-import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.wrapContent
 import kotlin.math.roundToInt
@@ -130,30 +127,32 @@ class StorageItemView(private val act: StorageActivity) :
     }
 
     override fun bind(item: Storage, isSelected: Boolean, position: Int) {
-        GlobalScope.launch(Dispatchers.Main) {
+        act.launch(act.coroutineContext) {
             val context = root.context
             val manga = mangaDao.getFromPath(item.path)
 
-            root.onClick { it?.menuOfActions(manga, item) }
+            withContext(Dispatchers.Main) {
+                root.onClick { it?.menuOfActions(manga, item) }
 
-            if (manga != null && manga.logo.isNotEmpty()) {
-                loadImage(manga.logo) {
-                    errorColor(Color.TRANSPARENT)
-                    into(logo)
-                }
-            } else logo.visibleOrInvisible(false)
+                if (manga != null && manga.logo.isNotEmpty()) {
+                    loadImage(manga.logo) {
+                        errorColor(Color.TRANSPARENT)
+                        into(logo)
+                    }
+                } else logo.visibleOrInvisible(false)
 
-            name.text = item.name
-            sizeText.text = context.getString(
-                R.string.storage_manga_item_size_text,
-                formatDouble(item.sizeFull)
-            )
-            isExists.visibleOrGone(manga == null)
+                name.text = item.name
+                sizeText.text = context.getString(
+                    R.string.storage_manga_item_size_text,
+                    formatDouble(item.sizeFull)
+                )
+                isExists.visibleOrGone(manga == null)
+            }
 
             Main.db.storageDao
                 .loadAllSize()
                 .observe(act, Observer {
-                    launch(Dispatchers.Main) {
+                    act.launch(Dispatchers.Main) {
                         val size = it?.roundToInt() ?: 0
                         progressBar.max = size
                         progressBar.progress = item.sizeFull.roundToInt()
@@ -178,20 +177,18 @@ class StorageItemView(private val act: StorageActivity) :
             }
         } else
             with(PopupMenu(context, this, Gravity.END)) {
-                menu.add(0, 1, 0, R.string.storage_item_menu_add)
                 menu.add(0, 2, 0, R.string.storage_item_menu_full_delete)
 
                 setOnMenuItemClickListener { menuItem ->
                     when (menuItem.itemId) {
-                        1 -> {
-                            context.startActivity<AddMangaActivity>(Storage::class.java.canonicalName to item)
-                        }
                         2 -> {
                             context.alert {
                                 messageResource = R.string.storage_item_alert_message
                                 positiveButton(R.string.storage_item_alert_positive) {
-                                    getFullPath(item.path).deleteRecursively()
-                                    storage.deleteAsync(item)
+                                    act.launch(act.coroutineContext) {
+                                        getFullPath(item.path).deleteRecursively()
+                                        storage.delete(item)
+                                    }
                                 }
                                 negativeButton(R.string.storage_item_alert_negative) {
                                     log("")

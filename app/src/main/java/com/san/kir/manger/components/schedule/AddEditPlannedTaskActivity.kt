@@ -7,12 +7,14 @@ import com.san.kir.manger.R
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.extending.ThemedActionBarActivity
 import com.san.kir.manger.extending.views.showAlways
-import com.san.kir.manger.room.dao.insertAsync
-import com.san.kir.manger.room.dao.updateAsync
 import com.san.kir.manger.room.models.PlannedAddEdit
 import com.san.kir.manger.room.models.PlannedTask
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.setContentView
 
+// TODO добавить кнопку удалить
 class AddEditPlannedTaskActivity : ThemedActionBarActivity() {
 
     private val mView = AddEditPlannedTaskView()
@@ -48,14 +50,17 @@ class AddEditPlannedTaskActivity : ThemedActionBarActivity() {
         when (item.itemId) {
             android.R.id.home -> onBackPressed()
             1 -> {
-                val task = mView.getTask()
-                if (isEditMode) {
-                    task.isEnabled = false
-                    Main.db.plannedDao.updateAsync(task)
-                    manager.cancel(task)
-                } else {
-                    task.addedTime = System.currentTimeMillis()
-                    Main.db.plannedDao.insertAsync(task)
+                GlobalScope.launch(Dispatchers.Default) {
+                    val task = mView.getTask()
+
+                    if (isEditMode) {
+                        task.isEnabled = false
+                        Main.db.plannedDao.update(task)
+                        manager.cancel(task)
+                    } else {
+                        task.addedTime = System.currentTimeMillis()
+                        Main.db.plannedDao.insert(task)
+                    }
                 }
                 onBackPressed()
             }

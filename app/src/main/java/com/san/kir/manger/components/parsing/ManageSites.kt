@@ -14,6 +14,7 @@ import com.san.kir.manger.room.models.Chapter
 import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.room.models.SiteCatalogElement
+import com.san.kir.manger.room.models.toDownloadItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -73,50 +74,5 @@ object ManageSites {
         .first { item.link.contains(it.catalogName) }
         .pages(item)
 
-
-}
-
-private const val url = "http://4pda.ru/forum/index.php?showtopic=772886&st=0#entry53336845"
-private var isCheck = false
-
-// функция проверки новой версии приложения на сайте 4pda.ru
-fun checkNewVersion(act: AppCompatActivity, user: Boolean = false) {
-    if (!isCheck || user)
-        GlobalScope.launch(Dispatchers.Default) {
-            try {
-                val doc = ManageSites.getDocument(url)
-                val matcher = Pattern.compile("[0-9]\\.[0-9]\\.[0-9]")
-                    .matcher(doc.select("#post-53336845 span > b").text())
-                if (matcher.find()) {
-                    val version = matcher.group()
-                    var message = ""
-                    if (version != BuildConfig.VERSION_NAME)
-                        message = act.getString(
-                            R.string.main_check_app_ver_find,
-                            version,
-                            BuildConfig.VERSION_NAME
-                        )
-                    else
-                        if (user) {
-                            message = act.getString(R.string.main_check_app_ver_no_find)
-                            isCheck = true
-                        }
-
-                    if (message.isNotEmpty())
-                        launch(Dispatchers.Main) {
-                            act.alert {
-                                this.message = message
-                                positiveButton(R.string.main_check_app_ver_close) {}
-                                negativeButton(R.string.main_check_app_ver_go_to) {
-                                    act.browse(url)
-                                }
-                            }.show()
-                        }
-                }
-            } catch (ex: Throwable) {
-                launch(Dispatchers.Main) {
-                    act.longToast(R.string.main_check_app_ver_error)
-                }
-            }
-        }
+    fun pages(chapter: Chapter) = pages(chapter.toDownloadItem())
 }

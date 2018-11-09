@@ -103,6 +103,9 @@
         <service
             android:name=".utils.MangaUpdaterService"
             />
+        <service
+            android:name=".utils.AppUpdateService"
+            />
     </application>
 
 </manifest>

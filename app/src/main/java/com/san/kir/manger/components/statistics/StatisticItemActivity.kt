@@ -5,15 +5,13 @@ import android.view.MenuItem
 import com.san.kir.manger.R
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.extending.ThemedActionBarActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.setContentView
 
 class StatisticItemActivity : ThemedActionBarActivity() {
-    private val manga by lazy {
-        val unic = intent.getStringExtra("manga")
-        Main.db.statisticDao.loadItem(unic)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         val key = getString(R.string.settings_app_dark_theme_key)
         val default = getString(R.string.settings_app_dark_theme_default) == "true"
@@ -22,11 +20,18 @@ class StatisticItemActivity : ThemedActionBarActivity() {
 
         super.onCreate(savedInstanceState)
 
-        StatisticItemFullView(manga).setContentView(this)
+        launch(coroutineContext) {
+            val manga = Main.db.statisticDao.loadItem(
+                intent.getStringExtra("manga")
+            )
 
+            withContext(Dispatchers.Main) {
+                StatisticItemFullView(manga).setContentView(this@StatisticItemActivity)
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = manga.manga
+                supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                supportActionBar?.title = manga.manga
+            }
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

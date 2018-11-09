@@ -9,6 +9,9 @@ import com.san.kir.manger.room.models.PlannedPeriod
 import com.san.kir.manger.room.models.PlannedTask
 import com.san.kir.manger.room.models.PlannedType
 import com.san.kir.manger.utils.log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.longToast
 import java.util.*
 
@@ -17,7 +20,6 @@ class ScheduleManager(private val context: Context) {
     private val weekPeriod = dayPeriod * 7
 
     fun add(task: PlannedTask) {
-
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = System.currentTimeMillis()
         calendar.set(Calendar.HOUR_OF_DAY, task.hour)
@@ -47,34 +49,45 @@ class ScheduleManager(private val context: Context) {
     fun cancel(plannedTask: PlannedTask) {
         val tasks = JobManager.instance().cancelAllForTag(plannedTask.addedTime.toString())
         if (tasks >= 1) {
-            when (plannedTask.type) {
-                PlannedType.MANGA ->
-                    context.longToast(
-                        context.getString(R.string.schedule_manager_cancel_manga, plannedTask.manga)
-                    )
-                PlannedType.CATEGORY ->
-                    context.longToast(
-                        context.getString(
-                            R.string.schedule_manager_cancel_category,
-                            plannedTask.category
+            GlobalScope.launch(Dispatchers.Main) {
+                when (plannedTask.type) {
+                    PlannedType.MANGA ->
+                        context.longToast(
+                            context.getString(
+                                R.string.schedule_manager_cancel_manga,
+                                plannedTask.manga
+                            )
                         )
-                    )
-                PlannedType.GROUP ->
-                    context.longToast(
-                        context.getString(
-                            R.string.schedule_manager_cancel_group,
-                            plannedTask.groupName
+                    PlannedType.CATEGORY ->
+                        context.longToast(
+                            context.getString(
+                                R.string.schedule_manager_cancel_category,
+                                plannedTask.category
+                            )
                         )
-                    )
-                PlannedType.CATALOG ->
-                    context.longToast(
-                        context.getString(
-                            R.string.schedule_manager_cancel_catalog,
-                            plannedTask.catalog
+                    PlannedType.GROUP ->
+                        context.longToast(
+                            context.getString(
+                                R.string.schedule_manager_cancel_group,
+                                plannedTask.groupName
+                            )
                         )
-                    )
-                else ->
-                    log("Тип не соответсвует действительности")
+                    PlannedType.CATALOG ->
+                        context.longToast(
+                            context.getString(
+                                R.string.schedule_manager_cancel_catalog,
+                                plannedTask.catalog
+                            )
+                        )
+                    PlannedType.APP ->
+                        context.longToast(
+                            context.getString(
+                                R.string.schedule_manager_cancel_app
+                            )
+                        )
+                    else ->
+                        log("Тип не соответсвует действительности")
+                }
             }
         }
     }

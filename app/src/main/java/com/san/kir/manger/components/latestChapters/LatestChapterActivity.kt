@@ -14,7 +14,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
 import com.san.kir.manger.R
-import com.san.kir.manger.components.downloadManager.ChapterLoader
+import com.san.kir.manger.components.downloadManager.ChapterLoaderC
 import com.san.kir.manger.components.downloadManager.DownloadService
 import com.san.kir.manger.components.drawer.DrawerActivity
 import com.san.kir.manger.components.main.Main
@@ -25,7 +25,6 @@ import com.san.kir.manger.extending.ankoExtend.visibleOrGone
 import com.san.kir.manger.extending.views.showNever
 import com.san.kir.manger.room.dao.loadPagedLatestChapters
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.horizontalProgressBar
@@ -45,12 +44,12 @@ class LatestChapterActivity : DrawerActivity() {
 
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             downloadManager =
-                    (service as DownloadService.LocalBinder).chapterLoader
+                    (service as DownloadService.LocalBinderC).chapterLoader
             bound = true
         }
     }
 
-    lateinit var downloadManager: ChapterLoader
+    lateinit var downloadManager: ChapterLoaderC
 
     override val LinearLayout.customView: View
         get() = verticalLayout {
@@ -104,8 +103,8 @@ class LatestChapterActivity : DrawerActivity() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        GlobalScope.launch(Dispatchers.Main) {
-            menu.getItem(0).isEnabled = _adapter.hasNewChapters()
+        launch(Dispatchers.Main) {
+            menu.getItem(0).isEnabled =_adapter.hasNewChapters().await()
         }
         return super.onPrepareOptionsMenu(menu)
     }

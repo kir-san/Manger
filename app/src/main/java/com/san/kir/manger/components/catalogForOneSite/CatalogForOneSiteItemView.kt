@@ -23,6 +23,7 @@ import com.san.kir.manger.utils.listStrToString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.alignParentBottom
 import org.jetbrains.anko.alignParentRight
@@ -109,12 +110,14 @@ class CatalogForOneSiteItemView : RecyclerViewAdapterFactory.AnkoView<SiteCatalo
             addBtn.visibility = View.INVISIBLE
             root.backgroundColor = Color.parseColor("#a5a2a2")
             item.isAdded = true
-            SiteCatalogElementViewModel.update(item)
+
+            GlobalScope.launch(Dispatchers.Default) {
+                SiteCatalogElementViewModel.update(item)
+            }
         }
 
         root.backgroundColor = when {
             item.isAdded -> Color.parseColor("#a5a2a2")
-//            position % 2 != 0 -> Color.LTGRAY
             else -> Color.TRANSPARENT
         }
 
@@ -130,25 +133,30 @@ class CatalogForOneSiteItemView : RecyclerViewAdapterFactory.AnkoView<SiteCatalo
         addBtn.onClick { AddMangaDialog(root.context, item, onAddManga) }
         updBtn.onClick {
             updBtn.visibleOrInvisible(false)
-            val oldManga = Main.db.mangaDao.loadManga(item.name)
-            val updItem = ManageSites.getFullElement(item).await()
-            oldManga.authorsList = updItem.authors
-            oldManga.logo = updItem.logo
-            oldManga.about = updItem.about
-            oldManga.genresList = updItem.genres
-            oldManga.site = updItem.link
-            oldManga.status = updItem.statusEdition
-            Main.db.mangaDao.update(oldManga)
+
+            GlobalScope.launch(Dispatchers.Default) {
+                val oldManga = Main.db.mangaDao.loadManga(item.name)
+                val updItem = ManageSites.getFullElement(item).await()
+                oldManga.authorsList = updItem.authors
+                oldManga.logo = updItem.logo
+                oldManga.about = updItem.about
+                oldManga.genresList = updItem.genres
+                oldManga.site = updItem.link
+                oldManga.status = updItem.statusEdition
+                Main.db.mangaDao.update(oldManga)
+            }
 
             updBtn.context.longToast("Информация о манге ${item.name} обновлена")
         }
 
-        GlobalScope.launch(Dispatchers.Main) {
+        GlobalScope.launch(Dispatchers.Default) {
             val isContain = Main.db.mangaDao.contain(item)
             if (item.isAdded != isContain) {
                 item.isAdded = isContain
                 SiteCatalogElementViewModel.update(item)
-                bind(item, isSelected, position)
+                withContext(Dispatchers.Main) {
+                    bind(item, isSelected, position)
+                }
             }
         }
     }

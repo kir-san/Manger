@@ -24,6 +24,7 @@ import com.san.kir.manger.room.models.PlannedTask
 import com.san.kir.manger.room.models.Site
 import com.san.kir.manger.room.models.Storage
 import com.san.kir.manger.room.typeConverters.FileConverter
+import com.san.kir.manger.room.typeConverters.ListStringConverter
 import com.san.kir.manger.room.typeConverters.MainMenuTypeConverter
 import com.san.kir.manger.utils.DIR
 
@@ -45,12 +46,13 @@ import com.san.kir.manger.utils.DIR
 )
 @TypeConverters(
     FileConverter::class,
+    ListStringConverter::class,
     MainMenuTypeConverter::class
 )
 abstract class RoomDB : RoomDatabase() {
     companion object {
         const val NAME = "${DIR.PROFILE}/profile.db"
-        const val VERSION = 30
+        const val VERSION = 31
     }
 
     abstract val siteDao: SiteDao

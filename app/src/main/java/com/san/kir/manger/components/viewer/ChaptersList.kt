@@ -1,19 +1,15 @@
 package com.san.kir.manger.components.viewer
 
 
+import android.os.Parcel
+import android.os.Parcelable
 import com.san.kir.manger.components.main.Main
-import com.san.kir.manger.components.viewer.ChaptersList.Helper.chapterDao
-import com.san.kir.manger.components.viewer.ChaptersList.Helper.positionStat
-import com.san.kir.manger.room.dao.updateAsync
+import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.room.models.Chapter
 import com.san.kir.manger.room.models.MangaStatistic
 import com.san.kir.manger.utils.getFullPath
-import com.san.kir.manger.utils.imageExtensions
-import com.san.kir.manger.utils.isEmptyDirectory
-import java.io.File
-import java.util.*
 
-// Свой класс для управления страницами и главами
+// класс для управления страницами и главами
 class ChaptersList(
     mangaName: String,
     chapter: String
@@ -24,18 +20,20 @@ class ChaptersList(
 
     init {
         Helper.list_chapter.clear() // Очистить список
-        Helper.list_chapter.addAll(chapterDao.loadChapters(mangaName)) // Получение глав
+        Helper.list_chapter.addAll(Helper.chapterDao.loadChapters(mangaName)) // Получение глав
         Helper.position_chapter = findChapterPosition(chapter) // Установка текущей главы
+
         PageObject.updateList() // Получение списка страниц для главы
         PageObject.position = when { // Установка текущей страницы
             ChapterObject.current.progress <= 0 -> 0 // Если не больше 0, то ноль
             else -> ChapterObject.current.progress // Иначе как есть
         }
-        positionStat = PageObject.position
+
+        Helper.positionStat = PageObject.position
         Helper.stats = Helper.statisticDao.loadItem(mangaName)
         Helper.stats.lastChapters = 0
         Helper.stats.lastPages = 0
-        Helper.statisticDao.updateAsync(Helper.stats)
+        Helper.statisticDao.update(Helper.stats)
     }
 
     private fun findChapterPosition(chapter: String): Int { // Позиции главы, по названию главы
@@ -47,12 +45,10 @@ class ChaptersList(
     object Helper { // маленький объект
         val chapterDao = Main.db.chapterDao
         val statisticDao = Main.db.statisticDao
-        val reg = Regex("\\d+") // шаблон
         val list_chapter: MutableList<Chapter> = mutableListOf() // Список глав
         var position_chapter = 0 // текущая глава
         var position_page = 0 // текущая страница
         var stats = MangaStatistic()
-        var list_page = mutableListOf<File>() // Список страниц
         var positionStat = 0
     }
 
@@ -72,18 +68,12 @@ class ChaptersList(
                 PageObject.updateList()
                 Helper.stats.lastChapters++
                 Helper.stats.allChapters++
-                Helper.statisticDao.updateAsync(Helper.stats)
+                Helper.statisticDao.update(Helper.stats)
             }
         }
 
         fun hasNext(): Boolean {
-            var hasNext = false
-            if (Helper.position_chapter < Helper.list_chapter.size - 1) {
-                Helper.position_chapter++
-                hasNext = PageObject.hasUpdateList()
-                Helper.position_chapter--
-            }
-            return hasNext
+            return Helper.position_chapter < Helper.list_chapter.size - 1
         }
 
         fun prev() { // переключение на предыдущию главу
@@ -94,13 +84,7 @@ class ChaptersList(
         }
 
         fun hasPrev(): Boolean {
-            var hasPrev = false
-            if (Helper.position_chapter > 0) {
-                Helper.position_chapter--
-                hasPrev = PageObject.hasUpdateList()
-                Helper.position_chapter++
-            }
-            return hasPrev
+            return Helper.position_chapter > 0
         }
     }
 
@@ -112,10 +96,10 @@ class ChaptersList(
                 saveProgress(value) // Сохранить позицию в бд
             }
 
-        val max: Int // Количество глав
-            get() = Helper.list_page.size
+        var max: Int = 0 // Количество глав
+            private set
 
-        var list: List<File> = listOf()
+        var list: List<Page> = listOf()
             private set
 
         private fun saveProgress(pos: Int = position) { // Сохранение позиции текущей главы
@@ -126,78 +110,69 @@ class ChaptersList(
                     p = max
                     // Сделать главу прочитанной
                     ChapterObject.current.isRead = true
-                    Helper.chapterDao.updateAsync(ChapterObject.current)
+                    Helper.chapterDao.update(ChapterObject.current)
                 }
                 pos > max -> return // Если больше максимального значения, ничего не делать
             }
             // Обновить позицию
             ChapterObject.current.progress = p
-            Helper.chapterDao.updateAsync(ChapterObject.current)
+            Helper.chapterDao.update(ChapterObject.current)
 
-            if (pos > positionStat) {
-                val diff = pos - positionStat
+            if (pos > Helper.positionStat) {
+                val diff = pos - Helper.positionStat
                 Helper.stats.lastPages += diff
                 Helper.stats.allPages += diff
-                Helper.statisticDao.updateAsync(Helper.stats)
-                positionStat = pos
+                Helper.statisticDao.update(Helper.stats)
+                Helper.positionStat = pos
             }
         }
 
-        fun hasUpdateList(): Boolean {
-            val fullPath = getFullPath(ChapterObject.current.path)
-
-            if (fullPath.isEmptyDirectory) {
-                return false
-            }
-            return fullPath // Получить все файлы из папки
-                .listFiles { file, s ->
-                    // фильтруем список
-                    val fin = File(file, s) // получаем каждый файл отдельно
-                    // если это файл и он является картинкой, то пропустить в список
-                    fin.isFile && (fin.extension in imageExtensions)
-                }.isNotEmpty()
-        }
-
-        fun updateList() { // Обновить список страниц
-            Helper.list_page =
-                    getFullPath(ChapterObject.current.path) // Получить все файлы из папки
-                        .listFiles { file, s ->
-                            // фильтруем список
-                            val fin = File(file, s) // получаем каждый файл отдельно
-                            // если это файл и он является картинкой, то пропустить в список
-                            fin.isFile && (fin.extension in imageExtensions)
-                        }.toMutableList()
-            try {
-                // Сортируем список, своим способом
-                Helper.list_page.sortWith(Comparator { file1, file2 ->
-                    // Сравниваем числовые значения у двух файлов
-                    val find1: MatchResult? =
-                        Helper.reg.find(file1.nameWithoutExtension)
-                    val find2 = Helper.reg.find(file2.nameWithoutExtension)
-                    if (find1 == null || find2 == null) {
-                        return@Comparator 1_000
-                    }
-                    find1.value.toInt() - find2.value.toInt()
-                })
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-                Helper.list_page.sort() // используем стандартную сортировку
+        fun updateList() {
+            if (ChapterObject.current.pages.isNullOrEmpty() ||
+                ChapterObject.current.pages.any { it.isBlank() }) {
+                ChapterObject.current.pages = ManageSites.pages(ChapterObject.current)
+                Helper.chapterDao.update(ChapterObject.current)
             }
 
-            val tempList = Helper.list_page.toMutableList() // копируем имеющийся список
-            if (ChapterObject.hasPrev()) { // Если есть главы до этой
-                tempList.add(0, File("prev")) // Добавить в начало специальный файл указатель
-            } else  // если нет
-                tempList.add(0, File("none")) // Добавить в начало другой файл указатель
+            max = ChapterObject.current.pages.size
 
-            if (ChapterObject.hasNext()) { // Если есть главы после этой
-                tempList.add(File("next")) // Добавить в конец специальный файл указатель
-            } else // если нет
-                tempList.add(File("none")) // Добавить в конец другой файл указатель
+            val pages = ChapterObject.current.pages.map {
+                Page(it, getFullPath(ChapterObject.current.path).absolutePath)
+            }.toMutableList()
 
-            positionStat = 1
+            if (ChapterObject.hasPrev())  // Если есть главы до этой
+                pages.add(0, Page("prev")) // Добавить в начало специальный файл указатель
+            else  // если нет
+                pages.add(0, Page("none")) // Добавить в начало другой файл указатель
 
-            list = tempList
+            if (ChapterObject.hasNext())  // Если есть главы после этой
+                pages.add(Page("next")) // Добавить в конец специальный файл указатель
+            else // если нет
+                pages.add(Page("none")) // Добавить в конец другой файл указатель
+
+            Helper.positionStat = 1
+
+            list = pages
         }
+    }
+}
+
+data class Page(val link: String, val fullPath: String = "") : Parcelable {
+    constructor(parcel: Parcel) : this(
+        parcel.readString(),
+        parcel.readString()
+    )
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(link)
+        parcel.writeString(fullPath)
+    }
+
+    override fun describeContents() = 0
+
+    companion object CREATOR : Parcelable.Creator<Page> {
+        override fun createFromParcel(parcel: Parcel) = Page(parcel)
+
+        override fun newArray(size: Int): Array<Page?> = arrayOfNulls(size)
     }
 }

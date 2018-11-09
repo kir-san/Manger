@@ -102,12 +102,14 @@ object PlannedType {
     const val GROUP = 2
     const val CATEGORY = 3
     const val CATALOG = 4
+    const val APP = 5
 
     val map = mapOf(
         App.context.getString(R.string.planned_type_manga) to MANGA,
         App.context.getString(R.string.planned_type_group) to GROUP,
         App.context.getString(R.string.planned_type_category) to CATEGORY,
-        App.context.getString(R.string.planned_type_catalog) to CATALOG
+        App.context.getString(R.string.planned_type_catalog) to CATALOG,
+        App.context.getString(R.string.planned_type_app) to APP
     )
 }
 

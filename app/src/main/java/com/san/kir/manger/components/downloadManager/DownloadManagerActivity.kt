@@ -20,7 +20,6 @@ import com.san.kir.manger.eventBus.Binder
 import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.room.models.DownloadStatus
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -28,7 +27,7 @@ class DownloadManagerActivity : DrawerActivity() {
     val dao = Main.db.downloadDao
     val updateNetwork = Binder(false)
 
-    lateinit var downloadManager: ChapterLoader
+    lateinit var downloadManager: ChapterLoaderC
 
     private var bound = false
 
@@ -39,13 +38,13 @@ class DownloadManagerActivity : DrawerActivity() {
 
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             downloadManager =
-                    (service as DownloadService.LocalBinder).chapterLoader
+                    (service as DownloadService.LocalBinderC).chapterLoader
             bound = true
         }
     }
     private val titleObserver = Observer<List<DownloadItem>> { item ->
         item?.let { downloads ->
-            GlobalScope.launch(Dispatchers.Default) {
+            launch(coroutineContext) {
                 val loadingCount = downloads.filter {
                     it.status == DownloadStatus.queued ||
                             it.status == DownloadStatus.loading

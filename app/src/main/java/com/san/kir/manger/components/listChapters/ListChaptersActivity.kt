@@ -11,7 +11,7 @@ import android.os.IBinder
 import android.view.Menu
 import android.view.MenuItem
 import com.san.kir.manger.R
-import com.san.kir.manger.components.downloadManager.ChapterLoader
+import com.san.kir.manger.components.downloadManager.ChapterLoaderC
 import com.san.kir.manger.components.downloadManager.DownloadService
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.eventBus.negative
@@ -19,13 +19,11 @@ import com.san.kir.manger.eventBus.positive
 import com.san.kir.manger.extending.ThemedActionBarActivity
 import com.san.kir.manger.extending.views.showAlways
 import com.san.kir.manger.room.dao.ChapterFilter
-import com.san.kir.manger.room.dao.updateAsync
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.room.models.MangaColumn
 import com.san.kir.manger.utils.ActionModeControl
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.MangaUpdaterService
-import com.san.kir.manger.utils.log
 import com.san.kir.manger.utils.sPrefListChapters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -39,13 +37,12 @@ class ListChaptersActivity : ThemedActionBarActivity() {
     private val filterStatus = "filteringStatus"
     private val connection = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName?) {
-            log("onServiceDisconnected()")
             bound = false
         }
 
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             downloadManager =
-                    (service as DownloadService.LocalBinder).chapterLoader
+                    (service as DownloadService.LocalBinderC).chapterLoader
             bound = true
         }
     }
@@ -84,7 +81,7 @@ class ListChaptersActivity : ThemedActionBarActivity() {
     private val adapter = ListChaptersRecyclerPresenter(this)
     private var bound = false
     private lateinit var manga: Manga
-    lateinit var downloadManager: ChapterLoader
+    lateinit var downloadManager: ChapterLoaderC
     val view = ListChapterView(adapter)
     val actionMode by lazy { ActionModeControl(this) }
 
@@ -95,11 +92,13 @@ class ListChaptersActivity : ThemedActionBarActivity() {
         val intentFilter = IntentFilter().apply { addAction(MangaUpdaterService.actionGet) }
         registerReceiver(receiver, intentFilter)
 
-        manga = mangaDao.loadManga(intent.getStringExtra(MangaColumn.unic))
-        manga.populate += 1
-        mangaDao.updateAsync(manga)
+        launch(coroutineContext) {
+            manga = mangaDao.loadManga(intent.getStringExtra(MangaColumn.unic))
+            manga.populate += 1
+            mangaDao.update(manga)
 
-        title = manga.name
+            title = manga.name
+        }
 
         val intent = Intent(this, DownloadService::class.java)
         bindService(intent, connection, Context.BIND_AUTO_CREATE)
@@ -176,12 +175,12 @@ class ListChaptersActivity : ThemedActionBarActivity() {
             OptionId.changeSort -> {
                 manga.isAlternativeSort = !manga.isAlternativeSort
                 adapter.changeSort(manga.isAlternativeSort)
-                mangaDao.updateAsync(manga)
+                mangaDao.update(manga)
             }
             OptionId.isUpdate -> {
                 manga.isUpdate = !manga.isUpdate
                 invalidateOptionsMenu()
-                mangaDao.updateAsync(manga)
+                mangaDao.update(manga)
             }
         }
         return super.onOptionsItemSelected(item)

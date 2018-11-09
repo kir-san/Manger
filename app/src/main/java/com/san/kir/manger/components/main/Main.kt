@@ -14,8 +14,6 @@ import com.san.kir.manger.extending.ankoExtend.compatCheckSelfPermission
 import com.san.kir.manger.extending.ankoExtend.compatRequestPermissions
 import com.san.kir.manger.room.RoomDB
 import com.san.kir.manger.room.dao.MainMenuType
-import com.san.kir.manger.room.dao.insertAsync
-import com.san.kir.manger.room.dao.updateAsync
 import com.san.kir.manger.room.migrations.migrations
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.room.models.MainMenuItem
@@ -24,6 +22,9 @@ import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.DIR
 import com.san.kir.manger.utils.createDirs
 import com.san.kir.manger.utils.getFullPath
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.longToast
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.startService
@@ -34,7 +35,7 @@ class Main : BaseActivity() {
         val db by lazy {
             Room.databaseBuilder(App.context, RoomDB::class.java, RoomDB.NAME)
                 .addMigrations(*migrations)
-                .allowMainThreadQueries()
+//                .allowMainThreadQueries()
                 .build()
         }
     }
@@ -65,10 +66,13 @@ class Main : BaseActivity() {
             }
     }
 
-    private fun init() {
-        createNeedFolders()
-        createAndInitializeDb()
-        restoreSchedule()
+    private fun init() = launch(Dispatchers.Main) {
+
+        withContext(Dispatchers.Default) {
+            createNeedFolders()
+            createAndInitializeDb()
+            restoreSchedule()
+        }
 
         startService<DownloadService>()
         startActivity<LibraryActivity>()
@@ -90,14 +94,14 @@ class Main : BaseActivity() {
     private fun insertMangaIntoStatistic() {
         if (db.statisticDao.loadItems().isEmpty()) {
             db.mangaDao.loadAllManga().forEach { manga ->
-                db.statisticDao.insertAsync(MangaStatistic(manga = manga.unic))
+                db.statisticDao.insert(MangaStatistic(manga = manga.unic))
             }
         } else {
             val stats = db.statisticDao.loadItems()
             val new = db.mangaDao.loadAllManga()
                 .filter { manga -> !stats.any { it.manga == manga.unic } }
             if (new.isNotEmpty()) {
-                new.forEach { db.statisticDao.insertAsync(MangaStatistic(manga = it.unic)) }
+                new.forEach { db.statisticDao.insert(MangaStatistic(manga = it.unic)) }
             }
         }
     }
@@ -107,37 +111,39 @@ class Main : BaseActivity() {
             MainMenuType.values()
                 .filter { it != MainMenuType.Default }
                 .forEachIndexed { index, type ->
-                    db.mainMenuDao.insertAsync(
+                    db.mainMenuDao.insert(
                         MainMenuItem(getString(type.stringId()), index, type)
                     )
                 }
         } else {
             val items = db.mainMenuDao.loadItems()
-            MainMenuType.values().filter { type ->
-                items.none { it.type == type }
-            }.forEach {
-                if (it != MainMenuType.Default)
-                    db.mainMenuDao.insertAsync(
-                        MainMenuItem(
-                            getString(it.stringId()),
-                            100,
-                            it
-                        )
-                    )
-            }
-
-            db.mainMenuDao
-                .loadItems()
-                .forEach { item ->
-                    item.name = getString(item.type.stringId())
-                    db.mainMenuDao.updateAsync(item)
+            MainMenuType.values()
+                .filter { type ->
+                    items.none { it.type == type }
                 }
+                .forEach {
+                    if (it != MainMenuType.Default)
+                        db.mainMenuDao.insert(
+                            MainMenuItem(
+                                getString(it.stringId()),
+                                100,
+                                it
+                            )
+                        )
+                }
+
+            db.mainMenuDao.update(*db.mainMenuDao
+                .loadItems()
+                .onEach { item ->
+                    item.name = getString(item.type.stringId())
+                }
+                .toTypedArray())
         }
     }
 
     private fun insertCategoryAll() {
         if (db.categoryDao.loadCategories().isEmpty())
-            db.categoryDao.insertAsync(Category(CATEGORY_ALL, 0))
+            db.categoryDao.insert(Category(CATEGORY_ALL, 0))
     }
 }
 

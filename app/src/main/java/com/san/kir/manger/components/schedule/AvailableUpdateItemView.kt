@@ -6,13 +6,13 @@ import android.widget.TextView
 import com.san.kir.manger.R
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.extending.ankoExtend.onCheckedChange
-import com.san.kir.manger.room.dao.updateAsync
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.alignParentEnd
 import org.jetbrains.anko.alignParentStart
@@ -79,7 +79,9 @@ class AvailableUpdateItemView : RecyclerViewAdapterFactory.AnkoView<Manga>() {
 
             switch.onCheckedChange { _, isChecked ->
                 item.isUpdate = isChecked
-                Main.db.mangaDao.updateAsync(item)
+                withContext(Dispatchers.Default) {
+                    Main.db.mangaDao.update(item)
+                }
             }
         }
     }

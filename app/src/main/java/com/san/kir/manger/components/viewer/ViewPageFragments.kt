@@ -11,49 +11,60 @@ import android.view.ViewGroup
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.san.kir.manger.R
+import com.san.kir.manger.components.downloadManager.ChapterDownloader
+import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.eventBus.Binder
+import com.san.kir.manger.eventBus.negative
 import com.san.kir.manger.extending.ankoExtend.bigImageView
 import com.san.kir.manger.extending.ankoExtend.goneOrVisible
 import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.ankoExtend.onDoubleTapListener
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
 import com.san.kir.manger.utils.convertImagesToPng
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okio.Okio
 import org.jetbrains.anko.alignParentBottom
 import org.jetbrains.anko.button
 import org.jetbrains.anko.centerHorizontally
+import org.jetbrains.anko.dip
 import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.matchParent
+import org.jetbrains.anko.progressBar
 import org.jetbrains.anko.relativeLayout
 import org.jetbrains.anko.sp
 import org.jetbrains.anko.textView
-import org.jetbrains.anko.verticalLayout
 import java.io.File
+import kotlin.coroutines.CoroutineContext
 
-class ViewerPageFragment : Fragment() {
+class ViewerPageFragment : Fragment(), CoroutineScope {
     companion object {
-        private const val File_name = "file_name"
+        private const val page_name = "page_name"
 
-        fun newInstance(file: File): ViewerPageFragment {
+        fun newInstance(page: Page): ViewerPageFragment {
             val set = Bundle()
-            set.putString(File_name, file.absolutePath)
+            set.putParcelable(page_name, page)
             val frag = ViewerPageFragment()
             frag.arguments = set
             return frag
         }
     }
 
-    private val isError = Binder(false)
-    private val errorData = Binder(Triple(0L, 0, 0))
-    private lateinit var mFile: File
+    lateinit var job: Job
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Default + job
+
+    private val isLoad = Binder(true)
+    private lateinit var page: Page
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        job = Job()
         // При создании фрагмента получить файл
-        mFile = File(arguments?.getString(File_name))
+        page = arguments?.getParcelable(page_name)!!
     }
 
     override fun onCreateView(
@@ -65,20 +76,12 @@ class ViewerPageFragment : Fragment() {
         return context?.linearLayout {
             lparams(width = matchParent, height = matchParent)
 
-            verticalLayout {
-                visibility = View.GONE
-                textView(R.string.viewer_page_error)
-                textView {
-                    errorData.bind { (size, width, height) ->
-                        text = context.getString(
-                            R.string.viewer_page_error_data,
-                            size,
-                            width,
-                            height
-                        )
-                    }
-                }
-                visibleOrGone(isError)
+            gravity = Gravity.CENTER
+
+            progressBar {
+                visibleOrGone(isLoad)
+            }.lparams(width = dip(100), height = dip(100)) {
+                gravity = Gravity.CENTER
             }
 
             linearLayout {
@@ -87,23 +90,20 @@ class ViewerPageFragment : Fragment() {
                 bigImageView {
                     lparams(width = matchParent, height = matchParent)
 
-                    GlobalScope.launch(Dispatchers.Main) {
-                        try {
-                            val img = async {
-                                if (mFile.extension in arrayOf("gif", "webp"))
-                                    convertImagesToPng(mFile)
-                                else
-                                    mFile
-                            }
-                            setImage(ImageSource.uri(Uri.fromFile(img.await())))
-                            when(resources.configuration.orientation) {
-                                Configuration.ORIENTATION_LANDSCAPE -> setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_START)
-                                Configuration.ORIENTATION_PORTRAIT -> setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CENTER_INSIDE)
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
+                    launch(Dispatchers.Main) {
+                        when (resources.configuration.orientation) {
+                            Configuration.ORIENTATION_LANDSCAPE -> setMinimumScaleType(
+                                SubsamplingScaleImageView.SCALE_TYPE_START
+                            )
+                            Configuration.ORIENTATION_PORTRAIT -> setMinimumScaleType(
+                                SubsamplingScaleImageView.SCALE_TYPE_CENTER_INSIDE
+                            )
                         }
+
+                        setImage(loadImage())
+                        isLoad.negative()
                     }
+
                     onDoubleTapListener {
                         // Переопределение одиночного нажатия
                         onSingleTapConfirmed {
@@ -125,9 +125,39 @@ class ViewerPageFragment : Fragment() {
                         }
                     }
                 }
-                goneOrVisible(isError)
+
+                goneOrVisible(isLoad)
             }
         }
+    }
+
+    private suspend fun loadImage() =
+        withContext(coroutineContext) {
+            val name = ChapterDownloader.nameFromUrl(page.link)
+            val file = File(page.fullPath, name)
+
+            if (!file.exists()) {
+                val body = ManageSites.openLink(ChapterDownloader.prepareUrl(page.link)).body()
+                val sink = Okio.buffer(Okio.sink(file))
+                sink.writeAll(body!!.source())
+                sink.close()
+            }
+
+            ImageSource.uri(
+                Uri.fromFile(
+                    if (file.extension in arrayOf("gif", "webp")) {
+                        convertImagesToPng(file)
+                    } else {
+                        file
+                    }
+                )
+            )
+        }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job.cancel()
     }
 }
 

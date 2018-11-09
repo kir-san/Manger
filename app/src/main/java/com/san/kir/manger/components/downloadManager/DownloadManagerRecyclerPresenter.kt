@@ -6,12 +6,10 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.room.dao.DownloadDao
-import com.san.kir.manger.room.dao.deleteAsync
 import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -51,7 +49,7 @@ class DownloadManagerRecyclerPresenter(
         super.into(recyclerView)
         recyclerView.adapter = adapter
         dao.pagedList().observe(act, Observer { items ->
-            GlobalScope.launch(Dispatchers.Default) {
+            act.launch(act.coroutineContext) {
                 items?.let {
                     adapter.items = it
                     withContext(Dispatchers.Main) {
@@ -77,8 +75,10 @@ class DownloadManagerRecyclerPresenter(
                     viewHolder: RecyclerView.ViewHolder,
                     direction: Int
                 ) {
-                    val position = viewHolder.adapterPosition
-                    dao.deleteAsync(adapter.items[position])
+                    act.launch(act.coroutineContext) {
+                        val position = viewHolder.adapterPosition
+                        dao.delete(adapter.items[position])
+                    }
                 }
 
             }).attachToRecyclerView(recyclerView)

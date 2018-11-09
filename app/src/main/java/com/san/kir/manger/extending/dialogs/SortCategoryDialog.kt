@@ -7,7 +7,6 @@ import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.extending.ankoExtend.onCheckedChange
 import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.ankoExtend.onSeekBarChangeListener
-import com.san.kir.manger.room.dao.updateAsync
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.SortLibraryUtil
@@ -133,7 +132,7 @@ class SortCategoryDialog(context: Context, category: Category) {
             }
 
             positiveButton(R.string.category_dialog_positive) {
-                Main.db.categoryDao.updateAsync(category)
+                Main.db.categoryDao.update(category)
             }
             negativeButton(R.string.category_dialog_negative) {}
         }.show()

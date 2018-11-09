@@ -100,6 +100,12 @@
     <string name="catalog_fos_service_notify_error_title">Обновление каталогов завершенно с ошибкой</string>
     <string name="catalog_fos_service_notify_error_text">Проверьте подключение к интернету</string>
 
+
+    <!-- AppUpdateService -->
+    <string name="app_update_service_action_cancel_all">Отменить все</string>
+    <string name="app_update_service_title">Поиск обновлений приложения</string>
+
+
     <!-- Viewer -->
     <string name="viewer_chapters_text">Главы: %1$d/%2$d</string>
     <string name="viewer_pages_text">Страницы: %1$d/%2$d</string>
@@ -210,7 +216,7 @@
 
 
     <!-- ListChapters -->
-    <string name="list_chapters_read">Прочитано %1$d из %2$d</string>
+    <string name="list_chapters_read">Прочитано %1$d из %2$d (%3$d)</string>
     <string name="list_chapters_remove_text">Вы действительно хотите удалить</string>
     <string name="list_chapters_remove_yes">Да</string>
     <string name="list_chapters_remove_no">Нет</string>
@@ -223,7 +229,7 @@
         <item quantity="other">%d выбрано</item>
     </plurals>
     <string name="list_chapters_open_is_download">Спокойствие, только спокойствие! Скоро скачается.</string>
-    <string name="list_chapters_open_not_exists">Глава отсутствует в телефоне, вы наверное удалили ее или не скачали</string>
+    <string name="list_chapters_open_not_exists">Обновите эту мангу перед тем как продолжить чтение</string>
     <string name="list_chapters_delete_text">Вы действительно хотите удалить эту главу?</string>
     <string name="list_chapters_delete_yes">Окей</string>
     <string name="list_chapters_delete_no">О, нет</string>
@@ -368,6 +374,7 @@
     <string name="planned_type_group">Группа</string>
     <string name="planned_type_category">Категория</string>
     <string name="planned_type_catalog">Каталог</string>
+    <string name="planned_type_app">Приложение</string>
     <string name="planned_week_monday">пн</string>
     <string name="planned_week_tuesday">вт</string>
     <string name="planned_week_wednesday">ср</string>
@@ -393,6 +400,7 @@
     <string name="schedule_manager_cancel_category">Было отменено обновление категории %s</string>
     <string name="schedule_manager_cancel_group">Было отменено обновление группы %s</string>
     <string name="schedule_manager_cancel_catalog">Было отменено обновление каталога %s</string>
+    <string name="schedule_manager_cancel_app">Было отменено обновление приложения</string>
     <string name="schedule_activity_menu_add">Добавить</string>
 
     <!--Planned Task-->
@@ -416,6 +424,7 @@
     <string name="planned_task_name_manga">Манга: %s</string>
     <string name="planned_task_name_category">Категория: %s</string>
     <string name="planned_task_name_catalog">Каталог: %s</string>
+    <string name="planned_task_name_app">Приложение</string>
     <string name="planned_task_name_group">Группа: %s</string>
     <string name="planned_task_update_text_template">Обновляется %1$s в %2$d:%3$s</string>
     <string name="planned_task_update_text_day">раз в день</string>

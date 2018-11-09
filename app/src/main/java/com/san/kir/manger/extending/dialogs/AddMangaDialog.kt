@@ -12,7 +12,6 @@ import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.room.dao.categoryNames
-import com.san.kir.manger.room.dao.insertAsync
 import com.san.kir.manger.room.models.MangaColumn
 import com.san.kir.manger.room.models.MangaStatistic
 import com.san.kir.manger.room.models.SiteCatalogElement
@@ -105,9 +104,9 @@ class AddMangaDialog(
                 val updatingElement = ManageSites.getFullElement(element).await()
 
                 val manga = updatingElement.toManga(category = category, path = path)
-                Main.db.mangaDao.insertAsync(manga)
+                Main.db.mangaDao.insert(manga)
 
-                Main.db.statisticDao.insertAsync(MangaStatistic(manga = manga.unic))
+                Main.db.statisticDao.insert(MangaStatistic(manga = manga.unic))
 
                 added?.visibility = View.VISIBLE
                 searching?.visibility = View.VISIBLE

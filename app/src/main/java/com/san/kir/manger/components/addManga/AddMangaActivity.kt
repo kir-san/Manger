@@ -9,8 +9,6 @@ import com.san.kir.manger.R.string
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.extending.ThemedActionBarActivity
 import com.san.kir.manger.extending.views.showAlways
-import com.san.kir.manger.room.dao.insertAsync
-import com.san.kir.manger.room.dao.updateAsync
 import com.san.kir.manger.room.models.Chapter
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.room.models.MangaColumn
@@ -66,12 +64,12 @@ class AddMangaActivity : ThemedActionBarActivity() {
             1 -> {
                 val manga: Manga = mView.getManga()
                 if (isEditMode) {
-                    mangaDao.updateAsync(manga)
+                    mangaDao.update(manga)
                 } else {
-                    mangaDao.insertAsync(manga)
+                    mangaDao.insert(manga)
                     getChapters(getFullPath(manga.path)).forEach {
                         val chapterFile = File(it)
-                        Main.db.chapterDao.insertAsync(Chapter(manga = manga.unic,
+                        Main.db.chapterDao.insert(Chapter(manga = manga.unic,
                                                                name = chapterFile.name,
                                                                path = chapterFile.shortPath))
                     }

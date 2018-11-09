@@ -8,13 +8,13 @@ import android.widget.TextView
 import com.san.kir.manger.R
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.extending.ankoExtend.onClick
-import com.san.kir.manger.room.dao.updateAsync
 import com.san.kir.manger.room.models.PlannedAddEdit
 import com.san.kir.manger.room.models.PlannedPeriod
 import com.san.kir.manger.room.models.PlannedTask
 import com.san.kir.manger.room.models.PlannedType
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.alignParentEnd
 import org.jetbrains.anko.alignParentStart
@@ -30,7 +30,7 @@ import org.jetbrains.anko.switch
 import org.jetbrains.anko.textView
 import java.util.*
 
-class PlannedTaskItemView(act: ScheduleActivity) :
+class PlannedTaskItemView(private val act: ScheduleActivity) :
     RecyclerViewAdapterFactory.AnkoView<PlannedTask>() {
 
     private val alarmManager = ScheduleManager(act)
@@ -96,6 +96,9 @@ class PlannedTaskItemView(act: ScheduleActivity) :
             PlannedType.CATALOG -> {
                 name.text = ctx.getString(R.string.planned_task_name_catalog, item.catalog)
             }
+            PlannedType.APP -> {
+                name.text = ctx.getString(R.string.planned_task_name_app)
+            }
         }
 
         val dayText: String =
@@ -123,13 +126,15 @@ class PlannedTaskItemView(act: ScheduleActivity) :
 
         switch.isChecked = item.isEnabled
         switch.onClick {
-            item.isEnabled = !item.isEnabled
-            Main.db.plannedDao.updateAsync(item)
+            withContext(act.coroutineContext) {
+                item.isEnabled = !item.isEnabled
+                Main.db.plannedDao.update(item)
 
-            if (item.isEnabled) {
-                alarmManager.add(item)
-            } else {
-                alarmManager.cancel(item)
+                if (item.isEnabled) {
+                    alarmManager.add(item)
+                } else {
+                    alarmManager.cancel(item)
+                }
             }
         }
 

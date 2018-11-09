@@ -408,5 +408,25 @@ val migrations: Array<Migration> = arrayOf(
                     "`${MangaStatisticColumn.downloadSize}` INTEGER NOT NULL, " +
                     "`${MangaStatisticColumn.downloadTime}` INTEGER NOT NULL, " +
                     "`${MangaStatisticColumn.openedTimes}` INTEGER NOT NULL)"
+    ),
+    migrate(
+        30, 31,
+        "ALTER TABLE chapters RENAME TO tmp_chapters",
+        "CREATE TABLE `chapters` (" +
+                "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "`manga` TEXT NOT NULL, " +
+                "`name` TEXT NOT NULL, " +
+                "`date` TEXT NOT NULL, " +
+                "`path` TEXT NOT NULL, " +
+                "`isRead` INTEGER NOT NULL, " +
+                "`site` TEXT NOT NULL, " +
+                "`progress` INTEGER NOT NULL, " +
+                "`pages` TEXT NOT NULL DEFAULT ``)",
+        "INSERT INTO chapters(" +
+                "id, manga, name, date, path, isRead, site, progress) " +
+                "SELECT " +
+                "id, manga, name, date, path, isRead, site, progress " +
+                "FROM tmp_chapters",
+        "DROP TABLE tmp_chapters"
     )
 )

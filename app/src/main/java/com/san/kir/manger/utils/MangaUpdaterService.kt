@@ -32,6 +32,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.notificationManager
 import org.jetbrains.anko.startService
@@ -209,73 +210,86 @@ class MangaUpdaterService : Service() {
     }
 
     @WorkerThread
-    fun onHandleIntent(manga: Manga) {
-        runBlocking(Dispatchers.Default) {
-            var countNew = 0
-            try {
-                val notify = NotificationCompat.InboxStyle(
-                    NotificationCompat.Builder(this@MangaUpdaterService, channelId)
-                        .setContentTitle(getString(R.string.manga_update_notify_searching))
-                        .setSmallIcon(R.drawable.ic_notification_update)
-                        .addAction(actionCancelAll)
-                        .setContentText(manga.name)
-                )
-                    .addLine(manga.name)
-                    .addLine(getString(R.string.manga_update_notify_remained, taskCounter.size))
-                    .build()
+    fun onHandleIntent(manga: Manga) = runBlocking {
+        var countNew = 0
+        try {
+            val notify = NotificationCompat.InboxStyle(
+                NotificationCompat.Builder(this@MangaUpdaterService, channelId)
+                    .setContentTitle(getString(R.string.manga_update_notify_searching))
+                    .setSmallIcon(R.drawable.ic_notification_update)
+                    .addAction(actionCancelAll)
+                    .setContentText(manga.name)
+            )
+                .addLine(manga.name)
+                .addLine(getString(R.string.manga_update_notify_remained, taskCounter.size))
+                .build()
 
-                notificationManager.notify(notificationId, notify)
+            notificationManager.notify(notificationId, notify)
 
-                mangaName = manga.name
+            mangaName = manga.name
 
-                val oldChapters = chapters.loadChapters(manga.unic)
-                var newChapters = listOf<Chapter>()
-
-                ManageSites.chapters(manga)?.let { new ->
-                    if (oldChapters.isEmpty()) {
-                        newChapters = new
-                    } else {
-                        new.forEach { chapter ->
-                            if (oldChapters.none { oldChapter -> chapter.site == oldChapter.site }) {
-                                newChapters += chapter
-                            } else {
-                                val tempChapter = oldChapters
-                                    .first { oldChapter -> chapter.site == oldChapter.site }
-                                tempChapter.path = chapter.path
-                                chapters.update(tempChapter)
+            val oldChapters =
+                withContext(Dispatchers.Default) {
+                    chapters
+                        .loadChapters(manga.unic)
+                        .onEach {
+                            launch(Dispatchers.Default) {
+                                if (it.pages.isNullOrEmpty() || it.pages.any { chap -> chap.isBlank() }) {
+                                    it.pages = ManageSites.pages(it)
+                                    chapters.update(it)
+                                }
                             }
+                        }
+                }
+
+            var newChapters = listOf<Chapter>()
+
+            ManageSites.chapters(manga)?.let { new ->
+                if (oldChapters.isEmpty()) { // Если глав не было до обновления
+                    newChapters = new
+                } else {
+                    new.forEach { chapter ->
+                        // Если глава отсутствует в базе данных то добавить
+                        if (oldChapters.none { oldChapter -> chapter.site == oldChapter.site }) {
+                            newChapters += chapter
+                        } else {
+                            val tempChapter = oldChapters
+                                .first { oldChapter -> chapter.site == oldChapter.site }
+                            tempChapter.path = chapter.path
+                            chapters.update(tempChapter)
                         }
                     }
                 }
-
-                if (newChapters.isNotEmpty()) {
-                    newChapters.reversed().forEach {
-                        chapters.insert(it)
-                        latestChapters.insert(LatestChapter(it))
-                    }
-                    val oldSize = oldChapters.size
-
-                    SearchDuplicate.silentRemoveDuplicate(manga)
-
-                    val newSize = chapters.loadChapters(manga.unic).size
-
-                    countNew = newSize - oldSize
-                }
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-                error++
-                countNew = 0
-            } finally {
-                progress++
-                fullCountNew += countNew
-                taskCounter -= manga
-
-                val intent = Intent(actionGet)
-                intent.putExtra(ITEM_NAME, manga.unic)
-                intent.putExtra(IS_FOUND_NEW, countNew > 0)
-                intent.putExtra(COUNT_NEW, countNew)
-                sendBroadcast(intent)
             }
+
+            if (newChapters.isNotEmpty()) {
+                newChapters.reversed().forEach {
+                    it.pages = ManageSites.pages(it)
+                    chapters.insert(it)
+                    latestChapters.insert(LatestChapter(it))
+                }
+                val oldSize = oldChapters.size
+
+                SearchDuplicate.silentRemoveDuplicate(manga)
+
+                val newSize = chapters.loadChapters(manga.unic).size
+
+                countNew = newSize - oldSize
+            }
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            error++
+            countNew = 0
+        } finally {
+            progress++
+            fullCountNew += countNew
+            taskCounter -= manga
+
+            val intent = Intent(actionGet)
+            intent.putExtra(ITEM_NAME, manga.unic)
+            intent.putExtra(IS_FOUND_NEW, countNew > 0)
+            intent.putExtra(COUNT_NEW, countNew)
+            sendBroadcast(intent)
         }
     }
 

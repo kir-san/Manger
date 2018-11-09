@@ -23,8 +23,8 @@ import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.getDrawableCompat
 import com.san.kir.manger.utils.loadImage
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.customView
@@ -47,40 +47,45 @@ abstract class LibraryItemView(
     lateinit var isUpdate: ProgressBar
 
     override fun bind(item: Manga, isSelected: Boolean, position: Int) {
-        GlobalScope.launch(Dispatchers.Main) {
+        act.launch(act.coroutineContext) {
             val context = root.context
-            root.onClick {
-                if (act.actionMode.hasFinish())
-                    context.startActivity<ListChaptersActivity>(MangaColumn.unic to item.unic)
-                else
-                    act.onListItemSelect(position)
-            }
 
-            root.onLongClick { view ->
-                if (act.actionMode.hasFinish())
-                    LibraryItemMenu(context, view, item, act, position)
-            }
+            withContext(Dispatchers.Main) {
+                root.onClick {
+                    if (act.actionMode.hasFinish())
+                        context.startActivity<ListChaptersActivity>(MangaColumn.unic to item.unic)
+                    else
+                        act.onListItemSelect(position)
+                }
 
-            name.text = item.name
+                root.onLongClick { view ->
+                    if (act.actionMode.hasFinish())
+                        LibraryItemMenu(context, view, item, act, position)
+                }
+
+                name.text = item.name
+            }
 
             if (item.color != 0) {
-                try {
-                    val drawableCompat = context.getDrawableCompat(item.color).apply {
-                        this?.alpha = 210
+                withContext(Dispatchers.Main) {
+                    try {
+                        val drawableCompat = context.getDrawableCompat(item.color).apply {
+                            this?.alpha = 210
+                        }
+                        name.background = drawableCompat
+                        notReadChapters.background = drawableCompat
+                        root.background = context.getDrawableCompat(item.color)
+                    } catch (ex: Resources.NotFoundException) {
+                        val newColor = Color.argb(
+                            210,
+                            Color.red(item.color),
+                            Color.green(item.color),
+                            Color.blue(item.color)
+                        )
+                        name.backgroundColor = newColor
+                        notReadChapters.backgroundColor = newColor
+                        root.backgroundColor = item.color
                     }
-                    name.background = drawableCompat
-                    notReadChapters.background = drawableCompat
-                    root.background = context.getDrawableCompat(item.color)
-                } catch (ex: Resources.NotFoundException) {
-                    val newColor = Color.argb(
-                        210,
-                        Color.red(item.color),
-                        Color.green(item.color),
-                        Color.blue(item.color)
-                    )
-                    name.backgroundColor = newColor
-                    notReadChapters.backgroundColor = newColor
-                    root.backgroundColor = item.color
                 }
             }
 
@@ -93,44 +98,45 @@ abstract class LibraryItemView(
             val countNotRead = chapters.countNotRead(item.unic)
             val count = chapters.count(item.unic)
 
-            notReadChapters.text = context.getString(
-                com.san.kir.manger.R.string.library_page_item_read_status,
-                countNotRead
-            )
-            notReadChapters.onClick {
-                context.alert {
-                    this.customView {
-                        verticalLayout {
-                            textView(context.getString(R.string.library_all_chapters, count))
-                            textView(
-                                context.getString(
-                                    R.string.library_not_read_chapters,
-                                    countNotRead
+            withContext(Dispatchers.Main) {
+                notReadChapters.text = context.getString(
+                    com.san.kir.manger.R.string.library_page_item_read_status,
+                    countNotRead
+                )
+                notReadChapters.onClick {
+                    context.alert {
+                        this.customView {
+                            verticalLayout {
+                                textView(context.getString(R.string.library_all_chapters, count))
+                                textView(
+                                    context.getString(
+                                        R.string.library_not_read_chapters,
+                                        countNotRead
+                                    )
                                 )
-                            )
-                            textView(
-                                context.getString(
-                                    R.string.library_read_chapters,
-                                    count - countNotRead
+                                textView(
+                                    context.getString(
+                                        R.string.library_read_chapters,
+                                        count - countNotRead
+                                    )
                                 )
-                            )
+                            }
                         }
-                    }
-                }.show()
-            }
+                    }.show()
+                }
 
-            selected.backgroundColor =
-                    if (isSelected) Color.parseColor("#af34b5e4")
-                    else Color.TRANSPARENT
+                selected.backgroundColor =
+                        if (isSelected) Color.parseColor("#af34b5e4")
+                        else Color.TRANSPARENT
 
-
-            val key = context.getString(R.string.settings_library_show_category_key)
-            val default =
-                context.getString(R.string.settings_library_show_category_default) == "true"
-            val isShow = context.defaultSharedPreferences.getBoolean(key, default)
-            if (cat.name == CATEGORY_ALL && isShow) {
-                category.text = item.categories
-                category.visibility = View.VISIBLE
+                val key = context.getString(R.string.settings_library_show_category_key)
+                val default =
+                    context.getString(R.string.settings_library_show_category_default) == "true"
+                val isShow = context.defaultSharedPreferences.getBoolean(key, default)
+                if (cat.name == CATEGORY_ALL && isShow) {
+                    category.text = item.categories
+                    category.visibility = View.VISIBLE
+                }
             }
         }
     }

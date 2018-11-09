@@ -8,7 +8,6 @@ import com.san.kir.manger.room.dao.MangaFilter
 import com.san.kir.manger.room.dao.loadMangas
 import com.san.kir.manger.room.dao.removeWithChapters
 import com.san.kir.manger.room.dao.toFilter
-import com.san.kir.manger.room.dao.updateAsync
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.utils.ItemMove
@@ -31,7 +30,7 @@ class LibraryItemsRecyclerPresenter(val cat: Category, private val act: LibraryA
         items.forEachIndexed { index, manga ->
             manga.order = index
         }
-        mangaDao.updateAsync(*items.toTypedArray())
+        mangaDao.update(*items.toTypedArray())
     }
 
     fun intoIsList(recyclerView: RecyclerView, isLarge: Boolean) {
@@ -125,7 +124,7 @@ class LibraryItemsRecyclerPresenter(val cat: Category, private val act: LibraryA
         forSelection { i ->
             val manga = adapter.items[i]
             manga.categories = newCategory
-            mangaDao.updateAsync(manga)
+            mangaDao.update(manga)
         }
     }
 

@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okio.Okio
 import java.util.concurrent.Executors
 
@@ -51,7 +52,7 @@ class ImageLoader(private val url: String) {
 
             if (path.exists() && path.length() > 0) {
                 //        если файл есть, то отображаем его в imageView
-                launch(Dispatchers.Main) {
+                withContext(Dispatchers.Main) {
                     target.setImageDrawable(Drawable.createFromPath(path.absolutePath))
                     success?.invoke()
                 }
@@ -64,27 +65,23 @@ class ImageLoader(private val url: String) {
                         close()
                     }
                     //              и отображаем его в imageView
-                    launch(Dispatchers.Main) {
+                    withContext(Dispatchers.Main) {
                         target.setImageDrawable(Drawable.createFromPath(path.absolutePath))
                         success?.invoke()
                     }
                 } catch (e: Exception) {
-                    //          если картинка загрузилась с ошибкой
-
-                    if (errorResId != -1) {
-                        //              если была указана картинка для ошибки указываем ее
-                        launch(Dispatchers.Main) {
+                    withContext(Dispatchers.Main) {
+                        //          если картинка загрузилась с ошибкой
+                        if (errorResId != -1) {
+                            //              если была указана картинка для ошибки указываем ее
                             target.setImageResource(errorResId)
-                        }
-                    } else if (color != -1) {
-                        //              если был указан цвет для ошибки, то устанавливаем цвет
-                        launch(Dispatchers.Main) {
+                        } else if (color != -1) {
+                            //              если был указан цвет для ошибки, то устанавливаем цвет
                             target.setBackgroundColor(color)
                         }
-                    }
 
-                    //              если ничего не было указано, то ничего не делаем
-                    launch(Dispatchers.Main) {
+                        //              если ничего не было указано, то ничего не делаем
+
                         error?.invoke()
                     }
                 }

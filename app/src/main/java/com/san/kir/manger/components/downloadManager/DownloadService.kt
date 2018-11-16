@@ -29,7 +29,7 @@ class DownloadService : Service(), DownloadListener {
     }
 
     private val downloadManager by lazy {
-        ChapterLoaderC(applicationContext).also {
+        ChapterLoader(applicationContext).also {
             it.addListener(this, this)
             defaultSharedPreferences.apply {
                 val concurrentKey = getString(R.string.settings_downloader_parallel_key)
@@ -118,8 +118,10 @@ class DownloadService : Service(), DownloadListener {
             else -> {
                 val item = intent?.getParcelableExtra<DownloadItem>("item")
                 item?.let {
-                    if (!downloadManager.hasTask(it)) {
-                        downloadManager.add(it)
+                    GlobalScope.launch(Dispatchers.Default) {
+                        if (!downloadManager.hasTask(it)) {
+                            downloadManager.add(it)
+                        }
                     }
                 }
             }

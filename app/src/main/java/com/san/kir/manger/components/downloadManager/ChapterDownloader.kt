@@ -2,105 +2,114 @@ package com.san.kir.manger.components.downloadManager
 
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.room.models.DownloadItem
+import com.san.kir.manger.utils.JobContext
 import com.san.kir.manger.utils.getFullPath
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import okio.Okio
 import java.io.File
 import java.net.URL
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executors.newFixedThreadPool
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicInteger
-import java.util.concurrent.atomic.AtomicLong
 import java.util.regex.Pattern
 
 
-class ChapterDownloader(private val task: DownloadItem, concurrent: Int) : Runnable {
-    val downloadItem: DownloadItem
-        get() {
-            task.totalPages = totalPages.get()
-            task.downloadPages = downloadPages.get()
-            task.downloadSize = downloadSize.get()
-            task.totalTime = totalTime.get()
-            return task
-        }
-
+class ChapterDownloader(private val task: DownloadItem, concurrent: Int) {
     var delegate: Delegate? = null
 
-    private val totalPages = AtomicInteger(0)
-    private val downloadPages = AtomicInteger(0)
-    private val downloadSize = AtomicLong(0L)
-    private val totalTime = AtomicLong(0L)
+    private var totalPages = 0
+    private var downloadPages = 0
+    private var downloadSize = 0L
+    private var totalTime = 0L
 
-
-    private var executor = newFixedThreadPool(concurrent)
+    private val lock = Mutex()
+    private var executor = JobContext(newFixedThreadPool(concurrent))
 
     @Volatile
     private var interrupted: Boolean = false
     @Volatile
     var terminated: Boolean = false
 
-    fun cancel() {
-        interrupted = true
+    suspend fun getDownloadItem(): DownloadItem {
+        lock.withLock {
+            task.totalPages = totalPages
+            task.downloadPages = downloadPages
+            task.downloadSize = downloadSize
+            task.totalTime = totalTime
+        }
+        return task
     }
 
-    override fun run() {
+    suspend fun cancel() {
+        lock.withLock {
+            interrupted = true
+        }
+    }
+
+    suspend fun run() {
         val previousTime = System.currentTimeMillis()
-        delegate?.onStarted(downloadItem)
+        delegate?.onStarted(getDownloadItem())
 
         try {
             download()
-            totalTime.set(System.currentTimeMillis() - previousTime)
 
-            if (!interrupted) delegate?.onComplete(downloadItem)
-        } catch (e: ExecutionException) {
-            delegate?.onError(downloadItem, e.cause)
-        } catch (e: Exception) {
-            delegate?.onError(downloadItem, e.cause)
-        } finally {
-            executor.shutdownNow()
-            while (!executor.awaitTermination(10, TimeUnit.MILLISECONDS)) {
+            lock.withLock {
+                totalTime = System.currentTimeMillis() - previousTime
             }
+
+            if (!interrupted) delegate?.onComplete(getDownloadItem())
+        } catch (e: ExecutionException) {
+            e.printStackTrace()
+            delegate?.onError(getDownloadItem(), e.cause)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            delegate?.onError(getDownloadItem(), e.cause)
+        } finally {
+            executor.close()
+            executor.join()
             terminated = true
         }
 
     }
 
-    private fun download() {
+    private suspend fun download() {
         if (interrupted) return
 
-        val downloadPath = getFullPath(downloadItem.path)
+        val downloadPath = getFullPath(getDownloadItem().path)
 
         if (interrupted) return
 
-        val pages = ManageSites.pages(downloadItem)
+        val pages = ManageSites.pages(getDownloadItem())
 
         if (pages.isEmpty()) {
             throw Exception("Problem with site")
         }
 
-        totalPages.set(pages.size)
-        delegate?.onProgress(downloadItem)
+        lock.withLock {
+            totalPages = pages.size
+        }
+
+        delegate?.onProgress(getDownloadItem())
 
         if (interrupted) return
 
         pages.forEach { url ->
-            val task = executor.submit {
+            val task = executor.post {
                 pageDownload(prepareUrl(url), downloadPath)
             }
-            task.get()
+            task.join()
         }
 
         try {
-            executor.shutdown()
-            while (!executor.awaitTermination(1, TimeUnit.SECONDS)) {
-            }
+            executor.close()
+            executor.join()
         } catch (e: Exception) {
             e.printStackTrace()
-            executor.shutdownNow()
+            executor.close()
         }
     }
 
-    private fun pageDownload(link: String, downloadPath: File) {
+    private suspend fun pageDownload(link: String, downloadPath: File) {
         if (interrupted) return
 
         val page = File(downloadPath, nameFromUrl(link))
@@ -113,9 +122,11 @@ class ChapterDownloader(private val task: DownloadItem, concurrent: Int) : Runna
             && pageSize != -1L // check valid size
             && page.exists()
             && page.length() == pageSize) {
-            downloadPages.incrementAndGet()
-            downloadSize.addAndGet(pageSize)
-            delegate?.onProgress(downloadItem)
+            lock.withLock {
+                downloadPages++
+                downloadSize += pageSize
+            }
+            delegate?.onProgress(getDownloadItem())
         } else if (!interrupted) {
             val body = ManageSites.openLink(link).body()
             val contentLength = body!!.contentLength()
@@ -126,9 +137,11 @@ class ChapterDownloader(private val task: DownloadItem, concurrent: Int) : Runna
 
             if (interrupted) return
 
-            downloadSize.addAndGet(contentLength)
-            downloadPages.incrementAndGet()
-            delegate?.onProgress(downloadItem)
+            lock.withLock {
+                downloadSize += contentLength
+                downloadPages++
+            }
+            delegate?.onProgress(getDownloadItem())
         }
     }
 
@@ -159,4 +172,3 @@ class ChapterDownloader(private val task: DownloadItem, concurrent: Int) : Runna
         fun prepareUrl(url: String) = url.removeSurrounding("\"", "\"")
     }
 }
-

@@ -27,7 +27,7 @@ class DownloadManagerActivity : DrawerActivity() {
     val dao = Main.db.downloadDao
     val updateNetwork = Binder(false)
 
-    lateinit var downloadManager: ChapterLoaderC
+    lateinit var downloadManager: ChapterLoader
 
     private var bound = false
 

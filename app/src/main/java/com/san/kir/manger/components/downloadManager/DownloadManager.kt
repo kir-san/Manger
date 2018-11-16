@@ -1,27 +1,26 @@
 package com.san.kir.manger.components.downloadManager
 
 import com.san.kir.manger.room.models.DownloadItem
-import java.io.Closeable
-import java.util.concurrent.Executors.newFixedThreadPool
+import com.san.kir.manger.utils.JobContext
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import java.util.concurrent.Executors
 
-class DownloadManager(private val concurrentLimit: Int) : Closeable {
-    private val lock = Object()
-    private val executor = newFixedThreadPool(concurrentLimit)
+class DownloadManager(private val concurrentLimit: Int) {
+    private val lock = Mutex()
+
+    private val executor =
+        JobContext(Executors.newFixedThreadPool(concurrentLimit))
     private val currentDownloadsMap = hashMapOf<Long, ChapterDownloader>()
 
-    @Volatile
     private var concurrentPages: Int = 4
-
-    @Volatile
     private var downloadCounter = 0
-
-    var delegate: DownloadManager.Delegate? = null
-
-    @Volatile
     private var isClosed: Boolean = false
 
-    fun start(task: DownloadItem): Boolean {
-        synchronized(lock) {
+    var delegate: Delegate? = null
+
+    suspend fun start(task: DownloadItem): Boolean {
+        lock.withLock {
             if (currentDownloadsMap.containsKey(task.id)
                 || downloadCounter >= concurrentLimit) {
                 return false
@@ -32,14 +31,14 @@ class DownloadManager(private val concurrentLimit: Int) : Closeable {
             downloadCounter += 1
             currentDownloadsMap[task.id] = chapterDownloader
             return try {
-                executor.execute {
+                executor.post {
                     chapterDownloader.run()
 
-                    synchronized(lock) {
+                    lock.withLock {
                         if (currentDownloadsMap.containsKey(task.id)) {
                             currentDownloadsMap.remove(task.id)
                             downloadCounter -= 1
-                            delegate?.onDownloadRemovedFromManager(chapterDownloader.downloadItem)
+                            delegate?.onDownloadRemovedFromManager(chapterDownloader.getDownloadItem())
                         }
                     }
                 }
@@ -51,8 +50,8 @@ class DownloadManager(private val concurrentLimit: Int) : Closeable {
         }
     }
 
-    fun cancel(id: Long): Boolean {
-        synchronized(lock) {
+    suspend fun cancel(id: Long): Boolean {
+        lock.withLock {
             return if (currentDownloadsMap.containsKey(id)) {
                 val chapterDownloader = currentDownloadsMap[id] as ChapterDownloader
                 chapterDownloader.cancel()
@@ -61,7 +60,7 @@ class DownloadManager(private val concurrentLimit: Int) : Closeable {
                 }
                 currentDownloadsMap.remove(id)
                 downloadCounter -= 1
-                delegate?.onDownloadRemovedFromManager(chapterDownloader.downloadItem)
+                delegate?.onDownloadRemovedFromManager(chapterDownloader.getDownloadItem())
 
                 true
             } else {
@@ -70,35 +69,42 @@ class DownloadManager(private val concurrentLimit: Int) : Closeable {
         }
     }
 
-    fun cancelAll() {
-        synchronized(lock) {
+    suspend fun cancelAll() {
+        lock.withLock {
             cancelAllDownloads()
         }
     }
 
-    fun contains(id: Long): Boolean {
-        synchronized(lock) {
-            return currentDownloadsMap.containsKey(id)
-        }
-    }
-
-    fun canAccommodateNewDownload(): Boolean {
-        synchronized(lock) {
-            return downloadCounter < concurrentLimit
-        }
-    }
-
-    fun changeConcurrentPages(concurrent: Int) {
-        synchronized(lock) {
+    suspend fun changeConcurrentPages(concurrent: Int) {
+        lock.withLock {
             concurrentPages = concurrent
         }
     }
 
-    private fun getNewChapterDownloader(task: DownloadItem): ChapterDownloader {
-        return ChapterDownloader(task = task, concurrent = concurrentPages)
+    suspend fun contains(id: Long): Boolean {
+        lock.withLock {
+            return currentDownloadsMap.containsKey(id)
+        }
     }
 
-    private fun cancelAllDownloads() {
+    suspend fun canAccommodateNewDownload(): Boolean {
+        lock.withLock {
+            return downloadCounter < concurrentLimit
+        }
+    }
+
+    suspend fun close() {
+        lock.withLock {
+            if (isClosed) {
+                return
+            }
+            isClosed = true
+            cancelAllDownloads()
+            executor.close()
+        }
+    }
+
+    private suspend fun cancelAllDownloads() {
         currentDownloadsMap.iterator().forEach {
             it.value.cancel()
             while (!it.value.terminated) {
@@ -109,19 +115,11 @@ class DownloadManager(private val concurrentLimit: Int) : Closeable {
         downloadCounter = 0
     }
 
-    override fun close() {
-        synchronized(lock) {
-            if (isClosed) {
-                return
-            }
-            isClosed = true
-            cancelAllDownloads()
-            executor.shutdown()
-        }
+    private fun getNewChapterDownloader(task: DownloadItem): ChapterDownloader {
+        return ChapterDownloader(task = task, concurrent = concurrentPages)
     }
 
     interface Delegate : ChapterDownloader.Delegate {
         fun onDownloadRemovedFromManager(item: DownloadItem)
     }
 }
-

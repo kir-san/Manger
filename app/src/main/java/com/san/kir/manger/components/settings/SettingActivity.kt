@@ -10,7 +10,7 @@ import android.os.IBinder
 import android.view.View
 import android.widget.LinearLayout
 import com.san.kir.manger.R
-import com.san.kir.manger.components.downloadManager.ChapterLoaderC
+import com.san.kir.manger.components.downloadManager.ChapterLoader
 import com.san.kir.manger.components.downloadManager.DownloadService
 import com.san.kir.manger.components.drawer.DrawerActivity
 import com.san.kir.manger.utils.ID
@@ -20,7 +20,7 @@ import org.jetbrains.anko.frameLayout
 class SettingActivity : DrawerActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
     private val content = ID.generate()
 
-    var downloadManager: ChapterLoaderC? = null
+    var downloadManager: ChapterLoader? = null
     private var bound = false
     private val connection = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName?) {

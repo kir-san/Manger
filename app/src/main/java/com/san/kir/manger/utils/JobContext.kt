@@ -1,4 +1,4 @@
-package com.san.kir.manger.components.downloadManager
+package com.san.kir.manger.utils
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -20,5 +20,9 @@ class JobContext(private val executor: ExecutorService) : CoroutineScope {
 
     fun close() {
         job.cancel()
+    }
+
+    suspend fun join() {
+        job.join()
     }
 }

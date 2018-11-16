@@ -14,7 +14,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
 import com.san.kir.manger.R
-import com.san.kir.manger.components.downloadManager.ChapterLoaderC
+import com.san.kir.manger.components.downloadManager.ChapterLoader
 import com.san.kir.manger.components.downloadManager.DownloadService
 import com.san.kir.manger.components.drawer.DrawerActivity
 import com.san.kir.manger.components.main.Main
@@ -49,7 +49,7 @@ class LatestChapterActivity : DrawerActivity() {
         }
     }
 
-    lateinit var downloadManager: ChapterLoaderC
+    lateinit var downloadManager: ChapterLoader
 
     override val LinearLayout.customView: View
         get() = verticalLayout {

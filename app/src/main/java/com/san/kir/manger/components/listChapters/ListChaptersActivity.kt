@@ -11,7 +11,7 @@ import android.os.IBinder
 import android.view.Menu
 import android.view.MenuItem
 import com.san.kir.manger.R
-import com.san.kir.manger.components.downloadManager.ChapterLoaderC
+import com.san.kir.manger.components.downloadManager.ChapterLoader
 import com.san.kir.manger.components.downloadManager.DownloadService
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.eventBus.negative
@@ -81,7 +81,7 @@ class ListChaptersActivity : ThemedActionBarActivity() {
     private val adapter = ListChaptersRecyclerPresenter(this)
     private var bound = false
     private lateinit var manga: Manga
-    lateinit var downloadManager: ChapterLoaderC
+    lateinit var downloadManager: ChapterLoader
     val view = ListChapterView(adapter)
     val actionMode by lazy { ActionModeControl(this) }
 

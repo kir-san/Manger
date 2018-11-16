@@ -9,22 +9,17 @@ import com.san.kir.manger.R.string
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.extending.ThemedActionBarActivity
 import com.san.kir.manger.extending.views.showAlways
-import com.san.kir.manger.room.models.Chapter
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.room.models.MangaColumn
 import com.san.kir.manger.room.models.Storage
-import com.san.kir.manger.utils.getChapters
-import com.san.kir.manger.utils.getFullPath
 import com.san.kir.manger.utils.getMangaLogo
 import com.san.kir.manger.utils.getShortPath
-import com.san.kir.manger.utils.shortPath
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.setContentView
-import java.io.File
 
 class AddMangaActivity : ThemedActionBarActivity() {
-    private var isEditMode = false
-
-    private var mOldCat = ""
     private val mView = AddMangaView()
 
     private val mangaDao = Main.db.mangaDao
@@ -36,16 +31,23 @@ class AddMangaActivity : ThemedActionBarActivity() {
         when {
             intent.hasExtra(Storage::class.java.canonicalName) -> {
                 val manga = intent.getParcelableExtra<Storage>(Storage::class.java.canonicalName)
-                mView.setManga(Manga(unic = manga.name,
-                                     name = manga.name,
-                                     path = manga.path,
-                                     logo = getShortPath(getMangaLogo(manga.path))))
+                mView.setManga(
+                    Manga(
+                        unic = manga.name,
+                        name = manga.name,
+                        path = manga.path,
+                        logo = getShortPath(getMangaLogo(manga.path))
+                    )
+                )
             }
             intent.hasExtra(MangaColumn.unic) -> {
-                val manga = mangaDao.loadManga(intent.getStringExtra(MangaColumn.unic))
-                mView.setManga(manga)
-                mOldCat = manga.categories
-                isEditMode = true
+                launch(coroutineContext) {
+                    val manga = mangaDao.loadManga(intent.getStringExtra(MangaColumn.unic))
+
+                    withContext(Dispatchers.Main) {
+                        mView.setManga(manga)
+                    }
+                }
             }
             else -> mView.setManga(Manga())
         }
@@ -62,18 +64,10 @@ class AddMangaActivity : ThemedActionBarActivity() {
         when (item.itemId) {
             id.home -> onBackPressed()
             1 -> {
-                val manga: Manga = mView.getManga()
-                if (isEditMode) {
-                    mangaDao.update(manga)
-                } else {
-                    mangaDao.insert(manga)
-                    getChapters(getFullPath(manga.path)).forEach {
-                        val chapterFile = File(it)
-                        Main.db.chapterDao.insert(Chapter(manga = manga.unic,
-                                                               name = chapterFile.name,
-                                                               path = chapterFile.shortPath))
-                    }
+                launch(coroutineContext) {
+                    mangaDao.update(mView.getManga())
                 }
+
                 onBackPressed()
             }
         }

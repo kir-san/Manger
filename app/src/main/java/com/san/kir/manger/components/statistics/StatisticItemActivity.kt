@@ -21,7 +21,7 @@ class StatisticItemActivity : ThemedActionBarActivity() {
         super.onCreate(savedInstanceState)
 
         launch(coroutineContext) {
-            val manga = Main.db.statisticDao.loadItem(
+            val manga = Main.db.statisticDao.getItem(
                 intent.getStringExtra("manga")
             )
 

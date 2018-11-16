@@ -19,6 +19,10 @@ import com.san.kir.manger.room.dao.categoryNames
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.utils.AnkoActivityComponent
 import com.san.kir.manger.utils.loadImage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.backgroundColorResource
@@ -126,69 +130,76 @@ class AddMangaView : AnkoActivityComponent() {
     }
 
     fun setManga(manga: Manga) {
-        _manga = manga
-        name.setText(manga.name)
-        authors.setText(manga.authors)
-        about.setText(manga.about)
-        genres.setText(manga.genres)
-        path.setText(manga.path)
-        site.setText(manga.site)
-        logoText.setText(manga.logo)
+        GlobalScope.launch(Dispatchers.Default) {
+            _manga = manga
+            val categoryNames = categoryDao.categoryNames()
+            val listStatus = listOf(
+                ctx.getString(R.string.manga_status_unknown),
+                ctx.getString(R.string.manga_status_continue),
+                ctx.getString(R.string.manga_status_complete)
+            )
 
-        isUpdate.isChecked = manga.isUpdate
+            withContext(Dispatchers.Main) {
+                name.setText(manga.name)
+                authors.setText(manga.authors)
+                about.setText(manga.about)
+                genres.setText(manga.genres)
+                path.setText(manga.path)
+                site.setText(manga.site)
+                logoText.setText(manga.logo)
 
-        categories.adapter = ArrayAdapter<String>(
-            categories.context,
-            android.R.layout.simple_spinner_item,
-            categoryDao.categoryNames()
-        ).apply {
-            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        }
-        categories.setSelection(categoryDao.categoryNames().indexOf(manga.categories))
+                isUpdate.isChecked = manga.isUpdate
 
-        val listStatus = listOf(
-            ctx.getString(R.string.manga_status_unknown),
-            ctx.getString(R.string.manga_status_continue),
-            ctx.getString(R.string.manga_status_complete)
-        )
-        status.adapter = ArrayAdapter<String>(
-            status.context,
-            android.R.layout.simple_spinner_item,
-            listStatus
-        ).apply {
-            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        }
-        status.setSelection(listStatus.indexOf(manga.status))
+                categories.adapter = ArrayAdapter<String>(
+                    categories.context,
+                    android.R.layout.simple_spinner_item,
+                    categoryNames
+                ).apply {
+                    setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                }
 
-        if (manga.color != 0) {
-            color.backgroundColor = manga.color
-        }
-        _manga.color = manga.color
-        color.onClick {
-            ColorPicker(color.context, _manga.color) { newColor ->
-                _manga.color = newColor
-                color.backgroundColor = newColor
-            }
-        }
+                categories.setSelection(categoryNames.indexOf(manga.categories))
 
-        if (manga.logo.isEmpty()) {
-            try {
-                logo.backgroundResource = if (manga.color != 0) manga.color
-                else android.R.color.holo_green_dark
-            } catch (ex: Resources.NotFoundException) {
-                logo.backgroundColor = manga.color
-            }
-        } else
-            loadImage(manga.logo) {
-                onError {
-                    if (manga.color != 0) {
-                        logo.backgroundColor = manga.color
-                    } else {
-                        logo.backgroundColorResource = android.R.color.holo_green_dark
+                status.adapter = ArrayAdapter<String>(
+                    status.context,
+                    android.R.layout.simple_spinner_item,
+                    listStatus
+                ).apply {
+                    setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                }
+                status.setSelection(listStatus.indexOf(manga.status))
+
+                if (manga.color != 0) {
+                    color.backgroundColor = manga.color
+                }
+                _manga.color = manga.color
+                color.onClick {
+                    ColorPicker(color.context, _manga.color) { newColor ->
+                        _manga.color = newColor
+                        color.backgroundColor = newColor
                     }
                 }
-                into(logo)
+
+                if (manga.logo.isEmpty()) {
+                    try {
+                        logo.backgroundResource = if (manga.color != 0) manga.color
+                        else android.R.color.holo_green_dark
+                    } catch (ex: Resources.NotFoundException) {
+                        logo.backgroundColor = manga.color
+                    }
+                } else
+                    loadImage(manga.logo) {
+                        onError {
+                            if (manga.color != 0) {
+                                logo.backgroundColor = manga.color
+                            } else {
+                                logo.backgroundColorResource = android.R.color.holo_green_dark
+                            }
+                        }
+                        into(logo)
+                    }
             }
+        }
     }
 
     fun getManga(): Manga {

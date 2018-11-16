@@ -4,12 +4,12 @@ import android.arch.lifecycle.Observer
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 import com.san.kir.manger.components.main.Main
-import com.san.kir.manger.room.dao.clearHistory
-import com.san.kir.manger.room.dao.clearHistoryDownload
-import com.san.kir.manger.room.dao.clearHistoryRead
-import com.san.kir.manger.room.dao.downloadNewChapters
+import com.san.kir.manger.room.dao.clearAll
+import com.san.kir.manger.room.dao.clearDownloaded
+import com.san.kir.manger.room.dao.clearRead
+import com.san.kir.manger.room.dao.getNewChapters
 import com.san.kir.manger.room.dao.hasNewChapters
-import com.san.kir.manger.room.dao.loadPagedLatestChapters
+import com.san.kir.manger.room.dao.loadPagedItems
 import com.san.kir.manger.room.models.toDownloadItem
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
@@ -29,7 +29,8 @@ class LatestChaptersRecyclerPresenter(private val act: LatestChapterActivity) :
         super.into(recyclerView)
         act.launch(act.coroutineContext) {
             recycler.adapter = adapter
-            latestChapterDao.loadPagedLatestChapters()
+            latestChapterDao
+                .loadPagedItems()
                 .observe(act, Observer { act.launch(Dispatchers.Main) { adapter.submitList(it) } })
         }
 
@@ -53,15 +54,15 @@ class LatestChaptersRecyclerPresenter(private val act: LatestChapterActivity) :
     fun hasNewChapters() = act.async(act.coroutineContext) { latestChapterDao.hasNewChapters() }
 
     fun downloadNewChapters() = act.launch(act.coroutineContext) {
-        latestChapterDao.downloadNewChapters().onEach { chapter ->
+        latestChapterDao.getNewChapters().onEach { chapter ->
             act.downloadManager.addOrStart(chapter.toDownloadItem())
         }
         adapter.notifyDataSetChanged()
     }
 
-    fun clearHistory() = latestChapterDao.clearHistory()
+    fun clearHistory() = latestChapterDao.clearAll()
 
-    fun clearHistoryRead() = latestChapterDao.clearHistoryRead()
+    fun clearHistoryRead() = latestChapterDao.clearRead()
 
-    fun clearHistoryDownload() = latestChapterDao.clearHistoryDownload()
+    fun clearHistoryDownload() = latestChapterDao.clearDownloaded()
 }

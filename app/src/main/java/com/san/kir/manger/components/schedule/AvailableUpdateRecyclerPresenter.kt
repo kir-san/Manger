@@ -16,7 +16,7 @@ class AvailableUpdateRecyclerPresenter : RecyclerPresenter() {
         super.into(recyclerView)
         GlobalScope.launch(Dispatchers.Main) {
             recycler.adapter = adapter
-            adapter.items = withContext(Dispatchers.Default) { Main.db.mangaDao.loadAllManga() }
+            adapter.items = withContext(Dispatchers.Default) { Main.db.mangaDao.getItems() }
             adapter.notifyDataSetChanged()
         }
 

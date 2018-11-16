@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.components.parsing.SiteCatalog
-import com.san.kir.manger.room.dao.loadPagedSites
+import com.san.kir.manger.room.dao.loadPagedItems
 import com.san.kir.manger.room.models.Site
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
@@ -21,7 +21,7 @@ class SiteCatalogRecyclerPresenter(private val act: SiteCatalogActivity) : Recyc
     override fun into(recyclerView: RecyclerView) {
         super.into(recyclerView)
         recyclerView.adapter = adapter
-        dao.loadPagedSites().observe(act, Observer(adapter::submitList))
+        dao.loadPagedItems().observe(act, Observer(adapter::submitList))
     }
 
     fun update() = act.launch {
@@ -40,7 +40,7 @@ class SiteCatalogRecyclerPresenter(private val act: SiteCatalogActivity) : Recyc
     }
 
     private fun save(site: SiteCatalog) {
-        val s = dao.loadSite(site.name)
+        val s = dao.getItem(site.name)
         if (s != null) {
             s.volume = site.volume
             s.host = site.host

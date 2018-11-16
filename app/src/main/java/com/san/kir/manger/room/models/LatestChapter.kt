@@ -30,7 +30,7 @@ class LatestChapter {
 
 fun LatestChapter.isRead(): Boolean {
     return try {
-        Main.db.chapterDao.loadChapters(manga)
+        Main.db.chapterDao.getItems(manga)
             .first { it.name == name }
             .isRead
     } catch (ex: NoSuchElementException) {

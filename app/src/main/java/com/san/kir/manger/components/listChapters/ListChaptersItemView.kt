@@ -301,7 +301,7 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
         percentProgress.backgroundColor = color
 
         Main.db.downloadDao
-            .loadLivedItem(item.site)
+            .loadItem(item.site)
             .observe(act, Observer {
                 changeVisibleAndActions(it, item)
             })

@@ -1,8 +1,5 @@
 package com.san.kir.manger.components.parsing
 
-import android.support.v7.app.AppCompatActivity
-import com.san.kir.manger.BuildConfig
-import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.sites.Allhentai
 import com.san.kir.manger.components.parsing.sites.Henchan
 import com.san.kir.manger.components.parsing.sites.Mangachan
@@ -15,21 +12,15 @@ import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.room.models.SiteCatalogElement
 import com.san.kir.manger.room.models.toDownloadItem
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.browse
-import org.jetbrains.anko.longToast
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import java.nio.charset.Charset
 import java.util.concurrent.TimeUnit
-import java.util.regex.Pattern
 
 object ManageSites {
     private val client: OkHttpClient = OkHttpClient.Builder()
@@ -50,6 +41,7 @@ object ManageSites {
     )
 
     fun openLink(url: String): Response {
+
         val request = Request.Builder().url(url).build()
         return client.newCall(request).execute()
     }

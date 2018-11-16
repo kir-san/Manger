@@ -135,7 +135,7 @@ class CatalogForOneSiteItemView : RecyclerViewAdapterFactory.AnkoView<SiteCatalo
             updBtn.visibleOrInvisible(false)
 
             GlobalScope.launch(Dispatchers.Default) {
-                val oldManga = Main.db.mangaDao.loadManga(item.name)
+                val oldManga = Main.db.mangaDao.getItem(item.name)
                 val updItem = ManageSites.getFullElement(item).await()
                 oldManga.authorsList = updItem.authors
                 oldManga.logo = updItem.logo

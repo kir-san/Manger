@@ -38,7 +38,7 @@ open class ReadmangaTemplate : SiteCatalog {
 
     override fun init(): ReadmangaTemplate {
         if (!isInit) {
-            oldVolume = Main.db.siteDao.loadSite(name)?.volume ?: 0
+            oldVolume = Main.db.siteDao.getItem(name)?.volume ?: 0
             val doc = ManageSites.getDocument(host)
             doc.select(".rightContent h5").forEach {
                 if (it.text() == "У нас сейчас")

@@ -167,7 +167,7 @@ class ViewerActivity : ThemedActionBarActivity() {
         val time = (System.currentTimeMillis() - readTime) / 1000
         if (time > 0) {
             launch(coroutineContext) {
-                val stats = Main.db.statisticDao.loadItem(mangaName)
+                val stats = Main.db.statisticDao.getItem(mangaName)
                 stats.lastTime = time
                 stats.allTime = stats.allTime + time
                 stats.maxSpeed = max(stats.maxSpeed, (stats.lastPages / (time.toFloat() / 60)).toInt())

@@ -49,7 +49,7 @@ class CategoryEditDialog(
     init {
         GlobalScope.launch(Dispatchers.Main) {
             val catList =
-                withContext(Dispatchers.Default) { categoryDao.loadCategories().map { it.name } }
+                withContext(Dispatchers.Default) { categoryDao.getItems().map { it.name } }
 
             val isAll = oldName == CATEGORY_ALL
             val validate = Binder("")

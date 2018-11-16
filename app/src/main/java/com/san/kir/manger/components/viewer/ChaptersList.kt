@@ -25,7 +25,7 @@ class ChaptersList {
 
     fun init(mangaName: String, chapter: String) {
         listChapter.clear() // Очистить список
-        listChapter.addAll(chapterDao.loadChapters(mangaName)) // Получение глав
+        listChapter.addAll(chapterDao.getItems(mangaName)) // Получение глав
 
         positionChapter = findChapterPosition(chapter) // Установка текущей главы
 

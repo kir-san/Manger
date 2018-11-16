@@ -15,7 +15,7 @@ import com.san.kir.manger.extending.BaseActivity
 import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
 import com.san.kir.manger.room.dao.MangaFilter
-import com.san.kir.manger.room.dao.loadMangas
+import com.san.kir.manger.room.dao.loadItems
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.utils.AnkoActivityComponent
 import com.san.kir.manger.utils.ID
@@ -89,7 +89,7 @@ class LibraryPageView(
         }
 
         Main.db.mangaDao
-            .loadMangas(category, MangaFilter.ADD_TIME_ASC)
+            .loadItems(category, MangaFilter.ADD_TIME_ASC)
             .observe(act, Observer {
                 GlobalScope.launch(Dispatchers.Default) {
                     val isVisible = it != null && it.isEmpty()
@@ -114,7 +114,7 @@ class LibraryPageView(
         adapter.intoIsList(recyclerView, isLarge)
 
         Main.db.categoryDao
-            .loadLiveCategory(category.name)
+            .loadItem(category.name)
             .observe(act, Observer { cat ->
                 GlobalScope.launch(Dispatchers.Default) {
                     cat?.let {

@@ -42,7 +42,7 @@ class DeleteReadChaptersDialog(context: Context, manga: Manga, function: (() -> 
                             task = GlobalScope.async {
                                 val chapters = Main.db
                                     .chapterDao
-                                    .loadChapters(manga.unic)
+                                    .getItems(manga.unic)
                                     .filter { chapter -> chapter.isRead }
                                 val size = chapters.size
 

@@ -1,276 +1,224 @@
 package com.san.kir.manger.components.downloadManager
 
 import android.content.Context
-import android.os.Handler
-import android.os.HandlerThread
-import android.os.Looper
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.room.models.DownloadStatus
+import com.san.kir.manger.utils.JobContext
+import com.san.kir.manger.utils.NetworkManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
+import java.util.concurrent.Executors
 
 class ChapterLoader(context: Context) {
-    private val lock = Object()
-
-    private val uiHandler = Handler(Looper.getMainLooper())
-    private val handler by lazy {
-        val handlerThread = HandlerThread("chapter downloader")
-        handlerThread.start()
-        Handler(handlerThread.looper)
-    }
-
+    private val uiJob = JobContext(Executors.newSingleThreadExecutor())
+    private val job = JobContext(Executors.newSingleThreadExecutor())
     private val listeners = ListenerProvider()
     private val networkManager = NetworkManager(context)
     private val downloadManager = DownloadManager(1)
-    private val iteratorProcessor = IteratorProcessor(handler, downloadManager, networkManager)
+    private val iteratorProcessor = IteratorProcessor(job, downloadManager, networkManager)
     private val dbManager = Main.db.downloadDao
 
     init {
         downloadManager.delegate = DownloadManagerDelegateImpl(
-            uiHandler,
-            handler,
+            uiJob,
+            job,
             listeners.mainListener,
             iteratorProcessor
         )
     }
 
-
     fun add(task: DownloadItem) {
-        synchronized(lock) {
-            handler.post {
-                try {
-                    task.order = System.currentTimeMillis()
-                    task.status = DownloadStatus.queued
-                    dbManager.insert(task)
+        job.post {
+            task.order = System.currentTimeMillis()
+            task.status = DownloadStatus.queued
+            dbManager.insert(task)
 
-                    startIteratorProcessor()
+            startIteratorProcessor()
 
-                    uiHandler.post {
-                        listeners.mainListener.onQueued(task)
-                    }
+            uiJob.post {
+                listeners.mainListener.onQueued(task)
+            }
 
-                    if (!networkManager.isAvailable()) {
-                        pause(task)
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
+            if (!networkManager.isAvailable()) {
+                pause(task)
             }
         }
     }
 
-    fun addOrStart(task: DownloadItem) {
-        if (hasTask(task)) {
-            start(task)
-        } else {
-            add(task)
-        }
+   fun addOrStart(task: DownloadItem) {
+       job.post {
+           if (hasTask(task)) {
+               start(task)
+           } else {
+               add(task)
+           }
+       }
     }
 
     fun pause(task: DownloadItem) {
-        synchronized(lock) {
-            handler.post {
-                try {
-                    task.status = DownloadStatus.queued
-                    dbManager.update(task)
+        job.post {
+            task.status = DownloadStatus.queued
+            dbManager.update(task)
 
-                    if (isDownloading(task.id)) {
-                        cancelDownload(task.id)
-                    }
-                    if (canPauseDownload(task)) {
-                        task.status = DownloadStatus.pause
-                    }
-                    dbManager.update(task)
+            if (isDownloading(task.id)) {
+                cancelDownload(task.id)
+            }
+            if (canPauseDownload(task)) {
+                task.status = DownloadStatus.pause
+            }
+            dbManager.update(task)
 
-                    uiHandler.post {
-                        listeners.mainListener.onPaused(task)
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
+            uiJob.post {
+                listeners.mainListener.onPaused(task)
             }
         }
     }
 
     fun start(task: DownloadItem) {
-        synchronized(lock) {
-            handler.post {
-                try {
-                    if (isDownloading(task.id)) {
-                        cancelDownload(task.id)
-                    }
-                    if (!isDownloading(task.id) && canResumeDownload(task)) {
-                        task.order = System.currentTimeMillis()
-                        task.status = DownloadStatus.queued
-                    }
+        job.post {
+            if (isDownloading(task.id)) {
+                cancelDownload(task.id)
+            }
+            if (!isDownloading(task.id) && canResumeDownload(task)) {
+                task.order = System.currentTimeMillis()
+                task.status = DownloadStatus.queued
+            }
 
-                    dbManager.update(task)
+            dbManager.update(task)
 
-                    startIteratorProcessor()
+            startIteratorProcessor()
 
-                    uiHandler.post {
-                        listeners.mainListener.onQueued(task)
-                    }
+            uiJob.post {
+                listeners.mainListener.onQueued(task)
+            }
 
-                    if (!networkManager.isAvailable()) {
-                        pause(task)
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
+            if (!networkManager.isAvailable()) {
+                pause(task)
             }
         }
     }
 
     fun retry(task: DownloadItem) {
-        synchronized(lock) {
-            handler.post {
-                try {
-                    if (canRetryDownload(task)) {
-                        task.order = System.currentTimeMillis()
-                        task.status = DownloadStatus.queued
-                    }
+        job.post {
+            if (canRetryDownload(task)) {
+                task.order = System.currentTimeMillis()
+                task.status = DownloadStatus.queued
+            }
 
-                    dbManager.update(task)
+            dbManager.update(task)
 
-                    startIteratorProcessor()
+            startIteratorProcessor()
 
-                    uiHandler.post {
-                        listeners.mainListener.onQueued(task)
-                    }
-                } catch (e: Exception) {
-
-                }
+            uiJob.post {
+                listeners.mainListener.onQueued(task)
             }
         }
     }
 
     fun pauseAll() {
-        synchronized(lock) {
-            handler.post {
-                try {
-                    val loading = dbManager.loadItems().filter { canPauseDownload(it) }
-                    if (loading.isNotEmpty()) {
-                        loading.forEach {
-                            it.status = DownloadStatus.queued
-                            dbManager.update(it)
-                        }
+        job.post {
+            val loading = dbManager.getItems().filter { canPauseDownload(it) }
+            if (loading.isNotEmpty()) {
+                loading.forEach {
+                    it.status = DownloadStatus.queued
+                    dbManager.update(it)
+                }
+            }
+
+            downloadManager.cancelAll()
+            iteratorProcessor.stop()
+
+            val downloads = dbManager.getItems().filter { canPauseDownload(it) }
+            if (downloads.isNotEmpty()) {
+                downloads.forEach {
+                    it.status = DownloadStatus.pause
+                }
+                dbManager.update(*downloads.toTypedArray())
+
+                uiJob.post {
+                    downloads.forEach {
+                        listeners.mainListener.onPaused(it)
                     }
-
-                    downloadManager.cancelAll()
-                    iteratorProcessor.stop()
-
-                    val downloads = dbManager.loadItems().filter { canPauseDownload(it) }
-                    if (downloads.isNotEmpty()) {
-                        downloads.forEach {
-                            it.status = DownloadStatus.pause
-                        }
-                        dbManager.update(*downloads.toTypedArray())
-
-                        uiHandler.post {
-                            downloads.forEach {
-                                listeners.mainListener.onPaused(it)
-                            }
-                        }
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
                 }
             }
         }
     }
 
     fun startAll() {
-        synchronized(lock) {
-            handler.post {
-                try {
-                    val downloads =
-                        dbManager.loadItems()
-                            .filter { canResumeDownload(it) }
-                    if (downloads.isNotEmpty()) {
-                        downloads.forEach {
-                            it.status = DownloadStatus.queued
-                        }
-                        dbManager.update(*downloads.toTypedArray())
-                    }
+        job.post {
+            val downloads =
+                dbManager.getItems()
+                    .filter { canResumeDownload(it) }
+            if (downloads.isNotEmpty()) {
+                downloads.forEach {
+                    it.status = DownloadStatus.queued
+                }
+                dbManager.update(*downloads.toTypedArray())
+            }
 
-                    iteratorProcessor.start()
+            iteratorProcessor.start()
 
-                    uiHandler.post {
-                        downloads.forEach {
-                            listeners.mainListener.onQueued(it)
-                        }
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
+            uiJob.post {
+                downloads.forEach {
+                    listeners.mainListener.onQueued(it)
                 }
             }
         }
     }
 
     fun retryAll() {
-        synchronized(lock) {
-            handler.post {
-                try {
-                    val downloads =
-                        dbManager.loadItems()
-                            .filter { canRetryDownload(it) }
-                    if (downloads.isNotEmpty()) {
-                        downloads.forEach {
-                            it.status = DownloadStatus.queued
-                        }
-                        dbManager.update(*downloads.toTypedArray())
-                    }
+        job.post {
+            val downloads =
+                dbManager.getItems()
+                    .filter { canRetryDownload(it) }
+            if (downloads.isNotEmpty()) {
+                downloads.forEach {
+                    it.status = DownloadStatus.queued
+                }
+                dbManager.update(*downloads.toTypedArray())
+            }
 
-                    iteratorProcessor.start()
+            iteratorProcessor.start()
 
-                    uiHandler.post {
-                        downloads.forEach {
-                            listeners.mainListener.onQueued(it)
-                        }
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
+            uiJob.post {
+                downloads.forEach {
+                    listeners.mainListener.onQueued(it)
                 }
             }
         }
     }
 
-    fun stop() {
+    fun stop() = runBlocking {
         listeners.clear()
         iteratorProcessor.stop()
         downloadManager.close()
-        handler.looper.quitSafely()
+        job.close()
+        uiJob.close()
     }
 
     fun <T : Any> addListener(tag: T, listener: DownloadListener) {
-        synchronized(lock) {
-            listeners.addListener(tag, listener)
-        }
+        listeners.addListener(tag, listener)
     }
 
     fun <T : Any> removeListeners(tag: T) {
-        synchronized(lock) {
-            listeners.removeListeners(tag)
-        }
+        listeners.removeListeners(tag)
     }
 
-    fun hasTask(task: DownloadItem): Boolean {
-        synchronized(lock) {
-            val containedItem = dbManager.loadItem(task.link)
-            return containedItem != null
-        }
+    suspend fun hasTask(task: DownloadItem): Boolean {
+        val containedItem = job.async(Dispatchers.Default) { dbManager.getItem(task.link) }.await()
+        return containedItem != null
     }
 
     fun setConcurrentPages(concurrent: Int) {
-        synchronized(lock) {
+        job.post {
             downloadManager.changeConcurrentPages(concurrent)
         }
     }
 
-    fun setRetryOnError(isRetry: Boolean) {
-        synchronized(lock) {
-            iteratorProcessor.setRetry(isRetry)
-        }
+    fun setRetryOnError(isRetry: Boolean) = runBlocking {
+        iteratorProcessor.setRetry(isRetry)
     }
 
     fun isWifiOnly(isWifi: Boolean) {
@@ -282,11 +230,11 @@ class ChapterLoader(context: Context) {
 
     }
 
-    private fun isDownloading(id: Long): Boolean {
+    private suspend fun isDownloading(id: Long): Boolean {
         return downloadManager.contains(id)
     }
 
-    private fun cancelDownload(id: Long): Boolean {
+    private suspend fun cancelDownload(id: Long): Boolean {
         return downloadManager.cancel(id)
     }
 
@@ -302,11 +250,9 @@ class ChapterLoader(context: Context) {
         return task.status == DownloadStatus.error
     }
 
-    private fun startIteratorProcessor() {
+    private suspend fun startIteratorProcessor() {
         if (iteratorProcessor.isStopped) {
             iteratorProcessor.start()
         }
     }
-
-
 }

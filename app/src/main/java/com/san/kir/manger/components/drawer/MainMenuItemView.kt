@@ -7,13 +7,12 @@ import android.widget.TextView
 import com.san.kir.manger.R
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.extending.BaseActivity
-import com.san.kir.manger.room.dao.MainMenuType
 import com.san.kir.manger.room.dao.loadAllSize
-import com.san.kir.manger.room.dao.loadPagedLatestChapters
-import com.san.kir.manger.room.dao.loadPagedPlannedTasks
-import com.san.kir.manger.room.dao.loadPagedSites
+import com.san.kir.manger.room.dao.loadPagedItems
 import com.san.kir.manger.room.dao.updateStorageItems
+import com.san.kir.manger.room.models.DownloadStatus
 import com.san.kir.manger.room.models.MainMenuItem
+import com.san.kir.manger.room.models.MangaColumn
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.formatDouble
 import kotlinx.coroutines.Dispatchers
@@ -58,7 +57,7 @@ class MainMenuItemView(private val act: BaseActivity) :
         when (type) {
             MainMenuType.Library -> {
                 Main.db.mangaDao
-                    .loadMangaAbcSortAsc()
+                    .loadItemsAscBy(MangaColumn.name)
                     .observe(act, Observer { text = it?.size.toString() })
             }
             MainMenuType.Storage -> {
@@ -74,12 +73,12 @@ class MainMenuItemView(private val act: BaseActivity) :
             }
             MainMenuType.Category -> {
                 Main.db.categoryDao
-                    .loadLiveCategories()
+                    .loadItems()
                     .observe(act, Observer { text = it?.size.toString() })
             }
             MainMenuType.Catalogs -> {
                 Main.db.siteDao
-                    .loadPagedSites()
+                    .loadPagedItems()
                     .observe(act, Observer { list ->
                         text = context.getString(R.string.main_menu_item_catalogs,
                                                  list?.size,
@@ -88,17 +87,17 @@ class MainMenuItemView(private val act: BaseActivity) :
             }
             MainMenuType.Downloader -> {
                 Main.db.downloadDao
-                    .loadLoadingDownloads()
+                    .loadItems(DownloadStatus.loading)
                     .observe(act, Observer { text = it?.size.toString() })
             }
             MainMenuType.Latest -> {
                 Main.db.latestChapterDao
-                    .loadPagedLatestChapters()
+                    .loadPagedItems()
                     .observe(act, Observer { text = it?.size.toString() })
             }
             MainMenuType.Schedule -> {
                 Main.db.plannedDao
-                    .loadPagedPlannedTasks()
+                    .loadPagedItems()
                     .observe(act, Observer { text = it?.size.toString() })
             }
             MainMenuType.Statistic -> {

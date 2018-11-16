@@ -20,86 +20,62 @@ import java.io.File
 @Dao
 interface MangaDao : BaseDao<Manga> {
     @Query("SELECT * FROM `${MangaColumn.tableName}`")
-    fun loadAllManga(): List<Manga>
+    fun getItems(): List<Manga>
 
     @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.unic}` IS :unic")
-    fun loadManga(unic: String): Manga
+    fun getItem(unic: String): Manga
 
     @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.unic}` IS :unic")
-    fun loadMangaOrNull(unic: String): Manga?
+    fun getItemOrNull(unic: String): Manga?
 
     @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.categories}` IS :category")
-    fun loadMangaWhereCategoryNotAll(category: String): List<Manga>
+    fun getItems(category: String): List<Manga>
 
-    @Query("SELECT * FROM `${MangaColumn.tableName}` ORDER BY `${MangaColumn.id}` ASC")
-    fun loadMangaAddTimeAsc(): LiveData<List<Manga>>
+    @Query("SELECT * FROM `${MangaColumn.tableName}` ORDER BY :order ASC")
+    fun loadItemsAscBy(order: String): LiveData<List<Manga>>
 
-    @Query("SELECT * FROM `${MangaColumn.tableName}` ORDER BY `${MangaColumn.id}` DESC")
-    fun loadMangaAddTimeDesc(): LiveData<List<Manga>>
+    @Query("SELECT * FROM `${MangaColumn.tableName}` ORDER BY :order DESC")
+    fun loadItemsDescBy(order: String): LiveData<List<Manga>>
 
-    @Query("SELECT * FROM `${MangaColumn.tableName}` ORDER BY `${MangaColumn.name}` ASC")
-    fun loadMangaAbcSortAsc(): LiveData<List<Manga>>
+    @Query("SELECT * FROM `${MangaColumn.tableName}`  WHERE `${MangaColumn.categories}` IS :category ORDER BY :order ASC")
+    fun loadItemsAscBy(order: String, category: String): LiveData<List<Manga>>
 
-    @Query("SELECT * FROM `${MangaColumn.tableName}` ORDER BY `${MangaColumn.name}` DESC")
-    fun loadMangaAbcSortDesc(): LiveData<List<Manga>>
-
-    @Query("SELECT * FROM `${MangaColumn.tableName}` ORDER BY `${MangaColumn.populate}` DESC")
-    fun loadMangaPopulateAsc(): LiveData<List<Manga>>
-
-    @Query("SELECT * FROM `${MangaColumn.tableName}` ORDER BY `${MangaColumn.populate}` ASC")
-    fun loadMangaPopulateDesc(): LiveData<List<Manga>>
-
-    @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.categories}` IS :category ORDER BY `${MangaColumn.id}` ASC")
-    fun loadMangaWithCategoryAddTimeAsc(category: String): LiveData<List<Manga>>
-
-    @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.categories}` IS :category ORDER BY `${MangaColumn.id}` DESC")
-    fun loadMangaWithCategoryAddTimeDesc(category: String): LiveData<List<Manga>>
-
-    @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.categories}` IS :category ORDER BY `${MangaColumn.name}` ASC")
-    fun loadMangaWithCategoryAbcSortAsc(category: String): LiveData<List<Manga>>
-
-    @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.categories}` IS :category ORDER BY `${MangaColumn.name}` DESC")
-    fun loadMangaWithCategoryAbcSortDesc(category: String): LiveData<List<Manga>>
-
-    @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.categories}` IS :category ORDER BY `${MangaColumn.populate}` DESC")
-    fun loadMangaWithCategoryPopulateAsc(category: String): LiveData<List<Manga>>
-
-    @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.categories}` IS :category ORDER BY `${MangaColumn.populate}` ASC")
-    fun loadMangaWithCategoryPopulateDesc(category: String): LiveData<List<Manga>>
+    @Query("SELECT * FROM `${MangaColumn.tableName}`  WHERE `${MangaColumn.categories}` IS :category ORDER BY :order DESC")
+    fun loadItemsDescBy(order: String, category: String): LiveData<List<Manga>>
 }
 
 fun MangaDao.getFromPath(shortPath: String) = getFromPath(getFullPath(shortPath))
 
 fun MangaDao.getFromPath(file: File) =
-    loadAllManga().firstOrNull { getFullPath(it.path) == file }
+    getItems().firstOrNull { getFullPath(it.path) == file }
 
-fun MangaDao.loadMangaWhereCategory(category: String) =
+fun MangaDao.getItemsWhere(category: String) =
     if (category == CATEGORY_ALL)
-        loadAllManga()
+        getItems()
     else
-        loadMangaWhereCategoryNotAll(category)
+        getItems(category)
 
 fun MangaDao.contain(item: SiteCatalogElement) =
-    loadAllManga().any { it.site == item.link }
+    getItems().any { it.site == item.link }
 
-fun MangaDao.loadMangas(cat: Category, filter: MangaFilter): LiveData<List<Manga>> {
+fun MangaDao.loadItems(cat: Category, filter: MangaFilter): LiveData<List<Manga>> {
     return if (cat.name == CATEGORY_ALL) {
         when (filter) {
-            MangaFilter.ADD_TIME_ASC -> loadMangaAddTimeAsc()
-            MangaFilter.ADD_TIME_DESC -> loadMangaAddTimeDesc()
-            MangaFilter.ABC_SORT_ASC -> loadMangaAbcSortAsc()
-            MangaFilter.ABC_SORT_DESC -> loadMangaAbcSortDesc()
-            MangaFilter.POPULATE_ASC -> loadMangaPopulateAsc()
-            MangaFilter.POPULATE_DESC -> loadMangaPopulateDesc()
+            MangaFilter.ADD_TIME_ASC -> loadItemsAscBy(MangaColumn.id)
+            MangaFilter.ADD_TIME_DESC -> loadItemsDescBy(MangaColumn.id)
+            MangaFilter.ABC_SORT_ASC -> loadItemsAscBy(MangaColumn.name)
+            MangaFilter.ABC_SORT_DESC -> loadItemsDescBy(MangaColumn.name)
+            MangaFilter.POPULATE_ASC -> loadItemsAscBy(MangaColumn.populate)
+            MangaFilter.POPULATE_DESC -> loadItemsDescBy(MangaColumn.populate)
         }
     } else {
         when (filter) {
-            MangaFilter.ADD_TIME_ASC -> loadMangaWithCategoryAddTimeAsc(cat.name)
-            MangaFilter.ABC_SORT_ASC -> loadMangaWithCategoryAbcSortAsc(cat.name)
-            MangaFilter.ADD_TIME_DESC -> loadMangaWithCategoryAddTimeDesc(cat.name)
-            MangaFilter.ABC_SORT_DESC -> loadMangaWithCategoryAbcSortDesc(cat.name)
-            MangaFilter.POPULATE_ASC -> loadMangaWithCategoryPopulateAsc(cat.name)
-            MangaFilter.POPULATE_DESC -> loadMangaWithCategoryPopulateDesc(cat.name)
+            MangaFilter.ADD_TIME_ASC -> loadItemsAscBy(MangaColumn.id, cat.name)
+            MangaFilter.ADD_TIME_DESC -> loadItemsDescBy(MangaColumn.id, cat.name)
+            MangaFilter.ABC_SORT_ASC -> loadItemsAscBy(MangaColumn.name, cat.name)
+            MangaFilter.ABC_SORT_DESC -> loadItemsDescBy(MangaColumn.name, cat.name)
+            MangaFilter.POPULATE_ASC -> loadItemsAscBy(MangaColumn.populate, cat.name)
+            MangaFilter.POPULATE_DESC -> loadItemsDescBy(MangaColumn.populate, cat.name)
         }
     }
 }
@@ -108,9 +84,9 @@ fun MangaDao.removeWithChapters(manga: Manga, withFiles: Boolean = false) =
     GlobalScope.launch(Dispatchers.Default) {
         delete(manga)
 
-        Main.db.chapterDao.removeChapters(manga.unic)
+        Main.db.chapterDao.deleteItems(manga.unic)
 
-        Main.db.latestChapterDao.removeChapters(manga.unic)
+        Main.db.latestChapterDao.deleteItems(manga.unic)
 
         if (withFiles) {
             getFullPath(manga.path).deleteRecursively()

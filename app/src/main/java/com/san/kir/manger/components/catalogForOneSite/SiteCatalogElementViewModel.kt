@@ -24,12 +24,12 @@ object SiteCatalogElementViewModel {
         return SiteCatalogElementViewModel
     }
 
-    fun items() = elements?.dao?.loadItems() ?: emptyList()
+    fun items() = elements?.dao?.getItems() ?: emptyList()
 
     fun update(element: SiteCatalogElement) = elements?.dao?.update(element)
 
     fun insert(element: SiteCatalogElement) = elements?.dao?.insert(element)
 
-    fun clearDb() = elements?.dao?.let { it.delete(*it.loadItems().toTypedArray()) }
+    fun clearDb() = elements?.dao?.let { it.delete(*it.getItems().toTypedArray()) }
 }
 

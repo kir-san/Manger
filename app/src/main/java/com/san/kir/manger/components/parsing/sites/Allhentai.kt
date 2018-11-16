@@ -27,7 +27,7 @@ class Allhentai : SiteCatalog {
     override val catalogName = "allhentai.ru"
     override val host = "http://$catalogName"
     override val siteCatalog = "$host/list?type=&sortType=RATING"
-    override var volume = Main.db.siteDao.loadSite(name)?.volume ?: 0
+    override var volume = Main.db.siteDao.getItem(name)?.volume ?: 0
     override var oldVolume = volume
 
     override fun init(): Allhentai {

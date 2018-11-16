@@ -4,7 +4,7 @@ import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 import com.san.kir.manger.components.main.Main
-import com.san.kir.manger.room.dao.loadMangaWhereCategory
+import com.san.kir.manger.room.dao.getItemsWhere
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
@@ -33,7 +33,7 @@ class CategoryRecyclerPresenter(private val act: CategoryActivity) : RecyclerPre
 
     private fun swapItems() = act.launch(act.coroutineContext) {
         val old = adapter.items
-        val new = catDao.loadCategories()
+        val new = catDao.getItems()
         val result = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
             override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
                 old[oldItemPosition].id == new[newItemPosition].id
@@ -66,7 +66,7 @@ class CategoryRecyclerPresenter(private val act: CategoryActivity) : RecyclerPre
             catDao.update(cat)
         else
             with(Main.db.mangaDao) {
-                update(*loadMangaWhereCategory(old).onEach {
+                update(*getItemsWhere(old).onEach {
                     it.categories = cat.name
                 }.toTypedArray())
                 catDao.update(cat)

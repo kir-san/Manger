@@ -51,7 +51,7 @@ import org.jetbrains.anko.verticalLayout
 import org.jetbrains.anko.wrapContent
 
 class LibraryActivity : DrawerActivity() {
-    private val mCategory: List<Category> get() = Main.db.categoryDao.loadCategories()
+    private val mCategory: List<Category> get() = Main.db.categoryDao.getItems()
     private var currentAdapter: LibraryItemsRecyclerPresenter? = null
     private lateinit var viewPager: ViewPager
     private val pagerAdapter by lazy { LibraryPageAdapter(this) }
@@ -256,7 +256,7 @@ class LibraryActivity : DrawerActivity() {
     }
 
     private fun updateAll() = GlobalScope.launch(Dispatchers.Main) {
-        Main.db.mangaDao.loadAllManga().forEach {
+        Main.db.mangaDao.getItems().forEach {
             startService<MangaUpdaterService>(MangaColumn.tableName to it)
         }
     }

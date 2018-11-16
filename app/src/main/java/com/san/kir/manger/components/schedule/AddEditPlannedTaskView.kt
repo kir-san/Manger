@@ -51,9 +51,9 @@ class AddEditPlannedTaskView : AnkoActivityComponent() {
 
     init {
         runBlocking(Dispatchers.Default) {
-            listManga = Main.db.mangaDao.loadAllManga().filter { it.isUpdate }
-            categoryList = Main.db.categoryDao.loadCategories().map { it.name }.toTypedArray()
-            catalogList = Main.db.siteDao.loadAllSites().map { it.name }.toTypedArray()
+            listManga = Main.db.mangaDao.getItems().filter { it.isUpdate }
+            categoryList = Main.db.categoryDao.getItems().map { it.name }.toTypedArray()
+            catalogList = Main.db.siteDao.getItems().map { it.name }.toTypedArray()
         }
     }
 

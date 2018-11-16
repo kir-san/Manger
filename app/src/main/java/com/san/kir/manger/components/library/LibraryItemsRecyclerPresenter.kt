@@ -5,7 +5,7 @@ import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.room.dao.MangaFilter
-import com.san.kir.manger.room.dao.loadMangas
+import com.san.kir.manger.room.dao.loadItems
 import com.san.kir.manger.room.dao.removeWithChapters
 import com.san.kir.manger.room.dao.toFilter
 import com.san.kir.manger.room.models.Category
@@ -49,7 +49,7 @@ class LibraryItemsRecyclerPresenter(val cat: Category, private val act: LibraryA
     override fun into(recyclerView: RecyclerView) {
         super.into(recyclerView)
         recycler.adapter = adapter
-        categories.loadLiveCategory(cat.name)
+        categories.loadItem(cat.name)
             .observe(act, Observer { category ->
                 category?.let {
                     changeOrder(it.toFilter())
@@ -60,8 +60,8 @@ class LibraryItemsRecyclerPresenter(val cat: Category, private val act: LibraryA
     private var mFilter = MangaFilter.ADD_TIME_ASC
     private fun changeOrder(filter: MangaFilter) {
         mFilter = filter
-        mangaDao.loadMangas(cat, filter).removeObservers(act)
-        mangaDao.loadMangas(cat, filter).observe(act, Observer { list ->
+        mangaDao.loadItems(cat, filter).removeObservers(act)
+        mangaDao.loadItems(cat, filter).observe(act, Observer { list ->
             GlobalScope.launch {
                 list?.let {
                     val old = adapter.items

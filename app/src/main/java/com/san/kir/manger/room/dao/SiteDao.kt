@@ -9,14 +9,14 @@ import com.san.kir.manger.room.models.Site
 @Dao
 interface SiteDao : BaseDao<Site> {
     @Query("SELECT * FROM sites")
-    fun loadSites(): DataSource.Factory<Int, Site>
+    fun pagedItems(): DataSource.Factory<Int, Site>
 
     @Query("SELECT * FROM sites")
-    fun loadAllSites(): List<Site>
+    fun getItems(): List<Site>
 
     @Query("SELECT * FROM sites WHERE name is :name")
-    fun loadSite(name: String): Site?
+    fun getItem(name: String): Site?
 }
 
-fun SiteDao.loadPagedSites() =
-        LivePagedListBuilder(loadSites(), 20).build()
+fun SiteDao.loadPagedItems() =
+        LivePagedListBuilder(pagedItems(), 20).build()

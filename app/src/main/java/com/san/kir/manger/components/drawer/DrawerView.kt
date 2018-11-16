@@ -24,7 +24,6 @@ import com.san.kir.manger.components.statistics.StatisticActivity
 import com.san.kir.manger.components.storage.StorageActivity
 import com.san.kir.manger.extending.BaseActivity
 import com.san.kir.manger.extending.ankoExtend.onClick
-import com.san.kir.manger.room.dao.MainMenuType
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.SimpleItemTouchHelperCallback
 import com.san.kir.manger.utils.getDrawableCompat
@@ -67,7 +66,7 @@ class DrawerView(private val act: BaseActivity) {
             })
         .apply {
             act.launch(act.coroutineContext) {
-                items = Main.db.mainMenuDao.loadItems()
+                items = Main.db.mainMenuDao.getItems()
 
                 withContext(Dispatchers.Main) {
                     notifyDataSetChanged()

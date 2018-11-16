@@ -13,26 +13,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-
-fun loadingAdapter(act: DownloadManagerActivity): DownloadManagerRecyclerPresenter {
+fun allAdapter(act: DownloadManagerActivity): DownloadManagerRecyclerPresenter {
     return DownloadManagerRecyclerPresenter(
         act,
-        { loadLoadingDownloads() },
-        { DownloadManagerItemView(act) },
-        false
-    )
-}
-
-
-fun otherAdapter(act: DownloadManagerActivity): DownloadManagerRecyclerPresenter {
-    return DownloadManagerRecyclerPresenter(
-        act,
-        { loadOtherDownloads() },
+        { loadItems() },
         { DownloadManagerItemView(act) },
         true
     )
 }
-
 
 class DownloadManagerRecyclerPresenter(
     private val act: DownloadManagerActivity,

@@ -42,7 +42,7 @@ class AddMangaActivity : ThemedActionBarActivity() {
             }
             intent.hasExtra(MangaColumn.unic) -> {
                 launch(coroutineContext) {
-                    val manga = mangaDao.loadManga(intent.getStringExtra(MangaColumn.unic))
+                    val manga = mangaDao.getItem(intent.getStringExtra(MangaColumn.unic))
 
                     withContext(Dispatchers.Main) {
                         mView.setManga(manga)

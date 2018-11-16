@@ -14,7 +14,7 @@ class ChangeCategoryDialog(context: Context, anchor: View?, manga: Manga) {
     init {
         GlobalScope.launch(Dispatchers.Main) {
             PopupMenu(context, anchor).apply {
-                val mCat = withContext(Dispatchers.Default) { Main.db.categoryDao.loadCategories() }
+                val mCat = withContext(Dispatchers.Default) { Main.db.categoryDao.getItems() }
 
                 mCat.forEachIndexed { i, cat ->
                     menu.add(i, i, i, cat.name)

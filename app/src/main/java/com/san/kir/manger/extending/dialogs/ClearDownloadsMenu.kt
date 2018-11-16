@@ -28,23 +28,23 @@ class ClearDownloadsMenu(act: DownloadManagerActivity, parent: View) {
                 GlobalScope.launch(Dispatchers.Default) {
                     when (item.itemId) {
                         clearCompleted -> {
-                            act.dao.loadItems()
+                            act.dao.getItems()
                                 .filter { it.status == DownloadStatus.completed }
                                 .forEach { act.dao.delete(it) }
 
                         }
                         clearPaused -> {
-                            act.dao.loadItems()
+                            act.dao.getItems()
                                 .filter { it.status == DownloadStatus.pause }
                                 .forEach { act.dao.delete(it) }
                         }
                         clearError -> {
-                            act.dao.loadItems()
+                            act.dao.getItems()
                                 .filter { it.status == DownloadStatus.error }
                                 .forEach { act.dao.delete(it) }
                         }
                         clearAll -> {
-                            act.dao.loadItems()
+                            act.dao.getItems()
                                 .filter {
                                     it.status == DownloadStatus.completed
                                             || it.status == DownloadStatus.pause

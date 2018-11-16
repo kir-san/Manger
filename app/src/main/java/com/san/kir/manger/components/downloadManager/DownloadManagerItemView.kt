@@ -227,7 +227,7 @@ class DownloadManagerItemView(private val act: DownloadManagerActivity) :
             }
 
 
-            val manga = Main.db.mangaDao.loadMangaOrNull(item.manga)
+            val manga = Main.db.mangaDao.getItemOrNull(item.manga)
             if (manga != null) {
                 loadImage(manga.logo).into(logo)
             }

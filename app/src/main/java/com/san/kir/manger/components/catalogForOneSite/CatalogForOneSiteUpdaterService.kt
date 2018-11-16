@@ -87,7 +87,7 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
         runBlocking(Dispatchers.Default) {
             try {
                 val site = ManageSites.CATALOG_SITES[intent.getIntExtra("id", -1)]
-                val siteDb = Main.db.siteDao.loadSite(site.name)
+                val siteDb = Main.db.siteDao.getItem(site.name)
 
                 with(NotificationCompat.Builder(this@CatalogForOneSiteUpdaterService, channelId)) {
                     setSmallIcon(R.drawable.ic_notification_update)

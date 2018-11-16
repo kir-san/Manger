@@ -20,26 +20,26 @@ import kotlinx.coroutines.async
 @Dao
 interface StorageDao : BaseDao<Storage> {
     @Query("SELECT * FROM StorageItem ORDER BY sizeFull DESC")
-    fun loadPagedItems(): DataSource.Factory<Int, Storage>
+    fun pagedItems(): DataSource.Factory<Int, Storage>
 
     @Query("SELECT * FROM StorageItem ORDER BY sizeFull DESC")
-    fun loadLivedItems(): LiveData<List<Storage>>
+    fun loadItems(): LiveData<List<Storage>>
 
     @Query("SELECT * FROM StorageItem WHERE path IS :shortPath")
-    fun loadLivedItem(shortPath: String): LiveData<Storage?>
+    fun loadItem(shortPath: String): LiveData<Storage?>
 
     @Query("SELECT * FROM StorageItem ORDER BY sizeFull DESC")
-    fun simpleLoadItems(): List<Storage>
+    fun getItems(): List<Storage>
 }
 
 fun StorageDao.loadAllSize(): LiveData<Double> =
-    Transformations.map(loadLivedItems()) { list -> list.sumByDouble { it.sizeFull } }
+    Transformations.map(loadItems()) { list -> list.sumByDouble { it.sizeFull } }
 
-fun StorageDao.loadPagedStorageItems() =
-    LivePagedListBuilder(loadPagedItems(), 20).build()
+fun StorageDao.loadPagedItems() =
+    LivePagedListBuilder(pagedItems(), 20).build()
 
-fun StorageDao.loadLivedStorageItem(shortPath: String): LiveData<Storage?> {
-    return loadLivedItem(getFullPath(shortPath).shortPath)
+fun StorageDao.loadItemWhere(shortPath: String): LiveData<Storage?> {
+    return loadItem(getFullPath(shortPath).shortPath)
 }
 
 fun StorageDao.updateStorageItems() {
@@ -53,9 +53,27 @@ fun StorageDao.updateStorageItems() {
     }
 }
 
+fun Storage.getSizeAndIsNew(): Storage {
+    val mangaDao = Main.db.mangaDao
+    val chapters = Main.db.chapterDao
+
+    val file = getFullPath(path)
+    mangaDao.getFromPath(file).let { manga ->
+        sizeFull = file.lengthMb
+        isNew = manga == null
+        sizeRead = manga?.let { it ->
+            chapters.getItems(it.unic)
+                .asSequence()
+                .filter { it.isRead }
+                .sumByDouble { getFullPath(it.path).lengthMb }
+        } ?: 0.0
+    }
+    return this
+}
+
 private val StorageDao.asyncUpdateStorageItems: Deferred<Any>
     get() = GlobalScope.async(Dispatchers.Default) {
-        val list = simpleLoadItems()
+        val list = getItems()
         val storageList = getFullPath(DIR.MANGA).listFiles()
         if (list.isEmpty() || storageList.size != list.size) {
             storageList.forEach { dir ->
@@ -77,20 +95,4 @@ private val StorageDao.asyncUpdateStorageItems: Deferred<Any>
 
 private var asyncUpdates: Deferred<Any>? = null
 
-fun Storage.getSizeAndIsNew(): Storage {
-    val mangaDao = Main.db.mangaDao
-    val chapters = Main.db.chapterDao
 
-    val file = getFullPath(path)
-    mangaDao.getFromPath(file).let { manga ->
-        sizeFull = file.lengthMb
-        isNew = manga == null
-        sizeRead = manga?.let { it ->
-            chapters.loadChapters(it.unic)
-                .asSequence()
-                .filter { it.isRead }
-                .sumByDouble { getFullPath(it.path).lengthMb }
-        } ?: 0.0
-    }
-    return this
-}

@@ -110,7 +110,7 @@ class StatisticItemView(private val act: StatisticActivity) :
     override fun bind(item: MangaStatistic, isSelected: Boolean, position: Int) {
         act.launch(act.coroutineContext) {
             val context = root.context
-            val manga = Main.db.mangaDao.loadMangaOrNull(item.manga)
+            val manga = Main.db.mangaDao.getItemOrNull(item.manga)
 
             withContext(Dispatchers.Main) {
                 if (manga != null && manga.logo.isNotEmpty()) {

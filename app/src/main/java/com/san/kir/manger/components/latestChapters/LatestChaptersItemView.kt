@@ -265,7 +265,7 @@ class LatestChaptersItemView(private val act: LatestChapterActivity) :
 
 
         Main.db.downloadDao
-            .loadLivedItem(item.site)
+            .loadItem(item.site)
             .observe(act, Observer {
                 changeVisibilityAndActions(it, item)
             })

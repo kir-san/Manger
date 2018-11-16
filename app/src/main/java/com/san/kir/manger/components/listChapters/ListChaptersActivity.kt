@@ -93,7 +93,7 @@ class ListChaptersActivity : ThemedActionBarActivity() {
         registerReceiver(receiver, intentFilter)
 
         launch(coroutineContext) {
-            manga = mangaDao.loadManga(intent.getStringExtra(MangaColumn.unic))
+            manga = mangaDao.getItem(intent.getStringExtra(MangaColumn.unic))
             manga.populate += 1
             mangaDao.update(manga)
 

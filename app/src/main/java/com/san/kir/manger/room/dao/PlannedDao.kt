@@ -10,14 +10,14 @@ import com.san.kir.manger.room.models.PlannedTaskColumn
 @Dao
 interface PlannedDao : BaseDao<PlannedTask> {
     @Query("SELECT * FROM ${PlannedTaskColumn.tableName} ORDER BY ${PlannedTaskColumn.id}")
-    fun loadPlannedTasks(): DataSource.Factory<Int, PlannedTask>
+    fun pagedItems(): DataSource.Factory<Int, PlannedTask>
 
     @Query("SELECT * FROM ${PlannedTaskColumn.tableName} ORDER BY ${PlannedTaskColumn.id}")
-    fun loadPTasks(): List<PlannedTask>
+    fun getItems(): List<PlannedTask>
 
     @Query("SELECT * FROM ${PlannedTaskColumn.tableName} WHERE `${PlannedTaskColumn.addedTime}` IS :taskId ORDER BY ${PlannedTaskColumn.id}")
-    fun loadPlannedTask(taskId: Long): PlannedTask
+    fun getItem(taskId: Long): PlannedTask
 }
 
-fun PlannedDao.loadPagedPlannedTasks() =
-    LivePagedListBuilder(loadPlannedTasks(), 20).build()
+fun PlannedDao.loadPagedItems() =
+    LivePagedListBuilder(pagedItems(), 20).build()

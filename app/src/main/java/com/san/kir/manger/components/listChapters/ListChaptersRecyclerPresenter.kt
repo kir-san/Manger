@@ -50,7 +50,7 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
 
     fun changeSort(alternative: Boolean) = GlobalScope.launch(Dispatchers.Default) {
         try {
-            val loadChapters = dao.loadChapters(manga.unic)
+            val loadChapters = dao.getItems(manga.unic)
             log("loadChapters = ${loadChapters.size}")
             backupCatalog = if (alternative) {
                 loadChapters.sortedWith(Comparator { arg1, arg2 ->
@@ -158,7 +158,7 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
 
     fun downloadNextNotReadChapter() = GlobalScope.launch(Dispatchers.Default) {
         val chapter = dao
-            .loadChaptersNotReadAsc(manga.unic)
+            .getItemsNotReadAsc(manga.unic)
             .first { it.action == ChapterStatus.DOWNLOADABLE }
 
         act.startService<DownloadService>("item" to chapter.toDownloadItem())
@@ -168,7 +168,7 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
 
     fun downloadAllNotReadChapters() = GlobalScope.launch(Dispatchers.Default) {
         val count =  dao
-            .loadChaptersNotReadAsc(manga.unic)
+            .getItemsNotReadAsc(manga.unic)
             .filter { it.action == ChapterStatus.DOWNLOADABLE }
             .onEach { chapter ->
                 act.startService<DownloadService>("item" to chapter.toDownloadItem())
@@ -185,7 +185,7 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
 
     fun downloadAllChapters() = GlobalScope.launch(Dispatchers.Default) {
         val count = dao
-            .loadChaptersAllAsc(manga.unic)
+            .getItemsAsc(manga.unic)
             .filter { it.action == ChapterStatus.DOWNLOADABLE }
             .onEach { chapter ->
                 act.startService<DownloadService>("item" to chapter.toDownloadItem())

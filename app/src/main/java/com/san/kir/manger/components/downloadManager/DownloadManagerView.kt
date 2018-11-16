@@ -52,16 +52,10 @@ class DownloadManagerView(private val act: DownloadManagerActivity) {
 
                     verticalLayout {
                         lparams(height = matchParent)
-                        // Загружаемые
-                        recyclerView {
-                            layoutManager = LinearLayoutManager(context)
-                            loadingAdapter(act).into(this)
-                        }
 
-                        // Все остальные
                         recyclerView {
                             layoutManager = LinearLayoutManager(context)
-                            otherAdapter(act).into(this)
+                            allAdapter(act).into(this)
                         }
                     }
                 }

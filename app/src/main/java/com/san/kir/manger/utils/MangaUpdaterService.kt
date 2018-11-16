@@ -23,7 +23,7 @@ import com.san.kir.manger.components.latestChapters.LatestChapterActivity
 import com.san.kir.manger.components.listChapters.SearchDuplicate
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.components.parsing.ManageSites
-import com.san.kir.manger.room.dao.downloadNewChapters
+import com.san.kir.manger.room.dao.getNewChapters
 import com.san.kir.manger.room.models.Chapter
 import com.san.kir.manger.room.models.LatestChapter
 import com.san.kir.manger.room.models.Manga
@@ -177,7 +177,7 @@ class MangaUpdaterService : Service() {
     }
 
     private fun downloadNew() = GlobalScope.launch(Dispatchers.Default) {
-        Main.db.latestChapterDao.downloadNewChapters().onEach { chapter ->
+        Main.db.latestChapterDao.getNewChapters().onEach { chapter ->
             startService<DownloadService>("item" to chapter.toDownloadItem())
         }
     }
@@ -231,7 +231,7 @@ class MangaUpdaterService : Service() {
             val oldChapters =
                 withContext(Dispatchers.Default) {
                     chapters
-                        .loadChapters(manga.unic)
+                        .getItems(manga.unic)
                         .onEach {
                             launch(Dispatchers.Default) {
                                 if (it.pages.isNullOrEmpty() || it.pages.any { chap -> chap.isBlank() }) {
@@ -272,7 +272,7 @@ class MangaUpdaterService : Service() {
 
                 SearchDuplicate.silentRemoveDuplicate(manga)
 
-                val newSize = chapters.loadChapters(manga.unic).size
+                val newSize = chapters.getItems(manga.unic).size
 
                 countNew = newSize - oldSize
             }

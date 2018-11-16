@@ -18,7 +18,7 @@ import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.dialogs.DeleteReadChaptersDialog
 import com.san.kir.manger.room.dao.getSizeAndIsNew
 import com.san.kir.manger.room.dao.loadAllSize
-import com.san.kir.manger.room.dao.loadLivedStorageItem
+import com.san.kir.manger.room.dao.loadItemWhere
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.room.models.Storage
 import com.san.kir.manger.utils.formatDouble
@@ -149,7 +149,7 @@ class StorageDialogView : AnkoComponent<StorageDialogFragment> {
                 progressBar?.secondaryProgress = dir?.sizeRead?.roundToInt() ?: 0
             })
 
-        storage.loadLivedStorageItem(manga.path).observe(act, Observer { item ->
+        storage.loadItemWhere(manga.path).observe(act, Observer { item ->
             if (dir == null && item != null) {
                 updateStorageItem(item)
             }

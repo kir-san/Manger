@@ -136,7 +136,7 @@ class SiteCatalogItemView(private val act: SiteCatalogActivity) :
                         site.init()
                         // Находим в базе данных наш сайт
                         with(Main.db.siteDao) {
-                            loadSite(site.name)?.let {
+                            getItem(site.name)?.let {
                                 // Сохраняем новое значение количества элементов
                                 it.oldVolume = SiteCatalogElementViewModel.setSiteId(site.id)
                                     .items()

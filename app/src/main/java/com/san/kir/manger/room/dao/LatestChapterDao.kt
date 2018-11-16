@@ -15,51 +15,51 @@ import kotlinx.coroutines.launch
 @Dao
 interface LatestChapterDao : BaseDao<LatestChapter> {
     @Query("SELECT * FROM latestChapters ORDER BY id DESC")
-    fun loadLatestChapters(): DataSource.Factory<Int, LatestChapter>
+    fun pagedItems(): DataSource.Factory<Int, LatestChapter>
 
     @Query("SELECT * FROM latestChapters")
-    fun load(): List<LatestChapter>
+    fun getItems(): List<LatestChapter>
 
     @Query("SELECT * FROM latestChapters WHERE site IS :link")
-    fun loadChaptersWhereLink(link: String): List<LatestChapter>
+    fun getItemsWhereLink(link: String): List<LatestChapter>
 
     @Query("SELECT * FROM latestChapters WHERE manga IS :manga")
-    fun loadChaptersWhereManga(manga: String): List<LatestChapter>
+    fun getItemsWhereManga(manga: String): List<LatestChapter>
 }
 
-fun LatestChapterDao.removeChapters(manga: String) =
-    delete(*loadChaptersWhereManga(manga).toTypedArray())
+fun LatestChapterDao.deleteItems(manga: String) =
+    delete(*getItemsWhereManga(manga).toTypedArray())
 
-fun LatestChapterDao.clearHistoryDownload() =
+fun LatestChapterDao.clearDownloaded() =
     GlobalScope.launch(Dispatchers.Default) {
-        load()
+        getItems()
             .filter { it.action == ChapterStatus.DELETE }
             .forEach { delete(it) }
     }
 
-fun LatestChapterDao.clearHistoryRead() =
+fun LatestChapterDao.clearRead() =
     GlobalScope.launch(Dispatchers.Default) {
-        load()
+        getItems()
             .filter { it.isRead() }.forEach { delete(it) }
     }
 
-fun LatestChapterDao.clearHistory() =
+fun LatestChapterDao.clearAll() =
     GlobalScope.launch(Dispatchers.Default) {
-        load()
+        getItems()
             .forEach { delete(it) }
     }
 
-fun LatestChapterDao.downloadNewChapters() =
-    load()
+fun LatestChapterDao.getNewChapters() =
+    getItems()
         .filter { !it.isRead() }
         .filter { it.action == ChapterStatus.DOWNLOADABLE }
 
 
 fun LatestChapterDao.hasNewChapters() =
-    load()
+    getItems()
         .filter { !it.isRead() }
         .any { it.action == ChapterStatus.DOWNLOADABLE }
 
 
-fun LatestChapterDao.loadPagedLatestChapters() =
-    LivePagedListBuilder(loadLatestChapters(), 20).build()
+fun LatestChapterDao.loadPagedItems() =
+    LivePagedListBuilder(pagedItems(), 20).build()

@@ -1,4 +1,4 @@
-package com.san.kir.manger.components.downloadManager
+package com.san.kir.manger.utils
 
 import android.content.Context
 import com.san.kir.manger.extending.ankoExtend.isNetworkAvailable

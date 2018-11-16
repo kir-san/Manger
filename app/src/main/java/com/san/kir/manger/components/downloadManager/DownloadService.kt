@@ -15,6 +15,9 @@ import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.bytesToMb
 import com.san.kir.manger.utils.formatDouble
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.notificationManager
@@ -293,6 +296,6 @@ class DownloadService : Service(), DownloadListener {
 
     }
 
-    class LocalBinder(val chapterLoader: ChapterLoader) : Binder()
-    class LocalBinderC(val chapterLoader: ChapterLoaderC) : Binder()
+//    class LocalBinder(val chapterLoader: ChapterLoader) : Binder()
+    class LocalBinderC(val chapterLoader: ChapterLoader) : Binder()
 }

@@ -2,7 +2,7 @@ package com.san.kir.manger.room.models
 
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
-import com.san.kir.manger.room.dao.MainMenuType
+import com.san.kir.manger.components.drawer.MainMenuType
 
 @Entity(tableName = "mainmenuitems")
 class MainMenuItem {

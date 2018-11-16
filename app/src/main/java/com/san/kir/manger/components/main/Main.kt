@@ -7,13 +7,13 @@ import android.os.Bundle
 import com.san.kir.manger.App
 import com.san.kir.manger.R
 import com.san.kir.manger.components.downloadManager.DownloadService
+import com.san.kir.manger.components.drawer.MainMenuType
 import com.san.kir.manger.components.library.LibraryActivity
 import com.san.kir.manger.components.schedule.ScheduleManager
 import com.san.kir.manger.extending.BaseActivity
 import com.san.kir.manger.extending.ankoExtend.compatCheckSelfPermission
 import com.san.kir.manger.extending.ankoExtend.compatRequestPermissions
 import com.san.kir.manger.room.RoomDB
-import com.san.kir.manger.room.dao.MainMenuType
 import com.san.kir.manger.room.migrations.migrations
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.room.models.MainMenuItem
@@ -80,7 +80,7 @@ class Main : BaseActivity() {
 
     private fun restoreSchedule() {
         val man = ScheduleManager(this)
-        db.plannedDao.loadPTasks().filter { it.isEnabled }.forEach { man.add(it) }
+        db.plannedDao.getItems().filter { it.isEnabled }.forEach { man.add(it) }
     }
 
     private fun createNeedFolders() = DIR.ALL.forEach { dir -> createDirs(getFullPath(dir)) }
@@ -92,13 +92,13 @@ class Main : BaseActivity() {
     }
 
     private fun insertMangaIntoStatistic() {
-        if (db.statisticDao.loadItems().isEmpty()) {
-            db.mangaDao.loadAllManga().forEach { manga ->
+        if (db.statisticDao.getItems().isEmpty()) {
+            db.mangaDao.getItems().forEach { manga ->
                 db.statisticDao.insert(MangaStatistic(manga = manga.unic))
             }
         } else {
-            val stats = db.statisticDao.loadItems()
-            val new = db.mangaDao.loadAllManga()
+            val stats = db.statisticDao.getItems()
+            val new = db.mangaDao.getItems()
                 .filter { manga -> !stats.any { it.manga == manga.unic } }
             if (new.isNotEmpty()) {
                 new.forEach { db.statisticDao.insert(MangaStatistic(manga = it.unic)) }
@@ -107,7 +107,7 @@ class Main : BaseActivity() {
     }
 
     private fun insertMenuItems() {
-        if (db.mainMenuDao.loadItems().isEmpty()) {
+        if (db.mainMenuDao.getItems().isEmpty()) {
             MainMenuType.values()
                 .filter { it != MainMenuType.Default }
                 .forEachIndexed { index, type ->
@@ -116,7 +116,7 @@ class Main : BaseActivity() {
                     )
                 }
         } else {
-            val items = db.mainMenuDao.loadItems()
+            val items = db.mainMenuDao.getItems()
             MainMenuType.values()
                 .filter { type ->
                     items.none { it.type == type }
@@ -133,7 +133,7 @@ class Main : BaseActivity() {
                 }
 
             db.mainMenuDao.update(*db.mainMenuDao
-                .loadItems()
+                .getItems()
                 .onEach { item ->
                     item.name = getString(item.type.stringId())
                 }
@@ -142,7 +142,7 @@ class Main : BaseActivity() {
     }
 
     private fun insertCategoryAll() {
-        if (db.categoryDao.loadCategories().isEmpty())
+        if (db.categoryDao.getItems().isEmpty())
             db.categoryDao.insert(Category(CATEGORY_ALL, 0))
     }
 }

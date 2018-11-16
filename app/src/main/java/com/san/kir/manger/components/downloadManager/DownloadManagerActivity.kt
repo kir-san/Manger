@@ -86,7 +86,7 @@ class DownloadManagerActivity : DrawerActivity() {
         val intent = Intent(this, DownloadService::class.java)
         bindService(intent, connection, Context.BIND_AUTO_CREATE)
         setTitle(R.string.main_menu_downloader)
-        dao.loadAllDownloads().observe(this, titleObserver)
+        dao.loadItems().observe(this, titleObserver)
 
         val filter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
         registerReceiver(receiver, filter)

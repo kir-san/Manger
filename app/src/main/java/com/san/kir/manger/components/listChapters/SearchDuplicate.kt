@@ -10,7 +10,7 @@ object SearchDuplicate {
     }
 
     private fun searchDuplicate(manga: Manga): MutableList<List<Chapter>> {
-        var list = Main.db.chapterDao.loadChapters(manga.unic)
+        var list = Main.db.chapterDao.getItems(manga.unic)
         val iterator = list.iterator()
 
         val allDuplicateList: MutableList<List<Chapter>> = mutableListOf()
@@ -45,14 +45,14 @@ object SearchDuplicate {
 
             val removesChapters = chapterDuplicates - first
             removesChapters.forEach { chapter ->
-                val latests = Main.db.latestChapterDao.loadChaptersWhereLink(chapter.site)
+                val latests = Main.db.latestChapterDao.getItemsWhereLink(chapter.site)
                 if (latests.isNotEmpty()) {
                     Main.db.latestChapterDao.delete(*latests.toTypedArray())
                 }
             }
             Main.db.chapterDao.delete(*removesChapters.toTypedArray())
 
-            val latests = Main.db.latestChapterDao.loadChaptersWhereLink(first.site)
+            val latests = Main.db.latestChapterDao.getItemsWhereLink(first.site)
             if (latests.size > 1) {
                 val deleting = latests - latests.first()
                 Main.db.latestChapterDao.delete(*deleting.toTypedArray())

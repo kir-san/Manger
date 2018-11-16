@@ -16,7 +16,7 @@ class LibraryPageAdapter(private val act: LibraryActivity) : PreparePagerAdapter
         act.launch(act.coroutineContext) {
             adapters = listOf()
             pagers = listOf()
-            categories = Main.db.categoryDao.loadCategories()
+            categories = Main.db.categoryDao.getItems()
 
             if (categories.isNotEmpty()) {
                 val prepare = categories

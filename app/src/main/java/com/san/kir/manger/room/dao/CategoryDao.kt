@@ -8,15 +8,15 @@ import com.san.kir.manger.room.models.Category
 @Dao
 abstract class CategoryDao: BaseDao<Category> {
     @Query("SELECT * FROM `categories` ORDER BY `order`")
-    abstract fun loadCategories(): List<Category>
+    abstract fun getItems(): List<Category>
 
     @Query("SELECT * FROM `categories` ORDER BY `order`")
-    abstract fun loadLiveCategories(): LiveData<List<Category>>
+    abstract fun loadItems(): LiveData<List<Category>>
 
     @Query("SELECT * FROM `categories` WHERE `name` IS :name")
-    abstract fun loadLiveCategory(name: String): LiveData<Category>
+    abstract fun loadItem(name: String): LiveData<Category>
 }
 
-fun CategoryDao.categoryNames() = loadCategories().map { it.name }
+fun CategoryDao.categoryNames() = getItems().map { it.name }
 
 

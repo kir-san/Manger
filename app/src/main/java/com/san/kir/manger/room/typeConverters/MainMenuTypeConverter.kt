@@ -1,7 +1,7 @@
 package com.san.kir.manger.room.typeConverters
 
 import android.arch.persistence.room.TypeConverter
-import com.san.kir.manger.room.dao.MainMenuType
+import com.san.kir.manger.components.drawer.MainMenuType
 
 class MainMenuTypeConverter {
     @TypeConverter

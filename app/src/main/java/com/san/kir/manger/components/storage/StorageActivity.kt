@@ -56,7 +56,7 @@ class StorageActivity : DrawerActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Main.db.storageDao.loadLivedItems().observe(this, titleObserver)
+        Main.db.storageDao.loadItems().observe(this, titleObserver)
 
     }
 }

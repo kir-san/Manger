@@ -87,7 +87,7 @@ class CatalogForOneSiteActivity : BaseActivity() {
             // Убираем прогрессБар
             view.isAction.negative()
 
-            Main.db.siteDao.loadSite(mSite.name)?.let {
+            Main.db.siteDao.getItem(mSite.name)?.let {
                 it.oldVolume = size
                 Main.db.siteDao.update(it)
             }

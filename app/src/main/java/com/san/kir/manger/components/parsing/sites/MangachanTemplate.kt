@@ -32,7 +32,7 @@ open class MangachanTemplate : SiteCatalog {
 
     override fun init(): MangachanTemplate {
         if (!isInit) {
-            oldVolume = Main.db.siteDao.loadSite(name)?.volume ?: 0
+            oldVolume = Main.db.siteDao.getItem(name)?.volume ?: 0
             val doc = ManageSites.getDocument(siteCatalog)
             volume = doc.select("#pagination > b").text().split(" ").first().toInt()
             isInit = true

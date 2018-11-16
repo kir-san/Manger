@@ -197,10 +197,11 @@ class Allhentai : SiteCatalog {
             val json = JSONArray(data)
 
             repeat(json.length()) { index ->
-                list += json.getJSONObject(index).getString("url")
+                var string = json.getJSONObject(index).getString("url")
+                if (string[7] == 'c')
+                    string = string.replaceFirst("c", "a")
+                list += string
             }
-
-
         }
         return list
     }

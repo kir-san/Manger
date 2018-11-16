@@ -10,9 +10,8 @@ import kotlinx.coroutines.withContext
 class ViewerPresenter(private val act: ViewerActivity) {
 
     private var adapter = ViewerAdapter(act.supportFragmentManager)
-    private lateinit var manager: ChaptersList // Менеджер глав и страниц
+    private var manager = ChaptersList()// Менеджер глав и страниц
     private lateinit var viewPager: SpecialViewPager
-
 
     val progressChapters = Binder(-1)
     val progressPages = Binder(0) // Текущая страница, которую в данный момент читают
@@ -33,24 +32,24 @@ class ViewerPresenter(private val act: ViewerActivity) {
         this.viewPager = viewPager
     }
 
-    fun configManager(mangaName: String, chapterName: String) = act.launch {
-        manager = ChaptersList(mangaName, chapterName)
+    fun configManager(mangaName: String, chapterName: String) = act.launch(act.coroutineContext) {
+        manager.init(mangaName, chapterName)
 
-        maxChapters = manager.chapter.max
-        max.item = manager.page.max
+        maxChapters = manager.chaptersSize
+        max.item = manager.pagesSize
         progressPages.item =
-                if (manager.page.position <= 0) 1 // Если полученная позиция не больше нуля, то присвоить значение 1
-                else manager.page.position // Иначе то что есть
+                if (manager.pagePosition <= 0) 1 // Если полученная позиция не больше нуля, то присвоить значение 1
+                else manager.pagePosition // Иначе то что есть
 
         // При изменении прогресса, отдать новое значение в менеджер
-        progressPages.bind { pos -> manager.page.position = pos }
+        progressPages.bind { pos -> manager.pagePosition = pos }
 
-        progressChapters.item = manager.chapter.position // Установка значения
+        progressChapters.item = manager.chapterPosition // Установка значения
 
         checkButton()
 
         withContext(Dispatchers.Main) {
-            adapter.setList(manager.page.list)
+            adapter.setList(manager.pagesList)
             viewPager.currentItem = progressPages.item
         }
     }
@@ -65,34 +64,34 @@ class ViewerPresenter(private val act: ViewerActivity) {
 
     // Предыдущая глава
     fun prevChapter() = act.launch {
-        manager.chapter.prev() // Переключение главы
+        manager.prevChapter() // Переключение главы
         initChapter()
     }
 
     // Следующая глава
     fun nextChapter() = act.launch {
-        manager.chapter.next() // Переключение главы
+        manager.nextChapter() // Переключение главы
         initChapter()
     }
 
     private suspend fun initChapter() {
         progressPages.item = 1
-        max.item = manager.page.max
-        progressChapters.item = manager.chapter.position
+        max.item = manager.pagesSize
+        progressChapters.item = manager.chapterPosition
 
         checkButton()
 
         withContext(Dispatchers.Main) {
-            adapter.setList(manager.page.list)
+            adapter.setList(manager.pagesList)
             viewPager.currentItem = progressPages.item
-            act.chapterName = manager.chapter.current.name // Сохранение данных
-            act.title = manager.chapter.current.name // Смена заголовка
+            act.chapterName = manager.chapter().name // Сохранение данных
+            act.title = manager.chapter().name // Смена заголовка
         }
     }
 
     // Проверка видимости кнопок переключения глав
     private fun checkButton() {
-        isPrev.item = manager.page.list.first().link== "prev"
-        isNext.item = manager.page.list.last().link == "next"
+        isPrev.item = manager.pagesList.first().link == "prev"
+        isNext.item = manager.pagesList.last().link == "next"
     }
 }

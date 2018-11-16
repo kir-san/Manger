@@ -8,153 +8,145 @@ import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.room.models.Chapter
 import com.san.kir.manger.room.models.MangaStatistic
 import com.san.kir.manger.utils.getFullPath
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
+import java.util.concurrent.Executors
 
 // класс для управления страницами и главами
-class ChaptersList(
-    mangaName: String,
-    chapter: String
-//    val act: ViewerActivity
-) {
-    var page = PageObject
-    var chapter = ChapterObject
+class ChaptersList {
+    private val pool = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+    private val chapterDao = Main.db.chapterDao
+    private val statisticDao = Main.db.statisticDao
+    private val listChapter: MutableList<Chapter> = mutableListOf() // Список глав
+    private var positionChapter = 0 // текущая глава
+    private var stats = MangaStatistic()
+    private var positionStat = 0
 
-    init {
-        Helper.list_chapter.clear() // Очистить список
-        Helper.list_chapter.addAll(Helper.chapterDao.loadChapters(mangaName)) // Получение глав
-        Helper.position_chapter = findChapterPosition(chapter) // Установка текущей главы
+    fun init(mangaName: String, chapter: String) {
+        listChapter.clear() // Очистить список
+        listChapter.addAll(chapterDao.loadChapters(mangaName)) // Получение глав
 
-        PageObject.updateList() // Получение списка страниц для главы
-        PageObject.position = when { // Установка текущей страницы
-            ChapterObject.current.progress <= 0 -> 0 // Если не больше 0, то ноль
-            else -> ChapterObject.current.progress // Иначе как есть
+        positionChapter = findChapterPosition(chapter) // Установка текущей главы
+
+        updatePagesList() // Получение списка страниц для главы
+        pagePosition = when { // Установка текущей страницы
+            chapter().progress <= 0 -> 0 // Если не больше 0, то ноль
+            else -> chapter().progress // Иначе как есть
         }
 
-        Helper.positionStat = PageObject.position
-        Helper.stats = Helper.statisticDao.loadItem(mangaName)
-        Helper.stats.lastChapters = 0
-        Helper.stats.lastPages = 0
-        Helper.statisticDao.update(Helper.stats)
+        positionStat = pagePosition
+
+        stats = statisticDao.getItem(mangaName)
+        stats.lastChapters = 0
+        stats.lastPages = 0
+
+        statisticDao.update(stats)
+    }
+
+    var pagePosition: Int = 0 // текущая страница
+        set(value) {
+            field = value
+            GlobalScope.launch(pool) {
+                saveProgress(value) // Сохранить позицию в бд
+            }
+        }
+
+    var pagesSize: Int = 0 // Количество глав
+        private set
+
+    var pagesList: List<Page> = listOf()
+        private set
+
+    val chapterPosition: Int // текущая глава
+        get() = positionChapter + 1
+
+    val chaptersSize: Int // Общее количество глав
+        get() = listChapter.size
+
+    fun chapter(): Chapter {
+        return listChapter[positionChapter]
+    }
+
+    fun nextChapter() { // переключение на следующую главу
+        if (hasNextChapter()) {
+            positionChapter++
+            updatePagesList()
+            stats.lastChapters++
+            stats.allChapters++
+            statisticDao.update(stats)
+        }
+    }
+
+    fun prevChapter() { // переключение на предыдущию главу
+        if (hasPrevChapter()) {
+            positionChapter--
+            updatePagesList()
+        }
     }
 
     private fun findChapterPosition(chapter: String): Int { // Позиции главы, по названию главы
-        val lastIndex = Helper.list_chapter.size - 1 // Последняя позиция
+        val lastIndex = listChapter.size - 1 // Последняя позиция
         // Проверка всех названий глав на соответствие, если ничего нет, то позиция равна 0
-        return (0..lastIndex).firstOrNull { Helper.list_chapter[it].name == chapter } ?: 0
+        return (0..lastIndex).firstOrNull { listChapter[it].name == chapter } ?: 0
     }
 
-    object Helper { // маленький объект
-        val chapterDao = Main.db.chapterDao
-        val statisticDao = Main.db.statisticDao
-        val list_chapter: MutableList<Chapter> = mutableListOf() // Список глав
-        var position_chapter = 0 // текущая глава
-        var position_page = 0 // текущая страница
-        var stats = MangaStatistic()
-        var positionStat = 0
+    private fun updatePagesList() {
+        if (chapter().pages.isNullOrEmpty() ||
+            chapter().pages.any { it.isBlank() }) {
+            chapter().pages = ManageSites.pages(chapter())
+            chapterDao.update(chapter())
+        }
+
+        pagesSize = chapter().pages.size
+
+        val pages = chapter().pages.map {
+            Page(it, getFullPath(chapter().path).absolutePath)
+        }.toMutableList()
+
+        if (hasPrevChapter())  // Если есть главы до этой
+            pages.add(0, Page("prev")) // Добавить в начало специальный файл указатель
+        else  // если нет
+            pages.add(0, Page("none")) // Добавить в начало другой файл указатель
+
+        if (hasNextChapter())  // Если есть главы после этой
+            pages.add(Page("next")) // Добавить в конец специальный файл указатель
+        else // если нет
+            pages.add(Page("none")) // Добавить в конец другой файл указатель
+
+        positionStat = 1
+
+        pagesList = pages
     }
 
-    object ChapterObject { // группа для глав
-        val position: Int // текущая глава
-            get() = Helper.position_chapter + 1
-
-        val max: Int // Общее количество глав
-            get() = Helper.list_chapter.size
-
-        val current: Chapter // Текущая глава
-            get() = Helper.list_chapter[Helper.position_chapter]
-
-        fun next() { // переключение на следующую главу
-            if (hasNext()) {
-                Helper.position_chapter++
-                PageObject.updateList()
-                Helper.stats.lastChapters++
-                Helper.stats.allChapters++
-                Helper.statisticDao.update(Helper.stats)
+    private fun saveProgress(pos: Int) { // Сохранение позиции текущей главы
+        var p = pos // скопировать позицию
+        when {
+            pos < 1 -> p = 1 // если меньше единицы значение, то приравнять к еденице
+            pos == pagesSize -> { // если текущая позиция последняя
+                p = pagesSize
+                // Сделать главу прочитанной
+                chapter().isRead = true
+                chapterDao.update(chapter())
             }
+            pos > pagesSize -> return // Если больше максимального значения, ничего не делать
         }
+        // Обновить позицию
+        chapter().progress = p
+        chapterDao.update(chapter())
 
-        fun hasNext(): Boolean {
-            return Helper.position_chapter < Helper.list_chapter.size - 1
-        }
-
-        fun prev() { // переключение на предыдущию главу
-            if (hasPrev()) {
-                Helper.position_chapter--
-                PageObject.updateList()
-            }
-        }
-
-        fun hasPrev(): Boolean {
-            return Helper.position_chapter > 0
+        if (pos > positionStat) {
+            val diff = pos - positionStat
+            stats.lastPages += diff
+            stats.allPages += diff
+            positionStat = pos
+            statisticDao.update(stats)
         }
     }
 
-    object PageObject { // группа для страниц
-        var position: Int // текущая страница
-            get() = Helper.position_page
-            set(value) {
-                Helper.position_page = value
-                saveProgress(value) // Сохранить позицию в бд
-            }
+    private fun hasNextChapter() = positionChapter < listChapter.size - 1
 
-        var max: Int = 0 // Количество глав
-            private set
-
-        var list: List<Page> = listOf()
-            private set
-
-        private fun saveProgress(pos: Int = position) { // Сохранение позиции текущей главы
-            var p = pos // скопировать позицию
-            when {
-                pos < 1 -> p = 1 // если меньше единицы значение, то приравнять к еденице
-                pos == max -> { // если текущая позиция последняя
-                    p = max
-                    // Сделать главу прочитанной
-                    ChapterObject.current.isRead = true
-                    Helper.chapterDao.update(ChapterObject.current)
-                }
-                pos > max -> return // Если больше максимального значения, ничего не делать
-            }
-            // Обновить позицию
-            ChapterObject.current.progress = p
-            Helper.chapterDao.update(ChapterObject.current)
-
-            if (pos > Helper.positionStat) {
-                val diff = pos - Helper.positionStat
-                Helper.stats.lastPages += diff
-                Helper.stats.allPages += diff
-                Helper.statisticDao.update(Helper.stats)
-                Helper.positionStat = pos
-            }
-        }
-
-        fun updateList() {
-            if (ChapterObject.current.pages.isNullOrEmpty() ||
-                ChapterObject.current.pages.any { it.isBlank() }) {
-                ChapterObject.current.pages = ManageSites.pages(ChapterObject.current)
-                Helper.chapterDao.update(ChapterObject.current)
-            }
-
-            max = ChapterObject.current.pages.size
-
-            val pages = ChapterObject.current.pages.map {
-                Page(it, getFullPath(ChapterObject.current.path).absolutePath)
-            }.toMutableList()
-
-            if (ChapterObject.hasPrev())  // Если есть главы до этой
-                pages.add(0, Page("prev")) // Добавить в начало специальный файл указатель
-            else  // если нет
-                pages.add(0, Page("none")) // Добавить в начало другой файл указатель
-
-            if (ChapterObject.hasNext())  // Если есть главы после этой
-                pages.add(Page("next")) // Добавить в конец специальный файл указатель
-            else // если нет
-                pages.add(Page("none")) // Добавить в конец другой файл указатель
-
-            Helper.positionStat = 1
-
-            list = pages
-        }
-    }
+    private fun hasPrevChapter() = positionChapter > 0
 }
 
 data class Page(val link: String, val fullPath: String = "") : Parcelable {

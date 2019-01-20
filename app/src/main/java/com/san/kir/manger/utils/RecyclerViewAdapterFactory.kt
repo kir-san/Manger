@@ -150,7 +150,6 @@ object RecyclerViewAdapterFactory {
         override fun bind(item: T, isSelected: Boolean, position: Int) {
             _bindAction.invoke(item, isSelected, position)
         }
-
     }
 }
 

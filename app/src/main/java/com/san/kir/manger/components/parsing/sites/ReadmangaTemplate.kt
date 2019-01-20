@@ -28,15 +28,17 @@ open class ReadmangaTemplate : SiteCatalog {
         get() = "$host/list?sortType=created"
     override var volume = 0
     override var oldVolume = 0
-    open val categories = listOf("Ёнкома",
-                                 "Комикс западный",
-                                 "Манхва",
-                                 "Маньхуа",
-                                 "В цвете",
-                                 "Веб",
-                                 "Сборник")
+    open val categories = listOf(
+        "Ёнкома",
+        "Комикс западный",
+        "Манхва",
+        "Маньхуа",
+        "В цвете",
+        "Веб",
+        "Сборник"
+    )
 
-    override fun init(): ReadmangaTemplate {
+    override suspend fun init(): ReadmangaTemplate {
         if (!isInit) {
             oldVolume = Main.db.siteDao.getItem(name)?.volume ?: 0
             val doc = ManageSites.getDocument(host)
@@ -50,7 +52,7 @@ open class ReadmangaTemplate : SiteCatalog {
     }
 
     ///
-    override fun getFullElement(element: SiteCatalogElement): SiteCatalogElement {
+    override suspend fun getFullElement(element: SiteCatalogElement): SiteCatalogElement {
 
         val doc = ManageSites.getDocument(element.link).select("div.leftContent")
 
@@ -68,7 +70,8 @@ open class ReadmangaTemplate : SiteCatalog {
         element.volume = if (volume < 0) 0 else volume
 
         element.genres.clear()
-        doc.select("span.elem_genre").forEach { element.genres.add(it.select("a.element-link").text()) }
+        doc.select("span.elem_genre")
+            .forEach { element.genres.add(it.select("a.element-link").text()) }
 
         element.about = doc.select("meta[itemprop=description]").attr("content")
 
@@ -114,7 +117,7 @@ open class ReadmangaTemplate : SiteCatalog {
         element.type = "Манга"
 
         element.authors = elem.select(".desc .tile-info .person-link")
-                .map { it.select(".person-link").text() }
+            .map { it.select(".person-link").text() }
 
         elem.select(".desc .tile-info a.element-link").forEach { element.genres.add(it.text()) }
 
@@ -141,26 +144,26 @@ open class ReadmangaTemplate : SiteCatalog {
     ///
 
 
-    override fun chapters(manga: Manga) =
-            ManageSites.getDocument(manga.site)
-                    .select("div.leftContent .chapters-link")
-                    .select("tr")
-                    .filter { it.select("a").text().isNotEmpty() }
-                    .map {
-                        var name = it.select("a").text()
-                        val pat = Pattern.compile("v.+").matcher(name)
-                        if (pat.find())
-                            name = pat.group()
-                        Chapter(manga = manga.unic,
-                                name = name,
-                                date = it.select("td").last().text(),
-                                site = host + it.select("a").attr("href"),
-                                path = "${manga.path}/$name")
-                    }
+    override suspend fun chapters(manga: Manga) =
+        ManageSites.getDocument(manga.site)
+            .select("div.leftContent .chapters-link")
+            .select("tr")
+            .filter { it.select("a").text().isNotEmpty() }
+            .map {
+                var name = it.select("a").text()
+                val pat = Pattern.compile("v.+").matcher(name)
+                if (pat.find())
+                    name = pat.group()
+                Chapter(
+                    manga = manga.unic,
+                    name = name,
+                    date = it.select("td").last().text(),
+                    site = host + it.select("a").attr("href"),
+                    path = "${manga.path}/$name"
+                )
+            }
 
-
-
-    override fun pages(item: DownloadItem): List<String> {
+    override suspend fun pages(item: DownloadItem): List<String> {
         var list = listOf<String>()
         // Создаю папку/папки по указанному пути
         createDirs(getFullPath(item.path))
@@ -171,8 +174,8 @@ open class ReadmangaTemplate : SiteCatalog {
         if (pat.find()) {
             // избавляюсь от ненужного и разделяю строку в список и отправляю
             val data = pat.group()
-                    .removeSuffix(", 0, false);")
-                    .removePrefix("rm_h.init( ")
+                .removeSuffix(", 0, false);")
+                .removePrefix("rm_h.init( ")
 
             val json = JSONArray(data)
 

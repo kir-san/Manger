@@ -1,21 +1,17 @@
 package com.san.kir.manger.room.dao
 
-import android.arch.paging.DataSource
-import android.arch.paging.LivePagedListBuilder
+import android.arch.lifecycle.LiveData
 import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Query
 import com.san.kir.manger.room.models.LatestChapter
 import com.san.kir.manger.room.models.action
 import com.san.kir.manger.room.models.isRead
 import com.san.kir.manger.utils.ChapterStatus
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 @Dao
 interface LatestChapterDao : BaseDao<LatestChapter> {
     @Query("SELECT * FROM latestChapters ORDER BY id DESC")
-    fun pagedItems(): DataSource.Factory<Int, LatestChapter>
+    fun loadItems(): LiveData<List<LatestChapter>>
 
     @Query("SELECT * FROM latestChapters")
     fun getItems(): List<LatestChapter>
@@ -59,7 +55,3 @@ fun LatestChapterDao.hasNewChapters() =
     getItems()
         .filter { !it.isRead() }
         .any { it.action == ChapterStatus.DOWNLOADABLE }
-
-
-fun LatestChapterDao.loadPagedItems() =
-    LivePagedListBuilder(pagedItems(), 20).build()

@@ -5,50 +5,58 @@ import android.widget.ImageView
 import com.san.kir.manger.components.parsing.ManageSites
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okio.Okio
 import java.util.concurrent.Executors
 
 
 class ImageLoader(private val url: String) {
-    private val POOL = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
-        .asCoroutineDispatcher()
+    private val pool =
+        Executors
+            .newFixedThreadPool(Runtime.getRuntime().availableProcessors())
+            .asCoroutineDispatcher()
 
     private var color = -1
     private var errorResId = -1
     private var error: (() -> Unit)? = null
     private var success: (() -> Unit)? = null
 
-    fun errorColor(color: Int) {
+    fun errorColor(color: Int): ImageLoader {
         this.color = color
+        return this
     }
 
-    fun errorResId(errorResId: Int) {
+    fun errorResId(errorResId: Int): ImageLoader {
         this.errorResId = errorResId
+        return this
     }
 
-    fun onError(action: () -> Unit) {
+    fun onError(action: () -> Unit): ImageLoader {
         error = action
+        return this
     }
 
-    fun onSuccess(action: () -> Unit) {
+    fun onSuccess(action: () -> Unit): ImageLoader {
         success = action
+        return this
     }
 
 
-    fun into(target: ImageView) {
-        load(target)
+    fun into(target: ImageView): Job {
+        return load(target)
     }
 
-    private fun load(target: ImageView) {
-        GlobalScope.launch(POOL) {
+    private fun load(target: ImageView): Job {
+        return GlobalScope.launch(pool) {
             //        Получаем имя из url
             val name = getNameFromUrl(url)
 
 //        Проверяем наличие файла с полученным именем в папке cache
             val path = getFullPath("${DIR.CACHE}/$name")
+
+            log("path = ${path}")
 
             if (path.exists() && path.length() > 0) {
                 //        если файл есть, то отображаем его в imageView
@@ -102,7 +110,9 @@ class ImageLoader(private val url: String) {
 
 @Suppress("ClassName")
 object loadImage {
-    operator fun invoke(url: String, init: ImageLoader.() -> Unit = {}) =
-        ImageLoader(url).apply { init() }
+    operator fun invoke(url: String) =
+        ImageLoader(url)
 
+    operator fun invoke(url: String, init: ImageLoader.() -> Unit = {}) =
+        ImageLoader(url).init()
 }

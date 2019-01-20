@@ -60,11 +60,10 @@ object ManageSites {
         CATALOG_SITES[simpleElement.siteId].getFullElement(simpleElement)
     }
 
-
     // Получение страниц для главы
-    fun pages(item: DownloadItem) = CATALOG_SITES
+    suspend fun pages(item: DownloadItem) = CATALOG_SITES
         .first { item.link.contains(it.catalogName) }
         .pages(item)
 
-    fun pages(chapter: Chapter) = pages(chapter.toDownloadItem())
+    suspend fun pages(chapter: Chapter) = pages(chapter.toDownloadItem())
 }

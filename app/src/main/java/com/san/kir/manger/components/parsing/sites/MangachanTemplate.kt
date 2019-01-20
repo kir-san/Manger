@@ -30,7 +30,7 @@ open class MangachanTemplate : SiteCatalog {
     override var volume: Int = 0
     override var oldVolume: Int = 0
 
-    override fun init(): MangachanTemplate {
+    override suspend fun init(): MangachanTemplate {
         if (!isInit) {
             oldVolume = Main.db.siteDao.getItem(name)?.volume ?: 0
             val doc = ManageSites.getDocument(siteCatalog)
@@ -40,7 +40,7 @@ open class MangachanTemplate : SiteCatalog {
         return this
     }
 
-    override fun getFullElement(element: SiteCatalogElement) = element
+    override suspend fun getFullElement(element: SiteCatalogElement) = element
 
     open fun simpleParseElement(elem: Element): SiteCatalogElement {
         val element = SiteCatalogElement()
@@ -122,7 +122,7 @@ open class MangachanTemplate : SiteCatalog {
         close()
     }
 
-    override fun chapters(manga: Manga) =
+    override suspend fun chapters(manga: Manga) =
         ManageSites.getDocument(manga.site)
             .select(".table_cha")
             .select("tr")
@@ -142,7 +142,7 @@ open class MangachanTemplate : SiteCatalog {
             }
 
 
-    override fun pages(item: DownloadItem): List<String> {
+    override suspend fun pages(item: DownloadItem): List<String> {
         var list = listOf<String>()
         // Создаю папку/папки по указанному пути
         createDirs(getFullPath(item.path))

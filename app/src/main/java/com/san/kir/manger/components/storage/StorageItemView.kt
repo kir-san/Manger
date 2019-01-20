@@ -171,10 +171,7 @@ class StorageItemView(private val act: StorageActivity) :
 
     private fun View.menuOfActions(manga: Manga?, item: Storage) {
         if (manga != null) {
-            StorageDialogFragment().apply {
-                bind(manga, act)
-                show(act.supportFragmentManager, "storage")
-            }
+            StorageDialogView(context).bind(manga, act)
         } else
             with(PopupMenu(context, this, Gravity.END)) {
                 menu.add(0, 2, 0, R.string.storage_item_menu_full_delete)

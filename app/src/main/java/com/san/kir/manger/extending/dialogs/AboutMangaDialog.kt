@@ -98,9 +98,8 @@ class AboutMangaDialog(context: Context, manga: Manga) {
                             imageView {
                                 scaleType = ImageView.ScaleType.FIT_CENTER
                                 if (manga.logo.isNotEmpty())
-                                    loadImage(manga.logo) {
-                                        into(this@imageView)
-                                    }
+                                    loadImage(manga.logo)
+                                        .into(this@imageView)
                                 else
                                     try {
                                         backgroundResource = manga.color

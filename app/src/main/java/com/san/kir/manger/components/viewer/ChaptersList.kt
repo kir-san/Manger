@@ -23,7 +23,7 @@ class ChaptersList {
     private var stats = MangaStatistic()
     private var positionStat = 0
 
-    fun init(mangaName: String, chapter: String) {
+    suspend fun init(mangaName: String, chapter: String) {
         listChapter.clear() // Очистить список
         listChapter.addAll(chapterDao.getItems(mangaName)) // Получение глав
 
@@ -68,7 +68,7 @@ class ChaptersList {
         return listChapter[positionChapter]
     }
 
-    fun nextChapter() { // переключение на следующую главу
+    suspend fun nextChapter() { // переключение на следующую главу
         if (hasNextChapter()) {
             positionChapter++
             updatePagesList()
@@ -78,7 +78,7 @@ class ChaptersList {
         }
     }
 
-    fun prevChapter() { // переключение на предыдущию главу
+    suspend fun prevChapter() { // переключение на предыдущию главу
         if (hasPrevChapter()) {
             positionChapter--
             updatePagesList()
@@ -91,7 +91,7 @@ class ChaptersList {
         return (0..lastIndex).firstOrNull { listChapter[it].name == chapter } ?: 0
     }
 
-    private fun updatePagesList() {
+    private suspend fun updatePagesList() {
         if (chapter().pages.isNullOrEmpty() ||
             chapter().pages.any { it.isBlank() }) {
             chapter().pages = ManageSites.pages(chapter())

@@ -442,7 +442,7 @@
     <string name="statistic_item_full_last_session">Последняя сессия</string>
     <string name="statistic_item_full_all">Общее</string>
     <string name="statistic_item_full_max_speed">Максимальная скорость чтения %1$d %2$s в минуту</string>
-    <string name="statistic_item_full_download_data">Загруженно %1$d МБ за %2$s</string>
+    <string name="statistic_item_full_download_data">Загруженно %1$s МБ за %2$s</string>
     <string name="statistic_item_full_reading_times">Читали %1$d %2$s</string>
     <string name="statistic_item_full_for_time_nothing">За %s ничего не прочитано</string>
     <string name="statistic_item_full_for_time_with_pages">За %1$s прочитано %2$d %3$s</string>

@@ -1,7 +1,5 @@
 package com.san.kir.manger.utils
 
-import com.san.kir.manger.App
-import com.san.kir.manger.R
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -18,7 +16,7 @@ object DIR {
 
 
 // Настройки
-val CATEGORY_ALL: String = App.context.getString(R.string.category_all)
+var CATEGORY_ALL: String = ""
 
 const val sPrefListChapters = "ListChaptersActivity"
 

@@ -209,7 +209,7 @@ object SortLibraryUtil {
 
 fun formatDouble(value: Double?): String = DecimalFormat("#0.00").format(value)
 
-fun bytesToMb(value: Long) = value.toDouble() / (1024.0 * 1024.0)
+fun bytesToMb(value: Long): Double = value.toDouble() / (1024.0 * 1024.0)
 
 fun convertImagesToPng(image: File): File {
     val b = BitmapFactory.decodeFile(image.path)

@@ -28,6 +28,7 @@ import com.san.kir.manger.utils.sPrefListChapters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.anko.longToast
 import org.jetbrains.anko.setContentView
 import org.jetbrains.anko.startService
@@ -92,7 +93,7 @@ class ListChaptersActivity : ThemedActionBarActivity() {
         val intentFilter = IntentFilter().apply { addAction(MangaUpdaterService.actionGet) }
         registerReceiver(receiver, intentFilter)
 
-        launch(coroutineContext) {
+        runBlocking(coroutineContext) {
             manga = mangaDao.getItem(intent.getStringExtra(MangaColumn.unic))
             manga.populate += 1
             mangaDao.update(manga)
@@ -111,7 +112,8 @@ class ListChaptersActivity : ThemedActionBarActivity() {
         // Загрузка настроек
         getSharedPreferences(sPrefListChapters, MODE_PRIVATE).apply {
             if (contains(filterStatus)) {
-                val filterString: String = getString(filterStatus, ChapterFilter.ALL_READ_ASC.name)!!
+                val filterString: String =
+                    getString(filterStatus, ChapterFilter.ALL_READ_ASC.name)!!
                 adapter.setManga(manga, ChapterFilter.valueOf(filterString)).invokeOnCompletion {
                     view.isUpdate.negative()
                 }

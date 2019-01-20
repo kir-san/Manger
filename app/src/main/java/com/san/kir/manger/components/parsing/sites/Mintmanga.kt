@@ -9,5 +9,5 @@ class Mintmanga : ReadmangaTemplate() {
     override var volume = Main.db.siteDao.getItem(name)?.volume ?: 0
     override var oldVolume = volume
 
-    override fun init() = super.init() as Mintmanga
+    override suspend fun init() = super.init() as Mintmanga
 }

@@ -3,9 +3,9 @@ package com.san.kir.manger.room.models
 import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
+import android.content.Context
 import android.os.Parcel
 import android.os.Parcelable
-import com.san.kir.manger.App
 import com.san.kir.manger.R
 import java.util.*
 
@@ -104,12 +104,12 @@ object PlannedType {
     const val CATALOG = 4
     const val APP = 5
 
-    val map = mapOf(
-        App.context.getString(R.string.planned_type_manga) to MANGA,
-        App.context.getString(R.string.planned_type_group) to GROUP,
-        App.context.getString(R.string.planned_type_category) to CATEGORY,
-        App.context.getString(R.string.planned_type_catalog) to CATALOG,
-        App.context.getString(R.string.planned_type_app) to APP
+    fun map(context: Context) = mapOf(
+        context.getString(R.string.planned_type_manga) to MANGA,
+        context.getString(R.string.planned_type_group) to GROUP,
+        context.getString(R.string.planned_type_category) to CATEGORY,
+        context.getString(R.string.planned_type_catalog) to CATALOG,
+        context.getString(R.string.planned_type_app) to APP
     )
 }
 
@@ -117,9 +117,9 @@ object PlannedPeriod {
     const val DAY = 1
     const val WEEK = 2
 
-    val map = mapOf(
-        App.context.getString(R.string.planned_period_day) to DAY,
-        App.context.getString(R.string.planned_period_week) to WEEK
+    fun map(context: Context) = mapOf(
+        context.getString(R.string.planned_period_day) to DAY,
+        context.getString(R.string.planned_period_week) to WEEK
     )
 }
 
@@ -143,14 +143,14 @@ object PlannedTaskColumn {
 }
 
 object PlannedWeek {
-    val map = mapOf(
-        App.context.getString(R.string.planned_week_monday) to Calendar.MONDAY,
-        App.context.getString(R.string.planned_week_tuesday) to Calendar.TUESDAY,
-        App.context.getString(R.string.planned_week_wednesday) to Calendar.WEDNESDAY,
-        App.context.getString(R.string.planned_week_thursday) to Calendar.THURSDAY,
-        App.context.getString(R.string.planned_week_friday) to Calendar.FRIDAY,
-        App.context.getString(R.string.planned_week_saturday) to Calendar.SATURDAY,
-        App.context.getString(R.string.planned_week_sunday) to Calendar.SUNDAY
+    fun map(context: Context) = mapOf(
+        context.getString(R.string.planned_week_monday) to Calendar.MONDAY,
+        context.getString(R.string.planned_week_tuesday) to Calendar.TUESDAY,
+        context.getString(R.string.planned_week_wednesday) to Calendar.WEDNESDAY,
+        context.getString(R.string.planned_week_thursday) to Calendar.THURSDAY,
+        context.getString(R.string.planned_week_friday) to Calendar.FRIDAY,
+        context.getString(R.string.planned_week_saturday) to Calendar.SATURDAY,
+        context.getString(R.string.planned_week_sunday) to Calendar.SUNDAY
     )
 }
 

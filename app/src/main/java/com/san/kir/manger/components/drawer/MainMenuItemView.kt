@@ -12,7 +12,6 @@ import com.san.kir.manger.room.dao.loadPagedItems
 import com.san.kir.manger.room.dao.updateStorageItems
 import com.san.kir.manger.room.models.DownloadStatus
 import com.san.kir.manger.room.models.MainMenuItem
-import com.san.kir.manger.room.models.MangaColumn
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.formatDouble
 import kotlinx.coroutines.Dispatchers
@@ -57,7 +56,7 @@ class MainMenuItemView(private val act: BaseActivity) :
         when (type) {
             MainMenuType.Library -> {
                 Main.db.mangaDao
-                    .loadItemsAscBy(MangaColumn.name)
+                    .loadMangaAbcSortAsc()
                     .observe(act, Observer { text = it?.size.toString() })
             }
             MainMenuType.Storage -> {
@@ -92,7 +91,7 @@ class MainMenuItemView(private val act: BaseActivity) :
             }
             MainMenuType.Latest -> {
                 Main.db.latestChapterDao
-                    .loadPagedItems()
+                    .loadItems()
                     .observe(act, Observer { text = it?.size.toString() })
             }
             MainMenuType.Schedule -> {

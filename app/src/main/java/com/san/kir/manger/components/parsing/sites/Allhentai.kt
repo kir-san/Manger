@@ -30,7 +30,7 @@ class Allhentai : SiteCatalog {
     override var volume = Main.db.siteDao.getItem(name)?.volume ?: 0
     override var oldVolume = volume
 
-    override fun init(): Allhentai {
+    override suspend fun init(): Allhentai {
         if (!isInit) {
             val doc = ManageSites.getDocument(host)
             doc.select(".rightContent h5")
@@ -45,7 +45,7 @@ class Allhentai : SiteCatalog {
     }
 
     ////
-    override fun getFullElement(element: SiteCatalogElement): SiteCatalogElement {
+    override suspend fun getFullElement(element: SiteCatalogElement): SiteCatalogElement {
         val rootDoc = ManageSites.getDocument(element.link)
         val doc = rootDoc.select("div.leftContent")
 
@@ -161,7 +161,7 @@ class Allhentai : SiteCatalog {
     }
 
     ///
-    override fun chapters(manga: Manga) =
+    override suspend fun chapters(manga: Manga) =
         ManageSites.getDocument(manga.site)
             .select(".cTable")
             .select("tr")
@@ -180,7 +180,7 @@ class Allhentai : SiteCatalog {
             }
 
 
-    override fun pages(item: DownloadItem): List<String> {
+    override suspend fun pages(item: DownloadItem): List<String> {
         var list = listOf<String>()
         // Создаю папку/папки по указанному пути
         createDirs(getFullPath(item.path))

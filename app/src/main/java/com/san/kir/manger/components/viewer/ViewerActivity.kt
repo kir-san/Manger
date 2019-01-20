@@ -19,6 +19,8 @@ import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.eventBus.negative
 import com.san.kir.manger.eventBus.positive
 import com.san.kir.manger.extending.ThemedActionBarActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.setContentView
@@ -166,7 +168,7 @@ class ViewerActivity : ThemedActionBarActivity() {
         super.onDestroy()
         val time = (System.currentTimeMillis() - readTime) / 1000
         if (time > 0) {
-            launch(coroutineContext) {
+            GlobalScope.launch(Dispatchers.Default) {
                 val stats = Main.db.statisticDao.getItem(mangaName)
                 stats.lastTime = time
                 stats.allTime = stats.allTime + time

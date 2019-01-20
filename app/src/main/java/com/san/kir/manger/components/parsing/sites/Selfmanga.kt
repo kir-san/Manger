@@ -11,7 +11,7 @@ class Selfmanga : ReadmangaTemplate() {
     override var volume = Main.db.siteDao.getItem(name)?.volume ?: 0
     override var oldVolume = volume
 
-    override fun init(): Selfmanga {
+    override suspend fun init(): Selfmanga {
         if (!isInit) {
             oldVolume = Main.db.siteDao.getItem(name)?.volume ?: 0
             val doc = ManageSites.getDocument(host)

@@ -15,7 +15,7 @@ class Henchan : MangachanTemplate() {
     override var volume = Main.db.siteDao.getItem(name)?.volume ?: 0
     override var oldVolume = volume
 
-    override fun init() = super.init() as Henchan
+    override suspend fun init() = super.init() as Henchan
 
     override fun simpleParseElement(elem: Element): SiteCatalogElement {
         val element = SiteCatalogElement()
@@ -59,7 +59,7 @@ class Henchan : MangachanTemplate() {
     }
 
 
-    override fun chapters(manga: Manga): List<Chapter> {
+    override suspend fun chapters(manga: Manga): List<Chapter> {
         val doc = ManageSites.getDocument(manga.site)
         val date = doc.select("#info_wrap .row5 .row4_right b").text()
         return doc.select("#right")

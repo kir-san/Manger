@@ -23,7 +23,6 @@ import com.san.kir.manger.eventBus.negative
 import com.san.kir.manger.eventBus.positive
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
 import com.san.kir.manger.extending.views.showNever
-import com.san.kir.manger.room.dao.loadPagedItems
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.dip
@@ -75,10 +74,10 @@ class LatestChapterActivity : DrawerActivity() {
         bindService(intent, connection, Context.BIND_AUTO_CREATE)
 
         Main.db.latestChapterDao
-            .loadPagedItems()
+            .loadItems()
             .observe(this, Observer { list ->
                 list?.let {
-                    if (it.size > 0)
+                    if (it.isNotEmpty())
                         title = getString(R.string.main_menu_latest_count, it.size)
                     else
                         setTitle(R.string.main_menu_latest)

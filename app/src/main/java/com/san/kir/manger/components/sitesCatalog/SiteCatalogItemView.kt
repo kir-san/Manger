@@ -138,7 +138,10 @@ class SiteCatalogItemView(private val act: SiteCatalogActivity) :
                         with(Main.db.siteDao) {
                             getItem(site.name)?.let {
                                 // Сохраняем новое значение количества элементов
-                                it.oldVolume = SiteCatalogElementViewModel.setSiteId(site.id)
+                                it.oldVolume = SiteCatalogElementViewModel.setSiteId(
+                                    act.applicationContext,
+                                    site.id
+                                )
                                     .items()
                                     .size
                                 it.volume = site.volume

@@ -40,7 +40,6 @@ import org.jetbrains.anko.verticalLayout
 import org.jetbrains.anko.wrapContent
 
 class AddMangaView : AnkoActivityComponent() {
-    private val categoryDao = Main.db.categoryDao
     private var _manga = Manga()
 
     private lateinit var ctx: Context
@@ -132,7 +131,7 @@ class AddMangaView : AnkoActivityComponent() {
     fun setManga(manga: Manga) {
         GlobalScope.launch(Dispatchers.Default) {
             _manga = manga
-            val categoryNames = categoryDao.categoryNames()
+            val categoryNames = Main.db.categoryDao.categoryNames()
             val listStatus = listOf(
                 ctx.getString(R.string.manga_status_unknown),
                 ctx.getString(R.string.manga_status_continue),
@@ -188,16 +187,16 @@ class AddMangaView : AnkoActivityComponent() {
                         logo.backgroundColor = manga.color
                     }
                 } else
-                    loadImage(manga.logo) {
-                        onError {
+                    loadImage(manga.logo)
+                        .onError {
                             if (manga.color != 0) {
                                 logo.backgroundColor = manga.color
                             } else {
                                 logo.backgroundColorResource = android.R.color.holo_green_dark
                             }
                         }
-                        into(logo)
-                    }
+                        .into(logo)
+
             }
         }
     }

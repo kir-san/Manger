@@ -105,7 +105,7 @@ class AddEditPlannedTaskView : AnkoActivityComponent() {
                     labelView(R.string.planned_task_type_of_update).lparams { topMargin = dip(5) }
                     radioGroup {
                         id = ID.generate()
-                        PlannedType.map.forEach { (t, v) ->
+                        PlannedType.map(context).forEach { (t, v) ->
                             radioButton {
                                 id = ID.generate()
                                 text = t
@@ -185,7 +185,7 @@ class AddEditPlannedTaskView : AnkoActivityComponent() {
                     labelView(R.string.planned_task_repeat).lparams { topMargin = dip(5) }
                     radioGroup {
                         id = ID.generate()
-                        PlannedPeriod.map.forEach { (p, v) ->
+                        PlannedPeriod.map(context).forEach { (p, v) ->
                             radioButton {
                                 id = ID.generate()
                                 text = p
@@ -204,7 +204,7 @@ class AddEditPlannedTaskView : AnkoActivityComponent() {
                         }
                         radioGroup {
                             id = ID.generate()
-                            PlannedWeek.map.forEach { (d, v) ->
+                            PlannedWeek.map(context).forEach { (d, v) ->
                                 radioButton {
                                     id = ID.generate()
                                     text = d

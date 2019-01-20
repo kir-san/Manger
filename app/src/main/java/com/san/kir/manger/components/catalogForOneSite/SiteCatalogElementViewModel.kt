@@ -1,7 +1,7 @@
 package com.san.kir.manger.components.catalogForOneSite
 
 import android.arch.persistence.room.Room
-import com.san.kir.manger.App
+import android.content.Context
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.room.CatalogDb
 import com.san.kir.manger.room.models.SiteCatalogElement
@@ -10,10 +10,10 @@ object SiteCatalogElementViewModel {
     private var elements: CatalogDb? = null
     private var siteId = -1
 
-    fun setSiteId(siteId: Int): SiteCatalogElementViewModel {
+    fun setSiteId(ctx: Context, siteId: Int): SiteCatalogElementViewModel {
         if (this.siteId != siteId) {
             elements?.close()
-            elements = Room.databaseBuilder(App.context,
+            elements = Room.databaseBuilder(ctx,
                                             CatalogDb::class.java,
                                             CatalogDb.NAME(ManageSites.CATALOG_SITES[siteId].catalogName))
                     .addMigrations(*CatalogDb.Migrate.migrations)

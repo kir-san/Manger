@@ -37,14 +37,14 @@ class ViewerPresenter(private val act: ViewerActivity) {
 
         maxChapters = manager.chaptersSize
         max.item = manager.pagesSize
-        progressPages.item =
+        progressPages.unicItem =
                 if (manager.pagePosition <= 0) 1 // Если полученная позиция не больше нуля, то присвоить значение 1
                 else manager.pagePosition // Иначе то что есть
 
         // При изменении прогресса, отдать новое значение в менеджер
         progressPages.bind { pos -> manager.pagePosition = pos }
 
-        progressChapters.item = manager.chapterPosition // Установка значения
+        progressChapters.unicItem = manager.chapterPosition // Установка значения
 
         checkButton()
 
@@ -55,11 +55,11 @@ class ViewerPresenter(private val act: ViewerActivity) {
     }
 
     fun nextPage() {
-        progressPages.item += 1
+        progressPages.unicItem += 1
     }
 
     fun prevPage() {
-        progressPages.item -= 1
+        progressPages.unicItem -= 1
     }
 
     // Предыдущая глава
@@ -69,15 +69,15 @@ class ViewerPresenter(private val act: ViewerActivity) {
     }
 
     // Следующая глава
-    fun nextChapter() = act.launch {
+    fun nextChapter() = act.launch(act.coroutineContext) {
         manager.nextChapter() // Переключение главы
         initChapter()
     }
 
     private suspend fun initChapter() {
-        progressPages.item = 1
-        max.item = manager.pagesSize
-        progressChapters.item = manager.chapterPosition
+        progressPages.unicItem = 1
+        max.unicItem = manager.pagesSize
+        progressChapters.unicItem = manager.chapterPosition
 
         checkButton()
 

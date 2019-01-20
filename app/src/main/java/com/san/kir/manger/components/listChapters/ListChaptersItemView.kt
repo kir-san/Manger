@@ -65,6 +65,7 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
     private val downloadManager by lazy { act.downloadManager }
 
     private var isDownload = false
+
     private lateinit var root: RelativeLayout
     private lateinit var name: TextView
     private lateinit var date: TextView
@@ -77,6 +78,10 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
     private lateinit var noAction: ImageView
     private lateinit var downloadBtn: ImageView
     private lateinit var progressBar: ProgressBar
+
+    private lateinit var item: Chapter
+
+    private lateinit var observer: Observer<DownloadItem?>
 
     override fun createView(ui: AnkoContext<ViewGroup>) = with(ui) {
         val bigBtnSize = dip(45)
@@ -172,34 +177,56 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
         }
     }
 
-    private fun enableDownload() {
-        progressBar.visibility = View.VISIBLE
-        percentProgress.visibility = View.VISIBLE
-        stopBtn.visibility = View.VISIBLE
-        startBtn.visibility = View.GONE
-        deleteBtn.visibility = View.GONE
-        noAction.visibility = View.GONE
-        downloadBtn.visibility = View.GONE
-        isDownload = true
+    override fun bind(item: Chapter, isSelected: Boolean, position: Int) {
+        this.item = item
+
+        name.text = item.name
+        date.text = item.date
+
+        updateStatus(item)
+
+        disableDownload(item)
+
+
+        val color = when {
+            isSelected -> Color.parseColor("#9934b5e4")
+            item.isRead -> Color.parseColor("#a5a2a2")
+            else -> Color.TRANSPARENT
+        }
+        root.backgroundColor = color
+        percentProgress.backgroundColor = color
+
+        observer = Observer {
+            changeVisibleAndActions(it, item)
+        }
     }
 
-    private fun pauseDownload() {
-        progressBar.visibility = View.GONE
-        percentProgress.visibility = View.VISIBLE
-        stopBtn.visibility = View.GONE
-        startBtn.visibility = View.VISIBLE
-        deleteBtn.visibility = View.GONE
-        noAction.visibility = View.GONE
-        downloadBtn.visibility = View.GONE
-        isDownload = false
+    override fun onAttached(position: Int) {
+        initializeOnClicks(item, position)
+
+        Main.db.downloadDao
+            .loadItem(item.site)
+            .observe(act, observer)
     }
 
-    private fun progressDownload(progress: Int, max: Int) {
-        val current =
-            if (max == 0) max
-            else progress * 100 / max
+    override fun onDetached() {
+        deleteBtn.setOnClickListener(null)
+        downloadBtn.setOnClickListener(null)
+        root.setOnClickListener(null)
+        root.setOnLongClickListener(null)
 
-        percentProgress.text = act.getString(R.string.list_chapters_download_progress, current)
+        Main.db.downloadDao
+            .loadItem(item.site)
+            .removeObserver(observer)
+    }
+
+    private fun updateStatus(chapter: Chapter) = GlobalScope.launch(Dispatchers.Main) {
+        status.text = act.resources.getString(
+            R.string.list_chapters_read,
+            chapter.progress,
+            chapter.pages.size,
+            chapter.countPages
+        )
     }
 
     private fun disableDownload(chapter: Chapter) = GlobalScope.launch(Dispatchers.Main) {
@@ -274,37 +301,26 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
         }
     }
 
-    private fun updateStatus(chapter: Chapter) = GlobalScope.launch(Dispatchers.Main) {
-        status.text = act.resources.getString(
-            R.string.list_chapters_read,
-            chapter.progress,
-            chapter.pages.size,
-            chapter.countPages
-        )
+    private fun enableDownload() {
+        progressBar.visibility = View.VISIBLE
+        percentProgress.visibility = View.VISIBLE
+        stopBtn.visibility = View.VISIBLE
+        startBtn.visibility = View.GONE
+        deleteBtn.visibility = View.GONE
+        noAction.visibility = View.GONE
+        downloadBtn.visibility = View.GONE
+        isDownload = true
     }
 
-    // Привязка значений
-    override fun bind(item: Chapter, isSelected: Boolean, position: Int) {
-        name.text = item.name
-        date.text = item.date
-        updateStatus(item)
-
-        disableDownload(item)
-        initializeOnClicks(item, position)
-
-        val color = when {
-            isSelected -> Color.parseColor("#9934b5e4")
-            item.isRead -> Color.parseColor("#a5a2a2")
-            else -> Color.TRANSPARENT
-        }
-        root.backgroundColor = color
-        percentProgress.backgroundColor = color
-
-        Main.db.downloadDao
-            .loadItem(item.site)
-            .observe(act, Observer {
-                changeVisibleAndActions(it, item)
-            })
+    private fun pauseDownload() {
+        progressBar.visibility = View.GONE
+        percentProgress.visibility = View.VISIBLE
+        stopBtn.visibility = View.GONE
+        startBtn.visibility = View.VISIBLE
+        deleteBtn.visibility = View.GONE
+        noAction.visibility = View.GONE
+        downloadBtn.visibility = View.GONE
+        isDownload = false
     }
 
     private fun changeVisibleAndActions(item: DownloadItem?, chapter: Chapter) {
@@ -340,5 +356,13 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
                 }
             }
         }
+    }
+
+    private fun progressDownload(progress: Int, max: Int) {
+        val current =
+            if (max == 0) max
+            else progress * 100 / max
+
+        percentProgress.text = act.getString(R.string.list_chapters_download_progress, current)
     }
 }

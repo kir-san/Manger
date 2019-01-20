@@ -40,8 +40,6 @@ import org.jetbrains.anko.textView
 import org.jetbrains.anko.wrapContent
 
 class CatalogForOneSiteItemView : RecyclerViewAdapterFactory.AnkoView<SiteCatalogElement>() {
-    val categoryDao = Main.db.categoryDao
-
     private object Id {
         val add = ID.generate()
         val statusEdition = ID.generate()

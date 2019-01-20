@@ -16,10 +16,11 @@ interface SiteCatalog {
     val siteCatalog: String
     var volume: Int
     var oldVolume: Int
-    fun init(): SiteCatalog
 
-    fun getFullElement(element: SiteCatalogElement): SiteCatalogElement
+    suspend fun init(): SiteCatalog
+
+    suspend fun getFullElement(element: SiteCatalogElement): SiteCatalogElement
     fun getCatalog(context: ExecutorCoroutineDispatcher): ReceiveChannel<SiteCatalogElement>
-    fun chapters(manga: Manga): List<Chapter>
-    fun pages(item: DownloadItem): List<String>
+    suspend fun chapters(manga: Manga): List<Chapter>
+    suspend fun pages(item: DownloadItem): List<String>
 }

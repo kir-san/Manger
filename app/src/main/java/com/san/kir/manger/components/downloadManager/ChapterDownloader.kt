@@ -1,15 +1,15 @@
 package com.san.kir.manger.components.downloadManager
 
+import com.github.kittinunf.fuel.Fuel
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.utils.JobContext
+import com.san.kir.manger.utils.createDirs
 import com.san.kir.manger.utils.getFullPath
+import com.san.kir.manger.utils.log
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import okio.Okio
 import java.io.File
-import java.net.URL
-import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executors.newFixedThreadPool
 import java.util.regex.Pattern
 
@@ -41,6 +41,7 @@ class ChapterDownloader(private val task: DownloadItem, concurrent: Int) {
     }
 
     suspend fun cancel() {
+        log("cancel")
         lock.withLock {
             interrupted = true
         }
@@ -58,9 +59,6 @@ class ChapterDownloader(private val task: DownloadItem, concurrent: Int) {
             }
 
             if (!interrupted) delegate?.onComplete(getDownloadItem())
-        } catch (e: ExecutionException) {
-            e.printStackTrace()
-            delegate?.onError(getDownloadItem(), e.cause)
         } catch (e: Exception) {
             e.printStackTrace()
             delegate?.onError(getDownloadItem(), e.cause)
@@ -128,12 +126,16 @@ class ChapterDownloader(private val task: DownloadItem, concurrent: Int) {
             }
             delegate?.onProgress(getDownloadItem())
         } else if (!interrupted) {
-            val body = ManageSites.openLink(link).body()
-            val contentLength = body!!.contentLength()
+            var contentLength = 0L
 
-            val sink = Okio.buffer(Okio.sink(page))
-            sink.writeAll(body.source())
-            sink.close()
+            Fuel.download(link)
+                .destination { response, _ ->
+                    contentLength = response.contentLength
+                    createDirs(page.parentFile)
+                    page.createNewFile()
+                    page
+                }
+                .response()
 
             if (interrupted) return
 
@@ -146,10 +148,7 @@ class ChapterDownloader(private val task: DownloadItem, concurrent: Int) {
     }
 
     private fun sizeOfPageFromUrl(link: String): Long {
-        val url = URL(link)
-        val urlConnection = url.openConnection()
-        urlConnection.connect()
-        return urlConnection.contentLength.toLong()
+        return Fuel.get(link).response().second.contentLength
     }
 
     interface Delegate {

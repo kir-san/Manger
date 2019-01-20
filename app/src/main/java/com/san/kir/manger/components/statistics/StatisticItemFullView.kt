@@ -6,6 +6,8 @@ import android.widget.TextView
 import com.san.kir.manger.R
 import com.san.kir.manger.room.models.MangaStatistic
 import com.san.kir.manger.utils.TimeFormat
+import com.san.kir.manger.utils.bytesToMb
+import com.san.kir.manger.utils.formatDouble
 import org.jetbrains.anko.AnkoComponent
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.applyRecursively

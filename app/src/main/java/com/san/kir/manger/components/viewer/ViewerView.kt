@@ -90,7 +90,7 @@ class ViewerView(private val presenter: ViewerPresenter) : AnkoComponent<ViewerA
                     onSeekBarChangeListener {
                         var progress = 0
                         onProgressChanged { _, p, _ -> progress = p }
-                        onStopTrackingTouch { presenter.progressPages.item = progress }
+                        onStopTrackingTouch { presenter.progressPages.unicItem = progress }
                     }
                 }.lparams(width = wrapContent, height = wrapContent) {
                     alignParentBottom()
@@ -190,7 +190,7 @@ class ViewerView(private val presenter: ViewerPresenter) : AnkoComponent<ViewerA
                     above(Id.bottomBar)
                 }
                 onPageChangeListener {
-                    onPageSelected { position -> presenter.progressPages.item = position }
+                    onPageSelected { position -> presenter.progressPages.unicItem = position }
                 }
                 presenter.into(this)
 

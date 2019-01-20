@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewManager
 import android.widget.ProgressBar
 import android.widget.TextView
-import com.san.kir.manger.App
 import com.san.kir.manger.R
 import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.components.parsing.ManageSites
@@ -46,7 +45,7 @@ class AddMangaDialog(
             val categories = Main.db.categoryDao.categoryNames()
 
             context.selector(
-                title = App.context.getString(R.string.catalog_for_one_site_selector_item),
+                title = context.getString(R.string.catalog_for_one_site_selector_item),
                 items = categories
             ) { _, index ->
                 nextStep(context, categories[index])

@@ -6,7 +6,7 @@ import android.widget.PopupMenu
 import com.san.kir.manger.R
 import com.san.kir.manger.components.library.LibraryActivity
 import com.san.kir.manger.components.main.Main
-import com.san.kir.manger.components.storage.StorageDialogFragment
+import com.san.kir.manger.components.storage.StorageDialogView
 import com.san.kir.manger.room.dao.removeWithChapters
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.utils.log
@@ -51,10 +51,7 @@ class LibraryItemMenu(
                     setCat -> ChangeCategoryDialog(context, anchor, manga)
                     select -> act.onListItemSelect(position)
                     storage -> {
-                        StorageDialogFragment().apply {
-                            bind(manga, act)
-                            show(act.supportFragmentManager, "storage")
-                        }
+                        StorageDialogView(context).bind(manga, act)
                     }
                     else -> return@setOnMenuItemClickListener false
                 }

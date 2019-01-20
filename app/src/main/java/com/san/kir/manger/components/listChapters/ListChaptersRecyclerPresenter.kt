@@ -35,10 +35,7 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
         recycler.adapter = adapter
     }
 
-    fun setManga(
-        manga: Manga = this.manga,
-        filter: ChapterFilter
-    ): Job {
+    fun setManga(manga: Manga = this.manga, filter: ChapterFilter): Job {
         this@ListChaptersRecyclerPresenter.manga = manga
         this@ListChaptersRecyclerPresenter.filter = filter
         return changeSort(manga.isAlternativeSort)
@@ -167,7 +164,7 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
     }
 
     fun downloadAllNotReadChapters() = GlobalScope.launch(Dispatchers.Default) {
-        val count =  dao
+        val count = dao
             .getItemsNotReadAsc(manga.unic)
             .filter { it.action == ChapterStatus.DOWNLOADABLE }
             .onEach { chapter ->

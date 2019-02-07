@@ -17,7 +17,6 @@ import org.jetbrains.anko.imageView
 import org.jetbrains.anko.margin
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.padding
-import org.jetbrains.anko.progressBar
 import org.jetbrains.anko.textColor
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.wrapContent
@@ -63,16 +62,6 @@ class LibraryLargeItemView(
             }.lparams(width = wrapContent, height = wrapContent) {
                 gravity = Gravity.END
                 topMargin = dip(25)
-            }
-
-            selected = imageView {
-            }.lparams(width = matchParent, height = matchParent)
-
-            isUpdate = progressBar {
-                isIndeterminate = true
-                visibility = View.GONE
-            }.lparams(width = wrapContent, height = wrapContent) {
-                gravity = Gravity.START or Gravity.TOP
             }
 
             root = this

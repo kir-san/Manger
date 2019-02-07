@@ -2,6 +2,7 @@ package com.san.kir.manger.room.models
 
 import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
+import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
 import android.os.Parcel
 import android.os.Parcelable
@@ -10,41 +11,70 @@ import android.os.Parcelable
 data class MangaStatistic(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = MangaStatisticColumn.id)
-    var id: Long = 0,
+    var id: Long,
 
     @ColumnInfo(name = MangaStatisticColumn.manga)
-    var manga:String = "",
+    var manga: String,
 
     @ColumnInfo(name = MangaStatisticColumn.allChapters)
-    var allChapters: Int = 0,
+    var allChapters: Int,
 
     @ColumnInfo(name = MangaStatisticColumn.lastChapters)
-    var lastChapters: Int = 0,
+    var lastChapters: Int,
 
     @ColumnInfo(name = MangaStatisticColumn.allPages)
-    var allPages: Int = 0,
+    var allPages: Int,
 
     @ColumnInfo(name = MangaStatisticColumn.lastPages)
-    var lastPages: Int = 0,
+    var lastPages: Int,
 
     @ColumnInfo(name = MangaStatisticColumn.allTime)
-    var allTime: Long = 0,
+    var allTime: Long,
 
     @ColumnInfo(name = MangaStatisticColumn.lastTime)
-    var lastTime: Long = 0,
+    var lastTime: Long,
 
     @ColumnInfo(name = MangaStatisticColumn.maxSpeed)
-    var maxSpeed: Int = 0,
+    var maxSpeed: Int,
 
     @ColumnInfo(name = MangaStatisticColumn.downloadSize)
-    var downloadSize: Long = 0,
+    var downloadSize: Long,
 
     @ColumnInfo(name = MangaStatisticColumn.downloadTime)
-    var downloadTime: Long = 0,
+    var downloadTime: Long,
 
     @ColumnInfo(name = MangaStatisticColumn.openedTimes)
-    var openedTimes: Int = 0
+    var openedTimes: Int
 ) : Parcelable {
+    @Ignore
+    constructor(
+        manga: String = "",
+        allChapters: Int = 0,
+        lastChapters: Int = 0,
+        allPages: Int = 0,
+        lastPages: Int = 0,
+        allTime: Long = 0,
+        lastTime: Long = 0,
+        maxSpeed: Int = 0,
+        downloadSize: Long = 0,
+        downloadTime: Long = 0,
+        openedTimes: Int = 0
+    ) : this(
+        0,
+        manga,
+        allChapters,
+        lastChapters,
+        allPages,
+        lastPages,
+        allTime,
+        lastTime,
+        maxSpeed,
+        downloadSize,
+        downloadTime,
+        openedTimes
+    )
+
+    @Ignore
     constructor(parcel: Parcel) : this(
         parcel.readLong(),
         parcel.readString(),

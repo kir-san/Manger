@@ -1,8 +1,10 @@
 package com.san.kir.manger.components.parsing.sites
 
-import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.components.parsing.SiteCatalog
+import com.san.kir.manger.components.parsing.Status
+import com.san.kir.manger.components.parsing.Translate
+import com.san.kir.manger.repositories.SiteRepository
 import com.san.kir.manger.room.models.Chapter
 import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.room.models.Manga
@@ -17,17 +19,10 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.util.regex.Pattern
 
-open class ReadmangaTemplate : SiteCatalog {
-    override var isInit = false
-    override val id = 1
-    override val name = "Read Manga"
-    override val catalogName = "readmanga.me"
-    override val host
-        get() = "http://$catalogName"
+abstract class ReadmangaTemplate(private val siteRepository: SiteRepository) : SiteCatalog() {
     override val siteCatalog
         get() = "$host/list?sortType=created"
-    override var volume = 0
-    override var oldVolume = 0
+
     open val categories = listOf(
         "Ёнкома",
         "Комикс западный",
@@ -40,18 +35,58 @@ open class ReadmangaTemplate : SiteCatalog {
 
     override suspend fun init(): ReadmangaTemplate {
         if (!isInit) {
-            oldVolume = Main.db.siteDao.getItem(name)?.volume ?: 0
-            val doc = ManageSites.getDocument(host)
-            doc.select(".rightContent h5").forEach {
-                if (it.text() == "У нас сейчас")
-                    volume = it.parent().select("li b").first().text().toInt()
-            }
+            oldVolume = siteRepository.getItem(name)?.volume ?: 0
+            val doc = ManageSites.getDocument(siteCatalog)
+            volume = doc.select("#mangaBox .leftContent .pagination a.step")
+                .last {
+                    val text = it.attr("href")
+                    text.contains("offset", true)
+                }
+                .attr("href")
+                .split("&")
+                .first { it.contains("offset", true) }
+                .split("=")
+                .last().toInt()
             isInit = true
         }
         return this
     }
 
-    ///
+    override suspend fun getElementOnline(url: String): SiteCatalogElement? {
+        return kotlin.runCatching {
+            val element = SiteCatalogElement()
+
+            val doc = ManageSites.getDocument(url)
+
+            element.host = host
+            element.catalogName = catalogName
+            element.siteId = id
+
+            element.name = doc.select("#mangaBox .leftContent span.name").text()
+
+            element.shotLink = url.split(catalogName).last()
+            element.link = url
+
+            val status = doc.select("#mangaBox .leftContent .expandable .subject-meta p")
+
+            element.statusEdition = Status.COMPLETE
+            if (status.first().text().contains(Status.SINGLE, true))
+                element.statusEdition = Status.SINGLE
+            else if (status.first().text().contains(Status.NOT_COMPLETE, true))
+                element.statusEdition = Status.NOT_COMPLETE
+
+            element.statusTranslate = Translate.COMPLETE
+            if (status[1].text().contains("продолжается", true)) {
+                element.statusTranslate = Translate.NOT_COMPLETE
+            }
+
+            element.logo = doc.select("#mangaBox .leftContent .expandable .subject-cower img").attr("src")
+
+            getFullElement(element)
+        }.fold(onSuccess = { it },
+               onFailure = { null })
+    }
+
     override suspend fun getFullElement(element: SiteCatalogElement): SiteCatalogElement {
 
         val doc = ManageSites.getDocument(element.link).select("div.leftContent")
@@ -76,6 +111,7 @@ open class ReadmangaTemplate : SiteCatalog {
         element.about = doc.select("meta[itemprop=description]").attr("content")
 
         element.isFull = true
+
 
         return element
     }

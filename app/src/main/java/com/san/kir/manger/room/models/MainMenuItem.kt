@@ -1,6 +1,7 @@
 package com.san.kir.manger.room.models
 
 import android.arch.persistence.room.Entity
+import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
 import com.san.kir.manger.components.drawer.MainMenuType
 
@@ -13,7 +14,7 @@ class MainMenuItem {
     var order = 0
     var type = MainMenuType.Default
 
-    constructor()
+    @Ignore constructor()
     constructor(name: String, order: Int, type: MainMenuType) {
         this.name = name
         this.order = order

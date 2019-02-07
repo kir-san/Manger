@@ -1,13 +1,12 @@
 package com.san.kir.manger.extending.dialogs
 
-import android.content.Context
 import android.view.Gravity
 import android.view.View
 import com.san.kir.manger.R
-import com.san.kir.manger.components.main.Main
+import com.san.kir.manger.extending.BaseActivity
+import com.san.kir.manger.repositories.ChapterRepository
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.utils.delChapters
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import org.jetbrains.anko.alert
@@ -19,12 +18,12 @@ import org.jetbrains.anko.progressBar
 import org.jetbrains.anko.textResource
 import org.jetbrains.anko.textView
 
-class DeleteReadChaptersDialog(context: Context, manga: Manga, function: (() -> Unit)? = null) {
+class DeleteReadChaptersDialog(act: BaseActivity, manga: Manga, function: (() -> Unit)? = null) {
     init {
-        context.alert {
+        act.alert {
             messageResource = R.string.library_popupmenu_delete_read_chapters_message
             positiveButton(R.string.library_popupmenu_delete_read_chapters_ok) {
-                context.alert {
+                act.alert {
                     var task: Job? = null
                     onCancelled {
                         task?.cancel()
@@ -39,9 +38,8 @@ class DeleteReadChaptersDialog(context: Context, manga: Manga, function: (() -> 
                                 padding = dip(10)
                             }.lparams { gravity = Gravity.CENTER }
 
-                            task = GlobalScope.async {
-                                val chapters = Main.db
-                                    .chapterDao
+                            task = act.async {
+                                val chapters = ChapterRepository(act)
                                     .getItems(manga.unic)
                                     .filter { chapter -> chapter.isRead }
                                 val size = chapters.size

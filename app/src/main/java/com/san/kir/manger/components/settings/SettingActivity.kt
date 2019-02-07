@@ -8,12 +8,12 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.IBinder
 import android.view.View
-import android.widget.LinearLayout
 import com.san.kir.manger.R
-import com.san.kir.manger.components.downloadManager.ChapterLoader
-import com.san.kir.manger.components.downloadManager.DownloadService
+import com.san.kir.manger.components.download_manager.ChapterLoader
+import com.san.kir.manger.components.download_manager.DownloadService
 import com.san.kir.manger.components.drawer.DrawerActivity
 import com.san.kir.manger.utils.ID
+import org.jetbrains.anko._LinearLayout
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.frameLayout
 
@@ -34,7 +34,7 @@ class SettingActivity : DrawerActivity(), SharedPreferences.OnSharedPreferenceCh
         }
     }
 
-    override val LinearLayout.customView: View
+    override val _LinearLayout.customView: View
         get() = frameLayout { id = content }
 
     override fun onCreate(savedInstanceState: Bundle?) {

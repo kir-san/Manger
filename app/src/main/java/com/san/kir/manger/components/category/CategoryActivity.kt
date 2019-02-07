@@ -1,15 +1,16 @@
 package com.san.kir.manger.components.category
 
-import android.annotation.SuppressLint
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Gravity
 import android.view.View
-import android.widget.LinearLayout
 import com.san.kir.manger.R
 import com.san.kir.manger.components.drawer.DrawerActivity
 import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.room.models.Category
+import com.san.kir.manger.view_models.CategoryViewModel
+import org.jetbrains.anko._LinearLayout
 import org.jetbrains.anko.design.floatingActionButton
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.frameLayout
@@ -18,9 +19,12 @@ import org.jetbrains.anko.recyclerview.v7.recyclerView
 import org.jetbrains.anko.wrapContent
 
 class CategoryActivity : DrawerActivity() {
-    private val _adapter = CategoryRecyclerPresenter(this)
+    private val mAdapter = CategoryRecyclerPresenter(this)
+    val mViewModel by lazy {
+        ViewModelProviders.of(this).get(CategoryViewModel::class.java)
+    }
 
-    override val LinearLayout.customView: View
+    override val _LinearLayout.customView: View
         get() = frameLayout {
             lparams(width = matchParent, height = matchParent)
 
@@ -28,7 +32,7 @@ class CategoryActivity : DrawerActivity() {
                 lparams(width = matchParent, height = matchParent)
                 setHasFixedSize(true)
                 layoutManager = LinearLayoutManager(context)
-                _adapter.into(this)
+                mAdapter.into(this)
             }
 
             floatingActionButton {
@@ -43,17 +47,14 @@ class CategoryActivity : DrawerActivity() {
             }
         }
 
-    @SuppressLint("MissingSuperCall")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTitle(R.string.main_menu_category)
     }
 
-    private fun View.addCategory() {
-        with(Category()) {
-            CategoryEditDialog(context, this) {
-                _adapter.add(this@with)
-            }
+    private fun addCategory() {
+        CategoryEditDialog(this, Category()) { cat ->
+            mAdapter.add(cat)
         }
     }
 }

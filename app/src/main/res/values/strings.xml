@@ -67,6 +67,7 @@
     <string name="catalog_for_one_site_update">Обновить</string>
     <string name="catalog_for_one_site_update_all">Обновить данные сайтов</string>
     <string name="catalog_for_one_site_update_catalog_contain">Обновить содержимое катологов</string>
+    <string name="catalog_for_one_site_global_search">Глобальный поиск</string>
     <string name="catalog_fot_one_site_warning">Внимание</string>
     <string name="catalog_fot_one_site_redownload_text">Нужно ваше согласие на обновление каталога</string>
     <string name="catalog_fot_one_site_redownload_ok">Согласен</string>
@@ -97,6 +98,8 @@
     <string name="catalog_fos_service_notify_text">Подготовка каталога %s к загрузке</string>
     <string name="catalog_fos_service_notify_title_2">Обновление %d шт.</string>
     <string name="catalog_fos_service_notify_complete">Обновление каталогов завершенно</string>
+    <string name="catalog_fos_service_notify_manual_stop_text">Вы сами это сделали</string>
+    <string name="catalog_fos_service_notify_manual_stop_title">Обновление каталогов отменено</string>
     <string name="catalog_fos_service_notify_error_title">Обновление каталогов завершенно с ошибкой</string>
     <string name="catalog_fos_service_notify_error_text">Проверьте подключение к интернету</string>
 
@@ -139,6 +142,7 @@
     <string name="main_menu_latest">Обновления</string>
     <string name="main_menu_latest_count">Обновления: %d</string>
     <string name="main_menu_settings">Настройки</string>
+    <string name="main_menu_search">Поиск</string>
     <string name="main_menu_item_catalogs">%1$d - %2$d</string>
     <string name="main_menu_schedule">Расписание</string>
     <string name="main_menu_statistic">Статистика</string>
@@ -189,7 +193,8 @@
     <string name="library_popupmenu_delete_read_chapters_delete">Удаляю…</string>
     <string name="library_popupmenu_delete_read_chapters_ready">Готово</string>
     <string name="library_popupmenu_delete_read_chapters_no">Не, не</string>
-    <string name="library_help">Библиотека пуста.\n перейдите в каталог\n и добавьте новой манги</string>
+    <string name="library_help">Библиотека пуста.\n Перейдите в каталоги\n и добавьте новой манги</string>
+    <string name="library_help2">Или добавьте мангу с помощью ссылки на нее,\n используйте для этого\n кнопку с крестиком сверху</string>
     <string name="library_help_go">В каталоги</string>
     <string name="library_sort_dialog_reverse">Изменить порядок?</string>
     <string name="library_sort_dialog_visible">Скрыть ?</string>
@@ -200,6 +205,7 @@
     <string name="library_menu_order_title">Настройки порядка в библиотеке</string>
     <string name="library_menu_customize_my_order">Настроить мой порядок</string>
     <string name="library_menu_update">Поиск обновлений приложения</string>
+    <string name="library_menu_add_manga">Добавить мангу</string>
     <string name="library_menu_close">Завершить</string>
     <string name="library_action_move_to_category">Переместить в категорию</string>
     <string name="library_action_remove">Удалить</string>
@@ -213,6 +219,7 @@
     <string name="library_all_chapters">Всего глав: %d</string>
     <string name="library_not_read_chapters">Непрочитанно: %d</string>
     <string name="library_read_chapters">Прочитанно: %d</string>
+    <string name="library_add_manga_title">Добавление новой манги</string>
 
 
     <!-- ListChapters -->
@@ -251,11 +258,12 @@
     <string name="action_set_download">Скачать</string>
     <string name="action_set_read">Пометить прочитаными</string>
     <string name="action_set_not_read">Пометить не прочитаными</string>
+    <string name="action_update_pages">Обновить страницы</string>
     <string name="action_select_prev">Выбрать все ниже</string>
     <string name="action_select_next">Выбрать все выше</string>
     <string name="action_full_delete">Удалить из базы данных</string>
     <string name="action_full_delete_title">Внимание!!!</string>
-    <string name="action_full_delete_message">Данное действие приведет к удалению глав из базы данных. Все файлы и папки будут не тронуты, но приложение больше не будет видеть эти главы. Рекомендуется использовать это при появлении копий существующих глав. За один раз удаляет небольшое количество глав.</string>
+    <string name="action_full_delete_message">Данное действие приведет к удалению глав из базы данных. Все файлы и папки будут не тронуты, но приложение больше не будет видеть эти главы. Рекомендуется использовать это при появлении копий существующих глав.</string>
     <string name="list_chapters_is_update">Разрешить обновления</string>
 
     <!--LatestChapter-->
@@ -503,6 +511,14 @@
     <string name="settings_library_show_category_key">show_category</string>
     <string name="settings_library_show_category_summary">Отображение названия категории у каждой манги в категории \'Все\'</string>
     <string name="settings_library_show_category_title">Отображение категории</string>
+
+
+    <string name="settings_list_chapter_title">Настройки библиотеки</string>
+
+    <string name="settings_list_chapter_filter_default">true</string>
+    <string name="settings_list_chapter_filter_key">chapter_filter</string>
+    <string name="settings_list_chapter_filter_summary">Фильтрация в списке глав общая для всей манги или независимая</string>
+    <string name="settings_list_chapter_filter_title">Индивидуальная фильтрация глав</string>
 
 
     <string name="settings_viewer_title">Настройки читалки</string>

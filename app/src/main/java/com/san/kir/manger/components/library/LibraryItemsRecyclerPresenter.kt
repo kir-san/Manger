@@ -1,96 +1,47 @@
 package com.san.kir.manger.components.library
 
 import android.arch.lifecycle.Observer
-import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
-import com.san.kir.manger.components.main.Main
-import com.san.kir.manger.room.dao.MangaFilter
-import com.san.kir.manger.room.dao.loadItems
-import com.san.kir.manger.room.dao.removeWithChapters
-import com.san.kir.manger.room.dao.toFilter
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.room.models.Manga
-import com.san.kir.manger.utils.ItemMove
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.util.*
+import com.san.kir.manger.utils.enums.MangaFilter
 
 class LibraryItemsRecyclerPresenter(val cat: Category, private val act: LibraryActivity) :
     RecyclerPresenter() {
-    private val mangaDao = Main.db.mangaDao
-    private val categories = Main.db.categoryDao
-    private lateinit var adapter: RecyclerViewAdapterFactory.DraggableRecyclerViewAdapter<Manga>
-    private val itemMove: ItemMove<Manga> = { fromPosition, toPosition ->
-        Collections.swap(items, fromPosition, toPosition)
-        notifyItemMoved(fromPosition, toPosition)
-        items.forEachIndexed { index, manga ->
-            manga.order = index
-        }
-        mangaDao.update(*items.toTypedArray())
-    }
+    private lateinit var adapter: RecyclerViewAdapterFactory.RecyclerPagingAdapter<Manga>
 
     fun intoIsList(recyclerView: RecyclerView, isLarge: Boolean) {
-        adapter = if (isLarge) {
-            RecyclerViewAdapterFactory
-                .createDraggable(view = { LibraryLargeItemView(act, cat) }, itemMove = itemMove)
-        } else {
-            RecyclerViewAdapterFactory
-                .createDraggable(
-                    view = { LibrarySmallItemView(act, cat) }, itemMove = itemMove
-                )
-        }
+        adapter = RecyclerViewAdapterFactory
+            .createPaging({
+                              if (isLarge) LibraryLargeItemView(act, cat)
+                              else LibrarySmallItemView(act, cat)
+                          },
+                          { oldItem, newItem -> oldItem.id == newItem.id },
+                          { oldItem, newItem -> oldItem == newItem })
+
         into(recyclerView)
     }
 
     override fun into(recyclerView: RecyclerView) {
         super.into(recyclerView)
         recycler.adapter = adapter
-        categories.loadItem(cat.name)
+        act.mViewModel.loadCategory(cat.name)
             .observe(act, Observer { category ->
                 category?.let {
-                    changeOrder(it.toFilter())
+                    changeOrder(act.mViewModel.filterFromCategory(it))
                 }
             })
     }
 
-    private var mFilter = MangaFilter.ADD_TIME_ASC
     private fun changeOrder(filter: MangaFilter) {
-        mFilter = filter
-        mangaDao.loadItems(cat, filter).removeObservers(act)
-        mangaDao.loadItems(cat, filter).observe(act, Observer { list ->
-            GlobalScope.launch {
-                list?.let {
-                    val old = adapter.items
-                    val new = it
-                    val result = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-                        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-                            old[oldItemPosition].id == new[newItemPosition].id
-
-                        override fun areContentsTheSame(
-                            oldItemPosition: Int,
-                            newItemPosition: Int
-                        ) =
-                            old[oldItemPosition] == new[newItemPosition]
-
-                        override fun getOldListSize() = old.size
-
-                        override fun getNewListSize() = new.size
-                    })
-
-                    adapter.items = new
-                    withContext(Dispatchers.Main) {
-                        result.dispatchUpdatesTo(adapter)
-                    }
-                }
-            }
+        act.mViewModel.loadMangas(cat, filter).observe(act, Observer { list ->
+                adapter.submitList(list)
         })
     }
 
-    val catalog: List<Manga> get() = adapter.items
+    val catalog: List<Manga>? get() = adapter.currentList
 
     val itemCount: Int?
         get() = try {
@@ -99,7 +50,7 @@ class LibraryItemsRecyclerPresenter(val cat: Category, private val act: LibraryA
             null
         }
 
-    fun toggleSelection(position: Int) {
+    /*fun toggleSelection(position: Int) {
         // Переключение выделения
         adapter.selectedItems[position] = !adapter.selectedItems[position]
         adapter.notifyItemChanged(position)
@@ -141,5 +92,5 @@ class LibraryItemsRecyclerPresenter(val cat: Category, private val act: LibraryA
                 block(index)
             }
         }
-    }
+    }*/
 }

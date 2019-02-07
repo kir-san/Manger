@@ -10,11 +10,10 @@ import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.san.kir.manger.R
-import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.ankoExtend.roundedImageView
 import com.san.kir.manger.extending.ankoExtend.visibleOrInvisible
-import com.san.kir.manger.room.dao.loadAllTime
+import com.san.kir.manger.extending.launchUI
 import com.san.kir.manger.room.models.MangaStatistic
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
@@ -24,11 +23,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.anko.AnkoContext
-import org.jetbrains.anko.alignParentBottom
+import org.jetbrains.anko.above
+import org.jetbrains.anko.alignParentEnd
 import org.jetbrains.anko.below
+import org.jetbrains.anko.centerVertically
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.horizontalPadding
 import org.jetbrains.anko.horizontalProgressBar
+import org.jetbrains.anko.leftOf
 import org.jetbrains.anko.leftPadding
 import org.jetbrains.anko.margin
 import org.jetbrains.anko.matchParent
@@ -42,11 +44,6 @@ import org.jetbrains.anko.wrapContent
 class StatisticItemView(private val act: StatisticActivity) :
     RecyclerViewAdapterFactory.AnkoView<MangaStatistic>() {
 
-    private object Id {
-        val logo = ID.generate()
-        val name = ID.generate()
-    }
-
     private lateinit var root: RelativeLayout
     private lateinit var logo: ImageView
     private lateinit var name: TextView
@@ -56,31 +53,42 @@ class StatisticItemView(private val act: StatisticActivity) :
 
     override fun createView(ui: AnkoContext<ViewGroup>) = with(ui) {
         relativeLayout {
-            lparams {
-                margin = dip(4)
-            }
+            lparams(width = matchParent, height = dip(84)) { margin = dip(4) }
 
             padding = dip(2)
 
             logo = roundedImageView {
-                id = Id.logo
+                id = ID.generate()
             }.lparams(width = dip(80), height = dip(80))
 
-            name = textView {
-                id = Id.name
-                textSize = 20f
-                padding = dip(2)
-                gravity = Gravity.CENTER_HORIZONTAL
-                maxLines = 1
-            }.lparams(width = matchParent) { rightOf(Id.logo) }
-
             timeText = textView {
+                id = ID.generate()
                 textSize = 15f
                 padding = dip(2)
                 leftPadding = dip(5)
             }.lparams {
-                below(Id.name)
-                rightOf(Id.logo)
+                centerVertically()
+                rightOf(logo)
+            }
+
+            name = textView {
+                id = ID.generate()
+                textSize = 20f
+                padding = dip(2)
+                gravity = Gravity.CENTER_HORIZONTAL
+                maxLines = 1
+            }.lparams(width = matchParent) {
+                above(timeText)
+                rightOf(logo)
+            }
+
+            percent = textView {
+                id = ID.generate()
+                gravity = Gravity.CENTER_HORIZONTAL
+                textSize = 16f
+            }.lparams(height = wrapContent, width = wrapContent) {
+                below(timeText)
+                alignParentEnd()
             }
 
             progressBar = horizontalProgressBar {
@@ -89,28 +97,19 @@ class StatisticItemView(private val act: StatisticActivity) :
                     R.drawable.storage_progressbar
                 )
                 horizontalPadding = dip(3)
-            }.lparams(height = dip(21), width = matchParent) {
-                alignParentBottom()
-                rightOf(Id.logo)
+            }.lparams(height = dip(10), width = matchParent) {
+                below(timeText)
+                rightOf(logo)
+                leftOf(percent)
+                topMargin = dip(5)
             }
-
-            percent = textView {
-                gravity = Gravity.CENTER_HORIZONTAL
-                textSize = 15f
-            }.lparams(height = wrapContent, width = matchParent) {
-                alignParentBottom()
-                rightOf(Id.logo)
-            }
-
-
             root = this
         }
     }
 
     override fun bind(item: MangaStatistic, isSelected: Boolean, position: Int) {
         act.launch(act.coroutineContext) {
-            val context = root.context
-            val manga = Main.db.mangaDao.getItemOrNull(item.manga)
+            val manga = act.mViewModel.getMangaItemOrNull(item)
 
             withContext(Dispatchers.Main) {
                 if (manga != null && manga.logo.isNotEmpty()) {
@@ -122,26 +121,25 @@ class StatisticItemView(private val act: StatisticActivity) :
 
                 name.text = item.manga
 
-                timeText.text = context.getString(
+                timeText.text = act.getString(
                     R.string.statistic_subtitle,
-                    TimeFormat(item.allTime).toString(context)
+                    TimeFormat(item.allTime).toString(act)
                 )
 
                 root.onClick {
-                    context.startActivity<StatisticItemActivity>("manga" to item.manga)
+                    act.startActivity<StatisticItemActivity>("manga" to item.manga)
                 }
             }
 
-            Main.db.statisticDao
-                .loadAllTime()
+            act.mViewModel.getStatisticAllTime()
                 .observe(act, Observer {
-                    act.launch(Dispatchers.Main) {
+                    act.launchUI {
                         val i = it?.toInt() ?: 0
                         progressBar.max = i
                         progressBar.progress = item.allTime.toInt()
 
                         if (i != 0) {
-                            percent.text = context.getString(
+                            percent.text = act.getString(
                                 R.string.storage_manga_item_size_percent,
                                 Math.round(item.allTime.toDouble() / i * 100)
                             )

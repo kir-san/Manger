@@ -1,10 +1,11 @@
 package com.san.kir.manger.components.schedule
 
 import com.evernote.android.job.Job
-import com.san.kir.manger.components.catalogForOneSite.CatalogForOneSiteUpdaterService
-import com.san.kir.manger.components.main.Main
+import com.san.kir.manger.components.catalog_for_one_site.CatalogForOneSiteUpdaterService
 import com.san.kir.manger.extending.ankoExtend.startForegroundService
-import com.san.kir.manger.room.dao.getItemsWhere
+import com.san.kir.manger.repositories.MangaRepository
+import com.san.kir.manger.repositories.PlannedRepository
+import com.san.kir.manger.repositories.SiteRepository
 import com.san.kir.manger.room.models.MangaColumn
 import com.san.kir.manger.room.models.PlannedType
 import com.san.kir.manger.room.models.mangaList
@@ -14,35 +15,37 @@ import com.san.kir.manger.utils.log
 
 class ScheduleJob(private val tag: String) : Job() {
     override fun onRunJob(params: Params): Result {
+        val plannedRepository = PlannedRepository(context)
         val taskId = tag.toLong()
-        val task = Main.db.plannedDao.getItem(taskId)
+        val task =plannedRepository.getItem(taskId)
 
         try {
             when (task.type) {
                 PlannedType.MANGA -> {
-                    val manga = Main.db.mangaDao.getItem(task.manga)
+                    val manga = MangaRepository(context).getItem(task.manga)
                     context.startForegroundService<MangaUpdaterService>(MangaColumn.tableName to manga)
-                    ScheduleManager(context).add(task)
+                    ScheduleManager().add(task)
                 }
                 PlannedType.CATEGORY -> {
-                    val categories = Main.db.mangaDao.getItemsWhere(task.category)
+                    val categories = MangaRepository(context).getItemsWhere(task.category)
                     categories.forEach {
                         context.startForegroundService<MangaUpdaterService>(MangaColumn.tableName to it)
                     }
-                    ScheduleManager(context).add(task)
+                    ScheduleManager().add(task)
                 }
                 PlannedType.GROUP -> {
                     val group = task.mangaList
+                    val mangaRepository = MangaRepository(context)
                     group.forEach { unic ->
-                        val manga = Main.db.mangaDao.getItem(unic)
+                        val manga = mangaRepository.getItem(unic)
                         context.startForegroundService<MangaUpdaterService>(MangaColumn.tableName to manga)
                     }
-                    ScheduleManager(context).add(task)
+                    ScheduleManager().add(task)
                 }
                 PlannedType.CATALOG -> {
-                    val catalog = Main.db.siteDao.getItem(task.catalog)
-                    if (catalog != null && !CatalogForOneSiteUpdaterService.isContain(catalog.siteID))
-                        context.startForegroundService<CatalogForOneSiteUpdaterService>("id" to catalog.siteID)
+                    val catalog = SiteRepository(context).getItem(task.catalog)
+                    if (catalog != null && !CatalogForOneSiteUpdaterService.isContain(catalog.catalogName))
+                        context.startForegroundService<CatalogForOneSiteUpdaterService>("catalogName" to catalog.catalogName)
                 }
                 PlannedType.APP -> {
                     context.startForegroundService<AppUpdateService>()

@@ -8,4 +8,7 @@ import com.san.kir.manger.room.models.SiteCatalogElement
 interface SiteCatalogDao: BaseDao<SiteCatalogElement> {
     @Query("SELECT * FROM items")
     fun getItems(): List<SiteCatalogElement>
+
+    @Query("DELETE FROM items")
+    fun deleteAll()
 }

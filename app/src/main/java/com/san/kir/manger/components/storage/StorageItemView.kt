@@ -12,13 +12,10 @@ import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.san.kir.manger.R
-import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.ankoExtend.roundedImageView
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
 import com.san.kir.manger.extending.ankoExtend.visibleOrInvisible
-import com.san.kir.manger.room.dao.getFromPath
-import com.san.kir.manger.room.dao.loadAllSize
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.room.models.Storage
 import com.san.kir.manger.utils.ID
@@ -28,16 +25,19 @@ import com.san.kir.manger.utils.getFullPath
 import com.san.kir.manger.utils.loadImage
 import com.san.kir.manger.utils.log
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.anko.AnkoContext
+import org.jetbrains.anko.above
 import org.jetbrains.anko.alert
-import org.jetbrains.anko.alignParentBottom
 import org.jetbrains.anko.alignParentEnd
 import org.jetbrains.anko.below
+import org.jetbrains.anko.centerVertically
 import org.jetbrains.anko.dip
 import org.jetbrains.anko.horizontalPadding
 import org.jetbrains.anko.horizontalProgressBar
+import org.jetbrains.anko.leftOf
 import org.jetbrains.anko.leftPadding
 import org.jetbrains.anko.margin
 import org.jetbrains.anko.matchParent
@@ -50,13 +50,6 @@ import kotlin.math.roundToInt
 
 class StorageItemView(private val act: StorageActivity) :
     RecyclerViewAdapterFactory.AnkoView<Storage>() {
-    private val mangaDao = Main.db.mangaDao
-    private val storage = Main.db.storageDao
-
-    private object Id {
-        val name = ID.generate()
-        val logo = ID.generate()
-    }
 
     private lateinit var root: RelativeLayout
     private lateinit var logo: ImageView
@@ -65,6 +58,12 @@ class StorageItemView(private val act: StorageActivity) :
     private lateinit var isExists: TextView
     private lateinit var progressBar: ProgressBar
     private lateinit var percent: TextView
+    private lateinit var item: Storage
+
+    private lateinit var observer: Observer<Double>
+
+    private var job: Job? = null
+    private var job2: Job? = null
 
     override fun createView(ui: AnkoContext<ViewGroup>) = with(ui) {
         relativeLayout {
@@ -74,32 +73,44 @@ class StorageItemView(private val act: StorageActivity) :
             padding = dip(2)
 
             logo = roundedImageView {
-                id = Id.logo
-//                scaleType = ImageView.ScaleType.FIT_XY
+                id = ID.generate()
             }.lparams(width = dip(80), height = dip(80))
 
-            name = textView {
-                id = Id.name
-                textSize = 20f
-                padding = dip(2)
-                gravity = Gravity.CENTER_HORIZONTAL
-                maxLines = 1
-            }.lparams(width = matchParent) { rightOf(Id.logo) }
-
             sizeText = textView {
+                id = ID.generate()
                 textSize = 15f
                 padding = dip(2)
                 leftPadding = dip(5)
             }.lparams {
-                below(Id.name)
-                rightOf(Id.logo)
+                centerVertically()
+                rightOf(logo)
+            }
+
+            name = textView {
+                id = ID.generate()
+                textSize = 20f
+                padding = dip(2)
+                gravity = Gravity.CENTER_HORIZONTAL
+                maxLines = 1
+            }.lparams(width = matchParent) {
+                above(sizeText)
+                rightOf(logo)
             }
 
             isExists = textView(R.string.storage_not_in_bd) {
                 textSize = 15f
                 padding = dip(2)
             }.lparams {
-                below(Id.name)
+                below(name)
+                alignParentEnd()
+            }
+
+            percent = textView {
+                id = ID.generate()
+                gravity = Gravity.CENTER_HORIZONTAL
+                textSize = 16f
+            }.lparams(height = wrapContent, width = wrapContent) {
+                below(sizeText)
                 alignParentEnd()
             }
 
@@ -109,17 +120,11 @@ class StorageItemView(private val act: StorageActivity) :
                     R.drawable.storage_progressbar
                 )
                 horizontalPadding = dip(3)
-            }.lparams(height = dip(21), width = matchParent) {
-                alignParentBottom()
-                rightOf(Id.logo)
-            }
-
-            percent = textView {
-                gravity = Gravity.CENTER_HORIZONTAL
-                textSize = 15f
-            }.lparams(height = wrapContent, width = matchParent) {
-                alignParentBottom()
-                rightOf(Id.logo)
+            }.lparams(height = dip(10), width = matchParent) {
+                below(sizeText)
+                rightOf(logo)
+                leftOf(percent)
+                topMargin = dip(5)
             }
 
             root = this
@@ -127,53 +132,67 @@ class StorageItemView(private val act: StorageActivity) :
     }
 
     override fun bind(item: Storage, isSelected: Boolean, position: Int) {
-        act.launch(act.coroutineContext) {
-            val context = root.context
-            val manga = mangaDao.getFromPath(item.path)
+        this.item = item
+
+        name.text = item.name
+        sizeText.text = act.getString(
+            R.string.storage_manga_item_size_text,
+            formatDouble(item.sizeFull)
+        )
+
+        observer = Observer {
+            val size = it?.roundToInt() ?: 0
+            progressBar.max = size
+            progressBar.progress = item.sizeFull.roundToInt()
+            progressBar.secondaryProgress = item.sizeRead.roundToInt()
+
+            if (size != 0) {
+                percent.text = act.getString(
+                    R.string.storage_manga_item_size_percent,
+                    Math.round(item.sizeFull / size * 100)
+                )
+            }
+        }
+    }
+
+    override fun onAttached() {
+        job2 = act.launch(act.coroutineContext) {
+            val manga = act.mViewModel.getMangaFromPath(item.path)
 
             withContext(Dispatchers.Main) {
-                root.onClick { it?.menuOfActions(manga, item) }
-
-                if (manga != null && manga.logo.isNotEmpty()) {
-                    loadImage(manga.logo) {
-                        errorColor(Color.TRANSPARENT)
-                        into(logo)
-                    }
-                } else logo.visibleOrInvisible(false)
-
-                name.text = item.name
-                sizeText.text = context.getString(
-                    R.string.storage_manga_item_size_text,
-                    formatDouble(item.sizeFull)
-                )
                 isExists.visibleOrGone(manga == null)
+                root.onClick {
+                    it?.menuOfActions(manga, item)
+                }
             }
 
-            Main.db.storageDao
-                .loadAllSize()
-                .observe(act, Observer {
-                    act.launch(Dispatchers.Main) {
-                        val size = it?.roundToInt() ?: 0
-                        progressBar.max = size
-                        progressBar.progress = item.sizeFull.roundToInt()
-                        progressBar.secondaryProgress = item.sizeRead.roundToInt()
+            manga?.let {
+                if (it.logo.isNotEmpty()) {
+                    job = loadImage(it.logo)
+                        .errorColor(Color.TRANSPARENT)
+                        .into(logo)
 
-                        if (size != 0) {
-                            percent.text = context.getString(
-                                R.string.storage_manga_item_size_percent,
-                                Math.round(item.sizeFull / size * 100)
-                            )
-                        }
-                    }
-                })
+                } else logo.visibleOrInvisible(false)
+            }
         }
+
+        act.mViewModel.getStorageAllSize().observe(act, observer)
+    }
+
+    override fun onDetached() {
+        root.setOnClickListener(null)
+
+        act.mViewModel.getStorageAllSize().removeObserver(observer)
+
+        job?.cancel()
+        job2?.cancel()
     }
 
     private fun View.menuOfActions(manga: Manga?, item: Storage) {
         if (manga != null) {
-            StorageDialogView(context).bind(manga, act)
+            StorageDialogView(act).bind(manga)
         } else
-            with(PopupMenu(context, this, Gravity.END)) {
+            with(PopupMenu(act, this, Gravity.END)) {
                 menu.add(0, 2, 0, R.string.storage_item_menu_full_delete)
 
                 setOnMenuItemClickListener { menuItem ->
@@ -184,7 +203,7 @@ class StorageItemView(private val act: StorageActivity) :
                                 positiveButton(R.string.storage_item_alert_positive) {
                                     act.launch(act.coroutineContext) {
                                         getFullPath(item.path).deleteRecursively()
-                                        storage.delete(item)
+                                        act.mViewModel.storageDelete(item)
                                     }
                                 }
                                 negativeButton(R.string.storage_item_alert_negative) {

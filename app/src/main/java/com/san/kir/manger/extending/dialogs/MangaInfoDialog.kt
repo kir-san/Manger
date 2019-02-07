@@ -1,6 +1,5 @@
 package com.san.kir.manger.extending.dialogs
 
-import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.view.Gravity
@@ -11,10 +10,12 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
+import com.san.kir.manger.extending.BaseActivity
 import com.san.kir.manger.extending.ankoExtend.labelView
 import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.ankoExtend.positiveButton
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
+import com.san.kir.manger.extending.launchUI
 import com.san.kir.manger.room.models.SiteCatalogElement
 import com.san.kir.manger.utils.listStrToString
 import com.san.kir.manger.utils.loadImage
@@ -39,7 +40,7 @@ import org.jetbrains.anko.verticalLayout
 import org.jetbrains.anko.wrapContent
 
 class MangaInfoDialog(
-    private val context: Context,
+    private val act: BaseActivity,
     item: SiteCatalogElement,
     private val onFinish: () -> Unit
 ) {
@@ -58,7 +59,7 @@ class MangaInfoDialog(
 
     init {
         updateInfo(item)
-        context.alert {
+        act.alert {
             customView {
                 frameLayout {
                     lparams(width = matchParent, height = matchParent)
@@ -122,7 +123,7 @@ class MangaInfoDialog(
 
             if (!item.isAdded)
                 positiveButton(R.string.manga_info_dialog_add, Dispatchers.Main) {
-                    AddMangaDialog(context, item) {
+                    AddMangaDialog(act, item) {
                         onFinish()
                     }
                 }
@@ -135,7 +136,7 @@ class MangaInfoDialog(
         authors.text = listStrToString(element.authors)
         type.text = element.type
         statusEdition.text = element.statusEdition
-        volume.text = context.getString(
+        volume.text = act.getString(
             R.string.catalog_for_one_site_prefix_volume,
             element.volume
         )
@@ -162,7 +163,7 @@ class MangaInfoDialog(
             logoLoadText.textResource = R.string.manga_info_dialog_not_image
     }
 
-    private fun updateInfo(element: SiteCatalogElement) = GlobalScope.launch(Dispatchers.Main) {
+    private fun updateInfo(element: SiteCatalogElement) = act.launchUI {
         try {
             updateProgress.visibility = View.VISIBLE
             bind(ManageSites.getFullElement(element).await())

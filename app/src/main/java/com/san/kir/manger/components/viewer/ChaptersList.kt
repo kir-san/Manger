@@ -3,7 +3,7 @@ package com.san.kir.manger.components.viewer
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.san.kir.manger.components.main.Main
+import com.san.kir.manger.components.list_chapters.ChapterComparator
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.room.models.Chapter
 import com.san.kir.manger.room.models.MangaStatistic
@@ -14,20 +14,26 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 
 // класс для управления страницами и главами
-class ChaptersList {
+class ChaptersList(private val act: ViewerActivity) {
     private val pool = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
-    private val chapterDao = Main.db.chapterDao
-    private val statisticDao = Main.db.statisticDao
-    private val listChapter: MutableList<Chapter> = mutableListOf() // Список глав
+    private var listChapter: List<Chapter> = listOf() // Список глав
     private var positionChapter = 0 // текущая глава
     private var stats = MangaStatistic()
     private var positionStat = 0
 
-    suspend fun init(mangaName: String, chapter: String) {
-        listChapter.clear() // Очистить список
-        listChapter.addAll(chapterDao.getItems(mangaName)) // Получение глав
+    suspend fun init(
+        chapter: Chapter,
+        isAlternative: Boolean
+    ) {
+        val list = act.mViewModel.getChapterItems(chapter.manga)
 
-        positionChapter = findChapterPosition(chapter) // Установка текущей главы
+        listChapter = if (isAlternative) {
+            list.sortedWith(ChapterComparator())
+        } else {
+            list
+        }
+
+        positionChapter = findChapterPosition(chapter.name) // Установка текущей главы
 
         updatePagesList() // Получение списка страниц для главы
         pagePosition = when { // Установка текущей страницы
@@ -37,11 +43,11 @@ class ChaptersList {
 
         positionStat = pagePosition
 
-        stats = statisticDao.getItem(mangaName)
+        stats = act.mViewModel.getStatisticItem(chapter.manga)
         stats.lastChapters = 0
         stats.lastPages = 0
 
-        statisticDao.update(stats)
+        act.mViewModel.statisticUpdate(stats)
     }
 
     var pagePosition: Int = 0 // текущая страница
@@ -74,7 +80,7 @@ class ChaptersList {
             updatePagesList()
             stats.lastChapters++
             stats.allChapters++
-            statisticDao.update(stats)
+            act.mViewModel.statisticUpdate(stats)
         }
     }
 
@@ -95,7 +101,7 @@ class ChaptersList {
         if (chapter().pages.isNullOrEmpty() ||
             chapter().pages.any { it.isBlank() }) {
             chapter().pages = ManageSites.pages(chapter())
-            chapterDao.update(chapter())
+            act.mViewModel.chapterUpdate(chapter())
         }
 
         pagesSize = chapter().pages.size
@@ -127,20 +133,20 @@ class ChaptersList {
                 p = pagesSize
                 // Сделать главу прочитанной
                 chapter().isRead = true
-                chapterDao.update(chapter())
+                act.mViewModel.chapterUpdate(chapter())
             }
             pos > pagesSize -> return // Если больше максимального значения, ничего не делать
         }
         // Обновить позицию
         chapter().progress = p
-        chapterDao.update(chapter())
+        act.mViewModel.chapterUpdate(chapter())
 
         if (pos > positionStat) {
             val diff = pos - positionStat
             stats.lastPages += diff
             stats.allPages += diff
             positionStat = pos
-            statisticDao.update(stats)
+            act.mViewModel.statisticUpdate(stats)
         }
     }
 

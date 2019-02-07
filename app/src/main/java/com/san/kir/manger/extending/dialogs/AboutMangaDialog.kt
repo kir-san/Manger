@@ -1,11 +1,11 @@
 package com.san.kir.manger.extending.dialogs
 
-import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
 import android.widget.ImageView
 import com.san.kir.manger.R
-import com.san.kir.manger.components.addManga.AddMangaActivity
+import com.san.kir.manger.components.add_manga.AddMangaActivity
+import com.san.kir.manger.extending.BaseActivity
 import com.san.kir.manger.extending.ankoExtend.labelView
 import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.ankoExtend.textViewBold15Size
@@ -16,7 +16,6 @@ import com.san.kir.manger.utils.getFullPath
 import com.san.kir.manger.utils.lengthMb
 import com.san.kir.manger.utils.loadImage
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.anko.alert
@@ -35,9 +34,9 @@ import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.textColor
 import org.jetbrains.anko.verticalLayout
 
-class AboutMangaDialog(context: Context, manga: Manga) {
+class AboutMangaDialog(act: BaseActivity, manga: Manga) {
     init {
-        context.alert {
+        act.alert {
             customView {
                 frameLayout {
                     lparams(width = matchParent, height = matchParent)
@@ -71,7 +70,7 @@ class AboutMangaDialog(context: Context, manga: Manga) {
 
                             labelView(R.string.about_manga_dialog_volume)
                             textViewBold15Size(R.string.about_manga_dialog_calculate) {
-                                GlobalScope.launch(Dispatchers.Default) {
+                                act.launch(Dispatchers.Default) {
                                     val size = getFullPath(manga.path).lengthMb
                                     withContext(Dispatchers.Main) {
                                         text = context.getString(
@@ -116,7 +115,7 @@ class AboutMangaDialog(context: Context, manga: Manga) {
             }
             positiveButton(R.string.about_manga_dialog_close) { }
             negativeButton(R.string.about_manga_dialog_edit) {
-                context.startActivity<AddMangaActivity>(MangaColumn.unic to manga.unic)
+                act.startActivity<AddMangaActivity>(MangaColumn.unic to manga.unic)
             }
         }.show()
     }

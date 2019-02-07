@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <application
         android:name=".App"
@@ -16,9 +17,11 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning">
+        android:usesCleartextTraffic="true"
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:targetApi="n">
         <activity
-            android:name=".components.main.Main"
+            android:name=".components.drawer.Main"
             android:label="@string/app_name"
             android:theme="@style/AppTheme"
             >
@@ -41,15 +44,15 @@
             android:theme="@style/AppTheme"
             />
         <activity
-            android:name=".components.sitesCatalog.SiteCatalogActivity"
+            android:name=".components.sites_catalog.SiteCatalogActivity"
             android:theme="@style/AppTheme"
             />
         <activity
-            android:name=".components.downloadManager.DownloadManagerActivity"
+            android:name=".components.download_manager.DownloadManagerActivity"
             android:theme="@style/AppTheme"
             />
         <activity
-            android:name=".components.latestChapters.LatestChapterActivity"
+            android:name=".components.latest_chapters.LatestChapterActivity"
             android:theme="@style/AppTheme"
             />
         <activity
@@ -57,17 +60,17 @@
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
             />
         <activity
-            android:name=".components.listChapters.ListChaptersActivity"
+            android:name=".components.list_chapters.ListChaptersActivity"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
             />
 
         <activity
-            android:name=".components.catalogForOneSite.CatalogForOneSiteActivity"
+            android:name=".components.catalog_for_one_site.CatalogForOneSiteActivity"
             android:theme="@style/AppTheme"
             />
 
         <activity
-            android:name=".components.addManga.AddMangaActivity"
+            android:name=".components.add_manga.AddMangaActivity"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
             android:windowSoftInputMode="stateHidden"
             />
@@ -93,12 +96,17 @@
             android:name=".components.statistics.StatisticItemActivity"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
             />
+        <activity
+            android:name=".components.sites_catalog.GlobalSearchActivity"
+            android:label="@string/main_menu_search"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            />
 
         <service
-            android:name=".components.catalogForOneSite.CatalogForOneSiteUpdaterService"
+            android:name=".components.catalog_for_one_site.CatalogForOneSiteUpdaterService"
             />
         <service
-            android:name=".components.downloadManager.DownloadService"
+            android:name=".components.download_manager.DownloadService"
             />
         <service
             android:name=".utils.MangaUpdaterService"

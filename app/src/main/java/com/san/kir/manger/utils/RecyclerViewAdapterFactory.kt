@@ -63,6 +63,14 @@ object RecyclerViewAdapterFactory {
             holder.bind(items[position], selectedItems[position])
         }
 
+        override fun onViewAttachedToWindow(holder: ViewHolder<T>) {
+            holder.onAttached()
+        }
+
+        override fun onViewDetachedFromWindow(holder: ViewHolder<T>) {
+            holder.onDetached()
+        }
+
         override fun getItemCount() = items.size
 
         override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
@@ -99,6 +107,14 @@ object RecyclerViewAdapterFactory {
             holder.bind(getItem(position), selectedItems[position])
         }
 
+        override fun onViewAttachedToWindow(holder: ViewHolder<T>) {
+            holder.onAttached()
+        }
+
+        override fun onViewDetachedFromWindow(holder: ViewHolder<T>) {
+            holder.onDetached()
+        }
+
         fun item(position: Int): T? = getItem(position)
         override fun getItemId(position: Int) = position.toLong()
         override fun getItemViewType(position: Int) = position
@@ -109,6 +125,15 @@ object RecyclerViewAdapterFactory {
         ItemTouchHelperViewHolder {
         fun bind(item: T?, isSelected: Boolean) {
             item?.let { view.bind(it, isSelected, adapterPosition) }
+        }
+
+        fun onAttached() {
+            view.onAttached()
+            view.onAttached(adapterPosition)
+        }
+
+        fun onDetached() {
+            view.onDetached()
         }
 
         override fun onItemSelected() {
@@ -127,6 +152,12 @@ object RecyclerViewAdapterFactory {
         }
 
         abstract fun bind(item: T, isSelected: Boolean, position: Int)
+
+        open fun onAttached(position: Int) {}
+
+        open fun onAttached() {}
+
+        open fun onDetached() {}
     }
 
     class SimpleAnkoView<T> : AnkoView<T>() {

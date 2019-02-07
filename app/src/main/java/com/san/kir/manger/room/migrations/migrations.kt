@@ -5,6 +5,7 @@ import android.arch.persistence.room.migration.Migration
 import com.san.kir.manger.room.models.DownloadColumn
 import com.san.kir.manger.room.models.MangaStatisticColumn
 import com.san.kir.manger.room.models.PlannedTaskColumn
+import com.san.kir.manger.utils.enums.ChapterFilter
 
 
 private fun migrate(from: Int, to: Int, vararg sql: String) =
@@ -428,5 +429,34 @@ val migrations: Array<Migration> = arrayOf(
                 "id, manga, name, date, path, isRead, site, progress " +
                 "FROM tmp_chapters",
         "DROP TABLE tmp_chapters"
+    ),
+    migrate(
+        31, 32,
+        "ALTER TABLE manga RENAME TO tmp_manga",
+        "CREATE TABLE `manga` (" +
+                "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "`unic` TEXT NOT NULL, " +
+                "`host` TEXT NOT NULL, " +
+                "`name` TEXT NOT NULL, " +
+                "`authors` TEXT NOT NULL, " +
+                "`logo` TEXT NOT NULL, " +
+                "`about` TEXT NOT NULL, " +
+                "`categories` TEXT NOT NULL, " +
+                "`genres` TEXT NOT NULL, " +
+                "`path` TEXT NOT NULL, " +
+                "`status` TEXT NOT NULL, " +
+                "`site` TEXT NOT NULL, " +
+                "`color` INTEGER NOT NULL, " +
+                "`populate` INTEGER NOT NULL DEFAULT 0, " +
+                "`order` INTEGER NOT NULL DEFAULT 0, " +
+                "`isAlternativeSort` INTEGER NOT NULL DEFAULT 1, " +
+                "isUpdate INTEGER NOT NULL DEFAULT 1," +
+                "chapterFilter TEXT NOT NULL DEFAULT ${ChapterFilter.ALL_READ_ASC.name})",
+        "INSERT INTO manga(" +
+                "id, unic, host, name, authors, logo, about, categories, genres, path, status, site, color, populate, `order`, isAlternativeSort, isUpdate) " +
+                "SELECT " +
+                "id, unic, host, name, authors, logo, about, categories, genres, path, status, site, color, populate, `order`, isAlternativeSort, isUpdate " +
+                "FROM tmp_manga",
+        "DROP TABLE tmp_manga"
     )
 )

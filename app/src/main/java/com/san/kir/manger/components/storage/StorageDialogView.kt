@@ -1,7 +1,6 @@
 package com.san.kir.manger.components.storage
 
 import android.arch.lifecycle.Observer
-import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.support.v4.content.ContextCompat
@@ -11,18 +10,14 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.san.kir.manger.R
-import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.extending.BaseActivity
 import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.dialogs.DeleteReadChaptersDialog
-import com.san.kir.manger.room.dao.getSizeAndIsNew
-import com.san.kir.manger.room.dao.loadAllSize
-import com.san.kir.manger.room.dao.loadItemWhere
+import com.san.kir.manger.repositories.StorageRepository
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.room.models.Storage
 import com.san.kir.manger.utils.formatDouble
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.backgroundColor
@@ -44,7 +39,8 @@ import org.jetbrains.anko.verticalLayout
 import org.jetbrains.anko.wrapContent
 import kotlin.math.roundToInt
 
-class StorageDialogView(context: Context) {
+class StorageDialogView(private val act: BaseActivity) {
+    private val storage = StorageRepository(act)
     private var name: TextView? = null
     private var progressBar: ProgressBar? = null
     private var allSize: TextView? = null
@@ -54,16 +50,16 @@ class StorageDialogView(context: Context) {
     private var isDark: Boolean = false
 
     init {
-        context.alert {
+        act.alert {
             customView {
                 verticalLayout {
                     padding = dip(10)
                     bottomPadding = 0
 
-                    val key = context.getString(R.string.settings_app_dark_theme_key)
+                    val key = act.getString(R.string.settings_app_dark_theme_key)
                     val default =
-                        context.getString(R.string.settings_app_dark_theme_default) == "true"
-                    isDark = context.defaultSharedPreferences.getBoolean(key, default)
+                        act.getString(R.string.settings_app_dark_theme_default) == "true"
+                    isDark = act.defaultSharedPreferences.getBoolean(key, default)
 
                     name = textView {
                         gravity = Gravity.CENTER_HORIZONTAL
@@ -74,7 +70,7 @@ class StorageDialogView(context: Context) {
                     progressBar = horizontalProgressBar {
                         padding = dip(4)
                         progressDrawable = ContextCompat.getDrawable(
-                            context,
+                            act,
                             R.drawable.storage_progressbar
                         )
                     }.lparams(height = dip(50), width = matchParent)
@@ -143,13 +139,11 @@ class StorageDialogView(context: Context) {
         }.show()
     }
 
-    fun bind(manga: Manga, act: BaseActivity) {
+    fun bind(manga: Manga) {
         var dir: Storage? = null
-        val context = name?.context
-        val storage = Main.db.storageDao
         storage.loadAllSize()
             .observe(act, Observer {
-                allSize?.text = context?.getString(
+                allSize?.text = act.getString(
                     R.string.storage_item_all_size,
                     formatDouble(it)
                 )
@@ -164,18 +158,16 @@ class StorageDialogView(context: Context) {
             }
 
             name?.text = manga.name
-            mangaSize?.text = context?.getString(
+            mangaSize?.text = act.getString(
                 R.string.storage_item_manga_size,
                 formatDouble(item?.sizeFull)
             )
-//            mangaSize?.textColor = if (isDark) Color.BLACK else Color.WHITE
-            readSize?.text = context?.getString(
+            readSize?.text = act.getString(
                 R.string.storage_item_read_size,
                 formatDouble(item?.sizeRead)
             )
-//            readSize?.textColor = if (isDark) Color.WHITE else Color.BLACK
             readSizeAction?.onClick {
-                DeleteReadChaptersDialog(readSizeAction!!.context, manga) {
+                DeleteReadChaptersDialog(act, manga) {
                     updateStorageItem(item)
                 }
             }
@@ -183,7 +175,7 @@ class StorageDialogView(context: Context) {
         })
     }
 
-    private fun updateStorageItem(dir: Storage?) = GlobalScope.launch(Dispatchers.Default) {
-        dir?.let { Main.db.storageDao.update(it.getSizeAndIsNew()) }
+    private fun updateStorageItem(dir: Storage?) = act.launch(Dispatchers.Default) {
+        dir?.let { storage.update(storage.getSizeAndIsNew(it)) }
     }
 }

@@ -11,6 +11,8 @@ import android.view.View
 import com.san.kir.manger.R
 import com.san.kir.manger.room.models.Chapter
 import com.san.kir.manger.room.models.LatestChapter
+import com.san.kir.manger.utils.enums.DIR
+import com.san.kir.manger.utils.enums.SortLibrary
 import java.io.File
 import java.io.FileOutputStream
 import java.text.DecimalFormat

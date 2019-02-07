@@ -10,9 +10,9 @@ import android.view.View
 import android.view.ViewGroup
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+import com.github.kittinunf.fuel.Fuel
 import com.san.kir.manger.R
-import com.san.kir.manger.components.downloadManager.ChapterDownloader
-import com.san.kir.manger.components.parsing.ManageSites
+import com.san.kir.manger.components.download_manager.ChapterDownloader
 import com.san.kir.manger.eventBus.Binder
 import com.san.kir.manger.eventBus.negative
 import com.san.kir.manger.extending.ankoExtend.bigImageView
@@ -20,13 +20,14 @@ import com.san.kir.manger.extending.ankoExtend.goneOrVisible
 import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.ankoExtend.onDoubleTapListener
 import com.san.kir.manger.extending.ankoExtend.visibleOrGone
+import com.san.kir.manger.extending.launchUI
 import com.san.kir.manger.utils.convertImagesToPng
+import com.san.kir.manger.utils.createDirs
+import com.san.kir.manger.utils.log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okio.Okio
 import org.jetbrains.anko.alignParentBottom
 import org.jetbrains.anko.button
 import org.jetbrains.anko.centerHorizontally
@@ -90,7 +91,7 @@ class ViewerPageFragment : Fragment(), CoroutineScope {
                 bigImageView {
                     lparams(width = matchParent, height = matchParent)
 
-                    launch(Dispatchers.Main) {
+                    launchUI {
                         when (resources.configuration.orientation) {
                             Configuration.ORIENTATION_LANDSCAPE -> setMinimumScaleType(
                                 SubsamplingScaleImageView.SCALE_TYPE_START
@@ -134,13 +135,23 @@ class ViewerPageFragment : Fragment(), CoroutineScope {
     private suspend fun loadImage() =
         withContext(coroutineContext) {
             val name = ChapterDownloader.nameFromUrl(page.link)
+            log("page.link = ${page.link}")
             val file = File(page.fullPath, name)
 
             if (!file.exists()) {
-                val body = ManageSites.openLink(ChapterDownloader.prepareUrl(page.link)).body()
-                val sink = Okio.buffer(Okio.sink(file))
-                sink.writeAll(body!!.source())
-                sink.close()
+                Fuel.download(ChapterDownloader.prepareUrl(page.link))
+                    .destination { _, _ ->
+                        createDirs(file.parentFile)
+                        file.createNewFile()
+                        file
+                    }
+                    .response()
+                    .third
+                    .fold({ },
+                          {
+                              it.exception.printStackTrace()
+
+                          })
             }
 
             ImageSource.uri(

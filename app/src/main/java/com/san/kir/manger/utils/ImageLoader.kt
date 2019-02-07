@@ -1,22 +1,32 @@
 package com.san.kir.manger.utils
 
-import android.graphics.drawable.Drawable
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.LruCache
 import android.widget.ImageView
+import com.github.kittinunf.fuel.Fuel
 import com.san.kir.manger.components.parsing.ManageSites
+import com.san.kir.manger.repositories.MangaRepository
+import com.san.kir.manger.utils.enums.DIR
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.util.concurrent.Executors
 
 
 class ImageLoader(private val url: String) {
     private val pool =
         Executors
-            .newFixedThreadPool(Runtime.getRuntime().availableProcessors())
+            .newFixedThreadPool(4)
             .asCoroutineDispatcher()
+
+    private val mMemoryCache = MemoryCache()
+    private val mDiskCache = DiskCache()
 
     private var color = -1
     private var errorResId = -1
@@ -43,7 +53,6 @@ class ImageLoader(private val url: String) {
         return this
     }
 
-
     fun into(target: ImageView): Job {
         return load(target)
     }
@@ -53,58 +62,124 @@ class ImageLoader(private val url: String) {
             //        Получаем имя из url
             val name = getNameFromUrl(url)
 
-//        Проверяем наличие файла с полученным именем в папке cache
-            val path = getFullPath("${DIR.CACHE}/$name")
-
-            log("path = ${path}")
-
-            if (path.exists() && path.length() > 0) {
-                //        если файл есть, то отображаем его в imageView
+            mMemoryCache.get(name)?.also {
                 withContext(Dispatchers.Main) {
-                    target.setImageDrawable(Drawable.createFromPath(path.absolutePath))
+                    target.setImageBitmap(it)
                     success?.invoke()
                 }
-            } else {
-                //        если файла нет, то загружаем его из интернета
-                try {
-                    //          если картинка загрузилась без ошибок, то сохраняем в папке cache
-                    Okio.buffer(Okio.sink(path)).apply {
-                        writeAll(ManageSites.openLink(url).body()!!.source())
-                        close()
-                    }
-                    //              и отображаем его в imageView
-                    withContext(Dispatchers.Main) {
-                        target.setImageDrawable(Drawable.createFromPath(path.absolutePath))
-                        success?.invoke()
-                    }
-                } catch (e: Exception) {
-                    withContext(Dispatchers.Main) {
-                        //          если картинка загрузилась с ошибкой
-                        if (errorResId != -1) {
-                            //              если была указана картинка для ошибки указываем ее
-                            target.setImageResource(errorResId)
-                        } else if (color != -1) {
-                            //              если был указан цвет для ошибки, то устанавливаем цвет
-                            target.setBackgroundColor(color)
-                        }
-
-                        //              если ничего не было указано, то ничего не делаем
-
-                        error?.invoke()
-                    }
-                }
+                return@launch
             }
+
+            getDiskBitmap(name)?.also {
+                withContext(Dispatchers.Main) {
+                    target.setImageBitmap(it)
+                    success?.invoke()
+                }
+                return@launch
+            }
+
+            getNetworkBitmap(url, name)?.also {
+                withContext(Dispatchers.Main) {
+                    target.setImageBitmap(it)
+                    success?.invoke()
+                }
+                return@launch
+            } ?: run {
+                tryUpdateLogoLink(url, target.context)
+            }
+
+            // если картинка загрузилась с ошибкой
+            if (errorResId != -1) {
+                // если была указана картинка для ошибки указываем ее
+                target.setImageResource(errorResId)
+            } else if (color != -1) {
+                // если был указан цвет для ошибки, то устанавливаем цвет
+                target.setBackgroundColor(color)
+            }
+
+            error?.invoke()
         }
     }
 
     private fun getNameFromUrl(url: String): String {
-        var name = url.split("/").last()
+        var parent = url.split("/").last()
 
-        if (imageExtensions.none { name.endsWith(it, true) }) {
-            name = "$name.jpg"
+        if (imageExtensions.none { parent.endsWith(it, true) }) {
+            parent = "$parent.jpg"
         }
 
-        return name
+        return parent
+    }
+
+    private fun getDiskBitmap(name: String): Bitmap? {
+        decode(name)?.also {
+            mMemoryCache.put(name, it)
+            return it
+        }
+
+        return null
+    }
+
+    private fun decode(name: String): Bitmap? {
+        val f = mDiskCache.get(name)
+        return if (f.exists() && f.length() > 0) {
+            BitmapFactory.decodeFile(f.absolutePath)
+        } else {
+            f.delete()
+            null
+        }
+    }
+
+    private fun getNetworkBitmap(url: String, name: String): Bitmap? {
+        kotlin.runCatching {
+            Fuel.download(url)
+                .destination { _, _ -> mDiskCache.createFile(name) }
+                .response()
+        }.fold(
+            onSuccess = {
+                return getDiskBitmap(name)
+            },
+            onFailure = {
+                return null
+            }
+        )
+    }
+
+    private suspend fun tryUpdateLogoLink(url: String, context: Context) {
+        log("tryUpdateLogoLink")
+        val mangaRepository = MangaRepository(context)
+        mangaRepository.getFromLogoUrl(url)?.also { manga ->
+            log("Manga is founded, $manga")
+            ManageSites.getElementOnline(manga.site)?.also { element ->
+                log("New logo is saved")
+                manga.logo = element.logo
+                mangaRepository.update(manga)
+            }
+        }
+    }
+}
+
+private class MemoryCache : LruCache<String, Bitmap>(cacheSize) {
+    companion object {
+        private val maxMemory = (Runtime.getRuntime().maxMemory() / 1024).toInt()
+        private val cacheSize = maxMemory / 8
+    }
+
+    override fun sizeOf(key: String, value: Bitmap): Int {
+        return value.byteCount / 1024
+    }
+}
+
+private class DiskCache {
+    fun get(name: String): File {
+        return getFullPath("${DIR.CACHE}/$name")
+    }
+
+    fun createFile(name: String): File {
+        val path = get(name)
+        createDirs(path.parentFile)
+        path.createNewFile()
+        return path
     }
 }
 

@@ -26,11 +26,11 @@ import org.jetbrains.anko.relativeLayout
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.wrapContent
 
-class CategoryItemView(private val adapter: CategoryRecyclerPresenter) :
+class CategoryItemView(
+    private val act: CategoryActivity,
+    private val adapter: CategoryRecyclerPresenter
+) :
     RecyclerViewAdapterFactory.AnkoView<Category>() {
-    private object Id {
-        val delete = ID.generate()
-    }
 
     private lateinit var root: RelativeLayout
     private lateinit var name: TextView
@@ -51,19 +51,9 @@ class CategoryItemView(private val adapter: CategoryRecyclerPresenter) :
                 leftMargin = dip(16)
             }
 
-            // переключение видимости
-            visibleBtn = imageView {
-                scaleType = ImageView.ScaleType.CENTER_CROP
-            }.lparams(width = sizeBtn, height = sizeBtn) {
-                centerVertically()
-                rightMargin = dip(2)
-                leftOf(Id.delete)
-                baselineOf(Id.delete)
-            }
-
             // удаление
             deleteBtn = imageView {
-                id = Id.delete
+                id = ID.generate()
                 scaleType = ImageView.ScaleType.CENTER_CROP
                 backgroundResource = R.drawable.ic_action_delete_black
             }.lparams(width = sizeBtn, height = sizeBtn) {
@@ -72,14 +62,24 @@ class CategoryItemView(private val adapter: CategoryRecyclerPresenter) :
                 rightMargin = dip(8)
             }
 
+            // переключение видимости
+            visibleBtn = imageView {
+                scaleType = ImageView.ScaleType.CENTER_CROP
+            }.lparams(width = sizeBtn, height = sizeBtn) {
+                centerVertically()
+                rightMargin = dip(2)
+                leftOf(deleteBtn)
+                baselineOf(deleteBtn)
+            }
+
             root = this
         }
     }
 
     override fun bind(item: Category, isSelected: Boolean, position: Int) {
         root.onClick {
-            CategoryEditDialog(root.context, item) { cat ->
-                adapter.update(cat, oldName)
+            CategoryEditDialog(act, item) { cat ->
+                act.mViewModel.categoryUpdateWithManga(cat, oldName)
                 bind(item, isSelected, position)
             }
         }
@@ -87,11 +87,11 @@ class CategoryItemView(private val adapter: CategoryRecyclerPresenter) :
         name.text = item.name
 
         visibleBtn.backgroundResource =
-                if (item.isVisible) R.drawable.ic_visibility
-                else R.drawable.ic_visibility_off
+            if (item.isVisible) R.drawable.ic_visibility
+            else R.drawable.ic_visibility_off
         visibleBtn.onClick {
             item.isVisible = !item.isVisible
-            adapter.update(item)
+            act.mViewModel.categoryUpdate(item)
             bind(item, isSelected, position)
         }
 
@@ -100,7 +100,7 @@ class CategoryItemView(private val adapter: CategoryRecyclerPresenter) :
             deleteBtn.isClickable = false
         } else {
             deleteBtn.onClick {
-                root.context.alert(R.string.category_item_question_delete) {
+                act.alert(R.string.category_item_question_delete) {
                     positiveButton(R.string.category_item_question_delete_yes) {
                         adapter.remove(item)
                     }

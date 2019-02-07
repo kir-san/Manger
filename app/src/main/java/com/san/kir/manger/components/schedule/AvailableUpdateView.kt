@@ -8,7 +8,7 @@ import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.recyclerview.v7.recyclerView
 
-class AvailableUpdateView : AnkoActivityComponent() {
+class AvailableUpdateView(private val act: ScheduleActivity) : AnkoActivityComponent() {
     override fun createView(ui: AnkoContext<BaseActivity>) = with(ui) {
         linearLayout {
             lparams(width = matchParent, height = matchParent)
@@ -16,7 +16,7 @@ class AvailableUpdateView : AnkoActivityComponent() {
             recyclerView {
                 layoutManager = LinearLayoutManager(context)
                 setHasFixedSize(true)
-                AvailableUpdateRecyclerPresenter().into(this)
+                AvailableUpdateRecyclerPresenter(act).into(this)
             }.lparams(width = matchParent, height = matchParent)
         }
     }

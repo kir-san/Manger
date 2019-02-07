@@ -35,7 +35,7 @@ class AppUpdateService : Service(), CoroutineScope {
 
     lateinit var job: Job
 
-    private val notificationId = ID.generate()
+    private var notificationId = ID.generate()
     private val actionCancelAll by lazy {
         val intent = intentFor<AppUpdateService>().setAction(ACTION_CANCEL_ALL)
         val cancelAll = PendingIntent.getService(this, 0, intent, 0)
@@ -72,7 +72,7 @@ class AppUpdateService : Service(), CoroutineScope {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (notificationManager.getNotificationChannel(channelId) == null) {
-                val importance = NotificationManager.IMPORTANCE_DEFAULT
+                val importance = NotificationManager.IMPORTANCE_LOW
 
                 NotificationChannel(channelId, name, importance).apply {
                     description = AppUpdateService.description
@@ -86,11 +86,13 @@ class AppUpdateService : Service(), CoroutineScope {
         when {
             intent.action == ACTION_CANCEL_ALL -> {
                 stopForeground(true)
+                notificationManager.cancel(notificationId)
                 stopSelf()
             }
             intent.action == ACTION_GO_TO_SITE -> {
                 browse(url)
                 stopForeground(true)
+                notificationManager.cancel(notificationId)
             }
             else -> launch(coroutineContext) {
                 try {
@@ -118,7 +120,7 @@ class AppUpdateService : Service(), CoroutineScope {
                             getString(R.string.main_check_app_ver_no_find)
 
                         stopForeground(false)
-
+                        notificationManager.cancel(notificationId)
                         with(NotificationCompat.Builder(this@AppUpdateService, channelId)) {
                             setSmallIcon(R.drawable.ic_notification_update)
                             setContentTitle(getString(R.string.app_update_service_title))
@@ -126,19 +128,20 @@ class AppUpdateService : Service(), CoroutineScope {
                             addAction(actionGoToSite)
                             notificationManager.notify(notificationId, build())
                         }
-
+                        notificationId = ID.generate()
                     } else {
 
                     }
                 } catch (ex: Throwable) {
                     stopForeground(false)
-
+                    notificationManager.cancel(notificationId)
                     with(NotificationCompat.Builder(this@AppUpdateService, channelId)) {
                         setSmallIcon(R.drawable.ic_notification_update)
                         setContentTitle(getString(R.string.app_update_service_title))
                         setContentText(getString(R.string.main_check_app_ver_error))
                         notificationManager.notify(notificationId, build())
                     }
+                    notificationId = ID.generate()
                 }
             }
         }

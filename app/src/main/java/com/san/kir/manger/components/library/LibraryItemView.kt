@@ -3,18 +3,15 @@ package com.san.kir.manger.components.library
 import android.content.res.Resources
 import android.graphics.Color
 import android.view.View
-import android.widget.FrameLayout
+import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.TextView
 import com.san.kir.manger.R
-import com.san.kir.manger.components.listChapters.ListChaptersActivity
-import com.san.kir.manger.components.main.Main
-import com.san.kir.manger.extending.ankoExtend.onClick
-import com.san.kir.manger.extending.ankoExtend.onLongClick
+import com.san.kir.manger.components.list_chapters.ListChaptersActivity
+import com.san.kir.manger.extending.ankoExtend.onClickListener
+import com.san.kir.manger.extending.ankoExtend.onLongClickListener
 import com.san.kir.manger.extending.dialogs.LibraryItemMenu
-import com.san.kir.manger.room.dao.count
-import com.san.kir.manger.room.dao.countNotRead
+import com.san.kir.manger.extending.launchCtx
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.room.models.MangaColumn
@@ -23,121 +20,97 @@ import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.getDrawableCompat
 import com.san.kir.manger.utils.loadImage
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.withContext
-import org.jetbrains.anko.alert
 import org.jetbrains.anko.backgroundColor
-import org.jetbrains.anko.customView
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.startActivity
-import org.jetbrains.anko.textView
-import org.jetbrains.anko.verticalLayout
 
 abstract class LibraryItemView(
     val act: LibraryActivity,
     private val cat: Category
 ) : RecyclerViewAdapterFactory.AnkoView<Manga>() {
-    val chapters = Main.db.chapterDao
-    lateinit var root: FrameLayout
+    lateinit var root: ViewGroup
     lateinit var name: TextView
     lateinit var logo: ImageView
     lateinit var notReadChapters: TextView
-    lateinit var selected: ImageView
     lateinit var category: TextView
-    lateinit var isUpdate: ProgressBar
+
+    private lateinit var item: Manga
+
+    private lateinit var listener: View.OnClickListener
+    private lateinit var longListener: View.OnLongClickListener
+
+    private var job: Job? = null
+    private var job2: Job? = null
 
     override fun bind(item: Manga, isSelected: Boolean, position: Int) {
-        act.launch(act.coroutineContext) {
-            val context = root.context
+        this.item = item
 
-            withContext(Dispatchers.Main) {
-                root.onClick {
-                    if (act.actionMode.hasFinish())
-                        context.startActivity<ListChaptersActivity>(MangaColumn.unic to item.unic)
-                    else
-                        act.onListItemSelect(position)
+        name.text = item.name
+        if (item.color != 0) {
+            try {
+                val drawableCompat = act.getDrawableCompat(item.color).apply {
+                    this?.alpha = 210
                 }
-
-                root.onLongClick { view ->
-                    if (act.actionMode.hasFinish())
-                        LibraryItemMenu(context, view, item, act, position)
-                }
-
-                name.text = item.name
-            }
-
-            if (item.color != 0) {
-                withContext(Dispatchers.Main) {
-                    try {
-                        val drawableCompat = context.getDrawableCompat(item.color).apply {
-                            this?.alpha = 210
-                        }
-                        name.background = drawableCompat
-                        notReadChapters.background = drawableCompat
-                        root.background = context.getDrawableCompat(item.color)
-                    } catch (ex: Resources.NotFoundException) {
-                        val newColor = Color.argb(
-                            210,
-                            Color.red(item.color),
-                            Color.green(item.color),
-                            Color.blue(item.color)
-                        )
-                        name.backgroundColor = newColor
-                        notReadChapters.backgroundColor = newColor
-                        root.backgroundColor = item.color
-                    }
-                }
-            }
-
-            if (item.logo.isNotEmpty()) {
-                loadImage(item.logo) {
-                    into(logo)
-                }
-            }
-
-            val countNotRead = chapters.countNotRead(item.unic)
-            val count = chapters.count(item.unic)
-
-            withContext(Dispatchers.Main) {
-                notReadChapters.text = context.getString(
-                    com.san.kir.manger.R.string.library_page_item_read_status,
-                    countNotRead
+                name.background = drawableCompat
+                notReadChapters.background = drawableCompat
+                root.background = act.getDrawableCompat(item.color)
+            } catch (ex: Resources.NotFoundException) {
+                val newColor = Color.argb(
+                    210,
+                    Color.red(item.color),
+                    Color.green(item.color),
+                    Color.blue(item.color)
                 )
-                notReadChapters.onClick {
-                    context.alert {
-                        this.customView {
-                            verticalLayout {
-                                textView(context.getString(R.string.library_all_chapters, count))
-                                textView(
-                                    context.getString(
-                                        R.string.library_not_read_chapters,
-                                        countNotRead
-                                    )
-                                )
-                                textView(
-                                    context.getString(
-                                        R.string.library_read_chapters,
-                                        count - countNotRead
-                                    )
-                                )
-                            }
-                        }
-                    }.show()
-                }
-
-                selected.backgroundColor =
-                        if (isSelected) Color.parseColor("#af34b5e4")
-                        else Color.TRANSPARENT
-
-                val key = context.getString(R.string.settings_library_show_category_key)
-                val default =
-                    context.getString(R.string.settings_library_show_category_default) == "true"
-                val isShow = context.defaultSharedPreferences.getBoolean(key, default)
-                if (cat.name == CATEGORY_ALL && isShow) {
-                    category.text = item.categories
-                    category.visibility = View.VISIBLE
-                }
+                name.backgroundColor = newColor
+                notReadChapters.backgroundColor = newColor
+                root.backgroundColor = item.color
             }
         }
+
+        val key = act.getString(R.string.settings_library_show_category_key)
+        val default =
+            act.getString(R.string.settings_library_show_category_default) == "true"
+        val isShow = act.defaultSharedPreferences.getBoolean(key, default)
+        if (cat.name == CATEGORY_ALL && isShow) {
+            category.text = item.categories
+            category.visibility = View.VISIBLE
+        }
+
+        listener = onClickListener {
+            act.startActivity<ListChaptersActivity>(MangaColumn.unic to item.unic)
+        }
+        longListener = onLongClickListener { view ->
+            LibraryItemMenu(act, view, item)
+        }
+    }
+
+    override fun onAttached() {
+        root.setOnClickListener(listener)
+        root.setOnLongClickListener(longListener)
+
+        job2 = loadImage(item.logo)
+            .into(logo)
+
+        job = act.launchCtx {
+            val countNotRead = act.mViewModel.countNotReadChapters(item)
+
+            withContext(Dispatchers.Main) {
+                notReadChapters.text = act.getString(
+                    R.string.library_page_item_read_status,
+                    countNotRead
+                )
+            }
+        }
+    }
+
+    override fun onDetached() {
+        root.setOnClickListener(null)
+        root.setOnLongClickListener(null)
+        notReadChapters.setOnClickListener(null)
+
+        job?.cancel()
+        job2?.cancel()
     }
 }

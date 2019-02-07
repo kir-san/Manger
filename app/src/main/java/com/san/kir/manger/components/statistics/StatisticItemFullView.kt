@@ -153,8 +153,8 @@ class StatisticItemFullView(private val manga: MangaStatistic) :
     private fun Context.downloadData(size: Long, time: Long): String {
         return getString(
             R.string.statistic_item_full_download_data,
-            size,
-            TimeFormat(time).toString(this)
+            formatDouble(bytesToMb(size)),
+            TimeFormat(time / 1000).toString(this)
         )
     }
 
@@ -174,26 +174,33 @@ class StatisticItemFullView(private val manga: MangaStatistic) :
             R.plurals.statistic_item_full_pages,
             pages
         )
-        return if (chapters / times == 0) {
-            getString(
+        return when {
+            times == 0 -> getString(
+                R.string.statistic_item_full_session_time_pages,
+                TimeFormat(0).toString(this@averageSession),
+                0,
+                pageString
+            )
+            chapters / times == 0 -> getString(
                 R.string.statistic_item_full_session_time_pages,
                 TimeFormat(time / times).toString(this@averageSession),
                 pages / times,
                 pageString
             )
-        } else {
-            val chapterString = resources.getQuantityString(
-                R.plurals.statistic_item_full_chapters,
-                chapters
-            )
-            getString(
-                R.string.statistic_item_full_session_time_pages_chapters,
-                TimeFormat(time / times).toString(this@averageSession),
-                pages / times,
-                pageString,
-                chapters / times,
-                chapterString
-            )
+            else -> {
+                val chapterString = resources.getQuantityString(
+                    R.plurals.statistic_item_full_chapters,
+                    chapters
+                )
+                getString(
+                    R.string.statistic_item_full_session_time_pages_chapters,
+                    TimeFormat(time / times).toString(this@averageSession),
+                    pages / times,
+                    pageString,
+                    chapters / times,
+                    chapterString
+                )
+            }
         }
     }
 }

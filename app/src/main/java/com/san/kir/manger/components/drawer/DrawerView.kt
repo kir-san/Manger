@@ -1,5 +1,7 @@
 package com.san.kir.manger.components.drawer
 
+import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.graphics.Color
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
@@ -9,17 +11,15 @@ import android.support.v7.widget.Toolbar
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.Gravity
 import android.view.View
-import android.widget.LinearLayout
 import com.san.kir.manger.BuildConfig
 import com.san.kir.manger.R
 import com.san.kir.manger.components.category.CategoryActivity
-import com.san.kir.manger.components.downloadManager.DownloadManagerActivity
-import com.san.kir.manger.components.latestChapters.LatestChapterActivity
+import com.san.kir.manger.components.download_manager.DownloadManagerActivity
+import com.san.kir.manger.components.latest_chapters.LatestChapterActivity
 import com.san.kir.manger.components.library.LibraryActivity
-import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.components.schedule.ScheduleActivity
 import com.san.kir.manger.components.settings.SettingActivity
-import com.san.kir.manger.components.sitesCatalog.SiteCatalogActivity
+import com.san.kir.manger.components.sites_catalog.SiteCatalogActivity
 import com.san.kir.manger.components.statistics.StatisticActivity
 import com.san.kir.manger.components.storage.StorageActivity
 import com.san.kir.manger.extending.BaseActivity
@@ -27,10 +27,12 @@ import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.SimpleItemTouchHelperCallback
 import com.san.kir.manger.utils.getDrawableCompat
+import com.san.kir.manger.view_models.DrawerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.anko.AnkoContextImpl
+import org.jetbrains.anko._LinearLayout
 import org.jetbrains.anko.appcompat.v7.toolbar
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.backgroundResource
@@ -43,7 +45,6 @@ import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.padding
 import org.jetbrains.anko.recyclerview.v7.recyclerView
 import org.jetbrains.anko.rightPadding
-import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.support.v4.drawerLayout
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.themedLinearLayout
@@ -52,21 +53,25 @@ import org.jetbrains.anko.verticalLayout
 import org.jetbrains.anko.wrapContent
 import java.util.*
 
-class DrawerView(private val act: BaseActivity) {
+class DrawerView(private val act: DrawerActivity) {
+    private val mViewModel by lazy {
+        ViewModelProviders.of(act).get(DrawerViewModel::class.java)
+    }
     private val mAdapter = RecyclerViewAdapterFactory
         .createDraggable(
-            { MainMenuItemView(act) },
+            { MainMenuItemView(act, mViewModel) },
             { fromPosition, toPosition ->
                 Collections.swap(items, fromPosition, toPosition)
                 notifyItemMoved(fromPosition, toPosition)
                 items.forEachIndexed { index, item ->
                     item.order = index
                 }
-                Main.db.mainMenuDao.update(*items.toTypedArray())
+                mViewModel.mainMenuUpdate(*items.toTypedArray())
             })
         .apply {
             act.launch(act.coroutineContext) {
-                items = Main.db.mainMenuDao.getItems()
+                setHasStableIds(true)
+                items = mViewModel.getMainMenuItems()
 
                 withContext(Dispatchers.Main) {
                     notifyDataSetChanged()
@@ -81,7 +86,7 @@ class DrawerView(private val act: BaseActivity) {
     lateinit var drawerLayout: DrawerLayout
     lateinit var toolbar: Toolbar
 
-    fun createView(act: BaseActivity, otherView: LinearLayout.() -> View): View {
+    fun createView(act: BaseActivity, otherView: _LinearLayout.() -> View): View {
         return with(AnkoContextImpl(act, act, true)) {
             drawerLayout {
                 lparams(width = matchParent, height = matchParent)
@@ -176,19 +181,23 @@ class DrawerView(private val act: BaseActivity) {
     }
 
     private fun showScreen(position: Int) {
-        when (mAdapter.items[position].type) {
-            MainMenuType.Library -> act.startActivity<LibraryActivity>()
-            MainMenuType.Storage -> act.startActivity<StorageActivity>()
-            MainMenuType.Category -> act.startActivity<CategoryActivity>()
-            MainMenuType.Catalogs -> act.startActivity<SiteCatalogActivity>()
-            MainMenuType.Downloader -> act.startActivity<DownloadManagerActivity>()
-            MainMenuType.Latest -> act.startActivity<LatestChapterActivity>()
-            MainMenuType.Settings -> act.startActivity<SettingActivity>()
-            MainMenuType.Schedule -> act.startActivity<ScheduleActivity>()
-            MainMenuType.Statistic -> act.startActivity<StatisticActivity>()
-            MainMenuType.Default -> TODO()
+
+        val activity = when (mAdapter.items[position].type) {
+            MainMenuType.Library -> LibraryActivity::class.java
+            MainMenuType.Storage -> StorageActivity::class.java
+            MainMenuType.Category -> CategoryActivity::class.java
+            MainMenuType.Catalogs -> SiteCatalogActivity::class.java
+            MainMenuType.Downloader -> DownloadManagerActivity::class.java
+            MainMenuType.Latest -> LatestChapterActivity::class.java
+            MainMenuType.Settings -> SettingActivity::class.java
+            MainMenuType.Schedule -> ScheduleActivity::class.java
+            MainMenuType.Statistic -> StatisticActivity::class.java
+            MainMenuType.Default -> LibraryActivity::class.java
         }
 
+        val intent = Intent(act, activity)
+        act.startActivity(intent)
+        act.finish()
     }
 
 }

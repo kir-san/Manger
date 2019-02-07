@@ -1,12 +1,11 @@
 package com.san.kir.manger.room.models
 
 import android.arch.persistence.room.Entity
+import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
-import com.san.kir.manger.components.main.Main
-import com.san.kir.manger.utils.ChapterStatus
+import com.san.kir.manger.utils.enums.ChapterStatus
 import com.san.kir.manger.utils.getFullPath
 import com.san.kir.manger.utils.isEmptyDirectory
-import com.san.kir.manger.utils.log
 
 @Entity(tableName = "latestChapters")
 class LatestChapter {
@@ -18,8 +17,8 @@ class LatestChapter {
     var path = ""
     var site = ""
 
-    constructor()
-    constructor(chapter: Chapter) {
+     constructor()
+    @Ignore constructor(chapter: Chapter) {
         manga = chapter.manga
         name = chapter.name
         date = chapter.date
@@ -27,18 +26,6 @@ class LatestChapter {
         path = chapter.path
     }
 }
-
-fun LatestChapter.isRead(): Boolean {
-    return try {
-        Main.db.chapterDao.getItems(manga)
-            .first { it.name == name }
-            .isRead
-    } catch (ex: NoSuchElementException) {
-        log("error on $manga $name")
-        false
-    }
-}
-
 
 val LatestChapter.action: Int
     get() {  // Определение доступного действия для главы

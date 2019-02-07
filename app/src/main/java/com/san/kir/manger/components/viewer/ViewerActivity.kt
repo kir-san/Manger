@@ -2,6 +2,7 @@ package com.san.kir.manger.components.viewer
 
 import android.R.id
 import android.annotation.SuppressLint
+import android.arch.lifecycle.ViewModelProviders
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
@@ -15,16 +16,13 @@ import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
 import com.san.kir.manger.R
-import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.eventBus.negative
 import com.san.kir.manger.eventBus.positive
 import com.san.kir.manger.extending.ThemedActionBarActivity
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import com.san.kir.manger.room.models.Chapter
+import com.san.kir.manger.view_models.ViewerViewModel
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.setContentView
-import kotlin.math.max
 import kotlin.properties.Delegates.observable
 
 class ViewerActivity : ThemedActionBarActivity() {
@@ -33,8 +31,9 @@ class ViewerActivity : ThemedActionBarActivity() {
         var RIGHT_PART_SCREEN = 0 // Правая часть экрана
     }
 
-    val chapters = Main.db.chapterDao
-
+    val mViewModel by lazy {
+        ViewModelProviders.of(this).get(ViewerViewModel::class.java)
+    }
     var isBar by observable(true) { _, old, new ->
         if (old != new) {
             if (!new) {
@@ -51,8 +50,8 @@ class ViewerActivity : ThemedActionBarActivity() {
     var isTapControl = false // Нажатия на экран
     private var isKeyControl = false // Кнопки громкости
 
-    var chapterName = ""
-    private var mangaName = ""
+    var chapter = Chapter()
+    private var isAlternative = false
 
     val presenter by lazy { ViewerPresenter(this) }
     private val view by lazy { ViewerView(presenter) }
@@ -98,11 +97,11 @@ class ViewerActivity : ThemedActionBarActivity() {
         supportActionBar?.setShowHideAnimationEnabled(true) // Анимация скрытия, сокрытия
 
         intent.apply {
-            mangaName = getStringExtra("manga_name")
-            chapterName = getStringExtra("chapter")
+            chapter = getParcelableExtra("chapter")
+            isAlternative = getBooleanExtra("is", false)
         }
 
-        title = chapterName // Смена заголвка
+        title = chapter.name // Смена заголвка
         readTime = System.currentTimeMillis()
     }
 
@@ -121,7 +120,7 @@ class ViewerActivity : ThemedActionBarActivity() {
             isBar = getBoolean(key, default)
         }
 
-        presenter.configManager(mangaName, chapterName).invokeOnCompletion {
+        presenter.configManager(chapter, isAlternative).invokeOnCompletion {
             presenter.isLoad.negative()
         }
     }
@@ -168,16 +167,7 @@ class ViewerActivity : ThemedActionBarActivity() {
         super.onDestroy()
         val time = (System.currentTimeMillis() - readTime) / 1000
         if (time > 0) {
-            GlobalScope.launch(Dispatchers.Default) {
-                val stats = Main.db.statisticDao.getItem(mangaName)
-                stats.lastTime = time
-                stats.allTime = stats.allTime + time
-                stats.maxSpeed = max(stats.maxSpeed, (stats.lastPages / (time.toFloat() / 60)).toInt())
-
-                stats.openedTimes = stats.openedTimes + 1
-                Main.db.statisticDao.update(stats)
-            }
+            mViewModel.updateStatisticInfo(chapter.manga, time)
         }
-
     }
 }

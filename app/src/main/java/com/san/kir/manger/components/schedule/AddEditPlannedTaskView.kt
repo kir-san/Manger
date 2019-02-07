@@ -8,7 +8,6 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.TimePicker
 import com.san.kir.manger.R
-import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.eventBus.Binder
 import com.san.kir.manger.extending.BaseActivity
 import com.san.kir.manger.extending.ankoExtend.labelView
@@ -44,16 +43,16 @@ import org.jetbrains.anko.timePicker
 import org.jetbrains.anko.verticalLayout
 
 //TODO переписать инициализацию данных
-class AddEditPlannedTaskView : AnkoActivityComponent() {
+class AddEditPlannedTaskView(private val act: AddEditPlannedTaskActivity) : AnkoActivityComponent() {
     private lateinit var listManga: List<Manga>
     private lateinit var categoryList: Array<String>
     private lateinit var catalogList: Array<String>
 
     init {
         runBlocking(Dispatchers.Default) {
-            listManga = Main.db.mangaDao.getItems().filter { it.isUpdate }
-            categoryList = Main.db.categoryDao.getItems().map { it.name }.toTypedArray()
-            catalogList = Main.db.siteDao.getItems().map { it.name }.toTypedArray()
+            listManga = act.mViewModel.getMangaItems().filter { it.isUpdate }
+            categoryList = act.mViewModel.getCategoryItems().map { it.name }.toTypedArray()
+            catalogList = act.mViewModel.getSiteItems().map { it.name }.toTypedArray()
         }
     }
 

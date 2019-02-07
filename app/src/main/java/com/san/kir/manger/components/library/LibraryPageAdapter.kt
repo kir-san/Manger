@@ -1,6 +1,5 @@
 package com.san.kir.manger.components.library
 
-import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.utils.PreparePagerAdapter
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +15,7 @@ class LibraryPageAdapter(private val act: LibraryActivity) : PreparePagerAdapter
         act.launch(act.coroutineContext) {
             adapters = listOf()
             pagers = listOf()
-            categories = Main.db.categoryDao.getItems()
+            categories = act.mViewModel.getCategoryItems()
 
             if (categories.isNotEmpty()) {
                 val prepare = categories

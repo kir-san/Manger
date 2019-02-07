@@ -16,7 +16,3 @@ abstract class CategoryDao: BaseDao<Category> {
     @Query("SELECT * FROM `categories` WHERE `name` IS :name")
     abstract fun loadItem(name: String): LiveData<Category>
 }
-
-fun CategoryDao.categoryNames() = getItems().map { it.name }
-
-

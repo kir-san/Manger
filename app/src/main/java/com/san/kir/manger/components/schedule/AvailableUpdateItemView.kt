@@ -4,15 +4,12 @@ import android.view.ViewGroup
 import android.widget.Switch
 import android.widget.TextView
 import com.san.kir.manger.R
-import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.extending.ankoExtend.onCheckedChange
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.alignParentEnd
 import org.jetbrains.anko.alignParentStart
@@ -26,7 +23,8 @@ import org.jetbrains.anko.startOf
 import org.jetbrains.anko.switch
 import org.jetbrains.anko.textView
 
-class AvailableUpdateItemView : RecyclerViewAdapterFactory.AnkoView<Manga>() {
+class AvailableUpdateItemView(private val act: ScheduleActivity) :
+    RecyclerViewAdapterFactory.AnkoView<Manga>() {
     private object Id {
         val switch = ID.generate()
         val manga = ID.generate()
@@ -69,7 +67,7 @@ class AvailableUpdateItemView : RecyclerViewAdapterFactory.AnkoView<Manga>() {
     }
 
     override fun bind(item: Manga, isSelected: Boolean, position: Int) {
-        GlobalScope.launch(Dispatchers.Main) {
+        act.launch(Dispatchers.Main) {
             manga.text = item.name
             category.text = category.context.getString(
                 R.string.available_update_category_name,
@@ -79,9 +77,7 @@ class AvailableUpdateItemView : RecyclerViewAdapterFactory.AnkoView<Manga>() {
 
             switch.onCheckedChange { _, isChecked ->
                 item.isUpdate = isChecked
-                withContext(Dispatchers.Default) {
-                    Main.db.mangaDao.update(item)
-                }
+                act.mViewModel.mangaUpdate(item)
             }
         }
     }

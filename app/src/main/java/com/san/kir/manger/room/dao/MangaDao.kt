@@ -1,21 +1,11 @@
 package com.san.kir.manger.room.dao
 
 import android.arch.lifecycle.LiveData
+import android.arch.paging.DataSource
 import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Query
-import com.san.kir.manger.components.main.Main
-import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.room.models.MangaColumn
-import com.san.kir.manger.room.models.SiteCatalogElement
-import com.san.kir.manger.utils.CATEGORY_ALL
-import com.san.kir.manger.utils.SortLibrary
-import com.san.kir.manger.utils.SortLibraryUtil
-import com.san.kir.manger.utils.getFullPath
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import java.io.File
 
 @Dao
 interface MangaDao : BaseDao<Manga> {
@@ -29,98 +19,44 @@ interface MangaDao : BaseDao<Manga> {
     fun getItemOrNull(unic: String): Manga?
 
     @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.categories}` IS :category")
-    fun getItems(category: String): List<Manga>
+    fun loadMangaWhereCategoryNotAll(category: String): List<Manga>
 
-    @Query("SELECT * FROM `${MangaColumn.tableName}` ORDER BY :order ASC")
-    fun loadItemsAscBy(order: String): LiveData<List<Manga>>
+    @Query("SELECT * FROM `${MangaColumn.tableName}`")
+    fun loadItems(): LiveData<List<Manga>>
 
-    @Query("SELECT * FROM `${MangaColumn.tableName}` ORDER BY :order DESC")
-    fun loadItemsDescBy(order: String): LiveData<List<Manga>>
+    @Query("SELECT * FROM `${MangaColumn.tableName}` ORDER BY `${MangaColumn.id}` ASC")
+    fun loadMangaAddTimeAsc(): DataSource.Factory<Int, Manga>
 
-    @Query("SELECT * FROM `${MangaColumn.tableName}`  WHERE `${MangaColumn.categories}` IS :category ORDER BY :order ASC")
-    fun loadItemsAscBy(order: String, category: String): LiveData<List<Manga>>
+    @Query("SELECT * FROM `${MangaColumn.tableName}` ORDER BY `${MangaColumn.id}` DESC")
+    fun loadMangaAddTimeDesc(): DataSource.Factory<Int, Manga>
 
-    @Query("SELECT * FROM `${MangaColumn.tableName}`  WHERE `${MangaColumn.categories}` IS :category ORDER BY :order DESC")
-    fun loadItemsDescBy(order: String, category: String): LiveData<List<Manga>>
-}
+    @Query("SELECT * FROM `${MangaColumn.tableName}` ORDER BY `${MangaColumn.name}` ASC")
+    fun loadMangaAbcSortAsc(): DataSource.Factory<Int, Manga>
 
-fun MangaDao.getFromPath(shortPath: String) = getFromPath(getFullPath(shortPath))
+    @Query("SELECT * FROM `${MangaColumn.tableName}` ORDER BY `${MangaColumn.name}` DESC")
+    fun loadMangaAbcSortDesc(): DataSource.Factory<Int, Manga>
 
-fun MangaDao.getFromPath(file: File) =
-    getItems().firstOrNull { getFullPath(it.path) == file }
+    @Query("SELECT * FROM `${MangaColumn.tableName}` ORDER BY `${MangaColumn.populate}` DESC")
+    fun loadMangaPopulateAsc(): DataSource.Factory<Int, Manga>
 
-fun MangaDao.getItemsWhere(category: String) =
-    if (category == CATEGORY_ALL)
-        getItems()
-    else
-        getItems(category)
+    @Query("SELECT * FROM `${MangaColumn.tableName}` ORDER BY `${MangaColumn.populate}` ASC")
+    fun loadMangaPopulateDesc(): DataSource.Factory<Int, Manga>
 
-fun MangaDao.contain(item: SiteCatalogElement) =
-    getItems().any { it.site == item.link }
+    @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.categories}` IS :category ORDER BY `${MangaColumn.id}` ASC")
+    fun loadMangaWithCategoryAddTimeAsc(category: String): DataSource.Factory<Int, Manga>
 
-fun MangaDao.loadItems(cat: Category, filter: MangaFilter): LiveData<List<Manga>> {
-    return if (cat.name == CATEGORY_ALL) {
-        when (filter) {
-            MangaFilter.ADD_TIME_ASC -> loadItemsAscBy(MangaColumn.id)
-            MangaFilter.ADD_TIME_DESC -> loadItemsDescBy(MangaColumn.id)
-            MangaFilter.ABC_SORT_ASC -> loadItemsAscBy(MangaColumn.name)
-            MangaFilter.ABC_SORT_DESC -> loadItemsDescBy(MangaColumn.name)
-            MangaFilter.POPULATE_ASC -> loadItemsAscBy(MangaColumn.populate)
-            MangaFilter.POPULATE_DESC -> loadItemsDescBy(MangaColumn.populate)
-        }
-    } else {
-        when (filter) {
-            MangaFilter.ADD_TIME_ASC -> loadItemsAscBy(MangaColumn.id, cat.name)
-            MangaFilter.ADD_TIME_DESC -> loadItemsDescBy(MangaColumn.id, cat.name)
-            MangaFilter.ABC_SORT_ASC -> loadItemsAscBy(MangaColumn.name, cat.name)
-            MangaFilter.ABC_SORT_DESC -> loadItemsDescBy(MangaColumn.name, cat.name)
-            MangaFilter.POPULATE_ASC -> loadItemsAscBy(MangaColumn.populate, cat.name)
-            MangaFilter.POPULATE_DESC -> loadItemsDescBy(MangaColumn.populate, cat.name)
-        }
-    }
-}
+    @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.categories}` IS :category ORDER BY `${MangaColumn.id}` DESC")
+    fun loadMangaWithCategoryAddTimeDesc(category: String): DataSource.Factory<Int, Manga>
 
-fun MangaDao.removeWithChapters(manga: Manga, withFiles: Boolean = false) =
-    GlobalScope.launch(Dispatchers.Default) {
-        delete(manga)
+    @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.categories}` IS :category ORDER BY `${MangaColumn.name}` ASC")
+    fun loadMangaWithCategoryAbcSortAsc(category: String): DataSource.Factory<Int, Manga>
 
-        Main.db.chapterDao.deleteItems(manga.unic)
+    @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.categories}` IS :category ORDER BY `${MangaColumn.name}` DESC")
+    fun loadMangaWithCategoryAbcSortDesc(category: String): DataSource.Factory<Int, Manga>
 
-        Main.db.latestChapterDao.deleteItems(manga.unic)
+    @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.categories}` IS :category ORDER BY `${MangaColumn.populate}` DESC")
+    fun loadMangaWithCategoryPopulateAsc(category: String): DataSource.Factory<Int, Manga>
 
-        if (withFiles) {
-            getFullPath(manga.path).deleteRecursively()
-        }
-    }
-
-fun Category.toFilter(): MangaFilter {
-    return when (SortLibraryUtil.toType(typeSort)) {
-        SortLibrary.AddTime ->
-            if (isReverseSort) {
-                MangaFilter.ADD_TIME_DESC
-            } else {
-                MangaFilter.ADD_TIME_ASC
-            }
-        SortLibrary.AbcSort ->
-            if (isReverseSort) {
-                MangaFilter.ABC_SORT_DESC
-            } else {
-                MangaFilter.ABC_SORT_ASC
-            }
-        SortLibrary.Populate ->
-            if (isReverseSort) {
-                MangaFilter.POPULATE_DESC
-            } else {
-                MangaFilter.POPULATE_ASC
-            }
-    }
-}
-
-enum class MangaFilter {
-    ADD_TIME_ASC,
-    ADD_TIME_DESC,
-    ABC_SORT_ASC,
-    ABC_SORT_DESC,
-    POPULATE_ASC,
-    POPULATE_DESC,
+    @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.categories}` IS :category ORDER BY `${MangaColumn.populate}` ASC")
+    fun loadMangaWithCategoryPopulateDesc(category: String): DataSource.Factory<Int, Manga>
 }

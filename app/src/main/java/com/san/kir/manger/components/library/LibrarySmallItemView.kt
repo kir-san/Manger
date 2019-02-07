@@ -2,22 +2,24 @@ package com.san.kir.manger.components.library
 
 import android.graphics.Color
 import android.graphics.Typeface
-import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import com.san.kir.manger.R
+import com.san.kir.manger.extending.ankoExtend.roundedImageView
 import com.san.kir.manger.room.models.Category
+import com.san.kir.manger.utils.ID
 import org.jetbrains.anko.AnkoContext
+import org.jetbrains.anko.alignParentBottom
+import org.jetbrains.anko.alignParentEnd
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.backgroundResource
+import org.jetbrains.anko.baselineOf
 import org.jetbrains.anko.dip
-import org.jetbrains.anko.frameLayout
-import org.jetbrains.anko.imageView
 import org.jetbrains.anko.margin
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.padding
-import org.jetbrains.anko.progressBar
+import org.jetbrains.anko.relativeLayout
+import org.jetbrains.anko.rightOf
 import org.jetbrains.anko.textColor
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.wrapContent
@@ -27,28 +29,36 @@ class LibrarySmallItemView(
     cat: Category
 ) : LibraryItemView(activity, cat) {
     override fun createView(ui: AnkoContext<ViewGroup>) = with(ui) {
-        frameLayout {
+        relativeLayout {
             lparams(width = matchParent, height = dip(75)) {
                 margin = dip(2)
             }
 
-            val colorBackground = Color.argb(210, 63, 81, 181)
-
             backgroundResource = R.color.colorPrimary
 
-            logo = imageView {
-                scaleType = ImageView.ScaleType.CENTER_CROP
-            }.lparams(width = matchParent, height = matchParent) {
+            logo = roundedImageView {
+                id = ID.generate()
+            }.lparams(width = dip(73), height = dip(73)) {
                 margin = dip(2)
             }
 
             name = textView {
-                backgroundColor = colorBackground
+                id = ID.generate()
                 maxLines = 1
+                textSize = 19f
                 typeface = Typeface.DEFAULT_BOLD
                 padding = dip(4)
-            }.lparams(width = matchParent, height = wrapContent) {
-                gravity = Gravity.TOP or Gravity.START
+            }.lparams(width = matchParent) {
+                rightOf(logo.id)
+                topMargin = dip(5)
+            }
+
+            notReadChapters = textView {
+                padding = dip(4)
+                textSize = 18f
+            }.lparams(width = wrapContent, height = wrapContent) {
+                baselineOf(name)
+                alignParentEnd()
             }
 
             category = textView {
@@ -57,25 +67,10 @@ class LibrarySmallItemView(
                 visibility = View.INVISIBLE
                 padding = dip(4)
             }.lparams(width = wrapContent, height = wrapContent) {
-                gravity = Gravity.CENTER_VERTICAL or Gravity.START
+                alignParentEnd()
+                alignParentBottom()
             }
 
-            notReadChapters = textView {
-                backgroundColor = colorBackground
-                padding = dip(4)
-            }.lparams(width = wrapContent, height = wrapContent) {
-                gravity = Gravity.BOTTOM or Gravity.START
-            }
-
-            selected = imageView {
-            }.lparams(width = matchParent, height = matchParent)
-
-            isUpdate = progressBar {
-                isIndeterminate = true
-                visibility = View.GONE
-            }.lparams(width = wrapContent, height = wrapContent) {
-                gravity = Gravity.END or Gravity.BOTTOM
-            }
 
             root = this
         }

@@ -2,6 +2,7 @@ package com.san.kir.manger.room.models
 
 import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
+import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
 
 @Entity(tableName = "categories")
@@ -20,7 +21,7 @@ class Category {
     @ColumnInfo(name = "isListLandscape")
     var isLargeLandscape = true
 
-    constructor()
+    @Ignore constructor()
     constructor(name: String, order: Int) {
         this.name = name
         this.order = order

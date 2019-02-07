@@ -2,9 +2,11 @@ package com.san.kir.manger.room.models
 
 import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
+import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
 import android.os.Parcel
 import android.os.Parcelable
+import com.san.kir.manger.utils.enums.ChapterFilter
 
 @Entity(tableName = MangaColumn.tableName)
 class Manga() : Parcelable {
@@ -32,7 +34,9 @@ class Manga() : Parcelable {
     var order = 0
     var isAlternativeSort = true
     var isUpdate = true
+    var chapterFilter = ChapterFilter.ALL_READ_ASC
 
+    @Ignore
     constructor(parcel: Parcel) : this() {
         id = parcel.readLong()
         unic = parcel.readString()

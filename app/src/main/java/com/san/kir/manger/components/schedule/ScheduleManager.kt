@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.anko.longToast
 import java.util.*
 
-class ScheduleManager(private val context: Context) {
+class ScheduleManager {
     private val dayPeriod = AlarmManager.INTERVAL_DAY
     private val weekPeriod = dayPeriod * 7
 
@@ -46,7 +46,7 @@ class ScheduleManager(private val context: Context) {
             .schedule()
     }
 
-    fun cancel(plannedTask: PlannedTask) {
+    fun cancel(context: Context, plannedTask: PlannedTask) {
         val tasks = JobManager.instance().cancelAllForTag(plannedTask.addedTime.toString())
         if (tasks >= 1) {
             GlobalScope.launch(Dispatchers.Main) {

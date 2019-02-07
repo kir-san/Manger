@@ -16,14 +16,13 @@ import android.os.Message
 import android.support.annotation.RequiresApi
 import android.support.annotation.WorkerThread
 import android.support.v4.app.NotificationCompat
-import android.support.v4.app.NotificationCompat.PRIORITY_MIN
 import com.san.kir.manger.R
-import com.san.kir.manger.components.downloadManager.DownloadService
-import com.san.kir.manger.components.latestChapters.LatestChapterActivity
-import com.san.kir.manger.components.listChapters.SearchDuplicate
-import com.san.kir.manger.components.main.Main
+import com.san.kir.manger.components.download_manager.DownloadService
+import com.san.kir.manger.components.latest_chapters.LatestChapterActivity
+import com.san.kir.manger.components.list_chapters.SearchDuplicate
 import com.san.kir.manger.components.parsing.ManageSites
-import com.san.kir.manger.room.dao.getNewChapters
+import com.san.kir.manger.repositories.ChapterRepository
+import com.san.kir.manger.repositories.LatestChapterRepository
 import com.san.kir.manger.room.models.Chapter
 import com.san.kir.manger.room.models.LatestChapter
 import com.san.kir.manger.room.models.Manga
@@ -56,10 +55,10 @@ class MangaUpdaterService : Service() {
         private var taskCounter = listOf<Manga>()
     }
 
-    private val notificationId = ID.generate()
+    private var notificationId = ID.generate()
     private var channelId = ""
-    private val chapters = Main.db.chapterDao
-    private val latestChapters = Main.db.latestChapterDao
+    private val mChapterRepository = ChapterRepository(this)
+    private val mLatestChapterRepository = LatestChapterRepository(this)
 
     @Volatile
     private lateinit var mServiceLopper: Looper
@@ -119,13 +118,17 @@ class MangaUpdaterService : Service() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel()
-            val notificationBuilder = NotificationCompat.Builder(this, channelId)
-            val notification = notificationBuilder.setOngoing(true)
-                .setSmallIcon(R.mipmap.icon_launcher)
-                .setPriority(PRIORITY_MIN)
-                .setCategory(Notification.CATEGORY_SERVICE)
-                .build()
-            startForeground(notificationId, notification)
+
+            with(NotificationCompat.Builder(this, channelId)) {
+                setSmallIcon(R.mipmap.icon_launcher)
+                startForeground(notificationId, build())
+            }
+//            val notificationBuilder = NotificationCompat.Builder(this, channelId)
+//            val notification = notificationBuilder.setOngoing(true)
+//                .setPriority(PRIORITY_MIN)
+//                .setCategory(Notification.CATEGORY_SERVICE)
+//                .build()
+//            startForeground(notificationId, notification)
         }
     }
 
@@ -133,11 +136,7 @@ class MangaUpdaterService : Service() {
     private fun createNotificationChannel() {
         val channelId = "MangaUpdaterChannelId"
         val channelName = TAG
-        val chan = NotificationChannel(
-            channelId,
-            channelName,
-            NotificationManager.IMPORTANCE_DEFAULT
-        )
+        val chan = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_LOW)
         chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
 
         notificationManager.createNotificationChannel(chan)
@@ -153,7 +152,7 @@ class MangaUpdaterService : Service() {
                     val task = intent.getParcelableExtra<Manga>("manga")
 
                     if (task.isUpdate) {
-                        taskCounter += task
+                        taskCounter = taskCounter + task
 
                         val intentSend = Intent(actionSend)
                         intentSend.putExtra(ITEM_NAME, task.unic)
@@ -174,7 +173,7 @@ class MangaUpdaterService : Service() {
     }
 
     private fun downloadNew() = GlobalScope.launch(Dispatchers.Default) {
-        Main.db.latestChapterDao.getNewChapters().onEach { chapter ->
+        mLatestChapterRepository.getNewChapters().onEach { chapter ->
             startService<DownloadService>("item" to chapter.toDownloadItem())
         }
     }
@@ -201,8 +200,12 @@ class MangaUpdaterService : Service() {
             .addLine(getString(R.string.manga_update_notify_new_founded, fullCountNew))
             .addLine(getString(R.string.manga_update_notify_founded_with_error, error))
             .build()
+
+        stopForeground(false)
+        notificationManager.cancel(notificationId)
         notificationManager.notify(notificationId, notify)
 
+        notificationId = ID.generate()
         stopSelf()
     }
 
@@ -220,22 +223,21 @@ class MangaUpdaterService : Service() {
                 .addLine(manga.name)
                 .addLine(getString(R.string.manga_update_notify_remained, taskCounter.size))
                 .build()
-
-            notificationManager.notify(notificationId, notify)
+            startForeground(notificationId, notify)
 
             mangaName = manga.name
 
             val oldChapters =
-                withContext(Dispatchers.Default) {
-                    chapters
+                withContext(Dispatchers.IO) {
+                    mChapterRepository
                         .getItems(manga.unic)
                         .onEach {
                             launch(Dispatchers.Default) {
                                 if (it.pages.isNullOrEmpty() || it.pages.any { chap -> chap.isBlank() }) {
                                     it.pages = ManageSites.pages(it)
-                                    chapters.update(it)
+                                    mChapterRepository.update(it)
                                 }
-                            }
+                            }.join()
                         }
                 }
 
@@ -248,12 +250,12 @@ class MangaUpdaterService : Service() {
                     new.forEach { chapter ->
                         // Если глава отсутствует в базе данных то добавить
                         if (oldChapters.none { oldChapter -> chapter.site == oldChapter.site }) {
-                            newChapters += chapter
+                            newChapters = newChapters + chapter
                         } else {
                             val tempChapter = oldChapters
                                 .first { oldChapter -> chapter.site == oldChapter.site }
                             tempChapter.path = chapter.path
-                            chapters.update(tempChapter)
+                            mChapterRepository.update(tempChapter)
                         }
                     }
                 }
@@ -262,14 +264,14 @@ class MangaUpdaterService : Service() {
             if (newChapters.isNotEmpty()) {
                 newChapters.reversed().forEach {
                     it.pages = ManageSites.pages(it)
-                    chapters.insert(it)
-                    latestChapters.insert(LatestChapter(it))
+                    mChapterRepository.insert(it)
+                    mLatestChapterRepository.insert(LatestChapter(it))
                 }
                 val oldSize = oldChapters.size
 
-                SearchDuplicate.silentRemoveDuplicate(manga)
+                SearchDuplicate(this@MangaUpdaterService).silentRemoveDuplicate(manga)
 
-                val newSize = chapters.getItems(manga.unic).size
+                val newSize = mChapterRepository.getItems(manga.unic).size
 
                 countNew = newSize - oldSize
             }
@@ -280,7 +282,7 @@ class MangaUpdaterService : Service() {
         } finally {
             progress++
             fullCountNew += countNew
-            taskCounter -= manga
+            taskCounter = taskCounter - manga
 
             val intent = Intent(actionGet)
             intent.putExtra(ITEM_NAME, manga.unic)

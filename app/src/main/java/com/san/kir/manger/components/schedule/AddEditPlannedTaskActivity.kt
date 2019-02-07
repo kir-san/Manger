@@ -1,25 +1,27 @@
 package com.san.kir.manger.components.schedule
 
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import com.san.kir.manger.R
-import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.extending.ThemedActionBarActivity
 import com.san.kir.manger.extending.views.showAlways
 import com.san.kir.manger.room.models.PlannedAddEdit
 import com.san.kir.manger.room.models.PlannedTask
+import com.san.kir.manger.view_models.AddEditPlannedTaskViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.setContentView
 
 // TODO добавить кнопку удалить
 class AddEditPlannedTaskActivity : ThemedActionBarActivity() {
-
-    private val mView = AddEditPlannedTaskView()
+    val mViewModel by lazy {
+        ViewModelProviders.of(this).get(AddEditPlannedTaskViewModel::class.java)
+    }
+    private val mView by lazy { AddEditPlannedTaskView(this) }
     private var isEditMode = false
-    private val manager by lazy { ScheduleManager(this) }
+    private val manager = ScheduleManager()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,16 +52,16 @@ class AddEditPlannedTaskActivity : ThemedActionBarActivity() {
         when (item.itemId) {
             android.R.id.home -> onBackPressed()
             1 -> {
-                GlobalScope.launch(Dispatchers.Default) {
+                launch(Dispatchers.Default) {
                     val task = mView.getTask()
 
                     if (isEditMode) {
                         task.isEnabled = false
-                        Main.db.plannedDao.update(task)
-                        manager.cancel(task)
+                        mViewModel.plannedUpdate(task)
+                        manager.cancel(this@AddEditPlannedTaskActivity, task)
                     } else {
                         task.addedTime = System.currentTimeMillis()
-                        Main.db.plannedDao.insert(task)
+                        mViewModel.plannedInsert(task)
                     }
                 }
                 onBackPressed()

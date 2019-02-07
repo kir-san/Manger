@@ -23,10 +23,11 @@ interface DownloadDao : BaseDao<DownloadItem> {
 
     @Query(
         "SELECT * FROM ${DownloadColumn.tableName} " +
-                "WHERE ${DownloadColumn.status} IS :status " +
+                "WHERE ${DownloadColumn.status} IS :status1 " +
+                "AND ${DownloadColumn.status} IS :status2 " +
                 "ORDER BY `${DownloadColumn.order}`"
     )
-    fun loadItems(status: Int): LiveData<List<DownloadItem>>
+    fun loadItems(status1: Int, status2: Int): LiveData<List<DownloadItem>>
 
     @Query("SELECT * FROM ${DownloadColumn.tableName}")
     fun getItems(): List<DownloadItem>

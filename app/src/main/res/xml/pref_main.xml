@@ -18,6 +18,16 @@
             />
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:title="@string/settings_list_chapter_title">
+        <SwitchPreference
+            android:key="@string/settings_list_chapter_filter_key"
+            android:defaultValue="@string/settings_list_chapter_filter_default"
+            android:summary="@string/settings_list_chapter_filter_summary"
+            android:title="@string/settings_list_chapter_filter_title"
+            />
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/settings_viewer_title">
         <ListPreference
             android:defaultValue="@string/settings_viewer_orientation_default"

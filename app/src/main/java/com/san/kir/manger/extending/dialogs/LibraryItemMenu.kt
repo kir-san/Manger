@@ -1,57 +1,48 @@
 package com.san.kir.manger.extending.dialogs
 
-import android.content.Context
 import android.view.View
 import android.widget.PopupMenu
 import com.san.kir.manger.R
 import com.san.kir.manger.components.library.LibraryActivity
-import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.components.storage.StorageDialogView
-import com.san.kir.manger.room.dao.removeWithChapters
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.utils.log
 import org.jetbrains.anko.alert
 
 class LibraryItemMenu(
-    context: Context,
-    anchor: View?,
-    manga: Manga,
     act: LibraryActivity,
-    position: Int
+    anchor: View?,
+    manga: Manga
 ) {
-    private val mangaDao = Main.db.mangaDao
-
     init {
-        PopupMenu(context, anchor).apply {
+        PopupMenu(act, anchor).apply {
             val about = menu.add(R.string.library_popupmenu_about)
             val setCat = menu.add(R.string.library_popupmenu_set_category)
             val storage = menu.add(R.string.library_popupmenu_storage)
             val delete = menu.add(R.string.library_popupmenu_delete)
-            val select = menu.add(R.string.library_popupmenu_select)
 
             setOnMenuItemClickListener { menuItem ->
                 when (menuItem) {
-                    about -> AboutMangaDialog(context, manga)
+                    about -> AboutMangaDialog(act, manga)
                     delete -> {
-                        context.alert(
+                        act.alert(
                             R.string.library_popupmenu_delete_message,
                             R.string.library_popupmenu_delete_title
                         ) {
                             positiveButton(R.string.library_popupmenu_delete_ok) {
-                                mangaDao.removeWithChapters(manga)
+                                act.mViewModel.removeWithChapters(manga)
                             }
                             neutralPressed(R.string.library_popupmenu_delete_no) {
                                 log("")
                             }
                             negativeButton(R.string.library_popupmenu_delete_ok_with_files) {
-                                mangaDao.removeWithChapters(manga, true)
+                                act.mViewModel.removeWithChapters(manga, true)
                             }
                         }.show()
                     }
-                    setCat -> ChangeCategoryDialog(context, anchor, manga)
-                    select -> act.onListItemSelect(position)
+                    setCat -> ChangeCategoryDialog(act, anchor, manga)
                     storage -> {
-                        StorageDialogView(context).bind(manga, act)
+                        StorageDialogView(act).bind(manga)
                     }
                     else -> return@setOnMenuItemClickListener false
                 }

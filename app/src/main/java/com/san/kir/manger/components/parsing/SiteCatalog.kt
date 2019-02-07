@@ -7,20 +7,28 @@ import com.san.kir.manger.room.models.SiteCatalogElement
 import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.channels.ReceiveChannel
 
-interface SiteCatalog {
-    var isInit: Boolean
-    val id: Int
-    val name: String
-    val host: String
-    val catalogName: String
-    val siteCatalog: String
-    var volume: Int
-    var oldVolume: Int
+abstract class SiteCatalog {
+    open var isInit: Boolean = false
+    open var id: Int = 0
 
-    suspend fun init(): SiteCatalog
+    abstract val name: String
+    abstract val catalogName: String
 
-    suspend fun getFullElement(element: SiteCatalogElement): SiteCatalogElement
-    fun getCatalog(context: ExecutorCoroutineDispatcher): ReceiveChannel<SiteCatalogElement>
-    suspend fun chapters(manga: Manga): List<Chapter>
-    suspend fun pages(item: DownloadItem): List<String>
+    open val host: String
+        get() = "http://$catalogName"
+    open val allCatalogName: List<String>
+        get() = listOf(catalogName)
+
+    abstract val siteCatalog: String
+
+    abstract var volume: Int
+    abstract var oldVolume: Int
+
+    abstract suspend fun init(): SiteCatalog
+
+    open suspend fun getFullElement(element: SiteCatalogElement): SiteCatalogElement = element
+    abstract fun getCatalog(context: ExecutorCoroutineDispatcher): ReceiveChannel<SiteCatalogElement>
+    abstract suspend fun chapters(manga: Manga): List<Chapter>
+    abstract suspend fun pages(item: DownloadItem): List<String>
+    abstract suspend fun getElementOnline(url: String): SiteCatalogElement?
 }

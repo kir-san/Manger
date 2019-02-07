@@ -1,24 +1,21 @@
 package com.san.kir.manger.components.category
 
-import android.content.Context
 import android.graphics.Color
 import android.view.Gravity
 import android.view.View
 import com.san.kir.manger.R
-import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.eventBus.Binder
 import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.extending.ankoExtend.onSeekBarChangeListener
 import com.san.kir.manger.extending.ankoExtend.textChangedListener
 import com.san.kir.manger.extending.ankoExtend.textView
 import com.san.kir.manger.extending.ankoExtend.typeText
+import com.san.kir.manger.extending.launchUI
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.SortLibraryUtil
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.checkBox
@@ -39,22 +36,21 @@ import org.jetbrains.anko.toast
 import org.jetbrains.anko.verticalLayout
 
 class CategoryEditDialog(
-    context: Context,
+    act: CategoryActivity,
     cat: Category,
     action: CategoryEditDialog.(Category) -> Unit = {}
 ) {
     val oldName = cat.name
-    private val categoryDao = Main.db.categoryDao
 
     init {
-        GlobalScope.launch(Dispatchers.Main) {
+        act.launchUI {
             val catList =
-                withContext(Dispatchers.Default) { categoryDao.getItems().map { it.name } }
+                withContext(Dispatchers.Default) { act.mViewModel.getCategoryNames() }
 
             val isAll = oldName == CATEGORY_ALL
             val validate = Binder("")
 
-            context.alert {
+            act.alert {
                 titleResource =
                         if (oldName.isEmpty()) R.string.category_dialog_title_create
                         else R.string.category_dialog_title_edit
@@ -242,12 +238,12 @@ class CategoryEditDialog(
                 positiveButton(if (oldName.isEmpty()) R.string.category_dialog_create else R.string.category_dialog_edit) {
                     if (validate.item != "") {
                         if (oldName.isEmpty()) {
-                            context.toast(R.string.category_dialog_not_create)
+                            act.toast(R.string.category_dialog_not_create)
                             return@positiveButton
                         }
                         if (cat.name != oldName) {
                             cat.name = oldName
-                            context.toast(R.string.category_dialog_save_old_name)
+                            act.toast(R.string.category_dialog_save_old_name)
                         }
                     }
                     action(cat)

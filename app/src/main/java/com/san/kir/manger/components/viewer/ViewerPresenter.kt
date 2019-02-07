@@ -1,7 +1,9 @@
 package com.san.kir.manger.components.viewer
 
 import com.san.kir.manger.eventBus.Binder
+import com.san.kir.manger.extending.launchCtx
 import com.san.kir.manger.extending.views.SpecialViewPager
+import com.san.kir.manger.room.models.Chapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -10,7 +12,7 @@ import kotlinx.coroutines.withContext
 class ViewerPresenter(private val act: ViewerActivity) {
 
     private var adapter = ViewerAdapter(act.supportFragmentManager)
-    private var manager = ChaptersList()// Менеджер глав и страниц
+    private var manager = ChaptersList(act)// Менеджер глав и страниц
     private lateinit var viewPager: SpecialViewPager
 
     val progressChapters = Binder(-1)
@@ -32,14 +34,18 @@ class ViewerPresenter(private val act: ViewerActivity) {
         this.viewPager = viewPager
     }
 
-    fun configManager(mangaName: String, chapterName: String) = act.launch(act.coroutineContext) {
-        manager.init(mangaName, chapterName)
+    fun configManager(
+        chapter: Chapter,
+        isAlternative: Boolean
+    ) = act.launchCtx {
+
+        manager.init(chapter, isAlternative)
 
         maxChapters = manager.chaptersSize
         max.item = manager.pagesSize
         progressPages.unicItem =
-                if (manager.pagePosition <= 0) 1 // Если полученная позиция не больше нуля, то присвоить значение 1
-                else manager.pagePosition // Иначе то что есть
+            if (manager.pagePosition <= 0) 1 // Если полученная позиция не больше нуля, то присвоить значение 1
+            else manager.pagePosition // Иначе то что есть
 
         // При изменении прогресса, отдать новое значение в менеджер
         progressPages.bind { pos -> manager.pagePosition = pos }
@@ -84,8 +90,8 @@ class ViewerPresenter(private val act: ViewerActivity) {
         withContext(Dispatchers.Main) {
             adapter.setList(manager.pagesList)
             viewPager.currentItem = progressPages.item
-            act.chapterName = manager.chapter().name // Сохранение данных
-            act.title = manager.chapter().name // Смена заголовка
+            act.chapter = manager.chapter() // Сохранение данных
+            act.title = act.chapter.name // Смена заголовка
         }
     }
 

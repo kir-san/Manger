@@ -3,13 +3,9 @@ package com.san.kir.manger.extending.dialogs
 import android.support.v7.widget.PopupMenu
 import android.view.View
 import com.san.kir.manger.R
-import com.san.kir.manger.components.downloadManager.DownloadManagerActivity
+import com.san.kir.manger.components.download_manager.DownloadManagerActivity
 import com.san.kir.manger.extending.views.add
-import com.san.kir.manger.room.models.DownloadStatus
 import com.san.kir.manger.utils.ID
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 class ClearDownloadsMenu(act: DownloadManagerActivity, parent: View) {
     init {
@@ -25,33 +21,11 @@ class ClearDownloadsMenu(act: DownloadManagerActivity, parent: View) {
             menu.add(clearAll, R.string.download_activity_option_submenu_clean_all)
 
             setOnMenuItemClickListener { item ->
-                GlobalScope.launch(Dispatchers.Default) {
-                    when (item.itemId) {
-                        clearCompleted -> {
-                            act.dao.getItems()
-                                .filter { it.status == DownloadStatus.completed }
-                                .forEach { act.dao.delete(it) }
-
-                        }
-                        clearPaused -> {
-                            act.dao.getItems()
-                                .filter { it.status == DownloadStatus.pause }
-                                .forEach { act.dao.delete(it) }
-                        }
-                        clearError -> {
-                            act.dao.getItems()
-                                .filter { it.status == DownloadStatus.error }
-                                .forEach { act.dao.delete(it) }
-                        }
-                        clearAll -> {
-                            act.dao.getItems()
-                                .filter {
-                                    it.status == DownloadStatus.completed
-                                            || it.status == DownloadStatus.pause
-                                            || it.status == DownloadStatus.error
-                                }.forEach { act.dao.delete(it) }
-                        }
-                    }
+                when (item.itemId) {
+                    clearCompleted -> act.mViewModel.clearCompletedDownloads()
+                    clearPaused -> act.mViewModel.clearPausedDownloads()
+                    clearError -> act.mViewModel.clearErrorDownloads()
+                    clearAll -> act.mViewModel.clearAllDownloads()
                 }
                 return@setOnMenuItemClickListener true
             }

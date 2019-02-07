@@ -44,6 +44,14 @@ class Binder<T>(initValue: T) {
             }
         }
 
+    var unicItem: T
+        get() = item
+        set(value) {
+            if (value != _item) {
+                item = value
+            }
+        }
+
     var asyncItem: Deferred<T>
         get() = GlobalScope.async { _channel.receive() }
         set(value) {
@@ -87,7 +95,7 @@ class Binder<T>(initValue: T) {
     }
 
     fun close() {
-        _channel.close()
         _bound.clear()
+        _channel.close()
     }
 }

@@ -1,30 +1,42 @@
 package com.san.kir.manger.room.models
 
 import android.arch.persistence.room.Entity
+import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
 import android.os.Parcel
 import android.os.Parcelable
 
 @Entity(tableName = "StorageItem")
 data class Storage(
-        @PrimaryKey(autoGenerate = true) var id: Long = 0L,
-        var name: String = "",
-        var path: String = "",
-        var sizeFull: Double = 0.0,
-        var sizeRead: Double = 0.0,
-        var isNew: Boolean = true,
-        var catalogName: String = ""
+    @PrimaryKey(autoGenerate = true) var id: Long,
+    var name: String,
+    var path: String,
+    var sizeFull: Double,
+    var sizeRead: Double,
+    var isNew: Boolean,
+    var catalogName: String
 ) : Parcelable {
+    @Ignore
+    constructor(
+        name: String = "",
+        path: String = "",
+        sizeFull: Double = 0.0,
+        sizeRead: Double = 0.0,
+        isNew: Boolean = false,
+        catalogName: String = ""
+    ) : this(0, name, path, sizeFull, sizeRead, isNew, catalogName)
 
-    constructor(parcel: Parcel) : this() {
-        id = parcel.readLong()
-        name = parcel.readString()
-        path = parcel.readString()
-        sizeFull = parcel.readDouble()
-        sizeRead = parcel.readDouble()
-        isNew = parcel.readByte() != 0.toByte()
-        catalogName = parcel.readString()
-    }
+    @Ignore
+    constructor(parcel: Parcel) :
+            this(
+                id = parcel.readLong(),
+                name = parcel.readString(),
+                path = parcel.readString(),
+                sizeFull = parcel.readDouble(),
+                sizeRead = parcel.readDouble(),
+                isNew = parcel.readByte() != 0.toByte(),
+                catalogName = parcel.readString()
+            )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeLong(id)

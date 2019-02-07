@@ -1,8 +1,10 @@
 package com.san.kir.manger.components.parsing.sites
 
-import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.components.parsing.SiteCatalog
+import com.san.kir.manger.components.parsing.Status
+import com.san.kir.manger.components.parsing.Translate
+import com.san.kir.manger.repositories.SiteRepository
 import com.san.kir.manger.room.models.Chapter
 import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.room.models.Manga
@@ -20,14 +22,11 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.util.regex.Pattern
 
-class Allhentai : SiteCatalog {
-    override var isInit = false
-    override val id = 5
+class Allhentai(siteRepository: SiteRepository) : SiteCatalog() {
     override val name = "All Hentai"
     override val catalogName = "allhentai.ru"
-    override val host = "http://$catalogName"
     override val siteCatalog = "$host/list?type=&sortType=RATING"
-    override var volume = Main.db.siteDao.getItem(name)?.volume ?: 0
+    override var volume = siteRepository.getItem(name)?.volume ?: 0
     override var oldVolume = volume
 
     override suspend fun init(): Allhentai {
@@ -44,6 +43,47 @@ class Allhentai : SiteCatalog {
         return this
     }
 
+    override suspend fun getElementOnline(url: String): SiteCatalogElement? = runCatching {
+        val element = SiteCatalogElement()
+
+        val doc = ManageSites.getDocument(url)
+
+        element.host = host
+        element.catalogName = catalogName
+        element.siteId = id
+
+        element.name = doc.select("#mangaBox .leftContent meta[itemprop=name]").attr("content")
+
+        element.shotLink = url.split(catalogName).last()
+        element.link = url
+
+        element.type = "Манга"
+
+        val status = doc.select("#mangaBox .leftContent .mangaSettings p")
+
+        // Статус выпуска
+        element.statusEdition = Status.COMPLETE
+        if (status.text().contains(Status.SINGLE, true))
+            element.statusEdition = "Выпуск завершен"
+        else if (status.text().contains(Status.NOT_COMPLETE, true))
+            element.statusEdition = Status.NOT_COMPLETE
+
+        // Статус перевода
+        element.statusTranslate = Translate.COMPLETE
+        if (status.text().contains("продолжается", true)) {
+            element.statusTranslate = Translate.NOT_COMPLETE
+        }
+
+        // Ссылка на лого
+        element.logo = doc.select("#mangaBox .leftContent .mangaDescPicture img").attr("src")
+
+        // Жанры
+        status.first { it.text().contains("Жанры") }.select("a").mapTo(element.genres) { it.text() }
+
+        getFullElement(element)
+    }.fold(onSuccess = { it },
+           onFailure = { null })
+
     ////
     override suspend fun getFullElement(element: SiteCatalogElement): SiteCatalogElement {
         val rootDoc = ManageSites.getDocument(element.link)
@@ -51,7 +91,7 @@ class Allhentai : SiteCatalog {
 
         // Список авторов
         element.authors =
-                doc.select(".mangaSettings .elementList a[href*=author]").map { it.text() }
+            doc.select(".mangaSettings .elementList a[href*=author]").map { it.text() }
 
         // Количество глав
         val volume =
@@ -200,7 +240,7 @@ class Allhentai : SiteCatalog {
                 var string = json.getJSONObject(index).getString("url")
                 if (string[7] == 'c')
                     string = string.replaceFirst("c", "a")
-                list += string
+                list = list + string
             }
         }
         return list

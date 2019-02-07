@@ -2,6 +2,7 @@ package com.san.kir.manger.room.models
 
 import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
+import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
 import android.content.Context
 import android.os.Parcel
@@ -41,7 +42,7 @@ class PlannedTask() : Parcelable {
     @ColumnInfo(name = PlannedTaskColumn.errorMessage)
     var errorMessage = ""
 
-    constructor(parcel: Parcel) : this() {
+    @Ignore constructor(parcel: Parcel) : this() {
         id = parcel.readLong()
         manga = parcel.readString()
         groupName = parcel.readString()

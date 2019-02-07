@@ -1,27 +1,20 @@
 package com.san.kir.manger.extending.dialogs
 
-import android.content.Context
 import android.view.Gravity
 import android.view.View
 import android.view.ViewManager
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.san.kir.manger.R
-import com.san.kir.manger.components.main.Main
-import com.san.kir.manger.components.parsing.ManageSites
+import com.san.kir.manger.extending.BaseActivity
 import com.san.kir.manger.extending.ankoExtend.onClick
-import com.san.kir.manger.room.dao.categoryNames
+import com.san.kir.manger.extending.launchUI
+import com.san.kir.manger.repositories.CategoryRepository
+import com.san.kir.manger.repositories.MangaRepository
 import com.san.kir.manger.room.models.MangaColumn
-import com.san.kir.manger.room.models.MangaStatistic
 import com.san.kir.manger.room.models.SiteCatalogElement
-import com.san.kir.manger.room.models.toManga
-import com.san.kir.manger.utils.DIR
 import com.san.kir.manger.utils.MangaUpdaterService
-import com.san.kir.manger.utils.createDirs
-import com.san.kir.manger.utils.getFullPath
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.customView
 import org.jetbrains.anko.dip
@@ -33,39 +26,40 @@ import org.jetbrains.anko.textResource
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.verticalLayout
 import org.jetbrains.anko.wrapContent
-import java.util.regex.Pattern
 
 class AddMangaDialog(
-    context: Context,
+    private val act: BaseActivity,
     private val element: SiteCatalogElement,
-    private val onFinish: () -> Unit
+    private val onFinish: (() -> Unit)? = null
 ) {
     init {
-        GlobalScope.launch(Dispatchers.Main) {
-            val categories = Main.db.categoryDao.categoryNames()
+        act.launchUI {
+            val categories = withContext(act.coroutineContext) {
+                CategoryRepository(act).categoryNames()
+            }
 
-            context.selector(
-                title = context.getString(R.string.catalog_for_one_site_selector_item),
+            act.selector(
+                title = act.getString(R.string.catalog_for_one_site_selector_item),
                 items = categories
             ) { _, index ->
-                nextStep(context, categories[index])
+                nextStep(categories[index])
             }
         }
     }
 
-    private fun nextStep(context: Context, category: String) {
+    private fun nextStep(category: String) {
         var added: TextView? = null
         var searching: TextView? = null
         var allReady: TextView? = null
         var progressBar: ProgressBar? = null
         var okBtn: TextView? = null
         var error: TextView? = null
-        val dialog = context.alert {
+        val dialog = act.alert {
             customView {
                 verticalLayout {
                     padding = dip(10)
                     textView {
-                        text = context.getString(
+                        text = act.getString(
                             R.string.add_manga_dialog_changed_category,
                             category
                         )
@@ -85,43 +79,38 @@ class AddMangaDialog(
                     progressBar = horizontalProgressBar {
                         isIndeterminate = true
                     }
-                    okBtn = hideTextView(R.string.add_manga_close_btn).lparams(width = wrapContent, height = wrapContent) {
+                    okBtn = hideTextView(R.string.add_manga_close_btn).lparams(
+                        width = wrapContent,
+                        height = wrapContent
+                    ) {
                         gravity = Gravity.END
                     }
                 }
             }
         }.show()
-        GlobalScope.launch(Dispatchers.Main) {
-            try {
-                val pat = Pattern.compile("[a-z/0-9]+-").matcher(element.shotLink)
-                if (pat.find())
-                    element.shotLink = element.shotLink
-                        .removePrefix(pat.group()).removeSuffix(".html")
-                val path = "${DIR.MANGA}/${element.catalogName}/${element.shotLink}"
-                createDirs(getFullPath(path))
-
-                val updatingElement = ManageSites.getFullElement(element).await()
-
-                val manga = updatingElement.toManga(category = category, path = path)
-                Main.db.mangaDao.insert(manga)
-
-                Main.db.statisticDao.insert(MangaStatistic(manga = manga.unic))
-
-                added?.visibility = View.VISIBLE
-                searching?.visibility = View.VISIBLE
-
-                context.startService<MangaUpdaterService>(MangaColumn.tableName to manga)
-
-                allReady?.visibility = View.VISIBLE
-            } catch (ex: Exception) {
-                error?.visibility = View.VISIBLE
-            } finally {
-                onFinish()
-                progressBar?.visibility = View.GONE
-                okBtn?.visibility = View.VISIBLE
-                okBtn?.onClick {
-                    dialog.dismiss()
+        act.launchUI {
+            kotlin.runCatching {
+                withContext(act.coroutineContext) {
+                    MangaRepository(act).addMangaToDb(element, category)
                 }
+            }.fold(
+                onSuccess = { manga ->
+                    added?.visibility = View.VISIBLE
+                    searching?.visibility = View.VISIBLE
+
+                    act.startService<MangaUpdaterService>(MangaColumn.tableName to manga)
+
+                    allReady?.visibility = View.VISIBLE
+                },
+                onFailure = {
+                    error?.visibility = View.VISIBLE
+                }
+            )
+            onFinish?.invoke()
+            progressBar?.visibility = View.GONE
+            okBtn?.visibility = View.VISIBLE
+            okBtn?.onClick {
+                dialog.dismiss()
             }
         }
     }

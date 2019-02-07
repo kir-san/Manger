@@ -6,7 +6,6 @@ import android.widget.RelativeLayout
 import android.widget.Switch
 import android.widget.TextView
 import com.san.kir.manger.R
-import com.san.kir.manger.components.main.Main
 import com.san.kir.manger.extending.ankoExtend.onClick
 import com.san.kir.manger.room.models.PlannedAddEdit
 import com.san.kir.manger.room.models.PlannedPeriod
@@ -28,12 +27,13 @@ import org.jetbrains.anko.relativeLayout
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.switch
 import org.jetbrains.anko.textView
+import org.jetbrains.anko.verticalMargin
 import java.util.*
 
 class PlannedTaskItemView(private val act: ScheduleActivity) :
     RecyclerViewAdapterFactory.AnkoView<PlannedTask>() {
 
-    private val alarmManager = ScheduleManager(act)
+    private val alarmManager = ScheduleManager()
 
     private lateinit var ctx: Context
     private lateinit var root: RelativeLayout
@@ -50,6 +50,7 @@ class PlannedTaskItemView(private val act: ScheduleActivity) :
         relativeLayout {
             lparams {
                 margin = dip(3)
+                verticalMargin = dip(6)
             }
 
             switch = switch {
@@ -128,12 +129,12 @@ class PlannedTaskItemView(private val act: ScheduleActivity) :
         switch.onClick {
             withContext(act.coroutineContext) {
                 item.isEnabled = !item.isEnabled
-                Main.db.plannedDao.update(item)
+                act.mViewModel.plannedUpdate(item)
 
                 if (item.isEnabled) {
                     alarmManager.add(item)
                 } else {
-                    alarmManager.cancel(item)
+                    alarmManager.cancel(act, item)
                 }
             }
         }

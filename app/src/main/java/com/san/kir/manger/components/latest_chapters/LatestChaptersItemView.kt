@@ -12,7 +12,8 @@ import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.san.kir.manger.R
-import com.san.kir.manger.extending.ankoExtend.onClick
+import com.san.kir.manger.components.download_manager.DownloadService
+import com.san.kir.manger.extending.anko_extend.onClick
 import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.room.models.DownloadStatus
 import com.san.kir.manger.room.models.LatestChapter
@@ -56,8 +57,6 @@ class LatestChaptersItemView(private val act: LatestChapterActivity) :
         val name = ID.generate()
         val limit = ID.generate()
     }
-
-    private val downloadManager by lazy { act.downloadManager }
 
     private var isDownload = false
     private lateinit var root: RelativeLayout
@@ -238,7 +237,7 @@ class LatestChaptersItemView(private val act: LatestChapterActivity) :
 
         download.onClick {
             enableDownload()
-            act.downloadManager.addOrStart(chapter.toDownloadItem())
+            DownloadService.addOrStart(act, chapter.toDownloadItem())
         }
     }
 
@@ -276,19 +275,19 @@ class LatestChaptersItemView(private val act: LatestChapterActivity) :
                     enableDownload()
                     progressDownload(downloadItem.downloadPages, downloadItem.totalPages)
                     limit.onClick {
-                        downloadManager.pause(item)
+                        DownloadService.pause(act, item)
                     }
                 }
                 DownloadStatus.pause -> {
                     pauseDownload()
                     limit.onClick {
-                        downloadManager.start(item)
+                        DownloadService.start(act, item)
                     }
                 }
                 DownloadStatus.error -> {
                     pauseDownload()
                     limit.onClick {
-                        downloadManager.retry(item)
+                        DownloadService.retry(act, item)
                     }
                 }
                 DownloadStatus.completed -> {

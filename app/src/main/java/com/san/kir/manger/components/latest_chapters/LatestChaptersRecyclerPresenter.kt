@@ -3,6 +3,7 @@ package com.san.kir.manger.components.latest_chapters
 import android.arch.lifecycle.Observer
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
+import com.san.kir.manger.components.download_manager.DownloadService
 import com.san.kir.manger.room.models.toDownloadItem
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
@@ -55,7 +56,7 @@ class LatestChaptersRecyclerPresenter(private val act: LatestChapterActivity) :
 
     fun downloadNewChapters() = act.launch(act.coroutineContext) {
         act.mViewModel.getLatestNewChapters().onEach { chapter ->
-            act.downloadManager.addOrStart(chapter.toDownloadItem())
+            DownloadService.addOrStart(act, chapter.toDownloadItem())
         }
         adapter.notifyDataSetChanged()
     }

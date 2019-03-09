@@ -6,11 +6,11 @@ import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.san.kir.manger.R
-import com.san.kir.manger.extending.ankoExtend.invisibleOrVisible
-import com.san.kir.manger.extending.ankoExtend.onClick
-import com.san.kir.manger.extending.ankoExtend.roundedImageView
-import com.san.kir.manger.extending.ankoExtend.visibleOrGone
-import com.san.kir.manger.extending.ankoExtend.visibleOrInvisible
+import com.san.kir.manger.extending.anko_extend.invisibleOrVisible
+import com.san.kir.manger.extending.anko_extend.onClick
+import com.san.kir.manger.extending.anko_extend.roundedImageView
+import com.san.kir.manger.extending.anko_extend.visibleOrGone
+import com.san.kir.manger.extending.anko_extend.visibleOrInvisible
 import com.san.kir.manger.extending.views.RoundedImageView
 import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.room.models.DownloadStatus
@@ -173,13 +173,13 @@ class DownloadManagerItemView(private val act: DownloadManagerActivity) :
                 progressBar.isIndeterminate = item.status == DownloadStatus.queued
 
                 startBtn.onClick {
-                    act.downloadManager.start(item)
+                    DownloadService.start(act, item)
                 }
                 retryBtn.onClick {
-                    act.downloadManager.retry(item)
+                    DownloadService.retry(act, item)
                 }
                 stopBtn.onClick {
-                    act.downloadManager.pause(item)
+                    DownloadService.pause(act, item)
                 }
 
                 if (item.status == DownloadStatus.loading) {

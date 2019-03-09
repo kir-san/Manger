@@ -2,6 +2,7 @@ package com.san.kir.manger.components.list_chapters
 
 import android.support.v7.widget.RecyclerView
 import com.san.kir.manger.R
+import com.san.kir.manger.components.download_manager.DownloadService
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.eventBus.negative
 import com.san.kir.manger.eventBus.positive
@@ -21,7 +22,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.anko.toast
-import java.util.regex.Pattern
 
 
 class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPresenter() {
@@ -109,7 +109,7 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
             val chapter = items[i]
             // для каждого выделенный элемент
             if (chapter.action == ChapterStatus.DOWNLOADABLE) {
-                act.downloadManager.addOrStart(chapter.toDownloadItem())
+                DownloadService.addOrStart(act, chapter.toDownloadItem())
             }
         }
     }
@@ -120,7 +120,7 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
             .getChaptersNotReadAsc(mManga)
             .first { it.action == ChapterStatus.DOWNLOADABLE }
 
-        act.downloadManager.addOrStart(chapter.toDownloadItem())
+        DownloadService.addOrStart(act, chapter.toDownloadItem())
 
         changeOrder(mFilter)
     }
@@ -131,7 +131,7 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
             .getChaptersNotReadAsc(mManga)
             .filter { it.action == ChapterStatus.DOWNLOADABLE }
             .onEach { chapter ->
-                act.downloadManager.addOrStart(chapter.toDownloadItem())
+                DownloadService.addOrStart(act, chapter.toDownloadItem())
             }
             .size
 
@@ -151,7 +151,7 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
             .getChaptersAsc(mManga)
             .filter { it.action == ChapterStatus.DOWNLOADABLE }
             .onEach { chapter ->
-                act.downloadManager.addOrStart(chapter.toDownloadItem())
+                DownloadService.addOrStart(act, chapter.toDownloadItem())
             }
             .size
         withContext(Dispatchers.Main) {

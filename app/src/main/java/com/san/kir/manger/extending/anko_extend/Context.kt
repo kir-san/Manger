@@ -1,8 +1,9 @@
-package com.san.kir.manger.extending.ankoExtend
+package com.san.kir.manger.extending.anko_extend
 
 import android.app.Service
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.Build
 import org.jetbrains.anko.connectivityManager
@@ -14,6 +15,14 @@ inline fun <reified T : Service> Context.startForegroundService(vararg params: P
         startForegroundService(AnkoInternals.createIntent(this, T::class.java, params))
     } else {
         startService(AnkoInternals.createIntent(this, T::class.java, params))
+    }
+}
+
+inline fun Context.startForegroundServiceIntent(intent: Intent): ComponentName? {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        startForegroundService(intent)
+    } else {
+        startService(intent)
     }
 }
 

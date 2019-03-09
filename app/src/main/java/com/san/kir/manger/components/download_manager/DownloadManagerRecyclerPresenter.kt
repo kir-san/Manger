@@ -52,7 +52,7 @@ class DownloadManagerRecyclerPresenter(
                 direction: Int
             ) {
                 val position = viewHolder.adapterPosition
-                act.downloadManager.pause(adapter.items[position])
+                DownloadService.pause(act, adapter.items[position])
                 act.mViewModel.downloadDelete(adapter.items[position])
             }
 

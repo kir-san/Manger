@@ -2,21 +2,17 @@ package com.san.kir.manger.components.list_chapters
 
 import android.arch.lifecycle.ViewModelProviders
 import android.content.BroadcastReceiver
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.IBinder
 import android.view.Menu
 import android.view.MenuItem
 import com.san.kir.manger.R
-import com.san.kir.manger.components.download_manager.ChapterLoader
-import com.san.kir.manger.components.download_manager.DownloadService
 import com.san.kir.manger.eventBus.negative
 import com.san.kir.manger.eventBus.positive
 import com.san.kir.manger.extending.ThemedActionBarActivity
+import com.san.kir.manger.extending.launchCtx
 import com.san.kir.manger.extending.views.showAlways
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.room.models.MangaColumn
@@ -29,7 +25,7 @@ import com.san.kir.manger.view_models.ListChaptersViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.longToast
 import org.jetbrains.anko.setContentView
@@ -37,19 +33,7 @@ import org.jetbrains.anko.startService
 import org.jetbrains.anko.toast
 
 class ListChaptersActivity : ThemedActionBarActivity() {
-    private val actionCallback by lazy { ListChaptersActionCallback(mAdapter, this) }
     private val filterStatusKey = "filteringStatus"
-    private val connection = object : ServiceConnection {
-        override fun onServiceDisconnected(name: ComponentName?) {
-            bound = false
-        }
-
-        override fun onServiceConnected(name: ComponentName, service: IBinder) {
-            downloadManager =
-                    (service as DownloadService.LocalBinderC).chapterLoader
-            bound = true
-        }
-    }
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             intent?.let {
@@ -98,16 +82,7 @@ class ListChaptersActivity : ThemedActionBarActivity() {
         val intentFilter = IntentFilter().apply { addAction(MangaUpdaterService.actionGet) }
         registerReceiver(receiver, intentFilter)
 
-        runBlocking(coroutineContext) {
-            manga = mViewModel.getManga(intent.getStringExtra(MangaColumn.unic))
-            manga.populate += 1
-            mViewModel.updateManga(manga)
-
-            title = manga.name
-        }
-
-        val intent = Intent(this, DownloadService::class.java)
-        bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        title = intent.getStringExtra(MangaColumn.unic)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
@@ -231,10 +206,6 @@ class ListChaptersActivity : ThemedActionBarActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (bound) {
-            unbindService(connection)
-            bound = false
-        }
         unregisterReceiver(receiver)
     }
 

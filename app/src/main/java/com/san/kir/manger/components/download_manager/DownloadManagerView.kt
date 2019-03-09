@@ -11,9 +11,9 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import com.san.kir.manger.R
-import com.san.kir.manger.extending.ankoExtend.isNetworkAvailable
-import com.san.kir.manger.extending.ankoExtend.isOnWifi
-import com.san.kir.manger.extending.ankoExtend.onClick
+import com.san.kir.manger.extending.anko_extend.isNetworkAvailable
+import com.san.kir.manger.extending.anko_extend.isOnWifi
+import com.san.kir.manger.extending.anko_extend.onClick
 import com.san.kir.manger.extending.dialogs.ClearDownloadsMenu
 import com.san.kir.manger.utils.ID
 import org.jetbrains.anko.above
@@ -74,14 +74,14 @@ class DownloadManagerView(private val act: DownloadManagerActivity) {
 
                 // Кнопка старта
                 btn {
-                    onClick { act.downloadManager.startAll() }
+                    onClick { DownloadService.startAll(act) }
                     backgroundResource =
-                            R.drawable.ic_start_white
+                        R.drawable.ic_start_white
                 }
 
                 // Кнопка паузы
                 btn {
-                    onClick { act.downloadManager.pauseAll() }
+                    onClick { DownloadService.pauseAll(act) }
 
                     backgroundResource = R.drawable.ic_stop_white
                 }
@@ -89,7 +89,7 @@ class DownloadManagerView(private val act: DownloadManagerActivity) {
 
                 // Кнопка перезапуска
                 btn {
-                    onClick { act.downloadManager.retryAll() }
+                    onClick { DownloadService.retryAll(act) }
                     backgroundResource = R.drawable.ic_update
                 }
 

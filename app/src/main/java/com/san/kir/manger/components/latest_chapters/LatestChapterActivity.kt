@@ -2,25 +2,18 @@ package com.san.kir.manger.components.latest_chapters
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.IBinder
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.san.kir.manger.R
-import com.san.kir.manger.components.download_manager.ChapterLoader
-import com.san.kir.manger.components.download_manager.DownloadService
 import com.san.kir.manger.components.drawer.DrawerActivity
 import com.san.kir.manger.eventBus.Binder
 import com.san.kir.manger.eventBus.negative
 import com.san.kir.manger.eventBus.positive
-import com.san.kir.manger.extending.ankoExtend.visibleOrGone
+import com.san.kir.manger.extending.anko_extend.visibleOrGone
 import com.san.kir.manger.extending.views.showNever
 import com.san.kir.manger.view_models.LatestChapterViewModel
 import kotlinx.coroutines.Dispatchers
@@ -35,23 +28,9 @@ class LatestChapterActivity : DrawerActivity() {
     private val _adapter = LatestChaptersRecyclerPresenter(this)
     private val isAction = Binder(false)
 
-    private var bound = false
-    private val connection = object : ServiceConnection {
-        override fun onServiceDisconnected(name: ComponentName?) {
-            bound = false
-        }
-
-        override fun onServiceConnected(name: ComponentName, service: IBinder) {
-            downloadManager =
-                    (service as DownloadService.LocalBinderC).chapterLoader
-            bound = true
-        }
-    }
-
     val mViewModel by lazy {
         ViewModelProviders.of(this).get(LatestChapterViewModel::class.java)
     }
-    lateinit var downloadManager: ChapterLoader
 
     override val _LinearLayout.customView: View
         get() = this.apply {
@@ -73,9 +52,6 @@ class LatestChapterActivity : DrawerActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val intent = Intent(this, DownloadService::class.java)
-        bindService(intent, connection, Context.BIND_AUTO_CREATE)
-
         mViewModel
             .getLatestItems()
             .observe(this, Observer { list ->
@@ -86,14 +62,6 @@ class LatestChapterActivity : DrawerActivity() {
                         setTitle(R.string.main_menu_latest)
                 }
             })
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        if (bound) {
-            unbindService(connection)
-            bound = false
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

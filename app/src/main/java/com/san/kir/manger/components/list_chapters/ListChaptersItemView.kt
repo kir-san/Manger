@@ -12,9 +12,10 @@ import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.san.kir.manger.R
+import com.san.kir.manger.components.download_manager.DownloadService
 import com.san.kir.manger.components.viewer.ViewerActivity
-import com.san.kir.manger.extending.ankoExtend.onClick
-import com.san.kir.manger.extending.ankoExtend.onLongClick
+import com.san.kir.manger.extending.anko_extend.onClick
+import com.san.kir.manger.extending.anko_extend.onLongClick
 import com.san.kir.manger.extending.launchUI
 import com.san.kir.manger.room.models.Chapter
 import com.san.kir.manger.room.models.DownloadItem
@@ -59,7 +60,6 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
     }
 
     private val actionMode = act.actionMode
-    private val downloadManager by lazy { act.downloadManager }
 
     private var isDownload = false
 
@@ -269,7 +269,7 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
 
         downloadBtn.onClick {
             enableDownload()
-            act.downloadManager.addOrStart(chapter.toDownloadItem())
+            DownloadService.addOrStart(act, chapter.toDownloadItem())
         }
 
         root.onClick {
@@ -326,20 +326,20 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
                     enableDownload()
                     progressDownload(download.downloadPages, download.totalPages)
                     limit.onClick {
-                        downloadManager.pause(download)
+                        DownloadService.pause(act, download)
                     }
                 }
                 DownloadStatus.pause -> {
                     pauseDownload()
                     limit.onClick {
-                        downloadManager.start(download)
+                        DownloadService.start(act, download)
                     }
                     updateStatus(chapter)
                 }
                 DownloadStatus.error -> {
                     pauseDownload()
                     limit.onClick {
-                        downloadManager.retry(download)
+                        DownloadService.retry(act, download)
                     }
                     updateStatus(chapter)
                 }

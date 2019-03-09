@@ -6,29 +6,125 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
-import android.os.Binder
 import android.os.Build
-import android.os.IBinder
 import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
 import com.san.kir.manger.R
+import com.san.kir.manger.extending.anko_extend.startForegroundServiceIntent
+import com.san.kir.manger.extending.launchCtx
 import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.bytesToMb
 import com.san.kir.manger.utils.formatDouble
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.asCoroutineDispatcher
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.notificationManager
+import java.util.concurrent.Executors
 
 
-class DownloadService : Service(), DownloadListener {
+class DownloadService : Service(), DownloadListener, CoroutineScope {
     companion object {
         private const val ACTION_PAUSE_ALL = "kir.san.manger.DownloadService.PAUSE_ALL"
+        private const val ACTION_PAUSE = "kir.san.manger.DownloadService.PAUSE"
+
+        private const val ACTION_START_ALL = "kir.san.manger.DownloadService.START_ALL"
+        private const val ACTION_START = "kir.san.manger.DownloadService.START"
+
+        private const val ACTION_RETRY_ALL = "kir.san.manger.DownloadService.RETRY_ALL"
+        private const val ACTION_RETRY = "kir.san.manger.DownloadService.RETRY"
+
+        private const val ACTION_ADD = "kir.san.manger.DownloadService.ADD"
+        private const val ACTION_ADD_OR_START = "kir.san.manger.DownloadService.ADD_OR_START"
+
+        private const val ACTION_CONCURRENT = "kir.san.manger.DownloadService.CONCURRENT"
+        private const val ACTION_SET_RETRY = "kir.san.manger.DownloadService.SET_RETRY"
+        private const val ACTION_IS_WIFI = "kir.san.manger.DownloadService.IS_WIFI"
 
         private const val TAG = "DownloadService"
+
+        fun startAll(ctx: Context) = with(ctx) {
+            startForegroundServiceIntent(
+                intentFor<DownloadService>().setAction(ACTION_START_ALL)
+            )
+        }
+
+        fun start(ctx: Context, item: DownloadItem) = with(ctx) {
+            startForegroundServiceIntent(
+                intentFor<DownloadService>("item" to item).setAction(ACTION_START)
+            )
+        }
+
+        fun retryAll(ctx: Context) = with(ctx) {
+            startForegroundServiceIntent(
+                intentFor<DownloadService>().setAction(ACTION_RETRY_ALL)
+            )
+        }
+
+        fun retry(ctx: Context, item: DownloadItem) = with(ctx) {
+            startForegroundServiceIntent(
+                intentFor<DownloadService>("item" to item).setAction(ACTION_RETRY)
+            )
+        }
+
+        fun pauseAll(ctx: Context) {
+            with(ctx) {
+                startService(
+                    intentFor<DownloadService>().setAction(ACTION_PAUSE_ALL)
+                )
+            }
+        }
+
+        fun pause(ctx: Context, item: DownloadItem) {
+            with(ctx) {
+                startService(
+                    intentFor<DownloadService>("item" to item).setAction(ACTION_PAUSE)
+                )
+            }
+        }
+
+        fun add(ctx: Context, item: DownloadItem) = with(ctx) {
+            startForegroundServiceIntent(
+                intentFor<DownloadService>("item" to item).setAction(ACTION_ADD)
+            )
+        }
+
+        fun addOrStart(ctx: Context, item: DownloadItem) = with(ctx) {
+            startForegroundServiceIntent(
+                intentFor<DownloadService>("item" to item).setAction(ACTION_ADD_OR_START)
+            )
+        }
+
+        fun setConcurrentPages(ctx: Context, concurrentPages: Int) {
+            with(ctx) {
+                startService(
+                    intentFor<DownloadService>("item" to concurrentPages).setAction(
+                        ACTION_CONCURRENT
+                    )
+                )
+            }
+        }
+
+        fun setRetryOnError(ctx: Context, isRetry: Boolean) {
+            with(ctx) {
+                startService(
+                    intentFor<DownloadService>("item" to isRetry).setAction(ACTION_SET_RETRY)
+                )
+            }
+        }
+
+        fun isWifiOnly(ctx: Context, isWifi: Boolean) {
+            with(ctx) {
+                startService(
+                    intentFor<DownloadService>("item" to isWifi).setAction(ACTION_IS_WIFI)
+                )
+            }
+        }
     }
 
     private val downloadManager by lazy {
@@ -75,7 +171,6 @@ class DownloadService : Service(), DownloadListener {
             .build()
     }
 
-
     private var totalSize = 0L
         set(value) {
             field = if (value < 0) 0 else value
@@ -87,6 +182,11 @@ class DownloadService : Service(), DownloadListener {
     private var totalCount = 0
     private var queueCount = 0
     private var errorCount = 0
+
+    private val job = Job()
+    private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+
+    override val coroutineContext = job + dispatcher
 
     @SuppressLint("InlinedApi")
     override fun onCreate() {
@@ -107,24 +207,60 @@ class DownloadService : Service(), DownloadListener {
         this.channelId = channelId
     }
 
-    override fun onBind(intent: Intent?): IBinder {
-        return LocalBinderC(this.downloadManager)
-    }
+    override fun onBind(intent: Intent?) = null
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        when (ACTION_PAUSE_ALL) {
-            intent?.action -> {
-                downloadManager.pauseAll()
-            }
-            else -> {
-                val item = intent?.getParcelableExtra<DownloadItem>("item")
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        when (intent.action) {
+            ACTION_PAUSE_ALL -> downloadManager.pauseAll()
+            ACTION_PAUSE -> launchCtx {
+                val item = intent.getParcelableExtra<DownloadItem>("item")
                 item?.let {
-                    GlobalScope.launch {
-                        if (!downloadManager.hasTask(it)) {
-                            downloadManager.add(it)
-                        }
+                    downloadManager.pause(it)
+                }
+            }
+
+            ACTION_START_ALL -> downloadManager.startAll()
+            ACTION_START -> launchCtx {
+                val item = intent.getParcelableExtra<DownloadItem>("item")
+                item?.let {
+                    downloadManager.start(it)
+                }
+            }
+
+            ACTION_RETRY_ALL -> downloadManager.retryAll()
+            ACTION_RETRY -> launchCtx {
+                val item = intent.getParcelableExtra<DownloadItem>("item")
+                item?.let {
+                    downloadManager.retry(it)
+                }
+            }
+
+            ACTION_ADD -> launchCtx {
+                val item = intent.getParcelableExtra<DownloadItem>("item")
+                item?.let {
+                    if (!downloadManager.hasTask(it)) {
+                        downloadManager.add(it)
                     }
                 }
+            }
+            ACTION_ADD_OR_START -> launchCtx {
+                val item = intent.getParcelableExtra<DownloadItem>("item")
+                item?.let {
+                    downloadManager.addOrStart(it)
+                }
+            }
+
+            ACTION_CONCURRENT -> launchCtx {
+                val item = intent.getIntExtra("item", 4)
+                downloadManager.setConcurrentPages(item)
+            }
+            ACTION_SET_RETRY -> launchCtx {
+                val item = intent.getBooleanExtra("item", false)
+                downloadManager.setRetryOnError(item)
+            }
+            ACTION_IS_WIFI -> launchCtx {
+                val item = intent.getBooleanExtra("item", false)
+                downloadManager.isWifiOnly(item)
             }
         }
         return super.onStartCommand(intent, flags, startId)
@@ -135,6 +271,7 @@ class DownloadService : Service(), DownloadListener {
         stopForeground(false)
         downloadManager.stop()
         stopSelf()
+        job.cancel()
     }
 
     override fun onQueued(item: DownloadItem) {
@@ -298,7 +435,4 @@ class DownloadService : Service(), DownloadListener {
         errorCount = 0
         notificationId = ID.generate()
     }
-
-    //    class LocalBinder(val chapterLoader: ChapterLoader) : Binder()
-    class LocalBinderC(val chapterLoader: ChapterLoader) : Binder()
 }

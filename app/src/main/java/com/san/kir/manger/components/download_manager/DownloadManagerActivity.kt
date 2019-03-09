@@ -3,14 +3,11 @@ package com.san.kir.manger.components.download_manager
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.BroadcastReceiver
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.ServiceConnection
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.os.IBinder
 import android.text.Html
 import android.view.View
 import com.san.kir.manger.R
@@ -30,21 +27,6 @@ class DownloadManagerActivity : DrawerActivity() {
     }
     val updateNetwork = Binder(false)
 
-    lateinit var downloadManager: ChapterLoader
-
-    private var bound = false
-
-    private val connection = object : ServiceConnection {
-        override fun onServiceDisconnected(name: ComponentName?) {
-            bound = false
-        }
-
-        override fun onServiceConnected(name: ComponentName, service: IBinder) {
-            downloadManager =
-                    (service as DownloadService.LocalBinderC).chapterLoader
-            bound = true
-        }
-    }
     private val titleObserver = Observer<List<DownloadItem>> { item ->
         item?.let { downloads ->
             launch(coroutineContext) {
@@ -86,8 +68,6 @@ class DownloadManagerActivity : DrawerActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val intent = Intent(this, DownloadService::class.java)
-        bindService(intent, connection, Context.BIND_AUTO_CREATE)
         setTitle(R.string.main_menu_downloader)
         mViewModel.getDownloadItems().observe(this, titleObserver)
 
@@ -98,10 +78,6 @@ class DownloadManagerActivity : DrawerActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (bound) {
-            unbindService(connection)
-            bound = false
-        }
         unregisterReceiver(receiver)
     }
 }

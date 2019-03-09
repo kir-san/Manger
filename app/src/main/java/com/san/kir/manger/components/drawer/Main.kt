@@ -4,13 +4,12 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
 import com.san.kir.manger.R
-import com.san.kir.manger.components.download_manager.DownloadService
 import com.san.kir.manger.components.library.LibraryActivity
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.components.schedule.ScheduleManager
 import com.san.kir.manger.extending.BaseActivity
-import com.san.kir.manger.extending.ankoExtend.compatCheckSelfPermission
-import com.san.kir.manger.extending.ankoExtend.compatRequestPermissions
+import com.san.kir.manger.extending.anko_extend.compatCheckSelfPermission
+import com.san.kir.manger.extending.anko_extend.compatRequestPermissions
 import com.san.kir.manger.extending.launchUI
 import com.san.kir.manger.repositories.CategoryRepository
 import com.san.kir.manger.repositories.MainMenuRepository
@@ -30,7 +29,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.anko.longToast
 import org.jetbrains.anko.startActivity
-import org.jetbrains.anko.startService
 
 class Main : BaseActivity() {
     private val mCategoryRepository by lazy { CategoryRepository(this) }
@@ -77,7 +75,6 @@ class Main : BaseActivity() {
             checkSiteCatalogs()
         }
 
-        startService<DownloadService>()
         startActivity<LibraryActivity>()
     }
 

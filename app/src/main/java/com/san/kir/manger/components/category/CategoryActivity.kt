@@ -7,7 +7,7 @@ import android.view.Gravity
 import android.view.View
 import com.san.kir.manger.R
 import com.san.kir.manger.components.drawer.DrawerActivity
-import com.san.kir.manger.extending.ankoExtend.onClick
+import com.san.kir.manger.extending.anko_extend.onClick
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.view_models.CategoryViewModel
 import org.jetbrains.anko._LinearLayout

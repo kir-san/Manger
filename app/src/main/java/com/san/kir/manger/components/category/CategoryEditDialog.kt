@@ -5,11 +5,11 @@ import android.view.Gravity
 import android.view.View
 import com.san.kir.manger.R
 import com.san.kir.manger.eventBus.Binder
-import com.san.kir.manger.extending.ankoExtend.onClick
-import com.san.kir.manger.extending.ankoExtend.onSeekBarChangeListener
-import com.san.kir.manger.extending.ankoExtend.textChangedListener
-import com.san.kir.manger.extending.ankoExtend.textView
-import com.san.kir.manger.extending.ankoExtend.typeText
+import com.san.kir.manger.extending.anko_extend.onClick
+import com.san.kir.manger.extending.anko_extend.onSeekBarChangeListener
+import com.san.kir.manger.extending.anko_extend.textChangedListener
+import com.san.kir.manger.extending.anko_extend.textView
+import com.san.kir.manger.extending.anko_extend.typeText
 import com.san.kir.manger.extending.launchUI
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.utils.CATEGORY_ALL

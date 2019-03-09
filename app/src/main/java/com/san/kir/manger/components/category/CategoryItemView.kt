@@ -6,8 +6,8 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.san.kir.manger.R
-import com.san.kir.manger.extending.ankoExtend.invisibleOrVisible
-import com.san.kir.manger.extending.ankoExtend.onClick
+import com.san.kir.manger.extending.anko_extend.invisibleOrVisible
+import com.san.kir.manger.extending.anko_extend.onClick
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.ID

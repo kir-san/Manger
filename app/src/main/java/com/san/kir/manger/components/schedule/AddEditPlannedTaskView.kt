@@ -10,10 +10,10 @@ import android.widget.TimePicker
 import com.san.kir.manger.R
 import com.san.kir.manger.eventBus.Binder
 import com.san.kir.manger.extending.BaseActivity
-import com.san.kir.manger.extending.ankoExtend.labelView
-import com.san.kir.manger.extending.ankoExtend.onClick
-import com.san.kir.manger.extending.ankoExtend.textViewBold15Size
-import com.san.kir.manger.extending.ankoExtend.visibleOrGone
+import com.san.kir.manger.extending.anko_extend.labelView
+import com.san.kir.manger.extending.anko_extend.onClick
+import com.san.kir.manger.extending.anko_extend.textViewBold15Size
+import com.san.kir.manger.extending.anko_extend.visibleOrGone
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.room.models.PlannedPeriod
 import com.san.kir.manger.room.models.PlannedTask

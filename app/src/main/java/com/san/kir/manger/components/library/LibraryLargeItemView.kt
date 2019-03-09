@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import com.san.kir.manger.R
-import com.san.kir.manger.extending.ankoExtend.squareFrameLayout
+import com.san.kir.manger.extending.anko_extend.squareFrameLayout
 import com.san.kir.manger.room.models.Category
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.backgroundColor

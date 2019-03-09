@@ -4,7 +4,7 @@ import android.view.ViewGroup
 import android.widget.Switch
 import android.widget.TextView
 import com.san.kir.manger.R
-import com.san.kir.manger.extending.ankoExtend.onCheckedChange
+import com.san.kir.manger.extending.anko_extend.onCheckedChange
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory

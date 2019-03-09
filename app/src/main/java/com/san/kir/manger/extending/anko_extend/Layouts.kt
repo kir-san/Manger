@@ -1,4 +1,4 @@
-package com.san.kir.manger.extending.ankoExtend
+package com.san.kir.manger.extending.anko_extend
 
 import android.content.Context
 import android.util.AttributeSet

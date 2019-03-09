@@ -5,7 +5,7 @@ import android.graphics.Typeface
 import android.view.View
 import android.view.ViewGroup
 import com.san.kir.manger.R
-import com.san.kir.manger.extending.ankoExtend.roundedImageView
+import com.san.kir.manger.extending.anko_extend.roundedImageView
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.utils.ID
 import org.jetbrains.anko.AnkoContext

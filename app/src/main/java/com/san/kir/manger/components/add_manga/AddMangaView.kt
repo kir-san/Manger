@@ -10,9 +10,9 @@ import android.widget.Spinner
 import com.san.kir.manger.R
 import com.san.kir.manger.R.string
 import com.san.kir.manger.extending.BaseActivity
-import com.san.kir.manger.extending.ankoExtend.onClick
-import com.san.kir.manger.extending.ankoExtend.typeText
-import com.san.kir.manger.extending.ankoExtend.typeTextMultiLine
+import com.san.kir.manger.extending.anko_extend.onClick
+import com.san.kir.manger.extending.anko_extend.typeText
+import com.san.kir.manger.extending.anko_extend.typeTextMultiLine
 import com.san.kir.manger.extending.dialogs.ColorPicker
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.utils.AnkoActivityComponent

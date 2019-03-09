@@ -6,9 +6,9 @@ import android.widget.ImageView
 import com.san.kir.manger.R
 import com.san.kir.manger.components.add_manga.AddMangaActivity
 import com.san.kir.manger.extending.BaseActivity
-import com.san.kir.manger.extending.ankoExtend.labelView
-import com.san.kir.manger.extending.ankoExtend.onClick
-import com.san.kir.manger.extending.ankoExtend.textViewBold15Size
+import com.san.kir.manger.extending.anko_extend.labelView
+import com.san.kir.manger.extending.anko_extend.onClick
+import com.san.kir.manger.extending.anko_extend.textViewBold15Size
 import com.san.kir.manger.room.models.Manga
 import com.san.kir.manger.room.models.MangaColumn
 import com.san.kir.manger.utils.formatDouble

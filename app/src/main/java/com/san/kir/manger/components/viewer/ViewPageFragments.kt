@@ -15,11 +15,11 @@ import com.san.kir.manger.R
 import com.san.kir.manger.components.download_manager.ChapterDownloader
 import com.san.kir.manger.eventBus.Binder
 import com.san.kir.manger.eventBus.negative
-import com.san.kir.manger.extending.ankoExtend.bigImageView
-import com.san.kir.manger.extending.ankoExtend.goneOrVisible
-import com.san.kir.manger.extending.ankoExtend.onClick
-import com.san.kir.manger.extending.ankoExtend.onDoubleTapListener
-import com.san.kir.manger.extending.ankoExtend.visibleOrGone
+import com.san.kir.manger.extending.anko_extend.bigImageView
+import com.san.kir.manger.extending.anko_extend.goneOrVisible
+import com.san.kir.manger.extending.anko_extend.onClick
+import com.san.kir.manger.extending.anko_extend.onDoubleTapListener
+import com.san.kir.manger.extending.anko_extend.visibleOrGone
 import com.san.kir.manger.extending.launchUI
 import com.san.kir.manger.utils.convertImagesToPng
 import com.san.kir.manger.utils.createDirs

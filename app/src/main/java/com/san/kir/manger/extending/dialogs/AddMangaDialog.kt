@@ -7,7 +7,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import com.san.kir.manger.R
 import com.san.kir.manger.extending.BaseActivity
-import com.san.kir.manger.extending.ankoExtend.onClick
+import com.san.kir.manger.extending.anko_extend.onClick
 import com.san.kir.manger.extending.launchUI
 import com.san.kir.manger.repositories.CategoryRepository
 import com.san.kir.manger.repositories.MangaRepository

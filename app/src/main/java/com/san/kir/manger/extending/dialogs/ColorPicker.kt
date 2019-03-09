@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.view.Gravity
 import com.san.kir.manger.eventBus.Binder
-import com.san.kir.manger.extending.ankoExtend.onSeekBarChangeListener
+import com.san.kir.manger.extending.anko_extend.onSeekBarChangeListener
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.customView

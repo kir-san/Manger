@@ -11,7 +11,7 @@ import com.san.kir.manger.R
 import com.san.kir.manger.components.catalog_for_one_site.CatalogForOneSiteActivity
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.components.parsing.SiteCatalog
-import com.san.kir.manger.extending.ankoExtend.onClick
+import com.san.kir.manger.extending.anko_extend.onClick
 import com.san.kir.manger.room.models.Site
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory

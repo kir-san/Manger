@@ -8,8 +8,8 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
-import com.san.kir.manger.extending.ankoExtend.onClick
-import com.san.kir.manger.extending.ankoExtend.visibleOrInvisible
+import com.san.kir.manger.extending.anko_extend.onClick
+import com.san.kir.manger.extending.anko_extend.visibleOrInvisible
 import com.san.kir.manger.extending.dialogs.AddMangaDialog
 import com.san.kir.manger.extending.dialogs.MangaInfoDialog
 import com.san.kir.manger.room.models.SiteCatalogElement

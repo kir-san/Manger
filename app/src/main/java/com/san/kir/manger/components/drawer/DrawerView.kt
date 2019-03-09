@@ -23,7 +23,7 @@ import com.san.kir.manger.components.sites_catalog.SiteCatalogActivity
 import com.san.kir.manger.components.statistics.StatisticActivity
 import com.san.kir.manger.components.storage.StorageActivity
 import com.san.kir.manger.extending.BaseActivity
-import com.san.kir.manger.extending.ankoExtend.onClick
+import com.san.kir.manger.extending.anko_extend.onClick
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.SimpleItemTouchHelperCallback
 import com.san.kir.manger.utils.getDrawableCompat

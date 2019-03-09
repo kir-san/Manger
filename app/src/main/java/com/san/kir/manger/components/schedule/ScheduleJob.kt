@@ -2,7 +2,7 @@ package com.san.kir.manger.components.schedule
 
 import com.evernote.android.job.Job
 import com.san.kir.manger.components.catalog_for_one_site.CatalogForOneSiteUpdaterService
-import com.san.kir.manger.extending.ankoExtend.startForegroundService
+import com.san.kir.manger.extending.anko_extend.startForegroundService
 import com.san.kir.manger.repositories.MangaRepository
 import com.san.kir.manger.repositories.PlannedRepository
 import com.san.kir.manger.repositories.SiteRepository

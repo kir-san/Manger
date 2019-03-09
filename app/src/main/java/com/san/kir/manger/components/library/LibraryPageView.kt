@@ -12,8 +12,8 @@ import android.widget.TextView
 import com.san.kir.manger.R
 import com.san.kir.manger.components.sites_catalog.SiteCatalogActivity
 import com.san.kir.manger.extending.BaseActivity
-import com.san.kir.manger.extending.ankoExtend.onClick
-import com.san.kir.manger.extending.ankoExtend.visibleOrGone
+import com.san.kir.manger.extending.anko_extend.onClick
+import com.san.kir.manger.extending.anko_extend.visibleOrGone
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.utils.AnkoActivityComponent
 import com.san.kir.manger.utils.ID

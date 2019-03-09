@@ -8,8 +8,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.san.kir.manger.R
 import com.san.kir.manger.components.list_chapters.ListChaptersActivity
-import com.san.kir.manger.extending.ankoExtend.onClickListener
-import com.san.kir.manger.extending.ankoExtend.onLongClickListener
+import com.san.kir.manger.extending.anko_extend.onClickListener
+import com.san.kir.manger.extending.anko_extend.onLongClickListener
 import com.san.kir.manger.extending.dialogs.LibraryItemMenu
 import com.san.kir.manger.extending.launchCtx
 import com.san.kir.manger.room.models.Category

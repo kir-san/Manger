@@ -22,8 +22,8 @@ import com.san.kir.manger.components.catalog_for_one_site.CatalogForOneSiteRecyc
 import com.san.kir.manger.components.catalog_for_one_site.CatalogForOneSiteRecyclerPresenter.Companion.POP
 import com.san.kir.manger.eventBus.Binder
 import com.san.kir.manger.eventBus.toggle
-import com.san.kir.manger.extending.ankoExtend.onClick
-import com.san.kir.manger.extending.ankoExtend.visibleOrGone
+import com.san.kir.manger.extending.anko_extend.onClick
+import com.san.kir.manger.extending.anko_extend.visibleOrGone
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.getDrawableCompat
 import org.jetbrains.anko.AnkoComponent

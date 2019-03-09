@@ -10,9 +10,9 @@ import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.san.kir.manger.R
-import com.san.kir.manger.extending.ankoExtend.onClick
-import com.san.kir.manger.extending.ankoExtend.roundedImageView
-import com.san.kir.manger.extending.ankoExtend.visibleOrInvisible
+import com.san.kir.manger.extending.anko_extend.onClick
+import com.san.kir.manger.extending.anko_extend.roundedImageView
+import com.san.kir.manger.extending.anko_extend.visibleOrInvisible
 import com.san.kir.manger.extending.launchUI
 import com.san.kir.manger.room.models.MangaStatistic
 import com.san.kir.manger.utils.ID

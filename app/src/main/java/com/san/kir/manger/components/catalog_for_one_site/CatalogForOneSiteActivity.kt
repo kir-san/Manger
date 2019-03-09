@@ -13,8 +13,8 @@ import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.eventBus.negative
 import com.san.kir.manger.extending.BaseActivity
-import com.san.kir.manger.extending.ankoExtend.onQueryTextListener
-import com.san.kir.manger.extending.ankoExtend.startForegroundService
+import com.san.kir.manger.extending.anko_extend.onQueryTextListener
+import com.san.kir.manger.extending.anko_extend.startForegroundService
 import com.san.kir.manger.extending.launchUI
 import com.san.kir.manger.extending.views.setButton
 import com.san.kir.manger.extending.views.setCloseButton

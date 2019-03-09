@@ -12,8 +12,8 @@ import com.san.kir.manger.eventBus.Binder
 import com.san.kir.manger.eventBus.negative
 import com.san.kir.manger.eventBus.positive
 import com.san.kir.manger.extending.ThemedActionBarActivity
-import com.san.kir.manger.extending.ankoExtend.onQueryTextListener
-import com.san.kir.manger.extending.ankoExtend.visibleOrGone
+import com.san.kir.manger.extending.anko_extend.onQueryTextListener
+import com.san.kir.manger.extending.anko_extend.visibleOrGone
 import com.san.kir.manger.extending.launchUI
 import com.san.kir.manger.extending.views.setButton
 import com.san.kir.manger.extending.views.setCloseButton

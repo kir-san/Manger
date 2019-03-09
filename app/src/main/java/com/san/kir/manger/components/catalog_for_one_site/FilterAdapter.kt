@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
-import com.san.kir.manger.extending.ankoExtend.onClick
+import com.san.kir.manger.extending.anko_extend.onClick
 import com.san.kir.manger.utils.ID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope

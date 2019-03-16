@@ -12,6 +12,7 @@ import android.view.Menu
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.eventBus.negative
+import com.san.kir.manger.eventBus.positive
 import com.san.kir.manger.extending.BaseActivity
 import com.san.kir.manger.extending.anko_extend.onQueryTextListener
 import com.san.kir.manger.extending.anko_extend.startForegroundService
@@ -74,7 +75,6 @@ class CatalogForOneSiteActivity : BaseActivity() {
         val intentFilter = IntentFilter(
             CatalogForOneSiteUpdaterService.ACTION_CATALOG_UPDATER_SERVICE
         )
-
         registerReceiver(receiver, intentFilter)
     }
 
@@ -85,7 +85,9 @@ class CatalogForOneSiteActivity : BaseActivity() {
                 title = "$mOldTitle: $size"
 
                 // Убираем прогрессБар
-                view.isAction.negative()
+                if (!CatalogForOneSiteUpdaterService.isContain(mSite.catalogName)) {
+                    view.isAction.negative()
+                }
             }
 
             mViewModel.getSiteItem(mSite.name)?.let {
@@ -135,8 +137,10 @@ class CatalogForOneSiteActivity : BaseActivity() {
             titleResource = R.string.catalog_fot_one_site_warning
             messageResource = R.string.catalog_fot_one_site_redownload_text
             positiveButton(R.string.catalog_fot_one_site_redownload_ok) {
-                if (!CatalogForOneSiteUpdaterService.isContain(mSite.catalogName))
+                if (!CatalogForOneSiteUpdaterService.isContain(mSite.catalogName)) {
                     startForegroundService<CatalogForOneSiteUpdaterService>("catalogName" to mSite.catalogName)
+                    view.isAction.positive()
+                }
             }
             negativeButton(getString(R.string.catalog_fot_one_site_redownload_cancel)) {}
         }.show()

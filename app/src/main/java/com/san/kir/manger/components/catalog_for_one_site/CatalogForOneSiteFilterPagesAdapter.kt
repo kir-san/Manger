@@ -10,22 +10,23 @@ import android.view.ViewGroup
 import com.san.kir.manger.R
 import org.jetbrains.anko.include
 
-class CatalogForOneSiteFilterPagesAdapter(private val ctx: Context,
-                                          filterAdapterList: List<CatalogFilter>) : PagerAdapter() {
+class CatalogForOneSiteFilterPagesAdapter : PagerAdapter() {
     // Список страниц
     private var pagers = arrayListOf<Map<String, Any>>()
     // Список адаптеров
     val adapters: MutableList<FilterAdapter> = arrayListOf()
 
-    init {
+    fun init(ctx: Context, filterAdapterList: List<CatalogFilter>) {
         filterAdapterList.forEach { (name, adapt) ->
             // Для каждого полученного адаптера
-            pagers.add(mapOf("name" to name,
-                             "view" to ctx.include<RecyclerView>(R.layout.recycler_view) {
-                                 // Создаем список
-                                 layoutManager = LinearLayoutManager(ctx)
-                                 adapter = adapt
-                             }))
+            pagers.add(
+                mapOf("name" to name,
+                      "view" to ctx.include<RecyclerView>(R.layout.recycler_view) {
+                          // Создаем список
+                          layoutManager = LinearLayoutManager(ctx)
+                          adapter = adapt
+                      })
+            )
             notifyDataSetChanged()
             adapters.add(adapt)
         }
@@ -37,9 +38,11 @@ class CatalogForOneSiteFilterPagesAdapter(private val ctx: Context,
         return v
     }
 
-    override fun destroyItem(container: ViewGroup,
-                             position: Int,
-                             `object`: Any) = (container as ViewPager).removeView(`object` as View)
+    override fun destroyItem(
+        container: ViewGroup,
+        position: Int,
+        `object`: Any
+    ) = (container as ViewPager).removeView(`object` as View)
 
 
     override fun isViewFromObject(view: View, `object`: Any) = view == `object`

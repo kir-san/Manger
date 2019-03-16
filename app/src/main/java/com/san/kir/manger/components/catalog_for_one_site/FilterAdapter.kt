@@ -18,7 +18,7 @@ import org.jetbrains.anko.lines
 import org.jetbrains.anko.textView
 
 class FilterAdapter : RecyclerView.Adapter<FilterAdapter.ViewHolder>() {
-    private var catalog: List<String> = listOf()
+    var catalog: List<String> = listOf()
     private val checkedId = ID.generate()
     private val nameId = ID.generate()
     private val selectedName: MutableList<String> = mutableListOf()

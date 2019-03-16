@@ -79,9 +79,6 @@ class CatalogForOneSiteView(
 
     override fun createView(ui: AnkoContext<CatalogForOneSiteActivity>) = with(ui) {
         // Адаптер с данными для фильтрации
-        val pagerAdapter =
-            CatalogForOneSiteFilterPagesAdapter(this.ctx, presenter.filterAdapterList)
-
         drawerLayout {
             lparams(width = matchParent, height = matchParent)
             fitsSystemWindows = true
@@ -198,7 +195,7 @@ class CatalogForOneSiteView(
             navigationView {
                 viewPager {
                     include<PagerTabStrip>(R.layout.page_tab_strip)
-                    adapter = pagerAdapter
+                    adapter = presenter.pagerAdapter
                 }
             }.lparams(width = wrapContent, height = matchParent) {
                 gravity = GravityCompat.START
@@ -212,7 +209,7 @@ class CatalogForOneSiteView(
                 override fun onDrawerClosed(drawerView: View) {
                     super.onDrawerClosed(drawerView)
                     act.title =
-                            "${act.mOldTitle}: ${presenter.changeOrder(filters = pagerAdapter.adapters)}"
+                            "${act.mOldTitle}: ${presenter.changeOrder(filters = presenter.pagerAdapter.adapters)}"
                 }
 
             }

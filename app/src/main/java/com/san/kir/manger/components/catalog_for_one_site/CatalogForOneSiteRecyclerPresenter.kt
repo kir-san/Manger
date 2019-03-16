@@ -23,6 +23,7 @@ class CatalogForOneSiteRecyclerPresenter(private val act: CatalogForOneSiteActiv
     }
 
     private val adapter = RecyclerViewAdapterFactory.createSimple { CatalogForOneSiteItemView(act) }
+    val pagerAdapter = CatalogForOneSiteFilterPagesAdapter()
     val filterAdapterList = listOf(
         CatalogFilter("Жанры", FilterAdapter()),
         CatalogFilter("Тип манги", FilterAdapter()),
@@ -40,12 +41,11 @@ class CatalogForOneSiteRecyclerPresenter(private val act: CatalogForOneSiteActiv
         if (mainJob.isActive) mainJob.cancel()
         mainJob = act.launchCtx {
             try {
-                backupCatalog = act.mViewModel.getSiteCatalogItems(siteId)
+                backupCatalog = act.mViewModel.getSiteCatalogItems(siteId, true)
 
                 adapter.items = backupCatalog
 
                 changeOrder()
-
 
                 listOf(
                     launch(Dispatchers.Default) {
@@ -71,9 +71,15 @@ class CatalogForOneSiteRecyclerPresenter(private val act: CatalogForOneSiteActiv
                 ).joinAll()
 
                 withContext(Dispatchers.Main) {
+                    var endList = listOf<CatalogFilter>()
                     filterAdapterList.forEach {
                         it.adapter.finishAdd()
+                        if (it.adapter.catalog.size > 1) {
+                            endList = endList + it
+                        }
+
                     }
+                    pagerAdapter.init(act, endList)
                 }
 
                 end?.invoke(adapter.itemCount)

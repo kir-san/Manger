@@ -106,6 +106,9 @@ class MangaRepository(context: Context) {
         val updatingElement = ManageSites.getFullElement(element).await()
 
         val manga = updatingElement.toManga(category = category, path = path)
+
+        manga.isAlternativeSite = ManageSites.getSite(element.link) is SiteCatalogAlternative
+
         mMangaDao.insert(manga)
         mStatisticDao.insert(MangaStatistic(manga = manga.unic))
         return manga

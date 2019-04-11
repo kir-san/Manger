@@ -35,6 +35,7 @@ class Manga() : Parcelable {
     var isAlternativeSort = true
     var isUpdate = true
     var chapterFilter = ChapterFilter.ALL_READ_ASC
+    var isAlternativeSite = false
 
     @Ignore
     constructor(parcel: Parcel) : this() {
@@ -55,6 +56,7 @@ class Manga() : Parcelable {
         order = parcel.readInt()
         isAlternativeSort = parcel.readByte() != 0.toByte()
         isUpdate = parcel.readByte() != 0.toByte()
+        isAlternativeSite = parcel.readByte() != 0.toByte()
     }
 
     constructor(
@@ -76,7 +78,9 @@ class Manga() : Parcelable {
         authorsList: List<String> = listOf(),
         categoriesList: List<String> = listOf(),
         genresList: List<String> = listOf(),
-        isUpdate: Boolean = true
+        isUpdate: Boolean = true,
+        chapterFilter: ChapterFilter = ChapterFilter.ALL_READ_ASC,
+        isAlternativeSite: Boolean = false
     ) : this() {
         this.id = id
         this.unic = unic
@@ -103,6 +107,9 @@ class Manga() : Parcelable {
 
         if (!genresList.isEmpty())
             this.genresList = genresList
+
+        this.chapterFilter = chapterFilter
+        this.isAlternativeSite = isAlternativeSite
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -123,6 +130,7 @@ class Manga() : Parcelable {
         parcel.writeInt(order)
         parcel.writeByte(if (isAlternativeSort) 1 else 0)
         parcel.writeByte(if (isUpdate) 1 else 0)
+        parcel.writeByte(if (isAlternativeSite) 1 else 0)
     }
 
     override fun describeContents() = 0

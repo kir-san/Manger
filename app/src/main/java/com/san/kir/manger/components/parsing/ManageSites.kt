@@ -31,7 +31,8 @@ object ManageSites {
             Selfmanga(mSiteRepository),
             Allhentai(mSiteRepository),
             Yaoichan(mSiteRepository),
-            Unicomics(mSiteRepository)
+            Unicomics(mSiteRepository),
+            Acomics(mSiteRepository)
         )
     }
 

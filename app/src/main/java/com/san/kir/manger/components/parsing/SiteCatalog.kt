@@ -28,7 +28,11 @@ abstract class SiteCatalog {
 
     open suspend fun getFullElement(element: SiteCatalogElement): SiteCatalogElement = element
     abstract fun getCatalog(context: ExecutorCoroutineDispatcher): ReceiveChannel<SiteCatalogElement>
+    abstract suspend fun getElementOnline(url: String): SiteCatalogElement?
     abstract suspend fun chapters(manga: Manga): List<Chapter>
     abstract suspend fun pages(item: DownloadItem): List<String>
-    abstract suspend fun getElementOnline(url: String): SiteCatalogElement?
 }
+
+abstract class SiteCatalogClassic : SiteCatalog()
+
+abstract class SiteCatalogAlternative : SiteCatalog()

@@ -72,8 +72,11 @@ class ListChaptersActivity : ThemedActionBarActivity() {
     val mViewModel by lazy {
         ViewModelProviders.of(this).get(ListChaptersViewModel::class.java)
     }
-    val view = ListChapterView(mAdapter)
-    val actionMode by lazy { ActionModeControl(this) }
+    val mAdapter = ListChaptersRecyclerPresenter(this)
+
+    val view by lazy { ListChapterBaseView(this) }
+
+    lateinit var manga: Manga
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,30 +97,42 @@ class ListChaptersActivity : ThemedActionBarActivity() {
         val default =
             getString(R.string.settings_list_chapter_filter_default) == "true"
 
-        val isIndividual = defaultSharedPreferences.getBoolean(key, default)
-        if (isIndividual) {
-            mAdapter.setManga(manga, manga.chapterFilter).invokeOnCompletion {
-                view.isUpdate.negative()
+        launchCtx {
+            manga = mViewModel.getManga(title as String)
+            manga.populate += 1
+            mViewModel.updateManga(manga)
+            withContext(Dispatchers.Main) {
+                title = manga.name
+                view.mAdapter.init(this@ListChaptersActivity)
             }
-            view.filterState = manga.chapterFilter.name
-        } else {
-            val filterStatus = defaultSharedPreferences.getString(filterStatusKey, ChapterFilter.ALL_READ_ASC.name)
-            filterStatus?.also {
-                mAdapter.setManga(manga, ChapterFilter.valueOf(filterStatus)).invokeOnCompletion {
-                    view.isUpdate.negative()
+        }.invokeOnCompletion {
+            val isIndividual = defaultSharedPreferences.getBoolean(key, default)
+            if (isIndividual) {
+                mAdapter.setManga(manga, manga.chapterFilter).invokeOnCompletion {
+                    mViewModel.isUpdate.negative()
                 }
-                view.filterState = filterStatus
-            } ?: kotlin.run {
-                toast("Произошли внезапности")
-                onBackPressed()
+                mViewModel.filterState = manga.chapterFilter.name
+            } else {
+                val filterStatus = defaultSharedPreferences.getString(
+                    filterStatusKey,
+                    ChapterFilter.ALL_READ_ASC.name
+                )
+                filterStatus?.also {
+                    mAdapter.setManga(manga, ChapterFilter.valueOf(filterStatus))
+                        .invokeOnCompletion {
+                            mViewModel.isUpdate.negative()
+                        }
+                    mViewModel.filterState = filterStatus
+                } ?: kotlin.run {
+                    toast("Произошли внезапности")
+                    onBackPressed()
+                }
             }
+            // Если в данный момент ведется поиск новых глав для данной манги
+            if (MangaUpdaterService.contains(manga))
+                mViewModel.isAction.positive()
         }
 
-
-
-        // Если в данный момент ведется поиск новых глав для данной манги
-        if (MangaUpdaterService.contains(manga))
-            view.isAction.positive()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

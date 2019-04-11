@@ -2,6 +2,7 @@ package com.san.kir.manger.components.parsing.sites
 
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.components.parsing.SiteCatalog
+import com.san.kir.manger.components.parsing.SiteCatalogClassic
 import com.san.kir.manger.components.parsing.Status
 import com.san.kir.manger.components.parsing.Translate
 import com.san.kir.manger.repositories.SiteRepository
@@ -22,7 +23,7 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.util.regex.Pattern
 
-class Allhentai(siteRepository: SiteRepository) : SiteCatalog() {
+class Allhentai(siteRepository: SiteRepository) : SiteCatalogClassic() {
     override val name = "All Hentai"
     override val catalogName = "allhentai.ru"
     override val siteCatalog = "$host/list?type=&sortType=RATING"

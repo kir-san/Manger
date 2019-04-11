@@ -513,12 +513,17 @@
     <string name="settings_library_show_category_title">Отображение категории</string>
 
 
-    <string name="settings_list_chapter_title">Настройки библиотеки</string>
+    <string name="settings_list_chapter_title">Настройки списка глав</string>
 
     <string name="settings_list_chapter_filter_default">true</string>
     <string name="settings_list_chapter_filter_key">chapter_filter</string>
     <string name="settings_list_chapter_filter_summary">Фильтрация в списке глав общая для всей манги или независимая</string>
     <string name="settings_list_chapter_filter_title">Индивидуальная фильтрация глав</string>
+
+    <string name="settings_list_chapter_title_default">true</string>
+    <string name="settings_list_chapter_title_key">chapter_title</string>
+    <string name="settings_list_chapter_title_summary">Переключение видимости названия вкладок</string>
+    <string name="settings_list_chapter_title_title">Отображение названия вкладок</string>
 
 
     <string name="settings_viewer_title">Настройки читалки</string>

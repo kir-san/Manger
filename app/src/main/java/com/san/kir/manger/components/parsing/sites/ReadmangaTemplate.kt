@@ -2,6 +2,7 @@ package com.san.kir.manger.components.parsing.sites
 
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.components.parsing.SiteCatalog
+import com.san.kir.manger.components.parsing.SiteCatalogClassic
 import com.san.kir.manger.components.parsing.Status
 import com.san.kir.manger.components.parsing.Translate
 import com.san.kir.manger.repositories.SiteRepository
@@ -19,7 +20,7 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.util.regex.Pattern
 
-abstract class ReadmangaTemplate(private val siteRepository: SiteRepository) : SiteCatalog() {
+abstract class ReadmangaTemplate(private val siteRepository: SiteRepository) : SiteCatalogClassic() {
     override val siteCatalog
         get() = "$host/list?sortType=created"
 

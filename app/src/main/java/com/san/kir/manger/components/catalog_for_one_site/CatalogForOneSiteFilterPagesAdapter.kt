@@ -19,14 +19,15 @@ class CatalogForOneSiteFilterPagesAdapter : PagerAdapter() {
     fun init(ctx: Context, filterAdapterList: List<CatalogFilter>) {
         filterAdapterList.forEach { (name, adapt) ->
             // Для каждого полученного адаптера
-            pagers.add(
-                mapOf("name" to name,
-                      "view" to ctx.include<RecyclerView>(R.layout.recycler_view) {
-                          // Создаем список
-                          layoutManager = LinearLayoutManager(ctx)
-                          adapter = adapt
-                      })
-            )
+            if (adapt.catalog.size > 1)
+                pagers.add(
+                    mapOf("name" to name,
+                          "view" to ctx.include<RecyclerView>(R.layout.recycler_view) {
+                              // Создаем список
+                              layoutManager = LinearLayoutManager(ctx)
+                              adapter = adapt
+                          })
+                )
             notifyDataSetChanged()
             adapters.add(adapt)
         }

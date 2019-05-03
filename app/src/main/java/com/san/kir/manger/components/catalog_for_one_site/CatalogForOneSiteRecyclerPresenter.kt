@@ -71,15 +71,10 @@ class CatalogForOneSiteRecyclerPresenter(private val act: CatalogForOneSiteActiv
                 ).joinAll()
 
                 withContext(Dispatchers.Main) {
-                    var endList = listOf<CatalogFilter>()
                     filterAdapterList.forEach {
                         it.adapter.finishAdd()
-                        if (it.adapter.catalog.size > 1) {
-                            endList = endList + it
-                        }
-
                     }
-                    pagerAdapter.init(act, endList)
+                    pagerAdapter.init(act, filterAdapterList)
                 }
 
                 end?.invoke(adapter.itemCount)

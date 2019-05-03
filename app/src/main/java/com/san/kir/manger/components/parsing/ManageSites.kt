@@ -41,40 +41,40 @@ object ManageSites {
         return Jsoup.parse(result.component1())
     }
 
-    suspend fun chapters(manga: Manga): List<Chapter>? {
-        val site = CATALOG_SITES.firstOrNull {
-            it.allCatalogName.any { manga.host.contains(it) }
+    fun getSite(link: String): SiteCatalog {
+        return CATALOG_SITES.first {
+            it.allCatalogName.any { s ->
+                link.contains(s)
+            }
         }
-        return site?.chapters(manga)
+    }
+
+    suspend fun chapters(manga: Manga): List<Chapter> {
+        val site = getSite(manga.host)
+        return site.chapters(manga)
     }
 
     // Загрузка полной информации для элемента в каталоге
     fun getFullElement(simpleElement: SiteCatalogElement) = GlobalScope.async {
-        CATALOG_SITES.first { it.allCatalogName.any { it == simpleElement.catalogName }}
+        CATALOG_SITES.first { it.allCatalogName.any { s -> s == simpleElement.catalogName } }
             .getFullElement(simpleElement)
     }
 
-    // Получение страниц для главы
-    suspend fun pages(item: DownloadItem) = CATALOG_SITES
-        .first { it.allCatalogName.any { item.link.contains(it) } }
-        .pages(item)
+    // Получение страниц
+    suspend fun pages(item: DownloadItem): List<String> {
+        val site = getSite(item.link)
+        return site.pages(item)
+    }
 
     suspend fun pages(chapter: Chapter) = pages(chapter.toDownloadItem())
 
     suspend fun getElementOnline(url: String): SiteCatalogElement? {
         var lUrl = url
-        CATALOG_SITES
-            .firstOrNull { catalog ->
-                catalog.allCatalogName.any {
-                    lUrl.contains(it)
-                }
+        getSite(lUrl).also {
+            if (!lUrl.contains("http://")) {
+                lUrl = "http://$lUrl"
             }
-            ?.also {
-                if (!lUrl.contains("http://")) {
-                    lUrl = "http://$lUrl"
-                }
-                return it.getElementOnline(lUrl)
-            }
-        return null
+            return it.getElementOnline(lUrl)
+        }
     }
 }

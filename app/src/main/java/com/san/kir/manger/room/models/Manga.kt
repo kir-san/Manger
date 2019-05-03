@@ -140,6 +140,7 @@ class Manga() : Parcelable {
 
         override fun newArray(size: Int): Array<Manga?> = arrayOfNulls(size)
     }
+
 }
 
 var Manga.authorsList: List<String>

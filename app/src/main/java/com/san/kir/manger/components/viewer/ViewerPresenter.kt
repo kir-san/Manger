@@ -17,6 +17,7 @@ class ViewerPresenter(private val act: ViewerActivity) {
 
     val progressChapters = Binder(-1)
     val progressPages = Binder(0) // Текущая страница, которую в данный момент читают
+
     val max = Binder(0)
     var maxChapters = -1
 
@@ -31,7 +32,6 @@ class ViewerPresenter(private val act: ViewerActivity) {
 
     fun into(viewPager: SpecialViewPager) {
         viewPager.adapter = adapter
-        this.viewPager = viewPager
     }
 
     fun configManager(
@@ -48,7 +48,9 @@ class ViewerPresenter(private val act: ViewerActivity) {
             else manager.pagePosition // Иначе то что есть
 
         // При изменении прогресса, отдать новое значение в менеджер
-        progressPages.bind { pos -> manager.pagePosition = pos }
+        progressPages.bind { pos ->
+            manager.pagePosition = pos
+        }
 
         progressChapters.unicItem = manager.chapterPosition // Установка значения
 
@@ -61,11 +63,11 @@ class ViewerPresenter(private val act: ViewerActivity) {
     }
 
     fun nextPage() {
-        progressPages.unicItem += 1
+        act.mView.viewPager.currentItem += 1
     }
 
     fun prevPage() {
-        progressPages.unicItem -= 1
+        act.mView.viewPager.currentItem -= 1
     }
 
     // Предыдущая глава

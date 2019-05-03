@@ -15,6 +15,35 @@ class ListChaptersViewModel(app: Application) : AndroidViewModel(app) {
     private val mMangaRepository = MangaRepository(app)
     private val mDownloadRepository = DownloadRepository(app)
 
+    val isAction = Binder(false)
+    val isUpdate = Binder(true)
+    val isVisibleBottom = Binder(true) // Отображение бара снизу
+    val sortIndicator = Binder(false) // Индикатор сортировки
+    val filterIndicator = Binder(ChapterFilter.ALL_READ_ASC) {
+        sortIndicator.item = filterStateHelp.isAsc
+    }
+
+    var filterStateHelp: Filter = FilterAsc
+    var filterState: String
+        get() = filterIndicator.item.name
+        set(value) {
+            val state = ChapterFilter.valueOf(value)
+            filterStateHelp = when (state) {
+                ChapterFilter.ALL_READ_ASC,
+                ChapterFilter.NOT_READ_ASC,
+                ChapterFilter.IS_READ_ASC -> {
+                    FilterAsc
+                }
+                ChapterFilter.ALL_READ_DESC,
+                ChapterFilter.NOT_READ_DESC,
+                ChapterFilter.IS_READ_DESC -> {
+                    FilterDesc
+                }
+            }
+            sortIndicator.item = filterStateHelp.isAsc
+            filterIndicator.item = state
+        }
+
     fun getChapters(manga: Manga): List<Chapter> {
         return mChapterRepository.getItems(manga.unic)
     }
@@ -37,5 +66,43 @@ class ListChaptersViewModel(app: Application) : AndroidViewModel(app) {
 
     fun getDownloadItem(item: Chapter): LiveData<DownloadItem?> {
         return mDownloadRepository.loadItem(item.site)
+    }
+
+    fun toggleFilterInverse() {
+        filterStateHelp = filterStateHelp.reverse()
+        filterIndicator.item = filterIndicator.item.inverse()
+    }
+
+    override fun onCleared() {
+        isAction.close()
+        isUpdate.close()
+        filterIndicator.close()
+        sortIndicator.close()
+    }
+
+    fun getFirstNotReadChapter(manga: Manga): Chapter? {
+        var list = mChapterRepository.getItems(mangaUnic = manga.unic)
+
+        list = if (manga.isAlternativeSort) {
+            list.sortedWith(ChapterComparator())
+        } else {
+            list
+        }
+
+        return list.firstOrNull { !it.isRead }
+    }
+
+    fun getFirstChapter(manga: Manga): Chapter {
+        var list = mChapterRepository.getItems(mangaUnic = manga.unic)
+
+        if (manga.isAlternativeSort) {
+            list = list.sortedWith(ChapterComparator())
+        }
+
+        val chapter = list.first()
+        chapter.progress = 0
+        updateChapter(chapter)
+
+        return list.first()
     }
 }

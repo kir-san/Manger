@@ -35,7 +35,7 @@ class CatalogForOneSiteViewModel(private val app: Application) : AndroidViewMode
         mSiteRepository.update(site)
     }
 
-    fun getSiteCatalogItems(site: SiteCatalog): List<SiteCatalogElement> {
+    fun getSiteCatalogItems(site: SiteCatalog, force: Boolean = false): List<SiteCatalogElement> {
         if (!::mSiteCatalogRepository.isInitialized) {
             mSiteCatalog = site
             mSiteCatalogRepository = SiteCatalogRepository(app, site.catalogName)
@@ -47,6 +47,10 @@ class CatalogForOneSiteViewModel(private val app: Application) : AndroidViewMode
                 mSiteCatalogRepository = SiteCatalogRepository(app, site.catalogName)
                 mSiteCatalogItems = mSiteCatalogRepository.items()
             }
+        }
+
+        if (force) {
+            mSiteCatalogItems = mSiteCatalogRepository.items()
         }
 
         return mSiteCatalogItems

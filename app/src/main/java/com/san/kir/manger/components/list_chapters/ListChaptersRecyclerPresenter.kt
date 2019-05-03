@@ -221,14 +221,14 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
     }
 
     fun updatePages() {
-        act.view.isAction.positive()
+        act.mViewModel.isAction.positive()
         act.launchCtx {
             forSelection { i ->
                 items[i].pages = ManageSites.pages(items[i])
                 act.mViewModel.updateChapter(items[i])
             }
         }.invokeOnCompletion {
-            act.view.isAction.negative()
+            act.mViewModel.isAction.negative()
         }
     }
 

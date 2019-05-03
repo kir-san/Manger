@@ -51,23 +51,25 @@ class ChapterDownloader(private val task: DownloadItem, concurrent: Int) {
         val previousTime = System.currentTimeMillis()
         delegate?.onStarted(getDownloadItem())
 
-        try {
+        runCatching {
             download()
+        }.fold(
+            onSuccess = {
+                lock.withLock {
+                    totalTime = System.currentTimeMillis() - previousTime
+                }
 
-            lock.withLock {
-                totalTime = System.currentTimeMillis() - previousTime
+                if (!interrupted) delegate?.onComplete(getDownloadItem())
+            },
+            onFailure = { e ->
+                e.printStackTrace()
+                delegate?.onError(getDownloadItem(), e.cause)
             }
+        )
 
-            if (!interrupted) delegate?.onComplete(getDownloadItem())
-        } catch (e: Exception) {
-            e.printStackTrace()
-            delegate?.onError(getDownloadItem(), e.cause)
-        } finally {
-            executor.close()
-            executor.join()
-            terminated = true
-        }
-
+        executor.close()
+        executor.join()
+        terminated = true
     }
 
     private suspend fun download() {

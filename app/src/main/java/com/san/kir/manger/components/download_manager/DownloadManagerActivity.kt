@@ -44,15 +44,15 @@ class DownloadManagerActivity : DrawerActivity() {
 
                 withContext(Dispatchers.Main) {
                     supportActionBar?.title =
-                            getString(R.string.main_menu_downloader_count, loadingCount)
+                        getString(R.string.main_menu_downloader_count, loadingCount)
                     supportActionBar?.subtitle =
-                            Html.fromHtml(
-                                "<font color='#FFFFFF'>${getString(
-                                    R.string.download_activity_subtitle,
-                                    stoppedCount,
-                                    completedCount
-                                )}</font>"
-                            )
+                        Html.fromHtml(
+                            "<font color='#FFFFFF'>${getString(
+                                R.string.download_activity_subtitle,
+                                stoppedCount,
+                                completedCount
+                            )}</font>"
+                        )
                 }
             }
         }

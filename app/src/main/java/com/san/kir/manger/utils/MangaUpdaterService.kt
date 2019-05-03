@@ -233,7 +233,9 @@ class MangaUpdaterService : Service() {
                         .getItems(manga.unic)
                         .onEach {
                             launch(Dispatchers.Default) {
-                                if (it.pages.isNullOrEmpty() || it.pages.any { chap -> chap.isBlank() }) {
+                                if (it.pages.isNullOrEmpty()
+                                    || it.pages.any { chap -> chap.isBlank() }
+                                    || manga.isAlternativeSite) {
                                     it.pages = ManageSites.pages(it)
                                     mChapterRepository.update(it)
                                 }
@@ -243,7 +245,7 @@ class MangaUpdaterService : Service() {
 
             var newChapters = listOf<Chapter>()
 
-            ManageSites.chapters(manga)?.let { new ->
+            ManageSites.chapters(manga).let { new ->
                 if (oldChapters.isEmpty()) { // Если глав не было до обновления
                     newChapters = new
                 } else {

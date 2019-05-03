@@ -33,8 +33,8 @@ import org.jetbrains.anko.space
 import org.jetbrains.anko.verticalLayout
 import org.jetbrains.anko.wrapContent
 
-class ListChapterView(private val adapterPresenter: ListChaptersRecyclerPresenter) :
-    AnkoComponent<ListChaptersActivity> {
+class ListChapterView(private val act: ListChaptersActivity) :
+    AnkoActivityComponent() {
     private object Id {
         val progressBar = ID.generate()
         val bottomBar = ID.generate()
@@ -95,18 +95,15 @@ class ListChapterView(private val adapterPresenter: ListChaptersRecyclerPresente
                     id = Id.bottomBar
                     backgroundColor = Color.parseColor("#ff212121")
                     gravity = Gravity.CENTER_HORIZONTAL
-                    visibleOrGone(isVisibleBottom)
+                    visibleOrGone(vm.isVisibleBottom)
 
                     // Кнопка переключения порядка сортировки
                     btn {
-                        onClick {
-                            _filterState = _filterState.reverse()
-                            filterIndicator.item = filterIndicator.item.inverse()
-                        }
-                        sortIndicator.bind {
+                        onClick { vm.toggleFilterInverse() }
+                        vm.sortIndicator.bind {
                             backgroundResource =
-                                    if (it) R.drawable.ic_sort_21
-                                    else R.drawable.ic_sort_12
+                                if (it) R.drawable.ic_sort_21
+                                else R.drawable.ic_sort_12
                         }
                     }
 
@@ -114,31 +111,31 @@ class ListChapterView(private val adapterPresenter: ListChaptersRecyclerPresente
 
                     // Кнопка включения отображения всех глав
                     btn {
-                        onClick { filterIndicator.item = _filterState.allRead }
-                        filterIndicator.bind {
+                        onClick { vm.filterIndicator.item = vm.filterStateHelp.allRead }
+                        vm.filterIndicator.bind {
                             backgroundResource =
-                                    if (it == _filterState.allRead) R.drawable.ic_action_all_blue
-                                    else R.drawable.ic_action_all_white
+                                if (it == vm.filterStateHelp.allRead) R.drawable.ic_action_all_blue
+                                else R.drawable.ic_action_all_white
                         }
                     }
 
                     // Кнопка включения отображения только прочитанных глав
                     btn {
-                        onClick { filterIndicator.item = _filterState.isRead }
-                        filterIndicator.bind {
+                        onClick { vm.filterIndicator.item = vm.filterStateHelp.isRead }
+                        vm.filterIndicator.bind {
                             backgroundResource =
-                                    if (it == _filterState.isRead) R.drawable.ic_action_read_blue
-                                    else R.drawable.ic_action_read_white
+                                if (it == vm.filterStateHelp.isRead) R.drawable.ic_action_read_blue
+                                else R.drawable.ic_action_read_white
                         }
                     }
 
                     // Кнопка включения отображения только не прочитанных глав
                     btn {
-                        onClick { filterIndicator.item = _filterState.notRead }
-                        filterIndicator.bind {
+                        onClick { vm.filterIndicator.item = vm.filterStateHelp.notRead }
+                        vm.filterIndicator.bind {
                             backgroundResource =
-                                    if (it == _filterState.notRead) R.drawable.ic_action_not_read_blue
-                                    else R.drawable.ic_action_not_read_white
+                                if (it == vm.filterStateHelp.notRead) R.drawable.ic_action_not_read_blue
+                                else R.drawable.ic_action_not_read_white
                         }
                     }
 
@@ -149,7 +146,7 @@ class ListChapterView(private val adapterPresenter: ListChaptersRecyclerPresente
                     layoutManager = object : LinearLayoutManager(ctx) {
                         override fun supportsPredictiveItemAnimations() = false
                     }
-                    this@ListChapterView.adapterPresenter.into(this)
+                    act.mAdapter.into(this)
                 }.lparams(width = matchParent, height = matchParent) {
                     below(Id.progressBar) // Начинается от прогрессБара
                     above(Id.bottomBar) // Заканчивается на нижнем меню

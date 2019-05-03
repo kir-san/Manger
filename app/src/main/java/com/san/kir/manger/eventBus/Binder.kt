@@ -18,7 +18,7 @@ import kotlin.coroutines.CoroutineContext
 * Я переработал для использования с корутинами
 * */
 data class Action<in T>(
-    val context: CoroutineContext,
+    val context: CoroutineContext = Dispatchers.Main,
     val action: suspend (T) -> Unit
 )
 
@@ -63,9 +63,11 @@ class Binder<T>(initValue: T) {
     init {
         GlobalScope.launch {
             for (new in _channel) {
-                _bound.forEach { _, it ->
-                    launch(it.context) {
-                        it.action(new)
+                lock.withLock {
+                    _bound.forEach { _, it ->
+                        launch(it.context) {
+                            it.action(new)
+                        }
                     }
                 }
             }
@@ -73,8 +75,12 @@ class Binder<T>(initValue: T) {
     }
 
     fun bind(action: Action<T>) {
-        _bound.append(ID.generate(), action)
-        GlobalScope.launch(action.context) { action.action.invoke(_item) }
+        GlobalScope.launch(action.context) {
+            lock.withLock {
+                _bound.append(ID.generate(), action)
+            }
+            action.action.invoke(_item)
+        }
     }
 
     fun bind(
@@ -88,10 +94,6 @@ class Binder<T>(initValue: T) {
         val value = _bound.indexOfValue(action)
         if (value != -1)
             _bound.removeAt(value)
-    }
-
-    fun unBind(context: CoroutineContext = Dispatchers.Main, binding: suspend (item: T) -> Unit) {
-        unBind(Action(context, binding))
     }
 
     fun close() {

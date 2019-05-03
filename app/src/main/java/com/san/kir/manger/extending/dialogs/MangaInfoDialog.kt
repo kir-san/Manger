@@ -151,8 +151,10 @@ class MangaInfoDialog(
                     logo.visibleOrGone(true)
                 }
                 onError {
-                    logoLoadText.textResource = R.string.manga_info_dialog_loading_failed
-                    logoLoadText.visibleOrGone(true)
+                    act.launchUI {
+                        logoLoadText.textResource = R.string.manga_info_dialog_loading_failed
+                        logoLoadText.visibleOrGone(true)
+                    }
                 }
                 into(logo)
             }

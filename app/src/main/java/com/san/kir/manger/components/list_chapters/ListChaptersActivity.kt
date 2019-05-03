@@ -59,7 +59,7 @@ class ListChaptersActivity : ThemedActionBarActivity() {
                                 mAdapter.update()
                             }
 
-                        view.isAction.item = false // Скрыть прогрессБар
+                        mViewModel.isAction.item = false // Скрыть прогрессБар
                     }
                 }
             }
@@ -177,7 +177,7 @@ class ListChaptersActivity : ThemedActionBarActivity() {
         when (item.itemId) {
             android.R.id.home -> onBackPressed() // Назад при нажатию стрелку
             OptionId.update -> { // Проверка на наличие новых глав
-                view.isAction.positive() // Показать прогрессБар
+                mViewModel.isAction.positive() // Показать прогрессБар
                 startService<MangaUpdaterService>("manga" to manga)
             }
             OptionId.loadNext -> mAdapter.downloadNextNotReadChapter()
@@ -209,12 +209,12 @@ class ListChaptersActivity : ThemedActionBarActivity() {
             getString(R.string.settings_list_chapter_filter_default) == "true"
         val isIndividual = defaultSharedPreferences.getBoolean(key, default)
         if (isIndividual) {
-            manga.chapterFilter = ChapterFilter.valueOf(view.filterState)
+            manga.chapterFilter = ChapterFilter.valueOf(mViewModel.filterState)
             mViewModel.updateManga(manga)
         } else {
             getSharedPreferences(sPrefListChapters, MODE_PRIVATE)
                 .edit()
-                .putString(filterStatusKey, view.filterState)
+                .putString(filterStatusKey, mViewModel.filterState)
                 .apply()
         }
     }

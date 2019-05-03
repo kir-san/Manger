@@ -135,7 +135,7 @@ class ListChaptersActionCallback(
     override fun onDestroyActionMode(mode: ActionMode?) {
         adapter.removeSelection() // Очистить выделение
         act.actionMode.clear()
-        act.view.isVisibleBottom.item = true // Показать бар внизу экрана
+        act.mViewModel.isVisibleBottom.item = true // Показать бар внизу экрана
     }
 
     private fun actionTitle(): String {

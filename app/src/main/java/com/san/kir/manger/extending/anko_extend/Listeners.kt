@@ -26,26 +26,26 @@ fun SubsamplingScaleImageView.onDoubleTapListener(init: __IPhotoView_OnDoubleTap
 }
 
 @Suppress("ClassName")
-class __IPhotoView_OnDoubleTapListener : android.view.GestureDetector.SimpleOnGestureListener() {
-    private var _onDoubleTap: ((android.view.MotionEvent) -> Boolean)? = null
-    private var _onDoubleTapEvent: ((android.view.MotionEvent) -> Boolean)? = null
-    private var _onSingleTapConfirmed: ((android.view.MotionEvent) -> Boolean)? = null
+class __IPhotoView_OnDoubleTapListener : GestureDetector.SimpleOnGestureListener() {
+    private var _onDoubleTap: ((MotionEvent) -> Boolean)? = null
+    private var _onDoubleTapEvent: ((MotionEvent) -> Boolean)? = null
+    private var _onSingleTapConfirmed: ((MotionEvent) -> Boolean)? = null
 
-    override fun onDoubleTap(e: android.view.MotionEvent) = _onDoubleTap?.invoke(e) == true
+    override fun onDoubleTap(e: MotionEvent) = _onDoubleTap?.invoke(e) == true
 
-    fun onDoubleTap(listener: (android.view.MotionEvent) -> Boolean) {
+    fun onDoubleTap(listener: (MotionEvent) -> Boolean) {
         _onDoubleTap = listener
     }
 
-    override fun onDoubleTapEvent(e: android.view.MotionEvent) = _onDoubleTapEvent?.invoke(e) == true
+    override fun onDoubleTapEvent(e: MotionEvent) = _onDoubleTapEvent?.invoke(e) == true
 
-    fun onDoubleTapEvent(listener: (android.view.MotionEvent) -> Boolean) {
+    fun onDoubleTapEvent(listener: (MotionEvent) -> Boolean) {
         _onDoubleTapEvent = listener
     }
 
-    override fun onSingleTapConfirmed(e: android.view.MotionEvent) = _onSingleTapConfirmed?.invoke(e) == true
+    override fun onSingleTapConfirmed(e: MotionEvent) = _onSingleTapConfirmed?.invoke(e) == true
 
-    fun onSingleTapConfirmed(listener: (android.view.MotionEvent) -> Boolean) {
+    fun onSingleTapConfirmed(listener: (MotionEvent) -> Boolean) {
         _onSingleTapConfirmed = listener
     }
 
@@ -56,9 +56,11 @@ interface ClickListener {
     fun onLongClick(view: View, position: Int)
 }
 
-class RecyclerViewTouchListeners(context: Context,
-                                 recyclerView: RecyclerView,
-                                 val clickListener: ClickListener) : RecyclerView.SimpleOnItemTouchListener() {
+class RecyclerViewTouchListeners(
+    context: Context,
+    recyclerView: RecyclerView,
+    val clickListener: ClickListener
+) : RecyclerView.SimpleOnItemTouchListener() {
     private val gestureDetector by lazy {
         GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
             override fun onSingleTapUp(e: MotionEvent?) = true
@@ -73,7 +75,7 @@ class RecyclerViewTouchListeners(context: Context,
     override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
         rv.findChildViewUnder(e.x, e.y)?.let {
             if (gestureDetector.onTouchEvent(e))
-            clickListener.onClick(it, rv.getChildAdapterPosition(it))
+                clickListener.onClick(it, rv.getChildAdapterPosition(it))
         }
         return false
     }
@@ -101,12 +103,18 @@ fun android.widget.SeekBar.onSeekBarChangeListener(
 }
 
 @Suppress("ClassName")
-class __SeekBar_OnSeekBarChangeListener(private val context: CoroutineDispatcher) : android.widget.SeekBar.OnSeekBarChangeListener {
+class __SeekBar_OnSeekBarChangeListener(private val context: CoroutineDispatcher) :
+    android.widget.SeekBar.OnSeekBarChangeListener {
 
-    private var _onProgressChanged: (suspend CoroutineScope.(android.widget.SeekBar?, Int, Boolean) -> Unit)? = null
+    private var _onProgressChanged: (suspend CoroutineScope.(android.widget.SeekBar?, Int, Boolean) -> Unit)? =
+        null
 
 
-    override fun onProgressChanged(seekBar: android.widget.SeekBar?, progress: Int, fromUser: Boolean) {
+    override fun onProgressChanged(
+        seekBar: android.widget.SeekBar?,
+        progress: Int,
+        fromUser: Boolean
+    ) {
         val handler = _onProgressChanged ?: return
         GlobalScope.launch(context) {
             handler(seekBar, progress, fromUser)
@@ -119,7 +127,8 @@ class __SeekBar_OnSeekBarChangeListener(private val context: CoroutineDispatcher
         _onProgressChanged = listener
     }
 
-    private var _onStartTrackingTouch: (suspend CoroutineScope.(android.widget.SeekBar?) -> Unit)? = null
+    private var _onStartTrackingTouch: (suspend CoroutineScope.(android.widget.SeekBar?) -> Unit)? =
+        null
 
 
     override fun onStartTrackingTouch(seekBar: android.widget.SeekBar?) {
@@ -135,7 +144,8 @@ class __SeekBar_OnSeekBarChangeListener(private val context: CoroutineDispatcher
         _onStartTrackingTouch = listener
     }
 
-    private var _onStopTrackingTouch: (suspend CoroutineScope.(android.widget.SeekBar?) -> Unit)? = null
+    private var _onStopTrackingTouch: (suspend CoroutineScope.(android.widget.SeekBar?) -> Unit)? =
+        null
 
 
     override fun onStopTrackingTouch(seekBar: android.widget.SeekBar?) {
@@ -210,7 +220,8 @@ fun android.widget.TextView.textChangedListener(
 
 class __TextWatcher(private val context: CoroutineContext) : android.text.TextWatcher {
 
-    private var _beforeTextChanged: (suspend CoroutineScope.(CharSequence?, Int, Int, Int) -> Unit)? = null
+    private var _beforeTextChanged: (suspend CoroutineScope.(CharSequence?, Int, Int, Int) -> Unit)? =
+        null
 
 
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -226,7 +237,8 @@ class __TextWatcher(private val context: CoroutineContext) : android.text.TextWa
         _beforeTextChanged = listener
     }
 
-    private var _onTextChanged: (suspend CoroutineScope.(CharSequence?, Int, Int, Int) -> Unit)? = null
+    private var _onTextChanged: (suspend CoroutineScope.(CharSequence?, Int, Int, Int) -> Unit)? =
+        null
 
 
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -282,7 +294,8 @@ fun android.support.v7.widget.SearchView.onQueryTextListener(
     setOnQueryTextListener(listener)
 }
 
-class __QueryTextListener(private val context: CoroutineContext) : android.support.v7.widget.SearchView.OnQueryTextListener {
+class __QueryTextListener(private val context: CoroutineContext) :
+    android.support.v7.widget.SearchView.OnQueryTextListener {
 
     private var _onQueryTextSubmit: (suspend CoroutineScope.(String?) -> Unit)? = null
 

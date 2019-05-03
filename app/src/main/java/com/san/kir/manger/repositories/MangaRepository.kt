@@ -5,6 +5,7 @@ import android.arch.paging.LivePagedListBuilder
 import android.arch.paging.PagedList
 import android.content.Context
 import com.san.kir.manger.components.parsing.ManageSites
+import com.san.kir.manger.components.parsing.SiteCatalogAlternative
 import com.san.kir.manger.room.getDatabase
 import com.san.kir.manger.room.models.Category
 import com.san.kir.manger.room.models.Manga

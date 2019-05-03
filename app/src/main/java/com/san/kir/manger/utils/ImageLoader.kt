@@ -133,7 +133,9 @@ class ImageLoader(private val url: String) {
     private fun getNetworkBitmap(url: String, name: String): Bitmap? {
         kotlin.runCatching {
             Fuel.download(url)
-                .destination { _, _ -> mDiskCache.createFile(name) }
+                .destination { _, _ -> val createFile = mDiskCache.createFile(name)
+                    createFile
+                }
                 .response()
         }.fold(
             onSuccess = {

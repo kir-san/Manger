@@ -185,14 +185,16 @@ class ViewerView(private val presenter: ViewerPresenter) : AnkoComponent<ViewerA
 
             specialViewPager {
                 id = ID.generate()
+                presenter.into(this)
                 lparams(width = matchParent, height = matchParent) {
                     below(Id.progressBar)
                     above(Id.bottomBar)
                 }
                 onPageChangeListener {
-                    onPageSelected { position -> presenter.progressPages.unicItem = position }
+                    onPageSelected { position ->
+                        presenter.progressPages.unicItem = position
+                    }
                 }
-                presenter.into(this)
 
                 presenter.progressPages.bind { currentItem = it }
                 presenter.isSwipeControl.bind { setLocked(!it) }

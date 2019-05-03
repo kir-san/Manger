@@ -34,6 +34,7 @@ class ViewerActivity : ThemedActionBarActivity() {
     val mViewModel by lazy {
         ViewModelProviders.of(this).get(ViewerViewModel::class.java)
     }
+
     var isBar by observable(true) { _, old, new ->
         if (old != new) {
             if (!new) {
@@ -54,7 +55,7 @@ class ViewerActivity : ThemedActionBarActivity() {
     private var isAlternative = false
 
     val presenter by lazy { ViewerPresenter(this) }
-    private val view by lazy { ViewerView(presenter) }
+    val mView by lazy { ViewerView(presenter) }
 
     private var defaultOrientation = 0
     private var readTime = 0L
@@ -91,7 +92,7 @@ class ViewerActivity : ThemedActionBarActivity() {
 
         }
 
-        view.setContentView(this) // Установка разметки
+        mView.setContentView(this) // Установка разметки
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // Кнопка назад в верхнем баре
         supportActionBar?.setShowHideAnimationEnabled(true) // Анимация скрытия, сокрытия
@@ -130,11 +131,11 @@ class ViewerActivity : ThemedActionBarActivity() {
         // Установка режима во весь экрана без верхней строки и навигационных кнопок
         if (hasFocus) { // Срабатывает только если был получен фокус
             window.decorView.systemUiVisibility =
-                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                    View.SYSTEM_UI_FLAG_FULLSCREEN or
-                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                        View.SYSTEM_UI_FLAG_FULLSCREEN or
+                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         }
     }
 

@@ -3,6 +3,7 @@ package com.san.kir.manger.components.viewer
 import android.R.id
 import android.annotation.SuppressLint
 import android.arch.lifecycle.ViewModelProviders
+import android.content.pm.ActivityInfo
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
@@ -57,7 +58,6 @@ class ViewerActivity : ThemedActionBarActivity() {
     val presenter by lazy { ViewerPresenter(this) }
     val mView by lazy { ViewerView(presenter) }
 
-    private var defaultOrientation = 0
     private var readTime = 0L
 
     @SuppressLint("RestrictedApi")
@@ -67,7 +67,6 @@ class ViewerActivity : ThemedActionBarActivity() {
             val orientationKey = getString(R.string.settings_viewer_orientation_key)
             val orientationDefault = getString(R.string.settings_viewer_orientation_default)
 
-            defaultOrientation = requestedOrientation
             requestedOrientation = when (getString(orientationKey, orientationDefault)) {
                 getString(R.string.settings_viewer_orientation_auto) -> SCREEN_ORIENTATION_SENSOR
                 getString(R.string.settings_viewer_orientation_port) -> SCREEN_ORIENTATION_PORTRAIT
@@ -162,6 +161,7 @@ class ViewerActivity : ThemedActionBarActivity() {
             .edit()
             .putBoolean(getString(R.string.settings_viewer_show_bar_key), isBar)
             .apply()
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
     }
 
     override fun onDestroy() {

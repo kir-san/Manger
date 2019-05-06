@@ -3,6 +3,7 @@ package com.san.kir.manger.components.viewer
 import android.graphics.Color
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewCompat
+import android.support.v4.view.ViewPager
 import android.support.v4.view.ViewPropertyAnimatorListenerAdapter
 import android.view.View
 import android.view.animation.DecelerateInterpolator
@@ -44,6 +45,8 @@ import org.jetbrains.anko.wrapContent
 
 
 class ViewerView(private val presenter: ViewerPresenter) : AnkoComponent<ViewerActivity> {
+    lateinit var viewPager: ViewPager
+
     private object Id {
         val progressBar = ID.generate()
         val bottomBar = ID.generate()
@@ -90,7 +93,10 @@ class ViewerView(private val presenter: ViewerPresenter) : AnkoComponent<ViewerA
                     onSeekBarChangeListener {
                         var progress = 0
                         onProgressChanged { _, p, _ -> progress = p }
-                        onStopTrackingTouch { presenter.progressPages.unicItem = progress }
+                        onStopTrackingTouch {
+                            //                            presenter.progressPages.unicItem = progress
+                            viewPager.currentItem = progress
+                        }
                     }
                 }.lparams(width = wrapContent, height = wrapContent) {
                     alignParentBottom()
@@ -183,7 +189,7 @@ class ViewerView(private val presenter: ViewerPresenter) : AnkoComponent<ViewerA
 
             }
 
-            specialViewPager {
+            viewPager = specialViewPager {
                 id = ID.generate()
                 presenter.into(this)
                 lparams(width = matchParent, height = matchParent) {
@@ -193,10 +199,10 @@ class ViewerView(private val presenter: ViewerPresenter) : AnkoComponent<ViewerA
                 onPageChangeListener {
                     onPageSelected { position ->
                         presenter.progressPages.unicItem = position
+                        presenter.invalidateFragmentMenus(position)
                     }
                 }
 
-                presenter.progressPages.bind { currentItem = it }
                 presenter.isSwipeControl.bind { setLocked(!it) }
             }
         }

@@ -102,4 +102,11 @@ class ViewerPresenter(private val act: ViewerActivity) {
         isPrev.item = manager.pagesList.first().link == "prev"
         isNext.item = manager.pagesList.last().link == "next"
     }
+
+    fun invalidateFragmentMenus(position: Int) {
+        adapter.items.forEachIndexed { index, fragment ->
+            fragment.setHasOptionsMenu(index == position)
+        }
+        act.invalidateOptionsMenu()
+    }
 }

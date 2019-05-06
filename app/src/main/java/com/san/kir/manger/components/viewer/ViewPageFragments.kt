@@ -6,6 +6,9 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import com.davemorrissey.labs.subscaleview.ImageSource
@@ -15,14 +18,17 @@ import com.san.kir.manger.R
 import com.san.kir.manger.components.download_manager.ChapterDownloader
 import com.san.kir.manger.eventBus.Binder
 import com.san.kir.manger.eventBus.negative
+import com.san.kir.manger.eventBus.positive
 import com.san.kir.manger.extending.anko_extend.bigImageView
 import com.san.kir.manger.extending.anko_extend.goneOrVisible
 import com.san.kir.manger.extending.anko_extend.onClick
 import com.san.kir.manger.extending.anko_extend.onDoubleTapListener
 import com.san.kir.manger.extending.anko_extend.visibleOrGone
 import com.san.kir.manger.extending.launchUI
+import com.san.kir.manger.extending.views.showAlways
 import com.san.kir.manger.utils.convertImagesToPng
 import com.san.kir.manger.utils.createDirs
+import com.san.kir.manger.utils.isOkPng
 import com.san.kir.manger.utils.log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -60,6 +66,7 @@ class ViewerPageFragment : Fragment(), CoroutineScope {
 
     private val isLoad = Binder(true)
     private lateinit var page: Page
+    private lateinit var view: SubsamplingScaleImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,7 +95,7 @@ class ViewerPageFragment : Fragment(), CoroutineScope {
             linearLayout {
                 lparams(width = matchParent, height = matchParent)
 
-                bigImageView {
+                view = bigImageView {
                     lparams(width = matchParent, height = matchParent)
 
                     launchUI {
@@ -100,9 +107,6 @@ class ViewerPageFragment : Fragment(), CoroutineScope {
                                 SubsamplingScaleImageView.SCALE_TYPE_CENTER_INSIDE
                             )
                         }
-
-                        setImage(loadImage())
-                        isLoad.negative()
                     }
 
                     onDoubleTapListener {
@@ -127,36 +131,67 @@ class ViewerPageFragment : Fragment(), CoroutineScope {
                     }
                 }
 
+                loadImage(view, false)
+
                 goneOrVisible(isLoad)
             }
         }
     }
 
-    private suspend fun loadImage() =
-        withContext(coroutineContext) {
+    private fun loadImage(view: SubsamplingScaleImageView, force: Boolean) {
+        launchUI {
+            isLoad.positive()
+
+            view.setImage(getImage(force))
+
+            isLoad.negative()
+        }
+    }
+
+    private suspend fun getImage(force: Boolean): ImageSource {
+        return withContext(coroutineContext) {
             val name = ChapterDownloader.nameFromUrl(page.link)
-            log("page.link = ${page.link}")
-            val file = File(page.fullPath, name)
 
-            if (!file.exists()) {
-                Fuel.download(ChapterDownloader.prepareUrl(page.link))
-                    .destination { _, _ ->
-                        createDirs(file.parentFile)
-                        file.createNewFile()
-                        file
-                    }
-                    .response()
-                    .third
-                    .fold({ },
-                          {
-                              it.exception.printStackTrace()
+            var file = File(page.fullPath, name)
 
-                          })
+            file = File(file.parentFile, "${file.nameWithoutExtension}.png")
+
+            if (file.exists() && file.isOkPng() && !force) {
+                return@withContext ImageSource.uri(Uri.fromFile(file))
+            }
+            file.delete()
+
+            file = File(page.fullPath, name)
+
+            if (file.exists() && !force) {
+                val png = convertImagesToPng(file)
+                if (png.isOkPng()) {
+                    return@withContext ImageSource.uri(Uri.fromFile(file))
+                }
+                png.delete()
             }
 
-            ImageSource.uri(
+            file.delete()
+
+            Fuel.download(ChapterDownloader.prepareUrl(page.link))
+                .destination { _, _ ->
+                    createDirs(file.parentFile)
+                    file.createNewFile()
+                    file
+                }
+                .response()
+                .third
+                .fold({ },
+                      {
+                          it.exception.printStackTrace()
+                      })
+
+
+            log("page.link = ${page.link} | file.isOkPng = ${file.isOkPng()}")
+
+            return@withContext ImageSource.uri(
                 Uri.fromFile(
-                    if (file.extension in arrayOf("gif", "webp")) {
+                    if (file.extension in arrayOf("gif", "webp", "jpg", "jpeg")) {
                         convertImagesToPng(file)
                     } else {
                         file
@@ -164,7 +199,19 @@ class ViewerPageFragment : Fragment(), CoroutineScope {
                 )
             )
         }
+    }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater?) {
+        super.onCreateOptionsMenu(menu, inflater)
+        menu.add(0, 2, 2, "Обновить").showAlways().setIcon(R.drawable.ic_action_update_white)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == 2) {
+            loadImage(view, true)
+        }
+        return super.onOptionsItemSelected(item)
+    }
 
     override fun onDestroy() {
         super.onDestroy()

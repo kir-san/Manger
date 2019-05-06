@@ -9,31 +9,34 @@ import android.support.v4.view.PagerAdapter
 class ViewerAdapter(fm: FragmentManager) :
     FragmentStatePagerAdapter(fm) {
 
-    private var items: List<Page> = listOf()
+    var items : List<Fragment> = listOf()
 
     fun setList(list: List<Page>) {
-        this.items = list
+        list.forEachIndexed { position, page ->
+            items = items + when (position) {
+                0 -> {
+                    if (page.link == "prev")
+                        ViewerPagerPrevFragment()
+                    else
+                        ViewerPageNonePrevFragment()
+                }
+                list.lastIndex -> {
+                    if (page.link == "next")
+                        ViewerPagerNextFragment()
+                    else
+                        ViewerPageNoneNextFragment()
+                }
+
+                else -> ViewerPageFragment.newInstance(page)
+            }
+        }
+
         notifyDataSetChanged()
     }
 
     // Получение нужного элемента взависимости от позиции
     override fun getItem(position: Int): Fragment {
-        return when (position) {
-            0 -> {
-                if (items.first().link == "prev")
-                    ViewerPagerPrevFragment()
-                else
-                    ViewerPageNonePrevFragment()
-            }
-            items.lastIndex -> {
-                if (items.last().link == "next")
-                    ViewerPagerNextFragment()
-                else
-                    ViewerPageNoneNextFragment()
-            }
-
-            else -> ViewerPageFragment.newInstance(items[position])
-        }
+        return items[position]
     }
 
     override fun getCount() = items.size

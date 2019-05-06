@@ -14,7 +14,7 @@ import com.san.kir.manger.R
 import com.san.kir.manger.components.drawer.DrawerActivity
 import com.san.kir.manger.eventBus.Binder
 import com.san.kir.manger.room.models.DownloadItem
-import com.san.kir.manger.room.models.DownloadStatus
+import com.san.kir.manger.utils.enums.DownloadStatus
 import com.san.kir.manger.view_models.DownloadManagerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,8 +35,7 @@ class DownloadManagerActivity : DrawerActivity() {
                             it.status == DownloadStatus.loading
                 }.size
                 val stoppedCount = downloads.filter {
-                    it.status == DownloadStatus.error ||
-                            it.status == DownloadStatus.pause
+                    it.status == DownloadStatus.pause
                 }.size
                 val completedCount = downloads.filter {
                     it.status == DownloadStatus.completed

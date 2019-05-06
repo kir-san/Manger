@@ -6,22 +6,8 @@ import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
 import android.os.Parcel
 import android.os.Parcelable
-
-object DownloadColumn {
-    const val tableName = "downloads"
-    const val id = "id"
-    const val manga = "manga"
-    const val name = "name"
-    const val link = "link"
-    const val path = "path"
-    const val totalPages = "totalPages"
-    const val downloadPages = "downloadPages"
-    const val totalSize = "totalSize"
-    const val downloadSize = "downloadSize"
-    const val totalTime = "totalTime"
-    const val status = "status"
-    const val order = "order"
-}
+import com.san.kir.manger.utils.enums.DownloadColumn
+import com.san.kir.manger.utils.enums.DownloadStatus
 
 @Entity(tableName = DownloadColumn.tableName)
 data class DownloadItem(
@@ -60,9 +46,12 @@ data class DownloadItem(
     var status: Int,
 
     @ColumnInfo(name = DownloadColumn.order)
-    var order: Long
-) : Parcelable {
+    var order: Long,
 
+    @ColumnInfo(name = DownloadColumn.error)
+    var isError: Boolean
+
+) : Parcelable {
     @Ignore
     constructor(parcel: Parcel) : this(
         parcel.readLong(),
@@ -76,7 +65,8 @@ data class DownloadItem(
         parcel.readLong(),
         parcel.readLong(),
         parcel.readInt(),
-        parcel.readLong()
+        parcel.readLong(),
+        parcel.readByte() != 0.toByte()
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -92,6 +82,7 @@ data class DownloadItem(
         parcel.writeLong(totalTime)
         parcel.writeInt(status)
         parcel.writeLong(order)
+        parcel.writeByte(if (isError) 1 else 0)
     }
 
     override fun describeContents() = 0
@@ -101,15 +92,7 @@ data class DownloadItem(
 
         override fun newArray(size: Int): Array<DownloadItem?> = arrayOfNulls(size)
     }
-}
 
-object DownloadStatus {
-    const val loading = 0
-    const val queued = 1
-    const val pause = 2
-    const val error = 3
-    const val completed = 4
-    const val unknown = 5
 }
 
 fun Chapter.toDownloadItem() = DownloadItem(
@@ -124,7 +107,8 @@ fun Chapter.toDownloadItem() = DownloadItem(
     downloadSize = 0,
     totalTime = 0,
     status = DownloadStatus.unknown,
-    order = 0
+    order = 0,
+    isError = false
 )
 
 fun LatestChapter.toDownloadItem() = DownloadItem(
@@ -139,5 +123,6 @@ fun LatestChapter.toDownloadItem() = DownloadItem(
     downloadSize = 0,
     totalTime = 0,
     status = DownloadStatus.unknown,
-    order = 0
+    order = 0,
+    isError = false
 )

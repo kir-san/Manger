@@ -6,7 +6,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -36,9 +35,6 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
         private const val ACTION_START_ALL = "kir.san.manger.DownloadService.START_ALL"
         private const val ACTION_START = "kir.san.manger.DownloadService.START"
 
-        private const val ACTION_RETRY_ALL = "kir.san.manger.DownloadService.RETRY_ALL"
-        private const val ACTION_RETRY = "kir.san.manger.DownloadService.RETRY"
-
         private const val ACTION_ADD = "kir.san.manger.DownloadService.ADD"
         private const val ACTION_ADD_OR_START = "kir.san.manger.DownloadService.ADD_OR_START"
 
@@ -57,18 +53,6 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
         fun start(ctx: Context, item: DownloadItem) = with(ctx) {
             startForegroundServiceIntent(
                 intentFor<DownloadService>("item" to item).setAction(ACTION_START)
-            )
-        }
-
-        fun retryAll(ctx: Context) = with(ctx) {
-            startForegroundServiceIntent(
-                intentFor<DownloadService>().setAction(ACTION_RETRY_ALL)
-            )
-        }
-
-        fun retry(ctx: Context, item: DownloadItem) = with(ctx) {
-            startForegroundServiceIntent(
-                intentFor<DownloadService>("item" to item).setAction(ACTION_RETRY)
             )
         }
 
@@ -223,15 +207,7 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
             ACTION_START -> launchCtx {
                 val item = intent.getParcelableExtra<DownloadItem>("item")
                 item?.let {
-                    downloadManager.start(it)
-                }
-            }
-
-            ACTION_RETRY_ALL -> downloadManager.retryAll()
-            ACTION_RETRY -> launchCtx {
-                val item = intent.getParcelableExtra<DownloadItem>("item")
-                item?.let {
-                    downloadManager.retry(it)
+                    downloadManager.addOrStart(it)
                 }
             }
 
@@ -309,7 +285,7 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
         queueCount--
         totalSize += item.downloadSize
         totalTime += item.totalTime
-        if (queueCount == 0)
+        if (queueCount <= 0)
             sendCompleteNotification()
     }
 

@@ -86,13 +86,6 @@ class DownloadManagerView(private val act: DownloadManagerActivity) {
                     backgroundResource = R.drawable.ic_stop_white
                 }
 
-
-                // Кнопка перезапуска
-                btn {
-                    onClick { DownloadService.retryAll(act) }
-                    backgroundResource = R.drawable.ic_update
-                }
-
                 space { }.lparams(width = dip(34))
 
                 // Кнопка очистки

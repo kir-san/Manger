@@ -36,6 +36,8 @@ class ChapterLoader(context: Context) {
         job.post {
             task.order = System.currentTimeMillis()
             task.status = DownloadStatus.queued
+            task.isError = false
+
             mDownloadDao.insert(task)
 
             startIteratorProcessor()
@@ -62,63 +64,67 @@ class ChapterLoader(context: Context) {
 
     fun pause(task: DownloadItem) {
         job.post {
-            task.status = DownloadStatus.queued
-            mDownloadDao.update(task)
+            val lTask =
+                if (task.id != 0L) task
+                else mDownloadDao.getItem(task.link)
 
-            if (isDownloading(task.id)) {
-                cancelDownload(task.id)
+
+            if (lTask == null) {
+                uiJob.post {
+                    listeners.mainListener.onError(task, null)
+                }
+                return@post
             }
-            if (canPauseDownload(task)) {
-                task.status = DownloadStatus.pause
+
+            lTask.status = DownloadStatus.queued
+            mDownloadDao.update(lTask)
+
+            if (isDownloading(lTask.id)) {
+                cancelDownload(lTask.id)
             }
-            mDownloadDao.update(task)
+            if (canPauseDownload(lTask)) {
+                lTask.status = DownloadStatus.pause
+            }
+            mDownloadDao.update(lTask)
 
             uiJob.post {
-                listeners.mainListener.onPaused(task)
+                listeners.mainListener.onPaused(lTask)
             }
         }
     }
 
     fun start(task: DownloadItem) {
         job.post {
-            if (isDownloading(task.id)) {
-                cancelDownload(task.id)
-            }
+            val lTask =
+                if (task.id != 0L) task
+                else mDownloadDao.getItem(task.link)
 
-            if (isDownloading(task.id) || !(canResumeDownload(task) || canCompleteDownload(task))) {
+
+            if (lTask == null) {
+                uiJob.post {
+                    listeners.mainListener.onError(task, null)
+                }
                 return@post
             }
 
-            task.order = System.currentTimeMillis()
-            task.status = DownloadStatus.queued
+            if (isDownloading(lTask.id)) {
+                cancelDownload(lTask.id)
+            }
 
-            mDownloadDao.update(task)
+            lTask.order = System.currentTimeMillis()
+            lTask.status = DownloadStatus.queued
+            lTask.isError = false
+
+            mDownloadDao.update(lTask)
 
             startIteratorProcessor()
 
             uiJob.post {
-                listeners.mainListener.onQueued(task)
+                listeners.mainListener.onQueued(lTask)
             }
 
             if (!networkManager.isAvailable()) {
-                pause(task)
-            }
-        }
-    }
-
-    fun retry(task: DownloadItem) {
-        job.post {
-            if (canRetryDownload(task)) {
-                task.order = System.currentTimeMillis()
-                task.status = DownloadStatus.queued
-            }
-
-            mDownloadDao.update(task)
-
-            startIteratorProcessor()
-
-            uiJob.post {
-                listeners.mainListener.onQueued(task)
+                pause(lTask)
             }
         }
     }
@@ -160,28 +166,7 @@ class ChapterLoader(context: Context) {
             if (downloads.isNotEmpty()) {
                 downloads.forEach {
                     it.status = DownloadStatus.queued
-                }
-                mDownloadDao.update(*downloads.toTypedArray())
-            }
-
-            iteratorProcessor.start()
-
-            uiJob.post {
-                downloads.forEach {
-                    listeners.mainListener.onQueued(it)
-                }
-            }
-        }
-    }
-
-    fun retryAll() {
-        job.post {
-            val downloads =
-                mDownloadDao.getItems()
-                    .filter { canRetryDownload(it) }
-            if (downloads.isNotEmpty()) {
-                downloads.forEach {
-                    it.status = DownloadStatus.queued
+                    it.isError = false
                 }
                 mDownloadDao.update(*downloads.toTypedArray())
             }
@@ -213,8 +198,11 @@ class ChapterLoader(context: Context) {
     }
 
     suspend fun hasTask(task: DownloadItem): Boolean {
-        val containedItem =
-            job.async(Dispatchers.Default) { mDownloadDao.getItem(task.link) }.await()
+        val containedItem = withContext(job.coroutineContext + Dispatchers.Default) {
+            mDownloadDao.getItem(
+                task.link
+            )
+        }
         return containedItem != null
     }
 
@@ -251,10 +239,6 @@ class ChapterLoader(context: Context) {
 
     private fun canResumeDownload(task: DownloadItem): Boolean {
         return task.status == DownloadStatus.pause
-    }
-
-    private fun canRetryDownload(task: DownloadItem): Boolean {
-        return task.status == DownloadStatus.error
     }
 
     private fun canCompleteDownload(task: DownloadItem): Boolean {

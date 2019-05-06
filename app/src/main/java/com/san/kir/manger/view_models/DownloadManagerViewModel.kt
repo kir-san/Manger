@@ -7,8 +7,8 @@ import com.san.kir.manger.extending.launchCtx
 import com.san.kir.manger.repositories.DownloadRepository
 import com.san.kir.manger.repositories.MangaRepository
 import com.san.kir.manger.room.models.DownloadItem
-import com.san.kir.manger.room.models.DownloadStatus
 import com.san.kir.manger.room.models.Manga
+import com.san.kir.manger.utils.enums.DownloadStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -54,7 +54,7 @@ class DownloadManagerViewModel(app: Application) : AndroidViewModel(app), Corout
         launchCtx {
             val items = mDownloaRepository
                 .getItems()
-                .filter { it.status == DownloadStatus.pause }
+                .filter { it.status == DownloadStatus.pause && !it.isError }
                 .toTypedArray()
             mDownloaRepository.delete(*items)
         }
@@ -64,7 +64,7 @@ class DownloadManagerViewModel(app: Application) : AndroidViewModel(app), Corout
         launchCtx {
             val items = mDownloaRepository
                 .getItems()
-                .filter { it.status == DownloadStatus.error }
+                .filter { it.status == DownloadStatus.pause && it.isError }
                 .toTypedArray()
             mDownloaRepository.delete(*items)
         }
@@ -77,7 +77,6 @@ class DownloadManagerViewModel(app: Application) : AndroidViewModel(app), Corout
                 .filter {
                     it.status == DownloadStatus.completed
                             || it.status == DownloadStatus.pause
-                            || it.status == DownloadStatus.error
                 }
                 .toTypedArray()
             mDownloaRepository.delete(*items)

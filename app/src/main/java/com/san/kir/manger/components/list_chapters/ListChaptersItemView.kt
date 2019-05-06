@@ -66,23 +66,21 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
     private lateinit var root: RelativeLayout
     private lateinit var name: TextView
     private lateinit var date: TextView
-    private lateinit var stopBtn: ImageView
     private lateinit var limit: FrameLayout
-    private lateinit var startBtn: ImageView
-    private lateinit var deleteBtn: ImageView
+    private lateinit var stopBtn: ImageView
+    private lateinit var restartBtn: ImageView
+    private lateinit var downloadBtn: ImageView
     private lateinit var status: TextView
     private lateinit var percentProgress: TextView
-    private lateinit var noAction: ImageView
-    private lateinit var downloadBtn: ImageView
     private lateinit var progressBar: ProgressBar
+    private lateinit var deleteIndicator: ImageView
 
     private lateinit var item: Chapter
 
     private lateinit var observer: Observer<DownloadItem?>
 
     override fun createView(ui: AnkoContext<ViewGroup>) = with(ui) {
-        val bigBtnSize = dip(45)
-        val smallBtnSize = dip(35)
+        val btnSize = dip(35)
 
         relativeLayout {
             lparams(width = matchParent, height = dip(55)) {
@@ -103,9 +101,20 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
 
             status = textView {
                 padding = dip(5)
+                id = ID.generate()
             }.lparams(width = wrapContent, height = wrapContent) {
                 alignParentLeft()
                 alignParentBottom()
+            }
+
+            deleteIndicator = imageView {
+                backgroundResource = R.drawable.ic_action_delete_black
+                padding = dip(10)
+                visibleOrGone(false)
+            }.lparams(width = dip(20), height = dip(20)) {
+                bottomMargin = dip(3)
+                alignParentBottom()
+                endOf(status)
             }
 
             date = textView {
@@ -119,44 +128,32 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
             limit = frameLayout {
                 id = Id.limit
 
-                deleteBtn = imageView {
-                    backgroundResource = R.drawable.ic_action_delete_black
+                restartBtn = imageView {
+                    backgroundResource = R.drawable.ic_update_black
                     visibility = View.GONE
-                }.lparams(width = bigBtnSize, height = bigBtnSize) {
-                    gravity = Gravity.CENTER
-                }
-
-                noAction = imageView {
-                    backgroundResource = R.drawable.ic_action_download_black
-                    visibility = View.GONE
-                }.lparams(width = bigBtnSize, height = bigBtnSize) {
+                }.lparams(width = btnSize, height = btnSize) {
                     gravity = Gravity.CENTER
                 }
 
                 downloadBtn = imageView {
                     backgroundResource = R.drawable.ic_action_download_green
                     visibility = View.GONE
-                }.lparams(width = bigBtnSize, height = bigBtnSize) {
+                }.lparams(width = btnSize, height = btnSize) {
                     gravity = Gravity.CENTER
                 }
 
                 stopBtn = imageView {
                     backgroundResource = R.drawable.ic_stop
                     visibility = View.GONE
-                }.lparams(width = smallBtnSize, height = smallBtnSize) {
-                    gravity = Gravity.CENTER
-                }
-
-                startBtn = imageView {
-                    backgroundResource = R.drawable.ic_start
-                    visibility = View.GONE
-                }.lparams(width = smallBtnSize, height = smallBtnSize) {
+                }.lparams(width = btnSize, height = btnSize) {
                     gravity = Gravity.CENTER
                 }
 
                 progressBar = progressBar {
                     visibility = View.GONE
-                }.lparams(width = matchParent, height = matchParent)
+                }.lparams(width = dip(17), height = dip(17)) {
+                    gravity = Gravity.TOP or Gravity.END
+                }
 
                 percentProgress = textView {
                     visibility = View.GONE
@@ -184,7 +181,6 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
 
         disableDownload(item)
 
-
         val color = when {
             isSelected -> Color.parseColor("#9934b5e4")
             item.isRead -> Color.parseColor("#a5a2a2")
@@ -201,17 +197,19 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
     override fun onAttached(position: Int) {
         initializeOnClicks(item, position)
 
-        act.mViewModel.getDownloadItem(item)
+        act.mViewModel
+            .getDownloadItem(item)
             .observe(act, observer)
     }
 
     override fun onDetached() {
-        deleteBtn.setOnClickListener(null)
+        restartBtn.setOnClickListener(null)
         downloadBtn.setOnClickListener(null)
         root.setOnClickListener(null)
         root.setOnLongClickListener(null)
 
-        act.mViewModel.getDownloadItem(item)
+        act.mViewModel
+            .getDownloadItem(item)
             .removeObserver(observer)
     }
 
@@ -222,54 +220,36 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
             chapter.pages.size,
             chapter.countPages
         )
+        deleteIndicator.visibleOrGone(chapter.countPages > 0)
     }
 
     private fun disableDownload(chapter: Chapter) = act.launchUI {
-        progressBar.visibility = View.GONE
-        percentProgress.visibility = View.GONE
-        stopBtn.visibility = View.GONE
-        startBtn.visibility = View.GONE
-        deleteBtn.visibility = View.GONE
-        noAction.visibility = View.GONE
-        downloadBtn.visibility = View.GONE
+        progressBar.visibleOrGone(false)
+        percentProgress.visibleOrGone(false)
+        stopBtn.visibleOrGone(false)
+        restartBtn.visibleOrGone(false)
+        downloadBtn.visibleOrGone(false)
 
         when (chapter.action) {
-            ChapterStatus.DELETE -> deleteBtn.visibility = View.VISIBLE
-            ChapterStatus.NOT_LOADED -> noAction.visibility = View.VISIBLE
-            ChapterStatus.DOWNLOADABLE -> downloadBtn.visibility = View.VISIBLE
-            else -> noAction.visibility = View.VISIBLE
+            ChapterStatus.DELETE -> restartBtn.visibleOrGone(true)
+            ChapterStatus.DOWNLOADABLE -> downloadBtn.visibleOrGone(true)
         }
 
         isDownload = false
     }
 
     private fun initializeOnClicks(chapter: Chapter, position: Int) {
-        deleteBtn.onClick {
-            act.alert(R.string.list_chapters_delete_text) {
-                positiveButton(R.string.list_chapters_delete_yes) {
-                    try {
-                        val (acc, max) = delChapters(chapter) // При удалении главы
-                        if (acc != max) // проверить результат
-                        // если не удалено
-                            act.toast(R.string.list_chapters_delete_not_delete)
-                        else {
-                            // если удалено
-                            act.toast(R.string.list_chapters_delete_okay_delete)
-                            disableDownload(chapter)
-                        }
-                    } catch (ex: IOException) {
-                        // В случае ошибки
-                        act.toast(R.string.list_chapters_delete_error)
-                        ex.printStackTrace()
-                    }
-                }
-                negativeButton(R.string.list_chapters_delete_no) {}
-            }.show()
+        restartBtn.onClick {
+            log("restart btn is clicked")
+            DownloadService.start(act, chapter.toDownloadItem())
         }
 
         downloadBtn.onClick {
-            enableDownload()
-            DownloadService.addOrStart(act, chapter.toDownloadItem())
+            DownloadService.add(act, chapter.toDownloadItem())
+        }
+
+        stopBtn.onClick {
+            DownloadService.pause(act, chapter.toDownloadItem())
         }
 
         root.onClick {
@@ -300,22 +280,9 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
         progressBar.visibility = View.VISIBLE
         percentProgress.visibility = View.VISIBLE
         stopBtn.visibility = View.VISIBLE
-        startBtn.visibility = View.GONE
-        deleteBtn.visibility = View.GONE
-        noAction.visibility = View.GONE
+        restartBtn.visibility = View.GONE
         downloadBtn.visibility = View.GONE
         isDownload = true
-    }
-
-    private fun pauseDownload() {
-        progressBar.visibility = View.GONE
-        percentProgress.visibility = View.VISIBLE
-        stopBtn.visibility = View.GONE
-        startBtn.visibility = View.VISIBLE
-        deleteBtn.visibility = View.GONE
-        noAction.visibility = View.GONE
-        downloadBtn.visibility = View.GONE
-        isDownload = false
     }
 
     private fun changeVisibleAndActions(item: DownloadItem?, chapter: Chapter) {
@@ -325,24 +292,8 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
                 DownloadStatus.loading -> {
                     enableDownload()
                     progressDownload(download.downloadPages, download.totalPages)
-                    limit.onClick {
-                        DownloadService.pause(act, download)
-                    }
                 }
-                DownloadStatus.pause -> {
-                    pauseDownload()
-                    limit.onClick {
-                        DownloadService.start(act, download)
-                    }
-                    updateStatus(chapter)
-                }
-                DownloadStatus.error -> {
-                    pauseDownload()
-                    limit.onClick {
-                        DownloadService.retry(act, download)
-                    }
-                    updateStatus(chapter)
-                }
+                DownloadStatus.pause,
                 DownloadStatus.completed -> {
                     disableDownload(chapter)
                     updateStatus(chapter)

@@ -2,10 +2,10 @@ package com.san.kir.manger.room.migrations
 
 import android.arch.persistence.db.SupportSQLiteDatabase
 import android.arch.persistence.room.migration.Migration
-import com.san.kir.manger.room.models.DownloadColumn
 import com.san.kir.manger.room.models.MangaStatisticColumn
 import com.san.kir.manger.room.models.PlannedTaskColumn
 import com.san.kir.manger.utils.enums.ChapterFilter
+import com.san.kir.manger.utils.enums.DownloadColumn
 
 
 private fun migrate(from: Int, to: Int, vararg sql: String) =
@@ -458,5 +458,65 @@ val migrations: Array<Migration> = arrayOf(
                 "id, unic, host, name, authors, logo, about, categories, genres, path, status, site, color, populate, `order`, isAlternativeSort, isUpdate " +
                 "FROM tmp_manga",
         "DROP TABLE tmp_manga"
+    ),
+    migrate(
+        32, 33,
+        "ALTER TABLE manga RENAME TO tmp_manga",
+        "CREATE TABLE `manga` (" +
+                "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "`unic` TEXT NOT NULL, " +
+                "`host` TEXT NOT NULL, " +
+                "`name` TEXT NOT NULL, " +
+                "`authors` TEXT NOT NULL, " +
+                "`logo` TEXT NOT NULL, " +
+                "`about` TEXT NOT NULL, " +
+                "`categories` TEXT NOT NULL, " +
+                "`genres` TEXT NOT NULL, " +
+                "`path` TEXT NOT NULL, " +
+                "`status` TEXT NOT NULL, " +
+                "`site` TEXT NOT NULL, " +
+                "`color` INTEGER NOT NULL, " +
+                "`populate` INTEGER NOT NULL DEFAULT 0, " +
+                "`order` INTEGER NOT NULL DEFAULT 0, " +
+                "`isAlternativeSort` INTEGER NOT NULL DEFAULT 1, " +
+                "isUpdate INTEGER NOT NULL DEFAULT 1," +
+                "chapterFilter TEXT NOT NULL DEFAULT ${ChapterFilter.ALL_READ_ASC.name}," +
+                "isAlternativeSite INTEGER NOT NULL DEFAULT 0)",
+        "INSERT INTO manga(" +
+                "id, unic, host, name, authors, logo, about, categories, genres, path, status, site, color, populate, `order`, isAlternativeSort, isUpdate, chapterFilter) " +
+                "SELECT " +
+                "id, unic, host, name, authors, logo, about, categories, genres, path, status, site, color, populate, `order`, isAlternativeSort, isUpdate, chapterFilter " +
+                "FROM tmp_manga",
+        "DROP TABLE tmp_manga"
+    ),
+    migrate(
+        33, 34,
+        "ALTER TABLE ${DownloadColumn.tableName} RENAME TO tmp_${DownloadColumn.tableName}",
+        "CREATE TABLE ${DownloadColumn.tableName} (" +
+                "${DownloadColumn.id} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "${DownloadColumn.manga} TEXT NOT NULL DEFAULT ``, " +
+                "${DownloadColumn.name} TEXT NOT NULL, " +
+                "${DownloadColumn.link} TEXT NOT NULL, " +
+                "${DownloadColumn.path} TEXT NOT NULL, " +
+                "${DownloadColumn.totalPages} INTEGER NOT NULL, " +
+                "${DownloadColumn.downloadPages} INTEGER NOT NULL, " +
+                "${DownloadColumn.totalSize} INTEGER NOT NULL, " +
+                "${DownloadColumn.downloadSize} INTEGER NOT NULL, " +
+                "${DownloadColumn.totalTime} INTEGER NOT NULL, " +
+                "${DownloadColumn.status} INTEGER NOT NULL, " +
+                "`${DownloadColumn.order}` INTEGER NOT NULL, " +
+                "${DownloadColumn.error} INTEGER NOT NULL DEFAULT 0)",
+        "INSERT INTO ${DownloadColumn.tableName}(" +
+                "${DownloadColumn.id}, ${DownloadColumn.name}, ${DownloadColumn.link}," +
+                "${DownloadColumn.path}, ${DownloadColumn.totalPages}, ${DownloadColumn.downloadPages}," +
+                "${DownloadColumn.totalSize}, ${DownloadColumn.downloadSize}, ${DownloadColumn.totalTime}," +
+                "${DownloadColumn.status}, `${DownloadColumn.order}`) " +
+                "SELECT " +
+                "${DownloadColumn.id}, ${DownloadColumn.name}, ${DownloadColumn.link}," +
+                "${DownloadColumn.path}, ${DownloadColumn.totalPages}, ${DownloadColumn.downloadPages}," +
+                "${DownloadColumn.totalSize}, ${DownloadColumn.downloadSize}, ${DownloadColumn.totalTime}," +
+                "${DownloadColumn.status}, `${DownloadColumn.order}` " +
+                "FROM tmp_${DownloadColumn.tableName}",
+        "DROP TABLE tmp_${DownloadColumn.tableName}"
     )
 )

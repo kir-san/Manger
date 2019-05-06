@@ -57,7 +57,7 @@ import com.san.kir.manger.utils.enums.DIR
 abstract class RoomDB : RoomDatabase() {
     companion object {
         const val NAME = "${DIR.PROFILE}/profile.db"
-        const val VERSION = 32
+        const val VERSION = 34
     }
 
     abstract val siteDao: SiteDao

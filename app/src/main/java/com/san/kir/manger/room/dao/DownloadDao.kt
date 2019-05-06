@@ -3,8 +3,8 @@ package com.san.kir.manger.room.dao
 import android.arch.lifecycle.LiveData
 import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Query
-import com.san.kir.manger.room.models.DownloadColumn
 import com.san.kir.manger.room.models.DownloadItem
+import com.san.kir.manger.utils.enums.DownloadColumn
 
 @Dao
 interface DownloadDao : BaseDao<DownloadItem> {
@@ -20,6 +20,13 @@ interface DownloadDao : BaseDao<DownloadItem> {
                 "ORDER BY `${DownloadColumn.order}`"
     )
     fun getItems(status: Int): List<DownloadItem>
+
+    @Query(
+        "SELECT * FROM ${DownloadColumn.tableName} " +
+                "WHERE ${DownloadColumn.error} IS 0 " +
+                "ORDER BY `${DownloadColumn.order}`"
+    )
+    fun getErrorItems(): List<DownloadItem>
 
     @Query(
         "SELECT * FROM ${DownloadColumn.tableName} " +

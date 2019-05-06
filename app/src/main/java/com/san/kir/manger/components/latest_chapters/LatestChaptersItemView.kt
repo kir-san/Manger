@@ -65,16 +65,13 @@ class LatestChaptersItemView(private val act: LatestChapterActivity) :
     private lateinit var stop: ImageView
     private lateinit var limit: FrameLayout
     private lateinit var manga: TextView
-    private lateinit var start: ImageView
-    private lateinit var delete: ImageView
+    private lateinit var restart: ImageView
     private lateinit var percent: TextView
-    private lateinit var noAction: ImageView
     private lateinit var download: ImageView
     private lateinit var progressBar: ProgressBar
 
     override fun createView(ui: AnkoContext<ViewGroup>) = with(ui) {
-        val bigBtnSize = dip(45)
-        val smallBtnSize = dip(35)
+        val btnSize = dip(35)
         // Подкорень (требуется для отображения выделения и всего остального)
         relativeLayout {
             lparams(width = matchParent, height = dip(55)) {
@@ -113,38 +110,28 @@ class LatestChaptersItemView(private val act: LatestChapterActivity) :
             limit = frameLayout {
                 id = Id.limit
 
-                delete = imageView {
-                    backgroundResource = R.drawable.ic_action_delete_black
-                }.lparams(width = bigBtnSize, height = bigBtnSize) {
-                    gravity = Gravity.CENTER
-                }
-
-                noAction = imageView {
-                    backgroundResource = R.drawable.ic_action_download_black
-                }.lparams(width = bigBtnSize, height = bigBtnSize) {
+                restart = imageView {
+                    backgroundResource = R.drawable.ic_update_black
+                }.lparams(width = btnSize, height = btnSize) {
                     gravity = Gravity.CENTER
                 }
 
                 download = imageView {
                     backgroundResource = R.drawable.ic_action_download_green
-                }.lparams(width = bigBtnSize, height = bigBtnSize) {
+                }.lparams(width = btnSize, height = btnSize) {
                     gravity = Gravity.CENTER
                 }
 
 
                 stop = imageView {
                     backgroundResource = R.drawable.ic_stop
-                }.lparams(width = smallBtnSize, height = smallBtnSize) {
+                }.lparams(width = btnSize, height = btnSize) {
                     gravity = Gravity.CENTER
                 }
 
-                start = imageView {
-                    backgroundResource = R.drawable.ic_start
-                }.lparams(width = smallBtnSize, height = smallBtnSize) {
-                    gravity = Gravity.CENTER
+                progressBar = progressBar { }.lparams(width = dip(17), height = dip(17)) {
+                    gravity = Gravity.TOP or Gravity.END
                 }
-
-                progressBar = progressBar { }.lparams(width = matchParent, height = matchParent)
 
                 percent = textView {
                     textSize = 10f
@@ -166,22 +153,9 @@ class LatestChaptersItemView(private val act: LatestChapterActivity) :
         progressBar.visibility = View.VISIBLE
         percent.visibility = View.VISIBLE
         stop.visibility = View.VISIBLE
-        start.visibility = View.GONE
-        delete.visibility = View.GONE
-        noAction.visibility = View.GONE
+        restart.visibility = View.GONE
         download.visibility = View.GONE
         isDownload = true
-    }
-
-    private fun pauseDownload() {
-        progressBar.visibility = View.GONE
-        percent.visibility = View.VISIBLE
-        stop.visibility = View.GONE
-        start.visibility = View.VISIBLE
-        delete.visibility = View.GONE
-        noAction.visibility = View.GONE
-        download.visibility = View.GONE
-        isDownload = false
     }
 
     private fun progressDownload(progress: Int, max: Int) {
@@ -196,48 +170,28 @@ class LatestChaptersItemView(private val act: LatestChapterActivity) :
         progressBar.visibility = View.GONE
         percent.visibility = View.GONE
         stop.visibility = View.GONE
-        start.visibility = View.GONE
-        delete.visibility = View.GONE
-        noAction.visibility = View.GONE
+        restart.visibility = View.GONE
         download.visibility = View.GONE
 
         when (chapter.action) {
-            ChapterStatus.DELETE -> delete.visibility = View.VISIBLE
-            ChapterStatus.NOT_LOADED -> noAction.visibility = View.VISIBLE
-            ChapterStatus.DOWNLOADABLE -> download.visibility = View.VISIBLE
-            else -> noAction.visibility = View.VISIBLE
+            ChapterStatus.DELETE -> restart.visibleOrGone(true)
+            ChapterStatus.DOWNLOADABLE -> download.visibleOrGone(true)
         }
 
         isDownload = false
     }
 
     private fun initializeOnClicks(chapter: LatestChapter) {
-        delete.onClick {
-            act.alert(R.string.list_chapters_delete_text) {
-                positiveButton(R.string.list_chapters_delete_yes) {
-                    try {
-                        val (acc, max) = delChapters(chapter) // При удалении главы
-                        if (acc != max) // проверить результат
-                        // если не удалено
-                            act.toast(R.string.list_chapters_delete_not_delete)
-                        else {
-                            // если удалено
-                            act.toast(R.string.list_chapters_delete_okay_delete)
-                            disableDownload(chapter)
-                        }
-                    } catch (ex: IOException) {
-                        // В случае ошибки
-                        act.toast(R.string.list_chapters_delete_error)
-                        ex.printStackTrace()
-                    }
-                }
-                negativeButton(R.string.list_chapters_delete_no) {}
-            }.show()
+        restart.onClick {
+            DownloadService.start(act, chapter.toDownloadItem())
         }
 
         download.onClick {
-            enableDownload()
-            DownloadService.addOrStart(act, chapter.toDownloadItem())
+            DownloadService.add(act, chapter.toDownloadItem())
+        }
+
+        stop.onClick {
+            DownloadService.pause(act, chapter.toDownloadItem())
         }
     }
 
@@ -268,28 +222,14 @@ class LatestChaptersItemView(private val act: LatestChapterActivity) :
     }
 
     private fun changeVisibilityAndActions(item: DownloadItem?, chapter: LatestChapter) {
-        item?.let { downloadItem ->
-            when (downloadItem.status) {
+        item?.let { download ->
+            when (download.status) {
                 DownloadStatus.queued,
                 DownloadStatus.loading -> {
                     enableDownload()
-                    progressDownload(downloadItem.downloadPages, downloadItem.totalPages)
-                    limit.onClick {
-                        DownloadService.pause(act, item)
-                    }
+                    progressDownload(download.downloadPages, download.totalPages)
                 }
-                DownloadStatus.pause -> {
-                    pauseDownload()
-                    limit.onClick {
-                        DownloadService.start(act, item)
-                    }
-                }
-                DownloadStatus.error -> {
-                    pauseDownload()
-                    limit.onClick {
-                        DownloadService.retry(act, item)
-                    }
-                }
+                DownloadStatus.pause,
                 DownloadStatus.completed -> {
                     disableDownload(chapter)
                 }

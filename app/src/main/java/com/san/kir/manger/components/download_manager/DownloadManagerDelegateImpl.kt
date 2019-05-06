@@ -2,8 +2,8 @@ package com.san.kir.manger.components.download_manager
 
 import com.san.kir.manger.room.RoomDB
 import com.san.kir.manger.room.models.DownloadItem
-import com.san.kir.manger.room.models.DownloadStatus
 import com.san.kir.manger.utils.JobContext
+import com.san.kir.manger.utils.enums.DownloadStatus
 
 class DownloadManagerDelegateImpl(
     private val uiJob: JobContext,
@@ -39,8 +39,10 @@ class DownloadManagerDelegateImpl(
     }
 
     override fun onError(item: DownloadItem, cause: Throwable?) {
-        item.status = DownloadStatus.error
+        item.status = DownloadStatus.pause
+        item.isError = true
         mDownloadDao.update(item)
+
         uiJob.post {
             listener.onError(item, cause)
         }

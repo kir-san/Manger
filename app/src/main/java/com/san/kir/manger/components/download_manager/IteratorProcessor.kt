@@ -2,9 +2,9 @@ package com.san.kir.manger.components.download_manager
 
 import com.san.kir.manger.room.RoomDB
 import com.san.kir.manger.room.models.DownloadItem
-import com.san.kir.manger.room.models.DownloadStatus
 import com.san.kir.manger.utils.JobContext
 import com.san.kir.manger.utils.NetworkManager
+import com.san.kir.manger.utils.enums.DownloadStatus
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
@@ -50,7 +50,7 @@ class IteratorProcessor(
     private fun getIterator(): Iterator<DownloadItem> {
         var queuedList = mDownloadDao.getItems(DownloadStatus.queued)
         if (isRetry) {
-            queuedList = queuedList + mDownloadDao.getItems(DownloadStatus.error)
+            queuedList = queuedList + mDownloadDao.getErrorItems()
         }
         return queuedList.iterator()
     }

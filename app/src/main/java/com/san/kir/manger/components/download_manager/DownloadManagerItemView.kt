@@ -3,6 +3,7 @@ package com.san.kir.manger.components.download_manager
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.san.kir.manger.R
@@ -13,11 +14,11 @@ import com.san.kir.manger.extending.anko_extend.visibleOrGone
 import com.san.kir.manger.extending.anko_extend.visibleOrInvisible
 import com.san.kir.manger.extending.views.RoundedImageView
 import com.san.kir.manger.room.models.DownloadItem
-import com.san.kir.manger.room.models.DownloadStatus
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.TimeFormat
 import com.san.kir.manger.utils.bytesToMb
+import com.san.kir.manger.utils.enums.DownloadStatus
 import com.san.kir.manger.utils.formatDouble
 import com.san.kir.manger.utils.loadImage
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +27,7 @@ import kotlinx.coroutines.withContext
 import org.jetbrains.anko.AnkoContext
 import org.jetbrains.anko.alignParentEnd
 import org.jetbrains.anko.alignParentStart
+import org.jetbrains.anko.alignParentTop
 import org.jetbrains.anko.backgroundResource
 import org.jetbrains.anko.bottomOf
 import org.jetbrains.anko.centerVertically
@@ -34,6 +36,7 @@ import org.jetbrains.anko.endOf
 import org.jetbrains.anko.horizontalMargin
 import org.jetbrains.anko.horizontalProgressBar
 import org.jetbrains.anko.imageButton
+import org.jetbrains.anko.imageView
 import org.jetbrains.anko.lines
 import org.jetbrains.anko.margin
 import org.jetbrains.anko.matchParent
@@ -58,15 +61,16 @@ class DownloadManagerItemView(private val act: DownloadManagerActivity) :
 
     private val gMargin = 2
     private val gPadding = 3
+    private val errorSize = 15
     private val logoSize = 50
     private val nameTextSize = 16.5f
     private val btnSize = 40
 
+    private lateinit var isError: ImageView
     private lateinit var logo: RoundedImageView
     private lateinit var name: TextView
     private lateinit var progressText: TextView
     private lateinit var startBtn: ImageButton
-    private lateinit var retryBtn: ImageButton
     private lateinit var stopBtn: ImageButton
     private lateinit var progressBar: ProgressBar
     private lateinit var progressPercent: TextView
@@ -76,6 +80,14 @@ class DownloadManagerItemView(private val act: DownloadManagerActivity) :
             lparams(width = matchParent, height = wrapContent) {
                 margin = dip(gMargin)
                 padding = dip(gPadding)
+            }
+
+            isError = imageView {
+                backgroundResource = R.drawable.unknown
+                visibleOrInvisible(false)
+            }.lparams(width = dip(errorSize), height = dip(errorSize)) {
+                alignParentStart()
+                alignParentTop()
             }
 
             logo = roundedImageView {
@@ -111,15 +123,6 @@ class DownloadManagerItemView(private val act: DownloadManagerActivity) :
                 id = Id.start
                 visibility = View.INVISIBLE
                 backgroundResource = R.drawable.ic_start
-                padding = dip(10)
-            }.lparams(width = dip(btnSize), height = dip(btnSize)) {
-                alignParentEnd()
-                centerVertically()
-            }
-
-            retryBtn = imageButton {
-                visibility = View.GONE
-                backgroundResource = R.drawable.ic_update_black
                 padding = dip(10)
             }.lparams(width = dip(btnSize), height = dip(btnSize)) {
                 alignParentEnd()
@@ -166,7 +169,6 @@ class DownloadManagerItemView(private val act: DownloadManagerActivity) :
                 name.text = context.getString(R.string.download_item_name, item.manga, item.name)
 
                 startBtn.invisibleOrVisible(item.status != DownloadStatus.pause)
-                retryBtn.visibleOrGone(item.status == DownloadStatus.error)
                 stopBtn.visibleOrGone(isLoadOrQueue)
                 progressPercent.visibleOrInvisible(isLoadOrQueue)
                 progressBar.visibleOrInvisible(isLoadOrQueue)
@@ -174,9 +176,6 @@ class DownloadManagerItemView(private val act: DownloadManagerActivity) :
 
                 startBtn.onClick {
                     DownloadService.start(act, item)
-                }
-                retryBtn.onClick {
-                    DownloadService.retry(act, item)
                 }
                 stopBtn.onClick {
                     DownloadService.pause(act, item)
@@ -193,6 +192,8 @@ class DownloadManagerItemView(private val act: DownloadManagerActivity) :
                                 else item.downloadPages * 100 / item.totalPages
                             )
                 }
+
+                isError.visibleOrInvisible(item.isError)
             }
 
             when (item.status) {

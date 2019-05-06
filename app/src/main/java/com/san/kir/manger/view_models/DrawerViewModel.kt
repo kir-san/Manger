@@ -14,7 +14,7 @@ import com.san.kir.manger.repositories.PlannedRepository
 import com.san.kir.manger.repositories.SiteRepository
 import com.san.kir.manger.repositories.StorageRepository
 import com.san.kir.manger.room.models.Category
-import com.san.kir.manger.room.models.DownloadStatus
+import com.san.kir.manger.utils.enums.DownloadStatus
 import com.san.kir.manger.room.models.LatestChapter
 import com.san.kir.manger.room.models.MainMenuItem
 import com.san.kir.manger.room.models.Manga

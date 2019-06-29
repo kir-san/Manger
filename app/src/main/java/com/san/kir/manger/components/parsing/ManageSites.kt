@@ -1,6 +1,7 @@
 package com.san.kir.manger.components.parsing
 
 import com.github.kittinunf.fuel.Fuel
+import com.san.kir.manger.components.parsing.sites.Acomics
 import com.san.kir.manger.components.parsing.sites.Allhentai
 import com.san.kir.manger.components.parsing.sites.Mangachan
 import com.san.kir.manger.components.parsing.sites.Mintmanga

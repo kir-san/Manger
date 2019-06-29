@@ -53,8 +53,8 @@ class DownloadManagerDelegateImpl(
         mDownloadDao.update(item)
 
         val stat = mStatisticDao.getItem(item.manga)
-        stat.downloadSize += item.downloadSize
-        stat.downloadTime += item.totalTime
+        stat.downloadSize = stat.downloadSize.plus(item.downloadSize)
+        stat.downloadTime = stat.downloadTime.plus(item.totalTime)
         mStatisticDao.update(stat)
 
         uiJob.post {

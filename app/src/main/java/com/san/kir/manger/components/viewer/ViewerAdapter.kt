@@ -12,6 +12,7 @@ class ViewerAdapter(fm: FragmentManager) :
     var items : List<Fragment> = listOf()
 
     fun setList(list: List<Page>) {
+        items = listOf()
         list.forEachIndexed { position, page ->
             items = items + when (position) {
                 0 -> {

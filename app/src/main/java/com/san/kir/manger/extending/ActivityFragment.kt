@@ -1,7 +1,9 @@
 package com.san.kir.manger.extending
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.Surface
 import com.san.kir.manger.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,5 +39,25 @@ abstract class ThemedActionBarActivity: BaseActivity() {
 
         super.onCreate(savedInstanceState)
     }
+}
+
+fun BaseActivity.getOrientation(): Int {
+    val rotation = windowManager.defaultDisplay.rotation
+    when (rotation) {
+        Surface.ROTATION_0 -> {
+            return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        }
+        Surface.ROTATION_90 -> {
+            return ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        }
+        Surface.ROTATION_180 -> {
+            return ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
+        }
+        Surface.ROTATION_270 -> {
+            return ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
+        }
+    }
+
+    return ActivityInfo.SCREEN_ORIENTATION_FULL_USER
 }
 

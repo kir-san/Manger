@@ -3,12 +3,12 @@ package com.san.kir.manger.components.download_manager
 import android.content.Context
 import com.san.kir.manger.room.getDatabase
 import com.san.kir.manger.room.models.DownloadItem
-import com.san.kir.manger.room.models.DownloadStatus
 import com.san.kir.manger.utils.JobContext
 import com.san.kir.manger.utils.NetworkManager
+import com.san.kir.manger.utils.enums.DownloadStatus
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.util.concurrent.Executors
 
 class ChapterLoader(context: Context) {
@@ -16,8 +16,8 @@ class ChapterLoader(context: Context) {
     private val job = JobContext(Executors.newSingleThreadExecutor())
     private val listeners = ListenerProvider()
     private val networkManager = NetworkManager(context)
-    private val downloadManager = DownloadManager(1)
     private val mDbManager = getDatabase(context)
+    private val downloadManager = DownloadManager(mDbManager, 1)
     private val iteratorProcessor =
         IteratorProcessor(job, downloadManager, networkManager, mDbManager)
     private val mDownloadDao = mDbManager.downloadDao

@@ -32,6 +32,7 @@ import org.jetbrains.anko.setContentView
 import org.jetbrains.anko.startService
 import org.jetbrains.anko.toast
 
+
 class ListChaptersActivity : ThemedActionBarActivity() {
     private val filterStatusKey = "filteringStatus"
     private val receiver = object : BroadcastReceiver() {
@@ -65,10 +66,10 @@ class ListChaptersActivity : ThemedActionBarActivity() {
             }
         }
     }
-    val mAdapter = ListChaptersRecyclerPresenter(this)
-    private var bound = false
-    lateinit var manga: Manga
-    lateinit var downloadManager: ChapterLoader
+
+    private val actionCallback by lazy { ListChaptersActionCallback(mAdapter, this) }
+    val actionMode by lazy { ActionModeControl(this) }
+
     val mViewModel by lazy {
         ViewModelProviders.of(this).get(ListChaptersViewModel::class.java)
     }
@@ -103,7 +104,7 @@ class ListChaptersActivity : ThemedActionBarActivity() {
             mViewModel.updateManga(manga)
             withContext(Dispatchers.Main) {
                 title = manga.name
-                view.mAdapter.init(this@ListChaptersActivity)
+                view.mAdapter.init
             }
         }.invokeOnCompletion {
             val isIndividual = defaultSharedPreferences.getBoolean(key, default)
@@ -123,7 +124,7 @@ class ListChaptersActivity : ThemedActionBarActivity() {
                             mViewModel.isUpdate.negative()
                         }
                     mViewModel.filterState = filterStatus
-                } ?: kotlin.run {
+                } ?: run {
                     toast("Произошли внезапности")
                     onBackPressed()
                 }
@@ -229,7 +230,7 @@ class ListChaptersActivity : ThemedActionBarActivity() {
         // Если есть выделенные элементы и экшнМод не включен
         if (mAdapter.getSelectedCount() > 0 && actionMode.hasFinish()) {
             actionMode.start(actionCallback)
-            view.isVisibleBottom.item = false // Скрыть меню снизу
+            mViewModel.isVisibleBottom.item = false // Скрыть меню снизу
         } else if (mAdapter.getSelectedCount() <= 0 && !actionMode.hasFinish()) { // Если все наоборот
             actionMode.finish() // Завершить работу экшнМода
         }

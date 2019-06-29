@@ -1,4 +1,4 @@
-package com.san.kir.manger.utils.enums
+package com.san.kir.manger.room.columns
 
 object DownloadColumn {
     const val tableName = "downloads"

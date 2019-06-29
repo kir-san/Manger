@@ -37,9 +37,9 @@ abstract class CatalogDb : RoomDatabase() {
                 .databaseBuilder(
                     context.applicationContext,
                     CatalogDb::class.java,
-                    CatalogDb.NAME(catName)
+                    NAME(catName)
                 )
-                .addMigrations(*CatalogDb.Migrate.migrations)
+                .addMigrations(*Migrate.migrations)
                 .allowMainThreadQueries()
                 .build()
         }

@@ -13,7 +13,6 @@ class ViewerPresenter(private val act: ViewerActivity) {
 
     private var adapter = ViewerAdapter(act.supportFragmentManager)
     private var manager = ChaptersList(act)// Менеджер глав и страниц
-    private lateinit var viewPager: SpecialViewPager
 
     val progressChapters = Binder(-1)
     val progressPages = Binder(0) // Текущая страница, которую в данный момент читают
@@ -41,11 +40,19 @@ class ViewerPresenter(private val act: ViewerActivity) {
 
         manager.init(chapter, isAlternative)
 
+        withContext(Dispatchers.Main) {
+            adapter.setList(manager.pagesList)
+//            viewPager.currentItem = progressPages.item
+        }
+
         maxChapters = manager.chaptersSize
         max.item = manager.pagesSize
-        progressPages.unicItem =
-            if (manager.pagePosition <= 0) 1 // Если полученная позиция не больше нуля, то присвоить значение 1
-            else manager.pagePosition // Иначе то что есть
+
+        withContext(Dispatchers.Main) {
+            act.mView.viewPager.currentItem =
+                if (manager.pagePosition <= 0) 1 // Если полученная позиция не больше нуля, то присвоить значение 1
+                else manager.pagePosition // Иначе то что есть
+        }
 
         // При изменении прогресса, отдать новое значение в менеджер
         progressPages.bind { pos ->
@@ -56,10 +63,7 @@ class ViewerPresenter(private val act: ViewerActivity) {
 
         checkButton()
 
-        withContext(Dispatchers.Main) {
-            adapter.setList(manager.pagesList)
-            viewPager.currentItem = progressPages.item
-        }
+
     }
 
     fun nextPage() {
@@ -83,7 +87,6 @@ class ViewerPresenter(private val act: ViewerActivity) {
     }
 
     private suspend fun initChapter() {
-        progressPages.unicItem = 1
         max.unicItem = manager.pagesSize
         progressChapters.unicItem = manager.chapterPosition
 
@@ -91,9 +94,9 @@ class ViewerPresenter(private val act: ViewerActivity) {
 
         withContext(Dispatchers.Main) {
             adapter.setList(manager.pagesList)
-            viewPager.currentItem = progressPages.item
             act.chapter = manager.chapter() // Сохранение данных
             act.title = act.chapter.name // Смена заголовка
+            act.mView.viewPager.currentItem = 1
         }
     }
 

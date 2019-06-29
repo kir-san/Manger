@@ -1,7 +1,6 @@
 package com.san.kir.manger.components.parsing.sites
 
 import com.san.kir.manger.components.parsing.ManageSites
-import com.san.kir.manger.components.parsing.SiteCatalog
 import com.san.kir.manger.components.parsing.SiteCatalogClassic
 import com.san.kir.manger.components.parsing.Status
 import com.san.kir.manger.components.parsing.Translate

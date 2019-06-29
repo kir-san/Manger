@@ -29,7 +29,6 @@ import com.san.kir.manger.extending.views.showAlways
 import com.san.kir.manger.utils.convertImagesToPng
 import com.san.kir.manger.utils.createDirs
 import com.san.kir.manger.utils.isOkPng
-import com.san.kir.manger.utils.log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -185,9 +184,6 @@ class ViewerPageFragment : Fragment(), CoroutineScope {
                       {
                           it.exception.printStackTrace()
                       })
-
-
-            log("page.link = ${page.link} | file.isOkPng = ${file.isOkPng()}")
 
             return@withContext ImageSource.uri(
                 Uri.fromFile(

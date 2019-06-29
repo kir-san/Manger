@@ -1,7 +1,7 @@
 package com.san.kir.manger.components.parsing.sites
 
 import com.san.kir.manger.components.parsing.ManageSites
-import com.san.kir.manger.components.parsing.SiteCatalog
+import com.san.kir.manger.components.parsing.SiteCatalogClassic
 import com.san.kir.manger.components.parsing.Status
 import com.san.kir.manger.components.parsing.Translate
 import com.san.kir.manger.repositories.SiteRepository
@@ -17,7 +17,7 @@ import kotlinx.coroutines.channels.produce
 import org.jsoup.nodes.Element
 import java.util.regex.Pattern
 
-class Unicomics(siteRepository: SiteRepository) : SiteCatalog() {
+class Unicomics(siteRepository: SiteRepository) : SiteCatalogClassic() {
     override val name: String = "UniComics"
     override val catalogName: String = "unicomics.ru"
     override val siteCatalog: String = "$host/map"
@@ -159,7 +159,7 @@ class Unicomics(siteRepository: SiteRepository) : SiteCatalog() {
         while (true) {
             counter++
 
-            list = list + doc.select(".content #image").attr("src")
+            list = list + doc.select(".content #b_image").attr("src")
 
             if (counter > size) break
 

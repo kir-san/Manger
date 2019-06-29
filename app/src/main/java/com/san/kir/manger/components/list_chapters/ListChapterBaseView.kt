@@ -15,7 +15,7 @@ import org.jetbrains.anko.wrapContent
 
 class ListChapterBaseView(private val act: ListChaptersActivity) :
     AnkoComponent<ListChaptersActivity> {
-    val mAdapter = ListChapterBaseAdapter()
+    val mAdapter = ListChapterBaseAdapter(act)
     private val titleKey = act.getString(R.string.settings_list_chapter_title_key)
     private val titleDefault = act.getString(R.string.settings_list_chapter_title_default) == "true"
     private val isTitle = act.defaultSharedPreferences.getBoolean(titleKey, titleDefault)

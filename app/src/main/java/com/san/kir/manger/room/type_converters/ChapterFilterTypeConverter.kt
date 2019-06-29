@@ -1,4 +1,4 @@
-package com.san.kir.manger.room.type_converters
+package com.san.kir.dblib.type_converters
 
 import android.arch.persistence.room.TypeConverter
 import com.san.kir.manger.utils.enums.ChapterFilter

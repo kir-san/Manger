@@ -14,21 +14,20 @@ import android.widget.TextView
 import com.san.kir.manger.R
 import com.san.kir.manger.components.download_manager.DownloadService
 import com.san.kir.manger.extending.anko_extend.onClick
+import com.san.kir.manger.extending.anko_extend.visibleOrGone
 import com.san.kir.manger.room.models.DownloadItem
-import com.san.kir.manger.room.models.DownloadStatus
 import com.san.kir.manger.room.models.LatestChapter
 import com.san.kir.manger.room.models.action
 import com.san.kir.manger.room.models.toDownloadItem
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
-import com.san.kir.manger.utils.delChapters
 import com.san.kir.manger.utils.enums.ChapterStatus
+import com.san.kir.manger.utils.enums.DownloadStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.anko.AnkoContext
-import org.jetbrains.anko.alert
 import org.jetbrains.anko.alignParentBottom
 import org.jetbrains.anko.alignParentEnd
 import org.jetbrains.anko.alignParentLeft
@@ -46,9 +45,8 @@ import org.jetbrains.anko.padding
 import org.jetbrains.anko.progressBar
 import org.jetbrains.anko.relativeLayout
 import org.jetbrains.anko.textView
-import org.jetbrains.anko.toast
 import org.jetbrains.anko.wrapContent
-import java.io.IOException
+
 
 class LatestChaptersItemView(private val act: LatestChapterActivity) :
     RecyclerViewAdapterFactory.AnkoView<LatestChapter>() {

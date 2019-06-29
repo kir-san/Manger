@@ -125,6 +125,7 @@ class ImageLoader(private val url: String) {
         return if (f.exists() && f.length() > 0) {
             BitmapFactory.decodeFile(f.absolutePath)
         } else {
+            log("f is not norm")
             f.delete()
             null
         }
@@ -148,12 +149,9 @@ class ImageLoader(private val url: String) {
     }
 
     private suspend fun tryUpdateLogoLink(url: String, context: Context) {
-        log("tryUpdateLogoLink")
         val mangaRepository = MangaRepository(context)
         mangaRepository.getFromLogoUrl(url)?.also { manga ->
-            log("Manga is founded, $manga")
             ManageSites.getElementOnline(manga.site)?.also { element ->
-                log("New logo is saved")
                 manga.logo = element.logo
                 mangaRepository.update(manga)
             }

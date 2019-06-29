@@ -10,6 +10,7 @@ import com.san.kir.manger.utils.getCountPagesForChapterInMemory
 import com.san.kir.manger.utils.getFullPath
 import com.san.kir.manger.utils.isEmptyDirectory
 
+
 @Entity(tableName = "chapters")
 data class Chapter(
     @PrimaryKey(autoGenerate = true)
@@ -63,7 +64,8 @@ data class Chapter(
     override fun describeContents() = 0
 
     companion object CREATOR : Parcelable.Creator<Chapter> {
-        override fun createFromParcel(parcel: Parcel) = Chapter(parcel)
+        override fun createFromParcel(parcel: Parcel) =
+            Chapter(parcel)
 
         override fun newArray(size: Int): Array<Chapter?> = arrayOfNulls(size)
     }

@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
-import android.os.Environment
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.View
@@ -44,24 +43,9 @@ fun folderSize(directory: File): Long {
 val File.lengthMb: Double
     get() = bytesToMb(folderSize(this))
 
-val File.ifExists: File?
-    get() = if (this.exists()) this else null
 
-val File.isEmptyDirectory: Boolean
-    get() =
-        if (exists() and isDirectory) {
-            var isOk = false
-            try {
-                if (listFiles().isEmpty())
-                    isOk = true
-            } catch (ex: NullPointerException) {
-            }
-            isOk
-        } else
-            true
 
-val File.isNotEmptyDirectory: Boolean
-    get() = !isEmptyDirectory
+
 
 
 fun getShortPath(path: String) =
@@ -70,15 +54,13 @@ fun getShortPath(path: String) =
 val File.shortPath: String
     get() = getShortPath(path)
 
-fun getFullPath(path: String): File = File(Environment.getExternalStorageDirectory(), path)
 
-val imageExtensions = listOf("png", "jpg", "webp", "gif")
 
-fun checkExtension(fileName: String): Boolean {
-    return imageExtensions.any { fileName.toLowerCase().endsWith(it) }
-}
-
-fun getMangaLogo(shortPath: String): String = getMangaLogo(getFullPath(shortPath))
+fun getMangaLogo(shortPath: String): String = getMangaLogo(
+    getFullPath(
+        shortPath
+    )
+)
 fun getMangaLogo(path: File): String {
     val tempList = path.listFiles { file, s ->
         val fin = File(file, s)
@@ -98,7 +80,6 @@ fun getChapters(
     path: File,
     readyList: ArrayList<String> = arrayListOf()
 ): ArrayList<String> {
-
     fun isContainImg(): Boolean {
         val list = path.listFiles()
         if (list != null) {
@@ -128,12 +109,7 @@ fun getChapters(
     return readyList
 }
 
-fun getCountPagesForChapterInMemory(shortPath: String): Int {
-    val listFiles = getFullPath(shortPath).ifExists?.listFiles { _, s ->
-        checkExtension(s)
-    }
-    return listFiles?.size ?: 0
-}
+
 
 fun listStrToString(list: List<String>): String {
     val temp = StringBuilder()
@@ -227,9 +203,11 @@ fun convertImagesToPng(image: File): File {
         "png not created ${png.path}"
     }
 
-    val stream = FileOutputStream(png.absoluteFile)
-    b.compress(Bitmap.CompressFormat.PNG, 100, stream)
-    stream.close()
+    if (b != null) {
+        val stream = FileOutputStream(png.absoluteFile)
+        b.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        stream.close()
+    }
 
     log = if (image.delete()) {
         "oldFile deleted ${image.path}"
@@ -297,4 +275,14 @@ class TimeFormat(seconds: Long) {
 
         return builder.toString()
     }
+}
+
+fun File.isOkPng(): Boolean {
+    val bytes = this.readBytes()
+    if (bytes.size < 4) return false
+
+    if (bytes[0] != 0x89.toByte() || bytes[1] != 0x50.toByte()) return false
+    if (bytes[bytes.size - 2] != 0x60.toByte() || bytes[bytes.size - 1] != 0x82.toByte()) return false
+
+    return true
 }

@@ -16,19 +16,19 @@ import com.san.kir.manger.components.download_manager.DownloadService
 import com.san.kir.manger.components.viewer.ViewerActivity
 import com.san.kir.manger.extending.anko_extend.onClick
 import com.san.kir.manger.extending.anko_extend.onLongClick
+import com.san.kir.manger.extending.anko_extend.visibleOrGone
 import com.san.kir.manger.extending.launchUI
 import com.san.kir.manger.room.models.Chapter
 import com.san.kir.manger.room.models.DownloadItem
-import com.san.kir.manger.room.models.DownloadStatus
 import com.san.kir.manger.room.models.action
 import com.san.kir.manger.room.models.countPages
 import com.san.kir.manger.room.models.toDownloadItem
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
-import com.san.kir.manger.utils.delChapters
 import com.san.kir.manger.utils.enums.ChapterStatus
+import com.san.kir.manger.utils.enums.DownloadStatus
+import com.san.kir.manger.utils.log
 import org.jetbrains.anko.AnkoContext
-import org.jetbrains.anko.alert
 import org.jetbrains.anko.alignParentBottom
 import org.jetbrains.anko.alignParentEnd
 import org.jetbrains.anko.alignParentLeft
@@ -36,6 +36,7 @@ import org.jetbrains.anko.alignParentTop
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.backgroundResource
 import org.jetbrains.anko.dip
+import org.jetbrains.anko.endOf
 import org.jetbrains.anko.frameLayout
 import org.jetbrains.anko.imageView
 import org.jetbrains.anko.leftOf
@@ -49,7 +50,6 @@ import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.textView
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.wrapContent
-import java.io.IOException
 
 class ListChaptersItemView(private val act: ListChaptersActivity) :
     RecyclerViewAdapterFactory.AnkoView<Chapter>() {

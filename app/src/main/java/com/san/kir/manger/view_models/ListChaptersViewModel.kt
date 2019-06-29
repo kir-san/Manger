@@ -3,12 +3,18 @@ package com.san.kir.manger.view_models
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
+import com.san.kir.manger.components.list_chapters.ChapterComparator
+import com.san.kir.manger.eventBus.Binder
 import com.san.kir.manger.repositories.ChapterRepository
 import com.san.kir.manger.repositories.DownloadRepository
 import com.san.kir.manger.repositories.MangaRepository
 import com.san.kir.manger.room.models.Chapter
 import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.room.models.Manga
+import com.san.kir.manger.utils.enums.ChapterFilter
+import com.san.kir.manger.utils.enums.Filter
+import com.san.kir.manger.utils.enums.FilterAsc
+import com.san.kir.manger.utils.enums.FilterDesc
 
 class ListChaptersViewModel(app: Application) : AndroidViewModel(app) {
     private val mChapterRepository = ChapterRepository(app)

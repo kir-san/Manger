@@ -39,6 +39,7 @@ import org.jetbrains.anko.horizontalPadding
 import org.jetbrains.anko.horizontalProgressBar
 import org.jetbrains.anko.leftOf
 import org.jetbrains.anko.leftPadding
+import org.jetbrains.anko.longToast
 import org.jetbrains.anko.margin
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.padding
@@ -202,8 +203,12 @@ class StorageItemView(private val act: StorageActivity) :
                                 messageResource = R.string.storage_item_alert_message
                                 positiveButton(R.string.storage_item_alert_positive) {
                                     act.launch(act.coroutineContext) {
-                                        getFullPath(item.path).deleteRecursively()
-                                        act.mViewModel.storageDelete(item)
+                                        runCatching {
+                                            act.mViewModel.storageDelete(item)
+                                            getFullPath(item.path).deleteRecursively()
+                                        }.onFailure {
+                                            act.longToast(it.toString())
+                                        }
                                     }
                                 }
                                 negativeButton(R.string.storage_item_alert_negative) {

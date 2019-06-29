@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 // адаптер страниц
-class LibraryPageAdapter(private val act: LibraryActivity) : PreparePagerAdapter() {
+class LibraryPageAdapter(act: LibraryActivity) : PreparePagerAdapter() {
     private lateinit var categories: List<Category>
     var adapters = listOf<LibraryItemsRecyclerPresenter>() // список адаптеров
 
@@ -29,8 +29,8 @@ class LibraryPageAdapter(private val act: LibraryActivity) : PreparePagerAdapter
 
 
                 withContext(Dispatchers.Main) {
-                    adapters += prepare.keys.toList()
-                    pagers += prepare.values.toList()
+                    adapters = adapters + prepare.keys.toList()
+                    pagers = pagers + prepare.values.toList()
 
                     notifyDataSetChanged()
                 }

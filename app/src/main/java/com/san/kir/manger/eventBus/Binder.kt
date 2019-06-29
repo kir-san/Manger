@@ -2,12 +2,12 @@ package com.san.kir.manger.eventBus
 
 import android.util.SparseArray
 import com.san.kir.manger.utils.ID
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.jetbrains.anko.collections.forEach
 import kotlin.coroutines.CoroutineContext
 
@@ -34,6 +34,7 @@ class Binder<T>(initValue: T) {
     private val _channel = Channel<T>(1)
     private var _bound = SparseArray<Action<T>>()
     private var _item: T = initValue
+    private val lock = Mutex()
 
     var item: T
         get() = _item
@@ -49,14 +50,6 @@ class Binder<T>(initValue: T) {
         set(value) {
             if (value != _item) {
                 item = value
-            }
-        }
-
-    var asyncItem: Deferred<T>
-        get() = GlobalScope.async { _channel.receive() }
-        set(value) {
-            GlobalScope.launch {
-                item = value.await()
             }
         }
 

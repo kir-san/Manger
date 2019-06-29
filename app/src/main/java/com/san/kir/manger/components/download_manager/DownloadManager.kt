@@ -1,12 +1,13 @@
 package com.san.kir.manger.components.download_manager
 
+import com.san.kir.manger.room.RoomDB
 import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.utils.JobContext
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.util.concurrent.Executors
 
-class DownloadManager(private val concurrentLimit: Int) {
+class DownloadManager(private val db: RoomDB, private val concurrentLimit: Int) {
     private val lock = Mutex()
 
     private val executor =
@@ -116,7 +117,7 @@ class DownloadManager(private val concurrentLimit: Int) {
     }
 
     private fun getNewChapterDownloader(task: DownloadItem): ChapterDownloader {
-        return ChapterDownloader(task = task, concurrent = concurrentPages)
+        return ChapterDownloader(task = task, concurrent = concurrentPages, db = db)
     }
 
     interface Delegate : ChapterDownloader.Delegate {

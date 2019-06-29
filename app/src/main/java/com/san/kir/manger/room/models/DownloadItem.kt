@@ -6,8 +6,7 @@ import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
 import android.os.Parcel
 import android.os.Parcelable
-import com.san.kir.manger.utils.enums.DownloadColumn
-import com.san.kir.manger.utils.enums.DownloadStatus
+import com.san.kir.manger.room.columns.DownloadColumn
 
 @Entity(tableName = DownloadColumn.tableName)
 data class DownloadItem(
@@ -88,41 +87,44 @@ data class DownloadItem(
     override fun describeContents() = 0
 
     companion object CREATOR : Parcelable.Creator<DownloadItem> {
-        override fun createFromParcel(parcel: Parcel) = DownloadItem(parcel)
+        override fun createFromParcel(parcel: Parcel) =
+            DownloadItem(parcel)
 
         override fun newArray(size: Int): Array<DownloadItem?> = arrayOfNulls(size)
     }
 
 }
 
-fun Chapter.toDownloadItem() = DownloadItem(
-    id = 0,
-    manga = manga,
-    name = name,
-    link = site,
-    path = path,
-    totalPages = 0,
-    downloadPages = 0,
-    totalSize = 0,
-    downloadSize = 0,
-    totalTime = 0,
-    status = DownloadStatus.unknown,
-    order = 0,
-    isError = false
-)
+fun Chapter.toDownloadItem() =
+    DownloadItem(
+        id = 0,
+        manga = manga,
+        name = name,
+        link = site,
+        path = path,
+        totalPages = 0,
+        downloadPages = 0,
+        totalSize = 0,
+        downloadSize = 0,
+        totalTime = 0,
+        status = -1,
+        order = 0,
+        isError = false
+    )
 
-fun LatestChapter.toDownloadItem() = DownloadItem(
-    id = 0,
-    manga = manga,
-    name = name,
-    link = site,
-    path = path,
-    totalPages = 0,
-    downloadPages = 0,
-    totalSize = 0,
-    downloadSize = 0,
-    totalTime = 0,
-    status = DownloadStatus.unknown,
-    order = 0,
-    isError = false
-)
+fun LatestChapter.toDownloadItem() =
+    DownloadItem(
+        id = 0,
+        manga = manga,
+        name = name,
+        link = site,
+        path = path,
+        totalPages = 0,
+        downloadPages = 0,
+        totalSize = 0,
+        downloadSize = 0,
+        totalTime = 0,
+        status = -1,
+        order = 0,
+        isError = false
+    )

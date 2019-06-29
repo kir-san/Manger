@@ -24,6 +24,7 @@ import com.san.kir.manger.extending.anko_extend.typeText
 import com.san.kir.manger.extending.anko_extend.visibleOrGone
 import com.san.kir.manger.extending.anko_extend.visibleOrInvisible
 import com.san.kir.manger.extending.dialogs.AddMangaDialog
+import com.san.kir.manger.extending.launchCtx
 import com.san.kir.manger.extending.views.showAlways
 import com.san.kir.manger.room.models.MangaColumn
 import com.san.kir.manger.utils.AppUpdateService
@@ -81,15 +82,6 @@ class LibraryActivity : DrawerActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = getString(R.string.main_menu_library)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        isAction.close()
-    }
-
-    override fun onResume() {
-        super.onResume()
         isAction.positive()
         pagerAdapter.init.invokeOnCompletion {
             launch(Dispatchers.Main) {
@@ -125,6 +117,11 @@ class LibraryActivity : DrawerActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        isAction.close()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -236,10 +233,11 @@ class LibraryActivity : DrawerActivity() {
         }
 
 
-    private fun updateAll() =
+    private fun updateAll() = launchCtx {
         mViewModel.getMangas().forEach {
             startService<MangaUpdaterService>(MangaColumn.tableName to it)
-        }
 
+        }
+    }
 }
 

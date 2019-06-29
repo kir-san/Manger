@@ -60,7 +60,7 @@ class DrawerView(private val act: DrawerActivity) {
     private val mAdapter = RecyclerViewAdapterFactory
         .createDraggable(
             { MainMenuItemView(act, mViewModel) },
-            { fromPosition, toPosition ->
+            { fromPosition: Int, toPosition: Int ->
                 Collections.swap(items, fromPosition, toPosition)
                 notifyItemMoved(fromPosition, toPosition)
                 items.forEachIndexed { index, item ->

@@ -2,11 +2,11 @@ package com.san.kir.manger.components.download_manager
 
 import com.github.kittinunf.fuel.Fuel
 import com.san.kir.manger.components.parsing.ManageSites
+import com.san.kir.manger.room.RoomDB
 import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.utils.JobContext
 import com.san.kir.manger.utils.createDirs
 import com.san.kir.manger.utils.getFullPath
-import com.san.kir.manger.utils.log
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.io.File
@@ -14,7 +14,7 @@ import java.util.concurrent.Executors.newFixedThreadPool
 import java.util.regex.Pattern
 
 
-class ChapterDownloader(private val task: DownloadItem, concurrent: Int) {
+class ChapterDownloader(private val task: DownloadItem, concurrent: Int, private val db: RoomDB) {
     var delegate: Delegate? = null
 
     private var totalPages = 0
@@ -41,7 +41,6 @@ class ChapterDownloader(private val task: DownloadItem, concurrent: Int) {
     }
 
     suspend fun cancel() {
-        log("cancel")
         lock.withLock {
             interrupted = true
         }
@@ -93,11 +92,22 @@ class ChapterDownloader(private val task: DownloadItem, concurrent: Int) {
 
         if (interrupted) return
 
-        pages.forEach { url ->
-            val task = executor.post {
-                pageDownload(prepareUrl(url), downloadPath)
+        if (pages.all { it.isNotEmpty() })
+            pages.forEach { url ->
+                executor.post {
+                    pageDownload(prepareUrl(url), downloadPath)
+                }.join()
             }
-            task.join()
+        else {
+            db.chapterDao.getItem(getDownloadItem().link)?.let {
+                it.pages.forEach { url ->
+                    executor.post {
+                        pageDownload(prepareUrl(url), downloadPath)
+                    }.join()
+                }
+            } ?: run {
+
+            }
         }
 
         try {
@@ -119,6 +129,7 @@ class ChapterDownloader(private val task: DownloadItem, concurrent: Int) {
         val pageSize = sizeOfPageFromUrl(link)
 
         if (!interrupted
+            && pageSize != null
             && pageSize != -1L // check valid size
             && page.exists()
             && page.length() == pageSize) {
@@ -149,8 +160,16 @@ class ChapterDownloader(private val task: DownloadItem, concurrent: Int) {
         }
     }
 
-    private fun sizeOfPageFromUrl(link: String): Long {
-        return Fuel.get(link).response().second.contentLength
+    private fun sizeOfPageFromUrl(link: String): Long? {
+        val res = Fuel.get(link).response()
+        res.third.fold(
+            success = {
+                return res.second.contentLength
+            },
+            failure = {
+                return null
+            }
+        )
     }
 
     interface Delegate {
@@ -162,8 +181,8 @@ class ChapterDownloader(private val task: DownloadItem, concurrent: Int) {
 
     companion object {
         fun nameFromUrl(url: String): String {
-            val pat = Pattern.compile("[a-z0-9._-]+\\.[a-z]{3,4}")
-                .matcher(url.removeSurrounding("\"", "\""))
+            val pat = Pattern.compile("[\\w.-]+\\.[a-z]{3,4}")
+                .matcher(prepareUrl(url))
             var name = ""
             while (pat.find())
                 name = pat.group()

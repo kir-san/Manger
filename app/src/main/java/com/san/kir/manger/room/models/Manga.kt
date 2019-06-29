@@ -99,13 +99,13 @@ class Manga() : Parcelable {
         this.order = order
         this.isUpdate = isUpdate
 
-        if (!authorsList.isEmpty())
+        if (authorsList.isNotEmpty())
             this.authorsList = authorsList
 
-        if (!categoriesList.isEmpty())
+        if (categoriesList.isNotEmpty())
             this.categoriesList = categoriesList
 
-        if (!genresList.isEmpty())
+        if (genresList.isNotEmpty())
             this.genresList = genresList
 
         this.chapterFilter = chapterFilter

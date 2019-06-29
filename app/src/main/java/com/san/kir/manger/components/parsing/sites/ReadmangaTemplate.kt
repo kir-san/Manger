@@ -1,7 +1,6 @@
 package com.san.kir.manger.components.parsing.sites
 
 import com.san.kir.manger.components.parsing.ManageSites
-import com.san.kir.manger.components.parsing.SiteCatalog
 import com.san.kir.manger.components.parsing.SiteCatalogClassic
 import com.san.kir.manger.components.parsing.Status
 import com.san.kir.manger.components.parsing.Translate
@@ -143,7 +142,7 @@ abstract class ReadmangaTemplate(private val siteRepository: SiteRepository) : S
 
         element.logo = elem.select(".img a").select("img").attr("data-original")
 
-        element.dateId = elem.select(".chapters span.bookmark-menu").attr("data-id").toInt()
+        element.dateId = elem.select("span.bookmark-menu").attr("data-id").toInt()
 
         try {
             element.populate = elem.select(".desc .tile-info p.small").first().ownText().toInt()

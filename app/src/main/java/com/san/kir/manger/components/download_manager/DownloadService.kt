@@ -18,6 +18,7 @@ import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.bytesToMb
 import com.san.kir.manger.utils.formatDouble
+import com.san.kir.manger.utils.log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -251,6 +252,7 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
     }
 
     override fun onQueued(item: DownloadItem) {
+        log("onQueued item = ${item}")
         totalCount++
         queueCount++
         if (queueCount == 1) {
@@ -259,10 +261,12 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
     }
 
     override fun onProgress(item: DownloadItem) {
+        log("onProgress item = ${item}")
         sendProgressNotification(item)
     }
 
     override fun onPaused(item: DownloadItem) {
+        log("onPaused item = ${item}")
         queueCount--
         totalCount--
         if (queueCount == 0)

@@ -329,3 +329,68 @@ class __QueryTextListener(private val context: CoroutineContext) :
         _onQueryTextChange = listener
     }
 }
+
+class SubsamplingScaleImageView_OnImageEventListener :
+    SubsamplingScaleImageView.OnImageEventListener {
+    private var _onReady: (() -> Unit)? = null
+    private var _onImageLoaded: (() -> Unit)? = null
+    private var _onPreviewReleased: (() -> Unit)? = null
+    private var _onPreviewLoadError: ((Exception) -> Unit)? = null
+    private var _onImageLoadError: ((Exception) -> Unit)? = null
+    private var _onTileLoadError: ((Exception) -> Unit)? = null
+
+    override fun onReady() {
+        _onReady?.invoke()
+    }
+
+    fun onReady(listener: () -> Unit) {
+        _onReady = listener
+    }
+
+    override fun onImageLoaded() {
+        _onImageLoaded?.invoke()
+    }
+
+    fun onImageLoaded(listener: () -> Unit) {
+        _onImageLoaded = listener
+    }
+
+    override fun onPreviewReleased() {
+        _onPreviewReleased?.invoke()
+    }
+
+    fun onPreviewReleased(listener: () -> Unit) {
+        _onPreviewReleased = listener
+    }
+
+    override fun onPreviewLoadError(e: Exception) {
+        _onPreviewLoadError?.invoke(e)
+    }
+
+    fun onPreviewLoadError(listener: (Exception) -> Unit) {
+        _onPreviewLoadError = listener
+    }
+
+    override fun onImageLoadError(e: Exception) {
+        _onImageLoadError?.invoke(e)
+    }
+
+    fun onImageLoadError(listener: (Exception) -> Unit) {
+        _onImageLoadError = listener
+    }
+
+    override fun onTileLoadError(e: Exception) {
+        _onTileLoadError?.invoke(e)
+    }
+
+    fun onTileLoadError(listener: (Exception) -> Unit) {
+        _onTileLoadError = listener
+    }
+}
+
+fun SubsamplingScaleImageView.imageEventListener(init: SubsamplingScaleImageView_OnImageEventListener.() -> Unit) {
+    val listener = SubsamplingScaleImageView_OnImageEventListener()
+    listener.init()
+
+    setOnImageEventListener(listener)
+}

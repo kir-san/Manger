@@ -123,12 +123,6 @@ class MangaUpdaterService : Service() {
                 setSmallIcon(R.mipmap.icon_launcher)
                 startForeground(notificationId, build())
             }
-//            val notificationBuilder = NotificationCompat.Builder(this, channelId)
-//            val notification = notificationBuilder.setOngoing(true)
-//                .setPriority(PRIORITY_MIN)
-//                .setCategory(Notification.CATEGORY_SERVICE)
-//                .build()
-//            startForeground(notificationId, notification)
         }
     }
 

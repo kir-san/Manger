@@ -10,10 +10,6 @@ import com.san.kir.manger.repositories.MangaRepository
 import com.san.kir.manger.room.entities.Category
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.utils.enums.MangaFilter
-import com.san.kir.manger.utils.extensions.getFullPath
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 class LibraryViewModel(app: Application) : AndroidViewModel(app) {
     private val mMangaRepository = MangaRepository(app)
@@ -44,16 +40,5 @@ class LibraryViewModel(app: Application) : AndroidViewModel(app) {
 
     suspend fun countNotReadChapters(manga: Manga) = mChapterRepository.countNotRead(manga.unic)
     suspend fun update(manga: Manga) = mMangaRepository.update(manga)
-
-    fun removeWithChapters(manga: Manga, withFiles: Boolean = false) =
-        GlobalScope.launch(Dispatchers.Default) {
-            mMangaRepository.delete(manga)
-
-            mChapterRepository.deleteItems(manga.unic)
-
-            if (withFiles) {
-                getFullPath(manga.path).deleteRecursively()
-            }
-        }
 }
 

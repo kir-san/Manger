@@ -6,8 +6,10 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
 import androidx.activity.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.ViewPager
+import androidx.work.WorkManager
 import com.san.kir.ankofork.dialogs.longToast
 import com.san.kir.ankofork.horizontalProgressBar
 import com.san.kir.ankofork.include
@@ -93,6 +95,18 @@ class LibraryActivity : DrawerActivity() {
                 )
             }
         }
+
+        WorkManager
+            .getInstance(this)
+            .getWorkInfosByTagLiveData("mangaDelete")
+            .observe(this, Observer { works ->
+                if (works.isNotEmpty())
+                    if (works.all { it.state.isFinished }) {
+                        action.gone()
+                    } else {
+                        action.visible()
+                    }
+            })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

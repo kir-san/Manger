@@ -1,12 +1,12 @@
 package com.san.kir.manger.view_models
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
+import androidx.lifecycle.AndroidViewModel
 import com.san.kir.manger.repositories.CategoryRepository
 import com.san.kir.manger.repositories.MangaRepository
-import com.san.kir.manger.room.models.Manga
+import com.san.kir.manger.room.entities.Manga
 
-class AddMangaViewModel(app: Application): AndroidViewModel(app) {
+class AddMangaViewModel(app: Application) : AndroidViewModel(app) {
     private val mMangaRepository = MangaRepository(app)
     private val mCategoryRepository = CategoryRepository(app)
 
@@ -14,9 +14,7 @@ class AddMangaViewModel(app: Application): AndroidViewModel(app) {
         return mMangaRepository.getItem(mangaUnic)
     }
 
-    fun mangaUpdate(manga: Manga) {
-        mMangaRepository.update(manga)
-    }
+    suspend fun update(manga: Manga) = mMangaRepository.update(manga)
 
     fun getCategoryNames(): List<String> {
         return mCategoryRepository.categoryNames()

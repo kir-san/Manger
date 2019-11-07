@@ -1,168 +1,4 @@
-<resources>
-  <string name="app_name"
-          translatable="false">Manger
-  </string>
-
-    <string name="app_name_version"
-            translatable="false">Manger: %s
-  </string>
-
-    <!-- Main Activity -->
-    <string name="main_check_app_ver_find">Найденная версия: %1$s.\nТекущая версия: %2$s</string>
-    <string name="main_check_app_ver_no_find">У вас установленна актуальная версия</string>
-    <string name="main_check_app_ver_close">Закрыть</string>
-    <string name="main_check_app_ver_go_to">Перейти на 4pda.ru</string>
-    <string name="main_check_app_ver_error">Произошла ошибка при поиске обновлений, возможно у вас интернет отключен</string>
-    <string name="main_permission_error">Без этого разрешения от приложения мало толку</string>
-
-
-    <!-- AddManga -->
-    <string name="add_manga_title">Редактор манги</string>
-    <string name="add_manga_ready">Готово</string>
-    <string name="add_manga_name">Название</string>
-    <string name="add_manga_author">Автор</string>
-    <string name="add_manga_about">Описание</string>
-    <string name="add_manga_categories">Категории</string>
-    <string name="add_manga_genres">Жанры</string>
-    <string name="add_manga_path">Путь к папке</string>
-    <string name="add_manga_status">Статус</string>
-    <string name="add_manga_site">Ссылка</string>
-    <string name="add_manga_color">Цвет элемента</string>
-    <string name="add_manga_logo">Логотип</string>
-    <string name="add_manga_update">Обновление манги</string>
-    <string name="add_manga_update_available">Разрешить?</string>
-    <string name="add_manga_dialog_changed_category">Категория выбрана: %s</string>
-    <string name="add_manga_dialog_created_folder">Создаю папки для манги</string>
-    <string name="add_manga_dialog_update_manga">Обновляю информацию о манге</string>
-    <string name="add_manga_dialog_added_manga">Новая манга добавлена в библиотеку</string>
-    <string name="add_manga_dialog_search_chapters">Поиск глав для манги</string>
-    <string name="add_manga_dialog_save_chapters">Сохранение найденных глав</string>
-    <string name="add_manga_dialog_all_complete">Все работы завершены успешно</string>
-    <string name="add_manga_dialog_error">Во время работы произошла ошибка, проверьте подключение к интеренету</string>
-    <string name="add_manga_close_btn">Закрыть</string>
-
-
-    <!--About Manga Dialog-->
-    <string name="about_manga_dialog_name">Название</string>
-    <string name="about_manga_dialog_category">Категория</string>
-    <string name="about_manga_dialog_authors">Авторы</string>
-    <string name="about_manga_dialog_status_edition">Статус выпуска</string>
-    <string name="about_manga_dialog_genres">Жанры</string>
-    <string name="about_manga_dialog_storage">Место хранения</string>
-    <string name="about_manga_dialog_volume">Текущий объем</string>
-    <string name="about_manga_dialog_link">Ссылка на источник</string>
-    <string name="about_manga_dialog_about">Описание</string>
-    <string name="about_manga_dialog_logo">Лого</string>
-    <string name="about_manga_dialog_calculate">Считаю…</string>
-    <string name="about_manga_dialog_close">Закрыть</string>
-    <string name="about_manga_dialog_edit">Редактировать</string>
-
-    <!-- CatalogForOneSite -->
-    <string name="catalog_for_one_site_prefix_volume">Глав %d</string>
-    <string name="catalog_for_one_site_selector_item">Выберете в какую категорию добавить</string>
-    <string name="catalog_for_one_site_name">Название</string>
-    <string name="catalog_for_one_site_date">Дата</string>
-    <string name="catalog_for_one_site_pop">Популярность</string>
-    <string name="catalog_for_one_site_search">Поиск</string>
-    <string name="catalog_for_one_site_update">Обновить</string>
-    <string name="catalog_for_one_site_update_all">Обновить данные сайтов</string>
-    <string name="catalog_for_one_site_update_catalog_contain">Обновить содержимое катологов</string>
-    <string name="catalog_for_one_site_global_search">Глобальный поиск</string>
-    <string name="catalog_fot_one_site_warning">Внимание</string>
-    <string name="catalog_fot_one_site_redownload_text">Нужно ваше согласие на обновление каталога</string>
-    <string name="catalog_fot_one_site_redownload_ok">Согласен</string>
-    <string name="catalog_fot_one_site_redownload_cancel">Не согласен</string>
-
-
-    <!--Manga Info Dialog-->
-    <string name="manga_info_dialog_name">Название</string>
-    <string name="manga_info_dialog_authors">Авторы</string>
-    <string name="manga_info_dialog_type">Тип</string>
-    <string name="manga_info_dialog_status_edition">Статус выпуска</string>
-    <string name="manga_info_dialog_volume">Объем</string>
-    <string name="manga_info_dialog_status_translate">Статус перевода</string>
-    <string name="manga_info_dialog_genres">Жанры</string>
-    <string name="manga_info_dialog_link">Ссылка на источник</string>
-    <string name="manga_info_dialog_about">Описание</string>
-    <string name="manga_info_dialog_logo">Лого</string>
-    <string name="manga_info_dialog_add">Добавить</string>
-    <string name="manga_info_dialog_close">Закрыть</string>
-    <string name="manga_info_dialog_loading">Загрузка…</string>
-    <string name="manga_info_dialog_loading_failed">Не удалось загрузить картинку</string>
-    <string name="manga_info_dialog_not_image">Картинки то нет</string>
-
-
-    <!-- CatalogForOneSiteService -->
-    <string name="catalog_fos_service_action_cancel_all">Отменить все</string>
-    <string name="catalog_fos_service_notify_title">Обновление каталогов: %d шт.</string>
-    <string name="catalog_fos_service_notify_text">Подготовка каталога %s к загрузке</string>
-    <string name="catalog_fos_service_notify_title_2">Обновление %d шт.</string>
-    <string name="catalog_fos_service_notify_complete">Обновление каталогов завершенно</string>
-    <string name="catalog_fos_service_notify_manual_stop_text">Вы сами это сделали</string>
-    <string name="catalog_fos_service_notify_manual_stop_title">Обновление каталогов отменено</string>
-    <string name="catalog_fos_service_notify_error_title">Обновление каталогов завершенно с ошибкой</string>
-    <string name="catalog_fos_service_notify_error_text">Проверьте подключение к интернету</string>
-
-
-    <!-- AppUpdateService -->
-    <string name="app_update_service_action_cancel_all">Отменить все</string>
-    <string name="app_update_service_title">Поиск обновлений приложения</string>
-
-
-    <!-- Viewer -->
-    <string name="viewer_chapters_text">Главы: %1$d/%2$d</string>
-    <string name="viewer_pages_text">Страницы: %1$d/%2$d</string>
-    <string name="viewer_page_next_text">Для перехода на следующую главу нажмите на экран</string>
-    <string name="viewer_page_prev_text">Для перехода на предыдущую главу нажмите на экран</string>
-    <string name="viewer_page_none_next_text">Увы но еще одной главы нет, мне очень жаль.</string>
-    <string name="viewer_page_none_prev_text">Эта самая первая глава, ничего первее быть не должно</string>
-    <string name="viewer_page_close">Закончить чтение</string>
-    <string name="viewer_menu_orientation">Ориентация</string>
-    <string name="viewer_menu_control">Управление</string>
-    <string name="viewer_menu_apply">Применить</string>
-    <string name="viewer_menu_cancel">Отменить</string>
-    <string name="viewer_page_error">При загрузке произошла ошибка</string>
-    <string name="viewer_page_error_data">
-        Размер файла %1$d Мб
-        Размер страницы %2$d x %3$d
-    </string>
-
-    <!-- FirstRun -->
-    <string name="first_run_exit_text">Двойное нажатие закроет приложение</string>
-
-    <!-- MainMenu -->
-    <string name="main_menu_library">Библиотека</string>
-    <string name="main_menu_library_count">Библиотека: %d</string>
-    <string name="main_menu_storage">Хранилище</string>
-    <string name="main_menu_storage_size_mb">%s Мб</string>
-    <string name="main_menu_category">Категории</string>
-    <string name="main_menu_catalogs">Каталоги</string>
-    <string name="main_menu_downloader">Загрузчик</string>
-    <string name="main_menu_downloader_count">Загрузчик: %d</string>
-    <string name="main_menu_latest">Обновления</string>
-    <string name="main_menu_latest_count">Обновления: %d</string>
-    <string name="main_menu_settings">Настройки</string>
-    <string name="main_menu_search">Поиск</string>
-    <string name="main_menu_item_catalogs">%1$d - %2$d</string>
-    <string name="main_menu_schedule">Расписание</string>
-    <string name="main_menu_statistic">Статистика</string>
-
-    <!-- Storage -->
-    <string name="storage_title_size">Хранилище: %s Мб</string>
-    <string name="storage_not_in_bd">Нет в базе</string>
-    <string name="storage_item_all_s">Всего занято: вычисление…</string>
-    <string name="storage_item_all_size">Всего занято: %s Мб</string>
-    <string name="storage_item_manga_size">Занято этой мангой: %s Мб</string>
-    <string name="storage_item_read_size">Прочитанное в этой манге: %s Мб</string>
-    <string name="storage_item_menu_detail">Подробнее</string>
-    <string name="storage_item_menu_add">Добавить в библиотеку</string>
-    <string name="storage_item_menu_full_delete">Удалить совсем</string>
-    <string name="storage_item_alert_message">Вы действительно хотите удалить?</string>
-    <string name="storage_item_alert_positive">Да, конечно</string>
-    <string name="storage_item_alert_negative">Нет</string>
-    <string name="storage_manga_item_size_text">Использовано: %s Мб</string>
-    <string name="storage_manga_item_size_percent">%d %%</string>
-    <string name="storage_dialog_close">Закрыть</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <plurals name="storage_subtitle">
         <item quantity="one">В %d манге</item>
         <item quantity="few">В %d мангах</item>
@@ -170,144 +6,19 @@
         <item quantity="other">В %d мангах</item>
     </plurals>
 
-    <!-- Library -->
-    <string name="library_sort_dialog_add">По дате добавления</string>
-    <string name="library_sort_dialog_abc">В алфавитном порядке</string>
-    <string name="library_sort_dialog_pop">По частоте использования</string>
-    <string name="library_sort_dialog_man">Моя настройка</string>
-    <string name="library_popupmenu_about">Свойства</string>
-    <string name="library_popupmenu_delete">Удалить</string>
-    <string name="library_popupmenu_storage">Используемая память</string>
-    <string name="library_popupmenu_delete_message">Вы действительно хотите удалить эту мангу</string>
-    <string name="library_popupmenu_delete_title">Внимание!!!</string>
-    <string name="library_popupmenu_delete_ok">Конечно</string>
-    <string name="library_popupmenu_delete_ok_with_files">Конечно, c файлами</string>
-    <string name="library_popupmenu_delete_no">Никогда</string>
-    <string name="library_popupmenu_set_category">Сменить категорию</string>
-    <string name="library_popupmenu_select">Выделить</string>
-    <string name="library_popupmenu_delete_read_chapters">Удалить прочитанное</string>
-    <string name="library_popupmenu_delete_read_chapters_message">Своими действиями вы хотите лишить себя такой кучи манги?</string>
-    <string name="library_popupmenu_delete_read_chapters_ok">Да</string>
-    <string name="library_popupmenu_delete_read_chapters_deleting">Удаление…</string>
-    <string name="library_popupmenu_delete_read_chapters_delete_nothing">Удалять нечего</string>
-    <string name="library_popupmenu_delete_read_chapters_delete">Удаляю…</string>
-    <string name="library_popupmenu_delete_read_chapters_ready">Готово</string>
-    <string name="library_popupmenu_delete_read_chapters_no">Не, не</string>
-    <string name="library_help">Библиотека пуста.\n Перейдите в каталоги\n и добавьте новой манги</string>
-    <string name="library_help2">Или добавьте мангу с помощью ссылки на нее,\n используйте для этого\n кнопку с крестиком сверху</string>
-    <string name="library_help_go">В каталоги</string>
-    <string name="library_sort_dialog_reverse">Изменить порядок?</string>
-    <string name="library_sort_dialog_visible">Скрыть ?</string>
-    <string name="library_page_item_read_status">%1$d</string>
-    <string name="library_menu_reload">Обновить текущую категорию</string>
-    <string name="library_menu_reload_all">Обновить все</string>
-    <string name="library_menu_order">Порядок</string>
-    <string name="library_menu_order_title">Настройки порядка в библиотеке</string>
-    <string name="library_menu_customize_my_order">Настроить мой порядок</string>
-    <string name="library_menu_update">Поиск обновлений приложения</string>
-    <string name="library_menu_add_manga">Добавить мангу</string>
-    <string name="library_menu_close">Завершить</string>
-    <string name="library_action_move_to_category">Переместить в категорию</string>
-    <string name="library_action_remove">Удалить</string>
-    <string name="library_action_remove_title">Вы действительно хотите удалить</string>
-    <string name="library_action_remove_yes">Да, хочу</string>
-    <string name="library_action_remove_yes_with_files">Да, вместе с файлами</string>
-    <string name="library_action_remove_no">Нет, не хочу</string>
-    <string name="library_page_item_size">%s Мб</string>
-    <string name="library_selection_mode_message_taboo">Не надо лезть к другим</string>
-    <string name="library_error_hide_categories">Все категории скрыты?</string>
-    <string name="library_all_chapters">Всего глав: %d</string>
-    <string name="library_not_read_chapters">Непрочитанно: %d</string>
-    <string name="library_read_chapters">Прочитанно: %d</string>
-    <string name="library_add_manga_title">Добавление новой манги</string>
-
-
-    <!-- ListChapters -->
-    <string name="list_chapters_read">Прочитано %1$d из %2$d (%3$d)</string>
-    <string name="list_chapters_remove_text">Вы действительно хотите удалить</string>
-    <string name="list_chapters_remove_yes">Да</string>
-    <string name="list_chapters_remove_no">Нет</string>
-    <string name="list_chapters_option_update">Обновить</string>
-    <string name="list_chapters_message_error">Произошла ошибка при обновлении</string>
-    <string name="list_chapters_message_no_found">Новых глав найти не удалось</string>
-    <string name="list_chapters_message_count_new">Новые главы есть, их а ж %d</string>
     <plurals name="list_chapters_action_selected">
         <item quantity="one">%d выбран</item>
         <item quantity="other">%d выбрано</item>
     </plurals>
-    <string name="list_chapters_open_is_download">Спокойствие, только спокойствие! Скоро скачается.</string>
-    <string name="list_chapters_open_not_exists">Обновите эту мангу перед тем как продолжить чтение</string>
-    <string name="list_chapters_delete_text">Вы действительно хотите удалить эту главу?</string>
-    <string name="list_chapters_delete_yes">Окей</string>
-    <string name="list_chapters_delete_no">О, нет</string>
-    <string name="list_chapters_delete_not_delete">Удалить не получилось</string>
-    <string name="list_chapters_delete_okay_delete">Глава была удалена без возвратно</string>
-    <string name="list_chapters_delete_error">При удалении главы произошла не предвиденная ошибка</string>
-    <string name="list_chapters_download_progress">%d%%</string>
-    <string name="list_chapters_selection_del_ok">У вас нет больше этих глав</string>
-    <string name="list_chapters_selection_del_error">Нельзя удалить то чего нет</string>
-    <string name="list_chapters_selection_load_ok">Качаю главы. Их всего %d</string>
-    <string name="list_chapters_selection_load_error">Все было скачано раньше</string>
-    <string name="list_chapters_download_next">Скачать следующую</string>
-    <string name="list_chapters_download_not_read">Скачать непрочитанное</string>
-    <string name="list_chapters_download_all">Скачать все</string>
-    <string name="list_chapters_change_sort">Изменить сортировку</string>
-    <string name="list_chapters_search_duplicates">Поиск дубликатов</string>
-    <string name="action_select_all">Выбрать все</string>
-    <string name="action_delete">Удалить</string>
-    <string name="action_set_download">Скачать</string>
-    <string name="action_set_read">Пометить прочитаными</string>
-    <string name="action_set_not_read">Пометить не прочитаными</string>
-    <string name="action_update_pages">Обновить страницы</string>
-    <string name="action_select_prev">Выбрать все ниже</string>
-    <string name="action_select_next">Выбрать все выше</string>
-    <string name="action_full_delete">Удалить из базы данных</string>
-    <string name="action_full_delete_title">Внимание!!!</string>
-    <string name="action_full_delete_message">Данное действие приведет к удалению глав из базы данных. Все файлы и папки будут не тронуты, но приложение больше не будет видеть эти главы. Рекомендуется использовать это при появлении копий существующих глав.</string>
-    <string name="list_chapters_is_update">Разрешить обновления</string>
 
-    <!--LatestChapter-->
-    <string name="latest_chapter_download_new">Скачать новое</string>
-    <string name="latest_chapter_clean">Очистить</string>
-    <string name="latest_chapter_clean_read">Очистить прочитанное</string>
-    <string name="latest_chapter_clean_download">Очистить скачанное</string>
-
-    <!--SearchDuplicate-->
-    <string name="duplicate_dialog_nothing_title">Ничего не найдено</string>
-    <string name="duplicate_dialog_nothing_close">Закрыть</string>
-    <string name="duplicate_dialog_title">Для %d гл. найдены дубликаты</string>
-    <string name="duplicate_dialog_message">Хотите избываться от дубликатов?</string>
-
-    <!--DownloadManager-->
-    <string name="download_item_progress_text">Загруженно %1$d из %2$d</string>
-    <string name="download_item_progress_size">%s Мб</string>
-    <string name="download_item_final_size_with_time">%1$s Мб за %2$s</string>
-    <string name="download_item_progress_percent">%d %%</string>
-    <string name="download_item_name">%1$s %2$s</string>
-    <string name="download_item_progress">%1$s  %2$s</string>
-    <string name="download_activity_subtitle">Останов.: %1$d  Заверш.: %2$d</string>
-    <string name="download_activity_option_parallel">Параллельная загрузка</string>
-    <string name="download_activity_option_error_retry">Повторять при ошибке</string>
-    <string name="download_activity_option_start">Продолжить</string>
-    <string name="download_activity_option_stop">Приостановить</string>
-    <string name="download_activity_option_retry">Повторить</string>
-    <string name="download_activity_option_submenu_clean">Очистить</string>
-    <string name="download_activity_option_submenu_clean_all">Очистить все</string>
-    <string name="download_activity_option_submenu_clean_completed">Очистить завершенные</string>
-    <string name="download_activity_option_submenu_clean_paused">Очистить приостановленные</string>
-    <string name="download_activity_option_submenu_clean_error">Очистить с ошибкой</string>
-
-    <!--DownloadService-->
-    <string name="download_service_queue">Очередь: %d</string>
-    <string name="download_service_complete_title">Загрузка завершена</string>
-    <string name="download_service_complete_title_error">Загрузка прервана c ошибкой</string>
-    <string name="download_service_complete_title_paused">Загрузка прервана</string>
-    <string name="download_service_complete_text">Приятного чтения</string>
-    <string name="download_service_complete_text_error">Ни одна глава не скачалась</string>
-    <string name="download_service_complete_text_paused">Все загрузки были приостановленны</string>
-    <string name="download_service_pause_all">Приостановить все</string>
-    <string name="download_service_complete_time_sec">Скачано %1$s Мб за %2$d сек</string>
-    <string name="download_service_complete_time_min_sec">%1$s Мб за %2$d мин и %3$d сек</string>
+    <!-- Main Activity -->
+    <plurals name="chapters">
+        <item quantity="zero">глав</item>
+        <item quantity="one">главу</item>
+        <item quantity="few">главы</item>
+        <item quantity="many">глав</item>
+        <item quantity="other">глав.</item>
+    </plurals>
     <plurals name="download_service_complete_without_error">
         <item quantity="one">%d глава скачалась без ошибок</item>
         <item quantity="few">%d главы скачались без ошибок</item>
@@ -324,57 +35,323 @@
         <item quantity="one">c %d ошибкой</item>
         <item quantity="other">с %d ошибками</item>
     </plurals>
+    <plurals name="statistic_item_full_pages">
+        <item quantity="one">страница</item>
+        <item quantity="few">страницы</item>
+        <item quantity="many">страниц</item>
+        <item quantity="other">страниц</item>
+    </plurals>
+
+
+    <!-- AddManga -->
+    <plurals name="statistic_item_full_chapters">
+        <item quantity="one">главе</item>
+        <item quantity="few">главах</item>
+        <item quantity="many">главах</item>
+        <item quantity="other">главах</item>
+    </plurals>
+    <plurals name="statistic_item_full_times">
+        <item quantity="one">раз</item>
+        <item quantity="few">раза</item>
+        <item quantity="many">раз</item>
+        <item quantity="other">раз</item>
+    </plurals>
+    <string name="app_name" translatable="false">Manger
+  </string>
+    <string name="app_name_version" translatable="false">Manger: %s
+  </string>
+    <string name="main_check_app_ver_find">Найденная версия: %1$s.\nТекущая версия: %2$s</string>
+    <string name="main_check_app_ver_no_find">У вас установленна актуальная версия</string>
+    <string name="main_check_app_ver_go_to">Перейти на 4pda.ru</string>
+    <string name="main_check_app_ver_error">Произошла ошибка при поиске обновлений, возможно у вас интернет отключен</string>
+    <string name="main_permission_error">Без этого разрешения от приложения мало толку</string>
+    <string name="add_manga_title">Редактор манги</string>
+    <string name="add_manga_ready">Готово</string>
+    <string name="add_manga_name">Название</string>
+    <string name="add_manga_author">Автор</string>
+    <string name="add_manga_about">Описание</string>
+    <string name="add_manga_categories">Категории</string>
+    <string name="add_manga_genres">Жанры</string>
+    <string name="add_manga_path">Путь к папке</string>
+    <string name="add_manga_status">Статус</string>
+    <string name="add_manga_site">Ссылка</string>
+    <string name="add_manga_color">Цвет элемента</string>
+    <string name="add_manga_logo">Логотип</string>
+    <string name="add_manga_update">Обновление манги</string>
+
+
+    <!--About Manga Dialog-->
+    <string name="add_manga_update_available">Разрешить?</string>
+    <string name="add_manga_dialog_changed_category">Категория выбрана: %s</string>
+    <string name="add_manga_dialog_created_folder">Создаю папки для манги</string>
+    <string name="add_manga_dialog_update_manga">Обновляю информацию о манге</string>
+    <string name="add_manga_dialog_added_manga">Новая манга добавлена в библиотеку</string>
+    <string name="add_manga_dialog_search_chapters">Поиск глав для манги</string>
+    <string name="add_manga_dialog_all_complete">Все работы завершены успешно</string>
+    <string name="add_manga_dialog_error">Во время работы произошла ошибка, проверьте подключение к интеренету</string>
+    <string name="add_manga_close_btn">Закрыть</string>
+    <string name="about_manga_dialog_name">Название</string>
+    <string name="about_manga_dialog_category">Категория</string>
+    <string name="about_manga_dialog_authors">Авторы</string>
+    <string name="about_manga_dialog_status_edition">Статус выпуска</string>
+
+    <!-- CatalogForOneSite -->
+    <string name="about_manga_dialog_genres">Жанры</string>
+    <string name="about_manga_dialog_storage">Место хранения</string>
+    <string name="about_manga_dialog_volume">Текущий объем</string>
+    <string name="about_manga_dialog_link">Ссылка на источник</string>
+    <string name="about_manga_dialog_about">Описание</string>
+    <string name="about_manga_dialog_logo">Лого</string>
+    <string name="about_manga_dialog_calculate">Считаю…</string>
+    <string name="about_manga_dialog_close">Закрыть</string>
+    <string name="about_manga_dialog_edit">Редактировать</string>
+    <string name="catalog_for_one_site_prefix_volume">Глав %d</string>
+
+
+    <!--Manga Info Dialog-->
+    <string name="catalog_for_one_site_selector_item">Выберете в какую категорию добавить</string>
+    <string name="catalog_for_one_site_search">Поиск</string>
+    <string name="catalog_for_one_site_update_all">Обновить данные сайтов</string>
+    <string name="catalog_for_one_site_update_catalog_contain">Обновить содержимое катологов</string>
+    <string name="catalog_for_one_site_global_search">Глобальный поиск</string>
+    <string name="catalog_fot_one_site_warning">Внимание</string>
+    <string name="catalog_fot_one_site_redownload_text">Нужно ваше согласие на обновление каталога</string>
+    <string name="catalog_fot_one_site_redownload_ok">Согласен</string>
+    <string name="catalog_fot_one_site_redownload_cancel">Не согласен</string>
+    <string name="manga_info_dialog_name">Название</string>
+    <string name="manga_info_dialog_authors">Авторы</string>
+    <string name="manga_info_dialog_type">Тип</string>
+    <string name="manga_info_dialog_status_edition">Статус выпуска</string>
+    <string name="manga_info_dialog_volume">Объем</string>
+    <string name="manga_info_dialog_status_translate">Статус перевода</string>
+
+
+    <!-- CatalogForOneSiteService -->
+    <string name="manga_info_dialog_genres">Жанры</string>
+    <string name="manga_info_dialog_link">Ссылка на источник</string>
+    <string name="manga_info_dialog_about">Описание</string>
+    <string name="manga_info_dialog_logo">Лого</string>
+    <string name="manga_info_dialog_add">Добавить</string>
+    <string name="manga_info_dialog_close">Закрыть</string>
+    <string name="manga_info_dialog_loading">Загрузка…</string>
+    <string name="manga_info_dialog_loading_failed">Не удалось загрузить картинку</string>
+    <string name="manga_info_dialog_not_image">Картинки то нет</string>
+
+
+    <!-- AppUpdateService -->
+    <string name="catalog_fos_service_action_cancel_all">Отменить все</string>
+    <string name="catalog_fos_service_notify_title">Обновление каталогов: %d шт.</string>
+
+
+    <!-- Viewer -->
+    <string name="catalog_fos_service_notify_text">Подготовка каталога %s к загрузке</string>
+    <string name="catalog_fos_service_notify_title_2">Обновление %d шт.</string>
+    <string name="catalog_fos_service_notify_complete">Обновление каталогов завершенно</string>
+    <string name="catalog_fos_service_notify_manual_stop_text">Вы сами это сделали</string>
+    <string name="catalog_fos_service_notify_manual_stop_title">Обновление каталогов отменено</string>
+    <string name="catalog_fos_service_notify_error_title">Обновление каталогов завершенно с ошибкой</string>
+    <string name="catalog_fos_service_notify_error_text">Проверьте подключение к интернету</string>
+
+
+    <!-- FirstRun -->
+    <string name="app_update_service_action_cancel_all">Отменить все</string>
+
+    <!-- MainMenu -->
+    <string name="app_update_service_title">Поиск обновлений приложения</string>
+    <string name="viewer_chapters_text">Главы: %1$d/%2$d</string>
+    <string name="viewer_pages_text">Страницы: %1$d/%2$d</string>
+    <string name="viewer_page_next_text">Для перехода на следующую главу нажмите на экран</string>
+    <string name="viewer_page_prev_text">Для перехода на предыдущую главу нажмите на экран</string>
+    <string name="viewer_page_none_next_text">Увы но еще одной главы нет, мне очень жаль.</string>
+    <string name="viewer_page_none_prev_text">Эта самая первая глава, ничего первее быть не должно</string>
+    <string name="viewer_page_close">Закончить чтение</string>
+    <string name="first_run_exit_text">Двойное нажатие закроет приложение</string>
+    <string name="main_menu_library">Библиотека</string>
+    <string name="main_menu_library_count">Библиотека: %d</string>
+    <string name="main_menu_storage">Хранилище</string>
+    <string name="main_menu_storage_size_mb">%s Мб</string>
+    <string name="main_menu_category">Категории</string>
+    <string name="main_menu_catalogs">Каталоги</string>
+
+    <!-- Storage -->
+    <string name="main_menu_downloader">Загрузчик</string>
+    <string name="main_menu_downloader_count">Загрузчик: %d</string>
+    <string name="main_menu_latest">Обновления</string>
+    <string name="main_menu_latest_count">Обновления: %d</string>
+    <string name="main_menu_settings">Настройки</string>
+    <string name="main_menu_search">Поиск</string>
+    <string name="main_menu_item_catalogs">%1$d - %2$d</string>
+    <string name="main_menu_schedule">Расписание</string>
+    <string name="main_menu_statistic">Статистика</string>
+    <string name="storage_title_size">Хранилище: %s Мб</string>
+    <string name="storage_not_in_bd">Нет в базе</string>
+    <string name="storage_item_all_s">Всего занято: вычисление…</string>
+    <string name="storage_item_all_size">Всего занято: %s Мб</string>
+
+    <!-- Library -->
+    <string name="storage_item_manga_size">Занято этой мангой: %s Мб</string>
+    <string name="storage_item_read_size">Прочитанное в этой манге: %s Мб</string>
+    <string name="storage_item_menu_full_delete">Удалить совсем</string>
+    <string name="storage_item_alert_message">Вы действительно хотите удалить?</string>
+    <string name="storage_item_alert_positive">Да, конечно</string>
+    <string name="storage_item_alert_negative">Нет</string>
+    <string name="storage_manga_item_size_text">Использовано: %1$s Мб или %2$d %%</string>
+    <string name="storage_dialog_close">Закрыть</string>
+    <string name="library_sort_dialog_add">По дате добавления</string>
+    <string name="library_sort_dialog_abc">В алфавитном порядке</string>
+    <string name="library_sort_dialog_pop">По частоте использования</string>
+    <string name="library_popupmenu_about">Свойства</string>
+    <string name="library_popupmenu_delete">Удалить</string>
+    <string name="library_popupmenu_storage">Используемая память</string>
+    <string name="library_popupmenu_delete_message">Вы действительно хотите удалить эту мангу</string>
+    <string name="library_popupmenu_delete_title">Внимание!!!</string>
+    <string name="library_popupmenu_delete_ok">Конечно</string>
+    <string name="library_popupmenu_delete_ok_with_files">Конечно, c файлами</string>
+    <string name="library_popupmenu_delete_no">Никогда</string>
+    <string name="library_popupmenu_set_category">Сменить категорию</string>
+    <string name="library_popupmenu_delete_read_chapters">Удалить прочитанное</string>
+    <string name="library_popupmenu_delete_read_chapters_message">Своими действиями вы хотите лишить себя такой кучи манги?</string>
+    <string name="library_popupmenu_delete_read_chapters_ok">Да</string>
+    <string name="library_popupmenu_delete_read_chapters_deleting">Удаление…</string>
+    <string name="library_popupmenu_delete_read_chapters_delete_nothing">Удалять нечего</string>
+    <string name="library_popupmenu_delete_read_chapters_delete">Удаляю…</string>
+    <string name="library_popupmenu_delete_read_chapters_ready">Готово</string>
+    <string name="library_popupmenu_delete_read_chapters_no">Не, не</string>
+    <string name="library_help">Библиотека пуста.\n Перейдите в каталоги\n и добавьте новой манги</string>
+    <string name="library_help2">Или добавьте мангу с помощью ссылки на нее,\n используйте для этого\n кнопку с крестиком сверху</string>
+    <string name="library_help_go">В каталоги</string>
+    <string name="library_sort_dialog_reverse">Изменить порядок?</string>
+    <string name="library_sort_dialog_visible">Скрыть ?</string>
+    <string name="library_page_item_read_status">%1$d</string>
+    <string name="library_menu_reload">Обновить текущую категорию</string>
+    <string name="library_menu_reload_all">Обновить все</string>
+
+
+    <!-- ListChapters -->
+    <string name="library_menu_update">Поиск обновлений приложения</string>
+    <string name="library_menu_add_manga">Добавить мангу</string>
+    <string name="library_page_item_size">%s Мб</string>
+    <string name="library_error_hide_categories">Все категории скрыты?</string>
+    <string name="library_add_manga_title">Добавление новой манги</string>
+    <string name="library_add_manga_hint">Введите ссылку на мангу</string>
+    <string name="library_add_manga_add_btn">Добавить</string>
+    <string name="library_add_manga_error">Ошибка в ссылке или нет интернета</string>
+    <string name="list_chapters_read">Прочитано %1$d из %2$d (%3$d)</string>
+    <string name="list_chapters_queue">Ожидание…</string>
+    <string name="list_chapters_remove_text">Вы действительно хотите удалить</string>
+    <string name="list_chapters_remove_yes">Да</string>
+    <string name="list_chapters_remove_no">Нет</string>
+    <string name="list_chapters_option_update">Обновить</string>
+    <string name="list_chapters_message_error">Произошла ошибка при обновлении</string>
+    <string name="list_chapters_message_no_found">Новых глав найти не удалось</string>
+    <string name="list_chapters_message_count_new">Новые главы есть, их а ж %d</string>
+    <string name="list_chapters_open_is_download">Спокойствие, только спокойствие! Скоро скачается.</string>
+    <string name="list_chapters_open_not_exists">Обновите эту мангу перед тем как продолжить чтение</string>
+    <string name="list_chapters_download_progress">Загрузка %d%%</string>
+    <string name="list_chapters_selection_del_ok">У вас нет больше этих глав</string>
+    <string name="list_chapters_selection_del_error">Нельзя удалить то чего нет</string>
+    <string name="list_chapters_selection_load_ok">Качаю главы. Их всего %d</string>
+    <string name="list_chapters_selection_load_error">Все было скачано раньше</string>
+    <string name="list_chapters_download_next">Скачать следующую</string>
+    <string name="list_chapters_download_not_read">Скачать непрочитанное</string>
+    <string name="list_chapters_download_all">Скачать все</string>
+    <string name="list_chapters_change_sort">Изменить сортировку</string>
+    <string name="action_select_all">Выбрать все</string>
+    <string name="action_delete">Удалить</string>
+    <string name="action_set_download">Скачать</string>
+    <string name="action_set_read">Пометить прочитаными</string>
+    <string name="action_set_not_read">Пометить не прочитаными</string>
+    <string name="action_update_pages">Обновить страницы</string>
+    <string name="action_select_prev">Выбрать все ниже</string>
+    <string name="action_select_next">Выбрать все выше</string>
+    <string name="action_full_delete">Удалить из базы данных</string>
+    <string name="action_full_delete_title">Внимание!!!</string>
+
+    <!--LatestChapter-->
+    <string name="action_full_delete_message">Данное действие приведет к удалению глав из базы данных. Все файлы и папки будут не тронуты, но приложение больше не будет видеть эти главы. Рекомендуется использовать это при появлении копий существующих глав.</string>
+    <string name="list_chapters_is_update">Разрешить обновления</string>
+    <string name="list_chapters_about_start">Читать с начала</string>
+    <string name="list_chapters_about_delete">Удалить прочитанное</string>
+
+    <!--DownloadManager-->
+    <string name="list_chapters_about_continue">"Продолжить чтение\n%s"</string>
+    <string name="list_chapters_about_read">"Вы прочитали %1$d %2$s из %3$d"</string>
+    <string name="latest_chapter_download_new">Скачать новое</string>
+    <string name="latest_chapter_clean">Очистить</string>
+    <string name="latest_chapter_clean_read">Очистить прочитанное</string>
+    <string name="latest_chapter_clean_download">Очистить скачанное</string>
+    <string name="download_item_progress_text">Загруженно %1$d из %2$d</string>
+    <string name="download_item_progress_size">%s Мб</string>
+    <string name="download_item_final_size_with_time">%1$s Мб за %2$s</string>
+    <string name="download_item_name">%1$s %2$s</string>
+    <string name="download_item_progress">%1$s  %2$s</string>
+    <string name="download_activity_subtitle">Останов.: %1$d  Заверш.: %2$d</string>
+
+    <!--DownloadService-->
+    <string name="download_activity_option_submenu_clean_all">Очистить все</string>
+    <string name="download_activity_option_submenu_clean_completed">Очистить завершенные</string>
+    <string name="download_activity_option_submenu_clean_paused">Очистить приостановленные</string>
+    <string name="download_activity_option_submenu_clean_error">Очистить с ошибкой</string>
+    <string name="download_view_wifi_off">Вай вай! Не включен Wi-fi!</string>
+    <string name="download_view_internet_off">Нет доступа в интернет</string>
+    <string name="download_service_queue">Очередь: %d</string>
+    <string name="download_service_complete_title">Загрузка завершена</string>
+    <string name="download_service_complete_title_error">Загрузка прервана c ошибкой</string>
+    <string name="download_service_complete_title_paused">Загрузка прервана</string>
+    <string name="download_service_complete_text">Приятного чтения</string>
+    <string name="download_service_complete_text_error">Ни одна глава не скачалась</string>
+    <string name="download_service_complete_text_paused">Все загрузки были приостановленны</string>
 
     <!--Category-->
+    <string name="download_service_pause_all">Приостановить все</string>
+    <string name="download_service_complete_time_sec">Скачано %1$s Мб за %2$d сек</string>
+    <string name="download_service_complete_time_min_sec">%1$s Мб за %2$d мин и %3$d сек</string>
+
+    <!--CategoryDialog-->
     <string name="category_item_question_delete">Вы действительно хотите удалить?</string>
     <string name="category_item_question_delete_yes">Да</string>
     <string name="category_item_question_delete_no">Нет</string>
-
-    <!--CategoryDialog-->
     <string name="category_dialog_span_text">Количество столбцов: %d</string>
     <string name="category_dialog_large_cells">Крупные ячейки</string>
     <string name="category_dialog_small_cells">Мелкие ячейки</string>
-    <string name="category_dialog_positive">Изменить</string>
-    <string name="category_dialog_negative">Я передумал</string>
     <string name="category_dialog_title_create">Создание категории</string>
     <string name="category_dialog_title_edit">Настройка категории</string>
     <string name="category_dialog_hint">Введите название</string>
     <string name="category_dialog_validate_length">Слишком коротко</string>
     <string name="category_dialog_validate_equal">Старое имя</string>
     <string name="category_dialog_validate_contain">Название занято</string>
-    <string name="category_dialog_validate_empty"> </string>
     <string name="category_dialog_portrait">Портретная ориентация</string>
     <string name="category_dialog_landscape">Ландшафтная ориентация</string>
     <string name="category_dialog_create">Создать</string>
     <string name="category_dialog_edit">Изменить</string>
+
+
+    <!-- Manga Status -->
     <string name="category_dialog_not_create">Категория не была создана</string>
     <string name="category_dialog_save_old_name">Имя не прошло проверку, сохранено старое</string>
     <string name="category_dialog_cancel">Я передумал</string>
 
-
-    <!-- Manga Status -->
+    <!-- Parsing Status -->
     <string name="manga_status_unknown">Не выбрано</string>
     <string name="manga_status_continue">Выпуск продолжается</string>
     <string name="manga_status_complete">Выпуск завершен</string>
-
-    <!-- Parsing Status -->
     <string name="status_complete">Выпуск завершен</string>
     <string name="status_not_complete">Выпуск продолжается</string>
     <string name="status_single">Сингл</string>
     <string name="status_unknown">Неизвестно</string>
     <string name="translate_complete">Перевод завершен</string>
+
+    <!-- Category All -->
     <string name="translate_not_complete">Перевод продолжается</string>
+
+    <!--AvailableUpdate-->
     <string name="translate_freeze">Перевод заморожен</string>
     <string name="translate_unknown">Неизвестно</string>
 
-    <!-- Category All -->
+    <!--PlannedTask-->
     <string name="category_all">Все</string>
-
-    <!--AvailableUpdate-->
     <string name="available_update_name">Разрешенные к обновлению</string>
     <string name="available_update_category_name">Категория %s</string>
-
-    <!--PlannedTask-->
     <string name="planned_task_name">Запланированные задачи</string>
     <string name="planned_period_day">День</string>
     <string name="planned_period_week">Неделя</string>
@@ -387,31 +364,35 @@
     <string name="planned_week_tuesday">вт</string>
     <string name="planned_week_wednesday">ср</string>
     <string name="planned_week_thursday">чт</string>
+
+    <!--MangaUpdateService-->
     <string name="planned_week_friday">пт</string>
     <string name="planned_week_saturday">сб</string>
     <string name="planned_week_sunday">вс</string>
-
-    <!--MangaUpdateService-->
     <string name="manga_update_action_cancel_all">Отменить все</string>
     <string name="manga_update_action_download_new">Скачать новое</string>
     <string name="manga_update_notify_update_ready">Обновление завершено</string>
     <string name="manga_update_notify_checked_manga">Проверенно манг: %d</string>
     <string name="manga_update_notify_checked_one_manga">Проверенна манга: %s</string>
     <string name="manga_update_notify_new_founded">Новых глав: %d</string>
+
+    <!-- MigrateLatestChapterToChapterService -->
+    <string name="migrate_service_title_update">Обновление базы данных…</string>
+    <string name="migrate_service_title_finish">Обновление завершено</string>
+    <string name="migrate_service_title_error">Обновление прервалось с ошибкой</string>
+
+    <!--Scheduler-->
     <string name="manga_update_notify_founded_with_error">С ошибкой: %d</string>
     <string name="manga_update_notify_searching">Поиск новых глав</string>
     <string name="manga_update_notify_remained">Осталось: %d</string>
-
-
-    <!--Scheduler-->
     <string name="schedule_manager_cancel_manga">Было отменено обновление манги %s</string>
     <string name="schedule_manager_cancel_category">Было отменено обновление категории %s</string>
     <string name="schedule_manager_cancel_group">Было отменено обновление группы %s</string>
+
+    <!--Planned Task-->
     <string name="schedule_manager_cancel_catalog">Было отменено обновление каталога %s</string>
     <string name="schedule_manager_cancel_app">Было отменено обновление приложения</string>
     <string name="schedule_activity_menu_add">Добавить</string>
-
-    <!--Planned Task-->
     <string name="planned_task_type_of_update">Тип обновления</string>
     <string name="planned_task_change_manga">Выбрать мангу</string>
     <string name="planned_task_name_of_group">Название группы</string>
@@ -441,12 +422,13 @@
     <string name="planned_task_update_text_wednesday">каждую среду</string>
     <string name="planned_task_update_text_thursday">каждый четверг</string>
     <string name="planned_task_update_text_friday">каждую пятницу</string>
+
+    <!-- Statistic -->
     <string name="planned_task_update_text_saturday">каждую субботу</string>
     <string name="planned_task_update_text_sunday">каждое воскресение</string>
     <string name="planned_task_update_text_unknown">Черт знает когда оно обновляется</string>
-
-    <!-- Statistic -->
     <string name="statistic_subtitle">За: %s</string>
+    <string name="statistic_item_time">Время чтения: %s</string>
     <string name="statistic_item_full_last_session">Последняя сессия</string>
     <string name="statistic_item_full_all">Общее</string>
     <string name="statistic_item_full_max_speed">Максимальная скорость чтения %1$d %2$s в минуту</string>
@@ -461,24 +443,6 @@
     <string name="statistic_item_full_average_speed_nothing">Средняя скорость чтения никакая</string>
     <string name="statistic_item_full_session_time_pages">Каждая сессия чтения длится в среднем %1$s по %2$d %3$s</string>
     <string name="statistic_item_full_session_time_pages_chapters">Каждая сессия чтения длится в среднем %1$s по %2$d %3$s в %4$d %5$s</string>
-    <plurals name="statistic_item_full_pages">
-        <item quantity="one">страница</item>
-        <item quantity="few">страницы</item>
-        <item quantity="many">страниц</item>
-        <item quantity="other">страниц</item>
-    </plurals>
-    <plurals name="statistic_item_full_chapters">
-        <item quantity="one">главе</item>
-        <item quantity="few">главах</item>
-        <item quantity="many">главах</item>
-        <item quantity="other">главах</item>
-    </plurals>
-    <plurals name="statistic_item_full_times">
-        <item quantity="one">раз</item>
-        <item quantity="few">раза</item>
-        <item quantity="many">раз</item>
-        <item quantity="other">раз</item>
-    </plurals>
 
     <!-- Time Format -->
     <string name="time_format_seconds">%d сек</string>
@@ -490,12 +454,9 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="pref_temp">Настройки приложения</string>
-
     <string name="site_volume">Объем: %1$d + %2$d</string>
 
     <string name="name">Автор: Kir San</string>
-    <string name="email">provakator-30@mail.ru</string>
 
     <!-- Preference -->
 
@@ -539,6 +500,34 @@
     <string name="settings_viewer_orientation_auto">auto</string>
     <string name="settings_viewer_orientation_auto_port">auto_port</string>
     <string name="settings_viewer_orientation_auto_land">auto_land</string>
+    <string name="settings_viewer_control_key">viewer_control</string>
+    <string name="settings_viewer_control_summary">Выбор способа перелистывания страниц</string>
+
+    <string name="settings_viewer_control_title">Управление</string>
+    <string name="settings_viewer_control_taps">taps</string>
+    <string name="settings_viewer_control_swipes">swipes</string>
+    <string name="settings_viewer_control_keys">keys</string>
+    <string name="settings_viewer_show_bar_default">true</string>
+    <string name="settings_viewer_show_bar_key">show_bar</string>
+    <string name="settings_viewer_show_bar_summary">Отображение панелей с информацией. Двойное нажатие по центру экрана дублирует эту настройку</string>
+    <string name="settings_viewer_show_bar_title">Отображение панелей</string>
+    <string name="settings_downloader_parallel_default">true</string>
+
+
+    <string name="settings_downloader_parallel_key">downloader_parallel</string>
+    <string name="settings_downloader_parallel_summary">Загрузка нескольких странниц одновременно. Ускорение загрузки</string>
+    <string name="settings_downloader_parallel_title">Параллельная загрузка</string>
+    <string name="settings_downloader_retry_default">false</string>
+
+
+    <string name="settings_downloader_retry_key">downloader_retry</string>
+    <string name="settings_downloader_retry_summary">Перезапуск загрузок если произошла ошибка при загрузке</string>
+    <string name="settings_downloader_retry_title">Повторять при ошибке</string>
+    <string name="settings_downloader_wifi_only_default">false</string>
+
+    <string name="settings_downloader_wifi_only_key">downloader_wifi_only</string>
+    <string name="settings_downloader_wifi_only_summary">Загружать главы только с помощью Wi-Fi</string>
+    <string name="settings_downloader_wifi_only_title">Только Wi-Fi</string>
     <string-array name="settings_viewer_orientation_array">
         <item>Портретная</item>
         <item>Портретная обратная</item>
@@ -548,6 +537,7 @@
         <item>Автоматическая портретная</item>
         <item>Автоматическая ландшафтная</item>
     </string-array>
+
     <string-array name="settings_viewer_orientation_values">
         <item>@string/settings_viewer_orientation_port</item>
         <item>@string/settings_viewer_orientation_port_rev</item>
@@ -557,16 +547,9 @@
         <item>@string/settings_viewer_orientation_auto_port</item>
         <item>@string/settings_viewer_orientation_auto_land</item>
     </string-array>
-
     <string-array name="settings_viewer_control_default">
         <item>@string/settings_viewer_control_swipes</item>
     </string-array>
-    <string name="settings_viewer_control_key">viewer_control</string>
-    <string name="settings_viewer_control_summary">Выбор способа перелистывания страниц</string>
-    <string name="settings_viewer_control_title">Управление</string>
-    <string name="settings_viewer_control_taps">taps</string>
-    <string name="settings_viewer_control_swipes">swipes</string>
-    <string name="settings_viewer_control_keys">keys</string>
     <string-array name="settings_viewer_control_array">
         <item>Тапы по экрану</item>
         <item>Свайпы по экрану</item>
@@ -577,29 +560,5 @@
         <item>@string/settings_viewer_control_swipes</item>
         <item>@string/settings_viewer_control_keys</item>
     </string-array>
-
-
-    <string name="settings_viewer_show_bar_default">true</string>
-    <string name="settings_viewer_show_bar_key">show_bar</string>
-    <string name="settings_viewer_show_bar_summary">Отображение панелей с информацией. Двойное нажатие по центру экрана дублирует эту настройку</string>
-    <string name="settings_viewer_show_bar_title">Отображение панелей</string>
-
-
-    <string name="settings_downloader_title">Настройки загрузчика</string>
-
-    <string name="settings_downloader_parallel_default">true</string>
-    <string name="settings_downloader_parallel_key">downloader_parallel</string>
-    <string name="settings_downloader_parallel_summary">Загрузка нескольких странниц одновременно. Ускорение загрузки</string>
-    <string name="settings_downloader_parallel_title">Параллельная загрузка</string>
-
-    <string name="settings_downloader_retry_default">false</string>
-    <string name="settings_downloader_retry_key">downloader_retry</string>
-    <string name="settings_downloader_retry_summary">Перезапуск загрузок если произошла ошибка при загрузке</string>
-    <string name="settings_downloader_retry_title">Повторять при ошибке</string>
-
-    <string name="settings_downloader_wifi_only_default">false</string>
-    <string name="settings_downloader_wifi_only_key">downloader_wifi_only</string>
-    <string name="settings_downloader_wifi_only_summary">Загружать главы только с помощью Wi-Fi</string>
-    <string name="settings_downloader_wifi_only_title">Только Wi-Fi</string>
 
 </resources>

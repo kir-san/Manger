@@ -1,73 +1,64 @@
 package com.san.kir.manger.components.schedule
 
+import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.Switch
 import android.widget.TextView
+import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.AnkoContext
+import com.san.kir.ankofork.dip
+import com.san.kir.ankofork.margin
+import com.san.kir.ankofork.matchParent
+import com.san.kir.ankofork.sdk28.linearLayout
+import com.san.kir.ankofork.sdk28.lines
+import com.san.kir.ankofork.sdk28.switch
+import com.san.kir.ankofork.sdk28.textView
+import com.san.kir.ankofork.verticalLayout
+import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.R
-import com.san.kir.manger.extending.anko_extend.onCheckedChange
-import com.san.kir.manger.room.models.Manga
-import com.san.kir.manger.utils.ID
+import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
+import com.san.kir.manger.utils.extensions.onCheckedChange
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.jetbrains.anko.AnkoContext
-import org.jetbrains.anko.alignParentEnd
-import org.jetbrains.anko.alignParentStart
-import org.jetbrains.anko.below
-import org.jetbrains.anko.centerVertically
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.horizontalMargin
-import org.jetbrains.anko.margin
-import org.jetbrains.anko.relativeLayout
-import org.jetbrains.anko.startOf
-import org.jetbrains.anko.switch
-import org.jetbrains.anko.textView
+
 
 class AvailableUpdateItemView(private val act: ScheduleActivity) :
     RecyclerViewAdapterFactory.AnkoView<Manga>() {
-    private object Id {
-        val switch = ID.generate()
-        val manga = ID.generate()
-    }
 
     private lateinit var manga: TextView
     private lateinit var category: TextView
     private lateinit var switch: Switch
 
     override fun createView(ui: AnkoContext<ViewGroup>) = with(ui) {
-        relativeLayout {
-            lparams {
-                margin = dip(3)
-                horizontalMargin = dip(5)
-            }
+        linearLayout {
+            lparams(width = matchParent, height = dip(60))
+            gravity = Gravity.CENTER_VERTICAL
 
-            manga = textView {
-                id = Id.manga
-                textSize = 16f
-            }.lparams {
-                alignParentStart()
-                startOf(Id.switch)
-            }
+            verticalLayout {
+                manga = textView {
+                    textSize = 16f
+                    lines = 1
+                }
 
-            category = textView {
-                textSize = 13f
-            }.lparams {
-                alignParentStart()
-                below(Id.manga)
-                startOf(Id.switch)
+                category = textView {
+                    textSize = 14f
+                }
+
+            }.lparams(width = matchParent, height = wrapContent) {
+                weight = 1f
+                leftMargin = dip(16)
             }
 
             switch = switch {
-                id = Id.switch
             }.lparams {
-                alignParentEnd()
-                centerVertically()
+                margin = dip(16)
             }
         }
     }
 
     override fun bind(item: Manga, isSelected: Boolean, position: Int) {
-        act.launch(Dispatchers.Main) {
+        act.lifecycleScope.launch(Dispatchers.Main) {
             manga.text = item.name
             category.text = category.context.getString(
                 R.string.available_update_category_name,
@@ -77,7 +68,7 @@ class AvailableUpdateItemView(private val act: ScheduleActivity) :
 
             switch.onCheckedChange { _, isChecked ->
                 item.isUpdate = isChecked
-                act.mViewModel.mangaUpdate(item)
+                act.mViewModel.update(item)
             }
         }
     }

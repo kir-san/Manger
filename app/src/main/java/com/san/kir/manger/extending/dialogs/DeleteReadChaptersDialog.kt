@@ -2,21 +2,22 @@ package com.san.kir.manger.extending.dialogs
 
 import android.view.Gravity
 import android.view.View
+import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.dialogs.alert
+import com.san.kir.ankofork.dialogs.customView
+import com.san.kir.ankofork.dip
+import com.san.kir.ankofork.padding
+import com.san.kir.ankofork.sdk28.linearLayout
+import com.san.kir.ankofork.sdk28.progressBar
+import com.san.kir.ankofork.sdk28.textResource
+import com.san.kir.ankofork.sdk28.textView
 import com.san.kir.manger.R
-import com.san.kir.manger.extending.BaseActivity
 import com.san.kir.manger.repositories.ChapterRepository
-import com.san.kir.manger.room.models.Manga
-import com.san.kir.manger.utils.delChapters
+import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.utils.extensions.BaseActivity
+import com.san.kir.manger.utils.extensions.delChapters
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.customView
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.linearLayout
-import org.jetbrains.anko.padding
-import org.jetbrains.anko.progressBar
-import org.jetbrains.anko.textResource
-import org.jetbrains.anko.textView
+import kotlinx.coroutines.launch
 
 class DeleteReadChaptersDialog(act: BaseActivity, manga: Manga, function: (() -> Unit)? = null) {
     init {
@@ -38,7 +39,7 @@ class DeleteReadChaptersDialog(act: BaseActivity, manga: Manga, function: (() ->
                                 padding = dip(10)
                             }.lparams { gravity = Gravity.CENTER }
 
-                            task = act.async {
+                            task = act.lifecycleScope.launch {
                                 val chapters = ChapterRepository(act)
                                     .getItems(manga.unic)
                                     .filter { chapter -> chapter.isRead }

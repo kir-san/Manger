@@ -1,18 +1,18 @@
 package com.san.kir.manger.components.catalog_for_one_site
 
-import android.support.v7.widget.RecyclerView
+import androidx.lifecycle.lifecycleScope
 import com.san.kir.manger.components.parsing.SiteCatalog
-import com.san.kir.manger.extending.launchCtx
-import com.san.kir.manger.room.models.SiteCatalogElement
+import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
-import com.san.kir.manger.utils.log
+import com.san.kir.manger.utils.extensions.log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import java.util.*
 
 class CatalogForOneSiteRecyclerPresenter(private val act: CatalogForOneSiteActivity) :
     RecyclerPresenter() {
@@ -24,7 +24,7 @@ class CatalogForOneSiteRecyclerPresenter(private val act: CatalogForOneSiteActiv
 
     private val adapter = RecyclerViewAdapterFactory.createSimple { CatalogForOneSiteItemView(act) }
     val pagerAdapter = CatalogForOneSiteFilterPagesAdapter()
-    val filterAdapterList = listOf(
+    private val filterAdapterList = listOf(
         CatalogFilter("Жанры", FilterAdapter()),
         CatalogFilter("Тип манги", FilterAdapter()),
         CatalogFilter("Статус манги", FilterAdapter()),
@@ -35,13 +35,13 @@ class CatalogForOneSiteRecyclerPresenter(private val act: CatalogForOneSiteActiv
     private var searchText = "" // Сохранение информации о поисковом запросе
     private var filters = listOf<FilterAdapter>() // Сохранение информации фильтрах
     private var backupCatalog = listOf<SiteCatalogElement>()
-    private var mainJob = Job()
+    private var mainJob: Job = Job()
 
     fun setSite(siteId: SiteCatalog, end: ((Int) -> Unit)? = null) {
         if (mainJob.isActive) mainJob.cancel()
-        mainJob = act.launchCtx {
+        mainJob = act.lifecycleScope.launch(Dispatchers.Default) {
             try {
-                backupCatalog = act.mViewModel.getSiteCatalogItems(siteId, true)
+                backupCatalog = act.mViewModel.items(siteId, true)
 
                 adapter.items = backupCatalog
 
@@ -92,7 +92,7 @@ class CatalogForOneSiteRecyclerPresenter(private val act: CatalogForOneSiteActiv
     }
 
     private fun swapItems(newCatalog: List<SiteCatalogElement>): Job {
-        return act.launch(Dispatchers.Main) {
+        return act.lifecycleScope.launch(Dispatchers.Main) {
             adapter.items = newCatalog
             adapter.notifyDataSetChanged()
         }
@@ -108,7 +108,9 @@ class CatalogForOneSiteRecyclerPresenter(private val act: CatalogForOneSiteActiv
 
         // Обработка поискового запроса
         if (searchText.isNotEmpty()) {
-            list = list.filter { it.name.toLowerCase().contains(searchText.toLowerCase()) }
+            list = list.filter {
+                it.name.toLowerCase(Locale.ROOT).contains(searchText.toLowerCase(Locale.ROOT))
+            }
         }
 
         // Обработка фильтров
@@ -151,11 +153,12 @@ class CatalogForOneSiteRecyclerPresenter(private val act: CatalogForOneSiteActiv
         return list.size
     }
 
-    override fun into(recyclerView: RecyclerView) {
+    override fun into(recyclerView: androidx.recyclerview.widget.RecyclerView) {
         super.into(recyclerView)
         recycler.adapter = this.adapter
     }
 
+    @Suppress("unused")
     fun clear() {
         swapItems(listOf())
     }

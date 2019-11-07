@@ -4,15 +4,15 @@ import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.components.parsing.SiteCatalogAlternative
 import com.san.kir.manger.components.parsing.Status
 import com.san.kir.manger.components.parsing.Translate
+import com.san.kir.manger.components.parsing.getShortLink
 import com.san.kir.manger.repositories.SiteRepository
-import com.san.kir.manger.room.models.Chapter
-import com.san.kir.manger.room.models.DownloadItem
-import com.san.kir.manger.room.models.Manga
-import com.san.kir.manger.room.models.SiteCatalogElement
-import kotlinx.coroutines.ExecutorCoroutineDispatcher
+import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.room.entities.DownloadItem
+import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.room.entities.SiteCatalogElement
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.channels.produce
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -130,7 +130,7 @@ class Acomics(private val siteRepository: SiteRepository) : SiteCatalogAlternati
         return element
     }
 
-    override fun getCatalog(context: ExecutorCoroutineDispatcher) = GlobalScope.produce(context) {
+    override fun getCatalog() = flow {
         var docLocal = ManageSites.getDocument(siteCatalog).select("#contentMargin .list-loadable")
         var i = 0
 
@@ -142,11 +142,10 @@ class Acomics(private val siteRepository: SiteRepository) : SiteCatalogAlternati
         }
         do {
             docLocal.forEach { element ->
-                send(simpleParseElement(element))
+                emit(simpleParseElement(element))
             }
             i++
         } while (isGetNext())
-        close()
     }
 
     override suspend fun chapters(manga: Manga): List<Chapter> {
@@ -154,20 +153,22 @@ class Acomics(private val siteRepository: SiteRepository) : SiteCatalogAlternati
             Chapter(
                 manga = manga.unic,
                 name = manga.unic,
-                site = manga.site,
+                site = host + manga.shortLink,
                 path = manga.path + "/" + manga.unic
             )
         )
     }
 
     override suspend fun pages(item: DownloadItem): List<String> {
-        var docLocal = ManageSites.getDocument("${item.link}/content")
+        val shortLink = getShortLink(item.link)
+
+        var docLocal = ManageSites.getDocument("${host + shortLink}/content")
             .select("#contentMargin .serial-content table td a")
         var i = 0
         var list = listOf<String>()
 
         fun isGetNext(): Boolean {
-            val document = ManageSites.getDocument("${item.link}/content" + "?skip=${10 * i}")
+            val document = ManageSites.getDocument("${host + shortLink}/content" + "?skip=${10 * i}")
             docLocal = document.select("#contentMargin .serial-content table td a")
 
             return docLocal.size != 0

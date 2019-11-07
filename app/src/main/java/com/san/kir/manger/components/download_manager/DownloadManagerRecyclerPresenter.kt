@@ -1,8 +1,10 @@
 package com.san.kir.manger.components.download_manager
 
-import android.arch.lifecycle.Observer
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
+import com.san.kir.manger.services.DownloadService
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +28,7 @@ class DownloadManagerRecyclerPresenter(
         super.into(recyclerView)
         recyclerView.adapter = adapter
         act.mViewModel.getDownloadItems().observe(act, Observer { items ->
-            act.launch(act.coroutineContext) {
+            act.lifecycleScope.launch(Dispatchers.Default) {
                 items?.let {
                     adapter.items = it
                     withContext(Dispatchers.Main) {
@@ -36,8 +38,7 @@ class DownloadManagerRecyclerPresenter(
             }
         })
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
-            0,
-            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+            0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
         ) {
             override fun onMove(
                 recyclerView: RecyclerView,
@@ -47,10 +48,7 @@ class DownloadManagerRecyclerPresenter(
                 return false
             }
 
-            override fun onSwiped(
-                viewHolder: RecyclerView.ViewHolder,
-                direction: Int
-            ) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
                 DownloadService.pause(act, adapter.items[position])
                 act.mViewModel.downloadDelete(adapter.items[position])

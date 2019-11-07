@@ -1,13 +1,13 @@
 package com.san.kir.manger.components.drawer
 
 import android.os.Bundle
-import android.support.v4.view.GravityCompat
 import android.view.View
+import androidx.core.view.GravityCompat
+import com.san.kir.ankofork.defaultSharedPreferences
+import com.san.kir.ankofork.dialogs.toast
+import com.san.kir.ankofork.sdk28._LinearLayout
 import com.san.kir.manger.R
-import com.san.kir.manger.extending.BaseActivity
-import org.jetbrains.anko._LinearLayout
-import org.jetbrains.anko.defaultSharedPreferences
-import org.jetbrains.anko.toast
+import com.san.kir.manger.utils.extensions.BaseActivity
 
 abstract class DrawerActivity : BaseActivity() {
     private val mView by lazy { DrawerView(this) }

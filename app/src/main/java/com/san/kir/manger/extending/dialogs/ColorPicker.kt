@@ -3,19 +3,19 @@ package com.san.kir.manger.extending.dialogs
 import android.content.Context
 import android.graphics.Color
 import android.view.Gravity
-import com.san.kir.manger.eventBus.Binder
-import com.san.kir.manger.extending.anko_extend.onSeekBarChangeListener
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.backgroundColor
-import org.jetbrains.anko.customView
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.imageView
-import org.jetbrains.anko.margin
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.noButton
-import org.jetbrains.anko.okButton
-import org.jetbrains.anko.seekBar
-import org.jetbrains.anko.verticalLayout
+import com.san.kir.ankofork.Binder
+import com.san.kir.ankofork.dialogs.alert
+import com.san.kir.ankofork.dialogs.customView
+import com.san.kir.ankofork.dialogs.noButton
+import com.san.kir.ankofork.dialogs.okButton
+import com.san.kir.ankofork.dip
+import com.san.kir.ankofork.margin
+import com.san.kir.ankofork.matchParent
+import com.san.kir.ankofork.sdk28.backgroundColor
+import com.san.kir.ankofork.sdk28.imageView
+import com.san.kir.ankofork.sdk28.onSeekBarChangeListener
+import com.san.kir.ankofork.sdk28.seekBar
+import com.san.kir.ankofork.verticalLayout
 
 class ColorPicker(context: Context, oldColor: Int? = null, onOk: (Int) -> Unit) {
     private val maxProgress = 255

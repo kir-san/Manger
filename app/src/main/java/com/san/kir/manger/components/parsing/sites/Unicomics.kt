@@ -4,16 +4,15 @@ import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.components.parsing.SiteCatalogClassic
 import com.san.kir.manger.components.parsing.Status
 import com.san.kir.manger.components.parsing.Translate
+import com.san.kir.manger.components.parsing.getShortLink
 import com.san.kir.manger.repositories.SiteRepository
-import com.san.kir.manger.room.models.Chapter
-import com.san.kir.manger.room.models.DownloadItem
-import com.san.kir.manger.room.models.Manga
-import com.san.kir.manger.room.models.SiteCatalogElement
-import com.san.kir.manger.utils.createDirs
-import com.san.kir.manger.utils.getFullPath
-import kotlinx.coroutines.ExecutorCoroutineDispatcher
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.channels.produce
+import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.room.entities.DownloadItem
+import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.room.entities.SiteCatalogElement
+import com.san.kir.manger.utils.extensions.createDirs
+import com.san.kir.manger.utils.extensions.getFullPath
+import kotlinx.coroutines.flow.flow
 import org.jsoup.nodes.Element
 import java.util.regex.Pattern
 
@@ -95,18 +94,16 @@ class Unicomics(siteRepository: SiteRepository) : SiteCatalogClassic() {
         return element
     }
 
-    override fun getCatalog(context: ExecutorCoroutineDispatcher) = GlobalScope.produce(context) {
+    override fun getCatalog() = flow {
         val doc = ManageSites.getDocument(siteCatalog).select(".content .block table tr a")
 
         doc.forEach { link ->
-            send(simpleParseElement(link))
+            emit(simpleParseElement(link))
         }
-
-        close()
     }
 
     override suspend fun chapters(manga: Manga): List<Chapter> {
-        return getChapters(manga.site)
+        return getChapters(host + manga.shortLink)
             .map {
                 val link = it.select("table > tbody .online > a").attr("href")
                 val name = it.select("a.list_title").text()
@@ -143,8 +140,10 @@ class Unicomics(siteRepository: SiteRepository) : SiteCatalogClassic() {
 
     override suspend fun pages(item: DownloadItem): List<String> {
         var list = listOf<String>()
-        createDirs(getFullPath(item.path))
-        var doc = ManageSites.getDocument(item.link)
+        getFullPath(item.path).createDirs()
+
+        val shortLink = getShortLink(item.link)
+        var doc = ManageSites.getDocument(host + shortLink)
 
         val matcher = Pattern.compile("\"paginator1\", (\\d+)")
             .matcher(doc.body().html())
@@ -163,7 +162,7 @@ class Unicomics(siteRepository: SiteRepository) : SiteCatalogClassic() {
 
             if (counter > size) break
 
-            doc = ManageSites.getDocument("${item.link}/$counter")
+            doc = ManageSites.getDocument("${host + shortLink}/$counter")
         }
 
         return list

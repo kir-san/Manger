@@ -1,20 +1,30 @@
 package com.san.kir.manger.components.storage
 
-import android.arch.lifecycle.Observer
-import android.support.v7.widget.RecyclerView
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.RecyclerView
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
+import com.san.kir.manger.utils.extensions.log
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class StorageRecyclerPresenter(private val act: StorageActivity) : RecyclerPresenter() {
     private var adapter = RecyclerViewAdapterFactory
-        .createPaging({ StorageItemView(act) },
-                      { oldItem, newItem -> oldItem.id == newItem.id },
-                      { oldItem, newItem -> oldItem == newItem })
+        .createSimple { StorageItemView(act) }
 
     override fun into(recyclerView: RecyclerView) {
         super.into(recyclerView)
         recyclerView.adapter = this.adapter
-        act.mViewModel.getStoragePagedItems()
-            .observe(act, Observer { adapter.submitList(it) })
+        act.lifecycleScope.launch {
+            act.mViewModel
+                .flowItems()
+                .collect {
+                    if (adapter.items != it) {
+                        log("collect")
+                        adapter.items = it
+                        adapter.notifyDataSetChanged()
+                    }
+                }
+        }
     }
 }

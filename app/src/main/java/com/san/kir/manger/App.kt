@@ -4,7 +4,7 @@ import android.app.Application
 import android.database.DatabaseErrorHandler
 import android.database.sqlite.SQLiteDatabase
 import android.os.Environment
-import android.support.v7.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate
 import com.evernote.android.job.JobManager
 import com.github.kittinunf.fuel.core.FuelManager
 import com.san.kir.manger.components.parsing.ManageSites
@@ -17,9 +17,11 @@ import com.san.kir.manger.utils.CATEGORY_ALL
 import java.io.File
 import java.util.concurrent.TimeUnit
 
+@Suppress("unused")
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
+
 
         ManageSites.mSiteRepository = SiteRepository(this)
         FuelManager.instance.timeoutInMillisecond = TimeUnit.SECONDS.toMillis(30).toInt()

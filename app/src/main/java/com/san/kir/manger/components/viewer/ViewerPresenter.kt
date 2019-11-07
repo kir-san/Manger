@@ -1,13 +1,12 @@
 package com.san.kir.manger.components.viewer
 
-import com.san.kir.manger.eventBus.Binder
-import com.san.kir.manger.extending.launchCtx
-import com.san.kir.manger.extending.views.SpecialViewPager
-import com.san.kir.manger.room.models.Chapter
+import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.Binder
+import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.utils.extensions.SpecialViewPager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-
 
 class ViewerPresenter(private val act: ViewerActivity) {
 
@@ -33,10 +32,7 @@ class ViewerPresenter(private val act: ViewerActivity) {
         viewPager.adapter = adapter
     }
 
-    fun configManager(
-        chapter: Chapter,
-        isAlternative: Boolean
-    ) = act.launchCtx {
+    fun configManager(chapter: Chapter, isAlternative: Boolean) = act.lifecycleScope.launch(Dispatchers.Default) {
 
         manager.init(chapter, isAlternative)
 
@@ -75,13 +71,13 @@ class ViewerPresenter(private val act: ViewerActivity) {
     }
 
     // Предыдущая глава
-    fun prevChapter() = act.launch {
+    fun prevChapter() = act.lifecycleScope.launch(Dispatchers.Default) {
         manager.prevChapter() // Переключение главы
         initChapter()
     }
 
     // Следующая глава
-    fun nextChapter() = act.launch(act.coroutineContext) {
+    fun nextChapter() = act.lifecycleScope.launch(Dispatchers.Default) {
         manager.nextChapter() // Переключение главы
         initChapter()
     }

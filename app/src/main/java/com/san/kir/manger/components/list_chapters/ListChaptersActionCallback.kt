@@ -4,12 +4,12 @@ import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
 import com.san.kir.manger.R
-import com.san.kir.manger.extending.views.showAlways
-import com.san.kir.manger.extending.views.showIfRoom
-import com.san.kir.manger.extending.views.showNever
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.cancelButton
-import org.jetbrains.anko.okButton
+import com.san.kir.manger.utils.extensions.showAlways
+import com.san.kir.manger.utils.extensions.showIfRoom
+import com.san.kir.manger.utils.extensions.showNever
+import com.san.kir.ankofork.dialogs.alert
+import com.san.kir.ankofork.dialogs.cancelButton
+import com.san.kir.ankofork.dialogs.okButton
 
 
 class ListChaptersActionCallback(

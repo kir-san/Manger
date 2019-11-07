@@ -1,78 +1,67 @@
 package com.san.kir.manger.components.list_chapters
 
-import android.arch.lifecycle.Observer
 import android.graphics.Color
 import android.graphics.Typeface
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
-import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet.PARENT_ID
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.AnkoContext
+import com.san.kir.ankofork.constraint_layout.ConstraintSetBuilder.Side.BASELINE
+import com.san.kir.ankofork.constraint_layout.ConstraintSetBuilder.Side.BOTTOM
+import com.san.kir.ankofork.constraint_layout.ConstraintSetBuilder.Side.END
+import com.san.kir.ankofork.constraint_layout.ConstraintSetBuilder.Side.START
+import com.san.kir.ankofork.constraint_layout.ConstraintSetBuilder.Side.TOP
+import com.san.kir.ankofork.constraint_layout.applyConstraintSet
+import com.san.kir.ankofork.constraint_layout.constraintLayout
+import com.san.kir.ankofork.dialogs.longToast
+import com.san.kir.ankofork.dialogs.toast
+import com.san.kir.ankofork.dip
+import com.san.kir.ankofork.matchParent
+import com.san.kir.ankofork.sdk28.backgroundColor
+import com.san.kir.ankofork.sdk28.backgroundResource
+import com.san.kir.ankofork.sdk28.imageView
+import com.san.kir.ankofork.sdk28.onClick
+import com.san.kir.ankofork.sdk28.progressBar
+import com.san.kir.ankofork.sdk28.textResource
+import com.san.kir.ankofork.sdk28.textView
+import com.san.kir.ankofork.startActivity
+import com.san.kir.ankofork.topPadding
+import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.R
-import com.san.kir.manger.components.download_manager.DownloadService
 import com.san.kir.manger.components.viewer.ViewerActivity
-import com.san.kir.manger.extending.anko_extend.onClick
-import com.san.kir.manger.extending.anko_extend.onLongClick
-import com.san.kir.manger.extending.anko_extend.visibleOrGone
-import com.san.kir.manger.extending.launchUI
-import com.san.kir.manger.room.models.Chapter
-import com.san.kir.manger.room.models.DownloadItem
-import com.san.kir.manger.room.models.action
-import com.san.kir.manger.room.models.countPages
-import com.san.kir.manger.room.models.toDownloadItem
-import com.san.kir.manger.utils.ID
+import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.room.entities.DownloadItem
+import com.san.kir.manger.room.entities.countPages
+import com.san.kir.manger.room.entities.toDownloadItem
+import com.san.kir.manger.services.DownloadService
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
-import com.san.kir.manger.utils.enums.ChapterStatus
 import com.san.kir.manger.utils.enums.DownloadStatus
-import com.san.kir.manger.utils.log
-import org.jetbrains.anko.AnkoContext
-import org.jetbrains.anko.alignParentBottom
-import org.jetbrains.anko.alignParentEnd
-import org.jetbrains.anko.alignParentLeft
-import org.jetbrains.anko.alignParentTop
-import org.jetbrains.anko.backgroundColor
-import org.jetbrains.anko.backgroundResource
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.endOf
-import org.jetbrains.anko.frameLayout
-import org.jetbrains.anko.imageView
-import org.jetbrains.anko.leftOf
-import org.jetbrains.anko.longToast
-import org.jetbrains.anko.margin
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.padding
-import org.jetbrains.anko.progressBar
-import org.jetbrains.anko.relativeLayout
-import org.jetbrains.anko.startActivity
-import org.jetbrains.anko.textView
-import org.jetbrains.anko.toast
-import org.jetbrains.anko.wrapContent
+import com.san.kir.manger.utils.extensions.onLongClick
+import com.san.kir.manger.utils.extensions.visibleOrGone
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ListChaptersItemView(private val act: ListChaptersActivity) :
     RecyclerViewAdapterFactory.AnkoView<Chapter>() {
-    private object Id {
-        val date = ID.generate()
-        val name = ID.generate()
-        val limit = ID.generate()
-    }
 
     private val actionMode = act.actionMode
 
     private var isDownload = false
 
-    private lateinit var root: RelativeLayout
+    private lateinit var root: ConstraintLayout
     private lateinit var name: TextView
     private lateinit var date: TextView
-    private lateinit var limit: FrameLayout
     private lateinit var stopBtn: ImageView
-    private lateinit var restartBtn: ImageView
     private lateinit var downloadBtn: ImageView
     private lateinit var status: TextView
-    private lateinit var percentProgress: TextView
-    private lateinit var progressBar: ProgressBar
+    private lateinit var indicator: ProgressBar
     private lateinit var deleteIndicator: ImageView
 
     private lateinit var item: Chapter
@@ -80,91 +69,108 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
     private lateinit var observer: Observer<DownloadItem?>
 
     override fun createView(ui: AnkoContext<ViewGroup>) = with(ui) {
-        val btnSize = dip(35)
+        val btnSize = dip(40)
 
-        relativeLayout {
-            lparams(width = matchParent, height = dip(55)) {
-                margin = dip(1)
-            }
+        constraintLayout {
+            lparams(width = matchParent, height = dip(64))
 
             name = textView {
-                id = Id.name
+                id = View.generateViewId()
                 maxLines = 1
-                padding = dip(5)
+                textSize = 16f
                 typeface = Typeface.DEFAULT_BOLD
-            }.lparams(width = wrapContent, height = wrapContent) {
-                alignParentTop()
-                alignParentLeft()
-                gravity = Gravity.CENTER_VERTICAL
-                leftOf(Id.limit)
-            }
+            }.lparams(width = 0, height = wrapContent)
+
+            indicator = progressBar {
+                id = View.generateViewId()
+                visibility = View.GONE
+            }.lparams(width = dip(20), height = dip(20))
 
             status = textView {
-                padding = dip(5)
-                id = ID.generate()
-            }.lparams(width = wrapContent, height = wrapContent) {
-                alignParentLeft()
-                alignParentBottom()
-            }
+                id = View.generateViewId()
+                textSize = 14f
+            }.lparams(width = wrapContent, height = wrapContent)
 
             deleteIndicator = imageView {
+                id = View.generateViewId()
                 backgroundResource = R.drawable.ic_action_delete_black
-                padding = dip(10)
                 visibleOrGone(false)
-            }.lparams(width = dip(20), height = dip(20)) {
-                bottomMargin = dip(3)
-                alignParentBottom()
-                endOf(status)
-            }
+            }.lparams(width = dip(20), height = dip(20))
 
             date = textView {
-                id = Id.date
-                padding = dip(5)
-            }.lparams(width = wrapContent, height = wrapContent) {
-                alignParentBottom()
-                leftOf(Id.limit)
-            }
+                id = View.generateViewId()
+                textSize = 14f
+                gravity = Gravity.END
+            }.lparams(width = 0, height = wrapContent)
 
-            limit = frameLayout {
-                id = Id.limit
+            downloadBtn = imageView {
+                id = View.generateViewId()
+                backgroundResource = R.drawable.ic_file_download_black
+                visibility = View.GONE
+            }.lparams(width = btnSize, height = btnSize)
 
-                restartBtn = imageView {
-                    backgroundResource = R.drawable.ic_update_black
-                    visibility = View.GONE
-                }.lparams(width = btnSize, height = btnSize) {
-                    gravity = Gravity.CENTER
+            stopBtn = imageView {
+                id = View.generateViewId()
+                backgroundResource = R.drawable.ic_clear_black
+                visibility = View.GONE
+            }.lparams(width = btnSize, height = btnSize)
+
+            applyConstraintSet {
+                downloadBtn {
+                    connect(
+                        END to END of PARENT_ID margin dip(12),
+                        TOP to TOP of PARENT_ID,
+                        BOTTOM to BOTTOM of PARENT_ID margin dip(7)
+                    )
                 }
 
-                downloadBtn = imageView {
-                    backgroundResource = R.drawable.ic_action_download_green
-                    visibility = View.GONE
-                }.lparams(width = btnSize, height = btnSize) {
-                    gravity = Gravity.CENTER
+                stopBtn {
+                    connect(
+                        END to START of downloadBtn margin dip(12),
+                        TOP to TOP of PARENT_ID,
+                        BOTTOM to BOTTOM of PARENT_ID margin dip(7)
+                    )
                 }
 
-                stopBtn = imageView {
-                    backgroundResource = R.drawable.ic_stop
-                    visibility = View.GONE
-                }.lparams(width = btnSize, height = btnSize) {
-                    gravity = Gravity.CENTER
+                name {
+                    connect(
+                        START to START of PARENT_ID margin dip(16),
+                        TOP to TOP of PARENT_ID,
+                        END to START of stopBtn margin dip(16)
+                    )
+
+                    topPadding = dip(10)
                 }
 
-                progressBar = progressBar {
-                    visibility = View.GONE
-                }.lparams(width = dip(17), height = dip(17)) {
-                    gravity = Gravity.TOP or Gravity.END
+                indicator {
+                    connect(
+                        START to START of name,
+                        TOP to BOTTOM of name margin dip(3)
+                    )
                 }
 
-                percentProgress = textView {
-                    visibility = View.GONE
-                    textSize = 10f
-                }.lparams(width = wrapContent, height = wrapContent) {
-                    gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-                    bottomMargin = dip(3)
+                status {
+                    connect(
+                        START to END of indicator,
+                        TOP to BOTTOM of name margin dip(3)
+                    )
                 }
 
-            }.lparams(height = matchParent, width = dip(55)) {
-                alignParentEnd()
+                deleteIndicator {
+                    connect(
+                        START to END of status margin dip(16),
+                        TOP to TOP of status,
+                        BOTTOM to BOTTOM of status
+                    )
+                }
+
+                date {
+                    connect(
+                        BASELINE to BASELINE of status,
+                        END to START of stopBtn margin dip(16),
+                        START to END of deleteIndicator margin dip(16)
+                    )
+                }
             }
 
             root = this
@@ -179,7 +185,7 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
 
         updateStatus(item)
 
-        disableDownload(item)
+        disableDownload()
 
         val color = when {
             isSelected -> Color.parseColor("#9934b5e4")
@@ -187,7 +193,6 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
             else -> Color.TRANSPARENT
         }
         root.backgroundColor = color
-        percentProgress.backgroundColor = color
 
         observer = Observer {
             changeVisibleAndActions(it, item)
@@ -197,23 +202,19 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
     override fun onAttached(position: Int) {
         initializeOnClicks(item, position)
 
-        act.mViewModel
-            .getDownloadItem(item)
-            .observe(act, observer)
+        act.mViewModel.getDownloadItem(item).observe(act, observer)
     }
 
     override fun onDetached() {
-        restartBtn.setOnClickListener(null)
         downloadBtn.setOnClickListener(null)
+        stopBtn.setOnClickListener(null)
         root.setOnClickListener(null)
         root.setOnLongClickListener(null)
 
-        act.mViewModel
-            .getDownloadItem(item)
-            .removeObserver(observer)
+        act.mViewModel.getDownloadItem(item).removeObserver(observer)
     }
 
-    private fun updateStatus(chapter: Chapter) = act.launchUI {
+    private fun updateStatus(chapter: Chapter) = act.lifecycleScope.launch(Dispatchers.Main) {
         status.text = act.resources.getString(
             R.string.list_chapters_read,
             chapter.progress,
@@ -223,29 +224,17 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
         deleteIndicator.visibleOrGone(chapter.countPages > 0)
     }
 
-    private fun disableDownload(chapter: Chapter) = act.launchUI {
-        progressBar.visibleOrGone(false)
-        percentProgress.visibleOrGone(false)
+    private fun disableDownload() = act.lifecycleScope.launch(Dispatchers.Main)  {
+        indicator.visibleOrGone(false)
         stopBtn.visibleOrGone(false)
-        restartBtn.visibleOrGone(false)
-        downloadBtn.visibleOrGone(false)
-
-        when (chapter.action) {
-            ChapterStatus.DELETE -> restartBtn.visibleOrGone(true)
-            ChapterStatus.DOWNLOADABLE -> downloadBtn.visibleOrGone(true)
-        }
+        downloadBtn.visibleOrGone(true)
 
         isDownload = false
     }
 
     private fun initializeOnClicks(chapter: Chapter, position: Int) {
-        restartBtn.onClick {
-            log("restart btn is clicked")
-            DownloadService.start(act, chapter.toDownloadItem())
-        }
-
         downloadBtn.onClick {
-            DownloadService.add(act, chapter.toDownloadItem())
+            DownloadService.addOrStart(act, chapter.toDownloadItem())
         }
 
         stopBtn.onClick {
@@ -277,25 +266,27 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
     }
 
     private fun enableDownload() {
-        progressBar.visibility = View.VISIBLE
-        percentProgress.visibility = View.VISIBLE
-        stopBtn.visibility = View.VISIBLE
-        restartBtn.visibility = View.GONE
-        downloadBtn.visibility = View.GONE
+        indicator.visibleOrGone(true)
+        stopBtn.visibleOrGone(true)
+        downloadBtn.visibleOrGone(false)
+        deleteIndicator.visibleOrGone(false)
         isDownload = true
     }
 
     private fun changeVisibleAndActions(item: DownloadItem?, chapter: Chapter) {
         item?.let { download ->
             when (download.status) {
-                DownloadStatus.queued,
+                DownloadStatus.queued -> {
+                    enableDownload()
+                    queueStatus()
+                }
                 DownloadStatus.loading -> {
                     enableDownload()
-                    progressDownload(download.downloadPages, download.totalPages)
+                    loadingStatus(download.downloadPages, download.totalPages)
                 }
                 DownloadStatus.pause,
                 DownloadStatus.completed -> {
-                    disableDownload(chapter)
+                    disableDownload()
                     updateStatus(chapter)
                 }
                 else -> {
@@ -304,11 +295,15 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
         }
     }
 
-    private fun progressDownload(progress: Int, max: Int) {
+    private fun queueStatus() {
+        status.textResource = R.string.list_chapters_queue
+    }
+
+    private fun loadingStatus(progress: Int, max: Int) {
         val current =
             if (max == 0) max
             else progress * 100 / max
 
-        percentProgress.text = act.getString(R.string.list_chapters_download_progress, current)
+        status.text = act.getString(R.string.list_chapters_download_progress, current)
     }
 }

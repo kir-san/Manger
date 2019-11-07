@@ -1,7 +1,5 @@
 package com.san.kir.manger.components.download_manager
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -10,26 +8,27 @@ import android.net.ConnectivityManager
 import android.os.Bundle
 import android.text.Html
 import android.view.View
+import androidx.activity.viewModels
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.Binder
+import com.san.kir.ankofork.sdk28._LinearLayout
 import com.san.kir.manger.R
 import com.san.kir.manger.components.drawer.DrawerActivity
-import com.san.kir.manger.eventBus.Binder
-import com.san.kir.manger.room.models.DownloadItem
+import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.utils.enums.DownloadStatus
 import com.san.kir.manger.view_models.DownloadManagerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.anko._LinearLayout
 
 class DownloadManagerActivity : DrawerActivity() {
-    val mViewModel by lazy {
-        ViewModelProviders.of(this).get(DownloadManagerViewModel::class.java)
-    }
+    val mViewModel by viewModels<DownloadManagerViewModel>()
     val updateNetwork = Binder(false)
 
     private val titleObserver = Observer<List<DownloadItem>> { item ->
         item?.let { downloads ->
-            launch(coroutineContext) {
+            lifecycleScope.launch(Dispatchers.Default) {
                 val loadingCount = downloads.filter {
                     it.status == DownloadStatus.queued ||
                             it.status == DownloadStatus.loading
@@ -72,7 +71,6 @@ class DownloadManagerActivity : DrawerActivity() {
 
         val filter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
         registerReceiver(receiver, filter)
-
     }
 
     override fun onDestroy() {

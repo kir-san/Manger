@@ -1,50 +1,43 @@
 package com.san.kir.manger.view_models
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.LiveData
-import android.arch.paging.PagedList
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.viewModelScope
+import androidx.paging.PagedList
+import com.github.kittinunf.result.coroutines.SuspendableResult
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.components.parsing.SiteCatalog
-import com.san.kir.manger.extending.asyncCtx
 import com.san.kir.manger.repositories.SiteCatalogRepository
 import com.san.kir.manger.repositories.SiteRepository
-import com.san.kir.manger.room.models.Site
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.asCoroutineDispatcher
+import com.san.kir.manger.room.entities.Site
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.concurrent.Executors
-import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.withContext
 
-class SiteCatalogViewModel(private val app: Application) : AndroidViewModel(app), CoroutineScope {
-    private val job = Job()
-    private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
-    override val coroutineContext: CoroutineContext
-        get() = dispatcher + job
-
+class SiteCatalogViewModel(private val app: Application) : AndroidViewModel(app) {
     private val mSiteRepository = SiteRepository(app)
 
     fun getSiteItems(): LiveData<PagedList<Site>> {
         return mSiteRepository.loadPagedItems()
     }
 
-    fun updateSitesInfo() = launch {
+    fun updateSitesInfo() = viewModelScope.launch(Dispatchers.Default) {
         ManageSites.CATALOG_SITES.forEach {
             it.isInit = false
             save(it)
         }
     }
 
-    fun update() = launch {
+    fun update() = viewModelScope.launch(Dispatchers.Default) {
         ManageSites.CATALOG_SITES.forEach {
             it.isInit = false
             save(it)
         }
     }
 
-    fun updateSiteInfo(site: SiteCatalog) = asyncCtx {
-        runCatching {
+    suspend fun updateSiteInfo(site: SiteCatalog) = withContext(Dispatchers.Default) {
+        SuspendableResult.of<Unit, Exception> {
             site.init()
             // Находим в базе данных наш сайт
             with(mSiteRepository) {
@@ -61,7 +54,7 @@ class SiteCatalogViewModel(private val app: Application) : AndroidViewModel(app)
         }
     }
 
-    private fun save(site: SiteCatalog) {
+    private suspend fun save(site: SiteCatalog) {
         val s = mSiteRepository.getItem(site.name)
         if (s != null) {
             s.volume = site.volume
@@ -83,9 +76,5 @@ class SiteCatalogViewModel(private val app: Application) : AndroidViewModel(app)
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        job.cancel()
-    }
 }
 

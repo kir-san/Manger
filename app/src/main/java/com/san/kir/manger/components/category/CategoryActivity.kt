@@ -1,28 +1,25 @@
 package com.san.kir.manger.components.category
 
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
 import android.view.Gravity
 import android.view.View
+import androidx.activity.viewModels
+import com.san.kir.ankofork.design.floatingActionButton
+import com.san.kir.ankofork.dip
+import com.san.kir.ankofork.matchParent
+import com.san.kir.ankofork.recyclerview.recyclerView
+import com.san.kir.ankofork.sdk28._LinearLayout
+import com.san.kir.ankofork.sdk28.frameLayout
+import com.san.kir.ankofork.sdk28.onClick
+import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.R
 import com.san.kir.manger.components.drawer.DrawerActivity
-import com.san.kir.manger.extending.anko_extend.onClick
-import com.san.kir.manger.room.models.Category
+import com.san.kir.manger.room.entities.Category
 import com.san.kir.manger.view_models.CategoryViewModel
-import org.jetbrains.anko._LinearLayout
-import org.jetbrains.anko.design.floatingActionButton
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.frameLayout
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.recyclerview.v7.recyclerView
-import org.jetbrains.anko.wrapContent
 
 class CategoryActivity : DrawerActivity() {
     private val mAdapter = CategoryRecyclerPresenter(this)
-    val mViewModel by lazy {
-        ViewModelProviders.of(this).get(CategoryViewModel::class.java)
-    }
+    val mViewModel by viewModels<CategoryViewModel>()
 
     override val _LinearLayout.customView: View
         get() = frameLayout {
@@ -31,7 +28,7 @@ class CategoryActivity : DrawerActivity() {
             recyclerView {
                 lparams(width = matchParent, height = matchParent)
                 setHasFixedSize(true)
-                layoutManager = LinearLayoutManager(context)
+                layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
                 mAdapter.into(this)
             }
 

@@ -1,30 +1,26 @@
 package com.san.kir.manger.components.schedule
 
-import android.arch.lifecycle.ViewModelProviders
-import android.support.v4.view.PagerTabStrip
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
+import com.san.kir.ankofork.include
+import com.san.kir.ankofork.sdk28._LinearLayout
+import com.san.kir.ankofork.startActivity
+import com.san.kir.ankofork.support.viewPager
+import com.san.kir.ankofork.verticalLayout
 import com.san.kir.manger.R
 import com.san.kir.manger.components.drawer.DrawerActivity
-import com.san.kir.manger.extending.views.showAlways
-import com.san.kir.manger.room.models.PlannedAddEdit
+import com.san.kir.manger.utils.enums.PlannedAddEdit
+import com.san.kir.manger.utils.extensions.showAlways
 import com.san.kir.manger.view_models.ScheduleViewModel
-import org.jetbrains.anko._LinearLayout
-import org.jetbrains.anko.include
-import org.jetbrains.anko.startActivity
-import org.jetbrains.anko.support.v4.viewPager
-import org.jetbrains.anko.verticalLayout
 
 class ScheduleActivity : DrawerActivity() {
-    val mViewModel by lazy {
-        ViewModelProviders.of(this).get(ScheduleViewModel::class.java)
-    }
-
+    val mViewModel by viewModels<ScheduleViewModel>()
     override val _LinearLayout.customView: View
         get() = verticalLayout {
             viewPager {
-                include<PagerTabStrip>(R.layout.page_tab_strip)
+                include<androidx.viewpager.widget.PagerTabStrip>(R.layout.page_tab_strip)
                 adapter = SchedulePageAdapter(this@ScheduleActivity)
                 setTitle(R.string.main_menu_schedule)
             }

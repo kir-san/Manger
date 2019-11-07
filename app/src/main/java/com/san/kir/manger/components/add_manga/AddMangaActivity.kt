@@ -1,27 +1,25 @@
 package com.san.kir.manger.components.add_manga
 
 import android.R.id
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.setContentView
 import com.san.kir.manger.R
-import com.san.kir.manger.R.string
-import com.san.kir.manger.extending.ThemedActionBarActivity
-import com.san.kir.manger.extending.launchCtx
-import com.san.kir.manger.extending.views.showAlways
-import com.san.kir.manger.room.models.Manga
-import com.san.kir.manger.room.models.MangaColumn
+import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.room.entities.MangaColumn
+import com.san.kir.manger.utils.extensions.ThemedActionBarActivity
+import com.san.kir.manger.utils.extensions.showAlways
 import com.san.kir.manger.view_models.AddMangaViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.anko.setContentView
 
 class AddMangaActivity : ThemedActionBarActivity() {
     private val mView by lazy { AddMangaView(this) }
-    val mViewModel by lazy {
-        ViewModelProviders.of(this).get(AddMangaViewModel::class.java)
-    }
+    val mViewModel by viewModels<AddMangaViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,12 +27,12 @@ class AddMangaActivity : ThemedActionBarActivity() {
         setTitle(R.string.add_manga_title)
         when {
             intent.hasExtra(MangaColumn.unic) -> {
-                launchCtx {
-                    val manga = mViewModel.getMangaItem(intent.getStringExtra(MangaColumn.unic))
-
-                    withContext(Dispatchers.Main) {
-                        mView.setManga(manga)
+                lifecycleScope.launch(Dispatchers.Main) {
+                    val manga = withContext(Dispatchers.Default) {
+                        val mangaUnic = intent.getStringExtra(MangaColumn.unic)
+                        mViewModel.getMangaItem(mangaUnic)
                     }
+                    mView.setManga(manga)
                 }
             }
             else -> mView.setManga(Manga())
@@ -44,7 +42,7 @@ class AddMangaActivity : ThemedActionBarActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menu.add(0, 1, 1, string.add_manga_ready).showAlways()
+        menu.add(0, 1, 1, R.string.add_manga_ready).showAlways()
         return true
     }
 
@@ -52,8 +50,13 @@ class AddMangaActivity : ThemedActionBarActivity() {
         when (item.itemId) {
             id.home -> onBackPressed()
             1 -> {
-                mViewModel.mangaUpdate(mView.getManga())
-                onBackPressed()
+                lifecycleScope.launch(Dispatchers.Default) {
+                    mViewModel.update(mView.getManga())
+
+                    withContext(Dispatchers.Main) {
+                        onBackPressed()
+                    }
+                }
             }
         }
         return super.onOptionsItemSelected(item)

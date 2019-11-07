@@ -2,28 +2,26 @@ package com.san.kir.manger.components.list_chapters
 
 import android.content.Context
 import com.san.kir.manger.repositories.ChapterRepository
-import com.san.kir.manger.repositories.LatestChapterRepository
-import com.san.kir.manger.room.models.Chapter
-import com.san.kir.manger.room.models.Manga
+import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.room.entities.Manga
 
 class SearchDuplicate(context: Context) {
     private val mChapterRepository = ChapterRepository(context)
-    private val mLatestChapterRepository = LatestChapterRepository(context)
 
-    fun silentRemoveDuplicate(manga: Manga) {
+    suspend fun silentRemoveDuplicate(manga: Manga) {
         removeDuplicates(searchDuplicate(manga))
     }
 
-    private fun searchDuplicate(manga: Manga): MutableList<List<Chapter>> {
-        var list = mChapterRepository.getItems(manga.unic)
-        val iterator = list.iterator()
+    private suspend fun searchDuplicate(manga: Manga): MutableList<List<Chapter>> {
+        val basicList = mChapterRepository.getItems(manga.unic)
+        val list = basicList.toMutableList()
 
         val allDuplicateList: MutableList<List<Chapter>> = mutableListOf()
 
-        while (iterator.hasNext()) {
-            var duplicateList: List<Chapter> = listOf()
-            val chapter = iterator.next()
+        basicList.forEach { chapter ->
+            val duplicateList: MutableList<Chapter> = mutableListOf()
             var hasDuplicate = false
+
             list -= chapter
             list.forEach { current ->
                 if (current.name == chapter.name) {
@@ -41,7 +39,7 @@ class SearchDuplicate(context: Context) {
         return allDuplicateList
     }
 
-    private fun removeDuplicates(allDuplicateList: MutableList<List<Chapter>>) =
+    private suspend fun removeDuplicates(allDuplicateList: MutableList<List<Chapter>>) =
         allDuplicateList.forEach { chapterDuplicates ->
             val first = chapterDuplicates.first()
             val last = chapterDuplicates.last()
@@ -49,19 +47,7 @@ class SearchDuplicate(context: Context) {
             first.progress = last.progress
 
             val removesChapters = chapterDuplicates - first
-            removesChapters.forEach { chapter ->
-                val latests = mLatestChapterRepository.getItemsWhereLink(chapter.site)
-                if (latests.isNotEmpty()) {
-                    mLatestChapterRepository.delete(*latests.toTypedArray())
-                }
-            }
             mChapterRepository.delete(*removesChapters.toTypedArray())
-
-            val latests = mLatestChapterRepository.getItemsWhereLink(first.site)
-            if (latests.size > 1) {
-                val deleting = latests - latests.first()
-                mLatestChapterRepository.delete(*deleting.toTypedArray())
-            }
             mChapterRepository.update(first)
         }
 }

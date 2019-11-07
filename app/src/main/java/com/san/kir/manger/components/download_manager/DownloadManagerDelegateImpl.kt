@@ -1,7 +1,7 @@
 package com.san.kir.manger.components.download_manager
 
 import com.san.kir.manger.room.RoomDB
-import com.san.kir.manger.room.models.DownloadItem
+import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.utils.JobContext
 import com.san.kir.manger.utils.enums.DownloadStatus
 
@@ -25,14 +25,18 @@ class DownloadManagerDelegateImpl(
 
     override fun onStarted(item: DownloadItem) {
         item.status = DownloadStatus.loading
-        mDownloadDao.update(item)
+        job.post {
+            mDownloadDao.update(item)
+        }
         uiJob.post {
             listener.onProgress(item)
         }
     }
 
     override fun onProgress(item: DownloadItem) {
-        mDownloadDao.update(item)
+        job.post {
+            mDownloadDao.update(item)
+        }
         uiJob.post {
             listener.onProgress(item)
         }
@@ -41,8 +45,9 @@ class DownloadManagerDelegateImpl(
     override fun onError(item: DownloadItem, cause: Throwable?) {
         item.status = DownloadStatus.pause
         item.isError = true
-        mDownloadDao.update(item)
-
+        job.post {
+            mDownloadDao.update(item)
+        }
         uiJob.post {
             listener.onError(item, cause)
         }
@@ -50,13 +55,16 @@ class DownloadManagerDelegateImpl(
 
     override fun onComplete(item: DownloadItem) {
         item.status = DownloadStatus.completed
-        mDownloadDao.update(item)
+        job.post {
+            mDownloadDao.update(item)
+        }
 
         val stat = mStatisticDao.getItem(item.manga)
         stat.downloadSize = stat.downloadSize.plus(item.downloadSize)
         stat.downloadTime = stat.downloadTime.plus(item.totalTime)
-        mStatisticDao.update(stat)
-
+        job.post {
+            mStatisticDao.update(stat)
+        }
         uiJob.post {
             listener.onCompleted(item)
         }

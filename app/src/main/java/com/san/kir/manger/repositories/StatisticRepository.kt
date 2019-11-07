@@ -1,14 +1,14 @@
 package com.san.kir.manger.repositories
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.Transformations
-import android.arch.paging.DataSource
-import android.arch.paging.LivePagedListBuilder
-import android.arch.paging.PagedList
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Transformations
+import androidx.paging.DataSource
+import androidx.paging.LivePagedListBuilder
+import androidx.paging.PagedList
 import android.content.Context
 import com.san.kir.manger.room.getDatabase
-import com.san.kir.manger.room.models.MangaStatistic
-import com.san.kir.manger.utils.sumByLong
+import com.san.kir.manger.room.entities.MangaStatistic
+import com.san.kir.manger.utils.extensions.sumByLong
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 

@@ -3,7 +3,6 @@ package com.san.kir.manger.components.viewer
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.Menu
@@ -11,57 +10,49 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.github.kittinunf.fuel.Fuel
+import com.san.kir.ankofork.Binder
+import com.san.kir.ankofork.alignParentBottom
+import com.san.kir.ankofork.centerHorizontally
+import com.san.kir.ankofork.dip
+import com.san.kir.ankofork.matchParent
+import com.san.kir.ankofork.negative
+import com.san.kir.ankofork.positive
+import com.san.kir.ankofork.sdk28.button
+import com.san.kir.ankofork.sdk28.linearLayout
+import com.san.kir.ankofork.sdk28.onClick
+import com.san.kir.ankofork.sdk28.progressBar
+import com.san.kir.ankofork.sdk28.relativeLayout
+import com.san.kir.ankofork.sdk28.textView
+import com.san.kir.ankofork.sp
+import com.san.kir.ankofork.withArguments
 import com.san.kir.manger.R
 import com.san.kir.manger.components.download_manager.ChapterDownloader
-import com.san.kir.manger.eventBus.Binder
-import com.san.kir.manger.eventBus.negative
-import com.san.kir.manger.eventBus.positive
-import com.san.kir.manger.extending.anko_extend.bigImageView
-import com.san.kir.manger.extending.anko_extend.goneOrVisible
-import com.san.kir.manger.extending.anko_extend.onClick
-import com.san.kir.manger.extending.anko_extend.onDoubleTapListener
-import com.san.kir.manger.extending.anko_extend.visibleOrGone
-import com.san.kir.manger.extending.launchUI
-import com.san.kir.manger.extending.views.showAlways
-import com.san.kir.manger.utils.convertImagesToPng
-import com.san.kir.manger.utils.createDirs
-import com.san.kir.manger.utils.isOkPng
-import kotlinx.coroutines.CoroutineScope
+import com.san.kir.manger.utils.extensions.bigImageView
+import com.san.kir.manger.utils.extensions.convertImagesToPng
+import com.san.kir.manger.utils.extensions.createDirs
+import com.san.kir.manger.utils.extensions.goneOrVisible
+import com.san.kir.manger.utils.extensions.isOkPng
+import com.san.kir.manger.utils.extensions.onDoubleTapListener
+import com.san.kir.manger.utils.extensions.showAlways
+import com.san.kir.manger.utils.extensions.visibleOrGone
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.anko.alignParentBottom
-import org.jetbrains.anko.button
-import org.jetbrains.anko.centerHorizontally
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.linearLayout
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.progressBar
-import org.jetbrains.anko.relativeLayout
-import org.jetbrains.anko.sp
-import org.jetbrains.anko.textView
 import java.io.File
-import kotlin.coroutines.CoroutineContext
 
-class ViewerPageFragment : Fragment(), CoroutineScope {
+class ViewerPageFragment : Fragment() {
     companion object {
         private const val page_name = "page_name"
 
         fun newInstance(page: Page): ViewerPageFragment {
-            val set = Bundle()
-            set.putParcelable(page_name, page)
-            val frag = ViewerPageFragment()
-            frag.arguments = set
-            return frag
+            return  ViewerPageFragment().withArguments(page_name to page)
         }
     }
-
-    lateinit var job: Job
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Default + job
 
     private val isLoad = Binder(true)
     private lateinit var page: Page
@@ -69,15 +60,12 @@ class ViewerPageFragment : Fragment(), CoroutineScope {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        job = Job()
         // При создании фрагмента получить файл
         page = arguments?.getParcelable(page_name)!!
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         val act = activity as ViewerActivity
         return context?.linearLayout {
@@ -97,7 +85,7 @@ class ViewerPageFragment : Fragment(), CoroutineScope {
                 view = bigImageView {
                     lparams(width = matchParent, height = matchParent)
 
-                    launchUI {
+                    lifecycleScope.launch(Dispatchers.Main) {
                         when (resources.configuration.orientation) {
                             Configuration.ORIENTATION_LANDSCAPE -> setMinimumScaleType(
                                 SubsamplingScaleImageView.SCALE_TYPE_START
@@ -138,7 +126,7 @@ class ViewerPageFragment : Fragment(), CoroutineScope {
     }
 
     private fun loadImage(view: SubsamplingScaleImageView, force: Boolean) {
-        launchUI {
+        lifecycleScope.launch(Dispatchers.Main) {
             isLoad.positive()
 
             view.setImage(getImage(force))
@@ -148,7 +136,7 @@ class ViewerPageFragment : Fragment(), CoroutineScope {
     }
 
     private suspend fun getImage(force: Boolean): ImageSource {
-        return withContext(coroutineContext) {
+        return withContext(Dispatchers.Default) {
             val name = ChapterDownloader.nameFromUrl(page.link)
 
             var file = File(page.fullPath, name)
@@ -165,7 +153,7 @@ class ViewerPageFragment : Fragment(), CoroutineScope {
             if (file.exists() && !force) {
                 val png = convertImagesToPng(file)
                 if (png.isOkPng()) {
-                    return@withContext ImageSource.uri(Uri.fromFile(file))
+                    return@withContext ImageSource.uri(Uri.fromFile(png))
                 }
                 png.delete()
             }
@@ -173,8 +161,8 @@ class ViewerPageFragment : Fragment(), CoroutineScope {
             file.delete()
 
             Fuel.download(ChapterDownloader.prepareUrl(page.link))
-                .destination { _, _ ->
-                    createDirs(file.parentFile)
+                .fileDestination { _, _ ->
+                    (file.parentFile).createDirs()
                     file.createNewFile()
                     file
                 }
@@ -197,7 +185,7 @@ class ViewerPageFragment : Fragment(), CoroutineScope {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater?) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         menu.add(0, 2, 2, "Обновить").showAlways().setIcon(R.drawable.ic_action_update_white)
     }
@@ -208,14 +196,9 @@ class ViewerPageFragment : Fragment(), CoroutineScope {
         }
         return super.onOptionsItemSelected(item)
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        job.cancel()
-    }
 }
 
-abstract class OtherFragment : Fragment() {
+abstract class OtherFragment : androidx.fragment.app.Fragment() {
 
     abstract val textRes: Int
     abstract val onTap: ViewerActivity.() -> Unit

@@ -1,5 +1,6 @@
 package com.san.kir.manger.components.add_manga
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.widget.ArrayAdapter
@@ -7,36 +8,36 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Spinner
+import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.AnkoContext
+import com.san.kir.ankofork.backgroundColorResource
+import com.san.kir.ankofork.dip
+import com.san.kir.ankofork.margin
+import com.san.kir.ankofork.matchParent
+import com.san.kir.ankofork.sdk28.backgroundColor
+import com.san.kir.ankofork.sdk28.backgroundResource
+import com.san.kir.ankofork.sdk28.checkBox
+import com.san.kir.ankofork.sdk28.editText
+import com.san.kir.ankofork.sdk28.imageView
+import com.san.kir.ankofork.sdk28.linearLayout
+import com.san.kir.ankofork.sdk28.onClick
+import com.san.kir.ankofork.sdk28.scrollView
+import com.san.kir.ankofork.sdk28.spinner
+import com.san.kir.ankofork.sdk28.textView
+import com.san.kir.ankofork.verticalLayout
+import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.R
-import com.san.kir.manger.R.string
-import com.san.kir.manger.extending.BaseActivity
-import com.san.kir.manger.extending.anko_extend.onClick
-import com.san.kir.manger.extending.anko_extend.typeText
-import com.san.kir.manger.extending.anko_extend.typeTextMultiLine
 import com.san.kir.manger.extending.dialogs.ColorPicker
-import com.san.kir.manger.room.models.Manga
-import com.san.kir.manger.utils.AnkoActivityComponent
+import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.utils.ActivityView
+import com.san.kir.manger.utils.extensions.BaseActivity
+import com.san.kir.manger.utils.extensions.typeText
+import com.san.kir.manger.utils.extensions.typeTextMultiLine
 import com.san.kir.manger.utils.loadImage
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.anko.AnkoContext
-import org.jetbrains.anko.backgroundColor
-import org.jetbrains.anko.backgroundColorResource
-import org.jetbrains.anko.backgroundResource
-import org.jetbrains.anko.checkBox
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.editText
-import org.jetbrains.anko.imageView
-import org.jetbrains.anko.linearLayout
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.scrollView
-import org.jetbrains.anko.spinner
-import org.jetbrains.anko.textView
-import org.jetbrains.anko.verticalLayout
-import org.jetbrains.anko.wrapContent
 
-class AddMangaView(private val act: AddMangaActivity) : AnkoActivityComponent() {
+class AddMangaView(private val act: AddMangaActivity) : ActivityView() {
     private var _manga = Manga()
 
     private lateinit var ctx: Context
@@ -61,60 +62,81 @@ class AddMangaView(private val act: AddMangaActivity) : AnkoActivityComponent() 
                 lparams(width = matchParent, height = matchParent)
 
                 verticalLayout {
-                    lparams(width = matchParent, height = wrapContent)
+                    lparams(width = matchParent, height = wrapContent) {
+                        margin = dip(16)
+                    }
 
-                    textView(text = string.add_manga_name)
+                    textView(text = R.string.add_manga_name)
                     name = editText().typeText()
-                        .lparams(width = matchParent, height = wrapContent)
+                        .lparams(width = matchParent, height = wrapContent) {
+                            bottomMargin = dip(8)
+                        }
 
-                    textView(text = string.add_manga_author)
+                    textView(text = R.string.add_manga_author)
                     authors = editText().typeText()
-                        .lparams(width = matchParent, height = wrapContent)
+                        .lparams(width = matchParent, height = wrapContent) {
+                            bottomMargin = dip(8)
+                        }
 
-                    textView(text = string.add_manga_about)
+                    textView(text = R.string.add_manga_about)
                     about = editText {
                         typeTextMultiLine()
                         minLines = 1
                         maxLines = 10
                         setHorizontallyScrolling(false)
-                    }.lparams(width = matchParent, height = wrapContent)
+                    }.lparams(width = matchParent, height = wrapContent) {
+                        bottomMargin = dip(8)
+                    }
 
-                    textView(text = string.add_manga_categories)
+                    textView(text = R.string.add_manga_categories)
                     categories = spinner {
-                    }.lparams(width = matchParent, height = wrapContent)
+                    }.lparams(width = matchParent, height = wrapContent) {
+                        bottomMargin = dip(8)
+                    }
 
-                    textView(text = string.add_manga_genres)
+                    textView(text = R.string.add_manga_genres)
                     genres = editText().typeText()
-                        .lparams(width = matchParent, height = wrapContent)
+                        .lparams(width = matchParent, height = wrapContent) {
+                            bottomMargin = dip(8)
+                        }
 
-                    textView(text = string.add_manga_path)
+                    textView(text = R.string.add_manga_path)
                     path = editText {
                         typeText()
                         isCursorVisible = false
                         isFocusable = false
                         isLongClickable = false
-                    }.lparams(width = matchParent, height = wrapContent)
+                    }.lparams(width = matchParent, height = wrapContent) {
+                        bottomMargin = dip(8)
+                    }
 
-                    textView(text = string.add_manga_status)
+                    textView(text = R.string.add_manga_status)
                     status = spinner {
-                    }.lparams(width = matchParent, height = wrapContent)
+                    }.lparams(width = matchParent, height = wrapContent) {
+                        bottomMargin = dip(8)
+                    }
 
-                    textView(text = string.add_manga_site)
+                    textView(text = R.string.add_manga_site)
                     site = editText().typeText()
-                        .lparams(width = matchParent, height = wrapContent)
+                        .lparams(width = matchParent, height = wrapContent) {
+                            bottomMargin = dip(8)
+                        }
 
                     textView(text = R.string.add_manga_update)
                     isUpdate = checkBox(R.string.add_manga_update_available).lparams(
-                        width = matchParent,
-                        height = wrapContent
-                    )
+                        width = matchParent, height = wrapContent
+                    ) {
+                        bottomMargin = dip(8)
+                    }
 
-                    textView(text = string.add_manga_color)
+                    textView(text = R.string.add_manga_color)
                     color = imageView {
                         backgroundResource = android.R.color.holo_blue_bright
-                    }.lparams(width = matchParent, height = dip(40))
+                    }.lparams(width = matchParent, height = dip(40)) {
+                        bottomMargin = dip(8)
+                    }
 
-                    textView(text = string.add_manga_logo)
+                    textView(text = R.string.add_manga_logo)
                     logoText = editText().typeText()
                         .lparams(width = matchParent, height = wrapContent)
                     logo = imageView {
@@ -125,76 +147,72 @@ class AddMangaView(private val act: AddMangaActivity) : AnkoActivityComponent() 
         }
     }
 
+    @SuppressLint("SetTextI18n")
     fun setManga(manga: Manga) {
-        act.launch(Dispatchers.Default) {
+        act.lifecycleScope.launchWhenResumed {
             _manga = manga
-            val categoryNames = act.mViewModel.getCategoryNames()
+            val categoryNames = withContext(Dispatchers.Default) {
+                act.mViewModel.getCategoryNames()
+            }
             val listStatus = listOf(
                 ctx.getString(R.string.manga_status_unknown),
                 ctx.getString(R.string.manga_status_continue),
                 ctx.getString(R.string.manga_status_complete)
             )
 
-            withContext(Dispatchers.Main) {
-                name.setText(manga.name)
-                authors.setText(manga.authors)
-                about.setText(manga.about)
-                genres.setText(manga.genres)
-                path.setText(manga.path)
-                site.setText(manga.site)
-                logoText.setText(manga.logo)
+            name.setText(manga.name)
+            authors.setText(manga.authors)
+            about.setText(manga.about)
+            genres.setText(manga.genres)
+            path.setText(manga.path)
+            site.setText(manga.host + manga.shortLink)
+            logoText.setText(manga.logo)
 
-                isUpdate.isChecked = manga.isUpdate
+            isUpdate.isChecked = manga.isUpdate
 
-                categories.adapter = ArrayAdapter<String>(
-                    categories.context,
-                    android.R.layout.simple_spinner_item,
-                    categoryNames
-                ).apply {
-                    setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                }
-
-                categories.setSelection(categoryNames.indexOf(manga.categories))
-
-                status.adapter = ArrayAdapter<String>(
-                    status.context,
-                    android.R.layout.simple_spinner_item,
-                    listStatus
-                ).apply {
-                    setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                }
-                status.setSelection(listStatus.indexOf(manga.status))
-
-                if (manga.color != 0) {
-                    color.backgroundColor = manga.color
-                }
-                _manga.color = manga.color
-                color.onClick {
-                    ColorPicker(color.context, _manga.color) { newColor ->
-                        _manga.color = newColor
-                        color.backgroundColor = newColor
-                    }
-                }
-
-                if (manga.logo.isEmpty()) {
-                    try {
-                        logo.backgroundResource = if (manga.color != 0) manga.color
-                        else android.R.color.holo_green_dark
-                    } catch (ex: Resources.NotFoundException) {
-                        logo.backgroundColor = manga.color
-                    }
-                } else
-                    loadImage(manga.logo)
-                        .onError {
-                            if (manga.color != 0) {
-                                logo.backgroundColor = manga.color
-                            } else {
-                                logo.backgroundColorResource = android.R.color.holo_green_dark
-                            }
-                        }
-                        .into(logo)
-
+            categories.adapter = ArrayAdapter(
+                categories.context, android.R.layout.simple_spinner_item, categoryNames
+            ).apply {
+                setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             }
+
+            categories.setSelection(categoryNames.indexOf(manga.categories))
+
+            status.adapter = ArrayAdapter<String>(
+                status.context, android.R.layout.simple_spinner_item, listStatus
+            ).apply {
+                setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            }
+            status.setSelection(listStatus.indexOf(manga.status))
+
+            if (manga.color != 0) {
+                color.backgroundColor = manga.color
+            }
+            _manga.color = manga.color
+            color.onClick {
+                ColorPicker(color.context, _manga.color) { newColor ->
+                    _manga.color = newColor
+                    color.backgroundColor = newColor
+                }
+            }
+
+            if (manga.logo.isEmpty()) {
+                try {
+                    logo.backgroundResource = if (manga.color != 0) manga.color
+                    else android.R.color.holo_green_dark
+                } catch (ex: Resources.NotFoundException) {
+                    logo.backgroundColor = manga.color
+                }
+            } else
+                loadImage(manga.logo)
+                    .onError {
+                        if (manga.color != 0) {
+                            logo.backgroundColor = manga.color
+                        } else {
+                            logo.backgroundColorResource = android.R.color.holo_green_dark
+                        }
+                    }
+                    .into(logo)
         }
     }
 
@@ -206,7 +224,6 @@ class AddMangaView(private val act: AddMangaActivity) : AnkoActivityComponent() 
         _manga.genres = genres.text.toString()
         _manga.path = path.text.toString()
         _manga.status = status.selectedItem.toString()
-        _manga.site = site.text.toString()
         _manga.logo = logoText.text.toString()
         _manga.isUpdate = isUpdate.isChecked
         return _manga

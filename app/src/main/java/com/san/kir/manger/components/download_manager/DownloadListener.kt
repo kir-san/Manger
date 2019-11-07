@@ -1,6 +1,6 @@
 package com.san.kir.manger.components.download_manager
 
-import com.san.kir.manger.room.models.DownloadItem
+import com.san.kir.manger.room.entities.DownloadItem
 
 interface DownloadListener {
     fun onProgress(item: DownloadItem) {}

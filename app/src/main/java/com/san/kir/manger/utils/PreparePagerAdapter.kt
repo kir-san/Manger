@@ -1,12 +1,11 @@
 package com.san.kir.manger.utils
 
-import android.support.v4.view.PagerAdapter
-import android.support.v4.view.ViewPager
 import android.view.View
 import android.view.ViewGroup
+import androidx.viewpager.widget.ViewPager
 import com.san.kir.manger.components.library.Page
 
-abstract class PreparePagerAdapter: PagerAdapter() {
+abstract class PreparePagerAdapter: androidx.viewpager.widget.PagerAdapter() {
     var pagers = listOf<Page>()
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {

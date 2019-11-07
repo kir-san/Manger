@@ -5,14 +5,14 @@ import android.content.Context
 import com.evernote.android.job.JobManager
 import com.evernote.android.job.JobRequest
 import com.san.kir.manger.R
-import com.san.kir.manger.room.models.PlannedPeriod
-import com.san.kir.manger.room.models.PlannedTask
-import com.san.kir.manger.room.models.PlannedType
-import com.san.kir.manger.utils.log
+import com.san.kir.manger.room.entities.PlannedTask
+import com.san.kir.manger.utils.enums.PlannedPeriod
+import com.san.kir.manger.utils.enums.PlannedType
+import com.san.kir.manger.utils.extensions.log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.jetbrains.anko.longToast
+import com.san.kir.ankofork.dialogs.longToast
 import java.util.*
 
 class ScheduleManager {

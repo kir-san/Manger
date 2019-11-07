@@ -1,130 +1,114 @@
 package com.san.kir.manger.components.list_chapters
 
-import android.arch.lifecycle.ViewModelProviders
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.dialogs.toast
+import com.san.kir.ankofork.horizontalProgressBar
+import com.san.kir.ankofork.include
+import com.san.kir.ankofork.matchParent
+import com.san.kir.ankofork.negative
+import com.san.kir.ankofork.positive
+import com.san.kir.ankofork.startService
+import com.san.kir.ankofork.verticalLayout
+import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.R
-import com.san.kir.manger.eventBus.negative
-import com.san.kir.manger.eventBus.positive
-import com.san.kir.manger.extending.ThemedActionBarActivity
-import com.san.kir.manger.extending.launchCtx
-import com.san.kir.manger.extending.views.showAlways
-import com.san.kir.manger.room.models.Manga
-import com.san.kir.manger.room.models.MangaColumn
+import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.room.entities.MangaColumn
+import com.san.kir.manger.services.MangaUpdaterService
 import com.san.kir.manger.utils.ActionModeControl
-import com.san.kir.manger.utils.ID
-import com.san.kir.manger.utils.MangaUpdaterService
 import com.san.kir.manger.utils.enums.ChapterFilter
-import com.san.kir.manger.utils.sPrefListChapters
+import com.san.kir.manger.utils.extensions.ThemedActionBarActivity
+import com.san.kir.manger.utils.extensions.add
+import com.san.kir.manger.utils.extensions.addCheckable
+import com.san.kir.manger.utils.extensions.boolean
+import com.san.kir.manger.utils.extensions.quantitySimple
+import com.san.kir.manger.utils.extensions.showAlways
+import com.san.kir.manger.utils.extensions.specialViewPager
+import com.san.kir.manger.utils.extensions.string
+import com.san.kir.manger.utils.extensions.visibleOrGone
 import com.san.kir.manger.view_models.ListChaptersViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.anko.defaultSharedPreferences
-import org.jetbrains.anko.longToast
-import org.jetbrains.anko.setContentView
-import org.jetbrains.anko.startService
-import org.jetbrains.anko.toast
 
 
 class ListChaptersActivity : ThemedActionBarActivity() {
-    private val filterStatusKey = "filteringStatus"
-    private val receiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            intent?.let {
-                if (intent.action == MangaUpdaterService.actionGet) {
-                    val manga = intent.getStringExtra(MangaUpdaterService.ITEM_NAME)
-                    val isFoundNew = intent.getBooleanExtra(MangaUpdaterService.IS_FOUND_NEW, false)
-                    val countNew = intent.getIntExtra(MangaUpdaterService.COUNT_NEW, 0)
-
-                    if (manga == this@ListChaptersActivity.manga.unic) { // Если совпадает манга
-                        if (countNew == -1) // Если произошла ошибка ошибках
-                            longToast(R.string.list_chapters_message_error)
-                        else
-                            if (!isFoundNew) // Если ничего не нашлось
-                                longToast(R.string.list_chapters_message_no_found)
-                            else { // Если нашлость, вывести сообщение с количеством
-                                longToast(
-                                    getString(
-                                        R.string.list_chapters_message_count_new,
-                                        countNew
-                                    )
-                                )
-                                // Обновить список
-                                mAdapter.update()
-                            }
-
-                        mViewModel.isAction.item = false // Скрыть прогрессБар
-                    }
-                }
-            }
-        }
-    }
-
+    private val receiver by lazy { ListChapterReceiver(this) }
     private val actionCallback by lazy { ListChaptersActionCallback(mAdapter, this) }
-    val actionMode by lazy { ActionModeControl(this) }
+    private val baseAdapter = ListChapterBaseAdapter(this)
 
-    val mViewModel by lazy {
-        ViewModelProviders.of(this).get(ListChaptersViewModel::class.java)
-    }
+    val actionMode by lazy { ActionModeControl(this) }
+    val mViewModel by viewModels<ListChaptersViewModel>()
     val mAdapter = ListChaptersRecyclerPresenter(this)
 
-    val view by lazy { ListChapterBaseView(this) }
+    private val isTitle by boolean(
+        R.string.settings_list_chapter_title_key, R.string.settings_list_chapter_title_default
+    )
+    private val isIndividual by boolean(
+        R.string.settings_list_chapter_filter_key, R.string.settings_list_chapter_filter_default
+    )
+    private var filterStatus by string(filterStatusKey, ChapterFilter.ALL_READ_ASC.name)
 
-    lateinit var manga: Manga
+    var manga = Manga()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        view.setContentView(this)
+        verticalLayout {
+            // ПрогрессБар для отображения поиска новых глав
+            horizontalProgressBar {
+                isIndeterminate = true
+                visibleOrGone(mViewModel.isAction, mViewModel.isUpdate)
+            }.lparams(width = matchParent, height = wrapContent)
 
-        val intentFilter = IntentFilter().apply { addAction(MangaUpdaterService.actionGet) }
-        registerReceiver(receiver, intentFilter)
+            specialViewPager {
+                if (isTitle) {
+                    include<androidx.viewpager.widget.PagerTabStrip>(R.layout.page_tab_strip)
+                }
 
-        title = intent.getStringExtra(MangaColumn.unic)
+                adapter = baseAdapter
+            }
+
+        }
+
+        IntentFilter().apply {
+            addAction(MangaUpdaterService.actionGet)
+            registerReceiver(receiver, this)
+        }
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onResume() {
         super.onResume()
-        // Загрузка настроек
-        val key = getString(R.string.settings_list_chapter_filter_key)
-        val default =
-            getString(R.string.settings_list_chapter_filter_default) == "true"
 
-        launchCtx {
-            manga = mViewModel.getManga(title as String)
-            manga.populate += 1
-            mViewModel.updateManga(manga)
-            withContext(Dispatchers.Main) {
-                title = manga.name
-                view.mAdapter.init
+        lifecycleScope.launchWhenResumed {
+            manga = withContext(Dispatchers.Default) {
+                mViewModel.manga(intent.getStringExtra(MangaColumn.unic) as String)
             }
+
+            title = manga.name
+            baseAdapter.init
+
         }.invokeOnCompletion {
-            val isIndividual = defaultSharedPreferences.getBoolean(key, default)
             if (isIndividual) {
                 mAdapter.setManga(manga, manga.chapterFilter).invokeOnCompletion {
                     mViewModel.isUpdate.negative()
                 }
-                mViewModel.filterState = manga.chapterFilter.name
+
+                mViewModel.filter.unicItem = manga.chapterFilter
+
             } else {
-                val filterStatus = defaultSharedPreferences.getString(
-                    filterStatusKey,
-                    ChapterFilter.ALL_READ_ASC.name
-                )
-                filterStatus?.also {
-                    mAdapter.setManga(manga, ChapterFilter.valueOf(filterStatus))
-                        .invokeOnCompletion {
-                            mViewModel.isUpdate.negative()
-                        }
-                    mViewModel.filterState = filterStatus
-                } ?: run {
+                if (filterStatus.isNotEmpty()) {
+                    mAdapter
+                        .setManga(manga, ChapterFilter.valueOf(filterStatus))
+                        .invokeOnCompletion { mViewModel.isUpdate.negative() }
+                    mViewModel.filter.unicItem = ChapterFilter.valueOf(filterStatus)
+                } else {
                     toast("Произошли внезапности")
                     onBackPressed()
                 }
@@ -133,71 +117,51 @@ class ListChaptersActivity : ThemedActionBarActivity() {
             if (MangaUpdaterService.contains(manga))
                 mViewModel.isAction.positive()
         }
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menu.add(
-            OptionId.groupId,
-            OptionId.update,
-            0,
-            R.string.list_chapters_option_update
-        )
+        menu.add(R.id.list_chapter_menu_update, R.string.list_chapters_option_update)
             .showAlways()
             .setIcon(R.drawable.ic_action_update_white)
 
         // Быстрая загрузка глав
-        menu.add(OptionId.groupId, OptionId.loadNext, 1, R.string.list_chapters_download_next)
-
-        menu.add(
-            OptionId.groupId,
-            OptionId.loadNotRead,
-            2,
-            R.string.list_chapters_download_not_read
-        )
-
-        menu.add(OptionId.groupId, OptionId.loadAll, 3, R.string.list_chapters_download_all)
-
-        menu.add(OptionId.groupId, OptionId.isUpdate, 4, R.string.list_chapters_is_update)
-            .isCheckable = true
-
-        menu.add(OptionId.groupId, OptionId.changeSort, 5, R.string.list_chapters_change_sort)
-            .isCheckable = true
-
+        menu.add(R.id.list_chapter_menu_loadnext, R.string.list_chapters_download_next)
+        menu.add(R.id.list_chapter_menu_loadnotread, R.string.list_chapters_download_not_read)
+        menu.add(R.id.list_chapter_menu_loadall, R.string.list_chapters_download_all)
+        menu.addCheckable(R.id.list_chapter_menu_isupdate, R.string.list_chapters_is_update)
+        menu.addCheckable(R.id.list_chapter_menu_changesort, R.string.list_chapters_change_sort)
         return super.onCreateOptionsMenu(menu)
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        menu.findItem(OptionId.changeSort).isChecked = manga.isAlternativeSort
-        menu.findItem(OptionId.isUpdate).isChecked = manga.isUpdate
-        menu.findItem(OptionId.update).isVisible = manga.isUpdate
+        menu.findItem(R.id.list_chapter_menu_changesort).isChecked = manga.isAlternativeSort
+        menu.findItem(R.id.list_chapter_menu_isupdate).isChecked = manga.isUpdate
+        menu.findItem(R.id.list_chapter_menu_update).isVisible = manga.isUpdate
         return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> onBackPressed() // Назад при нажатию стрелку
-            OptionId.update -> { // Проверка на наличие новых глав
+            R.id.list_chapter_menu_update -> { // Проверка на наличие новых глав
                 mViewModel.isAction.positive() // Показать прогрессБар
                 startService<MangaUpdaterService>("manga" to manga)
             }
-            OptionId.loadNext -> mAdapter.downloadNextNotReadChapter()
-            OptionId.loadNotRead -> mAdapter.downloadAllNotReadChapters()
-            OptionId.loadAll -> mAdapter.downloadAllChapters()
-            OptionId.changeSort -> {
-                launch(Dispatchers.Default) {
-                    manga.isAlternativeSort = !manga.isAlternativeSort
-                    mAdapter.changeSort(manga.isAlternativeSort)
-                    mViewModel.updateManga(manga)
-                }
+            R.id.list_chapter_menu_loadnext -> mAdapter.downloadNextNotReadChapter()
+            R.id.list_chapter_menu_loadnotread -> mAdapter.downloadAllNotReadChapters()
+            R.id.list_chapter_menu_loadall -> mAdapter.downloadAllChapters()
+            R.id.list_chapter_menu_changesort -> lifecycleScope.launch(Dispatchers.Default) {
+                manga.isAlternativeSort = !manga.isAlternativeSort
+                mAdapter.changeSort(manga.isAlternativeSort)
+                mViewModel.update(manga)
             }
-            OptionId.isUpdate -> {
-                launch(Dispatchers.Default) {
-                    manga.isUpdate = !manga.isUpdate
-                    invalidateOptionsMenu()
-                    mViewModel.updateManga(manga)
-                }
+
+            R.id.list_chapter_menu_isupdate -> lifecycleScope.launch(Dispatchers.Default) {
+                manga.isUpdate = !manga.isUpdate
+                invalidateOptionsMenu()
+                mViewModel.update(manga)
             }
+
         }
         return super.onOptionsItemSelected(item)
     }
@@ -205,18 +169,14 @@ class ListChaptersActivity : ThemedActionBarActivity() {
     override fun onPause() {
         super.onPause()
         // Сохранение статуса фильтрации
-        val key = getString(R.string.settings_list_chapter_filter_key)
-        val default =
-            getString(R.string.settings_list_chapter_filter_default) == "true"
-        val isIndividual = defaultSharedPreferences.getBoolean(key, default)
+
         if (isIndividual) {
-            manga.chapterFilter = ChapterFilter.valueOf(mViewModel.filterState)
-            mViewModel.updateManga(manga)
+            manga.chapterFilter = mViewModel.filter.item
+            lifecycleScope.launch(Dispatchers.Default) {
+                mViewModel.update(manga)
+            }
         } else {
-            getSharedPreferences(sPrefListChapters, MODE_PRIVATE)
-                .edit()
-                .putString(filterStatusKey, mViewModel.filterState)
-                .apply()
+            filterStatus = mViewModel.filter.item.name
         }
     }
 
@@ -237,24 +197,13 @@ class ListChaptersActivity : ThemedActionBarActivity() {
 
         // Вывод в заголовок количество выделенных элементов
         actionMode.setTitle(
-            resources
-                .getQuantityString(
-                    R.plurals.list_chapters_action_selected,
-                    mAdapter.getSelectedCount(),
-                    mAdapter.getSelectedCount()
-                )
+            quantitySimple(R.plurals.list_chapters_action_selected, mAdapter.getSelectedCount())
         )
     }
 
-    private object OptionId {
-        val update = ID.generate()
-        val loadNext = ID.generate()
-        val loadNotRead = ID.generate()
-        val loadAll = ID.generate()
-        val changeSort = ID.generate()
-        val isUpdate = ID.generate()
 
-        val groupId = ID.generate()
+    companion object {
+        private const val filterStatusKey = "filteringStatus"
     }
 }
 

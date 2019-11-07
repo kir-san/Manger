@@ -1,13 +1,15 @@
 package com.san.kir.manger.components.category
 
-import android.support.v7.util.DiffUtil
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
-import com.san.kir.manger.extending.launchCtx
-import com.san.kir.manger.room.models.Category
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
+import com.san.kir.manger.room.entities.Category
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.SimpleItemTouchHelperCallback
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.*
 
 
@@ -27,7 +29,7 @@ class CategoryRecyclerPresenter(private val act: CategoryActivity) : RecyclerPre
         ItemTouchHelper(SimpleItemTouchHelperCallback(adapter))
     }
 
-    private fun swapItems() = act.launchCtx {
+    private fun swapItems() = act.lifecycleScope.launch(Dispatchers.Default) {
         val old = adapter.items
         val new = act.mViewModel.getCategoryItems()
         val result = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
@@ -51,14 +53,14 @@ class CategoryRecyclerPresenter(private val act: CategoryActivity) : RecyclerPre
         swapItems()
     }
 
-    fun add(category: Category) = act.launchCtx {
+    fun add(category: Category) = act.lifecycleScope.launch {
         category.order = adapter.itemCount + 1
         act.mViewModel.categoryInsert(category).invokeOnCompletion {
             swapItems()
         }
     }
 
-    fun remove(cat: Category) = act.launchCtx {
+    fun remove(cat: Category) = act.lifecycleScope.launch {
         act.mViewModel.categoryDelete(cat).invokeOnCompletion {
             swapItems()
         }

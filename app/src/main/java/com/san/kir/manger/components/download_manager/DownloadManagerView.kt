@@ -1,38 +1,37 @@
 package com.san.kir.manger.components.download_manager
 
 import android.graphics.Color
-import android.support.design.widget.CoordinatorLayout
-import android.support.design.widget.Snackbar
-import android.support.v7.widget.LinearLayoutManager
 import android.view.Gravity
 import android.view.View
 import android.view.ViewManager
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
+import com.google.android.material.snackbar.Snackbar
+import com.san.kir.ankofork.above
+import com.san.kir.ankofork.alignParentBottom
+import com.san.kir.ankofork.alignParentTop
+import com.san.kir.ankofork.defaultSharedPreferences
+import com.san.kir.ankofork.design.coordinatorLayout
+import com.san.kir.ankofork.design.indefiniteSnackbar
+import com.san.kir.ankofork.dip
+import com.san.kir.ankofork.matchParent
+import com.san.kir.ankofork.recyclerview.recyclerView
+import com.san.kir.ankofork.sdk28.backgroundColor
+import com.san.kir.ankofork.sdk28.backgroundResource
+import com.san.kir.ankofork.sdk28.imageButton
+import com.san.kir.ankofork.sdk28.linearLayout
+import com.san.kir.ankofork.sdk28.onClick
+import com.san.kir.ankofork.sdk28.relativeLayout
+import com.san.kir.ankofork.sdk28.space
+import com.san.kir.ankofork.support.nestedScrollView
+import com.san.kir.ankofork.verticalLayout
 import com.san.kir.manger.R
-import com.san.kir.manger.extending.anko_extend.isNetworkAvailable
-import com.san.kir.manger.extending.anko_extend.isOnWifi
-import com.san.kir.manger.extending.anko_extend.onClick
 import com.san.kir.manger.extending.dialogs.ClearDownloadsMenu
+import com.san.kir.manger.services.DownloadService
 import com.san.kir.manger.utils.ID
-import org.jetbrains.anko.above
-import org.jetbrains.anko.alignParentBottom
-import org.jetbrains.anko.alignParentTop
-import org.jetbrains.anko.backgroundColor
-import org.jetbrains.anko.backgroundResource
-import org.jetbrains.anko.defaultSharedPreferences
-import org.jetbrains.anko.design.coordinatorLayout
-import org.jetbrains.anko.design.indefiniteSnackbar
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.imageButton
-import org.jetbrains.anko.linearLayout
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.recyclerview.v7.recyclerView
-import org.jetbrains.anko.relativeLayout
-import org.jetbrains.anko.space
-import org.jetbrains.anko.support.v4.nestedScrollView
-import org.jetbrains.anko.verticalLayout
+import com.san.kir.manger.utils.extensions.isNetworkAvailable
+import com.san.kir.manger.utils.extensions.isOnWifi
 
 class DownloadManagerView(private val act: DownloadManagerActivity) {
     private object Id {
@@ -54,13 +53,14 @@ class DownloadManagerView(private val act: DownloadManagerActivity) {
                         lparams(height = matchParent)
 
                         recyclerView {
-                            layoutManager = LinearLayoutManager(context)
+                            layoutManager =
+                                androidx.recyclerview.widget.LinearLayoutManager(context)
                             allAdapter(act).into(this)
                         }
                     }
                 }
                 bind()
-            }.lparams(height = matchParent) {
+            }.lparams(height = matchParent, width = matchParent) {
                 alignParentTop()
                 above(Id.bottomBar)
             }
@@ -86,7 +86,7 @@ class DownloadManagerView(private val act: DownloadManagerActivity) {
                     backgroundResource = R.drawable.ic_stop_white
                 }
 
-                space { }.lparams(width = dip(34))
+                space { }.lparams(width = dip(64))
 
                 // Кнопка очистки
                 btn {
@@ -101,7 +101,7 @@ class DownloadManagerView(private val act: DownloadManagerActivity) {
         }
     }
 
-    private fun CoordinatorLayout.bind() {
+    private fun androidx.coordinatorlayout.widget.CoordinatorLayout.bind() {
         val wifiKey = act.getString(R.string.settings_downloader_wifi_only_key)
         val wifiDefault =
             act.getString(R.string.settings_downloader_wifi_only_default) == "true"
@@ -114,10 +114,10 @@ class DownloadManagerView(private val act: DownloadManagerActivity) {
             }
             when {
                 isWifi && !act.isOnWifi() -> {
-                    snack = this@bind.indefiniteSnackbar("Вай вай! Не включен Wi-fi!")
+                    snack = this@bind.indefiniteSnackbar(R.string.download_view_wifi_off)
                 }
                 !act.isNetworkAvailable() -> {
-                    snack = this@bind.indefiniteSnackbar("Нет доступа в интернет")
+                    snack = this@bind.indefiniteSnackbar(R.string.download_view_internet_off)
                 }
             }
 
@@ -125,14 +125,14 @@ class DownloadManagerView(private val act: DownloadManagerActivity) {
     }
 
     private fun ViewManager.btn(action: ImageButton.() -> Unit): ImageButton {
-        val buttonSize = 38 // Размер кнопок
+        val buttonSize = 35 // Размер кнопок
         return imageButton {
             action()
             scaleType = ImageView.ScaleType.CENTER
             layoutParams = LinearLayout.LayoutParams(dip(buttonSize), dip(buttonSize)).apply {
                 gravity = Gravity.CENTER_VERTICAL
-                leftMargin = dip(12)
-                rightMargin = dip(12)
+                leftMargin = dip(8)
+                rightMargin = dip(8)
             }
         }
     }

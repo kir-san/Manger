@@ -1,6 +1,6 @@
 package com.san.kir.manger.components.download_manager
 
-import com.san.kir.manger.room.models.DownloadItem
+import com.san.kir.manger.room.entities.DownloadItem
 import java.util.*
 import kotlin.collections.HashMap
 

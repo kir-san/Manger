@@ -1,37 +1,34 @@
 package com.san.kir.manger.components.latest_chapters
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.Binder
+import com.san.kir.ankofork.dip
+import com.san.kir.ankofork.horizontalProgressBar
+import com.san.kir.ankofork.matchParent
+import com.san.kir.ankofork.negative
+import com.san.kir.ankofork.positive
+import com.san.kir.ankofork.recyclerview.recyclerView
+import com.san.kir.ankofork.sdk28._LinearLayout
 import com.san.kir.manger.R
 import com.san.kir.manger.components.drawer.DrawerActivity
-import com.san.kir.manger.eventBus.Binder
-import com.san.kir.manger.eventBus.negative
-import com.san.kir.manger.eventBus.positive
-import com.san.kir.manger.extending.anko_extend.visibleOrGone
-import com.san.kir.manger.extending.views.showNever
+import com.san.kir.manger.utils.extensions.showNever
+import com.san.kir.manger.utils.extensions.visibleOrGone
 import com.san.kir.manger.view_models.LatestChapterViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.jetbrains.anko._LinearLayout
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.horizontalProgressBar
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.recyclerview.v7.recyclerView
 
 class LatestChapterActivity : DrawerActivity() {
     private val _adapter = LatestChaptersRecyclerPresenter(this)
     private val isAction = Binder(false)
 
-    val mViewModel by lazy {
-        ViewModelProviders.of(this).get(LatestChapterViewModel::class.java)
-    }
-
+    val mViewModel by viewModels<LatestChapterViewModel>()
     override val _LinearLayout.customView: View
         get() = this.apply {
             horizontalProgressBar {
@@ -44,7 +41,7 @@ class LatestChapterActivity : DrawerActivity() {
             }.lparams(width = matchParent, height = dip(10))
             recyclerView {
                 lparams(width = matchParent, height = matchParent)
-                layoutManager = LinearLayoutManager(context)
+                layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
                 _adapter.into(this)
             }
         }
@@ -73,8 +70,8 @@ class LatestChapterActivity : DrawerActivity() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        launch(Dispatchers.Main) {
-            menu.getItem(0).isEnabled =_adapter.hasNewChapters().await()
+        lifecycleScope.launch(Dispatchers.Main) {
+            menu.getItem(0).isEnabled =_adapter.hasNewChapters()
         }
         return super.onPrepareOptionsMenu(menu)
     }

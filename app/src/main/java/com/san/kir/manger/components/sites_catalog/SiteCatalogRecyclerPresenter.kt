@@ -1,7 +1,7 @@
 package com.san.kir.manger.components.sites_catalog
 
-import android.arch.lifecycle.Observer
-import android.support.v7.widget.RecyclerView
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.RecyclerView
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 
@@ -10,8 +10,6 @@ class SiteCatalogRecyclerPresenter(private val act: SiteCatalogActivity) : Recyc
         .createPaging({ SiteCatalogItemView(act) },
                       { oldItem, newItem -> oldItem.id == newItem.id },
                       { oldItem, newItem -> oldItem == newItem })
-
-
 
     override fun into(recyclerView: RecyclerView) {
         super.into(recyclerView)

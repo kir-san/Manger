@@ -1,11 +1,11 @@
 package com.san.kir.manger.view_models
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
+import androidx.lifecycle.AndroidViewModel
 import com.san.kir.manger.repositories.ChapterRepository
 import com.san.kir.manger.repositories.StatisticRepository
-import com.san.kir.manger.room.models.Chapter
-import com.san.kir.manger.room.models.MangaStatistic
+import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.room.entities.MangaStatistic
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -21,26 +21,15 @@ class ViewerViewModel(app: Application) : AndroidViewModel(app) {
             stats.lastTime = time
             stats.allTime = stats.allTime + time
             stats.maxSpeed =
-                    max(stats.maxSpeed, (stats.lastPages / (time.toFloat() / 60)).toInt())
+                max(stats.maxSpeed, (stats.lastPages / (time.toFloat() / 60)).toInt())
             stats.openedTimes = stats.openedTimes + 1
             mStatisticRepository.update(stats)
         }
     }
 
-    fun getChapterItems(mangaName: String): List<Chapter> {
-        return mChapterRepository.getItems(mangaName)
-    }
-
-    fun getStatisticItem(mangaName: String): MangaStatistic {
-        return mStatisticRepository.getItem(mangaName)
-    }
-
-    fun statisticUpdate(stats: MangaStatistic) {
-        mStatisticRepository.update(stats)
-    }
-
-    fun chapterUpdate(chapter: Chapter) {
-        mChapterRepository.update(chapter)
-    }
+    suspend fun getChapterItems(mangaName: String) = mChapterRepository.getItems(mangaName)
+    fun getStatisticItem(mangaName: String) = mStatisticRepository.getItem(mangaName)
+    fun statisticUpdate(stats: MangaStatistic) = mStatisticRepository.update(stats)
+    suspend fun update(chapter: Chapter) = mChapterRepository.update(chapter)
 }
 

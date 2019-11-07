@@ -1,6 +1,6 @@
 package com.san.kir.manger.room.type_converters
 
-import android.arch.persistence.room.TypeConverter
+import androidx.room.TypeConverter
 
 class ListStringConverter {
     @TypeConverter

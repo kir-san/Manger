@@ -6,20 +6,21 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import com.san.kir.ankofork.AnkoContext
+import com.san.kir.ankofork.dip
+import com.san.kir.ankofork.margin
+import com.san.kir.ankofork.matchParent
+import com.san.kir.ankofork.padding
+import com.san.kir.ankofork.sdk28.backgroundColor
+import com.san.kir.ankofork.sdk28.backgroundResource
+import com.san.kir.ankofork.sdk28.imageView
+import com.san.kir.ankofork.sdk28.textColor
+import com.san.kir.ankofork.sdk28.textView
+import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.R
-import com.san.kir.manger.extending.anko_extend.squareFrameLayout
-import com.san.kir.manger.room.models.Category
-import org.jetbrains.anko.AnkoContext
-import org.jetbrains.anko.backgroundColor
-import org.jetbrains.anko.backgroundResource
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.imageView
-import org.jetbrains.anko.margin
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.padding
-import org.jetbrains.anko.textColor
-import org.jetbrains.anko.textView
-import org.jetbrains.anko.wrapContent
+import com.san.kir.manger.room.entities.Category
+import com.san.kir.manger.utils.extensions.squareFrameLayout
+
 
 class LibraryLargeItemView(
     activity: LibraryActivity,

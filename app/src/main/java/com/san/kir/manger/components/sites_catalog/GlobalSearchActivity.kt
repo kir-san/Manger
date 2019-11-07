@@ -1,61 +1,61 @@
 package com.san.kir.manger.components.sites_catalog
 
-import android.arch.lifecycle.ViewModelProviders
 import android.graphics.Color
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.SearchView
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.viewModels
+import androidx.appcompat.widget.SearchView
+import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.Binder
+import com.san.kir.ankofork.dip
+import com.san.kir.ankofork.horizontalProgressBar
+import com.san.kir.ankofork.matchParent
+import com.san.kir.ankofork.negative
+import com.san.kir.ankofork.positive
+import com.san.kir.ankofork.recyclerview.recyclerView
+import com.san.kir.ankofork.sdk28.onQueryTextListener
+import com.san.kir.ankofork.verticalLayout
 import com.san.kir.manger.R
-import com.san.kir.manger.eventBus.Binder
-import com.san.kir.manger.eventBus.negative
-import com.san.kir.manger.eventBus.positive
-import com.san.kir.manger.extending.ThemedActionBarActivity
-import com.san.kir.manger.extending.anko_extend.onQueryTextListener
-import com.san.kir.manger.extending.anko_extend.visibleOrGone
-import com.san.kir.manger.extending.launchUI
-import com.san.kir.manger.extending.views.setButton
-import com.san.kir.manger.extending.views.setCloseButton
-import com.san.kir.manger.extending.views.setTextColor
-import com.san.kir.manger.extending.views.showAlways
+import com.san.kir.manger.utils.extensions.ThemedActionBarActivity
+import com.san.kir.manger.utils.extensions.setButton
+import com.san.kir.manger.utils.extensions.setCloseButton
+import com.san.kir.manger.utils.extensions.setTextColor
+import com.san.kir.manger.utils.extensions.showAlways
+import com.san.kir.manger.utils.extensions.visibleOrGone
 import com.san.kir.manger.view_models.CatalogForOneSiteViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.horizontalProgressBar
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.recyclerview.v7.recyclerView
-import org.jetbrains.anko.verticalLayout
 
 class GlobalSearchActivity : ThemedActionBarActivity() {
 
     private val mAdapter = GlobalSearchRecyclerPresenter(this)
-    private var mJob = Job()
+    private var mJob: Job = Job()
     private val mOldTitle: CharSequence by lazy { title }
     private val isAction = Binder(true)
 
-    val mViewModel by lazy {
-        ViewModelProviders.of(this).get(CatalogForOneSiteViewModel::class.java)
-    }
-
+    val mViewModel by viewModels<CatalogForOneSiteViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         verticalLayout {
+            lparams(matchParent, matchParent)
             horizontalProgressBar {
                 isIndeterminate = true
                 visibleOrGone(isAction)
             }.lparams(width = matchParent, height = dip(10))
+
             recyclerView {
-                layoutManager = LinearLayoutManager(this@GlobalSearchActivity)
+                layoutManager =
+                    androidx.recyclerview.widget.LinearLayoutManager(this@GlobalSearchActivity)
                 mAdapter.into(this)
-            }
+            }.lparams(matchParent, matchParent)
         }
 
         mAdapter.loadSites { size ->
-            launchUI {
+            lifecycleScope.launch(Dispatchers.Main) {
                 // Изменяем заголовок окна
                 title = "$mOldTitle: $size"
 
@@ -79,12 +79,13 @@ class GlobalSearchActivity : ThemedActionBarActivity() {
                 onQueryTextChange {
                     isAction.positive()
                     mJob.cancel()
-                    mJob = launch {
+                    mJob = lifecycleScope.launch {
                         delay(1500L)
                         // Фильтрация при каждом изменении текста
                         mAdapter.changeOrder(searchText = it!!)
                         isAction.negative()
                     }
+                    true
                 }
             }
         }

@@ -1,11 +1,11 @@
 package com.san.kir.manger.extending.dialogs
 
-import android.support.v7.widget.PopupMenu
 import android.view.View
+import androidx.appcompat.widget.PopupMenu
 import com.san.kir.manger.R
 import com.san.kir.manger.components.download_manager.DownloadManagerActivity
-import com.san.kir.manger.extending.views.add
 import com.san.kir.manger.utils.ID
+import com.san.kir.manger.utils.extensions.add
 
 class ClearDownloadsMenu(act: DownloadManagerActivity, parent: View) {
     init {

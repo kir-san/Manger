@@ -1,13 +1,12 @@
 package com.san.kir.manger.view_models
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.LiveData
-import android.arch.paging.PagedList
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import com.san.kir.manger.repositories.MangaRepository
 import com.san.kir.manger.repositories.StorageRepository
-import com.san.kir.manger.room.models.Manga
-import com.san.kir.manger.room.models.Storage
+import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.room.entities.Storage
 
 class StorageViewModel(app: Application) : AndroidViewModel(app) {
     private val mStorageRepository = StorageRepository(app)
@@ -17,19 +16,13 @@ class StorageViewModel(app: Application) : AndroidViewModel(app) {
         return mStorageRepository.loadItems()
     }
 
-    fun getStoragePagedItems(): LiveData<PagedList<Storage>> {
-        return mStorageRepository.loadPagedItems()
-    }
+    fun flowItems() = mStorageRepository.flowItems()
+    fun flowAllSize() = mStorageRepository.flowAllSize()
 
     fun getMangaFromPath(path: String): Manga? {
         return mMangaRepository.getFromPath(path)
     }
 
-    fun getStorageAllSize(): LiveData<Double> {
-        return mStorageRepository.loadAllSize()
-    }
-
-    fun storageDelete(item: Storage) {
-        mStorageRepository.delete(item)
-    }
+    suspend fun allSize() = mStorageRepository.items().map { it.sizeFull }.sum()
+    suspend fun storageDelete(item: Storage) = mStorageRepository.delete(item)
 }

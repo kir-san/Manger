@@ -1,16 +1,36 @@
 package com.san.kir.manger.components.drawer
 
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.graphics.Color
-import android.support.v4.view.GravityCompat
-import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.Toolbar
-import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.Gravity
 import android.view.View
+import androidx.activity.viewModels
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
+import com.san.kir.ankofork.AnkoContextImpl
+import com.san.kir.ankofork.appcompat.themedToolbar
+import com.san.kir.ankofork.design.appBarLayout
+import com.san.kir.ankofork.design.navigationView
+import com.san.kir.ankofork.dip
+import com.san.kir.ankofork.leftPadding
+import com.san.kir.ankofork.matchParent
+import com.san.kir.ankofork.padding
+import com.san.kir.ankofork.recyclerview.recyclerView
+import com.san.kir.ankofork.rightPadding
+import com.san.kir.ankofork.sdk28._LinearLayout
+import com.san.kir.ankofork.sdk28.backgroundColor
+import com.san.kir.ankofork.sdk28.backgroundResource
+import com.san.kir.ankofork.sdk28.imageView
+import com.san.kir.ankofork.sdk28.textView
+import com.san.kir.ankofork.sdk28.themedLinearLayout
+import com.san.kir.ankofork.support.drawerLayout
+import com.san.kir.ankofork.topPadding
+import com.san.kir.ankofork.verticalLayout
+import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.BuildConfig
 import com.san.kir.manger.R
 import com.san.kir.manger.components.category.CategoryActivity
@@ -22,41 +42,19 @@ import com.san.kir.manger.components.settings.SettingActivity
 import com.san.kir.manger.components.sites_catalog.SiteCatalogActivity
 import com.san.kir.manger.components.statistics.StatisticActivity
 import com.san.kir.manger.components.storage.StorageActivity
-import com.san.kir.manger.extending.BaseActivity
-import com.san.kir.manger.extending.anko_extend.onClick
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.SimpleItemTouchHelperCallback
-import com.san.kir.manger.utils.getDrawableCompat
+import com.san.kir.manger.utils.enums.MainMenuType
+import com.san.kir.manger.utils.extensions.BaseActivity
+import com.san.kir.manger.utils.extensions.onClick
 import com.san.kir.manger.view_models.DrawerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.anko.AnkoContextImpl
-import org.jetbrains.anko._LinearLayout
-import org.jetbrains.anko.appcompat.v7.toolbar
-import org.jetbrains.anko.backgroundColor
-import org.jetbrains.anko.backgroundResource
-import org.jetbrains.anko.design.appBarLayout
-import org.jetbrains.anko.design.navigationView
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.imageView
-import org.jetbrains.anko.leftPadding
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.padding
-import org.jetbrains.anko.recyclerview.v7.recyclerView
-import org.jetbrains.anko.rightPadding
-import org.jetbrains.anko.support.v4.drawerLayout
-import org.jetbrains.anko.textView
-import org.jetbrains.anko.themedLinearLayout
-import org.jetbrains.anko.topPadding
-import org.jetbrains.anko.verticalLayout
-import org.jetbrains.anko.wrapContent
 import java.util.*
 
 class DrawerView(private val act: DrawerActivity) {
-    private val mViewModel by lazy {
-        ViewModelProviders.of(act).get(DrawerViewModel::class.java)
-    }
+    private val mViewModel by act.viewModels<DrawerViewModel>()
     private val mAdapter = RecyclerViewAdapterFactory
         .createDraggable(
             { MainMenuItemView(act, mViewModel) },
@@ -69,13 +67,11 @@ class DrawerView(private val act: DrawerActivity) {
                 mViewModel.mainMenuUpdate(*items.toTypedArray())
             })
         .apply {
-            act.launch(act.coroutineContext) {
-                setHasStableIds(true)
-                items = mViewModel.getMainMenuItems()
-
-                withContext(Dispatchers.Main) {
-                    notifyDataSetChanged()
+            act.lifecycleScope.launch(Dispatchers.Main) {
+                items = withContext(Dispatchers.Default) {
+                    mViewModel.getMainMenuItems()
                 }
+                notifyDataSetChanged()
             }
         }
 
@@ -84,7 +80,7 @@ class DrawerView(private val act: DrawerActivity) {
     }
 
     lateinit var drawerLayout: DrawerLayout
-    lateinit var toolbar: Toolbar
+    private lateinit var toolbar: Toolbar
 
     fun createView(act: BaseActivity, otherView: _LinearLayout.() -> View): View {
         return with(AnkoContextImpl(act, act, true)) {
@@ -97,12 +93,8 @@ class DrawerView(private val act: DrawerActivity) {
 
                     appBarLayout {
 
-                        toolbar = toolbar {
+                        toolbar = themedToolbar(R.style.ThemeOverlay_AppCompat_Dark) {
                             lparams(width = matchParent, height = wrapContent)
-                            backgroundColor =
-                                    Color.parseColor("#ff212121") // material_grey_900
-                            setTitleTextColor(Color.WHITE)
-                            overflowIcon = getDrawableCompat(R.drawable.dots_vertical)
                             act.setSupportActionBar(this)
                         }
                     }
@@ -144,13 +136,13 @@ class DrawerView(private val act: DrawerActivity) {
                                     rightPadding = dip(10)
                                     topPadding = dip(9)
                                 }
-
                             }
                         }
 
                         recyclerView {
                             setHasFixedSize(true)
-                            layoutManager = LinearLayoutManager(context)
+                            layoutManager =
+                                androidx.recyclerview.widget.LinearLayoutManager(context)
                             mItemTouchHelper.attachToRecyclerView(this)
                             adapter = mAdapter
                             overScrollMode = View.OVER_SCROLL_NEVER

@@ -1,16 +1,12 @@
 package com.san.kir.manger.components.catalog_for_one_site
 
 import android.content.Context
-import android.support.v4.view.PagerAdapter
-import android.support.v4.view.ViewPager
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import com.san.kir.manger.R
-import org.jetbrains.anko.include
+import com.san.kir.ankofork.include
 
-class CatalogForOneSiteFilterPagesAdapter : PagerAdapter() {
+class CatalogForOneSiteFilterPagesAdapter : androidx.viewpager.widget.PagerAdapter() {
     // Список страниц
     private var pagers = arrayListOf<Map<String, Any>>()
     // Список адаптеров
@@ -22,9 +18,9 @@ class CatalogForOneSiteFilterPagesAdapter : PagerAdapter() {
             if (adapt.catalog.size > 1)
                 pagers.add(
                     mapOf("name" to name,
-                          "view" to ctx.include<RecyclerView>(R.layout.recycler_view) {
+                          "view" to ctx.include<androidx.recyclerview.widget.RecyclerView>(R.layout.recycler_view) {
                               // Создаем список
-                              layoutManager = LinearLayoutManager(ctx)
+                              layoutManager = androidx.recyclerview.widget.LinearLayoutManager(ctx)
                               adapter = adapt
                           })
                 )
@@ -35,15 +31,12 @@ class CatalogForOneSiteFilterPagesAdapter : PagerAdapter() {
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val v = pagers[position]["view"] as View
-        (container as ViewPager).addView(v, position)
+        (container as androidx.viewpager.widget.ViewPager).addView(v, position)
         return v
     }
 
-    override fun destroyItem(
-        container: ViewGroup,
-        position: Int,
-        `object`: Any
-    ) = (container as ViewPager).removeView(`object` as View)
+    override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) =
+        (container as androidx.viewpager.widget.ViewPager).removeView(`object` as View)
 
 
     override fun isViewFromObject(view: View, `object`: Any) = view == `object`

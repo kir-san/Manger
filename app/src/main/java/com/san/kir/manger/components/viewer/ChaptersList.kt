@@ -5,9 +5,9 @@ import android.os.Parcel
 import android.os.Parcelable
 import com.san.kir.manger.components.list_chapters.ChapterComparator
 import com.san.kir.manger.components.parsing.ManageSites
-import com.san.kir.manger.room.models.Chapter
-import com.san.kir.manger.room.models.MangaStatistic
-import com.san.kir.manger.utils.getFullPath
+import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.room.entities.MangaStatistic
+import com.san.kir.manger.utils.extensions.getFullPath
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -21,10 +21,7 @@ class ChaptersList(private val act: ViewerActivity) {
     private var stats = MangaStatistic()
     private var positionStat = 0
 
-    suspend fun init(
-        chapter: Chapter,
-        isAlternative: Boolean
-    ) {
+    suspend fun init(chapter: Chapter, isAlternative: Boolean) {
         val list = act.mViewModel.getChapterItems(chapter.manga)
 
         listChapter = if (isAlternative) {
@@ -101,7 +98,7 @@ class ChaptersList(private val act: ViewerActivity) {
         if (chapter().pages.isNullOrEmpty() ||
             chapter().pages.any { it.isBlank() }) {
             chapter().pages = ManageSites.pages(chapter())
-            act.mViewModel.chapterUpdate(chapter())
+            act.mViewModel.update(chapter())
         }
 
         pagesSize = chapter().pages.size
@@ -125,7 +122,7 @@ class ChaptersList(private val act: ViewerActivity) {
         pagesList = pages
     }
 
-    private fun saveProgress(pos: Int) { // Сохранение позиции текущей главы
+    private suspend fun saveProgress(pos: Int) { // Сохранение позиции текущей главы
         var p = pos // скопировать позицию
         when {
             pos < 1 -> p = 1 // если меньше единицы значение, то приравнять к еденице
@@ -133,13 +130,13 @@ class ChaptersList(private val act: ViewerActivity) {
                 p = pagesSize
                 // Сделать главу прочитанной
                 chapter().isRead = true
-                act.mViewModel.chapterUpdate(chapter())
+                act.mViewModel.update(chapter())
             }
             pos > pagesSize -> return // Если больше максимального значения, ничего не делать
         }
         // Обновить позицию
         chapter().progress = p
-        act.mViewModel.chapterUpdate(chapter())
+        act.mViewModel.update(chapter())
 
         if (pos > positionStat) {
             val diff = pos - positionStat
@@ -157,8 +154,8 @@ class ChaptersList(private val act: ViewerActivity) {
 
 data class Page(val link: String, val fullPath: String = "") : Parcelable {
     constructor(parcel: Parcel) : this(
-        parcel.readString(),
-        parcel.readString()
+        parcel.readString() ?: "",
+        parcel.readString() ?: ""
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

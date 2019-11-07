@@ -1,7 +1,7 @@
 package com.san.kir.manger.utils
 
 import android.view.ActionMode
-import com.san.kir.manger.extending.BaseActivity
+import com.san.kir.manger.utils.extensions.BaseActivity
 
 class ActionModeControl(private val act: BaseActivity) {
     private var actionMode: ActionMode? = null

@@ -1,15 +1,15 @@
 package com.san.kir.manger.components.viewer
 
 import android.os.Parcelable
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentStatePagerAdapter
-import android.support.v4.view.PagerAdapter
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.viewpager.widget.PagerAdapter
+
 
 class ViewerAdapter(fm: FragmentManager) :
-    FragmentStatePagerAdapter(fm) {
+    androidx.fragment.app.FragmentStatePagerAdapter(fm) {
 
-    var items : List<Fragment> = listOf()
+    var items: List<Fragment> = listOf()
 
     fun setList(list: List<Page>) {
         items = listOf()
@@ -32,13 +32,12 @@ class ViewerAdapter(fm: FragmentManager) :
             }
         }
 
+
         notifyDataSetChanged()
     }
 
     // Получение нужного элемента взависимости от позиции
-    override fun getItem(position: Int): Fragment {
-        return items[position]
-    }
+    override fun getItem(position: Int) = items[position]
 
     override fun getCount() = items.size
 

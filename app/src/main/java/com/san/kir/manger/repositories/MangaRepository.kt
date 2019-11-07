@@ -1,24 +1,22 @@
 package com.san.kir.manger.repositories
 
-import android.arch.lifecycle.LiveData
-import android.arch.paging.LivePagedListBuilder
-import android.arch.paging.PagedList
 import android.content.Context
+import androidx.lifecycle.LiveData
+import androidx.paging.LivePagedListBuilder
+import androidx.paging.PagedList
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.components.parsing.SiteCatalogAlternative
+import com.san.kir.manger.room.entities.Category
+import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.room.entities.MangaStatistic
+import com.san.kir.manger.room.entities.SiteCatalogElement
+import com.san.kir.manger.room.entities.toManga
 import com.san.kir.manger.room.getDatabase
-import com.san.kir.manger.room.models.Category
-import com.san.kir.manger.room.models.Manga
-import com.san.kir.manger.room.models.MangaStatistic
-import com.san.kir.manger.room.models.SiteCatalogElement
-import com.san.kir.manger.room.models.toManga
 import com.san.kir.manger.utils.CATEGORY_ALL
-import com.san.kir.manger.utils.createDirs
 import com.san.kir.manger.utils.enums.DIR
 import com.san.kir.manger.utils.enums.MangaFilter
-import com.san.kir.manger.utils.getFullPath
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import com.san.kir.manger.utils.extensions.createDirs
+import com.san.kir.manger.utils.extensions.getFullPath
 import java.io.File
 import java.util.regex.Pattern
 
@@ -39,9 +37,9 @@ class MangaRepository(context: Context) {
         return mMangaDao.getItemOrNull(unic)
     }
 
-    fun insert(vararg manga: Manga) = GlobalScope.launch { mMangaDao.insert(*manga) }
-    fun update(vararg manga: Manga) = GlobalScope.launch { mMangaDao.update(*manga) }
-    fun delete(vararg manga: Manga) = GlobalScope.launch { mMangaDao.delete(*manga) }
+    suspend fun insert(vararg manga: Manga) =  mMangaDao.insert(*manga)
+    suspend fun update(vararg manga: Manga) =  mMangaDao.update(*manga)
+    suspend fun delete(vararg manga: Manga) =  mMangaDao.delete(*manga)
 
     fun loadMangas(cat: Category, filter: MangaFilter): LiveData<PagedList<Manga>> {
         val source = if (cat.name == CATEGORY_ALL) {
@@ -86,7 +84,7 @@ class MangaRepository(context: Context) {
     }
 
     fun contain(item: SiteCatalogElement): Boolean {
-        return getItems().any { it.site == item.link }
+        return getItems().any { it.shortLink == item.shotLink }
     }
 
     fun loadItems(): LiveData<List<Manga>> {
@@ -97,14 +95,14 @@ class MangaRepository(context: Context) {
         element: SiteCatalogElement,
         category: String
     ): Manga {
-        val pat = Pattern.compile("[a-z/0-9]+-").matcher(element.shotLink)
-        if (pat.find())
-            element.shotLink = element.shotLink
-                .removePrefix(pat.group()).removeSuffix(".html")
-        val path = "${DIR.MANGA}/${element.catalogName}/${element.shotLink}"
-        createDirs(getFullPath(path))
+        val updatingElement = ManageSites.getFullElement(element)
 
-        val updatingElement = ManageSites.getFullElement(element).await()
+        val pat = Pattern.compile("[a-z/0-9]+-").matcher(updatingElement.shotLink)
+        var shortPath = element.shotLink
+        if (pat.find())
+            shortPath = element.shotLink.removePrefix(pat.group()).removeSuffix(".html")
+        val path = "${DIR.MANGA}/${element.catalogName}/$shortPath"
+        (getFullPath(path)).createDirs()
 
         val manga = updatingElement.toManga(category = category, path = path)
 
@@ -113,8 +111,6 @@ class MangaRepository(context: Context) {
         mMangaDao.insert(manga)
         mStatisticDao.insert(MangaStatistic(manga = manga.unic))
         return manga
-
-
     }
 }
 

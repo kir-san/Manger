@@ -2,7 +2,7 @@ package com.san.kir.manger.repositories
 
 import android.content.Context
 import com.san.kir.manger.room.getDatabase
-import com.san.kir.manger.room.models.MainMenuItem
+import com.san.kir.manger.room.entities.MainMenuItem
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 

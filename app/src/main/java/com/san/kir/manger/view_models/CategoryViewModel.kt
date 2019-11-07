@@ -1,10 +1,10 @@
 package com.san.kir.manger.view_models
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
+import androidx.lifecycle.AndroidViewModel
 import com.san.kir.manger.repositories.CategoryRepository
 import com.san.kir.manger.repositories.MangaRepository
-import com.san.kir.manger.room.models.Category
+import com.san.kir.manger.room.entities.Category
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job

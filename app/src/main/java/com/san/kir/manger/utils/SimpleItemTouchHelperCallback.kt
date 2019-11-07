@@ -2,9 +2,11 @@ package com.san.kir.manger.utils
 
 
 import android.graphics.Canvas
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
+import com.san.kir.manger.utils.extensions.log
+import kotlin.math.abs
 import kotlin.properties.Delegates
 
 class SimpleItemTouchHelperCallback(adapter: ItemTouchHelperAdapter) : ItemTouchHelper.Callback() {
@@ -60,7 +62,7 @@ class SimpleItemTouchHelperCallback(adapter: ItemTouchHelperAdapter) : ItemTouch
                              actionState: Int,
                              isCurrentlyActive: Boolean) {
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-            val alpha: Float = alphaFull - Math.abs(dX) / viewHolder.itemView.width.toFloat()
+            val alpha: Float = alphaFull - abs(dX) / viewHolder.itemView.width.toFloat()
             viewHolder.itemView.alpha = alpha
             viewHolder.itemView.translationX = dX
         } else

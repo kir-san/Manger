@@ -1,45 +1,58 @@
 package com.san.kir.manger.repositories
 
 import android.content.Context
+import androidx.lifecycle.LiveData
+import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.room.entities.action
 import com.san.kir.manger.room.getDatabase
-import com.san.kir.manger.room.models.Chapter
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import com.san.kir.manger.utils.enums.ChapterStatus
 
 class ChapterRepository(context: Context) {
     private val db = getDatabase(context)
     private val mChapterDao = db.chapterDao
 
-    fun getItems(mangaUnic: String): List<Chapter> {
+    suspend fun getItems() = mChapterDao.getItems()
+
+    suspend fun getItems(mangaUnic: String): List<Chapter> {
         return mChapterDao.getItems(mangaUnic)
     }
 
-    fun getItem(site: String): Chapter? {
+    suspend fun getItem(site: String): Chapter? {
         return mChapterDao.getItem(site)
     }
 
-    fun getItemsNotReadAsc(mangaUnic: String): List<Chapter> {
+    suspend fun getItemsNotReadAsc(mangaUnic: String): List<Chapter> {
         return mChapterDao.getItemsNotReadAsc(mangaUnic)
     }
 
-    fun getItemsAsc(mangaUnic: String): List<Chapter> {
+    suspend fun getItemsAsc(mangaUnic: String): List<Chapter> {
         return mChapterDao.getItemsAsc(mangaUnic)
     }
 
-    fun insert(vararg chapter: Chapter) = GlobalScope.launch { mChapterDao.insert(*chapter) }
-    fun update(vararg chapter: Chapter) = GlobalScope.launch { mChapterDao.update(*chapter) }
-    fun delete(vararg chapter: Chapter) = GlobalScope.launch { mChapterDao.delete(*chapter) }
+    suspend fun insert(vararg chapter: Chapter) = mChapterDao.insert(*chapter)
+    suspend fun update(vararg chapter: Chapter) = mChapterDao.update(*chapter)
+    suspend fun delete(vararg chapter: Chapter) = mChapterDao.delete(*chapter)
 
-    fun countNotRead(mangaUnic: String): Int {
-        return mChapterDao.getItems(mangaUnic).filter { !it.isRead }.size
-    }
+    suspend fun countNotRead(mangaUnic: String) =
+        mChapterDao.getItems(mangaUnic).filter { !it.isRead }.size
 
-    fun count(manga: String): Int {
+    @Suppress("unused")
+    suspend fun count(manga: String): Int {
         return getItems(manga).size
     }
 
-    fun deleteItems(manga: String): Job {
+    suspend fun deleteItems(manga: String): Int {
         return delete(*getItems(manga).toTypedArray())
+    }
+
+    fun loadInUpdateItems(): LiveData<List<Chapter>> {
+        return mChapterDao.loadInUpdateItems()
+    }
+
+    suspend fun newChapters(): List<Chapter> {
+        return mChapterDao.getItems()
+            .filter { it.isInUpdate }
+            .filter { !it.isRead }
+            .filter { it.action == ChapterStatus.DOWNLOADABLE }
     }
 }

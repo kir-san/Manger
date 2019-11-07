@@ -1,27 +1,25 @@
 package com.san.kir.manger.components.list_chapters
 
-import android.support.v7.widget.RecyclerView
+import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.dialogs.toast
+import com.san.kir.ankofork.negative
+import com.san.kir.ankofork.positive
 import com.san.kir.manger.R
-import com.san.kir.manger.components.download_manager.DownloadService
 import com.san.kir.manger.components.parsing.ManageSites
-import com.san.kir.manger.eventBus.negative
-import com.san.kir.manger.eventBus.positive
-import com.san.kir.manger.extending.launchCtx
-import com.san.kir.manger.room.models.Chapter
-import com.san.kir.manger.room.models.Manga
-import com.san.kir.manger.room.models.action
-import com.san.kir.manger.room.models.toDownloadItem
+import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.room.entities.action
+import com.san.kir.manger.room.entities.toDownloadItem
+import com.san.kir.manger.services.DownloadService
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
-import com.san.kir.manger.utils.delChapters
 import com.san.kir.manger.utils.enums.ChapterFilter
 import com.san.kir.manger.utils.enums.ChapterStatus
-import com.san.kir.manger.utils.log
+import com.san.kir.manger.utils.extensions.delChapters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.anko.toast
 
 
 class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPresenter() {
@@ -30,10 +28,10 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
     private var mFilter = ChapterFilter.NOT_READ_DESC
     private var backupCatalog = listOf<Chapter>()
 
-    override fun into(recyclerView: RecyclerView) {
+    override fun into(recyclerView: androidx.recyclerview.widget.RecyclerView) {
         super.into(recyclerView)
         recycler.adapter = adapter
-        act.mViewModel.filterIndicator.bind {
+        act.mViewModel.filter.bind {
             changeOrder(it)
         }
     }
@@ -48,10 +46,9 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
         changeSort(mManga.isAlternativeSort)
     }
 
-    fun changeSort(alternative: Boolean) = act.launchCtx {
+    fun changeSort(alternative: Boolean) = act.lifecycleScope.launch(Dispatchers.Default) {
         try {
-            val loadChapters = act.mViewModel.getChapters(mManga)
-            log("loadChapters = ${loadChapters.size}")
+            val loadChapters = act.mViewModel.chapters(mManga)
             backupCatalog = if (alternative) {
                 loadChapters.sortedWith(ChapterComparator())
             } else {
@@ -63,7 +60,7 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
         changeOrder(mFilter)
     }
 
-    fun changeOrder(filter: ChapterFilter) = act.launchCtx {
+    private fun changeOrder(filter: ChapterFilter) = act.lifecycleScope.launch(Dispatchers.Default) {
         runCatching {
             this@ListChaptersRecyclerPresenter.mFilter = filter
             adapter.items = when (filter) {
@@ -89,7 +86,7 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
 
     fun getSelectedCount() = adapter.selectedItems.filter { it }.size
 
-    fun deleteSelectedItems() = act.launchCtx {
+    fun deleteSelectedItems() = act.lifecycleScope.launch(Dispatchers.Default) {
         var count = 0
         forSelection { i ->
             val chapter = items[i]
@@ -107,7 +104,7 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
         }
     }
 
-    fun downloadSelectedItems() = act.launchCtx {
+    fun downloadSelectedItems() = act.lifecycleScope.launch(Dispatchers.Default) {
         forSelection { i ->
             val chapter = items[i]
             // для каждого выделенный элемент
@@ -117,10 +114,10 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
         }
     }
 
-    fun downloadNextNotReadChapter() = act.launchCtx {
+    fun downloadNextNotReadChapter() = act.lifecycleScope.launch(Dispatchers.Default) {
         val chapter = act
             .mViewModel
-            .getChaptersNotReadAsc(mManga)
+            .chaptersNotReadAsc(mManga)
             .first { it.action == ChapterStatus.DOWNLOADABLE }
 
         DownloadService.addOrStart(act, chapter.toDownloadItem())
@@ -128,10 +125,10 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
         changeOrder(mFilter)
     }
 
-    fun downloadAllNotReadChapters() = act.launchCtx {
+    fun downloadAllNotReadChapters() = act.lifecycleScope.launch(Dispatchers.Default) {
         val count = act
             .mViewModel
-            .getChaptersNotReadAsc(mManga)
+            .chaptersNotReadAsc(mManga)
             .filter { it.action == ChapterStatus.DOWNLOADABLE }
             .onEach { chapter ->
                 DownloadService.addOrStart(act, chapter.toDownloadItem())
@@ -148,10 +145,10 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
         changeOrder(mFilter)
     }
 
-    fun downloadAllChapters() = act.launchCtx {
+    fun downloadAllChapters() = act.lifecycleScope.launch(Dispatchers.Default) {
         val count = act
             .mViewModel
-            .getChaptersAsc(mManga)
+            .chaptersAsc(mManga)
             .filter { it.action == ChapterStatus.DOWNLOADABLE }
             .onEach { chapter ->
                 DownloadService.addOrStart(act, chapter.toDownloadItem())
@@ -166,29 +163,30 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
         changeOrder(mFilter)
     }
 
-    fun setRead(isReading: Boolean) = act.launchCtx {
+    fun setRead(isReading: Boolean) = act.lifecycleScope.launch(Dispatchers.Default) {
         forSelection { i ->
             // Для всех выделеных элементов
             items[i].let { chapter ->
                 chapter.isRead = isReading
-                act.mViewModel.updateChapter(chapter)
+                act.mViewModel.update(chapter)
             }
         }
         changeOrder(mFilter)
     }
 
-    fun removeSelection() = act.launch(Dispatchers.Main) {
+    fun removeSelection() = act.lifecycleScope.launch(Dispatchers.Main) {
         repeat(adapter.itemCount) { i ->
             adapter.selectedItems[i] = false
             adapter.notifyItemChanged(i)
         }
     }
 
-    fun selectAll() =
+    fun selectAll() = act.lifecycleScope.launch(Dispatchers.Main) {
         repeat(adapter.itemCount) { i ->
             adapter.selectedItems[i] = true
             adapter.notifyItemChanged(i)
         }
+    }
 
     fun selectPrev() {
         // Выделить предидущие элементы
@@ -225,20 +223,20 @@ class ListChaptersRecyclerPresenter(val act: ListChaptersActivity) : RecyclerPre
 
     fun updatePages() {
         act.mViewModel.isAction.positive()
-        act.launchCtx {
+        act.lifecycleScope.launch(Dispatchers.Default) {
             forSelection { i ->
-                items[i].pages = ManageSites.pages(items[i]) ?: listOf()
-                act.mViewModel.updateChapter(items[i])
+                items[i].pages = ManageSites.pages(items[i])
+                act.mViewModel.update(items[i])
             }
         }.invokeOnCompletion {
             act.mViewModel.isAction.negative()
         }
     }
 
-    fun fullDeleteSelectedItems() = act.launchCtx {
+    fun fullDeleteSelectedItems() = act.lifecycleScope.launch(Dispatchers.Default) {
         forSelection { i ->
             items[i].let { chapter ->
-                act.mViewModel.deleteChapter(chapter)
+                act.mViewModel.delete(chapter)
                 backupCatalog = backupCatalog - chapter
             }
         }

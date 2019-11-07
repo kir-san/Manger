@@ -1,14 +1,15 @@
 package com.san.kir.manger.components.sites_catalog
 
-import android.support.v7.widget.RecyclerView
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.RecyclerView
 import com.san.kir.manger.components.parsing.ManageSites
-import com.san.kir.manger.extending.launchCtx
-import com.san.kir.manger.extending.launchUI
-import com.san.kir.manger.room.models.SiteCatalogElement
+import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
-import com.san.kir.manger.utils.log
+import com.san.kir.manger.utils.extensions.log
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 class GlobalSearchRecyclerPresenter(private val act: GlobalSearchActivity) : RecyclerPresenter() {
@@ -17,7 +18,7 @@ class GlobalSearchRecyclerPresenter(private val act: GlobalSearchActivity) : Rec
 
     private var searchText = "" // Сохранение информации о поисковом запросе
     private var backupCatalog = listOf<SiteCatalogElement>()
-    private var mainJob = Job()
+    private var mainJob: Job = Job()
 
     override fun into(recyclerView: RecyclerView) {
         super.into(recyclerView)
@@ -26,12 +27,12 @@ class GlobalSearchRecyclerPresenter(private val act: GlobalSearchActivity) : Rec
 
     fun loadSites(end: ((Int) -> Unit)? = null) {
         if (mainJob.isActive) mainJob.cancel()
-        mainJob = act.launchCtx {
+        mainJob = act.lifecycleScope.launch(Dispatchers.Default) {
             try {
                 ManageSites
                     .CATALOG_SITES
                     .forEach {
-                        backupCatalog = backupCatalog + act.mViewModel.getSiteCatalogItems(it)
+                        backupCatalog = backupCatalog + act.mViewModel.items(it)
                     }
 
                 adapter.items = backupCatalog
@@ -72,7 +73,7 @@ class GlobalSearchRecyclerPresenter(private val act: GlobalSearchActivity) : Rec
 
     private fun swapItems(newCatalog: List<SiteCatalogElement>): Job {
         adapter.items = newCatalog
-        return act.launchUI {
+        return act.lifecycleScope.launch(Dispatchers.Main) {
             adapter.notifyDataSetChanged()
         }
     }

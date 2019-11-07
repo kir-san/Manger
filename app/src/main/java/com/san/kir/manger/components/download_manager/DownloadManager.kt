@@ -1,7 +1,7 @@
 package com.san.kir.manger.components.download_manager
 
 import com.san.kir.manger.room.RoomDB
-import com.san.kir.manger.room.models.DownloadItem
+import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.utils.JobContext
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -51,6 +51,7 @@ class DownloadManager(private val db: RoomDB, private val concurrentLimit: Int) 
         }
     }
 
+    @Suppress("ControlFlowWithEmptyBody")
     suspend fun cancel(id: Long): Boolean {
         lock.withLock {
             return if (currentDownloadsMap.containsKey(id)) {
@@ -105,6 +106,7 @@ class DownloadManager(private val db: RoomDB, private val concurrentLimit: Int) 
         }
     }
 
+    @Suppress("ControlFlowWithEmptyBody")
     private suspend fun cancelAllDownloads() {
         currentDownloadsMap.iterator().forEach {
             it.value.cancel()

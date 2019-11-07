@@ -3,10 +3,10 @@ package com.san.kir.manger.components.download_manager
 import com.github.kittinunf.fuel.Fuel
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.room.RoomDB
-import com.san.kir.manger.room.models.DownloadItem
+import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.utils.JobContext
-import com.san.kir.manger.utils.createDirs
-import com.san.kir.manger.utils.getFullPath
+import com.san.kir.manger.utils.extensions.createDirs
+import com.san.kir.manger.utils.extensions.getFullPath
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.io.File
@@ -142,9 +142,9 @@ class ChapterDownloader(private val task: DownloadItem, concurrent: Int, private
             var contentLength = 0L
 
             Fuel.download(link)
-                .destination { response, _ ->
+                .fileDestination { response, _ ->
                     contentLength = response.contentLength
-                    createDirs(page.parentFile)
+                    page.parentFile.createDirs()
                     page.createNewFile()
                     page
                 }

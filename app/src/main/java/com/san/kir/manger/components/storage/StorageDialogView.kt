@@ -1,42 +1,40 @@
 package com.san.kir.manger.components.storage
 
-import android.arch.lifecycle.Observer
 import android.graphics.Color
 import android.graphics.Typeface
-import android.support.v4.content.ContextCompat
 import android.view.Gravity
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.bottomPadding
+import com.san.kir.ankofork.defaultSharedPreferences
+import com.san.kir.ankofork.dialogs.alert
+import com.san.kir.ankofork.dialogs.customView
+import com.san.kir.ankofork.dip
+import com.san.kir.ankofork.horizontalProgressBar
+import com.san.kir.ankofork.matchParent
+import com.san.kir.ankofork.padding
+import com.san.kir.ankofork.sdk28.backgroundColor
+import com.san.kir.ankofork.sdk28.backgroundResource
+import com.san.kir.ankofork.sdk28.imageView
+import com.san.kir.ankofork.sdk28.linearLayout
+import com.san.kir.ankofork.sdk28.onClick
+import com.san.kir.ankofork.sdk28.textView
+import com.san.kir.ankofork.verticalLayout
+import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.R
-import com.san.kir.manger.extending.BaseActivity
-import com.san.kir.manger.extending.anko_extend.onClick
 import com.san.kir.manger.extending.dialogs.DeleteReadChaptersDialog
 import com.san.kir.manger.repositories.StorageRepository
-import com.san.kir.manger.room.models.Manga
-import com.san.kir.manger.room.models.Storage
-import com.san.kir.manger.utils.formatDouble
+import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.room.entities.Storage
+import com.san.kir.manger.utils.extensions.BaseActivity
+import com.san.kir.manger.utils.extensions.formatDouble
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.backgroundColor
-import org.jetbrains.anko.backgroundResource
-import org.jetbrains.anko.bottomPadding
-import org.jetbrains.anko.customView
-import org.jetbrains.anko.defaultSharedPreferences
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.horizontalMargin
-import org.jetbrains.anko.horizontalProgressBar
-import org.jetbrains.anko.imageView
-import org.jetbrains.anko.leftPadding
-import org.jetbrains.anko.linearLayout
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.padding
-import org.jetbrains.anko.textResource
-import org.jetbrains.anko.textView
-import org.jetbrains.anko.verticalLayout
-import org.jetbrains.anko.wrapContent
 import kotlin.math.roundToInt
 
 class StorageDialogView(private val act: BaseActivity) {
@@ -53,7 +51,7 @@ class StorageDialogView(private val act: BaseActivity) {
         act.alert {
             customView {
                 verticalLayout {
-                    padding = dip(10)
+                    padding = dip(16)
                     bottomPadding = 0
 
                     val key = act.getString(R.string.settings_app_dark_theme_key)
@@ -65,69 +63,79 @@ class StorageDialogView(private val act: BaseActivity) {
                         gravity = Gravity.CENTER_HORIZONTAL
                         textSize = 18f
                         setTypeface(typeface, Typeface.BOLD)
-                    }.lparams(width = matchParent, height = wrapContent)
+                    }.lparams(width = matchParent, height = wrapContent) {
+                        bottomMargin = dip(10)
+                    }
 
                     progressBar = horizontalProgressBar {
-                        padding = dip(4)
                         progressDrawable = ContextCompat.getDrawable(
-                            act,
-                            R.drawable.storage_progressbar
+                            act, R.drawable.storage_progressbar
                         )
                     }.lparams(height = dip(50), width = matchParent)
 
                     // Строка с отображением всего занятого места
                     linearLayout {
-                        lparams(width = matchParent, height = dip(30))
-                        padding = dip(4)
-                        imageView { backgroundColor = Color.LTGRAY }
-                            .lparams(width = dip(50), height = dip(28))
+                        lparams(width = matchParent, height = dip(30)) {
+                            topMargin = dip(10)
+                        }
 
-                        allSize = textView(R.string.storage_item_all_s) {
-                            leftPadding = dip(4)
-                        }.lparams { gravity = Gravity.CENTER_VERTICAL }
+                        imageView { backgroundColor = Color.LTGRAY }
+                            .lparams(width = dip(50), height = dip(28)) {
+                                marginEnd = dip(16)
+                            }
+
+                        allSize = textView(R.string.storage_item_all_s).lparams {
+                            gravity = Gravity.CENTER_VERTICAL
+                        }
                     }
 
                     // Строка с отображением занятого места выбранной манги
                     linearLayout {
-                        lparams(width = matchParent, height = dip(30))
-                        padding = dip(4)
-                        imageView { backgroundColor = Color.parseColor("#FFFF4081") }
-                            .lparams(width = dip(50), height = dip(28))
+                        lparams(width = matchParent, height = dip(30)) {
+                            topMargin = dip(10)
+                        }
 
-                        mangaSize = textView {
-                            leftPadding = dip(4)
-                        }.lparams { gravity = Gravity.CENTER_VERTICAL }
+                        imageView { backgroundColor = Color.parseColor("#FFFF4081") }
+                            .lparams(width = dip(50), height = dip(28)) {
+                                marginEnd = dip(16)
+                            }
+
+                        mangaSize = textView().lparams { gravity = Gravity.CENTER_VERTICAL }
                     }
 
                     // Строка с отображение зянятого места прочитанных глав выбранной манги
                     linearLayout {
-                        lparams(width = matchParent, height = dip(30))
-                        padding = dip(4)
-                        imageView { backgroundColor = Color.parseColor("#222e7a") }
-                            .lparams(width = dip(50), height = dip(28))
+                        lparams(width = matchParent, height = dip(30)) {
+                            topMargin = dip(10)
+                        }
 
-                        readSize = textView {
-                            leftPadding = dip(4)
-                        }.lparams { gravity = Gravity.CENTER_VERTICAL }
+                        imageView { backgroundColor = Color.parseColor("#222e7a") }
+                            .lparams(width = dip(50), height = dip(28)) {
+                                marginEnd = dip(16)
+                            }
+
+                        readSize = textView().lparams { gravity = Gravity.CENTER_VERTICAL }
                     }
 
                     // Очистка прочитанных глав
                     linearLayout {
-                        lparams(width = matchParent, height = dip(34))
-                        padding = dip(4)
-                        imageView {
-                            backgroundResource =
-                                    if (isDark) R.drawable.ic_action_delete_white
-                                    else R.drawable.ic_action_delete_black
-                            scaleType = ImageView.ScaleType.FIT_CENTER
-                        }.lparams(width = dip(30), height = dip(30)) {
-                            horizontalMargin = dip(10)
+                        lparams(width = matchParent, height = dip(34)) {
+                            topMargin = dip(10)
                         }
 
-                        textView {
-                            leftPadding = dip(4)
-                            textResource = R.string.library_popupmenu_delete_read_chapters
-                        }.lparams { gravity = Gravity.CENTER_VERTICAL }
+                        imageView {
+                            backgroundResource =
+                                if (isDark) R.drawable.ic_action_delete_white
+                                else R.drawable.ic_action_delete_black
+                            scaleType = ImageView.ScaleType.FIT_CENTER
+                        }.lparams(width = dip(30), height = dip(30)) {
+                            marginEnd = dip(26)
+                            marginStart = dip(10)
+                        }
+
+                        textView(R.string.library_popupmenu_delete_read_chapters).lparams {
+                            gravity = Gravity.CENTER_VERTICAL
+                        }
 
                         readSizeAction = this
                     }
@@ -147,7 +155,6 @@ class StorageDialogView(private val act: BaseActivity) {
                     R.string.storage_item_all_size,
                     formatDouble(it)
                 )
-//                allSize?.textColor = if (isDark) Color.WHITE else Color.BLACK
                 progressBar?.max = it?.roundToInt() ?: 0
                 progressBar?.progress = dir?.sizeFull?.roundToInt() ?: 0
                 progressBar?.secondaryProgress = dir?.sizeRead?.roundToInt() ?: 0
@@ -175,7 +182,7 @@ class StorageDialogView(private val act: BaseActivity) {
         })
     }
 
-    private fun updateStorageItem(dir: Storage?) = act.launch(Dispatchers.Default) {
+    private fun updateStorageItem(dir: Storage?) = act.lifecycleScope.launch(Dispatchers.Default) {
         dir?.let { storage.update(storage.getSizeAndIsNew(it)) }
     }
 }

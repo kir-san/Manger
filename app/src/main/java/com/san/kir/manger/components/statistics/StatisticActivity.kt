@@ -1,11 +1,13 @@
 package com.san.kir.manger.components.statistics
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
 import android.text.Html
 import android.view.View
+import androidx.activity.viewModels
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.matchParent
+import com.san.kir.ankofork.sdk28._LinearLayout
 import com.san.kir.manger.R
 import com.san.kir.manger.components.drawer.DrawerActivity
 import com.san.kir.manger.utils.TimeFormat
@@ -13,15 +15,13 @@ import com.san.kir.manger.view_models.StatisticViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.anko._LinearLayout
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.recyclerview.v7.recyclerView
+import com.san.kir.ankofork.recyclerview.recyclerView
 
 class StatisticActivity : DrawerActivity() {
     private val titleObserver by lazy {
         Observer<Long> { l ->
             l?.let {
-                launch(Dispatchers.Main) {
+                lifecycleScope.launch(Dispatchers.Main) {
                     supportActionBar?.setTitle(R.string.main_menu_statistic)
                     supportActionBar?.subtitle = withContext(Dispatchers.Default) {
                         val time = TimeFormat(it)
@@ -38,13 +38,11 @@ class StatisticActivity : DrawerActivity() {
             }
         }
     }
-    val mViewModel by lazy {
-        ViewModelProviders.of(this).get(StatisticViewModel::class.java)
-    }
+    val mViewModel by viewModels<StatisticViewModel>()
 
     override val _LinearLayout.customView: View
         get() = recyclerView {
-            layoutManager = LinearLayoutManager(context)
+            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
             setHasFixedSize(true)
             StatisticRecyclerPresenter(this@StatisticActivity).into(this)
             lparams(matchParent, matchParent)

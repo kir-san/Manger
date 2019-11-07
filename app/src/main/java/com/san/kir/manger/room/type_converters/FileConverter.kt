@@ -1,11 +1,12 @@
 package com.san.kir.manger.room.type_converters
 
-import android.arch.persistence.room.TypeConverter
-import com.san.kir.manger.utils.getFullPath
-import com.san.kir.manger.utils.shortPath
+import androidx.room.TypeConverter
+import com.san.kir.manger.utils.extensions.getFullPath
+import com.san.kir.manger.utils.extensions.shortPath
 import java.io.File
 
 
+@Suppress("unused")
 class FileConverter {
     @TypeConverter
     fun fileToString(file: File): String = file.shortPath

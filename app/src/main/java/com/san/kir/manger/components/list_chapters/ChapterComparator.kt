@@ -1,6 +1,6 @@
 package com.san.kir.manger.components.list_chapters
 
-import com.san.kir.manger.room.models.Chapter
+import com.san.kir.manger.room.entities.Chapter
 import java.util.regex.Pattern
 
 class ChapterComparator : Comparator<Chapter> {
@@ -35,8 +35,8 @@ class ChapterComparator : Comparator<Chapter> {
         val prepare1 = String.format("%04d", prepareNumber1)
         val prepare2 = String.format("%04d", prepareNumber2)
 
-        val finishNumber1 = "${numbers1.first()}$prepare1".toInt(10)
-        val finishNumber2 = "${numbers2.first()}$prepare2".toInt(10)
+        val finishNumber1 = "${numbers1.firstOrNull() ?: 0}$prepare1".toInt(10)
+        val finishNumber2 = "${numbers2.firstOrNull() ?: 0}$prepare2".toInt(10)
 
         return finishNumber1 - finishNumber2
     }

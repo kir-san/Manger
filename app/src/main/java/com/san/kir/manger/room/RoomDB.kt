@@ -1,22 +1,10 @@
 package com.san.kir.manger.room
 
-import android.arch.persistence.room.Database
-import android.arch.persistence.room.Room
-import android.arch.persistence.room.RoomDatabase
-import android.arch.persistence.room.TypeConverters
 import android.content.Context
-import com.san.kir.manger.room.migrations.migrations
-import com.san.kir.manger.room.models.Category
-import com.san.kir.manger.room.models.Chapter
-import com.san.kir.manger.room.models.DownloadItem
-import com.san.kir.manger.room.models.LatestChapter
-import com.san.kir.manger.room.models.MainMenuItem
-import com.san.kir.manger.room.models.Manga
-import com.san.kir.manger.room.models.MangaStatistic
-import com.san.kir.manger.room.models.PlannedTask
-import com.san.kir.manger.room.models.Site
-import com.san.kir.manger.room.models.Storage
-import com.san.kir.dblib.type_converters.ChapterFilterTypeConverter
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.san.kir.manger.room.dao.CategoryDao
 import com.san.kir.manger.room.dao.ChapterDao
 import com.san.kir.manger.room.dao.DownloadDao
@@ -27,6 +15,18 @@ import com.san.kir.manger.room.dao.PlannedDao
 import com.san.kir.manger.room.dao.SiteDao
 import com.san.kir.manger.room.dao.StatisticDao
 import com.san.kir.manger.room.dao.StorageDao
+import com.san.kir.manger.room.entities.Category
+import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.room.entities.DownloadItem
+import com.san.kir.manger.room.entities.LatestChapter
+import com.san.kir.manger.room.entities.MainMenuItem
+import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.room.entities.MangaStatistic
+import com.san.kir.manger.room.entities.PlannedTask
+import com.san.kir.manger.room.entities.Site
+import com.san.kir.manger.room.entities.Storage
+import com.san.kir.manger.room.migrations.migrations
+import com.san.kir.manger.room.type_converters.ChapterFilterTypeConverter
 import com.san.kir.manger.room.type_converters.FileConverter
 import com.san.kir.manger.room.type_converters.ListStringConverter
 import com.san.kir.manger.room.type_converters.MainMenuTypeConverter
@@ -57,7 +57,7 @@ import com.san.kir.manger.utils.enums.DIR
 abstract class RoomDB : RoomDatabase() {
     companion object {
         const val NAME = "${DIR.PROFILE}/profile.db"
-        const val VERSION = 34
+        const val VERSION = 36
     }
 
     abstract val siteDao: SiteDao

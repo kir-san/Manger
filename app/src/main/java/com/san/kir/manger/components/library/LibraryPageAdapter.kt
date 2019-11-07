@@ -1,6 +1,7 @@
 package com.san.kir.manger.components.library
 
-import com.san.kir.manger.room.models.Category
+import androidx.lifecycle.lifecycleScope
+import com.san.kir.manger.room.entities.Category
 import com.san.kir.manger.utils.PreparePagerAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -12,7 +13,7 @@ class LibraryPageAdapter(act: LibraryActivity) : PreparePagerAdapter() {
     var adapters = listOf<LibraryItemsRecyclerPresenter>() // список адаптеров
 
     val init by lazy {
-        act.launch(act.coroutineContext) {
+        act.lifecycleScope.launch(Dispatchers.Default) {
             adapters = listOf()
             pagers = listOf()
             categories = act.mViewModel.getCategoryItems()

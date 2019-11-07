@@ -2,16 +2,16 @@ package com.san.kir.manger.components.schedule
 
 import com.evernote.android.job.Job
 import com.san.kir.manger.components.catalog_for_one_site.CatalogForOneSiteUpdaterService
-import com.san.kir.manger.extending.anko_extend.startForegroundService
 import com.san.kir.manger.repositories.MangaRepository
 import com.san.kir.manger.repositories.PlannedRepository
 import com.san.kir.manger.repositories.SiteRepository
-import com.san.kir.manger.room.models.MangaColumn
-import com.san.kir.manger.room.models.PlannedType
-import com.san.kir.manger.room.models.mangaList
-import com.san.kir.manger.utils.AppUpdateService
-import com.san.kir.manger.utils.MangaUpdaterService
-import com.san.kir.manger.utils.log
+import com.san.kir.manger.room.entities.MangaColumn
+import com.san.kir.manger.room.entities.mangaList
+import com.san.kir.manger.services.AppUpdateService
+import com.san.kir.manger.services.MangaUpdaterService
+import com.san.kir.manger.utils.enums.PlannedType
+import com.san.kir.manger.utils.extensions.log
+import com.san.kir.manger.utils.extensions.startForegroundService
 
 class ScheduleJob(private val tag: String) : Job() {
     override fun onRunJob(params: Params): Result {

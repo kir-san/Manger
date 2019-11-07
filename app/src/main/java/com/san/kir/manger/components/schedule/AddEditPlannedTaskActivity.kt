@@ -1,24 +1,23 @@
 package com.san.kir.manger.components.schedule
 
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.setContentView
 import com.san.kir.manger.R
-import com.san.kir.manger.extending.ThemedActionBarActivity
-import com.san.kir.manger.extending.views.showAlways
-import com.san.kir.manger.room.models.PlannedAddEdit
-import com.san.kir.manger.room.models.PlannedTask
+import com.san.kir.manger.room.entities.PlannedTask
+import com.san.kir.manger.utils.enums.PlannedAddEdit
+import com.san.kir.manger.utils.extensions.ThemedActionBarActivity
+import com.san.kir.manger.utils.extensions.showAlways
 import com.san.kir.manger.view_models.AddEditPlannedTaskViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.jetbrains.anko.setContentView
 
 // TODO добавить кнопку удалить
 class AddEditPlannedTaskActivity : ThemedActionBarActivity() {
-    val mViewModel by lazy {
-        ViewModelProviders.of(this).get(AddEditPlannedTaskViewModel::class.java)
-    }
+    val mViewModel by viewModels<AddEditPlannedTaskViewModel>()
     private val mView by lazy { AddEditPlannedTaskView(this) }
     private var isEditMode = false
     private val manager = ScheduleManager()
@@ -52,7 +51,7 @@ class AddEditPlannedTaskActivity : ThemedActionBarActivity() {
         when (item.itemId) {
             android.R.id.home -> onBackPressed()
             1 -> {
-                launch(Dispatchers.Default) {
+                lifecycleScope.launch(Dispatchers.Default) {
                     val task = mView.getTask()
 
                     if (isEditMode) {

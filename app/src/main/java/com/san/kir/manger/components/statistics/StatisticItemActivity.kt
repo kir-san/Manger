@@ -1,21 +1,19 @@
 package com.san.kir.manger.components.statistics
 
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.defaultSharedPreferences
+import com.san.kir.ankofork.setContentView
 import com.san.kir.manger.R
-import com.san.kir.manger.extending.ThemedActionBarActivity
+import com.san.kir.manger.utils.extensions.ThemedActionBarActivity
 import com.san.kir.manger.view_models.StatisticViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.anko.defaultSharedPreferences
-import org.jetbrains.anko.setContentView
 
 class StatisticItemActivity : ThemedActionBarActivity() {
-    val mViewModel by lazy {
-        ViewModelProviders.of(this).get(StatisticViewModel::class.java)
-    }
+    val mViewModel by viewModels<StatisticViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val key = getString(R.string.settings_app_dark_theme_key)
@@ -25,17 +23,14 @@ class StatisticItemActivity : ThemedActionBarActivity() {
 
         super.onCreate(savedInstanceState)
 
-        launch(coroutineContext) {
-            val manga = mViewModel.getStatisticItem(
-                intent.getStringExtra("manga")
-            )
-
-            withContext(Dispatchers.Main) {
-                StatisticItemFullView(manga).setContentView(this@StatisticItemActivity)
-
-                supportActionBar?.setDisplayHomeAsUpEnabled(true)
-                supportActionBar?.title = manga.manga
+            lifecycleScope.launchWhenResumed {
+            val manga = withContext(Dispatchers.Default) {
+                mViewModel.getStatisticItem(intent.getStringExtra("manga"))
             }
+            StatisticItemFullView(manga).setContentView(this@StatisticItemActivity)
+
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.title = manga.manga
         }
     }
 

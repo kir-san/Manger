@@ -1,9 +1,9 @@
 package com.san.kir.manger.repositories
 
-import android.arch.lifecycle.LiveData
 import android.content.Context
+import androidx.lifecycle.LiveData
+import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.room.getDatabase
-import com.san.kir.manger.room.models.DownloadItem
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 

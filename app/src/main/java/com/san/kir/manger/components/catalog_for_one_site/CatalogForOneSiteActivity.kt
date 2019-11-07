@@ -1,31 +1,34 @@
 package com.san.kir.manger.components.catalog_for_one_site
 
-import android.arch.lifecycle.ViewModelProviders
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color
-import android.support.v4.view.GravityCompat
-import android.support.v7.widget.SearchView
 import android.view.Menu
+import androidx.activity.viewModels
+import androidx.appcompat.widget.SearchView
+import androidx.core.view.GravityCompat
+import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.defaultSharedPreferences
+import com.san.kir.ankofork.dialogs.alert
+import com.san.kir.ankofork.negative
+import com.san.kir.ankofork.positive
+import com.san.kir.ankofork.sdk28.onQueryTextListener
+import com.san.kir.ankofork.setContentView
+import com.san.kir.ankofork.support.onRefresh
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
-import com.san.kir.manger.eventBus.negative
-import com.san.kir.manger.eventBus.positive
-import com.san.kir.manger.extending.BaseActivity
-import com.san.kir.manger.extending.anko_extend.onQueryTextListener
-import com.san.kir.manger.extending.anko_extend.startForegroundService
-import com.san.kir.manger.extending.launchUI
-import com.san.kir.manger.extending.views.setButton
-import com.san.kir.manger.extending.views.setCloseButton
-import com.san.kir.manger.extending.views.setTextColor
-import com.san.kir.manger.extending.views.showAlways
+import com.san.kir.manger.utils.extensions.BaseActivity
+import com.san.kir.manger.utils.extensions.setButton
+import com.san.kir.manger.utils.extensions.setCloseButton
+import com.san.kir.manger.utils.extensions.setTextColor
+import com.san.kir.manger.utils.extensions.showAlways
+import com.san.kir.manger.utils.extensions.startForegroundService
 import com.san.kir.manger.view_models.CatalogForOneSiteViewModel
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.defaultSharedPreferences
-import org.jetbrains.anko.setContentView
-import org.jetbrains.anko.support.v4.onRefresh
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class CatalogForOneSiteActivity : BaseActivity() {
@@ -37,9 +40,7 @@ class CatalogForOneSiteActivity : BaseActivity() {
     // Сохраняем название окна
     val mOldTitle: CharSequence by lazy { title }
 
-    val mViewModel by lazy {
-        ViewModelProviders.of(this).get(CatalogForOneSiteViewModel::class.java)
-    }
+    val mViewModel by viewModels<CatalogForOneSiteViewModel>()
 
     private val adapter = CatalogForOneSiteRecyclerPresenter(this)
     private val view = CatalogForOneSiteView(this, adapter)
@@ -72,15 +73,14 @@ class CatalogForOneSiteActivity : BaseActivity() {
         title = mSite.name
 
         // регистрируем BroadcastReceiver
-        val intentFilter = IntentFilter(
-            CatalogForOneSiteUpdaterService.ACTION_CATALOG_UPDATER_SERVICE
-        )
-        registerReceiver(receiver, intentFilter)
+        IntentFilter(CatalogForOneSiteUpdaterService.ACTION_CATALOG_UPDATER_SERVICE).apply {
+            registerReceiver(receiver, this)
+        }
     }
 
     private fun updateCatalog() {
         adapter.setSite(mSite) { size ->
-            launchUI {
+            lifecycleScope.launch(Dispatchers.Main) {
                 // Изменяем заголовок окна
                 title = "$mOldTitle: $size"
 
@@ -88,12 +88,15 @@ class CatalogForOneSiteActivity : BaseActivity() {
                 if (!CatalogForOneSiteUpdaterService.isContain(mSite.catalogName)) {
                     view.isAction.negative()
                 }
+
+                withContext(Dispatchers.Default) {
+                    mViewModel.getSiteItem(mSite.name)?.let {
+                        it.oldVolume = size
+                        mViewModel.siteUpdate(it)
+                    }
+                }
             }
 
-            mViewModel.getSiteItem(mSite.name)?.let {
-                it.oldVolume = size
-                mViewModel.siteUpdate(it)
-            }
         }
     }
 
@@ -114,7 +117,10 @@ class CatalogForOneSiteActivity : BaseActivity() {
             onQueryTextListener {
                 onQueryTextChange {
                     // Фильтрация при каждом изменении текста
-                    adapter.changeOrder(searchText = it!!)
+                    lifecycleScope.launch {
+                        adapter.changeOrder(searchText = it!!)
+                    }
+                    true
                 }
             }
         }

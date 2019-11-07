@@ -1,22 +1,20 @@
 package com.san.kir.manger.utils
 
-import android.arch.paging.PagedListAdapter
 import android.graphics.Color
-import android.support.v7.util.DiffUtil
-import android.support.v7.widget.RecyclerView
 import android.util.SparseBooleanArray
 import android.view.View
 import android.view.ViewGroup
-import org.jetbrains.anko.AnkoComponent
-import org.jetbrains.anko.AnkoContext
+import androidx.paging.PagedList
+import androidx.paging.PagedListAdapter
+import androidx.recyclerview.widget.DiffUtil
+import com.san.kir.ankofork.AnkoComponent
+import com.san.kir.ankofork.AnkoContext
 
 typealias ItemMove<T> = RecyclerViewAdapterFactory.DraggableRecyclerViewAdapter<T>.(fromPosition: Int, toPosition: Int) -> Unit
 typealias BindAction<T> = (T, Boolean, Int) -> Unit
 
 object RecyclerViewAdapterFactory {
-    fun <T> createSimple(view: () -> AnkoView<T>) =
-        RecyclerViewAdapter(view)
-
+    fun <T> createSimple(view: () -> AnkoView<T>) = RecyclerViewAdapter(view)
     fun <T> createSimple2(init: SimpleAnkoView<T>.() -> Unit): RecyclerViewAdapter<T> {
         val view = SimpleAnkoView<T>()
         view.init()
@@ -45,7 +43,7 @@ object RecyclerViewAdapterFactory {
     open class DraggableRecyclerViewAdapter<T>(
         private val view: () -> AnkoView<T>,
         private val itemMove: ItemMove<T>?
-    ) : RecyclerView.Adapter<ViewHolder<T>>(), ItemTouchHelperAdapter {
+    ) : androidx.recyclerview.widget.RecyclerView.Adapter<ViewHolder<T>>(), ItemTouchHelperAdapter {
         var selectedItems = BooleanArray(0)
             private set
         var items: List<T> = listOf()
@@ -82,10 +80,10 @@ object RecyclerViewAdapterFactory {
     class RecyclerViewAdapter<T>(view: () -> AnkoView<T>) :
         DraggableRecyclerViewAdapter<T>(view, null) {
         init {
-//            setHasStableIds(true)
+            setHasStableIds(true)
         }
 
-        override fun getItemId(position: Int) = position.toLong()
+        override fun getItemId(position: Int) = items[position].hashCode().toLong()
         override fun getItemViewType(position: Int) = position
     }
 
@@ -98,6 +96,7 @@ object RecyclerViewAdapterFactory {
             setHasStableIds(true)
         }
 
+        private var listener: ((PagedList<T>?) -> Unit)? = null
         val selectedItems = SparseBooleanArray()
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder<T> {
             return ViewHolder(view(), parent)
@@ -116,12 +115,20 @@ object RecyclerViewAdapterFactory {
         }
 
         fun item(position: Int): T? = getItem(position)
-        override fun getItemId(position: Int) = position.toLong()
+        override fun getItemId(position: Int) = getItem(position).hashCode().toLong()
         override fun getItemViewType(position: Int) = position
+
+        fun onListChanged(listener: ((PagedList<T>?) -> Unit)) {
+            this.listener = listener
+        }
+
+        override fun onCurrentListChanged(currentList: PagedList<T>?) {
+            listener?.invoke(currentList)
+        }
     }
 
     class ViewHolder<in T>(val view: AnkoView<T>, parent: ViewGroup) :
-        RecyclerView.ViewHolder(view.createView(parent)),
+        androidx.recyclerview.widget.RecyclerView.ViewHolder(view.createView(parent)),
         ItemTouchHelperViewHolder {
         fun bind(item: T?, isSelected: Boolean) {
             item?.let { view.bind(it, isSelected, adapterPosition) }

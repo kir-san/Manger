@@ -1,7 +1,7 @@
 package com.san.kir.manger.components.download_manager
 
 import com.san.kir.manger.room.RoomDB
-import com.san.kir.manger.room.models.DownloadItem
+import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.utils.JobContext
 import com.san.kir.manger.utils.NetworkManager
 import com.san.kir.manger.utils.enums.DownloadStatus

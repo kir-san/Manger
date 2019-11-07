@@ -11,8 +11,8 @@
     <PreferenceCategory
         android:title="@string/settings_library_title">
         <SwitchPreference
-            android:key="@string/settings_library_show_category_key"
             android:defaultValue="@string/settings_library_show_category_default"
+            android:key="@string/settings_library_show_category_key"
             android:summary="@string/settings_library_show_category_summary"
             android:title="@string/settings_library_show_category_title"
             />

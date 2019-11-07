@@ -1,11 +1,11 @@
 package com.san.kir.manger.components.parsing
 
-import com.san.kir.manger.room.models.Chapter
-import com.san.kir.manger.room.models.DownloadItem
-import com.san.kir.manger.room.models.Manga
-import com.san.kir.manger.room.models.SiteCatalogElement
-import kotlinx.coroutines.ExecutorCoroutineDispatcher
-import kotlinx.coroutines.channels.ReceiveChannel
+import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.room.entities.DownloadItem
+import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.room.entities.SiteCatalogElement
+import com.san.kir.manger.utils.extensions.log
+import kotlinx.coroutines.flow.Flow
 
 abstract class SiteCatalog {
     open var isInit: Boolean = false
@@ -27,7 +27,7 @@ abstract class SiteCatalog {
     abstract suspend fun init(): SiteCatalog
 
     open suspend fun getFullElement(element: SiteCatalogElement): SiteCatalogElement = element
-    abstract fun getCatalog(context: ExecutorCoroutineDispatcher): ReceiveChannel<SiteCatalogElement>
+    abstract fun getCatalog(): Flow<SiteCatalogElement>
     abstract suspend fun getElementOnline(url: String): SiteCatalogElement?
     abstract suspend fun chapters(manga: Manga): List<Chapter>
     abstract suspend fun pages(item: DownloadItem): List<String>
@@ -36,3 +36,18 @@ abstract class SiteCatalog {
 abstract class SiteCatalogClassic : SiteCatalog()
 
 abstract class SiteCatalogAlternative : SiteCatalog()
+
+fun SiteCatalog.getShortLink(fullLink: String): String {
+    val foundedCatalogs = allCatalogName.filter { catalog -> fullLink.contains(catalog, true) }
+
+    val shortLink: String
+
+    if (foundedCatalogs.size == 1) {
+        shortLink = fullLink.split(foundedCatalogs.first()).last()
+    } else {
+        log("fullLink = $fullLink")
+        throw Throwable("Каталогов найдено больше одного или не найдено совсем")
+    }
+
+    return shortLink
+}

@@ -1,74 +1,64 @@
 package com.san.kir.manger.view_models
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.LiveData
-import com.san.kir.manger.extending.launchCtx
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.san.kir.manger.repositories.ChapterRepository
 import com.san.kir.manger.repositories.DownloadRepository
-import com.san.kir.manger.repositories.LatestChapterRepository
-import com.san.kir.manger.room.models.DownloadItem
-import com.san.kir.manger.room.models.LatestChapter
-import kotlinx.coroutines.CoroutineScope
+import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.room.entities.action
+import com.san.kir.manger.utils.enums.ChapterStatus
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
-import java.util.concurrent.Executors
 
-class LatestChapterViewModel(app: Application) : AndroidViewModel(app), CoroutineScope {
-    private val mDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
-    private val mJob = Job()
-
-    override val coroutineContext = mDispatcher + mJob
-
-    private val mLatestChapterRepository = LatestChapterRepository(app)
+class LatestChapterViewModel(app: Application) : AndroidViewModel(app) {
+    private val mChapterRepository = ChapterRepository(app)
     private val mDownloadRepository = DownloadRepository(app)
 
-    fun getLatestItems(): LiveData<List<LatestChapter>> {
-        return mLatestChapterRepository.loadItems()
-    }
+    fun getLatestItems() = mChapterRepository.loadInUpdateItems()
+    suspend fun delete(chapter: Chapter) = mChapterRepository.delete(chapter)
+    suspend fun hasNewChapters() = newChapters().isNotEmpty()
+    suspend fun newChapters() = mChapterRepository.newChapters()
 
-    fun latestDelete(latestChapter: LatestChapter) {
-        mLatestChapterRepository.delete(latestChapter)
-    }
-
-    fun latestHasNewChapters(): Boolean {
-        return mLatestChapterRepository.hasNewChapters()
-    }
-
-    fun getLatestNewChapters(): List<LatestChapter> {
-        return mLatestChapterRepository.getNewChapters()
-    }
-
-    fun latestClearAll(): Job {
-        return launchCtx { mLatestChapterRepository.clearAll() }
-    }
-
-    fun latestClearRead(): Job {
-        return launchCtx {
-            with(mLatestChapterRepository) {
-                getItems()
-                    .map { launch { if (isRead(it)) delete(it) } }
-                    .joinAll()
-            }
+    fun clearAll(): Job {
+        return viewModelScope.launch(Dispatchers.Default) {
+            mChapterRepository.update(
+                *mChapterRepository
+                    .getItems()
+                    .filter { it.isInUpdate }
+                    .onEach { it.isInUpdate = false }
+                    .toTypedArray()
+            )
         }
     }
 
-    fun latestClearDownloaded(): Job {
-        return launchCtx { mLatestChapterRepository.clearDownloaded() }
+    fun clearRead(): Job {
+        return viewModelScope.launch(Dispatchers.Default) {
+            mChapterRepository.update(
+                *mChapterRepository
+                    .getItems()
+                    .filter { it.isInUpdate }
+                    .filter { it.isRead }
+                    .onEach { it.isInUpdate = false }
+                    .toTypedArray()
+            )
+        }
     }
 
-    fun getDownloadItems(item: LatestChapter): LiveData<DownloadItem?> {
-        return mDownloadRepository.loadItem(item.site)
+    fun clearDownloaded(): Job {
+        return viewModelScope.launch(Dispatchers.Default) {
+            mChapterRepository.update(
+                *mChapterRepository
+                    .getItems()
+                    .filter { it.isInUpdate }
+                    .filter { it.action == ChapterStatus.DELETE }
+                    .onEach { it.isInUpdate = false }
+                    .toTypedArray()
+            )
+        }
     }
 
-    fun isChapterRead(item: LatestChapter): Boolean {
-        return mLatestChapterRepository.isRead(item)
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        mJob.cancel()
-    }
+    fun getDownloadItems(item: Chapter) = mDownloadRepository.loadItem(item.site)
 }
 

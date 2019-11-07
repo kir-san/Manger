@@ -1,9 +1,9 @@
 package com.san.kir.manger.repositories
 
-import android.arch.lifecycle.LiveData
+import androidx.lifecycle.LiveData
 import android.content.Context
 import com.san.kir.manger.room.getDatabase
-import com.san.kir.manger.room.models.Category
+import com.san.kir.manger.room.entities.Category
 import com.san.kir.manger.utils.SortLibraryUtil
 import com.san.kir.manger.utils.enums.MangaFilter
 import com.san.kir.manger.utils.enums.SortLibrary

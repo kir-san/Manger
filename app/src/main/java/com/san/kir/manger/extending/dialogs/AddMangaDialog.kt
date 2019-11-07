@@ -5,27 +5,29 @@ import android.view.View
 import android.view.ViewManager
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.dialogs.alert
+import com.san.kir.ankofork.dialogs.customView
+import com.san.kir.ankofork.dialogs.selector
+import com.san.kir.ankofork.dip
+import com.san.kir.ankofork.horizontalProgressBar
+import com.san.kir.ankofork.padding
+import com.san.kir.ankofork.sdk28.onClick
+import com.san.kir.ankofork.sdk28.textResource
+import com.san.kir.ankofork.sdk28.textView
+import com.san.kir.ankofork.startService
+import com.san.kir.ankofork.verticalLayout
+import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.R
-import com.san.kir.manger.extending.BaseActivity
-import com.san.kir.manger.extending.anko_extend.onClick
-import com.san.kir.manger.extending.launchUI
 import com.san.kir.manger.repositories.CategoryRepository
 import com.san.kir.manger.repositories.MangaRepository
-import com.san.kir.manger.room.models.MangaColumn
-import com.san.kir.manger.room.models.SiteCatalogElement
-import com.san.kir.manger.utils.MangaUpdaterService
+import com.san.kir.manger.room.entities.MangaColumn
+import com.san.kir.manger.room.entities.SiteCatalogElement
+import com.san.kir.manger.services.MangaUpdaterService
+import com.san.kir.manger.utils.extensions.BaseActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.customView
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.horizontalProgressBar
-import org.jetbrains.anko.padding
-import org.jetbrains.anko.selector
-import org.jetbrains.anko.startService
-import org.jetbrains.anko.textResource
-import org.jetbrains.anko.textView
-import org.jetbrains.anko.verticalLayout
-import org.jetbrains.anko.wrapContent
 
 class AddMangaDialog(
     private val act: BaseActivity,
@@ -33,8 +35,8 @@ class AddMangaDialog(
     private val onFinish: (() -> Unit)? = null
 ) {
     init {
-        act.launchUI {
-            val categories = withContext(act.coroutineContext) {
+        act.lifecycleScope.launch(Dispatchers.Main) {
+            val categories = withContext(Dispatchers.Default) {
                 CategoryRepository(act).categoryNames()
             }
 
@@ -88,9 +90,9 @@ class AddMangaDialog(
                 }
             }
         }.show()
-        act.launchUI {
-            kotlin.runCatching {
-                withContext(act.coroutineContext) {
+        act.lifecycleScope.launch(Dispatchers.Main) {
+            runCatching {
+                withContext(Dispatchers.Default) {
                     MangaRepository(act).addMangaToDb(element, category)
                 }
             }.fold(

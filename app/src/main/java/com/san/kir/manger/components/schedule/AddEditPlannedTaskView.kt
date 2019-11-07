@@ -1,49 +1,49 @@
 package com.san.kir.manger.components.schedule
 
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.view.ViewManager
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.TimePicker
+import androidx.appcompat.app.AlertDialog
+import androidx.core.util.forEach
+import com.san.kir.ankofork.AnkoContext
+import com.san.kir.ankofork.Binder
+import com.san.kir.ankofork.dip
+import com.san.kir.ankofork.margin
+import com.san.kir.ankofork.matchParent
+import com.san.kir.ankofork.padding
+import com.san.kir.ankofork.recyclerview.recyclerView
+import com.san.kir.ankofork.sdk28.editText
+import com.san.kir.ankofork.sdk28.linearLayout
+import com.san.kir.ankofork.sdk28.onClick
+import com.san.kir.ankofork.sdk28.radioButton
+import com.san.kir.ankofork.sdk28.radioGroup
+import com.san.kir.ankofork.sdk28.textResource
+import com.san.kir.ankofork.sdk28.textView
+import com.san.kir.ankofork.sdk28.timePicker
+import com.san.kir.ankofork.support.nestedScrollView
+import com.san.kir.ankofork.textColorResource
+import com.san.kir.ankofork.verticalLayout
 import com.san.kir.manger.R
-import com.san.kir.manger.eventBus.Binder
-import com.san.kir.manger.extending.BaseActivity
-import com.san.kir.manger.extending.anko_extend.labelView
-import com.san.kir.manger.extending.anko_extend.onClick
-import com.san.kir.manger.extending.anko_extend.textViewBold15Size
-import com.san.kir.manger.extending.anko_extend.visibleOrGone
-import com.san.kir.manger.room.models.Manga
-import com.san.kir.manger.room.models.PlannedPeriod
-import com.san.kir.manger.room.models.PlannedTask
-import com.san.kir.manger.room.models.PlannedType
-import com.san.kir.manger.room.models.PlannedWeek
-import com.san.kir.manger.room.models.mangaList
-import com.san.kir.manger.utils.AnkoActivityComponent
+import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.room.entities.PlannedTask
+import com.san.kir.manger.room.entities.mangaList
+import com.san.kir.manger.utils.ActivityView
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
+import com.san.kir.manger.utils.enums.PlannedPeriod
+import com.san.kir.manger.utils.enums.PlannedType
+import com.san.kir.manger.utils.enums.PlannedWeek
+import com.san.kir.manger.utils.extensions.BaseActivity
+import com.san.kir.manger.utils.extensions.labelView
+import com.san.kir.manger.utils.extensions.textViewBold16Size
+import com.san.kir.manger.utils.extensions.visibleOrGone
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import org.jetbrains.anko.AnkoContext
-import org.jetbrains.anko.collections.forEach
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.editText
-import org.jetbrains.anko.linearLayout
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.padding
-import org.jetbrains.anko.radioButton
-import org.jetbrains.anko.radioGroup
-import org.jetbrains.anko.recyclerview.v7.recyclerView
-import org.jetbrains.anko.support.v4.nestedScrollView
-import org.jetbrains.anko.textColorResource
-import org.jetbrains.anko.textResource
-import org.jetbrains.anko.textView
-import org.jetbrains.anko.timePicker
-import org.jetbrains.anko.verticalLayout
 
 //TODO переписать инициализацию данных
-class AddEditPlannedTaskView(private val act: AddEditPlannedTaskActivity) : AnkoActivityComponent() {
+class AddEditPlannedTaskView(private val act: AddEditPlannedTaskActivity) : ActivityView() {
     private lateinit var listManga: List<Manga>
     private lateinit var categoryList: Array<String>
     private lateinit var catalogList: Array<String>
@@ -66,7 +66,7 @@ class AddEditPlannedTaskView(private val act: AddEditPlannedTaskActivity) : Anko
     private val groupContent = RecyclerViewAdapterFactory.createSimple2<String> {
         lateinit var name: TextView
         createView {
-            textViewBold15Size {
+            textViewBold16Size {
                 name = this
                 padding = dip(1)
             }
@@ -97,11 +97,10 @@ class AddEditPlannedTaskView(private val act: AddEditPlannedTaskActivity) : Anko
 
                 verticalLayout {
                     lparams(width = matchParent) {
-                        marginStart = dip(5)
-                        marginEnd = dip(5)
+                        margin = dip(16)
                     }
 
-                    labelView(R.string.planned_task_type_of_update).lparams { topMargin = dip(5) }
+                    labelView(R.string.planned_task_type_of_update)
                     radioGroup {
                         id = ID.generate()
                         PlannedType.map(context).forEach { (t, v) ->
@@ -119,9 +118,9 @@ class AddEditPlannedTaskView(private val act: AddEditPlannedTaskActivity) : Anko
                     verticalLayout {
                         typeBinder.bind { type -> visibleOrGone(type == PlannedType.MANGA) }
                         labelView(R.string.planned_task_change_manga).lparams {
-                            topMargin = dip(5)
+                            topMargin = dip(16)
                         }
-                        mangaName = textViewBold15Size { }
+                        mangaName = textViewBold16Size { }
                         btnChange {
                             singleChoiceList(listMangaName, mangaName.text) { name, index ->
                                 mangaName.text = name
@@ -133,17 +132,18 @@ class AddEditPlannedTaskView(private val act: AddEditPlannedTaskActivity) : Anko
                     verticalLayout {
                         typeBinder.bind { type -> visibleOrGone(type == PlannedType.GROUP) }
                         labelView(R.string.planned_task_name_of_group).lparams {
-                            topMargin = dip(5)
+                            topMargin = dip(16)
                         }
                         groupName = editText()
 
                         labelView(R.string.planned_task_option_of_group).lparams {
                             topMargin = dip(5)
                         }
-                        groupNothing = textViewBold15Size(R.string.planned_task_group_unknown)
+                        groupNothing = textViewBold16Size(R.string.planned_task_group_unknown)
                         recyclerView {
                             adapter = groupContent
-                            layoutManager = LinearLayoutManager(context)
+                            layoutManager =
+                                androidx.recyclerview.widget.LinearLayoutManager(context)
                             setHasFixedSize(true)
                         }
                         btnChange {
@@ -158,9 +158,9 @@ class AddEditPlannedTaskView(private val act: AddEditPlannedTaskActivity) : Anko
                     verticalLayout {
                         typeBinder.bind { type -> visibleOrGone(type == PlannedType.CATEGORY) }
                         labelView(R.string.planned_task_change_category).lparams {
-                            topMargin = dip(5)
+                            topMargin = dip(16)
                         }
-                        categoryName = textViewBold15Size("")
+                        categoryName = textViewBold16Size("")
                         btnChange {
                             singleChoiceList(categoryList, categoryName.text) { cat, _ ->
                                 categoryName.text = cat
@@ -171,9 +171,9 @@ class AddEditPlannedTaskView(private val act: AddEditPlannedTaskActivity) : Anko
                     verticalLayout {
                         typeBinder.bind { type -> visibleOrGone(type == PlannedType.CATALOG) }
                         labelView(R.string.planned_task_change_catalog).lparams {
-                            topMargin = dip(5)
+                            topMargin = dip(16)
                         }
-                        catalogName = textViewBold15Size("")
+                        catalogName = textViewBold16Size("")
                         btnChange {
                             singleChoiceList(catalogList, catalogName.text) { cat, _ ->
                                 catalogName.text = cat
@@ -181,7 +181,7 @@ class AddEditPlannedTaskView(private val act: AddEditPlannedTaskActivity) : Anko
                         }
                     }
 
-                    labelView(R.string.planned_task_repeat).lparams { topMargin = dip(5) }
+                    labelView(R.string.planned_task_repeat).lparams { topMargin = dip(16) }
                     radioGroup {
                         id = ID.generate()
                         PlannedPeriod.map(context).forEach { (p, v) ->
@@ -199,7 +199,7 @@ class AddEditPlannedTaskView(private val act: AddEditPlannedTaskActivity) : Anko
                     verticalLayout {
                         periodBinder.bind { visibleOrGone(it == PlannedPeriod.WEEK) }
                         labelView(R.string.planned_task_change_day).lparams {
-                            topMargin = dip(5)
+                            topMargin = dip(16)
                         }
                         radioGroup {
                             id = ID.generate()
@@ -216,7 +216,7 @@ class AddEditPlannedTaskView(private val act: AddEditPlannedTaskActivity) : Anko
                         }
                     }
 
-                    labelView(R.string.planned_task_change_time).lparams { topMargin = dip(5) }
+                    labelView(R.string.planned_task_change_time).lparams { topMargin = dip(16) }
                     timePicker = timePicker {
                         setIs24HourView(true)
                     }
@@ -273,9 +273,7 @@ class AddEditPlannedTaskView(private val act: AddEditPlannedTaskActivity) : Anko
     }
 
     private fun View.singleChoiceList(
-        data: Array<String>,
-        value: CharSequence,
-        action: (String, Int) -> Unit
+        data: Array<String>, value: CharSequence, action: (String, Int) -> Unit
     ) {
         AlertDialog.Builder(context).apply {
             val position = data.indexOf(value)
@@ -290,9 +288,7 @@ class AddEditPlannedTaskView(private val act: AddEditPlannedTaskActivity) : Anko
     }
 
     private fun View.multiChoiceList(
-        data: Array<String>,
-        value: List<String>,
-        action: (List<String>) -> Unit
+        data: Array<String>, value: List<String>, action: (List<String>) -> Unit
     ) {
         AlertDialog.Builder(context).apply {
             val chk =
@@ -301,7 +297,7 @@ class AddEditPlannedTaskView(private val act: AddEditPlannedTaskActivity) : Anko
             setPositiveButton(R.string.planned_task_button_ready) { d, _ ->
                 val positions =
                     (d as AlertDialog).listView.checkedItemPositions
-                var prepare = listOf<String>()
+                val prepare = mutableListOf<String>()
                 positions.forEach { i, b ->
                     if (b) prepare += data[i]
                 }

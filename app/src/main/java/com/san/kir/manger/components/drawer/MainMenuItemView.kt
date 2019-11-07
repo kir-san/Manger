@@ -1,32 +1,28 @@
 package com.san.kir.manger.components.drawer
 
-import android.arch.lifecycle.Observer
+import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.AnkoContext
+import com.san.kir.ankofork.defaultSharedPreferences
+import com.san.kir.ankofork.dip
+import com.san.kir.ankofork.margin
+import com.san.kir.ankofork.matchParent
+import com.san.kir.ankofork.sdk28.imageView
+import com.san.kir.ankofork.sdk28.linearLayout
+import com.san.kir.ankofork.sdk28.textView
 import com.san.kir.manger.R
-import com.san.kir.manger.extending.BaseActivity
-import com.san.kir.manger.room.models.MainMenuItem
-import com.san.kir.manger.utils.ID
+import com.san.kir.manger.room.entities.MainMenuItem
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
-import com.san.kir.manger.utils.formatDouble
+import com.san.kir.manger.utils.enums.MainMenuType
+import com.san.kir.manger.utils.extensions.BaseActivity
+import com.san.kir.manger.utils.extensions.formatDouble
 import com.san.kir.manger.view_models.DrawerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.jetbrains.anko.AnkoContext
-import org.jetbrains.anko.alignParentEnd
-import org.jetbrains.anko.alignParentStart
-import org.jetbrains.anko.baselineOf
-import org.jetbrains.anko.centerHorizontally
-import org.jetbrains.anko.defaultSharedPreferences
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.endOf
-import org.jetbrains.anko.imageView
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.padding
-import org.jetbrains.anko.relativeLayout
-import org.jetbrains.anko.textView
-import org.jetbrains.anko.verticalPadding
 
 class MainMenuItemView(private val act: BaseActivity, private val viewModel: DrawerViewModel) :
     RecyclerViewAdapterFactory.AnkoView<MainMenuItem>() {
@@ -35,40 +31,33 @@ class MainMenuItemView(private val act: BaseActivity, private val viewModel: Dra
     private lateinit var icon: ImageView
 
     override fun createView(ui: AnkoContext<ViewGroup>) = with(ui) {
-        relativeLayout {
+        linearLayout {
             lparams(width = matchParent)
-            padding = dip(5)
-            verticalPadding = dip(13)
 
             icon = imageView {
-                id = ID.generate()
-                padding = dip(4)
-            }.lparams {
-                alignParentStart()
+            }.lparams(width = dip(24), height = dip(24)) {
+                gravity = Gravity.CENTER_VERTICAL
+                margin = dip(16)
             }
 
             name = textView {
-                id = ID.generate()
-                textSize = 17.4f
-                padding = dip(4)
-            }.lparams {
-                centerHorizontally()
-                endOf(icon)
+                textSize = 16f
+            }.lparams(width = matchParent) {
+                weight = 1f
+                gravity = Gravity.CENTER_VERTICAL
             }
 
             type = textView {
-                textSize = 14.7f
-                padding = dip(3)
+                textSize = 15f
             }.lparams {
-                alignParentEnd()
-                baselineOf(name)
-//                endOf(name)
+                gravity = Gravity.CENTER_VERTICAL
+                margin = dip(16)
             }
         }
     }
 
     override fun bind(item: MainMenuItem, isSelected: Boolean, position: Int) {
-        act.launch(Dispatchers.Main) {
+        act.lifecycleScope.launch(Dispatchers.Main) {
             name.text = item.name
             type.setCounter(item.type)
             val key = act.getString(R.string.settings_app_dark_theme_key)

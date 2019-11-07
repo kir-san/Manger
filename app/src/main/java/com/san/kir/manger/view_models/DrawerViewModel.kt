@@ -1,25 +1,25 @@
 package com.san.kir.manger.view_models
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.Transformations
-import android.arch.paging.PagedList
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Transformations
+import androidx.paging.PagedList
 import com.san.kir.manger.repositories.CategoryRepository
+import com.san.kir.manger.repositories.ChapterRepository
 import com.san.kir.manger.repositories.DownloadRepository
-import com.san.kir.manger.repositories.LatestChapterRepository
 import com.san.kir.manger.repositories.MainMenuRepository
 import com.san.kir.manger.repositories.MangaRepository
 import com.san.kir.manger.repositories.PlannedRepository
 import com.san.kir.manger.repositories.SiteRepository
 import com.san.kir.manger.repositories.StorageRepository
-import com.san.kir.manger.room.models.Category
+import com.san.kir.manger.room.entities.Category
+import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.room.entities.MainMenuItem
+import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.room.entities.PlannedTask
+import com.san.kir.manger.room.entities.Site
 import com.san.kir.manger.utils.enums.DownloadStatus
-import com.san.kir.manger.room.models.LatestChapter
-import com.san.kir.manger.room.models.MainMenuItem
-import com.san.kir.manger.room.models.Manga
-import com.san.kir.manger.room.models.PlannedTask
-import com.san.kir.manger.room.models.Site
 
 class DrawerViewModel(app: Application) : AndroidViewModel(app) {
     private val mMainMenuRepository = MainMenuRepository(app)
@@ -28,7 +28,7 @@ class DrawerViewModel(app: Application) : AndroidViewModel(app) {
     private val mCategorRepository = CategoryRepository(app)
     private val mSiteRepository = SiteRepository(app)
     private val mDownloadRepository = DownloadRepository(app)
-    private val mLatestChapterRepository = LatestChapterRepository(app)
+    private val mChapterRepository = ChapterRepository(app)
     private val mPlannedRepository = PlannedRepository(app)
 
     fun mainMenuUpdate(vararg mainMenuItem: MainMenuItem) {
@@ -65,8 +65,8 @@ class DrawerViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun getLatestData(): LiveData<List<LatestChapter>> {
-        return mLatestChapterRepository.loadItems()
+    fun getLatestData(): LiveData<List<Chapter>> {
+        return mChapterRepository.loadInUpdateItems()
     }
 
     fun getPlannedData(): LiveData<PagedList<PlannedTask>> {

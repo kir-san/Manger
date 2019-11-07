@@ -3,32 +3,36 @@ package com.san.kir.manger.components.drawer
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.dialogs.longToast
+import com.san.kir.ankofork.startActivity
 import com.san.kir.manger.R
 import com.san.kir.manger.components.library.LibraryActivity
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.components.schedule.ScheduleManager
-import com.san.kir.manger.extending.BaseActivity
-import com.san.kir.manger.extending.anko_extend.compatCheckSelfPermission
-import com.san.kir.manger.extending.anko_extend.compatRequestPermissions
-import com.san.kir.manger.extending.launchUI
 import com.san.kir.manger.repositories.CategoryRepository
 import com.san.kir.manger.repositories.MainMenuRepository
 import com.san.kir.manger.repositories.MangaRepository
 import com.san.kir.manger.repositories.PlannedRepository
 import com.san.kir.manger.repositories.SiteRepository
 import com.san.kir.manger.repositories.StatisticRepository
-import com.san.kir.manger.room.models.Category
-import com.san.kir.manger.room.models.MainMenuItem
-import com.san.kir.manger.room.models.MangaStatistic
-import com.san.kir.manger.room.models.Site
+import com.san.kir.manger.room.entities.Category
+import com.san.kir.manger.room.entities.MainMenuItem
+import com.san.kir.manger.room.entities.MangaStatistic
+import com.san.kir.manger.room.entities.Site
+import com.san.kir.manger.services.MigrateLatestChapterToChapterService
 import com.san.kir.manger.utils.CATEGORY_ALL
-import com.san.kir.manger.utils.createDirs
 import com.san.kir.manger.utils.enums.DIR
-import com.san.kir.manger.utils.getFullPath
+import com.san.kir.manger.utils.enums.MainMenuType
+import com.san.kir.manger.utils.extensions.BaseActivity
+import com.san.kir.manger.utils.extensions.compatCheckSelfPermission
+import com.san.kir.manger.utils.extensions.compatRequestPermissions
+import com.san.kir.manger.utils.extensions.createDirs
+import com.san.kir.manger.utils.extensions.getFullPath
+import com.san.kir.manger.utils.extensions.startForegroundService
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.anko.longToast
-import org.jetbrains.anko.startActivity
 
 class Main : BaseActivity() {
     private val mCategoryRepository by lazy { CategoryRepository(this) }
@@ -51,9 +55,7 @@ class Main : BaseActivity() {
     }
 
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
         if (requestCode == 200)
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -64,8 +66,7 @@ class Main : BaseActivity() {
             }
     }
 
-    private fun init() = launchUI {
-
+    private fun init() = lifecycleScope.launch(Dispatchers.Main) {
         withContext(Dispatchers.Default) {
             createNeedFolders()
             insertCategoryAll()
@@ -75,11 +76,12 @@ class Main : BaseActivity() {
             checkSiteCatalogs()
         }
 
+        startForegroundService<MigrateLatestChapterToChapterService>()
         startActivity<LibraryActivity>()
     }
 
     private fun createNeedFolders() {
-        DIR.ALL.forEach { dir -> createDirs(getFullPath(dir)) }
+        DIR.ALL.forEach { dir -> getFullPath(dir).createDirs() }
     }
 
     private fun insertCategoryAll() {
@@ -142,7 +144,7 @@ class Main : BaseActivity() {
         mPlannedRepository.getItems().filter { it.isEnabled }.forEach { man.add(it) }
     }
 
-    private fun checkSiteCatalogs() {
+    private suspend fun checkSiteCatalogs() {
         var dbSites = mSiteRepository.getItems()
         val appSites = ManageSites.CATALOG_SITES
 

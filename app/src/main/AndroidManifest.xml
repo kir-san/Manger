@@ -19,7 +19,9 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning"
-        tools:targetApi="n">
+        tools:targetApi="n"
+        android:largeHeap="true"
+       >
         <activity
             android:name=".components.drawer.Main"
             android:label="@string/app_name"
@@ -106,18 +108,20 @@
             android:name=".components.catalog_for_one_site.CatalogForOneSiteUpdaterService"
             />
         <service
-            android:name=".components.download_manager.DownloadService"
+            android:name=".services.DownloadService"
             />
         <service
-            android:name=".utils.MangaUpdaterService"
+            android:name=".services.MangaUpdaterService"
             />
         <service
-            android:name=".utils.AppUpdateService"
+            android:name=".services.AppUpdateService"
             />
 
         <service
             android:name="com.evernote.android.job.gcm.PlatformGcmService"
             android:enabled="true"
             tools:replace="android:enabled"/>
+        <service android:name=".services.MigrateLatestChapterToChapterService" />
+
     </application>
 </manifest>

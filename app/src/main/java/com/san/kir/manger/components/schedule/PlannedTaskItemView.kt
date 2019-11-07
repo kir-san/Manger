@@ -1,33 +1,32 @@
 package com.san.kir.manger.components.schedule
 
 import android.content.Context
+import android.view.Gravity
 import android.view.ViewGroup
-import android.widget.RelativeLayout
+import android.widget.LinearLayout
 import android.widget.Switch
 import android.widget.TextView
+import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.AnkoContext
+import com.san.kir.ankofork.dip
+import com.san.kir.ankofork.margin
+import com.san.kir.ankofork.matchParent
+import com.san.kir.ankofork.sdk28.linearLayout
+import com.san.kir.ankofork.sdk28.lines
+import com.san.kir.ankofork.sdk28.onClick
+import com.san.kir.ankofork.sdk28.switch
+import com.san.kir.ankofork.sdk28.textView
+import com.san.kir.ankofork.startActivity
+import com.san.kir.ankofork.verticalLayout
+import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.R
-import com.san.kir.manger.extending.anko_extend.onClick
-import com.san.kir.manger.room.models.PlannedAddEdit
-import com.san.kir.manger.room.models.PlannedPeriod
-import com.san.kir.manger.room.models.PlannedTask
-import com.san.kir.manger.room.models.PlannedType
-import com.san.kir.manger.utils.ID
+import com.san.kir.manger.room.entities.PlannedTask
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
-import kotlinx.coroutines.withContext
-import org.jetbrains.anko.AnkoContext
-import org.jetbrains.anko.alignParentEnd
-import org.jetbrains.anko.alignParentStart
-import org.jetbrains.anko.bottomOf
-import org.jetbrains.anko.centerVertically
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.leftOf
-import org.jetbrains.anko.lines
-import org.jetbrains.anko.margin
-import org.jetbrains.anko.relativeLayout
-import org.jetbrains.anko.startActivity
-import org.jetbrains.anko.switch
-import org.jetbrains.anko.textView
-import org.jetbrains.anko.verticalMargin
+import com.san.kir.manger.utils.enums.PlannedAddEdit
+import com.san.kir.manger.utils.enums.PlannedPeriod
+import com.san.kir.manger.utils.enums.PlannedType
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.*
 
 class PlannedTaskItemView(private val act: ScheduleActivity) :
@@ -36,45 +35,34 @@ class PlannedTaskItemView(private val act: ScheduleActivity) :
     private val alarmManager = ScheduleManager()
 
     private lateinit var ctx: Context
-    private lateinit var root: RelativeLayout
+    private lateinit var root: LinearLayout
     private lateinit var name: TextView
     private lateinit var updateText: TextView
     private lateinit var switch: Switch
 
-    private object Id {
-        val name = ID.generate()
-        val switch = ID.generate()
-    }
-
     override fun createView(ui: AnkoContext<ViewGroup>) = with(ui) {
-        relativeLayout {
-            lparams {
-                margin = dip(3)
-                verticalMargin = dip(6)
+        linearLayout {
+            lparams(width = matchParent, height = dip(60))
+            gravity = Gravity.CENTER_VERTICAL
+
+            verticalLayout {
+                name = textView {
+                    textSize = 16f
+                    lines = 1
+                }
+
+                updateText = textView {
+                    textSize = 14f
+                }
+
+            }.lparams(width = matchParent, height = wrapContent) {
+                weight = 1f
+                leftMargin = dip(16)
             }
 
             switch = switch {
-                id = Id.switch
             }.lparams {
-                alignParentEnd()
-                centerVertically()
-                margin = dip(3)
-            }
-
-            name = textView {
-                id = Id.name
-                textSize = 18f
-                lines = 1
-            }.lparams {
-                margin = dip(3)
-                leftOf(Id.switch)
-            }
-
-            updateText = textView().lparams {
-                alignParentStart()
-                bottomOf(Id.name)
-                leftOf(Id.switch)
-                margin = dip(3)
+                margin = dip(16)
             }
 
             root = this
@@ -118,16 +106,16 @@ class PlannedTaskItemView(private val act: ScheduleActivity) :
                 }
             }
         updateText.text =
-                ctx.getString(
-                    R.string.planned_task_update_text_template,
-                    dayText,
-                    item.hour,
-                    String.format("%02d", item.minute)
-                )
+            ctx.getString(
+                R.string.planned_task_update_text_template,
+                dayText,
+                item.hour,
+                String.format("%02d", item.minute)
+            )
 
         switch.isChecked = item.isEnabled
         switch.onClick {
-            withContext(act.coroutineContext) {
+            act.lifecycleScope.launch(Dispatchers.Main) {
                 item.isEnabled = !item.isEnabled
                 act.mViewModel.plannedUpdate(item)
 

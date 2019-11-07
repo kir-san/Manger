@@ -1,20 +1,19 @@
 package com.san.kir.manger.components.schedule
 
-import android.support.v7.widget.LinearLayoutManager
-import com.san.kir.manger.extending.BaseActivity
-import com.san.kir.manger.utils.AnkoActivityComponent
-import org.jetbrains.anko.AnkoContext
-import org.jetbrains.anko.linearLayout
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.recyclerview.v7.recyclerView
+import com.san.kir.ankofork.AnkoContext
+import com.san.kir.ankofork.matchParent
+import com.san.kir.ankofork.sdk28.linearLayout
+import com.san.kir.manger.utils.ActivityView
+import com.san.kir.manger.utils.extensions.BaseActivity
+import com.san.kir.ankofork.recyclerview.recyclerView
 
-class AvailableUpdateView(private val act: ScheduleActivity) : AnkoActivityComponent() {
+class AvailableUpdateView(private val act: ScheduleActivity) : ActivityView() {
     override fun createView(ui: AnkoContext<BaseActivity>) = with(ui) {
         linearLayout {
             lparams(width = matchParent, height = matchParent)
 
             recyclerView {
-                layoutManager = LinearLayoutManager(context)
+                layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
                 setHasFixedSize(true)
                 AvailableUpdateRecyclerPresenter(act).into(this)
             }.lparams(width = matchParent, height = matchParent)

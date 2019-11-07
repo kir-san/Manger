@@ -2,18 +2,14 @@ package com.san.kir.manger.extending.dialogs
 
 import android.view.View
 import android.widget.PopupMenu
+import com.san.kir.ankofork.dialogs.alert
 import com.san.kir.manger.R
 import com.san.kir.manger.components.library.LibraryActivity
 import com.san.kir.manger.components.storage.StorageDialogView
-import com.san.kir.manger.room.models.Manga
-import com.san.kir.manger.utils.log
-import org.jetbrains.anko.alert
+import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.utils.extensions.log
 
-class LibraryItemMenu(
-    act: LibraryActivity,
-    anchor: View?,
-    manga: Manga
-) {
+class LibraryItemMenu(act: LibraryActivity, anchor: View?, manga: Manga) {
     init {
         PopupMenu(act, anchor).apply {
             val about = menu.add(R.string.library_popupmenu_about)

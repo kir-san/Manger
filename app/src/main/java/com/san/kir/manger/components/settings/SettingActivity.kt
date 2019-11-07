@@ -4,12 +4,12 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import com.san.kir.manger.R
-import com.san.kir.manger.components.download_manager.DownloadService
 import com.san.kir.manger.components.drawer.DrawerActivity
+import com.san.kir.manger.services.DownloadService
 import com.san.kir.manger.utils.ID
-import org.jetbrains.anko._LinearLayout
-import org.jetbrains.anko.defaultSharedPreferences
-import org.jetbrains.anko.frameLayout
+import com.san.kir.ankofork.sdk28._LinearLayout
+import com.san.kir.ankofork.defaultSharedPreferences
+import com.san.kir.ankofork.sdk28.frameLayout
 
 class SettingActivity : DrawerActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
     private val content = ID.generate()

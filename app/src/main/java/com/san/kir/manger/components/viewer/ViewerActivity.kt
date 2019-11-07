@@ -2,7 +2,6 @@ package com.san.kir.manger.components.viewer
 
 import android.R.id
 import android.annotation.SuppressLint
-import android.arch.lifecycle.ViewModelProviders
 import android.content.pm.ActivityInfo
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
@@ -16,14 +15,16 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
+import com.san.kir.ankofork.defaultSharedPreferences
+import com.san.kir.ankofork.negative
+import com.san.kir.ankofork.positive
+import com.san.kir.ankofork.setContentView
 import com.san.kir.manger.R
-import com.san.kir.manger.eventBus.negative
-import com.san.kir.manger.eventBus.positive
-import com.san.kir.manger.extending.ThemedActionBarActivity
-import com.san.kir.manger.room.models.Chapter
+import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.utils.extensions.ThemedActionBarActivity
+import com.san.kir.manger.utils.extensions.string
 import com.san.kir.manger.view_models.ViewerViewModel
-import org.jetbrains.anko.defaultSharedPreferences
-import org.jetbrains.anko.setContentView
 import kotlin.properties.Delegates.observable
 
 class ViewerActivity : ThemedActionBarActivity() {
@@ -32,9 +33,7 @@ class ViewerActivity : ThemedActionBarActivity() {
         var RIGHT_PART_SCREEN = 0 // Правая часть экрана
     }
 
-    val mViewModel by lazy {
-        ViewModelProviders.of(this).get(ViewerViewModel::class.java)
-    }
+    val mViewModel by viewModels<ViewerViewModel>()
 
     var isBar by observable(true) { _, old, new ->
         if (old != new) {
@@ -60,14 +59,15 @@ class ViewerActivity : ThemedActionBarActivity() {
 
     private var readTime = 0L
 
+    private val orientation by string(
+        R.string.settings_viewer_orientation_key, R.string.settings_viewer_orientation_default
+    )
+
     @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         defaultSharedPreferences.apply {
-            val orientationKey = getString(R.string.settings_viewer_orientation_key)
-            val orientationDefault = getString(R.string.settings_viewer_orientation_default)
-
-            requestedOrientation = when (getString(orientationKey, orientationDefault)) {
+            requestedOrientation = when (orientation) {
                 getString(R.string.settings_viewer_orientation_auto) -> SCREEN_ORIENTATION_SENSOR
                 getString(R.string.settings_viewer_orientation_port) -> SCREEN_ORIENTATION_PORTRAIT
                 getString(R.string.settings_viewer_orientation_port_rev) -> SCREEN_ORIENTATION_REVERSE_PORTRAIT

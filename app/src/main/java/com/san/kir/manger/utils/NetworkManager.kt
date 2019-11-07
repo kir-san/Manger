@@ -1,8 +1,8 @@
 package com.san.kir.manger.utils
 
 import android.content.Context
-import com.san.kir.manger.extending.anko_extend.isNetworkAvailable
-import com.san.kir.manger.extending.anko_extend.isOnWifi
+import com.san.kir.manger.utils.extensions.isNetworkAvailable
+import com.san.kir.manger.utils.extensions.isOnWifi
 
 class NetworkManager(private val context: Context) {
 

@@ -10,13 +10,13 @@ import com.san.kir.manger.components.parsing.sites.Selfmanga
 import com.san.kir.manger.components.parsing.sites.Unicomics
 import com.san.kir.manger.components.parsing.sites.Yaoichan
 import com.san.kir.manger.repositories.SiteRepository
-import com.san.kir.manger.room.models.Chapter
-import com.san.kir.manger.room.models.DownloadItem
-import com.san.kir.manger.room.models.Manga
-import com.san.kir.manger.room.models.SiteCatalogElement
-import com.san.kir.manger.room.models.toDownloadItem
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
+import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.room.entities.DownloadItem
+import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.room.entities.SiteCatalogElement
+import com.san.kir.manger.room.entities.toDownloadItem
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
@@ -39,6 +39,7 @@ object ManageSites {
 
     fun getDocument(url: String): Document {
         val (_, _, result) = Fuel.get(url).responseString()
+        result.fold({}, { throw it })
         return Jsoup.parse(result.component1())
     }
 
@@ -56,10 +57,12 @@ object ManageSites {
     }
 
     // Загрузка полной информации для элемента в каталоге
-    fun getFullElement(simpleElement: SiteCatalogElement) = GlobalScope.async {
-        CATALOG_SITES.first { it.allCatalogName.any { s -> s == simpleElement.catalogName } }
-            .getFullElement(simpleElement)
-    }
+    suspend fun getFullElement(simpleElement: SiteCatalogElement) =
+        withContext(Dispatchers.Default) {
+            CATALOG_SITES.first { it.allCatalogName.any { s -> s == simpleElement.catalogName } }
+                .getFullElement(simpleElement)
+        }
+
 
     // Получение страниц
     suspend fun pages(item: DownloadItem): List<String> {

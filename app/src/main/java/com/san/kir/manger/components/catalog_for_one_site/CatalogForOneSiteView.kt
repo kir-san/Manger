@@ -1,67 +1,54 @@
 package com.san.kir.manger.components.catalog_for_one_site
 
 import android.graphics.Color
-import android.support.v4.content.ContextCompat
-import android.support.v4.view.GravityCompat
-import android.support.v4.view.PagerTabStrip
-import android.support.v4.widget.DrawerLayout
-import android.support.v4.widget.SwipeRefreshLayout
-import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
 import android.view.Gravity
 import android.view.View
 import android.view.ViewManager
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
+import com.google.android.material.tabs.TabLayout
+import com.san.kir.ankofork.AnkoComponent
+import com.san.kir.ankofork.AnkoContext
+import com.san.kir.ankofork.Binder
+import com.san.kir.ankofork.appcompat.themedToolbar
+import com.san.kir.ankofork.design.appBarLayout
+import com.san.kir.ankofork.design.navigationView
+import com.san.kir.ankofork.dip
+import com.san.kir.ankofork.horizontalProgressBar
+import com.san.kir.ankofork.include
+import com.san.kir.ankofork.matchParent
+import com.san.kir.ankofork.sdk28.backgroundColor
+import com.san.kir.ankofork.sdk28.backgroundResource
+import com.san.kir.ankofork.sdk28.button
+import com.san.kir.ankofork.sdk28.imageButton
+import com.san.kir.ankofork.sdk28.linearLayout
+import com.san.kir.ankofork.sdk28.onClick
+import com.san.kir.ankofork.sdk28.space
+import com.san.kir.ankofork.support.drawerLayout
+import com.san.kir.ankofork.support.swipeRefreshLayout
+import com.san.kir.ankofork.support.viewPager
+import com.san.kir.ankofork.toggle
+import com.san.kir.ankofork.verticalLayout
+import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.R
 import com.san.kir.manger.components.catalog_for_one_site.CatalogForOneSiteRecyclerPresenter.Companion.DATE
 import com.san.kir.manger.components.catalog_for_one_site.CatalogForOneSiteRecyclerPresenter.Companion.NAME
 import com.san.kir.manger.components.catalog_for_one_site.CatalogForOneSiteRecyclerPresenter.Companion.POP
-import com.san.kir.manger.eventBus.Binder
-import com.san.kir.manger.eventBus.toggle
-import com.san.kir.manger.extending.anko_extend.onClick
-import com.san.kir.manger.extending.anko_extend.visibleOrGone
-import com.san.kir.manger.utils.ID
-import com.san.kir.manger.utils.getDrawableCompat
-import org.jetbrains.anko.AnkoComponent
-import org.jetbrains.anko.AnkoContext
-import org.jetbrains.anko.above
-import org.jetbrains.anko.alignParentBottom
-import org.jetbrains.anko.appcompat.v7.toolbar
-import org.jetbrains.anko.backgroundColor
-import org.jetbrains.anko.backgroundResource
-import org.jetbrains.anko.below
-import org.jetbrains.anko.design.appBarLayout
-import org.jetbrains.anko.design.navigationView
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.horizontalProgressBar
-import org.jetbrains.anko.imageButton
-import org.jetbrains.anko.include
-import org.jetbrains.anko.linearLayout
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.relativeLayout
-import org.jetbrains.anko.space
-import org.jetbrains.anko.support.v4.drawerLayout
-import org.jetbrains.anko.support.v4.swipeRefreshLayout
-import org.jetbrains.anko.support.v4.viewPager
-import org.jetbrains.anko.wrapContent
+import com.san.kir.manger.utils.extensions.visibleOrGone
 
 class CatalogForOneSiteView(
     private val act: CatalogForOneSiteActivity,
     private val presenter: CatalogForOneSiteRecyclerPresenter
 ) : AnkoComponent<CatalogForOneSiteActivity> {
-    private object Id {
-        val appbar = ID.generate()
-        val bottom = ID.generate()
-        val progressbar = ID.generate()
-    }
 
-    lateinit var drawerLayout: DrawerLayout
+    lateinit var drawerLayout: androidx.drawerlayout.widget.DrawerLayout
     lateinit var toolbar: Toolbar
-    lateinit var swipe: SwipeRefreshLayout
+    lateinit var swipe: androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
     val isAction = Binder(true)
     private val sort = Binder(DATE) { sortType ->
@@ -83,48 +70,39 @@ class CatalogForOneSiteView(
             lparams(width = matchParent, height = matchParent)
             fitsSystemWindows = true
 
-            relativeLayout {
+            verticalLayout {
                 lparams(width = matchParent, height = matchParent)
 
                 appBarLayout {
                     lparams(width = matchParent, height = wrapContent)
-                    id = Id.appbar
 
-                    toolbar = toolbar {
+                    toolbar = themedToolbar(R.style.ThemeOverlay_AppCompat_Dark) {
                         lparams(width = matchParent, height = wrapContent)
-                        backgroundColor = Color.parseColor("#ff212121") // material_grey_900
-                        setTitleTextColor(Color.WHITE)
-                        overflowIcon = getDrawableCompat(R.drawable.dots_vertical)
                         act.setSupportActionBar(this)
                     }
                 }
+
                 horizontalProgressBar {
-                    id = Id.progressbar
                     isIndeterminate = true
                     visibleOrGone(isAction)
                     progressDrawable = ContextCompat.getDrawable(
                         this@with.ctx,
                         R.drawable.storage_progressbar
                     )
-                }.lparams(width = matchParent, height = dip(10)) {
-                    below(Id.appbar)
-                }
+                }.lparams(width = matchParent, height = dip(10))
 
                 swipe = swipeRefreshLayout {
                     // Список
-                    include<RecyclerView>(R.layout.recycler_view) {
-                        layoutManager = LinearLayoutManager(act)
+                    include<androidx.recyclerview.widget.RecyclerView>(R.layout.recycler_view) {
+                        layoutManager = androidx.recyclerview.widget.LinearLayoutManager(act)
                         this@CatalogForOneSiteView.presenter.into(this)
                     }
                 }.lparams(width = matchParent, height = matchParent) {
-                    below(Id.progressbar)
-                    above(Id.bottom)
+                    weight = 1f
                 }
-
 
                 // Нижняя панель для сортировки элементов
                 linearLayout {
-                    id = Id.bottom
                     backgroundColor = Color.parseColor("#ff212121") // material_grey_900
                     gravity = Gravity.CENTER_HORIZONTAL
 
@@ -133,8 +111,8 @@ class CatalogForOneSiteView(
                         onClick { sortIndicator.toggle() }
                         sortIndicator.bind {
                             backgroundResource =
-                                    if (it) R.drawable.ic_sort_21
-                                    else R.drawable.ic_sort_12
+                                if (it) R.drawable.ic_sort_21
+                                else R.drawable.ic_sort_12
                         }
                     }
 
@@ -147,8 +125,8 @@ class CatalogForOneSiteView(
                         }
                         sort.bind { sortType ->
                             backgroundResource =
-                                    if (sortType == NAME) R.drawable.ic_abc_blue
-                                    else R.drawable.ic_abc_white
+                                if (sortType == NAME) R.drawable.ic_abc_blue
+                                else R.drawable.ic_abc_white
                         }
                     }
 
@@ -159,8 +137,8 @@ class CatalogForOneSiteView(
                         }
                         sort.bind { sortType ->
                             backgroundResource =
-                                    if (sortType == DATE) R.drawable.ic_date_range_blue
-                                    else R.drawable.ic_date_range_white
+                                if (sortType == DATE) R.drawable.ic_date_range_blue
+                                else R.drawable.ic_date_range_white
                         }
                     }
 
@@ -171,8 +149,8 @@ class CatalogForOneSiteView(
                         }
                         sort.bind { sortType ->
                             backgroundResource =
-                                    if (sortType == POP) R.drawable.ic_rate_blue
-                                    else R.drawable.ic_rate_white
+                                if (sortType == POP) R.drawable.ic_rate_blue
+                                else R.drawable.ic_rate_white
                         }
                     }
 
@@ -187,17 +165,29 @@ class CatalogForOneSiteView(
 
                     }
 
-                }.lparams(width = matchParent, height = dip(50)) {
-                    alignParentBottom()
-                }
+                }.lparams(width = matchParent, height = dip(50))
             }
 
             navigationView {
-                viewPager {
-                    include<PagerTabStrip>(R.layout.page_tab_strip)
-                    adapter = presenter.pagerAdapter
+                verticalLayout {
+                    viewPager {
+                        include<TabLayout>(R.layout.tab_layout).apply {
+                            setupWithViewPager(this@viewPager)
+                        }
+                        adapter = presenter.pagerAdapter
+                    }.lparams(height = matchParent) {
+                        weight = 1f
+                    }
+
+                    button("Очистить") {
+                        onClick {
+                            presenter.pagerAdapter.adapters.forEach { adapter ->
+                                adapter.clearSelected()
+                            }
+                        }
+                    }.lparams(width = matchParent)
                 }
-            }.lparams(width = wrapContent, height = matchParent) {
+            }.lparams(width = matchParent, height = matchParent) {
                 gravity = GravityCompat.START
             }
 
@@ -209,7 +199,7 @@ class CatalogForOneSiteView(
                 override fun onDrawerClosed(drawerView: View) {
                     super.onDrawerClosed(drawerView)
                     act.title =
-                            "${act.mOldTitle}: ${presenter.changeOrder(filters = presenter.pagerAdapter.adapters)}"
+                        "${act.mOldTitle}: ${presenter.changeOrder(filters = presenter.pagerAdapter.adapters)}"
                 }
 
             }
@@ -222,16 +212,14 @@ class CatalogForOneSiteView(
     }
 
     private fun ViewManager.btn(action: ImageButton.() -> Unit): ImageButton {
-//        val backColor = Color.parseColor("#00ffffff") // Цвет заднего фона
-        val buttonSize = 38 // Размер кнопок
+        val buttonSize = 35 // Размер кнопок
         return imageButton {
             action()
             scaleType = ImageView.ScaleType.CENTER
-//            backgroundColor = backColor
             layoutParams = LinearLayout.LayoutParams(dip(buttonSize), dip(buttonSize)).apply {
                 gravity = Gravity.CENTER_VERTICAL
-                leftMargin = dip(12)
-                rightMargin = dip(12)
+                leftMargin = dip(8)
+                rightMargin = dip(8)
             }
         }
     }

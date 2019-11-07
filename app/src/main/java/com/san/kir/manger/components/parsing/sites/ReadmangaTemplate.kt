@@ -4,16 +4,15 @@ import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.components.parsing.SiteCatalogClassic
 import com.san.kir.manger.components.parsing.Status
 import com.san.kir.manger.components.parsing.Translate
+import com.san.kir.manger.components.parsing.getShortLink
 import com.san.kir.manger.repositories.SiteRepository
-import com.san.kir.manger.room.models.Chapter
-import com.san.kir.manger.room.models.DownloadItem
-import com.san.kir.manger.room.models.Manga
-import com.san.kir.manger.room.models.SiteCatalogElement
-import com.san.kir.manger.utils.createDirs
-import com.san.kir.manger.utils.getFullPath
-import kotlinx.coroutines.ExecutorCoroutineDispatcher
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.channels.produce
+import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.room.entities.DownloadItem
+import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.room.entities.SiteCatalogElement
+import com.san.kir.manger.utils.extensions.createDirs
+import com.san.kir.manger.utils.extensions.getFullPath
+import kotlinx.coroutines.flow.flow
 import org.json.JSONArray
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
@@ -160,7 +159,7 @@ abstract class ReadmangaTemplate(private val siteRepository: SiteRepository) : S
         return element
     }
 
-    override fun getCatalog(context: ExecutorCoroutineDispatcher) = GlobalScope.produce(context) {
+    override fun getCatalog() = flow {
         var docLocal: Document = ManageSites.getDocument(siteCatalog)
 
         fun isGetNext(): Boolean {
@@ -172,16 +171,15 @@ abstract class ReadmangaTemplate(private val siteRepository: SiteRepository) : S
 
         do {
             docLocal.select("div.tile").forEach { element ->
-                send(simpleParseElement(element))
+                emit(simpleParseElement(element))
             }
         } while (isGetNext())
-        close()
     }
     ///
 
 
     override suspend fun chapters(manga: Manga) =
-        ManageSites.getDocument(manga.site)
+        ManageSites.getDocument(host + manga.shortLink)
             .select("div.leftContent .chapters-link")
             .select("tr")
             .filter { it.select("a").text().isNotEmpty() }
@@ -200,10 +198,13 @@ abstract class ReadmangaTemplate(private val siteRepository: SiteRepository) : S
             }
 
     override suspend fun pages(item: DownloadItem): List<String> {
-        var list = listOf<String>()
+        val list = mutableListOf<String>()
         // Создаю папку/папки по указанному пути
-        createDirs(getFullPath(item.path))
-        val doc = ManageSites.getDocument(item.link + "?mature=1")
+        (getFullPath(item.path)).createDirs()
+
+        val shortLink = getShortLink(item.link)
+
+        val doc = ManageSites.getDocument("$host$shortLink?mature=1")
         // с помощью регулярных выражений ищу нужные данные
         val pat = Pattern.compile("rm_h.init.+").matcher(doc.body().html())
         // если данные найдены то продолжаю

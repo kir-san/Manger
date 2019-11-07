@@ -1,13 +1,13 @@
 package com.san.kir.manger.view_models
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.LiveData
-import android.arch.paging.PagedList
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.paging.PagedList
 import com.san.kir.manger.repositories.MangaRepository
 import com.san.kir.manger.repositories.StatisticRepository
-import com.san.kir.manger.room.models.Manga
-import com.san.kir.manger.room.models.MangaStatistic
+import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.room.entities.MangaStatistic
 
 class StatisticViewModel(app: Application) : AndroidViewModel(app) {
     private val mStatisticRepository = StatisticRepository(app)

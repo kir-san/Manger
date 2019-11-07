@@ -1,8 +1,8 @@
 package com.san.kir.manger.components.download_manager
 
 import android.content.Context
+import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.room.getDatabase
-import com.san.kir.manger.room.models.DownloadItem
 import com.san.kir.manger.utils.JobContext
 import com.san.kir.manger.utils.NetworkManager
 import com.san.kir.manger.utils.enums.DownloadStatus
@@ -193,6 +193,7 @@ class ChapterLoader(context: Context) {
         listeners.addListener(tag, listener)
     }
 
+    @Suppress("unused")
     fun <T : Any> removeListeners(tag: T) {
         listeners.removeListeners(tag)
     }
@@ -241,6 +242,7 @@ class ChapterLoader(context: Context) {
         return task.status == DownloadStatus.pause
     }
 
+    @Suppress("unused")
     private fun canCompleteDownload(task: DownloadItem): Boolean {
         return task.status == DownloadStatus.completed
     }

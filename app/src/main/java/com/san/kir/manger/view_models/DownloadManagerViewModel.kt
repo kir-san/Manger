@@ -1,25 +1,18 @@
 package com.san.kir.manger.view_models
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.LiveData
-import com.san.kir.manger.extending.launchCtx
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.viewModelScope
 import com.san.kir.manger.repositories.DownloadRepository
 import com.san.kir.manger.repositories.MangaRepository
-import com.san.kir.manger.room.models.DownloadItem
-import com.san.kir.manger.room.models.Manga
+import com.san.kir.manger.room.entities.DownloadItem
+import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.utils.enums.DownloadStatus
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.asCoroutineDispatcher
-import java.util.concurrent.Executors
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class DownloadManagerViewModel(app: Application) : AndroidViewModel(app), CoroutineScope {
-    private val mDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
-    private val mJob = Job()
-
-    override val coroutineContext = mDispatcher + mJob
-
+class DownloadManagerViewModel(app: Application) : AndroidViewModel(app) {
     private val mDownloaRepository = DownloadRepository(app)
     private val mMangaRepository = MangaRepository(app)
 
@@ -36,7 +29,7 @@ class DownloadManagerViewModel(app: Application) : AndroidViewModel(app), Corout
     }
 
     fun clearCompletedDownloads() {
-        launchCtx {
+        viewModelScope.launch(Dispatchers.Default) {
             val items = mDownloaRepository
                 .getItems()
                 .filter { it.status == DownloadStatus.completed }
@@ -45,13 +38,8 @@ class DownloadManagerViewModel(app: Application) : AndroidViewModel(app), Corout
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        mJob.cancel()
-    }
-
     fun clearPausedDownloads() {
-        launchCtx {
+        viewModelScope.launch(Dispatchers.Default) {
             val items = mDownloaRepository
                 .getItems()
                 .filter { it.status == DownloadStatus.pause && !it.isError }
@@ -61,7 +49,7 @@ class DownloadManagerViewModel(app: Application) : AndroidViewModel(app), Corout
     }
 
     fun clearErrorDownloads() {
-        launchCtx {
+        viewModelScope.launch(Dispatchers.Default) {
             val items = mDownloaRepository
                 .getItems()
                 .filter { it.status == DownloadStatus.pause && it.isError }
@@ -71,7 +59,7 @@ class DownloadManagerViewModel(app: Application) : AndroidViewModel(app), Corout
     }
 
     fun clearAllDownloads() {
-        launchCtx {
+        viewModelScope.launch(Dispatchers.Default) {
             val items = mDownloaRepository
                 .getItems()
                 .filter {

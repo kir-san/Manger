@@ -3,22 +3,22 @@ package com.san.kir.manger.components.statistics
 import android.content.Context
 import android.graphics.Typeface
 import android.widget.TextView
+import com.san.kir.ankofork.AnkoComponent
+import com.san.kir.ankofork.AnkoContext
+import com.san.kir.ankofork.applyRecursively
+import com.san.kir.ankofork.bottomPadding
+import com.san.kir.ankofork.dip
+import com.san.kir.ankofork.padding
+import com.san.kir.ankofork.sdk28.frameLayout
+import com.san.kir.ankofork.sdk28.textView
+import com.san.kir.ankofork.support.nestedScrollView
+import com.san.kir.ankofork.topPadding
+import com.san.kir.ankofork.verticalLayout
 import com.san.kir.manger.R
-import com.san.kir.manger.room.models.MangaStatistic
+import com.san.kir.manger.room.entities.MangaStatistic
 import com.san.kir.manger.utils.TimeFormat
-import com.san.kir.manger.utils.bytesToMb
-import com.san.kir.manger.utils.formatDouble
-import org.jetbrains.anko.AnkoComponent
-import org.jetbrains.anko.AnkoContext
-import org.jetbrains.anko.applyRecursively
-import org.jetbrains.anko.bottomPadding
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.frameLayout
-import org.jetbrains.anko.padding
-import org.jetbrains.anko.support.v4.nestedScrollView
-import org.jetbrains.anko.textView
-import org.jetbrains.anko.topPadding
-import org.jetbrains.anko.verticalLayout
+import com.san.kir.manger.utils.extensions.bytesToMb
+import com.san.kir.manger.utils.extensions.formatDouble
 
 class StatisticItemFullView(private val manga: MangaStatistic) :
     AnkoComponent<StatisticItemActivity> {

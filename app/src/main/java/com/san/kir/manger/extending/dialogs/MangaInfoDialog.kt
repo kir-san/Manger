@@ -8,34 +8,35 @@ import android.view.ViewManager
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.browse
+import com.san.kir.ankofork.dialogs.alert
+import com.san.kir.ankofork.dialogs.customView
+import com.san.kir.ankofork.dip
+import com.san.kir.ankofork.horizontalProgressBar
+import com.san.kir.ankofork.margin
+import com.san.kir.ankofork.matchParent
+import com.san.kir.ankofork.padding
+import com.san.kir.ankofork.sdk28.frameLayout
+import com.san.kir.ankofork.sdk28.imageView
+import com.san.kir.ankofork.sdk28.onClick
+import com.san.kir.ankofork.sdk28.scrollView
+import com.san.kir.ankofork.sdk28.textColor
+import com.san.kir.ankofork.sdk28.textResource
+import com.san.kir.ankofork.sdk28.textView
+import com.san.kir.ankofork.verticalLayout
+import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
-import com.san.kir.manger.extending.BaseActivity
-import com.san.kir.manger.extending.anko_extend.labelView
-import com.san.kir.manger.extending.anko_extend.onClick
-import com.san.kir.manger.extending.anko_extend.positiveButton
-import com.san.kir.manger.extending.anko_extend.visibleOrGone
-import com.san.kir.manger.extending.launchUI
-import com.san.kir.manger.room.models.SiteCatalogElement
-import com.san.kir.manger.utils.listStrToString
+import com.san.kir.manger.room.entities.SiteCatalogElement
+import com.san.kir.manger.utils.extensions.BaseActivity
+import com.san.kir.manger.utils.extensions.labelView
+import com.san.kir.manger.utils.extensions.listStrToString
+import com.san.kir.manger.utils.extensions.positiveButton
+import com.san.kir.manger.utils.extensions.visibleOrGone
 import com.san.kir.manger.utils.loadImage
 import kotlinx.coroutines.Dispatchers
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.browse
-import org.jetbrains.anko.customView
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.frameLayout
-import org.jetbrains.anko.horizontalProgressBar
-import org.jetbrains.anko.imageView
-import org.jetbrains.anko.margin
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.padding
-import org.jetbrains.anko.scrollView
-import org.jetbrains.anko.textColor
-import org.jetbrains.anko.textResource
-import org.jetbrains.anko.textView
-import org.jetbrains.anko.verticalLayout
-import org.jetbrains.anko.wrapContent
+import kotlinx.coroutines.launch
 
 class MangaInfoDialog(
     private val act: BaseActivity,
@@ -151,7 +152,7 @@ class MangaInfoDialog(
                     logo.visibleOrGone(true)
                 }
                 onError {
-                    act.launchUI {
+                    act.lifecycleScope.launch(Dispatchers.Main) {
                         logoLoadText.textResource = R.string.manga_info_dialog_loading_failed
                         logoLoadText.visibleOrGone(true)
                     }
@@ -163,10 +164,10 @@ class MangaInfoDialog(
             logoLoadText.textResource = R.string.manga_info_dialog_not_image
     }
 
-    private fun updateInfo(element: SiteCatalogElement) = act.launchUI {
+    private fun updateInfo(element: SiteCatalogElement) = act.lifecycleScope.launch(Dispatchers.Main) {
         try {
             updateProgress.visibility = View.VISIBLE
-            bind(ManageSites.getFullElement(element).await())
+            bind(ManageSites.getFullElement(element))
         } finally {
             updateProgress.visibility = View.GONE
         }

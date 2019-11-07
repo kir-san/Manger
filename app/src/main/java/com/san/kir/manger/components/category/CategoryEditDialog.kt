@@ -3,37 +3,37 @@ package com.san.kir.manger.components.category
 import android.graphics.Color
 import android.view.Gravity
 import android.view.View
+import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.Binder
+import com.san.kir.ankofork.design.textInputEditText
+import com.san.kir.ankofork.design.textInputLayout
+import com.san.kir.ankofork.dialogs.alert
+import com.san.kir.ankofork.dialogs.customView
+import com.san.kir.ankofork.dialogs.toast
+import com.san.kir.ankofork.dip
+import com.san.kir.ankofork.leftPadding
+import com.san.kir.ankofork.padding
+import com.san.kir.ankofork.sdk28.checkBox
+import com.san.kir.ankofork.sdk28.onClick
+import com.san.kir.ankofork.sdk28.onSeekBarChangeListener
+import com.san.kir.ankofork.sdk28.radioButton
+import com.san.kir.ankofork.sdk28.radioGroup
+import com.san.kir.ankofork.sdk28.seekBar
+import com.san.kir.ankofork.sdk28.space
+import com.san.kir.ankofork.sdk28.textChangedListener
+import com.san.kir.ankofork.sdk28.textColor
+import com.san.kir.ankofork.sdk28.textView
+import com.san.kir.ankofork.support.nestedScrollView
+import com.san.kir.ankofork.verticalLayout
 import com.san.kir.manger.R
-import com.san.kir.manger.eventBus.Binder
-import com.san.kir.manger.extending.anko_extend.onClick
-import com.san.kir.manger.extending.anko_extend.onSeekBarChangeListener
-import com.san.kir.manger.extending.anko_extend.textChangedListener
-import com.san.kir.manger.extending.anko_extend.textView
-import com.san.kir.manger.extending.anko_extend.typeText
-import com.san.kir.manger.extending.launchUI
-import com.san.kir.manger.room.models.Category
+import com.san.kir.manger.room.entities.Category
 import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.SortLibraryUtil
+import com.san.kir.manger.utils.extensions.typeText
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.checkBox
-import org.jetbrains.anko.customView
-import org.jetbrains.anko.design.textInputEditText
-import org.jetbrains.anko.design.textInputLayout
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.leftPadding
-import org.jetbrains.anko.padding
-import org.jetbrains.anko.radioButton
-import org.jetbrains.anko.radioGroup
-import org.jetbrains.anko.seekBar
-import org.jetbrains.anko.space
-import org.jetbrains.anko.support.v4.nestedScrollView
-import org.jetbrains.anko.textColor
-import org.jetbrains.anko.textView
-import org.jetbrains.anko.toast
-import org.jetbrains.anko.verticalLayout
 
 class CategoryEditDialog(
     act: CategoryActivity,
@@ -43,7 +43,7 @@ class CategoryEditDialog(
     val oldName = cat.name
 
     init {
-        act.launchUI {
+        act.lifecycleScope.launch(Dispatchers.Main) {
             val catList =
                 withContext(Dispatchers.Default) { act.mViewModel.getCategoryNames() }
 

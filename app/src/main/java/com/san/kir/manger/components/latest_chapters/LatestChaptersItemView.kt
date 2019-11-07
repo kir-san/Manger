@@ -1,228 +1,203 @@
 package com.san.kir.manger.components.latest_chapters
 
-import android.arch.lifecycle.Observer
 import android.graphics.Color
 import android.graphics.Typeface
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet.PARENT_ID
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.AnkoContext
+import com.san.kir.ankofork.constraint_layout.ConstraintSetBuilder.Side.BASELINE
+import com.san.kir.ankofork.constraint_layout.ConstraintSetBuilder.Side.BOTTOM
+import com.san.kir.ankofork.constraint_layout.ConstraintSetBuilder.Side.END
+import com.san.kir.ankofork.constraint_layout.ConstraintSetBuilder.Side.START
+import com.san.kir.ankofork.constraint_layout.ConstraintSetBuilder.Side.TOP
+import com.san.kir.ankofork.constraint_layout.applyConstraintSet
+import com.san.kir.ankofork.constraint_layout.constraintLayout
+import com.san.kir.ankofork.constraint_layout.matchConstraint
+import com.san.kir.ankofork.dip
+import com.san.kir.ankofork.matchParent
+import com.san.kir.ankofork.sdk28.backgroundColor
+import com.san.kir.ankofork.sdk28.backgroundResource
+import com.san.kir.ankofork.sdk28.imageView
+import com.san.kir.ankofork.sdk28.onClick
+import com.san.kir.ankofork.sdk28.textResource
+import com.san.kir.ankofork.sdk28.textView
+import com.san.kir.ankofork.topPadding
+import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.R
-import com.san.kir.manger.components.download_manager.DownloadService
-import com.san.kir.manger.extending.anko_extend.onClick
-import com.san.kir.manger.extending.anko_extend.visibleOrGone
-import com.san.kir.manger.room.models.DownloadItem
-import com.san.kir.manger.room.models.LatestChapter
-import com.san.kir.manger.room.models.action
-import com.san.kir.manger.room.models.toDownloadItem
-import com.san.kir.manger.utils.ID
+import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.room.entities.DownloadItem
+import com.san.kir.manger.room.entities.toDownloadItem
+import com.san.kir.manger.services.DownloadService
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
-import com.san.kir.manger.utils.enums.ChapterStatus
 import com.san.kir.manger.utils.enums.DownloadStatus
+import com.san.kir.manger.utils.extensions.visibleOrGone
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.anko.AnkoContext
-import org.jetbrains.anko.alignParentBottom
-import org.jetbrains.anko.alignParentEnd
-import org.jetbrains.anko.alignParentLeft
-import org.jetbrains.anko.alignParentTop
-import org.jetbrains.anko.backgroundColor
-import org.jetbrains.anko.backgroundResource
-import org.jetbrains.anko.dip
-import org.jetbrains.anko.frameLayout
-import org.jetbrains.anko.imageView
-import org.jetbrains.anko.leftOf
-import org.jetbrains.anko.lines
-import org.jetbrains.anko.margin
-import org.jetbrains.anko.matchParent
-import org.jetbrains.anko.padding
-import org.jetbrains.anko.progressBar
-import org.jetbrains.anko.relativeLayout
-import org.jetbrains.anko.textView
-import org.jetbrains.anko.wrapContent
 
 
 class LatestChaptersItemView(private val act: LatestChapterActivity) :
-    RecyclerViewAdapterFactory.AnkoView<LatestChapter>() {
-    private object Id { // id элементов для связи между собой
-        val date = ID.generate()
-        val name = ID.generate()
-        val limit = ID.generate()
-    }
+    RecyclerViewAdapterFactory.AnkoView<Chapter>() {
 
     private var isDownload = false
-    private lateinit var root: RelativeLayout
+    private lateinit var root: ConstraintLayout
     private lateinit var name: TextView
     private lateinit var date: TextView
-    private lateinit var stop: ImageView
-    private lateinit var limit: FrameLayout
+    private lateinit var stopBtn: ImageView
     private lateinit var manga: TextView
-    private lateinit var restart: ImageView
-    private lateinit var percent: TextView
-    private lateinit var download: ImageView
-    private lateinit var progressBar: ProgressBar
+    private lateinit var downloadBtn: ImageView
+    private lateinit var item: Chapter
+    private lateinit var observer: Observer<DownloadItem?>
 
     override fun createView(ui: AnkoContext<ViewGroup>) = with(ui) {
-        val btnSize = dip(35)
-        // Подкорень (требуется для отображения выделения и всего остального)
-        relativeLayout {
-            lparams(width = matchParent, height = dip(55)) {
-                margin = dip(1)
-            }
+        val btnSize = dip(40)
+
+        constraintLayout {
+            lparams(width = matchParent, height = dip(64))
 
             name = textView {
-                id = Id.name
+                id = View.generateViewId()
                 maxLines = 1
-                padding = dip(5)
+                textSize = 16f
                 typeface = Typeface.DEFAULT_BOLD
-            }.lparams(width = wrapContent, height = wrapContent) {
-                alignParentTop()
-                alignParentLeft()
-                gravity = Gravity.CENTER_VERTICAL
-                leftOf(Id.limit)
-            }
+            }.lparams(width = 0, height = wrapContent)
 
             manga = textView {
-                padding = dip(5)
-                lines = 1
-            }.lparams(width = wrapContent, height = wrapContent) {
-                alignParentLeft()
-                alignParentBottom()
-                leftOf(Id.date)
-            }
+                id = View.generateViewId()
+                maxLines = 1
+                textSize = 14f
+            }.lparams(width = matchConstraint, height = wrapContent)
 
             date = textView {
-                id = Id.date
-                padding = dip(5)
-            }.lparams(width = wrapContent, height = wrapContent) {
-                alignParentBottom()
-                leftOf(Id.limit)
-            }
+                id = View.generateViewId()
+                textSize = 14f
+                gravity = Gravity.END
+            }.lparams(width = wrapContent, height = wrapContent)
 
-            limit = frameLayout {
-                id = Id.limit
+            downloadBtn = imageView {
+                id = View.generateViewId()
+                backgroundResource = R.drawable.ic_file_download_black
+                visibility = View.GONE
+            }.lparams(width = btnSize, height = btnSize)
 
-                restart = imageView {
-                    backgroundResource = R.drawable.ic_update_black
-                }.lparams(width = btnSize, height = btnSize) {
-                    gravity = Gravity.CENTER
+            stopBtn = imageView {
+                id = View.generateViewId()
+                backgroundResource = R.drawable.ic_clear_black
+                visibility = View.GONE
+            }.lparams(width = btnSize, height = btnSize)
+
+            applyConstraintSet {
+                downloadBtn {
+                    connect(
+                        END to END of PARENT_ID margin dip(12),
+                        TOP to TOP of PARENT_ID,
+                        BOTTOM to BOTTOM of PARENT_ID margin dip(7)
+                    )
                 }
 
-                download = imageView {
-                    backgroundResource = R.drawable.ic_action_download_green
-                }.lparams(width = btnSize, height = btnSize) {
-                    gravity = Gravity.CENTER
+                stopBtn {
+                    connect(
+                        END to START of downloadBtn margin dip(12),
+                        TOP to TOP of PARENT_ID,
+                        BOTTOM to BOTTOM of PARENT_ID margin dip(7)
+                    )
                 }
 
+                name {
+                    connect(
+                        START to START of PARENT_ID margin dip(16),
+                        TOP to TOP of PARENT_ID,
+                        END to START of stopBtn margin dip(16)
+                    )
 
-                stop = imageView {
-                    backgroundResource = R.drawable.ic_stop
-                }.lparams(width = btnSize, height = btnSize) {
-                    gravity = Gravity.CENTER
+                    topPadding = dip(10)
                 }
 
-                progressBar = progressBar { }.lparams(width = dip(17), height = dip(17)) {
-                    gravity = Gravity.TOP or Gravity.END
+                date {
+                    connect(
+                        TOP to BOTTOM of name margin dip(3),
+                        END to START of stopBtn margin dip(16)
+                    )
                 }
 
-                percent = textView {
-                    textSize = 10f
-                }.lparams(width = wrapContent, height = wrapContent) {
-                    gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-                    bottomMargin = dip(3)
+                manga {
+                    connect(
+                        START to START of name,
+                        BASELINE to BASELINE of date,
+                        END to START of date margin dip(16)
+                    )
                 }
-
-            }.lparams(height = matchParent, width = dip(55)) {
-                alignParentEnd()
             }
 
             root = this
         }
-
     }
 
-    private fun enableDownload() {
-        progressBar.visibility = View.VISIBLE
-        percent.visibility = View.VISIBLE
-        stop.visibility = View.VISIBLE
-        restart.visibility = View.GONE
-        download.visibility = View.GONE
-        isDownload = true
-    }
+    override fun bind(item: Chapter, isSelected: Boolean, position: Int) {
+        this.item = item
 
-    private fun progressDownload(progress: Int, max: Int) {
-        val current =
-            if (max == 0) max
-            else progress * 100 / max
-
-        percent.text = act.getString(R.string.list_chapters_download_progress, current)
-    }
-
-    private fun disableDownload(chapter: LatestChapter) = GlobalScope.launch(Dispatchers.Main) {
-        progressBar.visibility = View.GONE
-        percent.visibility = View.GONE
-        stop.visibility = View.GONE
-        restart.visibility = View.GONE
-        download.visibility = View.GONE
-
-        when (chapter.action) {
-            ChapterStatus.DELETE -> restart.visibleOrGone(true)
-            ChapterStatus.DOWNLOADABLE -> download.visibleOrGone(true)
-        }
-
-        isDownload = false
-    }
-
-    private fun initializeOnClicks(chapter: LatestChapter) {
-        restart.onClick {
-            DownloadService.start(act, chapter.toDownloadItem())
-        }
-
-        download.onClick {
-            DownloadService.add(act, chapter.toDownloadItem())
-        }
-
-        stop.onClick {
-            DownloadService.pause(act, chapter.toDownloadItem())
-        }
-    }
-
-    override fun bind(item: LatestChapter, isSelected: Boolean, position: Int) {
         name.text = item.name
-        date.text = item.date
         manga.text = item.manga
 
         disableDownload(item)
         initializeOnClicks(item)
 
-        act.launch(act.coroutineContext) {
+        act.lifecycleScope.launch(Dispatchers.Default) {
             val color = when {
-                act.mViewModel.isChapterRead(item) -> Color.parseColor("#a5a2a2")
+                item.isRead -> Color.parseColor("#a5a2a2")
                 else -> Color.TRANSPARENT
             }
             withContext(Dispatchers.Main) {
                 root.backgroundColor = color
-                percent.backgroundColor = color
             }
         }
 
-        act.mViewModel
-            .getDownloadItems(item)
-            .observe(act, Observer {
-                changeVisibilityAndActions(it, item)
-            })
+        observer = Observer {
+            changeVisibilityAndActions(it, item)
+        }
+
+        act.mViewModel.getDownloadItems(item).observe(act, observer)
     }
 
-    private fun changeVisibilityAndActions(item: DownloadItem?, chapter: LatestChapter) {
+    override fun onDetached() {
+        downloadBtn.setOnClickListener(null)
+        stopBtn.setOnClickListener(null)
+        act.mViewModel.getDownloadItems(item).removeObserver(observer)
+    }
+
+    private fun disableDownload(chapter: Chapter) =
+        act.lifecycleScope.launch(Dispatchers.Main) {
+            stopBtn.visibleOrGone(false)
+            downloadBtn.visibleOrGone(true)
+            date.text = chapter.date
+
+            isDownload = false
+        }
+
+    private fun initializeOnClicks(chapter: Chapter) {
+        downloadBtn.onClick {
+            DownloadService.addOrStart(act, chapter.toDownloadItem())
+        }
+
+        stopBtn.onClick {
+            DownloadService.pause(act, chapter.toDownloadItem())
+        }
+    }
+
+    private fun changeVisibilityAndActions(item: DownloadItem?, chapter: Chapter) {
         item?.let { download ->
             when (download.status) {
-                DownloadStatus.queued,
+                DownloadStatus.queued -> {
+                    enableDownload()
+                    queueStatus()
+                }
                 DownloadStatus.loading -> {
                     enableDownload()
                     progressDownload(download.downloadPages, download.totalPages)
@@ -235,5 +210,23 @@ class LatestChaptersItemView(private val act: LatestChapterActivity) :
                 }
             }
         }
+    }
+
+    private fun queueStatus() {
+        date.textResource = R.string.list_chapters_queue
+    }
+
+    private fun enableDownload() {
+        stopBtn.visibleOrGone(true)
+        downloadBtn.visibleOrGone(false)
+        isDownload = true
+    }
+
+    private fun progressDownload(progress: Int, max: Int) {
+        val current =
+            if (max == 0) max
+            else progress * 100 / max
+
+        date.text = act.getString(R.string.list_chapters_download_progress, current)
     }
 }

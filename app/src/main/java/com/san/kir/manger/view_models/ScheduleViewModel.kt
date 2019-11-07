@@ -1,13 +1,13 @@
 package com.san.kir.manger.view_models
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.LiveData
-import android.arch.paging.PagedList
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.paging.PagedList
 import com.san.kir.manger.repositories.MangaRepository
 import com.san.kir.manger.repositories.PlannedRepository
-import com.san.kir.manger.room.models.Manga
-import com.san.kir.manger.room.models.PlannedTask
+import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.room.entities.PlannedTask
 
 class ScheduleViewModel(app: Application) : AndroidViewModel(app) {
     private val mPlannedRepository = PlannedRepository(app)
@@ -25,8 +25,7 @@ class ScheduleViewModel(app: Application) : AndroidViewModel(app) {
         return mMangaRepository.getItems()
     }
 
-    fun mangaUpdate(item: Manga) {
-        mMangaRepository.update(item)
-    }
+    suspend fun update(item: Manga) = mMangaRepository.update(item)
+
 }
 

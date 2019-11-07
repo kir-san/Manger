@@ -1,14 +1,13 @@
 package com.san.kir.manger.components.latest_chapters
 
-import android.arch.lifecycle.Observer
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
-import com.san.kir.manger.components.download_manager.DownloadService
-import com.san.kir.manger.room.models.toDownloadItem
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
+import com.san.kir.manger.room.entities.toDownloadItem
+import com.san.kir.manger.services.DownloadService
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -17,53 +16,51 @@ class LatestChaptersRecyclerPresenter(private val act: LatestChapterActivity) :
     private val adapter = RecyclerViewAdapterFactory
         .createSimple { LatestChaptersItemView(act) }
 
-    override fun into(recyclerView: RecyclerView) {
+    override fun into(recyclerView: androidx.recyclerview.widget.RecyclerView) {
         super.into(recyclerView)
-        act.launch(act.coroutineContext) {
-            recycler.adapter = adapter
-            act.mViewModel
-                .getLatestItems()
-                .observe(act, Observer { items ->
-                    act.launch(act.coroutineContext) {
-                        items?.let {
-                            adapter.items = it
-                            withContext(Dispatchers.Main) {
-                                adapter.notifyDataSetChanged()
-                            }
-                        }
-                    }
-                })
-        }
+        recycler.adapter = adapter
+        act.mViewModel
+            .getLatestItems()
+            .observe(act, Observer { items ->
+                items?.let {
+                    adapter.items = it
+                    adapter.notifyDataSetChanged()
+                }
+            })
 
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
-            0,
-            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+            0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
         ) {
             override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
+                recyclerView: androidx.recyclerview.widget.RecyclerView,
+                viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder,
+                target: androidx.recyclerview.widget.RecyclerView.ViewHolder
             ) = false
 
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+            override fun onSwiped(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
-                act.mViewModel.latestDelete(adapter.items[position])
+                act.lifecycleScope.launch(Dispatchers.Default) {
+                    act.mViewModel.delete(adapter.items[position])
+                }
             }
         }).attachToRecyclerView(recyclerView)
     }
 
-    fun hasNewChapters() = act.async(act.coroutineContext) { act.mViewModel.latestHasNewChapters() }
+    suspend fun hasNewChapters() = withContext(Dispatchers.Default) { act.mViewModel.hasNewChapters() }
 
-    fun downloadNewChapters() = act.launch(act.coroutineContext) {
-        act.mViewModel.getLatestNewChapters().onEach { chapter ->
-            DownloadService.addOrStart(act, chapter.toDownloadItem())
+    fun downloadNewChapters() = act.lifecycleScope.launch(Dispatchers.Main) {
+        withContext(Dispatchers.Default) {
+            act.mViewModel.newChapters().onEach { chapter ->
+                DownloadService.addOrStart(act, chapter.toDownloadItem())
+            }
         }
+
         adapter.notifyDataSetChanged()
     }
 
-    fun clearHistory() = act.mViewModel.latestClearAll()
+    fun clearHistory() = act.mViewModel.clearAll()
 
-    fun clearHistoryRead() = act.mViewModel.latestClearRead()
+    fun clearHistoryRead() = act.mViewModel.clearRead()
 
-    fun clearHistoryDownload() = act.mViewModel.latestClearDownloaded()
+    fun clearHistoryDownload() = act.mViewModel.clearDownloaded()
 }

@@ -3,13 +3,13 @@ package com.san.kir.manger.components.list_chapters
 import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
+import com.san.kir.ankofork.dialogs.alert
+import com.san.kir.ankofork.dialogs.cancelButton
+import com.san.kir.ankofork.dialogs.okButton
 import com.san.kir.manger.R
 import com.san.kir.manger.utils.extensions.showAlways
 import com.san.kir.manger.utils.extensions.showIfRoom
 import com.san.kir.manger.utils.extensions.showNever
-import com.san.kir.ankofork.dialogs.alert
-import com.san.kir.ankofork.dialogs.cancelButton
-import com.san.kir.ankofork.dialogs.okButton
 
 
 class ListChaptersActionCallback(
@@ -95,11 +95,22 @@ class ListChaptersActionCallback(
                 return false
             } // Удалить
             Id.download -> adapter.downloadSelectedItems() // Скачать
-            Id.setNotRead -> adapter.setRead(false) // Сделать не прочитанными
-            Id.setRead -> adapter.setRead(true) // Сделать прочитанными
+            Id.setNotRead -> {
+                act.mViewModel.isAction.item = true
+                adapter.setRead(false).invokeOnCompletion {
+                    act.mViewModel.isAction.item = false
+                } // Сделать не прочитанными
+            }
+            Id.setRead -> {
+                act.mViewModel.isAction.item = true
+                adapter.setRead(true).invokeOnCompletion {
+                    act.mViewModel.isAction.item = false
+                } // Сделать прочитанными
+            }
             Id.selectAll -> {
-                adapter.selectAll() // Выбрать все
-                act.actionMode.setTitle(actionTitle())
+                adapter.selectAll().invokeOnCompletion {
+                    act.actionMode.setTitle(actionTitle())
+                } // Выбрать все
                 return false
             }
             Id.selectPrev -> {

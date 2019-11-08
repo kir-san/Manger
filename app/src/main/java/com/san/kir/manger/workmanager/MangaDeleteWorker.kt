@@ -2,9 +2,13 @@ package com.san.kir.manger.workmanager
 
 import android.content.Context
 import androidx.work.CoroutineWorker
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import androidx.work.workDataOf
 import com.san.kir.manger.repositories.ChapterRepository
 import com.san.kir.manger.repositories.MangaRepository
+import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.MangaColumn
 import com.san.kir.manger.utils.extensions.getFullPath
 import kotlinx.coroutines.coroutineScope
@@ -40,4 +44,16 @@ class MangaDeleteWorker(appContext: Context, workerParams: WorkerParameters) :
             getFullPath(manga.path).deleteRecursively()
         }
     }
+
+    companion object {
+        fun addTask(ctx: Context, manga: Manga, withFiles: Boolean = false) {
+            val data = workDataOf(MangaColumn.unic to manga.unic, "withFiles" to withFiles)
+            val deleteManga = OneTimeWorkRequestBuilder<MangaDeleteWorker>()
+                .setInputData(data)
+                .addTag("mangaDelete")
+                .build()
+            WorkManager.getInstance(ctx).enqueue(deleteManga)
+        }
+    }
 }
+

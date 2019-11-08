@@ -3,15 +3,11 @@ package com.san.kir.manger.extending.dialogs
 import android.view.MenuItem
 import android.view.View
 import android.widget.PopupMenu
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import androidx.work.workDataOf
 import com.san.kir.ankofork.dialogs.alert
 import com.san.kir.manger.R
 import com.san.kir.manger.components.library.LibraryActivity
 import com.san.kir.manger.components.storage.StorageDialogView
 import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.room.entities.MangaColumn
 import com.san.kir.manger.utils.extensions.log
 import com.san.kir.manger.workmanager.MangaDeleteWorker
 
@@ -59,21 +55,14 @@ class LibraryItemMenu(act: LibraryActivity, anchor: View?, manga: Manga) {
             act.alert(
                 R.string.library_popupmenu_delete_message, R.string.library_popupmenu_delete_title
             ) {
-                positiveButton(R.string.library_popupmenu_delete_ok) { deleteManga(manga) }
                 neutralPressed(R.string.library_popupmenu_delete_no) { log("") }
+                positiveButton(R.string.library_popupmenu_delete_ok) {
+                    MangaDeleteWorker.addTask(act, manga)
+                }
                 negativeButton(R.string.library_popupmenu_delete_ok_with_files) {
-                    deleteManga(manga, true)
+                    MangaDeleteWorker.addTask(act, manga, true)
                 }
             }.show()
-        }
-
-        private fun deleteManga(manga: Manga, withFiles: Boolean = false) {
-            val data = workDataOf(MangaColumn.unic to manga.unic, "withFiles" to withFiles)
-            val deleteManga = OneTimeWorkRequestBuilder<MangaDeleteWorker>()
-                .setInputData(data)
-                .addTag("mangaDelete")
-                .build()
-            WorkManager.getInstance(act).enqueue(deleteManga)
         }
     }
 }

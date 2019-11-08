@@ -32,7 +32,6 @@ import com.san.kir.manger.utils.extensions.string
 import com.san.kir.manger.utils.extensions.visibleOrGone
 import com.san.kir.manger.view_models.ListChaptersViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -185,7 +184,7 @@ class ListChaptersActivity : ThemedActionBarActivity() {
         unregisterReceiver(receiver)
     }
 
-    fun onListItemSelect(position: Int) = GlobalScope.launch(Dispatchers.Main) {
+    fun onListItemSelect(position: Int) = lifecycleScope.launch(Dispatchers.Main) {
         mAdapter.toggleSelection(position) // Переключить выбран элемент или нет
         // Если есть выделенные элементы и экшнМод не включен
         if (mAdapter.getSelectedCount() > 0 && actionMode.hasFinish()) {

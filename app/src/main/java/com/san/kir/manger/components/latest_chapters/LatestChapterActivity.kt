@@ -4,36 +4,40 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ProgressBar
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import com.san.kir.ankofork.Binder
+import androidx.work.WorkManager
 import com.san.kir.ankofork.dip
 import com.san.kir.ankofork.horizontalProgressBar
 import com.san.kir.ankofork.matchParent
-import com.san.kir.ankofork.negative
-import com.san.kir.ankofork.positive
 import com.san.kir.ankofork.recyclerview.recyclerView
 import com.san.kir.ankofork.sdk28._LinearLayout
 import com.san.kir.manger.R
 import com.san.kir.manger.components.drawer.DrawerActivity
+import com.san.kir.manger.utils.extensions.gone
 import com.san.kir.manger.utils.extensions.showNever
-import com.san.kir.manger.utils.extensions.visibleOrGone
+import com.san.kir.manger.utils.extensions.visible
 import com.san.kir.manger.view_models.LatestChapterViewModel
+import com.san.kir.manger.workmanager.AllLatestClearWorker
+import com.san.kir.manger.workmanager.DownloadedLatestClearWorker
+import com.san.kir.manger.workmanager.LatestClearWorker
+import com.san.kir.manger.workmanager.ReadLatestClearWorker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class LatestChapterActivity : DrawerActivity() {
     private val _adapter = LatestChaptersRecyclerPresenter(this)
-    private val isAction = Binder(false)
+    private lateinit var action: ProgressBar
 
     val mViewModel by viewModels<LatestChapterViewModel>()
     override val _LinearLayout.customView: View
         get() = this.apply {
-            horizontalProgressBar {
+            action = horizontalProgressBar {
                 isIndeterminate = true
-                visibleOrGone(isAction)
+                gone()
                 progressDrawable = ContextCompat.getDrawable(
                     this@LatestChapterActivity,
                     R.drawable.storage_progressbar
@@ -59,6 +63,17 @@ class LatestChapterActivity : DrawerActivity() {
                         setTitle(R.string.main_menu_latest)
                 }
             })
+
+        WorkManager
+            .getInstance(this)
+            .getWorkInfosByTagLiveData("cleanLatest")
+            .observe(this, Observer { works ->
+                if (works.isNotEmpty())
+                    if (works.all { it.state.isFinished }) {
+                        action.gone()
+                    } else {
+                        action.visible()
+                    } })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -71,7 +86,7 @@ class LatestChapterActivity : DrawerActivity() {
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         lifecycleScope.launch(Dispatchers.Main) {
-            menu.getItem(0).isEnabled =_adapter.hasNewChapters()
+            menu.getItem(0).isEnabled = _adapter.hasNewChapters()
         }
         return super.onPrepareOptionsMenu(menu)
     }
@@ -82,24 +97,9 @@ class LatestChapterActivity : DrawerActivity() {
                 _adapter.downloadNewChapters()
                 item.isEnabled = false
             }
-            1 -> {
-                isAction.positive()
-                _adapter.clearHistory().invokeOnCompletion {
-                    isAction.negative()
-                }
-            }
-            2 -> {
-                isAction.positive()
-                _adapter.clearHistoryRead().invokeOnCompletion {
-                    isAction.negative()
-                }
-            }
-            3 -> {
-                isAction.positive()
-                _adapter.clearHistoryDownload().invokeOnCompletion {
-                    isAction.negative()
-                }
-            }
+            1 -> LatestClearWorker.addTask<AllLatestClearWorker>(this)
+            2 -> LatestClearWorker.addTask<ReadLatestClearWorker>(this)
+            3 -> LatestClearWorker.addTask<DownloadedLatestClearWorker>(this)
         }
         return true
     }

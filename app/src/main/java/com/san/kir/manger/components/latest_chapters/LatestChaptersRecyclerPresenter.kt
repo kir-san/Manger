@@ -57,10 +57,4 @@ class LatestChaptersRecyclerPresenter(private val act: LatestChapterActivity) :
 
         adapter.notifyDataSetChanged()
     }
-
-    fun clearHistory() = act.mViewModel.clearAll()
-
-    fun clearHistoryRead() = act.mViewModel.clearRead()
-
-    fun clearHistoryDownload() = act.mViewModel.clearDownloaded()
 }

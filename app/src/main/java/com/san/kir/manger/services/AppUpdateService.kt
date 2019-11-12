@@ -15,6 +15,7 @@ import com.san.kir.manger.BuildConfig
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.utils.ID
+import com.san.kir.manger.utils.extensions.log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -109,13 +110,14 @@ class AppUpdateService : Service(), CoroutineScope {
                         startForeground(notificationId, build())
                     }
 
-                    val doc = ManageSites.getDocument(url)
-                    val text = doc.select("#ipbwrapper")
+                    val doc = ManageSites.getDocument(url).body()
+                    val texts = doc.text()
                     val matcher = Pattern.compile("[0-9]\\.[0-9]\\.[0-9]")
-                        .matcher(text.toString())
+                        .matcher(texts.toString())
 
                     if (matcher.find()) {
                         val version = matcher.group()
+                        log("version = ${version}")
                         val message = if (version != BuildConfig.VERSION_NAME)
                             getString(
                                 R.string.main_check_app_ver_find,
@@ -136,8 +138,11 @@ class AppUpdateService : Service(), CoroutineScope {
                             notificationManager.notify(notificationId, build())
                         }
                         notificationId = ID.generate()
+                    } else {
+                        throw Throwable("not find in $matcher")
                     }
                 } catch (ex: Throwable) {
+                    ex.printStackTrace()
                     stopForeground(false)
                     notificationManager.cancel(notificationId)
                     with(NotificationCompat.Builder(this@AppUpdateService,

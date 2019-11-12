@@ -46,11 +46,13 @@ class MangaDeleteWorker(appContext: Context, workerParams: WorkerParameters) :
     }
 
     companion object {
+        const val tag = "mangaDelete"
+
         fun addTask(ctx: Context, manga: Manga, withFiles: Boolean = false) {
             val data = workDataOf(MangaColumn.unic to manga.unic, "withFiles" to withFiles)
             val deleteManga = OneTimeWorkRequestBuilder<MangaDeleteWorker>()
                 .setInputData(data)
-                .addTag("mangaDelete")
+                .addTag(tag)
                 .build()
             WorkManager.getInstance(ctx).enqueue(deleteManga)
         }

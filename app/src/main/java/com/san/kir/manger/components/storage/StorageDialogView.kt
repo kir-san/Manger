@@ -191,18 +191,14 @@ class StorageDialogView(private val act: BaseActivity) {
             }
 
             name?.text = manga.name
-            mangaSize?.text = act.getString(
-                R.string.storage_item_manga_size,
-                formatDouble(item?.sizeFull)
-            )
-            readSize?.text = act.getString(
-                R.string.storage_item_read_size,
-                formatDouble(item?.sizeRead)
-            )
+
+            mangaSize?.text =
+                act.getString(R.string.storage_item_manga_size, item?.sizeFull.format())
+
+            readSize?.text = act.getString(R.string.storage_item_read_size, item?.sizeRead.format())
+
             readSizeAction?.onClick {
-                DeleteReadChaptersDialog(act, manga) {
-                    updateStorageItem(item)
-                }
+                DeleteReadChaptersDialog(act, manga, item?.sizeRead)
             }
 
             allSizeAction?.onClick {

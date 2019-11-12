@@ -30,6 +30,7 @@ import com.san.kir.manger.utils.extensions.showAlways
 import com.san.kir.manger.utils.extensions.startForegroundService
 import com.san.kir.manger.utils.extensions.visible
 import com.san.kir.manger.view_models.LibraryViewModel
+import com.san.kir.manger.workmanager.MangaDeleteWorker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -98,7 +99,7 @@ class LibraryActivity : DrawerActivity() {
 
         WorkManager
             .getInstance(this)
-            .getWorkInfosByTagLiveData("mangaDelete")
+            .getWorkInfosByTagLiveData(MangaDeleteWorker.tag)
             .observe(this, Observer { works ->
                 if (works.isNotEmpty())
                     if (works.all { it.state.isFinished }) {

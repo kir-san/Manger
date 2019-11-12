@@ -15,9 +15,11 @@ abstract class LatestClearWorker(appContext: Context, workerParams: WorkerParame
     suspend fun items() = mChapterRepository.getItems()
 
     companion object {
+        const val tag = "cleanLatest"
         inline fun <reified T : LatestClearWorker> addTask(ctx: Context) {
-            val task = OneTimeWorkRequestBuilder<T>().addTag("cleanLatest").build()
+            val task = OneTimeWorkRequestBuilder<T>().addTag(tag).build()
             WorkManager.getInstance(ctx).enqueue(task)
         }
     }
 }
+

@@ -66,7 +66,7 @@ class LatestChapterActivity : DrawerActivity() {
 
         WorkManager
             .getInstance(this)
-            .getWorkInfosByTagLiveData("cleanLatest")
+            .getWorkInfosByTagLiveData(LatestClearWorker.tag)
             .observe(this, Observer { works ->
                 if (works.isNotEmpty())
                     if (works.all { it.state.isFinished }) {

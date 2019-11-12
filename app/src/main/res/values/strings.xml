@@ -210,7 +210,9 @@
     <string name="library_popupmenu_delete_no">Никогда</string>
     <string name="library_popupmenu_set_category">Сменить категорию</string>
     <string name="library_popupmenu_delete_read_chapters">Удалить прочитанное</string>
+    <string name="library_popupmenu_delete_all">Очистить папку</string>
     <string name="library_popupmenu_delete_read_chapters_message">Своими действиями вы хотите лишить себя такой кучи манги?</string>
+    <string name="library_popupmenu_delete_all_chapters_message">Своими действиями вы хотите лишить себя всей манги?</string>
     <string name="library_popupmenu_delete_read_chapters_ok">Да</string>
     <string name="library_popupmenu_delete_read_chapters_deleting">Удаление…</string>
     <string name="library_popupmenu_delete_read_chapters_delete_nothing">Удалять нечего</string>

@@ -27,11 +27,13 @@ import com.san.kir.ankofork.sdk28.textView
 import com.san.kir.ankofork.verticalLayout
 import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.R
+import com.san.kir.manger.extending.dialogs.DeleteAllDialog
 import com.san.kir.manger.extending.dialogs.DeleteReadChaptersDialog
 import com.san.kir.manger.repositories.StorageRepository
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.Storage
 import com.san.kir.manger.utils.extensions.BaseActivity
+import com.san.kir.manger.utils.extensions.format
 import com.san.kir.manger.utils.extensions.formatDouble
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -45,6 +47,7 @@ class StorageDialogView(private val act: BaseActivity) {
     private var mangaSize: TextView? = null
     private var readSize: TextView? = null
     private var readSizeAction: LinearLayout? = null
+    private var allSizeAction: LinearLayout? = null
     private var isDark: Boolean = false
 
     init {
@@ -139,6 +142,29 @@ class StorageDialogView(private val act: BaseActivity) {
 
                         readSizeAction = this
                     }
+
+                    // Очистка прочитанных глав
+                    linearLayout {
+                        lparams(width = matchParent, height = dip(34)) {
+                            topMargin = dip(10)
+                        }
+
+                        imageView {
+                            backgroundResource =
+                                if (isDark) R.drawable.ic_action_delete_white
+                                else R.drawable.ic_action_delete_black
+                            scaleType = ImageView.ScaleType.FIT_CENTER
+                        }.lparams(width = dip(30), height = dip(30)) {
+                            marginEnd = dip(26)
+                            marginStart = dip(10)
+                        }
+
+                        textView(R.string.library_popupmenu_delete_all).lparams {
+                            gravity = Gravity.CENTER_VERTICAL
+                        }
+
+                        allSizeAction = this
+                    }
                 }
             }
 
@@ -177,6 +203,10 @@ class StorageDialogView(private val act: BaseActivity) {
                 DeleteReadChaptersDialog(act, manga) {
                     updateStorageItem(item)
                 }
+            }
+
+            allSizeAction?.onClick {
+                DeleteAllDialog(act, manga, item?.sizeFull)
             }
             dir = item
         })

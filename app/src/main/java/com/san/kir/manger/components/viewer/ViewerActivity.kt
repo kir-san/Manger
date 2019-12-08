@@ -66,6 +66,15 @@ class ViewerActivity : ThemedActionBarActivity() {
     @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mView.setContentView(this) // Установка разметки
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true) // Кнопка назад в верхнем баре
+        supportActionBar?.setShowHideAnimationEnabled(true) // Анимация скрытия, сокрытия
+    }
+
+    override fun onResume() {
+        super.onResume()
+
         defaultSharedPreferences.apply {
             requestedOrientation = when (orientation) {
                 getString(R.string.settings_viewer_orientation_auto) -> SCREEN_ORIENTATION_SENSOR
@@ -91,11 +100,6 @@ class ViewerActivity : ThemedActionBarActivity() {
 
         }
 
-        mView.setContentView(this) // Установка разметки
-
-        supportActionBar?.setDisplayHomeAsUpEnabled(true) // Кнопка назад в верхнем баре
-        supportActionBar?.setShowHideAnimationEnabled(true) // Анимация скрытия, сокрытия
-
         intent.apply {
             chapter = getParcelableExtra("chapter")
             isAlternative = getBooleanExtra("is", false)
@@ -103,10 +107,6 @@ class ViewerActivity : ThemedActionBarActivity() {
 
         title = chapter.name // Смена заголвка
         readTime = System.currentTimeMillis()
-    }
-
-    override fun onResume() {
-        super.onResume()
 
         val point = Point() // Хранилище для данных экрана
         windowManager.defaultDisplay.getSize(point) // Сохранение данных в хранилище
@@ -123,19 +123,14 @@ class ViewerActivity : ThemedActionBarActivity() {
         presenter.configManager(chapter, isAlternative).invokeOnCompletion {
             presenter.isLoad.negative()
         }
-    }
 
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
-        // Установка режима во весь экрана без верхней строки и навигационных кнопок
-        if (hasFocus) { // Срабатывает только если был получен фокус
-            window.decorView.systemUiVisibility =
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                        View.SYSTEM_UI_FLAG_FULLSCREEN or
-                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-        }
+        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_FULLSCREEN)
+
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
@@ -162,10 +157,7 @@ class ViewerActivity : ThemedActionBarActivity() {
             .putBoolean(getString(R.string.settings_viewer_show_bar_key), isBar)
             .apply()
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
-    }
 
-    override fun onDestroy() {
-        super.onDestroy()
         val time = (System.currentTimeMillis() - readTime) / 1000
         if (time > 0) {
             mViewModel.updateStatisticInfo(chapter.manga, time)

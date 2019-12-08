@@ -3,6 +3,7 @@ package com.san.kir.manger.components.latest_chapters
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.san.kir.manger.room.entities.toDownloadItem
 import com.san.kir.manger.services.DownloadService
 import com.san.kir.manger.utils.RecyclerPresenter
@@ -37,10 +38,13 @@ class LatestChaptersRecyclerPresenter(private val act: LatestChapterActivity) :
                 target: androidx.recyclerview.widget.RecyclerView.ViewHolder
             ) = false
 
-            override fun onSwiped(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, direction: Int) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
                 act.lifecycleScope.launch(Dispatchers.Default) {
-                    act.mViewModel.delete(adapter.items[position])
+                    adapter.currentList?.get(position)?.let { chapter ->
+                        chapter.isInUpdate = false
+                        act.mViewModel.update(chapter)
+                    }
                 }
             }
         }).attachToRecyclerView(recyclerView)

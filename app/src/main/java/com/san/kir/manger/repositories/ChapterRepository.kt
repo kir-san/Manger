@@ -1,7 +1,7 @@
 package com.san.kir.manger.repositories
 
 import android.content.Context
-import androidx.lifecycle.LiveData
+import androidx.paging.LivePagedListBuilder
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.action
 import com.san.kir.manger.room.getDatabase
@@ -45,9 +45,7 @@ class ChapterRepository(context: Context) {
         return delete(*getItems(manga).toTypedArray())
     }
 
-    fun loadInUpdateItems(): LiveData<List<Chapter>> {
-        return mChapterDao.loadInUpdateItems()
-    }
+    fun loadInUpdateItems() = mChapterDao.loadInUpdateItems()
 
     suspend fun newChapters(): List<Chapter> {
         return mChapterDao.getItems()
@@ -55,4 +53,6 @@ class ChapterRepository(context: Context) {
             .filter { !it.isRead }
             .filter { it.action == ChapterStatus.DOWNLOADABLE }
     }
+
+    fun pagedItems() = LivePagedListBuilder(mChapterDao.pagedItems(), 50).build()
 }

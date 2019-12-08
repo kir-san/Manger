@@ -22,6 +22,7 @@ import com.san.kir.manger.utils.extensions.BaseActivity
 import com.san.kir.manger.utils.extensions.formatDouble
 import com.san.kir.manger.view_models.DrawerViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class MainMenuItemView(private val act: BaseActivity, private val viewModel: DrawerViewModel) :
@@ -99,7 +100,9 @@ class MainMenuItemView(private val act: BaseActivity, private val viewModel: Dra
                 viewModel.getDownloadData().observe(act, Observer { text = it.toString() })
 
             MainMenuType.Latest ->
-                viewModel.getLatestData().observe(act, Observer { text = it?.size.toString() })
+                act.lifecycleScope.launchWhenCreated {
+                    viewModel.getLatestData().collect { text = it.size.toString() }
+                }
 
             MainMenuType.Schedule ->
                 viewModel.getPlannedData().observe(act, Observer { text = it?.size.toString() })

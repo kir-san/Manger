@@ -2,8 +2,6 @@ package com.san.kir.manger.view_models
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.paging.PagedList
 import com.san.kir.manger.repositories.CategoryRepository
 import com.san.kir.manger.repositories.ChapterRepository
 import com.san.kir.manger.repositories.MangaRepository
@@ -18,9 +16,7 @@ class LibraryViewModel(app: Application) : AndroidViewModel(app) {
 
     private lateinit var mCategories: List<Category>
 
-    fun getMangas(): List<Manga> {
-        return mMangaRepository.getItems()
-    }
+    fun getMangas() = mMangaRepository.getItems()
 
     fun getCategoryItems(): List<Category> {
         if (!::mCategories.isInitialized) {
@@ -30,13 +26,8 @@ class LibraryViewModel(app: Application) : AndroidViewModel(app) {
         return mCategories
     }
 
-    fun filterFromCategory(category: Category): MangaFilter {
-        return mCategoryRepository.toFilter(category)
-    }
-
-    fun loadMangas(cat: Category, filter: MangaFilter): LiveData<PagedList<Manga>> {
-        return mMangaRepository.loadMangas(cat, filter)
-    }
+    fun filterFromCategory(category: Category) = mCategoryRepository.toFilter(category)
+    fun loadMangas(cat: Category, filter: MangaFilter) = mMangaRepository.loadMangas(cat, filter)
 
     suspend fun countNotReadChapters(manga: Manga) = mChapterRepository.countNotRead(manga.unic)
     suspend fun update(manga: Manga) = mMangaRepository.update(manga)

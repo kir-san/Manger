@@ -26,6 +26,7 @@ import com.san.kir.manger.workmanager.DownloadedLatestClearWorker
 import com.san.kir.manger.workmanager.LatestClearWorker
 import com.san.kir.manger.workmanager.ReadLatestClearWorker
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class LatestChapterActivity : DrawerActivity() {
@@ -53,16 +54,16 @@ class LatestChapterActivity : DrawerActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mViewModel
-            .getLatestItems()
-            .observe(this, Observer { list ->
-                list?.let {
-                    if (it.isNotEmpty())
-                        title = getString(R.string.main_menu_latest_count, it.size)
+        lifecycleScope.launchWhenCreated {
+            mViewModel
+                .getLatestItems()
+                .collect { list ->
+                    if (list.isNotEmpty())
+                        title = getString(R.string.main_menu_latest_count, list.size)
                     else
                         setTitle(R.string.main_menu_latest)
                 }
-            })
+        }
 
         WorkManager
             .getInstance(this)

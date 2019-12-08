@@ -28,6 +28,7 @@ import com.san.kir.manger.repositories.MangaRepository
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.utils.ID
+import com.san.kir.manger.utils.extensions.log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -201,6 +202,8 @@ class MangaUpdaterService : Service() {
                 .build()
             startForeground(notificationId, notify)
 
+            log("start")
+
             val mangaDB = mMangaRepository.getItem(manga.unic)
 
             if (mangaDB.shortLink.isEmpty()) {
@@ -219,6 +222,8 @@ class MangaUpdaterService : Service() {
             }
 
             mangaName = mangaDB.name
+
+            log("oldchapters")
 
             val oldChapters =
                 withContext(Dispatchers.IO) {
@@ -242,6 +247,8 @@ class MangaUpdaterService : Service() {
 
             var newChapters = listOf<Chapter>()
 
+            log("chapters")
+
             ManageSites.chapters(mangaDB).let { new ->
                 if (oldChapters.isEmpty()) { // Если глав не было до обновления
                     newChapters = new
@@ -260,7 +267,9 @@ class MangaUpdaterService : Service() {
                 }
             }
 
+            log("new chapters")
             if (newChapters.isNotEmpty()) {
+                log("not empty")
                 newChapters.reversed().forEach {
                     it.pages = ManageSites.pages(it)
                     it.isInUpdate = true
@@ -281,6 +290,7 @@ class MangaUpdaterService : Service() {
                 }
             }
         } catch (ex: Exception) {
+            log("manga = ${manga.name}")
             ex.printStackTrace()
             error++
             countNew = 0

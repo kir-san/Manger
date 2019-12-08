@@ -206,7 +206,7 @@ class LatestChaptersItemView(private val act: LatestChapterActivity) :
                 DownloadStatus.completed -> {
                     disableDownload(chapter)
                 }
-                else -> {
+                else -> { // for when work
                 }
             }
         }

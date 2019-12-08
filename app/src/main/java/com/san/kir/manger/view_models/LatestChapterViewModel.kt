@@ -17,5 +17,7 @@ class LatestChapterViewModel(app: Application) : AndroidViewModel(app) {
     suspend fun newChapters() = mChapterRepository.newChapters()
 
     fun getDownloadItems(item: Chapter) = mDownloadRepository.loadItem(item.site)
+    fun loadPagedItems() = mChapterRepository.pagedItems()
+
 }
 

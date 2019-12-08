@@ -15,27 +15,33 @@ import kotlinx.coroutines.withContext
 class LatestChaptersRecyclerPresenter(private val act: LatestChapterActivity) :
     RecyclerPresenter() {
     private val adapter = RecyclerViewAdapterFactory
-        .createSimple { LatestChaptersItemView(act) }
-
-    override fun into(recyclerView: androidx.recyclerview.widget.RecyclerView) {
+//        .createSimple { LatestChaptersItemView(act) }
+        .createPaging({ LatestChaptersItemView(act) },
+                      { oldItem, newItem -> oldItem.id == newItem.id },
+                      { oldItem, newItem -> oldItem == newItem })
+    override fun into(recyclerView: RecyclerView) {
         super.into(recyclerView)
         recycler.adapter = adapter
-        act.mViewModel
-            .getLatestItems()
-            .observe(act, Observer { items ->
-                items?.let {
-                    adapter.items = it
-                    adapter.notifyDataSetChanged()
-                }
-            })
+
+        act.lifecycleScope.launchWhenResumed {
+            act.mViewModel
+//                .getLatestItems()
+//                .collect { items ->
+//                    adapter.items = items
+//                    adapter.notifyDataSetChanged()
+//                }
+                .loadPagedItems()
+                .observe(act, Observer {  adapter.submitList(it) })
+        }
+
 
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
             0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
         ) {
             override fun onMove(
-                recyclerView: androidx.recyclerview.widget.RecyclerView,
-                viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder,
-                target: androidx.recyclerview.widget.RecyclerView.ViewHolder
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
             ) = false
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {

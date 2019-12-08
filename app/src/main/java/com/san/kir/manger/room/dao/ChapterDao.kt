@@ -1,9 +1,11 @@
 package com.san.kir.manger.room.dao
 
-import androidx.lifecycle.LiveData
+import androidx.paging.DataSource
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.Transaction
 import com.san.kir.manger.room.entities.Chapter
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ChapterDao : BaseDao<Chapter> {
@@ -22,7 +24,12 @@ interface ChapterDao : BaseDao<Chapter> {
     @Query("SELECT * FROM chapters WHERE manga IS :manga AND isRead IS 0 ORDER BY id ASC")
     suspend fun getItemsNotReadAsc(manga: String): List<Chapter>
 
+    @Transaction
     @Query("SELECT * FROM chapters WHERE isInUpdate IS 1 ORDER BY id DESC")
-    fun loadInUpdateItems(): LiveData<List<Chapter>>
+    fun loadInUpdateItems(): Flow<List<Chapter>>
+
+    @Transaction
+    @Query("SELECT * FROM chapters WHERE isInUpdate IS 1 ORDER BY id DESC")
+    fun pagedItems(): DataSource.Factory<Int, Chapter>
 }
 

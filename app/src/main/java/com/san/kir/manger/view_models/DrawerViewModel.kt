@@ -14,7 +14,6 @@ import com.san.kir.manger.repositories.PlannedRepository
 import com.san.kir.manger.repositories.SiteRepository
 import com.san.kir.manger.repositories.StorageRepository
 import com.san.kir.manger.room.entities.Category
-import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.MainMenuItem
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.PlannedTask
@@ -65,9 +64,7 @@ class DrawerViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun getLatestData(): LiveData<List<Chapter>> {
-        return mChapterRepository.loadInUpdateItems()
-    }
+    fun getLatestData() = mChapterRepository.loadInUpdateItems()
 
     fun getPlannedData(): LiveData<PagedList<PlannedTask>> {
         return mPlannedRepository.loadPagedItems()

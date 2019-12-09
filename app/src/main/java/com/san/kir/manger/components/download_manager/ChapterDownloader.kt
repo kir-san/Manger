@@ -80,26 +80,34 @@ class ChapterDownloader(private val task: DownloadItem, concurrent: Int, private
 
         val pages = ManageSites.pages(getDownloadItem())
 
-        if (pages.isEmpty()) {
-            throw Exception("Problem with site")
-        }
-
-        lock.withLock {
-            totalPages = pages.size
-        }
-
-        delegate?.onProgress(getDownloadItem())
-
         if (interrupted) return
 
-        if (pages.all { it.isNotEmpty() })
+        if (pages.isNotEmpty() && pages.all { it.isNotEmpty() }) {
+
+            lock.withLock {
+                totalPages = pages.size
+            }
+
+            delegate?.onProgress(getDownloadItem())
+
+            if (interrupted) return
+
             pages.forEach { url ->
                 executor.post {
                     pageDownload(prepareUrl(url), downloadPath)
                 }.join()
             }
-        else {
+        } else {
             db.chapterDao.getItem(getDownloadItem().link)?.let {
+
+                lock.withLock {
+                    totalPages = it.pages.size
+                }
+
+                delegate?.onProgress(getDownloadItem())
+
+                if (interrupted) return
+
                 it.pages.forEach { url ->
                     executor.post {
                         pageDownload(prepareUrl(url), downloadPath)
@@ -128,9 +136,10 @@ class ChapterDownloader(private val task: DownloadItem, concurrent: Int, private
 
         val pageSize = sizeOfPageFromUrl(link)
 
+        val isCorrectPageSize = pageSize != null && pageSize != -1L // check valid size
+
         if (!interrupted
-            && pageSize != null
-            && pageSize != -1L // check valid size
+            && isCorrectPageSize
             && page.exists()
             && page.length() == pageSize) {
             lock.withLock {

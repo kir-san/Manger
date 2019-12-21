@@ -30,40 +30,10 @@ interface AnkoContext<out T> : ViewManager {
         fun create(ctx: Context, setContentView: Boolean = false): AnkoContext<Context>
                 = AnkoContextImpl(ctx, ctx, setContentView)
 
-        fun createReusable(ctx: Context, setContentView: Boolean = false): AnkoContext<Context>
-                = ReusableAnkoContext(ctx, ctx, setContentView)
-
         fun <T> create(ctx: Context, owner: T, setContentView: Boolean = false): AnkoContext<T>
                 = AnkoContextImpl(ctx, owner, setContentView)
 
-        fun <T> createReusable(ctx: Context, owner: T, setContentView: Boolean = false): AnkoContext<T>
-                = ReusableAnkoContext(ctx, owner, setContentView)
-
-        fun <T: ViewGroup> createDelegate(owner: T): AnkoContext<T> = DelegatingAnkoContext(owner)
     }
-}
-
-internal class DelegatingAnkoContext<T: ViewGroup>(override val owner: T): AnkoContext<T> {
-    override val ctx: Context = owner.context
-    override val view: View = owner
-
-    override fun addView(view: View?, params: ViewGroup.LayoutParams?) {
-        if (view == null) return
-
-        if (params == null) {
-            owner.addView(view)
-        } else {
-            owner.addView(view, params)
-        }
-    }
-}
-
-internal class ReusableAnkoContext<T>(
-        override val ctx: Context,
-        override val owner: T,
-        setContentView: Boolean
-) : AnkoContextImpl<T>(ctx, owner, setContentView) {
-    override fun alreadyHasView() {}
 }
 
 open class AnkoContextImpl<T>(

@@ -214,7 +214,7 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
             }
 
             ACTION_START_ALL -> downloadManager.startAll()
-            ACTION_START -> launch {
+            ACTION_START, ACTION_ADD_OR_START -> launch {
                 val item = intent.getParcelableExtra<DownloadItem>("item")
                 item?.let {
                     downloadManager.addOrStart(it)
@@ -227,12 +227,6 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
                     if (!downloadManager.hasTask(it)) {
                         downloadManager.add(it)
                     }
-                }
-            }
-            ACTION_ADD_OR_START -> launch {
-                val item = intent.getParcelableExtra<DownloadItem>("item")
-                item?.let {
-                    downloadManager.addOrStart(it)
                 }
             }
 

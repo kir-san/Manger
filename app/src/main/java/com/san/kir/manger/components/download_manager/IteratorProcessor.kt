@@ -47,7 +47,7 @@ class IteratorProcessor(
         }
     }
 
-    private fun getIterator(): Iterator<DownloadItem> {
+    private suspend fun getIterator(): Iterator<DownloadItem> {
         var queuedList = mDownloadDao.getItems(DownloadStatus.queued)
         if (isRetry) {
             queuedList = queuedList + mDownloadDao.getErrorItems()

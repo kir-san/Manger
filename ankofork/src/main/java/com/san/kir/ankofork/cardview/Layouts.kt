@@ -21,7 +21,7 @@ open class _CardView(ctx: Context) : CardView(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
         c: Context?,
         attrs: AttributeSet?
     ): T {
@@ -41,7 +41,7 @@ open class _CardView(ctx: Context) : CardView(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
         width: Int = ViewGroup.LayoutParams.WRAP_CONTENT,
         height: Int = ViewGroup.LayoutParams.WRAP_CONTENT
     ): T {
@@ -62,7 +62,7 @@ open class _CardView(ctx: Context) : CardView(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
         width: Int = ViewGroup.LayoutParams.WRAP_CONTENT,
         height: Int = ViewGroup.LayoutParams.WRAP_CONTENT,
         gravity: Int
@@ -82,7 +82,7 @@ open class _CardView(ctx: Context) : CardView(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
         source: ViewGroup.LayoutParams?
     ): T {
         val layoutParams = LayoutParams(source!!)
@@ -100,7 +100,7 @@ open class _CardView(ctx: Context) : CardView(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
         source: MarginLayoutParams?
     ): T {
         val layoutParams = LayoutParams(source!!)
@@ -118,7 +118,7 @@ open class _CardView(ctx: Context) : CardView(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
         source: LayoutParams?
     ): T {
         val layoutParams = LayoutParams(source!!)

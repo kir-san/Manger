@@ -196,23 +196,25 @@ class AddMangaView(private val act: AddMangaActivity) : ActivityView() {
                 }
             }
 
-            if (manga.logo.isEmpty()) {
-                try {
-                    logo.backgroundResource = if (manga.color != 0) manga.color
-                    else android.R.color.holo_green_dark
-                } catch (ex: Resources.NotFoundException) {
-                    logo.backgroundColor = manga.color
-                }
-            } else
-                loadImage(manga.logo)
-                    .onError {
-                        if (manga.color != 0) {
-                            logo.backgroundColor = manga.color
-                        } else {
-                            logo.backgroundColorResource = android.R.color.holo_green_dark
-                        }
+            loadImage(manga.logo)
+                .beforeTry {
+                    try {
+                        logo.backgroundResource = if (manga.color != 0) manga.color
+                        else android.R.color.holo_green_dark
+                        true
+                    } catch (ex: Resources.NotFoundException) {
+                        logo.backgroundColor = manga.color
+                        false
                     }
-                    .into(logo)
+                }
+                .onError {
+                    if (manga.color != 0) {
+                        logo.backgroundColor = manga.color
+                    } else {
+                        logo.backgroundColorResource = android.R.color.holo_green_dark
+                    }
+                }
+                .into(logo)
         }
     }
 

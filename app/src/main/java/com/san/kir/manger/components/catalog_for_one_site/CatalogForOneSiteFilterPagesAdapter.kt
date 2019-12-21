@@ -3,8 +3,8 @@ package com.san.kir.manger.components.catalog_for_one_site
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
-import com.san.kir.manger.R
 import com.san.kir.ankofork.include
+import com.san.kir.manger.R
 
 class CatalogForOneSiteFilterPagesAdapter : androidx.viewpager.widget.PagerAdapter() {
     // Список страниц
@@ -35,11 +35,11 @@ class CatalogForOneSiteFilterPagesAdapter : androidx.viewpager.widget.PagerAdapt
         return v
     }
 
-    override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) =
-        (container as androidx.viewpager.widget.ViewPager).removeView(`object` as View)
+    override fun destroyItem(container: ViewGroup, position: Int, any: Any) =
+        (container as androidx.viewpager.widget.ViewPager).removeView(any as View)
 
 
-    override fun isViewFromObject(view: View, `object`: Any) = view == `object`
+    override fun isViewFromObject(view: View, any: Any) = view == any
 
     override fun getCount() = pagers.size
 

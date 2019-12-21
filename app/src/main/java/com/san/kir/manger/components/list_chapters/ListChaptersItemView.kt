@@ -46,6 +46,7 @@ import com.san.kir.manger.utils.enums.DownloadStatus
 import com.san.kir.manger.utils.extensions.onLongClick
 import com.san.kir.manger.utils.extensions.visibleOrGone
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class ListChaptersItemView(private val act: ListChaptersActivity) :
@@ -194,15 +195,15 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
         }
         root.backgroundColor = color
 
-        observer = Observer {
-            changeVisibleAndActions(it, item)
+        act.lifecycleScope.launchWhenResumed {
+            act.mViewModel.getDownloadItem(item).collect {
+                changeVisibleAndActions(it, item)
+            }
         }
     }
 
     override fun onAttached(position: Int) {
         initializeOnClicks(item, position)
-
-        act.mViewModel.getDownloadItem(item).observe(act, observer)
     }
 
     override fun onDetached() {
@@ -210,8 +211,6 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
         stopBtn.setOnClickListener(null)
         root.setOnClickListener(null)
         root.setOnLongClickListener(null)
-
-        act.mViewModel.getDownloadItem(item).removeObserver(observer)
     }
 
     private fun updateStatus(chapter: Chapter) = act.lifecycleScope.launch(Dispatchers.Main) {
@@ -289,7 +288,7 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
                     disableDownload()
                     updateStatus(chapter)
                 }
-                else -> {
+                else -> { //
                 }
             }
         }

@@ -2,12 +2,10 @@ package com.san.kir.manger.view_models
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.san.kir.manger.repositories.DownloadRepository
 import com.san.kir.manger.repositories.MangaRepository
 import com.san.kir.manger.room.entities.DownloadItem
-import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.utils.enums.DownloadStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -16,17 +14,12 @@ class DownloadManagerViewModel(app: Application) : AndroidViewModel(app) {
     private val mDownloaRepository = DownloadRepository(app)
     private val mMangaRepository = MangaRepository(app)
 
-    fun getDownloadItems(): LiveData<List<DownloadItem>> {
-        return mDownloaRepository.loadItems()
-    }
+    suspend fun getItems() = mDownloaRepository.items()
+    fun getDownloadItems() = mDownloaRepository.loadItems()
+    fun loadItems(link: String) = mDownloaRepository.loadItem(link)
 
-    fun downloadDelete(downloadItem: DownloadItem) {
-        mDownloaRepository.delete(downloadItem)
-    }
-
-    fun getMangaItemOrNull(item: DownloadItem): Manga? {
-        return mMangaRepository.getItemOrNull(item.manga)
-    }
+    suspend fun delete(downloadItem: DownloadItem) = mDownloaRepository.delete(downloadItem)
+    suspend fun getMangaItemOrNull(item: DownloadItem) = mMangaRepository.getItemOrNull(item.manga)
 
     fun clearCompletedDownloads() {
         viewModelScope.launch(Dispatchers.Default) {

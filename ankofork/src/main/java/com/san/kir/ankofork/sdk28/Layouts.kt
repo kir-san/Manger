@@ -237,19 +237,14 @@ open class _HorizontalScrollView(ctx: Context) : HorizontalScrollView(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
-        source: LayoutParams?,
-        init: LayoutParams.() -> Unit
-    ): T {
+    inline fun <T : View> T.lparams(source: LayoutParams?, init: LayoutParams.() -> Unit): T {
         val layoutParams = LayoutParams(source!!)
         layoutParams.init()
         this@lparams.layoutParams = layoutParams
         return this
     }
 
-    fun <T : View> T.lparams(
-        source: LayoutParams?
-    ): T {
+    fun <T : View> T.lparams(source: LayoutParams?): T {
         val layoutParams = LayoutParams(source!!)
         this@lparams.layoutParams = layoutParams
         return this
@@ -271,10 +266,7 @@ open class _LinearLayout(ctx: Context) : LinearLayout(ctx) {
         return this
     }
 
-    fun <T : View> T.lparams(
-        c: Context?,
-        attrs: AttributeSet?
-    ): T {
+    fun <T : View> T.lparams(c: Context?, attrs: AttributeSet?): T {
         val layoutParams = LayoutParams(c!!, attrs!!)
         this@lparams.layoutParams = layoutParams
         return this
@@ -322,27 +314,21 @@ open class _LinearLayout(ctx: Context) : LinearLayout(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
-        p: ViewGroup.LayoutParams?,
-        init: LayoutParams.() -> Unit
-    ): T {
+    inline fun <T : View> T.lparams(p: ViewGroup.LayoutParams?, init: LayoutParams.() -> Unit): T {
         val layoutParams = LayoutParams(p!!)
         layoutParams.init()
         this@lparams.layoutParams = layoutParams
         return this
     }
 
-    fun <T : View> T.lparams(
-        p: ViewGroup.LayoutParams?
-    ): T {
+    fun <T : View> T.lparams(p: ViewGroup.LayoutParams?): T {
         val layoutParams = LayoutParams(p!!)
         this@lparams.layoutParams = layoutParams
         return this
     }
 
     inline fun <T : View> T.lparams(
-        source: MarginLayoutParams?,
-        init: LayoutParams.() -> Unit
+        source: MarginLayoutParams?, init: LayoutParams.() -> Unit
     ): T {
         val layoutParams = LayoutParams(source!!)
         layoutParams.init()
@@ -350,27 +336,20 @@ open class _LinearLayout(ctx: Context) : LinearLayout(ctx) {
         return this
     }
 
-    fun <T : View> T.lparams(
-        source: MarginLayoutParams?
-    ): T {
+    fun <T : View> T.lparams(source: MarginLayoutParams?): T {
         val layoutParams = LayoutParams(source!!)
         this@lparams.layoutParams = layoutParams
         return this
     }
 
-    inline fun <T : View> T.lparams(
-        source: LayoutParams?,
-        init: LayoutParams.() -> Unit
-    ): T {
+    inline fun <T : View> T.lparams(source: LayoutParams?, init: LayoutParams.() -> Unit): T {
         val layoutParams = LayoutParams(source!!)
         layoutParams.init()
         this@lparams.layoutParams = layoutParams
         return this
     }
 
-    fun <T : View> T.lparams(
-        source: LayoutParams?
-    ): T {
+    fun <T : View> T.lparams(source: LayoutParams?): T {
         val layoutParams = LayoutParams(source!!)
         this@lparams.layoutParams = layoutParams
         return this
@@ -382,9 +361,7 @@ open class _LinearLayout(ctx: Context) : LinearLayout(ctx) {
 open class _RadioGroup(ctx: Context) : RadioGroup(ctx) {
 
     inline fun <T : View> T.lparams(
-        c: Context?,
-        attrs: AttributeSet?,
-        init: LayoutParams.() -> Unit
+        c: Context?, attrs: AttributeSet?, init: LayoutParams.() -> Unit
     ): T {
         val layoutParams = LayoutParams(c!!, attrs!!)
         layoutParams.init()
@@ -392,10 +369,7 @@ open class _RadioGroup(ctx: Context) : RadioGroup(ctx) {
         return this
     }
 
-    fun <T : View> T.lparams(
-        c: Context?,
-        attrs: AttributeSet?
-    ): T {
+    fun <T : View> T.lparams(c: Context?, attrs: AttributeSet?): T {
         val layoutParams = LayoutParams(c!!, attrs!!)
         this@lparams.layoutParams = layoutParams
         return this
@@ -444,8 +418,7 @@ open class _RadioGroup(ctx: Context) : RadioGroup(ctx) {
     }
 
     inline fun <T : View> T.lparams(
-        p: ViewGroup.LayoutParams?,
-        init: LayoutParams.() -> Unit
+        p: ViewGroup.LayoutParams?, init: LayoutParams.() -> Unit
     ): T {
         val layoutParams = LayoutParams(p!!)
         layoutParams.init()
@@ -453,17 +426,14 @@ open class _RadioGroup(ctx: Context) : RadioGroup(ctx) {
         return this
     }
 
-    fun <T : View> T.lparams(
-        p: ViewGroup.LayoutParams?
-    ): T {
+    fun <T : View> T.lparams(p: ViewGroup.LayoutParams?): T {
         val layoutParams = LayoutParams(p!!)
         this@lparams.layoutParams = layoutParams
         return this
     }
 
     inline fun <T : View> T.lparams(
-        source: MarginLayoutParams?,
-        init: LayoutParams.() -> Unit
+        source: MarginLayoutParams?, init: LayoutParams.() -> Unit
     ): T {
         val layoutParams = LayoutParams(source!!)
         layoutParams.init()
@@ -471,9 +441,7 @@ open class _RadioGroup(ctx: Context) : RadioGroup(ctx) {
         return this
     }
 
-    fun <T : View> T.lparams(
-        source: MarginLayoutParams?
-    ): T {
+    fun <T : View> T.lparams(source: MarginLayoutParams?): T {
         val layoutParams = LayoutParams(source!!)
         this@lparams.layoutParams = layoutParams
         return this
@@ -485,9 +453,7 @@ open class _RadioGroup(ctx: Context) : RadioGroup(ctx) {
 open class _RelativeLayout(ctx: Context) : RelativeLayout(ctx) {
 
     inline fun <T : View> T.lparams(
-        c: Context?,
-        attrs: AttributeSet?,
-        init: LayoutParams.() -> Unit
+        c: Context?, attrs: AttributeSet?, init: LayoutParams.() -> Unit
     ): T {
         val layoutParams = LayoutParams(c!!, attrs!!)
         layoutParams.init()
@@ -495,10 +461,7 @@ open class _RelativeLayout(ctx: Context) : RelativeLayout(ctx) {
         return this
     }
 
-    fun <T : View> T.lparams(
-        c: Context?,
-        attrs: AttributeSet?
-    ): T {
+    fun <T : View> T.lparams(c: Context?, attrs: AttributeSet?): T {
         val layoutParams = LayoutParams(c!!, attrs!!)
         this@lparams.layoutParams = layoutParams
         return this
@@ -525,8 +488,7 @@ open class _RelativeLayout(ctx: Context) : RelativeLayout(ctx) {
     }
 
     inline fun <T : View> T.lparams(
-        source: ViewGroup.LayoutParams?,
-        init: LayoutParams.() -> Unit
+        source: ViewGroup.LayoutParams?, init: LayoutParams.() -> Unit
     ): T {
         val layoutParams = LayoutParams(source!!)
         layoutParams.init()
@@ -534,17 +496,14 @@ open class _RelativeLayout(ctx: Context) : RelativeLayout(ctx) {
         return this
     }
 
-    fun <T : View> T.lparams(
-        source: ViewGroup.LayoutParams?
-    ): T {
+    fun <T : View> T.lparams(source: ViewGroup.LayoutParams?): T {
         val layoutParams = LayoutParams(source!!)
         this@lparams.layoutParams = layoutParams
         return this
     }
 
     inline fun <T : View> T.lparams(
-        source: MarginLayoutParams?,
-        init: LayoutParams.() -> Unit
+        source: MarginLayoutParams?, init: LayoutParams.() -> Unit
     ): T {
         val layoutParams = LayoutParams(source!!)
         layoutParams.init()
@@ -552,27 +511,20 @@ open class _RelativeLayout(ctx: Context) : RelativeLayout(ctx) {
         return this
     }
 
-    fun <T : View> T.lparams(
-        source: MarginLayoutParams?
-    ): T {
+    fun <T : View> T.lparams(source: MarginLayoutParams?): T {
         val layoutParams = LayoutParams(source!!)
         this@lparams.layoutParams = layoutParams
         return this
     }
 
-    inline fun <T : View> T.lparams(
-        source: LayoutParams?,
-        init: LayoutParams.() -> Unit
-    ): T {
+    inline fun <T : View> T.lparams(source: LayoutParams?, init: LayoutParams.() -> Unit): T {
         val layoutParams = LayoutParams(source!!)
         layoutParams.init()
         this@lparams.layoutParams = layoutParams
         return this
     }
 
-    fun <T : View> T.lparams(
-        source: LayoutParams?
-    ): T {
+    fun <T : View> T.lparams(source: LayoutParams?): T {
         val layoutParams = LayoutParams(source!!)
         this@lparams.layoutParams = layoutParams
         return this
@@ -584,9 +536,7 @@ open class _RelativeLayout(ctx: Context) : RelativeLayout(ctx) {
 open class _ScrollView(ctx: Context) : ScrollView(ctx) {
 
     inline fun <T : View> T.lparams(
-        c: Context?,
-        attrs: AttributeSet?,
-        init: LayoutParams.() -> Unit
+        c: Context?, attrs: AttributeSet?, init: LayoutParams.() -> Unit
     ): T {
         val layoutParams = LayoutParams(c!!, attrs!!)
         layoutParams.init()
@@ -594,10 +544,7 @@ open class _ScrollView(ctx: Context) : ScrollView(ctx) {
         return this
     }
 
-    fun <T : View> T.lparams(
-        c: Context?,
-        attrs: AttributeSet?
-    ): T {
+    fun <T : View> T.lparams(c: Context?, attrs: AttributeSet?): T {
         val layoutParams = LayoutParams(c!!, attrs!!)
         this@lparams.layoutParams = layoutParams
         return this
@@ -646,8 +593,7 @@ open class _ScrollView(ctx: Context) : ScrollView(ctx) {
     }
 
     inline fun <T : View> T.lparams(
-        source: ViewGroup.LayoutParams?,
-        init: LayoutParams.() -> Unit
+        source: ViewGroup.LayoutParams?, init: LayoutParams.() -> Unit
     ): T {
         val layoutParams = LayoutParams(source!!)
         layoutParams.init()
@@ -655,17 +601,14 @@ open class _ScrollView(ctx: Context) : ScrollView(ctx) {
         return this
     }
 
-    fun <T : View> T.lparams(
-        source: ViewGroup.LayoutParams?
-    ): T {
+    fun <T : View> T.lparams(source: ViewGroup.LayoutParams?): T {
         val layoutParams = LayoutParams(source!!)
         this@lparams.layoutParams = layoutParams
         return this
     }
 
     inline fun <T : View> T.lparams(
-        source: MarginLayoutParams?,
-        init: LayoutParams.() -> Unit
+        source: MarginLayoutParams?, init: LayoutParams.() -> Unit
     ): T {
         val layoutParams = LayoutParams(source!!)
         layoutParams.init()
@@ -673,27 +616,20 @@ open class _ScrollView(ctx: Context) : ScrollView(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
-        source: MarginLayoutParams?
-    ): T {
+    fun <T : View> T.lparams(source: MarginLayoutParams?): T {
         val layoutParams = LayoutParams(source!!)
         this@lparams.layoutParams = layoutParams
         return this
     }
 
-    inline fun <T : View> T.lparams(
-        source: LayoutParams?,
-        init: LayoutParams.() -> Unit
-    ): T {
+    inline fun <T : View> T.lparams(source: LayoutParams?, init: LayoutParams.() -> Unit): T {
         val layoutParams = LayoutParams(source!!)
         layoutParams.init()
         this@lparams.layoutParams = layoutParams
         return this
     }
 
-    inline fun <T : View> T.lparams(
-        source: LayoutParams?
-    ): T {
+    fun <T : View> T.lparams(source: LayoutParams?): T {
         val layoutParams = LayoutParams(source!!)
         this@lparams.layoutParams = layoutParams
         return this
@@ -705,9 +641,7 @@ open class _ScrollView(ctx: Context) : ScrollView(ctx) {
 open class _TableLayout(ctx: Context) : TableLayout(ctx) {
 
     inline fun <T : View> T.lparams(
-        c: Context?,
-        attrs: AttributeSet?,
-        init: LayoutParams.() -> Unit
+        c: Context?, attrs: AttributeSet?, init: LayoutParams.() -> Unit
     ): T {
         val layoutParams = LayoutParams(c!!, attrs!!)
         layoutParams.init()
@@ -715,10 +649,7 @@ open class _TableLayout(ctx: Context) : TableLayout(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
-        c: Context?,
-        attrs: AttributeSet?
-    ): T {
+    fun <T : View> T.lparams(c: Context?, attrs: AttributeSet?): T {
         val layoutParams = LayoutParams(c!!, attrs!!)
         this@lparams.layoutParams = layoutParams
         return this
@@ -735,7 +666,7 @@ open class _TableLayout(ctx: Context) : TableLayout(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
         width: Int = ViewGroup.LayoutParams.WRAP_CONTENT,
         height: Int = ViewGroup.LayoutParams.WRAP_CONTENT
     ): T {
@@ -756,7 +687,7 @@ open class _TableLayout(ctx: Context) : TableLayout(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
         width: Int = ViewGroup.LayoutParams.WRAP_CONTENT,
         height: Int = ViewGroup.LayoutParams.WRAP_CONTENT,
         initWeight: Float
@@ -766,26 +697,21 @@ open class _TableLayout(ctx: Context) : TableLayout(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
-        init: LayoutParams.() -> Unit
-    ): T {
+    inline fun <T : View> T.lparams(init: LayoutParams.() -> Unit): T {
         val layoutParams = LayoutParams()
         layoutParams.init()
         this@lparams.layoutParams = layoutParams
         return this
     }
 
-    inline fun <T : View> T.lparams(
-
-    ): T {
+    fun <T : View> T.lparams(): T {
         val layoutParams = LayoutParams()
         this@lparams.layoutParams = layoutParams
         return this
     }
 
     inline fun <T : View> T.lparams(
-        p: ViewGroup.LayoutParams?,
-        init: LayoutParams.() -> Unit
+        p: ViewGroup.LayoutParams?, init: LayoutParams.() -> Unit
     ): T {
         val layoutParams = LayoutParams(p!!)
         layoutParams.init()
@@ -793,17 +719,14 @@ open class _TableLayout(ctx: Context) : TableLayout(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
-        p: ViewGroup.LayoutParams?
-    ): T {
+    fun <T : View> T.lparams(p: ViewGroup.LayoutParams?): T {
         val layoutParams = LayoutParams(p!!)
         this@lparams.layoutParams = layoutParams
         return this
     }
 
     inline fun <T : View> T.lparams(
-        source: MarginLayoutParams?,
-        init: LayoutParams.() -> Unit
+        source: MarginLayoutParams?, init: LayoutParams.() -> Unit
     ): T {
         val layoutParams = LayoutParams(source!!)
         layoutParams.init()
@@ -811,9 +734,7 @@ open class _TableLayout(ctx: Context) : TableLayout(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
-        source: MarginLayoutParams?
-    ): T {
+    fun <T : View> T.lparams(source: MarginLayoutParams?): T {
         val layoutParams = LayoutParams(source!!)
         this@lparams.layoutParams = layoutParams
         return this
@@ -835,7 +756,7 @@ open class _TableRow(ctx: Context) : TableRow(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
         c: Context?,
         attrs: AttributeSet?
     ): T {
@@ -855,7 +776,7 @@ open class _TableRow(ctx: Context) : TableRow(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
         width: Int = ViewGroup.LayoutParams.WRAP_CONTENT,
         height: Int = ViewGroup.LayoutParams.WRAP_CONTENT
     ): T {
@@ -876,7 +797,7 @@ open class _TableRow(ctx: Context) : TableRow(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
         width: Int = ViewGroup.LayoutParams.WRAP_CONTENT,
         height: Int = ViewGroup.LayoutParams.WRAP_CONTENT,
         initWeight: Float
@@ -895,7 +816,7 @@ open class _TableRow(ctx: Context) : TableRow(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
 
     ): T {
         val layoutParams = LayoutParams()
@@ -913,7 +834,7 @@ open class _TableRow(ctx: Context) : TableRow(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
         column: Int
     ): T {
         val layoutParams = LayoutParams(column)
@@ -931,7 +852,7 @@ open class _TableRow(ctx: Context) : TableRow(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
         p: ViewGroup.LayoutParams?
     ): T {
         val layoutParams = LayoutParams(p!!)
@@ -949,7 +870,7 @@ open class _TableRow(ctx: Context) : TableRow(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
         source: MarginLayoutParams?
     ): T {
         val layoutParams = LayoutParams(source!!)
@@ -973,7 +894,7 @@ open class _TextSwitcher(ctx: Context) : TextSwitcher(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
         c: Context?,
         attrs: AttributeSet?
     ): T {
@@ -993,7 +914,7 @@ open class _TextSwitcher(ctx: Context) : TextSwitcher(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
         width: Int = ViewGroup.LayoutParams.WRAP_CONTENT,
         height: Int = ViewGroup.LayoutParams.WRAP_CONTENT
     ): T {
@@ -1014,7 +935,7 @@ open class _TextSwitcher(ctx: Context) : TextSwitcher(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
         width: Int = ViewGroup.LayoutParams.WRAP_CONTENT,
         height: Int = ViewGroup.LayoutParams.WRAP_CONTENT,
         gravity: Int
@@ -1034,7 +955,7 @@ open class _TextSwitcher(ctx: Context) : TextSwitcher(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
         source: ViewGroup.LayoutParams?
     ): T {
         val layoutParams = LayoutParams(source!!)
@@ -1052,7 +973,7 @@ open class _TextSwitcher(ctx: Context) : TextSwitcher(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
         source: MarginLayoutParams?
     ): T {
         val layoutParams = LayoutParams(source!!)
@@ -1070,7 +991,7 @@ open class _TextSwitcher(ctx: Context) : TextSwitcher(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
         source: LayoutParams?
     ): T {
         val layoutParams = LayoutParams(source!!)
@@ -1094,7 +1015,7 @@ open class _ViewAnimator(ctx: Context) : ViewAnimator(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
         c: Context?,
         attrs: AttributeSet?
     ): T {
@@ -1114,7 +1035,7 @@ open class _ViewAnimator(ctx: Context) : ViewAnimator(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
         width: Int = ViewGroup.LayoutParams.WRAP_CONTENT,
         height: Int = ViewGroup.LayoutParams.WRAP_CONTENT
     ): T {
@@ -1135,7 +1056,7 @@ open class _ViewAnimator(ctx: Context) : ViewAnimator(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
         width: Int = ViewGroup.LayoutParams.WRAP_CONTENT,
         height: Int = ViewGroup.LayoutParams.WRAP_CONTENT,
         gravity: Int
@@ -1155,7 +1076,7 @@ open class _ViewAnimator(ctx: Context) : ViewAnimator(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
         source: ViewGroup.LayoutParams?
     ): T {
         val layoutParams = LayoutParams(source!!)
@@ -1173,7 +1094,7 @@ open class _ViewAnimator(ctx: Context) : ViewAnimator(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
         source: MarginLayoutParams?
     ): T {
         val layoutParams = LayoutParams(source!!)
@@ -1191,7 +1112,7 @@ open class _ViewAnimator(ctx: Context) : ViewAnimator(ctx) {
         return this
     }
 
-    inline fun <T : View> T.lparams(
+    fun <T : View> T.lparams(
         source: LayoutParams?
     ): T {
         val layoutParams = LayoutParams(source!!)

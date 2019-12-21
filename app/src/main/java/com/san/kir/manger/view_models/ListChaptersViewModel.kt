@@ -2,14 +2,12 @@ package com.san.kir.manger.view_models
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import com.san.kir.ankofork.Binder
 import com.san.kir.manger.components.list_chapters.ChapterComparator
 import com.san.kir.manger.repositories.ChapterRepository
 import com.san.kir.manger.repositories.DownloadRepository
 import com.san.kir.manger.repositories.MangaRepository
 import com.san.kir.manger.room.entities.Chapter
-import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.utils.enums.ChapterFilter
 
@@ -39,9 +37,7 @@ class ListChaptersViewModel(app: Application) : AndroidViewModel(app) {
     suspend fun update(vararg manga: Manga) = mMangaRepository.update(*manga)
     suspend fun delete(vararg chapter: Chapter) = mChapterRepository.delete(*chapter)
 
-    fun getDownloadItem(item: Chapter): LiveData<DownloadItem?> {
-        return mDownloadRepository.loadItem(item.site)
-    }
+    fun getDownloadItem(item: Chapter) = mDownloadRepository.loadItem(item.site)
 
     override fun onCleared() {
         isAction.close()

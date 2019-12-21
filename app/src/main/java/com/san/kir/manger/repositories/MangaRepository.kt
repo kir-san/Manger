@@ -33,9 +33,7 @@ class MangaRepository(context: Context) {
         return mMangaDao.getItem(mangaUnic)
     }
 
-    fun getItemOrNull(unic: String): Manga? {
-        return mMangaDao.getItemOrNull(unic)
-    }
+    suspend fun getItemOrNull(unic: String) = mMangaDao.getItemOrNull(unic)
 
     suspend fun insert(vararg manga: Manga) =  mMangaDao.insert(*manga)
     suspend fun update(vararg manga: Manga) =  mMangaDao.update(*manga)

@@ -66,14 +66,14 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
     @SuppressLint("InlinedApi")
     override fun onCreate() {
         super.onCreate()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (notificationManager.getNotificationChannel(channelId) == null) {
-                val importance = NotificationManager.IMPORTANCE_LOW
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+            && notificationManager.getNotificationChannel(channelId) == null) {
 
-                NotificationChannel(channelId, name, importance).apply {
-                    description = CatalogForOneSiteUpdaterService.description
-                    notificationManager.createNotificationChannel(this)
-                }
+            val importance = NotificationManager.IMPORTANCE_LOW
+
+            NotificationChannel(channelId, name, importance).apply {
+                description = CatalogForOneSiteUpdaterService.description
+                notificationManager.createNotificationChannel(this)
             }
         }
     }
@@ -170,7 +170,7 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
                 } catch (e: Exception) {
                     e.printStackTrace()
                     isError = true
-                } finally {
+                } finally { //
                 }
             }
             job.join()

@@ -1,42 +1,41 @@
 package com.san.kir.manger.repositories
 
 import android.content.Context
-import androidx.lifecycle.LiveData
 import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.room.getDatabase
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 
 class DownloadRepository(context: Context) {
     private val db = getDatabase(context)
     private val mDownloadDao = db.downloadDao
 
-    fun loadItems(): LiveData<List<DownloadItem>> {
-        return mDownloadDao.loadItems()
-    }
+    suspend fun items() = mDownloadDao.items()
+    fun loadItems() = mDownloadDao.loadItems()
 
-    fun getItems(status: Int): List<DownloadItem> {
-        return mDownloadDao.getItems(status)
-    }
+    suspend fun getItems(status: Int) = mDownloadDao.getItems(status)
 
-    fun loadItems(status1: Int, status2: Int): LiveData<List<DownloadItem>> {
-        return mDownloadDao.loadItems(status1, status2)
-    }
+    fun loadItems(status1: Int, status2: Int) = mDownloadDao.loadItems(status1, status2)
 
-    fun getItems(): List<DownloadItem> {
-        return mDownloadDao.getItems()
-    }
+    suspend fun getItems() = mDownloadDao.getItems()
 
-    fun getItem(link: String): DownloadItem? {
-        return mDownloadDao.getItem(link)
-    }
+    suspend fun getItem(link: String) = mDownloadDao.getItem(link)
 
-    fun loadItem(link: String): LiveData<DownloadItem?> {
+    fun loadItem(link: String): Flow<DownloadItem> {
+        var lastObj: DownloadItem? = null
         return mDownloadDao.loadItem(link)
+            .filter {
+                if (lastObj == null || lastObj != it) {
+                    lastObj = it
+                    true
+                } else {
+                    false
+                }
+            }
     }
 
-    fun insert(vararg downloadItem: DownloadItem) = GlobalScope.launch { mDownloadDao.insert(*downloadItem) }
-    fun update(vararg downloadItem: DownloadItem) = GlobalScope.launch { mDownloadDao.update(*downloadItem) }
-    fun delete(vararg downloadItem: DownloadItem) = GlobalScope.launch { mDownloadDao.delete(*downloadItem) }
+    suspend fun insert(vararg downloadItem: DownloadItem) = mDownloadDao.insert(*downloadItem)
+    suspend fun update(vararg downloadItem: DownloadItem) = mDownloadDao.update(*downloadItem)
+    suspend fun delete(vararg downloadItem: DownloadItem) = mDownloadDao.delete(*downloadItem)
 }
 

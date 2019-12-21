@@ -30,7 +30,7 @@ class AppUpdateService : Service(), CoroutineScope {
 
         private const val channelId = "AppUpdaterId"
         private const val name = "AppUpdaterServiceName"
-        private const val description = "AppUpdaterServiceDescription"
+        private const val descriptions = "AppUpdaterServiceDescription"
 
         private const val url = "http://4pda.ru/forum/index.php?showtopic=772886&st=0#entry53336845"
     }
@@ -72,37 +72,33 @@ class AppUpdateService : Service(), CoroutineScope {
 
         job = Job()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (notificationManager.getNotificationChannel(channelId) == null) {
-                val importance = NotificationManager.IMPORTANCE_LOW
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+            && notificationManager.getNotificationChannel(channelId) == null) {
 
-                NotificationChannel(
-                    channelId,
-                    name, importance).apply {
-                    description = description
-                    notificationManager.createNotificationChannel(this)
-                }
+            val importance = NotificationManager.IMPORTANCE_LOW
+
+            NotificationChannel(channelId, name, importance).apply {
+                description = descriptions
+                notificationManager.createNotificationChannel(this)
             }
         }
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        when {
-            intent.action == ACTION_CANCEL_ALL -> {
+        when (intent.action) {
+            ACTION_CANCEL_ALL -> {
                 stopForeground(true)
                 notificationManager.cancel(notificationId)
                 stopSelf()
             }
-            intent.action == ACTION_GO_TO_SITE -> {
+            ACTION_GO_TO_SITE -> {
                 browse(url)
                 stopForeground(true)
                 notificationManager.cancel(notificationId)
             }
             else -> launch(coroutineContext) {
                 try {
-                    with(NotificationCompat.Builder(this@AppUpdateService,
-                                                    channelId
-                    )) {
+                    with(NotificationCompat.Builder(this@AppUpdateService, channelId)) {
                         setSmallIcon(R.drawable.ic_notification_update)
                         setContentTitle(getString(R.string.app_update_service_title))
                         setProgress(0, 0, true)
@@ -117,7 +113,7 @@ class AppUpdateService : Service(), CoroutineScope {
 
                     if (matcher.find()) {
                         val version = matcher.group()
-                        log("version = ${version}")
+                        log("version = $version")
                         val message = if (version != BuildConfig.VERSION_NAME)
                             getString(
                                 R.string.main_check_app_ver_find,
@@ -128,9 +124,7 @@ class AppUpdateService : Service(), CoroutineScope {
                             getString(R.string.main_check_app_ver_no_find)
                         stopForeground(false)
                         notificationManager.cancel(notificationId)
-                        with(NotificationCompat.Builder(this@AppUpdateService,
-                                                        channelId
-                        )) {
+                        with(NotificationCompat.Builder(this@AppUpdateService, channelId)) {
                             setSmallIcon(R.drawable.ic_notification_update)
                             setContentTitle(getString(R.string.app_update_service_title))
                             setContentText(message)
@@ -145,9 +139,7 @@ class AppUpdateService : Service(), CoroutineScope {
                     ex.printStackTrace()
                     stopForeground(false)
                     notificationManager.cancel(notificationId)
-                    with(NotificationCompat.Builder(this@AppUpdateService,
-                                                    channelId
-                    )) {
+                    with(NotificationCompat.Builder(this@AppUpdateService, channelId)) {
                         setSmallIcon(R.drawable.ic_notification_update)
                         setContentTitle(getString(R.string.app_update_service_title))
                         setContentText(getString(R.string.main_check_app_ver_error))

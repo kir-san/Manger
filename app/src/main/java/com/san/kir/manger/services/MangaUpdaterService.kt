@@ -149,8 +149,7 @@ class MangaUpdaterService : Service() {
                         msg.arg1 = startId
                         msg.obj = task
                         mServiceHandler.sendMessage(msg)
-                    } else {
-
+                    } else { // for sonar lint
                     }
                 }
             }
@@ -190,60 +189,23 @@ class MangaUpdaterService : Service() {
     fun onHandleIntent(manga: Manga) = runBlocking {
         var countNew = 0
         try {
-            val notify = NotificationCompat.InboxStyle(
-                NotificationCompat.Builder(this@MangaUpdaterService, channelId)
-                    .setContentTitle(getString(R.string.manga_update_notify_searching))
-                    .setSmallIcon(R.drawable.ic_notification_update)
-                    .addAction(actionCancelAll)
-                    .setContentText(manga.name)
-            )
-                .addLine(manga.name)
-                .addLine(getString(R.string.manga_update_notify_remained, taskCounter.size))
-                .build()
-            startForeground(notificationId, notify)
+            showStartNotification(manga)
 
             log("start")
 
             val mangaDB = mMangaRepository.getItem(manga.unic)
 
-            if (mangaDB.shortLink.isEmpty()) {
-                val site = ManageSites.getSite(mangaDB.host)
-
-                mangaDB.host = site.host
-                mangaDB.shortLink = site.getShortLink(mangaDB.site)
-
-                mMangaRepository.update(mangaDB)
-            } else {
-                val site = ManageSites.getSite(mangaDB.host)
-
-                mangaDB.host = site.host
-
-                mMangaRepository.update(mangaDB)
-            }
+            checkLinkInManga(mangaDB)
 
             mangaName = mangaDB.name
 
             log("oldchapters")
 
-            val oldChapters =
-                withContext(Dispatchers.IO) {
-                    mChapterRepository
-                        .getItems(mangaDB.unic)
-                        .onEach {
-                            launch(Dispatchers.Default) {
-                                if (
-                                    it.pages.isNullOrEmpty()
-                                    ||
-                                    it.pages.any { chap -> chap.isBlank() }
-                                    ||
-                                    mangaDB.isAlternativeSite
-                                ) {
-                                    it.pages = ManageSites.pages(it)
-                                    mChapterRepository.update(it)
-                                }
-                            }.join()
-                        }
-                }
+            updatePagesInChapters(mangaDB)
+
+            val oldChapters = withContext(Dispatchers.Default) {
+                mChapterRepository.getItems(mangaDB.unic)
+            }
 
             var newChapters = listOf<Chapter>()
 
@@ -258,8 +220,8 @@ class MangaUpdaterService : Service() {
                         if (oldChapters.none { oldChapter -> chapter.site == oldChapter.site }) {
                             newChapters = newChapters + chapter
                         } else {
-                            val tempChapter = oldChapters
-                                .first { oldChapter -> chapter.site == oldChapter.site }
+                            val tempChapter =
+                                oldChapters.first { oldChapter -> chapter.site == oldChapter.site }
                             tempChapter.path = chapter.path
                             mChapterRepository.update(tempChapter)
                         }
@@ -306,6 +268,56 @@ class MangaUpdaterService : Service() {
             sendBroadcast(intent)
         }
     }
+
+    private suspend fun updatePagesInChapters(mangaDB: Manga) = withContext(Dispatchers.Default) {
+        mChapterRepository
+            .getItems(mangaDB.unic)
+            .filter {
+                mangaDB.isAlternativeSite
+                        || it.pages.isNullOrEmpty()
+                        || it.pages.any { chap -> chap.isBlank() }
+            }
+            .onEach {
+                launch(Dispatchers.Default) {
+                    it.pages = ManageSites.pages(it)
+                }.join()
+            }
+            .apply {
+                mChapterRepository.update(*this.toTypedArray())
+            }
+    }
+
+    private suspend fun checkLinkInManga(mangaDB: Manga) {
+        if (mangaDB.shortLink.isEmpty()) {
+            val site = ManageSites.getSite(mangaDB.host)
+
+            mangaDB.host = site.host
+            mangaDB.shortLink = site.getShortLink(mangaDB.site)
+
+            mMangaRepository.update(mangaDB)
+        } else {
+            val site = ManageSites.getSite(mangaDB.host)
+
+            mangaDB.host = site.host
+
+            mMangaRepository.update(mangaDB)
+        }
+    }
+
+    private fun showStartNotification(manga: Manga) {
+        NotificationCompat.InboxStyle(
+            NotificationCompat.Builder(this@MangaUpdaterService, channelId)
+                .setContentTitle(getString(R.string.manga_update_notify_searching))
+                .setSmallIcon(R.drawable.ic_notification_update)
+                .addAction(actionCancelAll)
+                .setContentText(manga.name)
+        ).run {
+            addLine(manga.name)
+            addLine(getString(R.string.manga_update_notify_remained, taskCounter.size))
+            startForeground(notificationId, build())
+        }
+    }
+
 
     private open class ServiceHandler(
         looper: Looper,

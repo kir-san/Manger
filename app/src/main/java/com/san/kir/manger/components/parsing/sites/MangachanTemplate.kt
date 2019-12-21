@@ -17,7 +17,8 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.util.regex.Pattern
 
-abstract class MangachanTemplate(private val siteRepository: SiteRepository) : SiteCatalogClassic() {
+abstract class MangachanTemplate(private val siteRepository: SiteRepository) :
+    SiteCatalogClassic() {
 
     override val siteCatalog: String
         get() = "$host/manga/new"
@@ -52,22 +53,18 @@ abstract class MangachanTemplate(private val siteRepository: SiteRepository) : S
             .select(".mangatitle tr")
             .forEach {
                 when (it.select("td.item").text()) {
-                    "Тип" -> {
-                        element.type = it.select("td.item2 > h2 > span > a").text()
-                    }
-                    "Автор" -> {
-                        element.authors =
-                            it.select("td.item2 > span > a").map { a -> a.text() }.dropLast(1)
-                    }
+                    "Тип" -> element.type = it.select("td.item2 > h2 > span > a").text()
+                    "Автор" -> element.authors =
+                        it.select("td.item2 > span > a").map { a -> a.text() }.dropLast(1)
+
                     "Статус (Томов)" -> {
                         val s = it.select("td.item2 > h2").text()
                         element.statusEdition = when {
                             s.contains(Status.COMPLETE, true) -> Status.COMPLETE
                             s.contains(Status.NOT_COMPLETE, true) -> Status.NOT_COMPLETE
                             s.contains(Status.SINGLE, true) -> Status.SINGLE
-                            else -> {
-                                Status.UNKNOWN
-                            }
+                            else -> Status.UNKNOWN
+
                         }
                     }
                     "Загружено" -> {
@@ -97,7 +94,6 @@ abstract class MangachanTemplate(private val siteRepository: SiteRepository) : S
         element.populate = doc.select("#content #left div > font > b").text().toInt()
 
         val content = doc.select("#content")
-//        val content = doc.select("#content #right .ext .user_link_short")
         val right = content.select("#right")
         val ext = right.select(".ext")
         val link = ext.select(".user_link")
@@ -149,7 +145,6 @@ abstract class MangachanTemplate(private val siteRepository: SiteRepository) : S
                 }
             }
 
-//        val text = elem.select(".manga_row3 span").html()
         s = elem.select(".manga_row3 .item2").toString()
         element.statusTranslate = when {
             s.contains(Translate.COMPLETE, true) -> Translate.COMPLETE

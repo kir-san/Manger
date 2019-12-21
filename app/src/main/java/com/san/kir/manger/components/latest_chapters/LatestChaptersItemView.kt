@@ -9,7 +9,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet.PARENT_ID
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.san.kir.ankofork.AnkoContext
 import com.san.kir.ankofork.constraint_layout.ConstraintSetBuilder.Side.BASELINE
@@ -39,6 +38,7 @@ import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.enums.DownloadStatus
 import com.san.kir.manger.utils.extensions.visibleOrGone
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -54,7 +54,6 @@ class LatestChaptersItemView(private val act: LatestChapterActivity) :
     private lateinit var manga: TextView
     private lateinit var downloadBtn: ImageView
     private lateinit var item: Chapter
-    private lateinit var observer: Observer<DownloadItem?>
 
     override fun createView(ui: AnkoContext<ViewGroup>) = with(ui) {
         val btnSize = dip(40)
@@ -157,19 +156,18 @@ class LatestChaptersItemView(private val act: LatestChapterActivity) :
             withContext(Dispatchers.Main) {
                 root.backgroundColor = color
             }
-        }
 
-        observer = Observer {
-            changeVisibilityAndActions(it, item)
+            act.mViewModel.getDownloadItems(item).collect {
+                withContext(Dispatchers.Main) {
+                    changeVisibilityAndActions(it, item)
+                }
+            }
         }
-
-        act.mViewModel.getDownloadItems(item).observe(act, observer)
     }
 
     override fun onDetached() {
         downloadBtn.setOnClickListener(null)
         stopBtn.setOnClickListener(null)
-        act.mViewModel.getDownloadItems(item).removeObserver(observer)
     }
 
     private fun disableDownload(chapter: Chapter) =

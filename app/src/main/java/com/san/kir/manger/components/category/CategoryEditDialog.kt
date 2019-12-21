@@ -44,16 +44,15 @@ class CategoryEditDialog(
 
     init {
         act.lifecycleScope.launch(Dispatchers.Main) {
-            val catList =
-                withContext(Dispatchers.Default) { act.mViewModel.getCategoryNames() }
+            val catList = withContext(Dispatchers.Default) { act.mViewModel.getCategoryNames() }
 
             val isAll = oldName == CATEGORY_ALL
             val validate = Binder("")
 
             act.alert {
                 titleResource =
-                        if (oldName.isEmpty()) R.string.category_dialog_title_create
-                        else R.string.category_dialog_title_edit
+                    if (oldName.isEmpty()) R.string.category_dialog_title_create
+                    else R.string.category_dialog_title_edit
                 customView {
                     nestedScrollView {
                         verticalLayout {
@@ -85,9 +84,7 @@ class CategoryEditDialog(
 
                             textView(validate) {
                                 textColor = Color.RED
-                                visibility =
-                                        if (isAll) View.INVISIBLE
-                                        else View.VISIBLE
+                                visibility = if (isAll) View.INVISIBLE else View.VISIBLE
                             }.lparams {
                                 gravity = Gravity.END
                             }

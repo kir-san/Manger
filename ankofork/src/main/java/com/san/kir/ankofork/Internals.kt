@@ -248,13 +248,9 @@ object AnkoInternals {
             if (currentLong == Configuration.SCREENLAYOUT_LONG_NO && long) return false
         }
 
-        if (fromSdk != null) {
-            if (Build.VERSION.SDK_INT < fromSdk) return false
-        }
+        if (fromSdk != null && Build.VERSION.SDK_INT < fromSdk) return false
 
-        if (sdk != null) {
-            if (Build.VERSION.SDK_INT != sdk) return false
-        }
+        if (sdk != null && Build.VERSION.SDK_INT != sdk) return false
 
         if (uiMode != null) {
             if (config == null) return false

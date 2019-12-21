@@ -11,15 +11,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-fun allAdapter(act: DownloadManagerActivity): DownloadManagerRecyclerPresenter {
-    return DownloadManagerRecyclerPresenter(
-        act
-    )
-}
+fun allAdapter(act: DownloadManagerActivity) = DownloadManagerRecyclerPresenter(act)
 
-class DownloadManagerRecyclerPresenter(
-    private val act: DownloadManagerActivity
-) :
+class DownloadManagerRecyclerPresenter(private val act: DownloadManagerActivity) :
     RecyclerPresenter() {
     private val adapter = RecyclerViewAdapterFactory
         .createSimple { DownloadManagerItemView(act) }
@@ -28,13 +22,9 @@ class DownloadManagerRecyclerPresenter(
         super.into(recyclerView)
         recyclerView.adapter = adapter
         act.mViewModel.getDownloadItems().observe(act, Observer { items ->
-            act.lifecycleScope.launch(Dispatchers.Default) {
-                items?.let {
-                    adapter.items = it
-                    withContext(Dispatchers.Main) {
-                        adapter.notifyDataSetChanged()
-                    }
-                }
+            items?.let {
+                adapter.items = it
+                adapter.notifyDataSetChanged()
             }
         })
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
@@ -44,14 +34,18 @@ class DownloadManagerRecyclerPresenter(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
-            ): Boolean {
-                return false
-            }
+            ) = false
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
-                DownloadService.pause(act, adapter.items[position])
-                act.mViewModel.downloadDelete(adapter.items[position])
+                act.lifecycleScope.launch(Dispatchers.Default) {
+                    DownloadService.pause(act, adapter.items[position])
+                    act.mViewModel.delete(adapter.items[position])
+                    adapter.items = adapter.items - adapter.items[position]
+                    withContext(Dispatchers.Main) {
+                        adapter.notifyItemRemoved(position)
+                    }
+                }
             }
 
         }).attachToRecyclerView(recyclerView)

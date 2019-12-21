@@ -16,7 +16,7 @@ interface MangaDao : BaseDao<Manga> {
     fun getItem(unic: String): Manga
 
     @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.unic}` IS :unic")
-    fun getItemOrNull(unic: String): Manga?
+    suspend fun getItemOrNull(unic: String): Manga?
 
     @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.categories}` IS :category")
     fun loadMangaWhereCategoryNotAll(category: String): List<Manga>

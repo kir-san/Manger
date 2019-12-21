@@ -107,9 +107,7 @@ class AddEditPlannedTaskView(private val act: AddEditPlannedTaskActivity) : Acti
                             radioButton {
                                 id = ID.generate()
                                 text = t
-                                typeBinder.bind {
-                                    isChecked = it == v
-                                }
+                                typeBinder.bind { isChecked = it == v }
                                 onClick { typeBinder.item = v }
                             }
                         }

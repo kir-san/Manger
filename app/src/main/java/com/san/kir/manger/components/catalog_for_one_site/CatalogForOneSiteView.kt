@@ -11,6 +11,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.tabs.TabLayout
 import com.san.kir.ankofork.AnkoComponent
 import com.san.kir.ankofork.AnkoContext
@@ -86,14 +87,13 @@ class CatalogForOneSiteView(
                     isIndeterminate = true
                     visibleOrGone(isAction)
                     progressDrawable = ContextCompat.getDrawable(
-                        this@with.ctx,
-                        R.drawable.storage_progressbar
+                        this@with.ctx, R.drawable.storage_progressbar
                     )
                 }.lparams(width = matchParent, height = dip(10))
 
                 swipe = swipeRefreshLayout {
                     // Список
-                    include<androidx.recyclerview.widget.RecyclerView>(R.layout.recycler_view) {
+                    include<RecyclerView>(R.layout.recycler_view) {
                         layoutManager = androidx.recyclerview.widget.LinearLayoutManager(act)
                         this@CatalogForOneSiteView.presenter.into(this)
                     }
@@ -120,9 +120,7 @@ class CatalogForOneSiteView(
 
                     btn {
                         // Сортировка по названию
-                        onClick {
-                            sort.item = NAME
-                        }
+                        onClick { sort.item = NAME }
                         sort.bind { sortType ->
                             backgroundResource =
                                 if (sortType == NAME) R.drawable.ic_abc_blue
@@ -132,9 +130,7 @@ class CatalogForOneSiteView(
 
                     btn {
                         // Сортировка по дате
-                        onClick {
-                            sort.item = DATE
-                        }
+                        onClick { sort.item = DATE }
                         sort.bind { sortType ->
                             backgroundResource =
                                 if (sortType == DATE) R.drawable.ic_date_range_blue
@@ -144,9 +140,7 @@ class CatalogForOneSiteView(
 
                     btn {
                         // Сортировка по популярности
-                        onClick {
-                            sort.item = POP
-                        }
+                        onClick { sort.item = POP }
                         sort.bind { sortType ->
                             backgroundResource =
                                 if (sortType == POP) R.drawable.ic_rate_blue
@@ -158,11 +152,8 @@ class CatalogForOneSiteView(
 
                     btn {
                         // Сортировка по популярности
-                        onClick {
-                            act.reloadCatalogDialog()
-                        }
+                        onClick { act.reloadCatalogDialog() }
                         backgroundResource = R.drawable.ic_update
-
                     }
 
                 }.lparams(width = matchParent, height = dip(50))
@@ -181,9 +172,7 @@ class CatalogForOneSiteView(
 
                     button("Очистить") {
                         onClick {
-                            presenter.pagerAdapter.adapters.forEach { adapter ->
-                                adapter.clearSelected()
-                            }
+                            presenter.pagerAdapter.adapters.forEach { it.clearSelected() }
                         }
                     }.lparams(width = matchParent)
                 }

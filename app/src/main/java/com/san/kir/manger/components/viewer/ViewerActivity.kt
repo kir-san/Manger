@@ -1,6 +1,5 @@
 package com.san.kir.manger.components.viewer
 
-import android.R.id
 import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
@@ -11,6 +10,7 @@ import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
 import android.graphics.Point
+import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MenuItem
@@ -26,6 +26,7 @@ import com.san.kir.manger.utils.extensions.ThemedActionBarActivity
 import com.san.kir.manger.utils.extensions.string
 import com.san.kir.manger.view_models.ViewerViewModel
 import kotlin.properties.Delegates.observable
+
 
 class ViewerActivity : ThemedActionBarActivity() {
     companion object { // константы для сохранения настроек
@@ -123,14 +124,31 @@ class ViewerActivity : ThemedActionBarActivity() {
         presenter.configManager(chapter, isAlternative).invokeOnCompletion {
             presenter.isLoad.negative()
         }
+    }
 
-        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_FULLSCREEN)
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            onVisibilityChanged(false)
+        }
+    }
 
+    fun onVisibilityChanged(visible: Boolean) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            val decorView = window.decorView
+            if (visible) {
+                decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+            } else {
+                decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // прячем панель навигации
+                        or View.SYSTEM_UI_FLAG_FULLSCREEN // прячем строку состояния
+                        or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+            }
+        }
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
@@ -145,7 +163,7 @@ class ViewerActivity : ThemedActionBarActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (item!!.itemId == id.home) onBackPressed()
+        if (item!!.itemId == android.R.id.home) onBackPressed()
         return super.onOptionsItemSelected(item)
     }
 

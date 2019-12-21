@@ -37,6 +37,7 @@ class ImageLoader(private val url: String) {
     private var errorResId = -1
     private var error: (() -> Unit)? = null
     private var success: (() -> Unit)? = null
+    private var trying: (() -> Boolean)? = null
 
     fun errorColor(color: Int): ImageLoader {
         this.color = color
@@ -58,8 +59,16 @@ class ImageLoader(private val url: String) {
         return this
     }
 
-    fun into(target: ImageView): Job {
-        return load(target)
+    fun beforeTry(action: () -> Boolean): ImageLoader {
+        trying = action
+        return this
+    }
+
+    fun into(target: ImageView): Job? {
+        return if (trying == null || !trying!!.invoke())
+            load(target)
+        else
+            null
     }
 
     private fun load(target: ImageView): Job {

@@ -31,6 +31,8 @@ class Acomics(private val siteRepository: SiteRepository) : SiteCatalogAlternati
     override var volume = siteRepository.getItem(name)?.volume ?: 0
     override var oldVolume = volume
 
+    private val contentTemplate = "#contentMargin .list-loadable"
+
     override suspend fun init(): Acomics {
         if (!isInit) {
             oldVolume = siteRepository.getItem(name)?.volume ?: 0
@@ -41,7 +43,8 @@ class Acomics(private val siteRepository: SiteRepository) : SiteCatalogAlternati
 
             fun isGetNext(): Boolean {
                 val document = ManageSites.getDocument(siteCatalog + "&skip=${10 * i}")
-                docLocal = document.select("#contentMargin .list-loadable")
+
+                docLocal = document.select(contentTemplate)
 
                 return docLocal.none { it.text().isBlank() }
             }
@@ -131,12 +134,12 @@ class Acomics(private val siteRepository: SiteRepository) : SiteCatalogAlternati
     }
 
     override fun getCatalog() = flow {
-        var docLocal = ManageSites.getDocument(siteCatalog).select("#contentMargin .list-loadable")
+        var docLocal = ManageSites.getDocument(siteCatalog).select(contentTemplate)
         var i = 0
 
         fun isGetNext(): Boolean {
             val document = ManageSites.getDocument(siteCatalog + "&skip=${10 * i}")
-            docLocal = document.select("#contentMargin .list-loadable")
+            docLocal = document.select(contentTemplate)
 
             return docLocal.none { it.text().isBlank() }
         }

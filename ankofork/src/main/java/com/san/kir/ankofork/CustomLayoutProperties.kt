@@ -15,6 +15,7 @@
  */
 
 @file:Suppress("NOTHING_TO_INLINE", "unused")
+
 package com.san.kir.ankofork
 
 import android.view.ViewGroup
@@ -34,7 +35,10 @@ var ViewGroup.MarginLayoutParams.verticalMargin: Int
 
 var ViewGroup.MarginLayoutParams.horizontalMargin: Int
     @Deprecated(NO_GETTER, level = ERROR) get() = noGetter()
-    set(v) { leftMargin = v; rightMargin = v }
+    set(v) {
+        leftMargin = v
+        rightMargin = v
+    }
 
 var ViewGroup.MarginLayoutParams.margin: Int
     @Deprecated(NO_GETTER, level = ERROR) get() = noGetter()

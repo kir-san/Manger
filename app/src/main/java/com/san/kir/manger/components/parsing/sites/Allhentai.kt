@@ -27,6 +27,8 @@ class Allhentai(siteRepository: SiteRepository) : SiteCatalogClassic() {
     override var volume = siteRepository.getItem(name)?.volume ?: 0
     override var oldVolume = volume
 
+    private val statusComplete = "Выпуск завершен"
+
     override suspend fun init(): Allhentai {
         if (!isInit) {
             val doc = ManageSites.getDocument(host)
@@ -61,9 +63,9 @@ class Allhentai(siteRepository: SiteRepository) : SiteCatalogClassic() {
 
         // Статус выпуска
         element.statusEdition = Status.COMPLETE
-        if (status.text().contains(Status.SINGLE, true))
-            element.statusEdition = "Выпуск завершен"
-        else if (status.text().contains(Status.NOT_COMPLETE, true))
+        if (status.text().contains(Status.SINGLE, true)) {
+            element.statusEdition = statusComplete
+        } else if (status.text().contains(Status.NOT_COMPLETE, true))
             element.statusEdition = Status.NOT_COMPLETE
 
         // Статус перевода
@@ -130,7 +132,7 @@ class Allhentai(siteRepository: SiteRepository) : SiteCatalogClassic() {
         // Статус выпуска
         element.statusEdition = "Выпуск продолжается"
         if (elem.select("span.mangaCompleted").text().isNotEmpty())
-            element.statusEdition = "Выпуск завершен"
+            element.statusEdition = statusComplete
         else if (elem.select("span.mangaSingle").text().isNotEmpty() and (element.volume > 0))
             element.statusEdition = "Сингл"
 
@@ -138,7 +140,7 @@ class Allhentai(siteRepository: SiteRepository) : SiteCatalogClassic() {
         element.statusTranslate = "Перевод продолжается"
         if (elem.select("span.mangaTranslationCompleted").text().isNotEmpty()) {
             element.statusTranslate = "Перевод завершен"
-            element.statusEdition = "Выпуск завершен"
+            element.statusEdition = statusComplete
         }
 
         // Ссылка на лого

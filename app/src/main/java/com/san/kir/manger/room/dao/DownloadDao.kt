@@ -5,10 +5,10 @@ import androidx.room.Dao
 import androidx.room.Query
 import com.san.kir.manger.room.columns.DownloadColumn
 import com.san.kir.manger.room.entities.DownloadItem
+import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface DownloadDao :
-    BaseDao<DownloadItem> {
+interface DownloadDao : BaseDao<DownloadItem> {
     @Query(
         "SELECT * FROM ${DownloadColumn.tableName} " +
                 "ORDER BY ${DownloadColumn.status}, `${DownloadColumn.order}`"
@@ -17,17 +17,23 @@ interface DownloadDao :
 
     @Query(
         "SELECT * FROM ${DownloadColumn.tableName} " +
+                "ORDER BY ${DownloadColumn.status}, `${DownloadColumn.order}`"
+    )
+    suspend fun items(): List<DownloadItem>
+
+    @Query(
+        "SELECT * FROM ${DownloadColumn.tableName} " +
                 "WHERE ${DownloadColumn.status} IS :status " +
                 "ORDER BY `${DownloadColumn.order}`"
     )
-    fun getItems(status: Int): List<DownloadItem>
+    suspend fun getItems(status: Int): List<DownloadItem>
 
     @Query(
         "SELECT * FROM ${DownloadColumn.tableName} " +
                 "WHERE ${DownloadColumn.error} IS 0 " +
                 "ORDER BY `${DownloadColumn.order}`"
     )
-    fun getErrorItems(): List<DownloadItem>
+    suspend fun getErrorItems(): List<DownloadItem>
 
     @Query(
         "SELECT * FROM ${DownloadColumn.tableName} " +
@@ -38,18 +44,18 @@ interface DownloadDao :
     fun loadItems(status1: Int, status2: Int): LiveData<List<DownloadItem>>
 
     @Query("SELECT * FROM ${DownloadColumn.tableName}")
-    fun getItems(): List<DownloadItem>
+    suspend fun getItems(): List<DownloadItem>
 
     @Query(
         "SELECT * FROM ${DownloadColumn.tableName} " +
                 "WHERE ${DownloadColumn.link} IS :link"
     )
-    fun getItem(link: String): DownloadItem?
+    suspend fun getItem(link: String): DownloadItem?
 
     @Query(
         "SELECT * FROM ${DownloadColumn.tableName} " +
                 "WHERE ${DownloadColumn.link} IS :link"
     )
-    fun loadItem(link: String): LiveData<DownloadItem?>
+    fun loadItem(link: String): Flow<DownloadItem>
 }
 

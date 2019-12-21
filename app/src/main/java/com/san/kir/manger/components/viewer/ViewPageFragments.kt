@@ -113,6 +113,7 @@ class ViewerPageFragment : Fragment() {
                             if (it.x > ViewerActivity.LEFT_PART_SCREEN && it.x < ViewerActivity.RIGHT_PART_SCREEN)
                             // Переключение видимости баров
                                 act.isBar = !act.isBar
+                                act.onVisibilityChanged(act.isBar)
                             true
                         }
                     }

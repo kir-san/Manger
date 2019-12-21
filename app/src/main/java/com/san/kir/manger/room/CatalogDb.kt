@@ -1,6 +1,7 @@
 package com.san.kir.manger.room
 
 import android.content.Context
+import android.os.Environment
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -12,6 +13,7 @@ import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.room.type_converters.ListStringConverter
 import com.san.kir.manger.utils.enums.DIR
 import com.san.kir.manger.utils.extensions.getFullPath
+import java.io.File
 
 @Database(
     entities = [(SiteCatalogElement::class)],
@@ -37,7 +39,7 @@ abstract class CatalogDb : RoomDatabase() {
                 .databaseBuilder(
                     context.applicationContext,
                     CatalogDb::class.java,
-                    NAME(catName)
+                    File(Environment.getExternalStorageDirectory(), NAME(catName)).absolutePath
                 )
                 .addMigrations(*Migrate.migrations)
                 .allowMainThreadQueries()

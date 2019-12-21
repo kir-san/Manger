@@ -59,7 +59,7 @@
             />
         <activity
             android:name=".components.viewer.ViewerActivity"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar.Fullscreen"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
             />
         <activity
             android:name=".components.list_chapters.ListChaptersActivity"

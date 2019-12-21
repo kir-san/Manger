@@ -1,6 +1,7 @@
 package com.san.kir.manger.room
 
 import android.content.Context
+import android.os.Environment
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -31,6 +32,7 @@ import com.san.kir.manger.room.type_converters.FileConverter
 import com.san.kir.manger.room.type_converters.ListStringConverter
 import com.san.kir.manger.room.type_converters.MainMenuTypeConverter
 import com.san.kir.manger.utils.enums.DIR
+import java.io.File
 
 @Database(
     entities =
@@ -81,7 +83,7 @@ fun getDatabase(context: Context): RoomDB {
                 sDb = Room.databaseBuilder(
                     context.applicationContext,
                     RoomDB::class.java,
-                    RoomDB.NAME
+                    File(Environment.getExternalStorageDirectory(), RoomDB.NAME).absolutePath
                 )
                     .addMigrations(*migrations)
                     .build()

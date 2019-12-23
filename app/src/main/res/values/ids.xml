@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item type="id" name="list_chapter_menu_update"/>
-    <item type="id" name="list_chapter_menu_loadnext"/>
-    <item type="id" name="list_chapter_menu_loadnotread"/>
-    <item type="id" name="list_chapter_menu_loadall"/>
-    <item type="id" name="list_chapter_menu_changesort"/>
-    <item type="id" name="list_chapter_menu_isupdate"/>
+    <item name="list_chapter_menu_update" type="id" />
+    <item name="list_chapter_menu_loadnext" type="id" />
+    <item name="list_chapter_menu_loadnotread" type="id" />
+    <item name="list_chapter_menu_loadall" type="id" />
+    <item name="list_chapter_menu_changesort" type="id" />
+    <item name="list_chapter_menu_isupdate" type="id" />
 
-    <item type="id" name="library_viewpager"/>
+    <item name="library_viewpager" type="id" />
+
+    <item name="viewer_menu_next" type="id" />
+    <item name="viewer_menu_prev" type="id" />
 </resources>

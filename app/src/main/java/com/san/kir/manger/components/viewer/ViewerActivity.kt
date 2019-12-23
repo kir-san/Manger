@@ -13,22 +13,27 @@ import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowManager
 import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
 import com.san.kir.ankofork.defaultSharedPreferences
 import com.san.kir.ankofork.negative
 import com.san.kir.ankofork.positive
 import com.san.kir.ankofork.setContentView
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Chapter
-import com.san.kir.manger.utils.extensions.ThemedActionBarActivity
+import com.san.kir.manger.utils.extensions.BaseActivity
+import com.san.kir.manger.utils.extensions.add
+import com.san.kir.manger.utils.extensions.showAlways
 import com.san.kir.manger.utils.extensions.string
 import com.san.kir.manger.view_models.ViewerViewModel
 import kotlin.properties.Delegates.observable
 
 
-class ViewerActivity : ThemedActionBarActivity() {
+class ViewerActivity : BaseActivity() {
     companion object { // константы для сохранения настроек
         var LEFT_PART_SCREEN = 0 // Левая часть экрана
         var RIGHT_PART_SCREEN = 0 // Правая часть экрана
@@ -101,6 +106,12 @@ class ViewerActivity : ThemedActionBarActivity() {
 
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            val color = ContextCompat.getColor(this, R.color.transparent_dark)
+            window.statusBarColor = color
+            window.navigationBarColor = color
+        }
         intent.apply {
             chapter = getParcelableExtra("chapter")
             isAlternative = getBooleanExtra("is", false)
@@ -119,6 +130,7 @@ class ViewerActivity : ThemedActionBarActivity() {
             val key = getString(R.string.settings_viewer_show_bar_key)
             val default = getString(R.string.settings_viewer_show_bar_default) == "true"
             isBar = getBoolean(key, default)
+            onVisibilityChanged(isBar)
         }
 
         presenter.configManager(chapter, isAlternative).invokeOnCompletion {
@@ -129,19 +141,19 @@ class ViewerActivity : ThemedActionBarActivity() {
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         if (hasFocus) {
-            onVisibilityChanged(false)
+            onVisibilityChanged(isBar)
         }
     }
 
     fun onVisibilityChanged(visible: Boolean) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            val decorView = window.decorView
             if (visible) {
-                decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+                        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        )
             } else {
-                decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                         or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // прячем панель навигации
@@ -162,8 +174,27 @@ class ViewerActivity : ThemedActionBarActivity() {
         return super.onKeyDown(keyCode, event)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menu.add(R.id.viewer_menu_prev, R.string.viewer_page_prev_text).showAlways()
+            .setIcon(R.drawable.ic_previous_white)
+        menu.add(R.id.viewer_menu_next, R.string.viewer_page_next_text).showAlways()
+            .setIcon(R.drawable.ic_next_white)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        menu.findItem(R.id.viewer_menu_prev).isEnabled = presenter.isPrev.item
+        menu.findItem(R.id.viewer_menu_next).isEnabled = presenter.isNext.item
+        return super.onPrepareOptionsMenu(menu)
+    }
+
+
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (item!!.itemId == android.R.id.home) onBackPressed()
+        when (item!!.itemId) {
+            android.R.id.home -> onBackPressed()
+            R.id.viewer_menu_prev -> presenter.prevChapter()
+            R.id.viewer_menu_next -> presenter.nextChapter()
+        }
         return super.onOptionsItemSelected(item)
     }
 

@@ -33,6 +33,10 @@ class MangaRepository(context: Context) {
         return mMangaDao.getItem(mangaUnic)
     }
 
+    fun getItemWhereShortLink(shortLink: String): Manga {
+        return mMangaDao.getItems().first { it.shortLink == shortLink }
+    }
+
     suspend fun getItemOrNull(unic: String) = mMangaDao.getItemOrNull(unic)
 
     suspend fun insert(vararg manga: Manga) =  mMangaDao.insert(*manga)

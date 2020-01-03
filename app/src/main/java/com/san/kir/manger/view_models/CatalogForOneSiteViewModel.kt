@@ -58,8 +58,8 @@ class CatalogForOneSiteViewModel(private val app: Application) : AndroidViewMode
         mSiteCatalogRepository.update(siteCatalogElement)
 
 
-    fun getMangaItem(mangaUnic: String): Manga {
-        return mMangaRepository.getItem(mangaUnic)
+    fun getMangaItem(shortLink: String): Manga {
+        return mMangaRepository.getItemWhereShortLink(shortLink)
     }
 
     suspend fun mangaUpdate(manga: Manga) = mMangaRepository.update(manga)

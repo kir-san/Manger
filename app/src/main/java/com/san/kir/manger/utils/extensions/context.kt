@@ -53,6 +53,6 @@ fun Context.quantitySimple(@PluralsRes id: Int, quantity: Int): String {
     return resources.getQuantityString(id, quantity, quantity)
 }
 
-fun Context.longToast(@StringRes resId:Int, vararg formatArgs: Any) {
-    longToast(getString(resId, formatArgs))
+fun Context.longToast(@StringRes resId:Int, vararg formatArgs: Any?) {
+    longToast(getString(resId, *formatArgs))
 }

@@ -108,7 +108,7 @@ class GlobalSearchItemView(private val act: GlobalSearchActivity) :
             updBtn.visibleOrGone(false)
 
             act.lifecycleScope.launch(Dispatchers.Default) {
-                val oldManga = act.mViewModel.getMangaItem(item.name)
+                val oldManga = act.mViewModel.getMangaItem(item.shotLink)
                 val updItem = ManageSites.getFullElement(item)
                 oldManga.authorsList = updItem.authors
                 oldManga.logo = updItem.logo

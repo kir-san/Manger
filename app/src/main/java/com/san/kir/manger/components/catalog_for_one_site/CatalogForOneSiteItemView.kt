@@ -33,7 +33,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class CatalogForOneSiteItemView(private val act: CatalogForOneSiteActivity) : RecyclerViewAdapterFactory.AnkoView<SiteCatalogElement>() {
+class CatalogForOneSiteItemView(private val act: CatalogForOneSiteActivity) :
+    RecyclerViewAdapterFactory.AnkoView<SiteCatalogElement>() {
 
     private lateinit var root: LinearLayout
     private lateinit var name: TextView
@@ -107,7 +108,7 @@ class CatalogForOneSiteItemView(private val act: CatalogForOneSiteActivity) : Re
             updBtn.visibleOrGone(false)
 
             act.lifecycleScope.launch(Dispatchers.Default) {
-                val oldManga = act.mViewModel.getMangaItem(item.name)
+                val oldManga = act.mViewModel.getMangaItem(item.shotLink)
                 val updItem = ManageSites.getFullElement(item)
                 oldManga.authorsList = updItem.authors
                 oldManga.logo = updItem.logo

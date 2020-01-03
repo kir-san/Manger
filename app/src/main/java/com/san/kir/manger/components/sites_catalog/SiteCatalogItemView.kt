@@ -110,7 +110,8 @@ class SiteCatalogItemView(private val act: SiteCatalogActivity) :
 
         act.lifecycleScope.launch(Dispatchers.Main) {
             val site: SiteCatalog =
-                ManageSites.CATALOG_SITES.first { it.catalogName == item.catalogName }
+                ManageSites.CATALOG_SITES
+                    .first { it.allCatalogName.any { s -> s == item.catalogName } }
             if (!site.isInit) {
                 isError.visibility = View.GONE
                 isInit.visibility = View.VISIBLE

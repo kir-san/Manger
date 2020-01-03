@@ -23,7 +23,7 @@ import java.util.regex.Pattern
 class Allhentai(siteRepository: SiteRepository) : SiteCatalogClassic() {
     override val name = "All Hentai"
     override val catalogName = "allhentai.ru"
-    override val siteCatalog = "$host/list?type=&sortType=RATING"
+    override val siteCatalog = "$host/list?sortType=created"
     override var volume = siteRepository.getItem(name)?.volume ?: 0
     override var oldVolume = volume
 
@@ -31,13 +31,9 @@ class Allhentai(siteRepository: SiteRepository) : SiteCatalogClassic() {
 
     override suspend fun init(): Allhentai {
         if (!isInit) {
-            val doc = ManageSites.getDocument(host)
-            doc.select(".rightContent h5")
-                .filter { it.text() == "У нас сейчас" }
-                .map { it.parent().select("li") }
-                .map { it.first().text() }
-                .map { it.split(" ").component4().toInt() }
-                .forEach { volume = it }
+            val doc = ManageSites.getDocument("$host/list")
+            volume =
+                doc.select("#mangaBox .leftContent .pagination .step").last().text().toInt() * 70
             isInit = true
         }
         return this
@@ -59,12 +55,12 @@ class Allhentai(siteRepository: SiteRepository) : SiteCatalogClassic() {
 
         element.type = "Манга"
 
-        val status = doc.select("#mangaBox .leftContent .mangaSettings p")
+        val status = doc.select("#mangaBox .leftContent .expandable .subject-meta p")
 
         // Статус выпуска
         element.statusEdition = Status.COMPLETE
         if (status.text().contains(Status.SINGLE, true)) {
-            element.statusEdition = statusComplete
+            element.statusEdition = Status.SINGLE
         } else if (status.text().contains(Status.NOT_COMPLETE, true))
             element.statusEdition = Status.NOT_COMPLETE
 
@@ -73,12 +69,6 @@ class Allhentai(siteRepository: SiteRepository) : SiteCatalogClassic() {
         if (status.text().contains("продолжается", true)) {
             element.statusTranslate = Translate.NOT_COMPLETE
         }
-
-        // Ссылка на лого
-        element.logo = doc.select("#mangaBox .leftContent .mangaDescPicture img").attr("src")
-
-        // Жанры
-        status.first { it.text().contains("Жанры") }.select("a").mapTo(element.genres) { it.text() }
 
         getFullElement(element)
     }.fold(onSuccess = { it },
@@ -91,15 +81,18 @@ class Allhentai(siteRepository: SiteRepository) : SiteCatalogClassic() {
 
         // Список авторов
         element.authors =
-            doc.select(".mangaSettings .elementList a[href*=author]").map { it.text() }
+            doc.select(".expandable .elementList .elem_author .person-link").map { it.text() }
 
         // Количество глав
         val volume =
-            doc.select(".cTable tr").filter { !it.select("a").attr("href").contains("forum") }.size - 1
+            doc.select(".chapters-link table tbody tr").size
         element.volume = if (volume < 0) 0 else volume
 
         // Краткое описание
-        element.about = rootDoc.select("meta[name=description]").attr("content")
+        element.about = doc.select(".expandable .manga-description").text()
+
+        // Обновляем лого на получше
+        element.logo = doc.select(".expandable .subject-cower img").attr("data-full")
 
         element.isFull = true
 
@@ -107,7 +100,7 @@ class Allhentai(siteRepository: SiteRepository) : SiteCatalogClassic() {
     }
 
     ////
-    private var count = 1_000_000
+    private var count = 1
     private val mutex = Mutex()
 
     ////
@@ -120,10 +113,10 @@ class Allhentai(siteRepository: SiteRepository) : SiteCatalogClassic() {
         element.siteId = id
 
         // название манги
-        element.name = elem.select("a").first().ownText()
+        element.name = elem.select(".desc h3 a").first().ownText()
 
         // ссылка в интернете
-        element.shotLink = elem.select("a").attr("href")
+        element.shotLink = elem.select(".desc h3 a").attr("href")
         element.link = host + element.shotLink
 
         // Тип манги(Манга, Манхва или еще что
@@ -131,47 +124,36 @@ class Allhentai(siteRepository: SiteRepository) : SiteCatalogClassic() {
 
         // Статус выпуска
         element.statusEdition = "Выпуск продолжается"
-        if (elem.select("span.mangaCompleted").text().isNotEmpty())
+        if (elem.select(".tags .mangaCompleted").text().isNotEmpty())
             element.statusEdition = statusComplete
-        else if (elem.select("span.mangaSingle").text().isNotEmpty() and (element.volume > 0))
+        else if (elem.select(".tags .mangaSingle").text().isNotEmpty() and (element.volume > 0))
             element.statusEdition = "Сингл"
 
         // Статус перевода
         element.statusTranslate = "Перевод продолжается"
-        if (elem.select("span.mangaTranslationCompleted").text().isNotEmpty()) {
+        if (elem.select(".tags .mangaTranslationCompleted").text().isNotEmpty()) {
             element.statusTranslate = "Перевод завершен"
             element.statusEdition = statusComplete
         }
 
         // Ссылка на лого
-        element.logo = elem.select("a.screenshot").attr("rel")
+        element.logo = elem.select(".img .lazy").attr("data-original")
 
         // Жанры
-        elem.select("a").first().attr("title").split(", ").forEach {
+        elem.select(".desc .tile-info .element-link").map { it.text() }.forEach {
             element.genres.add(it)
         }
 
-
         // Порядок в базе данных
-        try {
-            val matcher3 = Pattern.compile("\\d+")
-                .matcher(elem.select(".screenshot").first().attr("rel"))
-            val dateId = StringBuilder()
-            while (matcher3.find()) {
-                dateId.append(matcher3.group())
-            }
-            element.dateId = dateId.toString().toInt()
-        } catch (ex: NullPointerException) {
-            val doc = ManageSites.getDocument(element.link).select("div.leftContent")
-            val matcher3 = Pattern.compile("\\d+")
-                .matcher(doc.select(".mangaSettings div[id*=user_rate]").first().id())
-            if (matcher3.find()) {
-                element.dateId = matcher3.group().toInt()
-            }
+        mutex.withLock {
+            element.dateId = count++
         }
 
-        mutex.withLock {
-            element.populate = count--
+        kotlin.runCatching {
+            element.populate =
+                (elem.select(".desc .star-rate .rating").attr("title").split(" ").first().toFloat() * 10_000).toInt()
+        }.onFailure {
+            element.populate = 0
         }
 
         return element
@@ -181,7 +163,7 @@ class Allhentai(siteRepository: SiteRepository) : SiteCatalogClassic() {
         var docLocal: Document = ManageSites.getDocument(siteCatalog)
 
         fun isGetNext(): Boolean {
-            val next = docLocal.select(".pagination > a.nextLink").attr("href")
+            val next = docLocal.select("#mangaBox .pagination a.nextLink").attr("href")
             return if (next.isNotEmpty()) {
                 docLocal = ManageSites.getDocument(host + next)
                 true
@@ -190,7 +172,7 @@ class Allhentai(siteRepository: SiteRepository) : SiteCatalogClassic() {
         }
 
         do {
-            docLocal.select("div.pageBlock .cTable td[style]").forEach { element ->
+            docLocal.select("#mangaBox .leftContent .tiles .tile").forEach { element ->
                 emit(simpleParseElement(element))
             }
         } while (isGetNext())
@@ -199,17 +181,14 @@ class Allhentai(siteRepository: SiteRepository) : SiteCatalogClassic() {
     ///
     override suspend fun chapters(manga: Manga) =
         ManageSites.getDocument(host + manga.shortLink)
-            .select(".cTable")
-            .select("tr")
-            .map { it.select("td[align]").text() to it.select("a") }
-            .filterNot { (_, it) -> it.attr("href").contains("forum") }
-            .filter { (_, it) -> it.text().isNotEmpty() }
-            .map { (date, select) ->
+            .select(".chapters-link table tbody tr")
+            .map {
+                val select = it.select("a")
                 val link = select.attr("href")
                 Chapter(
                     manga = manga.unic,
                     name = select.text(),
-                    date = date,
+                    date = it.select("td.hidden-xxs").text(),
                     site = if (link.contains(host)) link else host + link,
                     path = "${manga.path}/${select.text()}"
                 )
@@ -217,7 +196,7 @@ class Allhentai(siteRepository: SiteRepository) : SiteCatalogClassic() {
 
 
     override suspend fun pages(item: DownloadItem): List<String> {
-        var list = listOf<String>()
+        val list = mutableListOf<String>()
         // Создаю папку/папки по указанному пути
         getFullPath(item.path).createDirs()
 
@@ -226,20 +205,22 @@ class Allhentai(siteRepository: SiteRepository) : SiteCatalogClassic() {
         val doc = ManageSites.getDocument(host + shortLink)
 
         // с помощью регулярных выражений ищу нужные данные
-        val pat = Pattern.compile("var pictures.+").matcher(doc.body().html())
+        val pat = Pattern.compile("rm_h.init.+").matcher(doc.body().html())
         // если данные найдены то продолжаю
         if (pat.find()) {
             // избавляюсь от ненужного и разделяю строку в список и отправляю
             val data = pat.group()
-                .removeSuffix(";")
-                .removePrefix("var pictures = ")
+                .removeSuffix(", 0, false);")
+                .removePrefix("rm_h.init( ")
+
             val json = JSONArray(data)
 
             repeat(json.length()) { index ->
-                var string = json.getJSONObject(index).getString("url")
-                if (string[7] == 'c')
-                    string = string.replaceFirst("c", "a")
-                list = list + string
+                val jsonArray = json.getJSONArray(index)
+                val url = jsonArray.getString(1) +
+                        jsonArray.getString(0) +
+                        jsonArray.getString(2)
+                list += url
             }
         }
         return list

@@ -12,6 +12,7 @@ import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.utils.extensions.createDirs
 import com.san.kir.manger.utils.extensions.getFullPath
+import com.san.kir.manger.utils.extensions.log
 import kotlinx.coroutines.flow.flow
 import org.json.JSONArray
 import org.jsoup.nodes.Document
@@ -79,8 +80,6 @@ abstract class ReadmangaTemplate(private val siteRepository: SiteRepository) : S
                 element.statusTranslate = Translate.NOT_COMPLETE
             }
 
-            element.logo = doc.select("#mangaBox .leftContent .expandable .subject-cower img").attr("src")
-
             getFullElement(element)
         }.fold(onSuccess = { it },
                onFailure = { null })
@@ -109,8 +108,12 @@ abstract class ReadmangaTemplate(private val siteRepository: SiteRepository) : S
 
         element.about = doc.select("meta[itemprop=description]").attr("content")
 
-        element.isFull = true
+        log(doc.select(".expandable .subject-cower img").toString())
 
+        // Ссылка на лого
+        element.logo = doc.select(".expandable .subject-cower img").attr("data-full")
+
+        element.isFull = true
 
         return element
     }

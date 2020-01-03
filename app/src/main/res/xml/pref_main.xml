@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <SwitchPreference
         android:key="@string/settings_app_dark_theme_key"
@@ -58,6 +59,14 @@
             android:defaultValue="@string/settings_viewer_show_bar_default"
             android:summary="@string/settings_viewer_show_bar_summary"
             android:title="@string/settings_viewer_show_bar_title"
+            />
+
+        <SwitchPreference
+            android:enabled="true" tools:targetApi="p"
+            android:key="@string/settings_viewer_cutout_key"
+            android:defaultValue="@string/settings_viewer_cutout_default"
+            android:summary="@string/settings_viewer_cutout_summary"
+            android:title="@string/settings_viewer_cutout_title"
             />
     </PreferenceCategory>
 

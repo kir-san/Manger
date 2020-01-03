@@ -110,10 +110,10 @@ class ViewerPageFragment : Fragment() {
                         // и заодно отключается зум по двойному нажатию
                         onDoubleTap {
                             // Если нажатие по центральной части
-                            if (it.x > ViewerActivity.LEFT_PART_SCREEN && it.x < ViewerActivity.RIGHT_PART_SCREEN)
+                            if (it.x > ViewerActivity.LEFT_PART_SCREEN
+                                && it.x < ViewerActivity.RIGHT_PART_SCREEN)
                             // Переключение видимости баров
                                 act.isBar = !act.isBar
-                                act.onVisibilityChanged(act.isBar)
                             true
                         }
                     }

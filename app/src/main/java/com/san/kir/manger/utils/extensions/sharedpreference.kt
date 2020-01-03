@@ -16,3 +16,6 @@ fun SharedPreferencesHolder.string(key: String, defValue: String) =
 
 fun SharedPreferencesHolder.string(key: Int, defValue: Int) =
     StringPreference2Delegate(this, key, defValue)
+
+fun SharedPreferencesHolder.stringSet(key: Int, defValue: Int) =
+    StringSetPreference2Delegate(this, key, defValue)

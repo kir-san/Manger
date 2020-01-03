@@ -19,7 +19,7 @@ import android.view.View
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
-import com.san.kir.ankofork.defaultSharedPreferences
+import com.san.kir.ankofork.doFromSdk
 import com.san.kir.ankofork.negative
 import com.san.kir.ankofork.positive
 import com.san.kir.ankofork.setContentView
@@ -27,8 +27,10 @@ import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.utils.extensions.BaseActivity
 import com.san.kir.manger.utils.extensions.add
+import com.san.kir.manger.utils.extensions.boolean
 import com.san.kir.manger.utils.extensions.showAlways
 import com.san.kir.manger.utils.extensions.string
+import com.san.kir.manger.utils.extensions.stringSet
 import com.san.kir.manger.view_models.ViewerViewModel
 import kotlin.properties.Delegates.observable
 
@@ -46,9 +48,11 @@ class ViewerActivity : BaseActivity() {
             if (!new) {
                 supportActionBar!!.hide() //Скрыть бар сверху
                 presenter.isBottomBar.negative() // Скрыть нижний бар
+                onVisibilityChanged(false)
             } else {
                 supportActionBar!!.show() // Показать бар сверху
                 presenter.isBottomBar.positive()// Показать нижний бар
+                onVisibilityChanged(true)
             }
         }
     }
@@ -68,10 +72,20 @@ class ViewerActivity : BaseActivity() {
     private val orientation by string(
         R.string.settings_viewer_orientation_key, R.string.settings_viewer_orientation_default
     )
+    private val controlKey by stringSet(
+        R.string.settings_viewer_control_key, R.array.settings_viewer_control_default
+    )
+    private var isBarPref by boolean(
+        R.string.settings_viewer_show_bar_key, R.string.settings_viewer_show_bar_default
+    )
+    private var cutout by boolean(
+        R.string.settings_viewer_cutout_key, R.string.settings_viewer_cutout_default
+    )
 
     @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         mView.setContentView(this) // Установка разметки
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // Кнопка назад в верхнем баре
@@ -81,57 +95,53 @@ class ViewerActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
 
-        defaultSharedPreferences.apply {
-            requestedOrientation = when (orientation) {
-                getString(R.string.settings_viewer_orientation_auto) -> SCREEN_ORIENTATION_SENSOR
-                getString(R.string.settings_viewer_orientation_port) -> SCREEN_ORIENTATION_PORTRAIT
-                getString(R.string.settings_viewer_orientation_port_rev) -> SCREEN_ORIENTATION_REVERSE_PORTRAIT
-                getString(R.string.settings_viewer_orientation_land) -> SCREEN_ORIENTATION_LANDSCAPE
-                getString(R.string.settings_viewer_orientation_land_rev) -> SCREEN_ORIENTATION_REVERSE_LANDSCAPE
-                getString(R.string.settings_viewer_orientation_auto_port) -> SCREEN_ORIENTATION_SENSOR_PORTRAIT
-                getString(R.string.settings_viewer_orientation_auto_land) -> SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-                else -> SCREEN_ORIENTATION_SENSOR
-            }
-
-            val controlKey = getString(R.string.settings_viewer_control_key)
-            val controlDefault = resources.getStringArray(R.array.settings_viewer_control_default)
-
-            getStringSet(controlKey, controlDefault.toSet())?.forEach {
-                when (it) {
-                    getString(R.string.settings_viewer_control_taps) -> isTapControl = true
-                    getString(R.string.settings_viewer_control_swipes) -> presenter.isSwipeControl.positive()
-                    getString(R.string.settings_viewer_control_keys) -> isKeyControl = true
-                }
-            }
-
+        // Загрузка настроек
+        requestedOrientation = when (orientation) {
+            getString(R.string.settings_viewer_orientation_auto) -> SCREEN_ORIENTATION_SENSOR
+            getString(R.string.settings_viewer_orientation_port) -> SCREEN_ORIENTATION_PORTRAIT
+            getString(R.string.settings_viewer_orientation_port_rev) -> SCREEN_ORIENTATION_REVERSE_PORTRAIT
+            getString(R.string.settings_viewer_orientation_land) -> SCREEN_ORIENTATION_LANDSCAPE
+            getString(R.string.settings_viewer_orientation_land_rev) -> SCREEN_ORIENTATION_REVERSE_LANDSCAPE
+            getString(R.string.settings_viewer_orientation_auto_port) -> SCREEN_ORIENTATION_SENSOR_PORTRAIT
+            getString(R.string.settings_viewer_orientation_auto_land) -> SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+            else -> SCREEN_ORIENTATION_SENSOR
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        controlKey.forEach {
+            when (it) {
+                getString(R.string.settings_viewer_control_taps) -> isTapControl = true
+                getString(R.string.settings_viewer_control_swipes) -> presenter.isSwipeControl.positive()
+                getString(R.string.settings_viewer_control_keys) -> isKeyControl = true
+            }
+        }
+
+        isBar = isBarPref
+
+        doFromSdk(28) {
+            window.attributes.layoutInDisplayCutoutMode =
+                if (cutout) WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+                else WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
+        }
+
+        doFromSdk(Build.VERSION_CODES.LOLLIPOP) {
+//            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
             val color = ContextCompat.getColor(this, R.color.transparent_dark)
             window.statusBarColor = color
             window.navigationBarColor = color
         }
+
         intent.apply {
             chapter = getParcelableExtra("chapter")
             isAlternative = getBooleanExtra("is", false)
         }
 
-        title = chapter.name // Смена заголвка
-        readTime = System.currentTimeMillis()
+        title = chapter.name // Смена заголовка
+        readTime = System.currentTimeMillis() // Старт отсчета времени чтения
 
         val point = Point() // Хранилище для данных экрана
         windowManager.defaultDisplay.getSize(point) // Сохранение данных в хранилище
         LEFT_PART_SCREEN = point.x / 3 // Установка данных
         RIGHT_PART_SCREEN = point.x * 2 / 3 // Установка данных
-
-        // Загрузка настроек
-        defaultSharedPreferences.apply {
-            val key = getString(R.string.settings_viewer_show_bar_key)
-            val default = getString(R.string.settings_viewer_show_bar_default) == "true"
-            isBar = getBoolean(key, default)
-            onVisibilityChanged(isBar)
-        }
 
         presenter.configManager(chapter, isAlternative).invokeOnCompletion {
             presenter.isLoad.negative()
@@ -145,7 +155,7 @@ class ViewerActivity : BaseActivity() {
         }
     }
 
-    fun onVisibilityChanged(visible: Boolean) {
+    private fun onVisibilityChanged(visible: Boolean) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             if (visible) {
                 window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -183,11 +193,10 @@ class ViewerActivity : BaseActivity() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        menu.findItem(R.id.viewer_menu_prev).isEnabled = presenter.isPrev.item
-        menu.findItem(R.id.viewer_menu_next).isEnabled = presenter.isNext.item
+        menu.findItem(R.id.viewer_menu_prev).isVisible = presenter.isPrev.item
+        menu.findItem(R.id.viewer_menu_next).isVisible = presenter.isNext.item
         return super.onPrepareOptionsMenu(menu)
     }
-
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item!!.itemId) {
@@ -201,10 +210,8 @@ class ViewerActivity : BaseActivity() {
     override fun onPause() {
         super.onPause()
         // Сохранение настроек
-        defaultSharedPreferences
-            .edit()
-            .putBoolean(getString(R.string.settings_viewer_show_bar_key), isBar)
-            .apply()
+        isBarPref = isBar
+
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
 
         val time = (System.currentTimeMillis() - readTime) / 1000

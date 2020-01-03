@@ -502,34 +502,42 @@
     <string name="settings_viewer_orientation_auto">auto</string>
     <string name="settings_viewer_orientation_auto_port">auto_port</string>
     <string name="settings_viewer_orientation_auto_land">auto_land</string>
+
     <string name="settings_viewer_control_key">viewer_control</string>
     <string name="settings_viewer_control_summary">Выбор способа перелистывания страниц</string>
-
     <string name="settings_viewer_control_title">Управление</string>
     <string name="settings_viewer_control_taps">taps</string>
     <string name="settings_viewer_control_swipes">swipes</string>
     <string name="settings_viewer_control_keys">keys</string>
+
     <string name="settings_viewer_show_bar_default">true</string>
     <string name="settings_viewer_show_bar_key">show_bar</string>
     <string name="settings_viewer_show_bar_summary">Отображение панелей с информацией. Двойное нажатие по центру экрана дублирует эту настройку</string>
     <string name="settings_viewer_show_bar_title">Отображение панелей</string>
+
+    <string name="settings_viewer_cutout_default">true</string>
+    <string name="settings_viewer_cutout_key">cutout</string>
+    <string name="settings_viewer_cutout_summary">Будет ли использоваться зона выреза или она будет закрашена черной полосой</string>
+    <string name="settings_viewer_cutout_title">Использовать зону выреза</string>
+
+
+    <string name="settings_downloader_title">Настройки загрузчика</string>
+
     <string name="settings_downloader_parallel_default">true</string>
-
-
     <string name="settings_downloader_parallel_key">downloader_parallel</string>
     <string name="settings_downloader_parallel_summary">Загрузка нескольких странниц одновременно. Ускорение загрузки</string>
     <string name="settings_downloader_parallel_title">Параллельная загрузка</string>
+
     <string name="settings_downloader_retry_default">false</string>
-
-
     <string name="settings_downloader_retry_key">downloader_retry</string>
     <string name="settings_downloader_retry_summary">Перезапуск загрузок если произошла ошибка при загрузке</string>
     <string name="settings_downloader_retry_title">Повторять при ошибке</string>
-    <string name="settings_downloader_wifi_only_default">false</string>
 
+    <string name="settings_downloader_wifi_only_default">false</string>
     <string name="settings_downloader_wifi_only_key">downloader_wifi_only</string>
     <string name="settings_downloader_wifi_only_summary">Загружать главы только с помощью Wi-Fi</string>
     <string name="settings_downloader_wifi_only_title">Только Wi-Fi</string>
+
     <string-array name="settings_viewer_orientation_array">
         <item>Портретная</item>
         <item>Портретная обратная</item>

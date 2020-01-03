@@ -2,6 +2,7 @@ package com.san.kir.manger.utils.extensions
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.annotation.ArrayRes
 import androidx.annotation.StringRes
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -89,6 +90,23 @@ class StringPreference2Delegate(
 
     override fun setValue(value: String) {
         holder.editor.putString(key, value)
+    }
+}
+
+class StringSetPreference2Delegate(
+    private val holder: SharedPreferencesHolder,
+    @StringRes keyRes: Int, @ArrayRes defValueRes: Int
+) : CommonPreferenceDelegate<Set<String>>() {
+
+    private val key by lazy { holder.ctx.getString(keyRes) }
+    private val defValue by lazy { holder.ctx.resources.getStringArray(defValueRes) }
+
+    override fun getValue(): Set<String> {
+        return holder.preferences.getStringSet(key, defValue.toSet()) ?: emptySet()
+    }
+
+    override fun setValue(value: Set<String>) {
+        holder.editor.putStringSet(key, value)
     }
 }
 

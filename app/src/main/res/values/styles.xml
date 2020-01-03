@@ -9,6 +9,8 @@
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="p">never</item>
+
     </style>
 
     <style name="AppThemeDark" parent="Theme.AppCompat">
@@ -19,6 +21,7 @@
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="p">never</item>
     </style>
 
     <style name="Theme.AppCompat.Light.DarkActionBar.Fullscreen" parent="@style/Theme.AppCompat.Light.DarkActionBar">

@@ -12,6 +12,7 @@ import androidx.core.view.GravityCompat
 import androidx.lifecycle.lifecycleScope
 import com.san.kir.ankofork.defaultSharedPreferences
 import com.san.kir.ankofork.dialogs.alert
+import com.san.kir.ankofork.dialogs.okButton
 import com.san.kir.ankofork.negative
 import com.san.kir.ankofork.positive
 import com.san.kir.ankofork.sdk28.onQueryTextListener
@@ -47,8 +48,11 @@ class CatalogForOneSiteActivity : BaseActivity() {
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent) {
             val catalogName = intent.getStringExtra(CatalogForOneSiteUpdaterService.EXTRA_KEY_OUT)
-            if (catalogName == mSite.catalogName || catalogName == "destroy")
-                updateCatalog()
+            when (catalogName) {
+                mSite.catalogName -> updateCatalog()
+                "destroy" -> hideAction()
+                "error" -> showErrorDialog()
+            }
         }
     }
 
@@ -78,16 +82,20 @@ class CatalogForOneSiteActivity : BaseActivity() {
         }
     }
 
+    private fun hideAction() {
+        // Убираем прогрессБар
+        if (!CatalogForOneSiteUpdaterService.isContain(mSite.catalogName)) {
+            view.isAction.negative()
+        }
+    }
+
     private fun updateCatalog() {
         adapter.setSite(mSite) { size ->
             lifecycleScope.launch(Dispatchers.Main) {
                 // Изменяем заголовок окна
                 title = "$mOldTitle: $size"
 
-                // Убираем прогрессБар
-                if (!CatalogForOneSiteUpdaterService.isContain(mSite.catalogName)) {
-                    view.isAction.negative()
-                }
+                hideAction()
 
                 withContext(Dispatchers.Default) {
                     mViewModel.getSiteItem(mSite.name)?.let {
@@ -150,5 +158,14 @@ class CatalogForOneSiteActivity : BaseActivity() {
             }
             negativeButton(getString(R.string.catalog_fot_one_site_redownload_cancel)) {}
         }.show()
+    }
+
+    private fun showErrorDialog() {
+        alert {
+            titleResource = R.string.manga_error_dialog_title
+            messageResource = R.string.manga_error_dialog_message
+            okButton { hideAction() }
+            show()
+        }
     }
 }

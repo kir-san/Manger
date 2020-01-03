@@ -136,6 +136,12 @@
     <string name="manga_info_dialog_loading">Загрузка…</string>
     <string name="manga_info_dialog_loading_failed">Не удалось загрузить картинку</string>
     <string name="manga_info_dialog_not_image">Картинки то нет</string>
+    <string name="manga_error_dialog_title">Внимание</string>
+    <string name="manga_error_dialog_message">При обновлении каталога произошла ошибка.
+    Проверьте наличие интернета. Проверьте работу других каталогов. Попробуйте зайти на сайт этого
+    каталога через браузер. Если все вышеперечисленное сработало, а каталог так и необновляется,
+    значит в сайте произошли изменения и парсер не может с ними справится. Сообщите автору
+    приложения, пусть он исправит парсер.</string>
 
 
     <!-- AppUpdateService -->

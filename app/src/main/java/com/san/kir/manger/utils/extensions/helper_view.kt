@@ -11,6 +11,7 @@ import android.graphics.Rect
 import android.graphics.drawable.BitmapDrawable
 import android.util.AttributeSet
 import android.view.MotionEvent
+import android.view.View
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.viewpager.widget.ViewPager
 import kotlin.math.min
@@ -101,3 +102,6 @@ class SpecialViewPager : ViewPager {
     }
 
 }
+
+fun recordInitialPaddingForView(view: View) =
+    Rect(view.paddingLeft, view.paddingTop, view.paddingRight, view.paddingBottom)

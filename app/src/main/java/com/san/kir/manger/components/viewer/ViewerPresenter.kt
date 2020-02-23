@@ -22,7 +22,7 @@ class ViewerPresenter(private val act: ViewerActivity) {
     val isNext = Binder(true) // Есть ли следующая глава
     val isPrev = Binder(true) // Есть ли предыдущая глава
 
-    val isBottomBar = Binder(true) // Отображение нижнего бара
+    val isBottomBar = Binder(false) // Отображение нижнего бара
 
     val isLoad = Binder(true)
 

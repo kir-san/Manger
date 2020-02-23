@@ -29,6 +29,7 @@ import com.san.kir.ankofork.sdk28.progressBar
 import com.san.kir.ankofork.sdk28.relativeLayout
 import com.san.kir.ankofork.sdk28.textView
 import com.san.kir.ankofork.sp
+import com.san.kir.ankofork.verticalLayout
 import com.san.kir.ankofork.withArguments
 import com.san.kir.manger.R
 import com.san.kir.manger.components.download_manager.ChapterDownloader
@@ -41,6 +42,8 @@ import com.san.kir.manger.utils.extensions.onDoubleTapListener
 import com.san.kir.manger.utils.extensions.showAlways
 import com.san.kir.manger.utils.extensions.visibleOrGone
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -57,6 +60,7 @@ class ViewerPageFragment : Fragment() {
     private val isLoad = Binder(true)
     private lateinit var page: Page
     private lateinit var view: SubsamplingScaleImageView
+    private var showHide: Job? = Job()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,13 +72,17 @@ class ViewerPageFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         val act = activity as ViewerActivity
-        return context?.linearLayout {
+        return context?.verticalLayout {
             lparams(width = matchParent, height = matchParent)
 
             gravity = Gravity.CENTER
 
             progressBar {
                 visibleOrGone(isLoad)
+                onClick {
+                    // Переключение видимости баров
+                    act.isBar = !act.isBar
+                }
             }.lparams(width = dip(100), height = dip(100)) {
                 gravity = Gravity.CENTER
             }
@@ -104,16 +112,25 @@ class ViewerPageFragment : Fragment() {
                                     act.presenter.prevPage() // Предыдущая страница
                                 else if (it.x > ViewerActivity.RIGHT_PART_SCREEN) // Нажатие на правую часть
                                     act.presenter.nextPage() // Следущая страница
-                            true
-                        }
-                        // Переопределение двойного нажатия
-                        // и заодно отключается зум по двойному нажатию
-                        onDoubleTap {
+
                             // Если нажатие по центральной части
                             if (it.x > ViewerActivity.LEFT_PART_SCREEN
-                                && it.x < ViewerActivity.RIGHT_PART_SCREEN)
-                            // Переключение видимости баров
-                                act.isBar = !act.isBar
+                                && it.x < ViewerActivity.RIGHT_PART_SCREEN) {
+                                // Переключение видимости баров
+
+                                if (act.isBar) {
+                                    act.isBar = false
+                                    showHide?.cancel()
+                                    showHide = null
+                                } else {
+                                    act.isBar = true
+                                    showHide = lifecycleScope.launch {
+                                        delay(3000L)
+                                        act.isBar = false
+                                    }
+                                }
+                            }
+
                             true
                         }
                     }

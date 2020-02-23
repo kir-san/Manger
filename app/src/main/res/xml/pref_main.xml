@@ -55,13 +55,6 @@
             />
 
         <SwitchPreference
-            android:key="@string/settings_viewer_show_bar_key"
-            android:defaultValue="@string/settings_viewer_show_bar_default"
-            android:summary="@string/settings_viewer_show_bar_summary"
-            android:title="@string/settings_viewer_show_bar_title"
-            />
-
-        <SwitchPreference
             android:enabled="true" tools:targetApi="p"
             android:key="@string/settings_viewer_cutout_key"
             android:defaultValue="@string/settings_viewer_cutout_default"

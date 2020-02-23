@@ -43,16 +43,16 @@ class ViewerActivity : BaseActivity() {
 
     val mViewModel by viewModels<ViewerViewModel>()
 
-    var isBar by observable(true) { _, old, new ->
+    var isBar by observable(false) { _, old, new ->
         if (old != new) {
             if (!new) {
                 supportActionBar!!.hide() //Скрыть бар сверху
                 presenter.isBottomBar.negative() // Скрыть нижний бар
-                onVisibilityChanged(false)
+                hideSystemUI()
             } else {
+                showSystemUI()
                 supportActionBar!!.show() // Показать бар сверху
                 presenter.isBottomBar.positive()// Показать нижний бар
-                onVisibilityChanged(true)
             }
         }
     }
@@ -75,9 +75,6 @@ class ViewerActivity : BaseActivity() {
     private val controlKey by stringSet(
         R.string.settings_viewer_control_key, R.array.settings_viewer_control_default
     )
-    private var isBarPref by boolean(
-        R.string.settings_viewer_show_bar_key, R.string.settings_viewer_show_bar_default
-    )
     private var cutout by boolean(
         R.string.settings_viewer_cutout_key, R.string.settings_viewer_cutout_default
     )
@@ -91,6 +88,27 @@ class ViewerActivity : BaseActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // Кнопка назад в верхнем баре
         supportActionBar?.setShowHideAnimationEnabled(true) // Анимация скрытия, сокрытия
     }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) hideSystemUI()
+    }
+
+    private fun hideSystemUI() {
+        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE
+                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_FULLSCREEN)
+    }
+
+    private fun showSystemUI() {
+        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+    }
+
 
     override fun onResume() {
         super.onResume()
@@ -115,8 +133,6 @@ class ViewerActivity : BaseActivity() {
             }
         }
 
-        isBar = isBarPref
-
         doFromSdk(28) {
             window.attributes.layoutInDisplayCutoutMode =
                 if (cutout) WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
@@ -124,7 +140,6 @@ class ViewerActivity : BaseActivity() {
         }
 
         doFromSdk(Build.VERSION_CODES.LOLLIPOP) {
-//            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
             val color = ContextCompat.getColor(this, R.color.transparent_dark)
             window.statusBarColor = color
             window.navigationBarColor = color
@@ -146,31 +161,8 @@ class ViewerActivity : BaseActivity() {
         presenter.configManager(chapter, isAlternative).invokeOnCompletion {
             presenter.isLoad.negative()
         }
-    }
 
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
-        if (hasFocus) {
-            onVisibilityChanged(isBar)
-        }
-    }
 
-    private fun onVisibilityChanged(visible: Boolean) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            if (visible) {
-                window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        )
-            } else {
-                window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // прячем панель навигации
-                        or View.SYSTEM_UI_FLAG_FULLSCREEN // прячем строку состояния
-                        or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
-            }
-        }
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
@@ -210,8 +202,6 @@ class ViewerActivity : BaseActivity() {
     override fun onPause() {
         super.onPause()
         // Сохранение настроек
-        isBarPref = isBar
-
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
 
         val time = (System.currentTimeMillis() - readTime) / 1000

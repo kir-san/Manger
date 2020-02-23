@@ -2,11 +2,13 @@ package com.san.kir.manger.components.viewer
 
 import android.graphics.Color
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import androidx.constraintlayout.widget.ConstraintSet.PARENT_ID
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.ViewPropertyAnimatorListenerAdapter
+import androidx.core.view.updateLayoutParams
 import com.san.kir.ankofork.AnkoComponent
 import com.san.kir.ankofork.AnkoContext
 import com.san.kir.ankofork.constraint_layout.constraintLayout
@@ -24,10 +26,12 @@ import com.san.kir.ankofork.support.onPageChangeListener
 import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.R
 import com.san.kir.manger.utils.ID
+import com.san.kir.manger.utils.extensions.doOnApplyWindowInstets
 import com.san.kir.manger.utils.extensions.goneOrVisible
+import com.san.kir.manger.utils.extensions.invisible
 import com.san.kir.manger.utils.extensions.specialViewPager
-import com.san.kir.manger.utils.extensions.visibleOrGone
-
+import com.san.kir.manger.utils.extensions.visible
+import kotlin.math.max
 
 class ViewerView(private val presenter: ViewerPresenter) : AnkoComponent<ViewerActivity> {
     lateinit var viewPager: androidx.viewpager.widget.ViewPager
@@ -82,6 +86,30 @@ class ViewerView(private val presenter: ViewerPresenter) : AnkoComponent<ViewerA
 
             linearLayout {
                 id = Id.bottomBar
+                invisible()
+
+                var top = 0
+                var right = 0
+                var left = 0
+
+                doOnApplyWindowInstets { v, insets, _ ->
+                    top = max(top, insets.systemWindowInsetTop)
+                    right =
+                        if (insets.systemWindowInsetRight == 0) right
+                        else insets.systemWindowInsetRight
+                    left =
+                        if (insets.systemWindowInsetLeft == 0) left
+                        else insets.systemWindowInsetLeft
+
+                    v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                        topMargin = top
+                        leftMargin = left
+                        rightMargin = right
+                    }
+                    insets
+                }
+
+                padding = dip(4)
                 backgroundColor = ContextCompat.getColor(this.context, R.color.transparent_dark)
 
                 textView {
@@ -120,18 +148,18 @@ class ViewerView(private val presenter: ViewerPresenter) : AnkoComponent<ViewerA
                             .setInterpolator(DecelerateInterpolator())
                             .setListener(object : ViewPropertyAnimatorListenerAdapter() {
                                 override fun onAnimationStart(view: View?) {
-                                    visibleOrGone(true)
+                                    view?.visible()
                                 }
                             })
                             .start()
                     } else {
                         ViewCompat.animate(this)
                             .setDuration(300)
-                            .translationY(actionBarSize.toFloat() * 2.5F)
+                            .translationY(-actionBarSize.toFloat() * 2.5F)
                             .setInterpolator(DecelerateInterpolator())
                             .setListener(object : ViewPropertyAnimatorListenerAdapter() {
                                 override fun onAnimationEnd(view: View?) {
-                                    visibleOrGone(false)
+                                    view?.invisible()
                                 }
                             })
                             .start()
@@ -139,9 +167,9 @@ class ViewerView(private val presenter: ViewerPresenter) : AnkoComponent<ViewerA
                 }
 
             }.lparams(width = matchConstraint, height = wrapContent) {
+                topToTop = PARENT_ID
                 startToStart = PARENT_ID
                 endToEnd = PARENT_ID
-                bottomToBottom = PARENT_ID
             }
         }
     }

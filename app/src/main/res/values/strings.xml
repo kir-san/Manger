@@ -516,11 +516,6 @@
     <string name="settings_viewer_control_swipes">swipes</string>
     <string name="settings_viewer_control_keys">keys</string>
 
-    <string name="settings_viewer_show_bar_default">true</string>
-    <string name="settings_viewer_show_bar_key">show_bar</string>
-    <string name="settings_viewer_show_bar_summary">Отображение панелей с информацией. Двойное нажатие по центру экрана дублирует эту настройку</string>
-    <string name="settings_viewer_show_bar_title">Отображение панелей</string>
-
     <string name="settings_viewer_cutout_default">true</string>
     <string name="settings_viewer_cutout_key">cutout</string>
     <string name="settings_viewer_cutout_summary">Будет ли использоваться зона выреза или она будет закрашена черной полосой</string>

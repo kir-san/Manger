@@ -31,9 +31,12 @@
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
-    <style name="AppTheme.Viewer" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="windowActionModeOverlay">true</item>
+    <style name="AppTheme.Viewer" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
         <item name="actionBarStyle">@style/MyTheme.ActionBar</item>
+        <item name="android:navigationBarColor" tools:ignore="NewApi">@color/transparent_dark</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/transparent_dark</item>
     </style>
 
     <style name="MyTheme.ActionBar" parent="Widget.AppCompat.ActionBar">

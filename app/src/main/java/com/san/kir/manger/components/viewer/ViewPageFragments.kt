@@ -1,6 +1,5 @@
 package com.san.kir.manger.components.viewer
 
-import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
@@ -27,10 +26,12 @@ import com.san.kir.ankofork.sdk28.linearLayout
 import com.san.kir.ankofork.sdk28.onClick
 import com.san.kir.ankofork.sdk28.progressBar
 import com.san.kir.ankofork.sdk28.relativeLayout
+import com.san.kir.ankofork.sdk28.scrollView
 import com.san.kir.ankofork.sdk28.textView
 import com.san.kir.ankofork.sp
 import com.san.kir.ankofork.verticalLayout
 import com.san.kir.ankofork.withArguments
+import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.R
 import com.san.kir.manger.components.download_manager.ChapterDownloader
 import com.san.kir.manger.utils.extensions.bigImageView
@@ -85,39 +86,32 @@ class ViewerPageFragment : Fragment() {
             }
 
             linearLayout {
-                lparams(width = matchParent, height = matchParent)
+                lparams(width = matchParent, height = wrapContent)
+                scrollView {
+                    lparams(width = matchParent, height = wrapContent)
+                    post { scrollTo(0, 0) }
+                    view = bigImageView {
+                        lparams(width = matchParent, height = matchParent)
+                        setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CENTER_CROP)
 
-                view = bigImageView {
-                    lparams(width = matchParent, height = matchParent)
+                        onDoubleTapListener {
+                            // Переопределение одиночного нажатия
+                            onSingleTapConfirmed {
+                                if (act.isTapControl) // Включен ли режим управления нажатиями на экран
+                                    if (it.x < ViewerActivity.LEFT_PART_SCREEN) // Нажатие на левую часть экрана
+                                        act.presenter.prevPage() // Предыдущая страница
+                                    else if (it.x > ViewerActivity.RIGHT_PART_SCREEN) // Нажатие на правую часть
+                                        act.presenter.nextPage() // Следущая страница
 
-                    lifecycleScope.launch(Dispatchers.Main) {
-                        when (resources.configuration.orientation) {
-                            Configuration.ORIENTATION_LANDSCAPE -> setMinimumScaleType(
-                                SubsamplingScaleImageView.SCALE_TYPE_START
-                            )
-                            Configuration.ORIENTATION_PORTRAIT -> setMinimumScaleType(
-                                SubsamplingScaleImageView.SCALE_TYPE_CENTER_INSIDE
-                            )
-                        }
-                    }
+                                // Если нажатие по центральной части
+                                if (it.x > ViewerActivity.LEFT_PART_SCREEN
+                                    && it.x < ViewerActivity.RIGHT_PART_SCREEN) {
+                                    // Переключение видимости баров
+                                    act.toogleBars()
+                                }
 
-                    onDoubleTapListener {
-                        // Переопределение одиночного нажатия
-                        onSingleTapConfirmed {
-                            if (act.isTapControl) // Включен ли режим управления нажатиями на экран
-                                if (it.x < ViewerActivity.LEFT_PART_SCREEN) // Нажатие на левую часть экрана
-                                    act.presenter.prevPage() // Предыдущая страница
-                                else if (it.x > ViewerActivity.RIGHT_PART_SCREEN) // Нажатие на правую часть
-                                    act.presenter.nextPage() // Следущая страница
-
-                            // Если нажатие по центральной части
-                            if (it.x > ViewerActivity.LEFT_PART_SCREEN
-                                && it.x < ViewerActivity.RIGHT_PART_SCREEN) {
-                                // Переключение видимости баров
-                                act.toogleBars()
+                                true
                             }
-
-                            true
                         }
                     }
                 }
@@ -188,7 +182,6 @@ class ViewerPageFragment : Fragment() {
             )
         }
     }
-
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

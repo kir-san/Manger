@@ -4,6 +4,8 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.lifecycle.lifecycleScope
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.san.kir.ankofork.dialogs.longToast
 import com.san.kir.ankofork.startActivity
 import com.san.kir.manger.R
@@ -20,7 +22,6 @@ import com.san.kir.manger.room.entities.Category
 import com.san.kir.manger.room.entities.MainMenuItem
 import com.san.kir.manger.room.entities.MangaStatistic
 import com.san.kir.manger.room.entities.Site
-import com.san.kir.manger.services.MigrateLatestChapterToChapterService
 import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.enums.DIR
 import com.san.kir.manger.utils.enums.MainMenuType
@@ -29,7 +30,7 @@ import com.san.kir.manger.utils.extensions.compatCheckSelfPermission
 import com.san.kir.manger.utils.extensions.compatRequestPermissions
 import com.san.kir.manger.utils.extensions.createDirs
 import com.san.kir.manger.utils.extensions.getFullPath
-import com.san.kir.manger.utils.extensions.startForegroundService
+import com.san.kir.manger.workmanager.MigrateLatestChapterToChapterWorker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -76,7 +77,10 @@ class Main : BaseActivity() {
             checkSiteCatalogs()
         }
 
-        startForegroundService<MigrateLatestChapterToChapterService>()
+        val task = OneTimeWorkRequestBuilder<MigrateLatestChapterToChapterWorker>()
+            .addTag("migrate")
+            .build()
+        WorkManager.getInstance(applicationContext).enqueue(task)
         startActivity<LibraryActivity>()
     }
 

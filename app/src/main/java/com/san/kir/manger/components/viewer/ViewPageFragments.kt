@@ -42,8 +42,6 @@ import com.san.kir.manger.utils.extensions.onDoubleTapListener
 import com.san.kir.manger.utils.extensions.showAlways
 import com.san.kir.manger.utils.extensions.visibleOrGone
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -53,14 +51,13 @@ class ViewerPageFragment : Fragment() {
         private const val page_name = "page_name"
 
         fun newInstance(page: Page): ViewerPageFragment {
-            return  ViewerPageFragment().withArguments(page_name to page)
+            return ViewerPageFragment().withArguments(page_name to page)
         }
     }
 
     private val isLoad = Binder(true)
     private lateinit var page: Page
     private lateinit var view: SubsamplingScaleImageView
-    private var showHide: Job? = Job()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,7 +78,7 @@ class ViewerPageFragment : Fragment() {
                 visibleOrGone(isLoad)
                 onClick {
                     // Переключение видимости баров
-                    act.isBar = !act.isBar
+                    act.toogleBars()
                 }
             }.lparams(width = dip(100), height = dip(100)) {
                 gravity = Gravity.CENTER
@@ -117,18 +114,7 @@ class ViewerPageFragment : Fragment() {
                             if (it.x > ViewerActivity.LEFT_PART_SCREEN
                                 && it.x < ViewerActivity.RIGHT_PART_SCREEN) {
                                 // Переключение видимости баров
-
-                                if (act.isBar) {
-                                    act.isBar = false
-                                    showHide?.cancel()
-                                    showHide = null
-                                } else {
-                                    act.isBar = true
-                                    showHide = lifecycleScope.launch {
-                                        delay(3000L)
-                                        act.isBar = false
-                                    }
-                                }
+                                act.toogleBars()
                             }
 
                             true
@@ -202,6 +188,8 @@ class ViewerPageFragment : Fragment() {
             )
         }
     }
+
+
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)

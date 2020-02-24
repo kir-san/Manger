@@ -19,6 +19,7 @@ import android.view.View
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.san.kir.ankofork.doFromSdk
 import com.san.kir.ankofork.negative
 import com.san.kir.ankofork.positive
@@ -32,7 +33,9 @@ import com.san.kir.manger.utils.extensions.showAlways
 import com.san.kir.manger.utils.extensions.string
 import com.san.kir.manger.utils.extensions.stringSet
 import com.san.kir.manger.view_models.ViewerViewModel
-import kotlin.properties.Delegates.observable
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 class ViewerActivity : BaseActivity() {
@@ -43,15 +46,7 @@ class ViewerActivity : BaseActivity() {
 
     val mViewModel by viewModels<ViewerViewModel>()
 
-    var isBar by observable(false) { _, old, new ->
-        if (old != new) {
-            if (!new) {
-                hideSystemUI()
-            } else {
-                showSystemUI()
-            }
-        }
-    }
+    private var showHide: Job? = Job()
 
     // Режимы листания страниц
     var isTapControl = false // Нажатия на экран
@@ -91,9 +86,15 @@ class ViewerActivity : BaseActivity() {
             if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
                 supportActionBar!!.show() // Показать бар сверху
                 presenter.isBottomBar.positive()// Показать нижний бар
+                showHide = lifecycleScope.launch {
+                    delay(4000L)
+                    hideSystemUI()
+                }
             } else {
                 supportActionBar!!.hide() //Скрыть бар сверху
                 presenter.isBottomBar.negative() // Скрыть нижний бар
+                showHide?.cancel()
+                showHide = null
             }
         }
     }
@@ -101,6 +102,15 @@ class ViewerActivity : BaseActivity() {
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         if (hasFocus) hideSystemUI()
+    }
+
+    fun toogleBars() {
+        if (window.decorView.windowSystemUiVisibility and
+            View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
+            hideSystemUI()
+        } else {
+            showSystemUI()
+        }
     }
 
     private fun hideSystemUI() {

@@ -46,13 +46,9 @@ class ViewerActivity : BaseActivity() {
     var isBar by observable(false) { _, old, new ->
         if (old != new) {
             if (!new) {
-                supportActionBar!!.hide() //Скрыть бар сверху
-                presenter.isBottomBar.negative() // Скрыть нижний бар
                 hideSystemUI()
             } else {
                 showSystemUI()
-                supportActionBar!!.show() // Показать бар сверху
-                presenter.isBottomBar.positive()// Показать нижний бар
             }
         }
     }
@@ -85,8 +81,21 @@ class ViewerActivity : BaseActivity() {
 
         mView.setContentView(this) // Установка разметки
 
+        setSupportActionBar(mView.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // Кнопка назад в верхнем баре
         supportActionBar?.setShowHideAnimationEnabled(true) // Анимация скрытия, сокрытия
+
+        window.decorView.setOnSystemUiVisibilityChangeListener { visibility ->
+            // Note that system bars will only be "visible" if none of the
+            // LOW_PROFILE, HIDE_NAVIGATION, or FULLSCREEN flags are set.
+            if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
+                supportActionBar!!.show() // Показать бар сверху
+                presenter.isBottomBar.positive()// Показать нижний бар
+            } else {
+                supportActionBar!!.hide() //Скрыть бар сверху
+                presenter.isBottomBar.negative() // Скрыть нижний бар
+            }
+        }
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -108,7 +117,6 @@ class ViewerActivity : BaseActivity() {
                 or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
     }
-
 
     override fun onResume() {
         super.onResume()

@@ -31,16 +31,27 @@
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
-    <style name="AppTheme.Viewer" parent="Theme.MaterialComponents.Light.DarkActionBar">
+    <style name="AppTheme.Viewer" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">true</item>
-        <item name="actionBarStyle">@style/MyTheme.ActionBar</item>
-        <item name="android:navigationBarColor" tools:ignore="NewApi">@color/transparent_dark</item>
+        <item name="android:navigationBarColor" tools:targetApi="lollipop">@color/transparent_dark</item>
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/transparent_dark</item>
+    </style>
+
+    <style name="MyTheme.Viewer.ActionBar" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar">
+        <item name="elevation" tools:targetApi="lollipop">0dp</item>
+        <item name="background">@color/transparent_dark</item>
+        <item name="android:windowActionBarOverlay">true</item>
+    </style>
+
+    <style name="MyTheme.Viewer.ActionBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="elevation" tools:targetApi="lollipop">0dp</item>
+        <item name="background">@color/transparent_dark</item>
     </style>
 
     <style name="MyTheme.ActionBar" parent="Widget.AppCompat.ActionBar">
         <item name="elevation" tools:targetApi="lollipop">0dp</item>
         <item name="background">@color/transparent_dark</item>
+<!--        -->
     </style>
 </resources>

@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
+import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintSet.PARENT_ID
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -11,8 +12,11 @@ import androidx.core.view.ViewPropertyAnimatorListenerAdapter
 import androidx.core.view.updateLayoutParams
 import com.san.kir.ankofork.AnkoComponent
 import com.san.kir.ankofork.AnkoContext
+import com.san.kir.ankofork.appcompat.toolbar
+import com.san.kir.ankofork.backgroundColorResource
 import com.san.kir.ankofork.constraint_layout.constraintLayout
 import com.san.kir.ankofork.constraint_layout.matchConstraint
+import com.san.kir.ankofork.design.themedAppBarLayout
 import com.san.kir.ankofork.dip
 import com.san.kir.ankofork.horizontalPadding
 import com.san.kir.ankofork.horizontalProgressBar
@@ -31,15 +35,16 @@ import com.san.kir.manger.utils.extensions.goneOrVisible
 import com.san.kir.manger.utils.extensions.invisible
 import com.san.kir.manger.utils.extensions.specialViewPager
 import com.san.kir.manger.utils.extensions.visible
-import kotlin.math.max
 
 class ViewerView(private val presenter: ViewerPresenter) : AnkoComponent<ViewerActivity> {
     lateinit var viewPager: androidx.viewpager.widget.ViewPager
+    lateinit var toolbar: Toolbar
 
     private object Id {
         val progressBar = ID.generate()
         val bottomBar = ID.generate()
         val chapters = ID.generate()
+        val toolbar = ID.generate()
     }
 
     override fun createView(ui: AnkoContext<ViewerActivity>) = with(ui) {
@@ -65,6 +70,8 @@ class ViewerView(private val presenter: ViewerPresenter) : AnkoComponent<ViewerA
                 endToEnd = PARENT_ID
             }
 
+
+
             viewPager = specialViewPager {
                 id = ID.generate()
                 presenter.into(this)
@@ -84,30 +91,29 @@ class ViewerView(private val presenter: ViewerPresenter) : AnkoComponent<ViewerA
                 presenter.isSwipeControl.bind { setLocked(!it) }
             }
 
-            linearLayout {
-                id = Id.bottomBar
-                invisible()
-
-                var top = 0
-                var right = 0
-                var left = 0
+            themedAppBarLayout(R.style.MyTheme_Viewer_ActionBarOverlay) {
+                id = Id.toolbar
+                backgroundColorResource = R.color.transparent_dark
 
                 doOnApplyWindowInstets { v, insets, _ ->
-                    top = max(top, insets.systemWindowInsetTop)
-                    right =
-                        if (insets.systemWindowInsetRight == 0) right
-                        else insets.systemWindowInsetRight
-                    left =
-                        if (insets.systemWindowInsetLeft == 0) left
-                        else insets.systemWindowInsetLeft
-
                     v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                        topMargin = top
-                        leftMargin = left
-                        rightMargin = right
+                        topMargin = insets.systemWindowInsetTop
                     }
                     insets
                 }
+
+                toolbar = toolbar {
+                    lparams(width = matchParent, height = wrapContent)
+                }
+            }.lparams(width = matchConstraint, height = wrapContent) {
+                topToBottom = Id.progressBar
+                startToStart = PARENT_ID
+                endToEnd = PARENT_ID
+            }
+
+            linearLayout {
+                id = Id.bottomBar
+                invisible()
 
                 padding = dip(4)
                 backgroundColor = ContextCompat.getColor(this.context, R.color.transparent_dark)
@@ -143,7 +149,7 @@ class ViewerView(private val presenter: ViewerPresenter) : AnkoComponent<ViewerA
                 presenter.isBottomBar.bind {
                     if (it) {
                         ViewCompat.animate(this)
-                            .setDuration(300)
+                            .setDuration(200)
                             .translationY(0f)
                             .setInterpolator(DecelerateInterpolator())
                             .setListener(object : ViewPropertyAnimatorListenerAdapter() {
@@ -154,7 +160,7 @@ class ViewerView(private val presenter: ViewerPresenter) : AnkoComponent<ViewerA
                             .start()
                     } else {
                         ViewCompat.animate(this)
-                            .setDuration(300)
+                            .setDuration(200)
                             .translationY(-actionBarSize.toFloat() * 2.5F)
                             .setInterpolator(DecelerateInterpolator())
                             .setListener(object : ViewPropertyAnimatorListenerAdapter() {
@@ -167,7 +173,7 @@ class ViewerView(private val presenter: ViewerPresenter) : AnkoComponent<ViewerA
                 }
 
             }.lparams(width = matchConstraint, height = wrapContent) {
-                topToTop = PARENT_ID
+                topToBottom = Id.toolbar
                 startToStart = PARENT_ID
                 endToEnd = PARENT_ID
             }

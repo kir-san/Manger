@@ -1,19 +1,31 @@
 package com.san.kir.manger.components.list_chapters
 
 import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.viewModels
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.content.ContextCompat
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
+import androidx.viewpager.widget.PagerTabStrip
+import com.san.kir.ankofork.appcompat.toolbar
+import com.san.kir.ankofork.constraint_layout.constraintLayout
+import com.san.kir.ankofork.constraint_layout.matchConstraint
+import com.san.kir.ankofork.design.themedAppBarLayout
 import com.san.kir.ankofork.dialogs.toast
+import com.san.kir.ankofork.doFromSdk
 import com.san.kir.ankofork.horizontalProgressBar
 import com.san.kir.ankofork.include
 import com.san.kir.ankofork.matchParent
 import com.san.kir.ankofork.negative
 import com.san.kir.ankofork.positive
 import com.san.kir.ankofork.startService
-import com.san.kir.ankofork.verticalLayout
 import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Manga
@@ -21,10 +33,12 @@ import com.san.kir.manger.room.entities.MangaColumn
 import com.san.kir.manger.services.MangaUpdaterService
 import com.san.kir.manger.utils.ActionModeControl
 import com.san.kir.manger.utils.enums.ChapterFilter
-import com.san.kir.manger.utils.extensions.ThemedActionBarActivity
+import com.san.kir.manger.utils.extensions.BaseActivity
 import com.san.kir.manger.utils.extensions.add
 import com.san.kir.manger.utils.extensions.addCheckable
 import com.san.kir.manger.utils.extensions.boolean
+import com.san.kir.manger.utils.extensions.doOnApplyWindowInstets
+import com.san.kir.manger.utils.extensions.log
 import com.san.kir.manger.utils.extensions.quantitySimple
 import com.san.kir.manger.utils.extensions.showAlways
 import com.san.kir.manger.utils.extensions.specialViewPager
@@ -36,7 +50,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
-class ListChaptersActivity : ThemedActionBarActivity() {
+class ListChaptersActivity : BaseActivity() {
     private val receiver by lazy { ListChapterReceiver(this) }
     private val actionCallback by lazy { ListChaptersActionCallback(mAdapter, this) }
     private val baseAdapter = ListChapterBaseAdapter(this)
@@ -57,19 +71,78 @@ class ListChaptersActivity : ThemedActionBarActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        verticalLayout {
+
+        doFromSdk(Build.VERSION_CODES.LOLLIPOP) {
+            window.statusBarColor = ContextCompat.getColor(this, R.color.transparent_dark)
+            window.navigationBarColor = ContextCompat.getColor(this, R.color.transparent_dark2)
+        }
+
+        constraintLayout {
+            lparams(width = matchParent, height = matchParent)
+
+            systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
+
+            doOnApplyWindowInstets { view, insets, _ ->
+                // Получаем размер выреза, если есть
+                val cutoutRight = insets.displayCutout?.safeInsetRight ?: 0
+                val cutoutLeft = insets.displayCutout?.safeInsetLeft ?: 0
+                // Вычитаем из WindowInsets размер выреза, для fullscreen
+                view.updatePadding(
+                    left = insets.systemWindowInsetLeft - cutoutLeft,
+                    right = insets.systemWindowInsetRight - cutoutRight
+                )
+                insets
+            }
+
+            val appBar = themedAppBarLayout(R.style.ThemeOverlay_AppCompat_DayNight_ActionBar) {
+                id = View.generateViewId()
+                doOnApplyWindowInstets { v, insets, _ ->
+                    v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                        topMargin = insets.systemWindowInsetTop
+                    }
+                    insets
+                }
+
+                toolbar {
+                    lparams(width = matchParent, height = wrapContent)
+                    setSupportActionBar(this)
+                }
+            }.lparams(width = matchConstraint, height = wrapContent) {
+                topToTop = ConstraintSet.PARENT_ID
+                startToStart = ConstraintSet.PARENT_ID
+                endToEnd = ConstraintSet.PARENT_ID
+            }
+
             // ПрогрессБар для отображения поиска новых глав
-            horizontalProgressBar {
+            val progress = horizontalProgressBar {
+                id = View.generateViewId()
                 isIndeterminate = true
                 visibleOrGone(mViewModel.isAction, mViewModel.isUpdate)
-            }.lparams(width = matchParent, height = wrapContent)
+            }.lparams(width = matchConstraint, height = wrapContent) {
+                topToBottom = appBar.id
+                startToStart = ConstraintSet.PARENT_ID
+                endToEnd = ConstraintSet.PARENT_ID
+            }
 
             specialViewPager {
+                id = View.generateViewId()
                 if (isTitle) {
-                    include<androidx.viewpager.widget.PagerTabStrip>(R.layout.page_tab_strip)
+                    include<PagerTabStrip>(R.layout.page_tab_strip)
+                }
+
+                doOnApplyWindowInstets { v, insets, _ ->
+                    log("insets.systemWindowInsetBottom ${insets.systemWindowInsetBottom}")
+
+                    insets
                 }
 
                 adapter = baseAdapter
+            }.lparams(width = matchConstraint, height = matchConstraint) {
+                topToBottom = progress.id
+                startToStart = ConstraintSet.PARENT_ID
+                endToEnd = ConstraintSet.PARENT_ID
+                bottomToBottom = ConstraintSet.PARENT_ID
             }
 
         }
@@ -121,7 +194,7 @@ class ListChaptersActivity : ThemedActionBarActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menu.add(R.id.list_chapter_menu_update, R.string.list_chapters_option_update)
             .showAlways()
-            .setIcon(R.drawable.ic_action_update_white)
+            .setIcon(R.drawable.ic_action_update)
 
         // Быстрая загрузка глав
         menu.add(R.id.list_chapter_menu_loadnext, R.string.list_chapters_download_next)

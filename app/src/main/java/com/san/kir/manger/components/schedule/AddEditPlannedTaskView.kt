@@ -1,14 +1,19 @@
 package com.san.kir.manger.components.schedule
 
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewManager
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.TimePicker
 import androidx.appcompat.app.AlertDialog
 import androidx.core.util.forEach
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import com.san.kir.ankofork.AnkoContext
 import com.san.kir.ankofork.Binder
+import com.san.kir.ankofork.appcompat.toolbar
+import com.san.kir.ankofork.design.themedAppBarLayout
 import com.san.kir.ankofork.dip
 import com.san.kir.ankofork.margin
 import com.san.kir.ankofork.matchParent
@@ -25,6 +30,7 @@ import com.san.kir.ankofork.sdk28.timePicker
 import com.san.kir.ankofork.support.nestedScrollView
 import com.san.kir.ankofork.textColorResource
 import com.san.kir.ankofork.verticalLayout
+import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.PlannedTask
@@ -36,6 +42,7 @@ import com.san.kir.manger.utils.enums.PlannedPeriod
 import com.san.kir.manger.utils.enums.PlannedType
 import com.san.kir.manger.utils.enums.PlannedWeek
 import com.san.kir.manger.utils.extensions.BaseActivity
+import com.san.kir.manger.utils.extensions.doOnApplyWindowInstets
 import com.san.kir.manger.utils.extensions.labelView
 import com.san.kir.manger.utils.extensions.textViewBold16Size
 import com.san.kir.manger.utils.extensions.visibleOrGone
@@ -89,11 +96,47 @@ class AddEditPlannedTaskView(private val act: AddEditPlannedTaskActivity) : Acti
     private lateinit var timePicker: TimePicker
 
     override fun createView(ui: AnkoContext<BaseActivity>) = with(ui) {
-        linearLayout {
+        verticalLayout {
             lparams(width = matchParent)
+
+            systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
+
+            doOnApplyWindowInstets { view, insets, _ ->
+                // Получаем размер выреза, если есть
+                val cutoutRight = insets.displayCutout?.safeInsetRight ?: 0
+                val cutoutLeft = insets.displayCutout?.safeInsetLeft ?: 0
+                // Вычитаем из WindowInsets размер выреза, для fullscreen
+                view.updatePadding(
+                    left = insets.systemWindowInsetLeft - cutoutLeft,
+                    right = insets.systemWindowInsetRight - cutoutRight
+                )
+                insets
+            }
+
+            themedAppBarLayout(R.style.ThemeOverlay_AppCompat_DayNight_ActionBar) {
+
+                doOnApplyWindowInstets { v, insets, _ ->
+                    v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                        topMargin = insets.systemWindowInsetTop
+                    }
+                    insets
+                }
+
+                toolbar {
+                    lparams(width = matchParent, height = wrapContent)
+                    act.setSupportActionBar(this)
+                }
+            }
 
             nestedScrollView {
                 lparams(width = matchParent)
+                clipToPadding = true
+
+                doOnApplyWindowInstets { v, insets, _ ->
+                    v.updatePadding(bottom = insets.systemWindowInsetBottom)
+                    insets
+                }
 
                 verticalLayout {
                     lparams(width = matchParent) {

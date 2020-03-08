@@ -5,9 +5,11 @@ import android.view.Gravity
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import com.san.kir.ankofork.AnkoContext
 import com.san.kir.ankofork.matchParent
+import com.san.kir.ankofork.recyclerview.recyclerView
 import com.san.kir.ankofork.sdk28.button
 import com.san.kir.ankofork.sdk28.onClick
 import com.san.kir.ankofork.sdk28.textView
@@ -20,11 +22,11 @@ import com.san.kir.manger.room.entities.Category
 import com.san.kir.manger.utils.ActivityView
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.extensions.BaseActivity
+import com.san.kir.manger.utils.extensions.doOnApplyWindowInstets
 import com.san.kir.manger.utils.extensions.visibleOrGone
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import com.san.kir.ankofork.recyclerview.recyclerView
 
 class LibraryPageView(
     val adapter: LibraryItemsRecyclerPresenter,
@@ -70,7 +72,15 @@ class LibraryPageView(
                     lparams(width = matchParent, height = matchParent)
                     visibleOrGone(false)
                     setHasFixedSize(true)
+                    clipToPadding = false
+
+                    doOnApplyWindowInstets { view, insets, padding ->
+                        view.updatePadding(bottom = padding.bottom + insets.systemWindowInsetBottom)
+                        insets
+                    }
                 }
+
+
 
                 bind()
             }

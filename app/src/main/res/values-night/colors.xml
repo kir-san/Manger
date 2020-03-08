@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="iconColor">#F2FFFFFF</color>
+    <color name="inverseTextColor">#F2000000</color>
+    <color name="backgroundColor">@color/colorPrimaryDark</color>
+</resources>

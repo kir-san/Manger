@@ -114,7 +114,7 @@ class LibraryActivity : DrawerActivity() {
         menu.add(0, 0, 0, R.string.library_menu_reload)
         menu.add(1, 1, 1, R.string.library_menu_reload_all)
         menu.add(3, 3, 4, R.string.library_menu_update)
-        menu.add(4, 4, 5, R.string.library_menu_add_manga).setIcon(R.drawable.ic_add_white)
+        menu.add(4, 4, 5, R.string.library_menu_add_manga).setIcon(R.drawable.ic_add)
             .showAlways()
         return super.onCreateOptionsMenu(menu)
     }

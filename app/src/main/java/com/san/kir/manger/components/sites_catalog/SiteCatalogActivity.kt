@@ -4,6 +4,9 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
+import androidx.core.view.updatePadding
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.san.kir.ankofork.include
 import com.san.kir.ankofork.sdk28._LinearLayout
 import com.san.kir.ankofork.startActivity
@@ -12,6 +15,7 @@ import com.san.kir.manger.R
 import com.san.kir.manger.components.catalog_for_one_site.CatalogForOneSiteUpdaterService
 import com.san.kir.manger.components.drawer.DrawerActivity
 import com.san.kir.manger.components.parsing.ManageSites
+import com.san.kir.manger.utils.extensions.doOnApplyWindowInstets
 import com.san.kir.manger.utils.extensions.showAlways
 import com.san.kir.manger.utils.extensions.showNever
 import com.san.kir.manger.view_models.SiteCatalogViewModel
@@ -21,9 +25,16 @@ class SiteCatalogActivity : DrawerActivity() {
     val mViewModel by viewModels<SiteCatalogViewModel>()
 
     override val _LinearLayout.customView: View
-        get() = include<androidx.recyclerview.widget.RecyclerView>(R.layout.recycler_view) {
-            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
+        get() = include<RecyclerView>(R.layout.recycler_view) {
+            layoutManager = LinearLayoutManager(context)
             mAdapter.into(this)
+
+            clipToPadding = false
+
+            doOnApplyWindowInstets { view, insets, padding ->
+                view.updatePadding(bottom = padding.bottom + insets.systemWindowInsetBottom)
+                insets
+            }
         }
 
     override fun onResume() {

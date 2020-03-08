@@ -11,7 +11,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.san.kir.ankofork.bottomPadding
-import com.san.kir.ankofork.defaultSharedPreferences
 import com.san.kir.ankofork.dialogs.alert
 import com.san.kir.ankofork.dialogs.customView
 import com.san.kir.ankofork.dip
@@ -24,6 +23,7 @@ import com.san.kir.ankofork.sdk28.imageView
 import com.san.kir.ankofork.sdk28.linearLayout
 import com.san.kir.ankofork.sdk28.onClick
 import com.san.kir.ankofork.sdk28.textView
+import com.san.kir.ankofork.support.nestedScrollView
 import com.san.kir.ankofork.verticalLayout
 import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.R
@@ -48,122 +48,116 @@ class StorageDialogView(private val act: BaseActivity) {
     private var readSize: TextView? = null
     private var readSizeAction: LinearLayout? = null
     private var allSizeAction: LinearLayout? = null
-    private var isDark: Boolean = false
 
     init {
         act.alert {
             customView {
                 verticalLayout {
-                    padding = dip(16)
-                    bottomPadding = 0
+                    nestedScrollView {
+                        verticalLayout {
+                            padding = dip(16)
+                            bottomPadding = 0
 
-                    val key = act.getString(R.string.settings_app_dark_theme_key)
-                    val default =
-                        act.getString(R.string.settings_app_dark_theme_default) == "true"
-                    isDark = act.defaultSharedPreferences.getBoolean(key, default)
-
-                    name = textView {
-                        gravity = Gravity.CENTER_HORIZONTAL
-                        textSize = 18f
-                        setTypeface(typeface, Typeface.BOLD)
-                    }.lparams(width = matchParent, height = wrapContent) {
-                        bottomMargin = dip(10)
-                    }
-
-                    progressBar = horizontalProgressBar {
-                        progressDrawable = ContextCompat.getDrawable(
-                            act, R.drawable.storage_progressbar
-                        )
-                    }.lparams(height = dip(50), width = matchParent)
-
-                    // Строка с отображением всего занятого места
-                    linearLayout {
-                        lparams(width = matchParent, height = dip(30)) {
-                            topMargin = dip(10)
-                        }
-
-                        imageView { backgroundColor = Color.LTGRAY }
-                            .lparams(width = dip(50), height = dip(28)) {
-                                marginEnd = dip(16)
+                            name = textView {
+                                gravity = Gravity.CENTER_HORIZONTAL
+                                textSize = 18f
+                                setTypeface(typeface, Typeface.BOLD)
+                            }.lparams(width = matchParent, height = wrapContent) {
+                                bottomMargin = dip(10)
                             }
 
-                        allSize = textView(R.string.storage_item_all_s).lparams {
-                            gravity = Gravity.CENTER_VERTICAL
-                        }
-                    }
+                            progressBar = horizontalProgressBar {
+                                progressDrawable = ContextCompat.getDrawable(
+                                    act, R.drawable.storage_progressbar
+                                )
+                            }.lparams(height = dip(50), width = matchParent)
 
-                    // Строка с отображением занятого места выбранной манги
-                    linearLayout {
-                        lparams(width = matchParent, height = dip(30)) {
-                            topMargin = dip(10)
-                        }
+                            // Строка с отображением всего занятого места
+                            linearLayout {
+                                lparams(width = matchParent, height = dip(30)) {
+                                    topMargin = dip(10)
+                                }
 
-                        imageView { backgroundColor = Color.parseColor("#FFFF4081") }
-                            .lparams(width = dip(50), height = dip(28)) {
-                                marginEnd = dip(16)
+                                imageView { backgroundColor = Color.LTGRAY }
+                                    .lparams(width = dip(50), height = dip(28)) {
+                                        marginEnd = dip(16)
+                                    }
+
+                                allSize = textView(R.string.storage_item_all_s).lparams {
+                                    gravity = Gravity.CENTER_VERTICAL
+                                }
                             }
 
-                        mangaSize = textView().lparams { gravity = Gravity.CENTER_VERTICAL }
-                    }
+                            // Строка с отображением занятого места выбранной манги
+                            linearLayout {
+                                lparams(width = matchParent, height = dip(30)) {
+                                    topMargin = dip(10)
+                                }
 
-                    // Строка с отображение зянятого места прочитанных глав выбранной манги
-                    linearLayout {
-                        lparams(width = matchParent, height = dip(30)) {
-                            topMargin = dip(10)
-                        }
+                                imageView { backgroundColor = Color.parseColor("#FFFF4081") }
+                                    .lparams(width = dip(50), height = dip(28)) {
+                                        marginEnd = dip(16)
+                                    }
 
-                        imageView { backgroundColor = Color.parseColor("#222e7a") }
-                            .lparams(width = dip(50), height = dip(28)) {
-                                marginEnd = dip(16)
+                                mangaSize = textView().lparams { gravity = Gravity.CENTER_VERTICAL }
                             }
 
-                        readSize = textView().lparams { gravity = Gravity.CENTER_VERTICAL }
-                    }
+                            // Строка с отображение зянятого места прочитанных глав выбранной манги
+                            linearLayout {
+                                lparams(width = matchParent, height = dip(30)) {
+                                    topMargin = dip(10)
+                                }
 
-                    // Очистка прочитанных глав
-                    linearLayout {
-                        lparams(width = matchParent, height = dip(34)) {
-                            topMargin = dip(10)
+                                imageView { backgroundColor = Color.parseColor("#222e7a") }
+                                    .lparams(width = dip(50), height = dip(28)) {
+                                        marginEnd = dip(16)
+                                    }
+
+                                readSize = textView().lparams { gravity = Gravity.CENTER_VERTICAL }
+                            }
+
+                            // Очистка прочитанных глав
+                            linearLayout {
+                                lparams(width = matchParent, height = dip(34)) {
+                                    topMargin = dip(10)
+                                }
+
+                                imageView {
+                                    backgroundResource = R.drawable.ic_action_delete
+                                    scaleType = ImageView.ScaleType.FIT_CENTER
+                                }.lparams(width = dip(30), height = dip(30)) {
+                                    marginEnd = dip(26)
+                                    marginStart = dip(10)
+                                }
+
+                                textView(R.string.library_popupmenu_delete_read_chapters).lparams {
+                                    gravity = Gravity.CENTER_VERTICAL
+                                }
+
+                                readSizeAction = this
+                            }
+
+                            // Очистка прочитанных глав
+                            linearLayout {
+                                lparams(width = matchParent, height = dip(34)) {
+                                    topMargin = dip(10)
+                                }
+
+                                imageView {
+                                    backgroundResource = R.drawable.ic_action_delete
+                                    scaleType = ImageView.ScaleType.FIT_CENTER
+                                }.lparams(width = dip(30), height = dip(30)) {
+                                    marginEnd = dip(26)
+                                    marginStart = dip(10)
+                                }
+
+                                textView(R.string.library_popupmenu_delete_all).lparams {
+                                    gravity = Gravity.CENTER_VERTICAL
+                                }
+
+                                allSizeAction = this
+                            }
                         }
-
-                        imageView {
-                            backgroundResource =
-                                if (isDark) R.drawable.ic_action_delete_white
-                                else R.drawable.ic_action_delete_black
-                            scaleType = ImageView.ScaleType.FIT_CENTER
-                        }.lparams(width = dip(30), height = dip(30)) {
-                            marginEnd = dip(26)
-                            marginStart = dip(10)
-                        }
-
-                        textView(R.string.library_popupmenu_delete_read_chapters).lparams {
-                            gravity = Gravity.CENTER_VERTICAL
-                        }
-
-                        readSizeAction = this
-                    }
-
-                    // Очистка прочитанных глав
-                    linearLayout {
-                        lparams(width = matchParent, height = dip(34)) {
-                            topMargin = dip(10)
-                        }
-
-                        imageView {
-                            backgroundResource =
-                                if (isDark) R.drawable.ic_action_delete_white
-                                else R.drawable.ic_action_delete_black
-                            scaleType = ImageView.ScaleType.FIT_CENTER
-                        }.lparams(width = dip(30), height = dip(30)) {
-                            marginEnd = dip(26)
-                            marginStart = dip(10)
-                        }
-
-                        textView(R.string.library_popupmenu_delete_all).lparams {
-                            gravity = Gravity.CENTER_VERTICAL
-                        }
-
-                        allSizeAction = this
                     }
                 }
             }

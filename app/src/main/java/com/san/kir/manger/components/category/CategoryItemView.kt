@@ -58,7 +58,7 @@ class CategoryItemView(
             // удаление
             deleteBtn = imageView {
                 id = ID.generate()
-                backgroundResource = R.drawable.ic_action_delete_black
+                backgroundResource = R.drawable.ic_action_delete_t
             }.lparams(width = sizeBtn, height = sizeBtn) {
                 gravity = Gravity.CENTER_VERTICAL
                 rightMargin = dip(16)

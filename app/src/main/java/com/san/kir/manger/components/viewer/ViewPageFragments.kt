@@ -11,10 +11,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.davemorrissey.labs.subscaleview.ImageSource
-import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.github.kittinunf.fuel.Fuel
 import com.san.kir.ankofork.Binder
+import com.san.kir.ankofork.SubsamplingScaleImageView.ImageSource
+import com.san.kir.ankofork.SubsamplingScaleImageView.SubsamplingScaleImageView
 import com.san.kir.ankofork.alignParentBottom
 import com.san.kir.ankofork.centerHorizontally
 import com.san.kir.ankofork.dip
@@ -26,12 +26,10 @@ import com.san.kir.ankofork.sdk28.linearLayout
 import com.san.kir.ankofork.sdk28.onClick
 import com.san.kir.ankofork.sdk28.progressBar
 import com.san.kir.ankofork.sdk28.relativeLayout
-import com.san.kir.ankofork.sdk28.scrollView
 import com.san.kir.ankofork.sdk28.textView
 import com.san.kir.ankofork.sp
 import com.san.kir.ankofork.verticalLayout
 import com.san.kir.ankofork.withArguments
-import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.R
 import com.san.kir.manger.components.download_manager.ChapterDownloader
 import com.san.kir.manger.utils.extensions.bigImageView
@@ -86,32 +84,29 @@ class ViewerPageFragment : Fragment() {
             }
 
             linearLayout {
-                lparams(width = matchParent, height = wrapContent)
-                scrollView {
-                    lparams(width = matchParent, height = wrapContent)
-                    post { scrollTo(0, 0) }
-                    view = bigImageView {
-                        lparams(width = matchParent, height = matchParent)
-                        setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CENTER_CROP)
+                lparams(width = matchParent, height = matchParent)
+                view = bigImageView {
+                    lparams(width = matchParent, height = matchParent)
 
-                        onDoubleTapListener {
-                            // Переопределение одиночного нажатия
-                            onSingleTapConfirmed {
-                                if (act.isTapControl) // Включен ли режим управления нажатиями на экран
-                                    if (it.x < ViewerActivity.LEFT_PART_SCREEN) // Нажатие на левую часть экрана
-                                        act.presenter.prevPage() // Предыдущая страница
-                                    else if (it.x > ViewerActivity.RIGHT_PART_SCREEN) // Нажатие на правую часть
-                                        act.presenter.nextPage() // Следущая страница
+                    setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CENTER_CROP)
 
-                                // Если нажатие по центральной части
-                                if (it.x > ViewerActivity.LEFT_PART_SCREEN
-                                    && it.x < ViewerActivity.RIGHT_PART_SCREEN) {
-                                    // Переключение видимости баров
-                                    act.toogleBars()
-                                }
+                    onDoubleTapListener {
+                        // Переопределение одиночного нажатия
+                        onSingleTapConfirmed {
+                            if (act.isTapControl) // Включен ли режим управления нажатиями на экран
+                                if (it.x < ViewerActivity.LEFT_PART_SCREEN) // Нажатие на левую часть экрана
+                                    act.presenter.prevPage() // Предыдущая страница
+                                else if (it.x > ViewerActivity.RIGHT_PART_SCREEN) // Нажатие на правую часть
+                                    act.presenter.nextPage() // Следущая страница
 
-                                true
+                            // Если нажатие по центральной части
+                            if (it.x > ViewerActivity.LEFT_PART_SCREEN
+                                && it.x < ViewerActivity.RIGHT_PART_SCREEN) {
+                                // Переключение видимости баров
+                                act.toogleBars()
                             }
+
+                            true
                         }
                     }
                 }
@@ -186,7 +181,7 @@ class ViewerPageFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        menu.add(0, 2, 2, "Обновить").showAlways().setIcon(R.drawable.ic_action_update_white)
+        menu.add(0, 2, 2, "Обновить").showAlways().setIcon(R.drawable.ic_action_update)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

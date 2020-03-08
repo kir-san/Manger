@@ -1,8 +1,8 @@
 package com.san.kir.manger.components.catalog_for_one_site
 
-import android.graphics.Color
 import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewManager
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -11,19 +11,24 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.tabs.TabLayout
 import com.san.kir.ankofork.AnkoComponent
 import com.san.kir.ankofork.AnkoContext
 import com.san.kir.ankofork.Binder
-import com.san.kir.ankofork.appcompat.themedToolbar
-import com.san.kir.ankofork.design.appBarLayout
+import com.san.kir.ankofork.appcompat.toolbar
 import com.san.kir.ankofork.design.navigationView
+import com.san.kir.ankofork.design.themedAppBarLayout
 import com.san.kir.ankofork.dip
 import com.san.kir.ankofork.horizontalProgressBar
 import com.san.kir.ankofork.include
+import com.san.kir.ankofork.leftPadding
 import com.san.kir.ankofork.matchParent
-import com.san.kir.ankofork.sdk28.backgroundColor
+import com.san.kir.ankofork.rightPadding
 import com.san.kir.ankofork.sdk28.backgroundResource
 import com.san.kir.ankofork.sdk28.button
 import com.san.kir.ankofork.sdk28.imageButton
@@ -31,7 +36,6 @@ import com.san.kir.ankofork.sdk28.linearLayout
 import com.san.kir.ankofork.sdk28.onClick
 import com.san.kir.ankofork.sdk28.space
 import com.san.kir.ankofork.support.drawerLayout
-import com.san.kir.ankofork.support.swipeRefreshLayout
 import com.san.kir.ankofork.support.viewPager
 import com.san.kir.ankofork.toggle
 import com.san.kir.ankofork.verticalLayout
@@ -40,6 +44,7 @@ import com.san.kir.manger.R
 import com.san.kir.manger.components.catalog_for_one_site.CatalogForOneSiteRecyclerPresenter.Companion.DATE
 import com.san.kir.manger.components.catalog_for_one_site.CatalogForOneSiteRecyclerPresenter.Companion.NAME
 import com.san.kir.manger.components.catalog_for_one_site.CatalogForOneSiteRecyclerPresenter.Companion.POP
+import com.san.kir.manger.utils.extensions.doOnApplyWindowInstets
 import com.san.kir.manger.utils.extensions.visibleOrGone
 
 class CatalogForOneSiteView(
@@ -47,9 +52,8 @@ class CatalogForOneSiteView(
     private val presenter: CatalogForOneSiteRecyclerPresenter
 ) : AnkoComponent<CatalogForOneSiteActivity> {
 
-    lateinit var drawerLayout: androidx.drawerlayout.widget.DrawerLayout
+    lateinit var drawerLayout: DrawerLayout
     lateinit var toolbar: Toolbar
-    lateinit var swipe: androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
     val isAction = Binder(true)
     private val sort = Binder(DATE) { sortType ->
@@ -69,15 +73,39 @@ class CatalogForOneSiteView(
         // Адаптер с данными для фильтрации
         drawerLayout {
             lparams(width = matchParent, height = matchParent)
-            fitsSystemWindows = true
+
+            systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
 
             verticalLayout {
                 lparams(width = matchParent, height = matchParent)
 
-                appBarLayout {
+                doOnApplyWindowInstets { v, insets, padding ->
+                    v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                        // Получаем размер выреза, если есть
+                        val cutoutRight = insets.displayCutout?.safeInsetRight ?: 0
+                        val cutoutLeft = insets.displayCutout?.safeInsetLeft ?: 0
+                        // Вычитаем из WindowInsets размер выреза, для fullscreen
+                        rightMargin = insets.systemWindowInsetRight - cutoutRight
+                        leftMargin = insets.systemWindowInsetLeft - cutoutLeft
+                    }
+                    v.updatePadding(
+                        bottom = padding.bottom + insets.systemWindowInsetBottom
+                    )
+                    insets
+                }
+
+                themedAppBarLayout(R.style.ThemeOverlay_AppCompat_DayNight_ActionBar) {
                     lparams(width = matchParent, height = wrapContent)
 
-                    toolbar = themedToolbar(R.style.ThemeOverlay_AppCompat_Dark) {
+                    doOnApplyWindowInstets { v, insets, _ ->
+                        v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                            topMargin = insets.systemWindowInsetTop
+                        }
+                        insets
+                    }
+
+                    toolbar = toolbar {
                         lparams(width = matchParent, height = wrapContent)
                         act.setSupportActionBar(this)
                     }
@@ -91,19 +119,16 @@ class CatalogForOneSiteView(
                     )
                 }.lparams(width = matchParent, height = dip(10))
 
-                swipe = swipeRefreshLayout {
-                    // Список
-                    include<RecyclerView>(R.layout.recycler_view) {
-                        layoutManager = androidx.recyclerview.widget.LinearLayoutManager(act)
-                        this@CatalogForOneSiteView.presenter.into(this)
-                    }
+                // Список
+                include<RecyclerView>(R.layout.recycler_view) {
+                    layoutManager = LinearLayoutManager(act)
+                    this@CatalogForOneSiteView.presenter.into(this)
                 }.lparams(width = matchParent, height = matchParent) {
                     weight = 1f
                 }
 
                 // Нижняя панель для сортировки элементов
                 linearLayout {
-                    backgroundColor = Color.parseColor("#ff212121") // material_grey_900
                     gravity = Gravity.CENTER_HORIZONTAL
 
                     // переключение порядка сортировки
@@ -116,7 +141,7 @@ class CatalogForOneSiteView(
                         }
                     }
 
-                    space { }.lparams(width = dip(34))
+                    space { }.lparams(width = dip(64))
 
                     btn {
                         // Сортировка по названию
@@ -124,7 +149,7 @@ class CatalogForOneSiteView(
                         sort.bind { sortType ->
                             backgroundResource =
                                 if (sortType == NAME) R.drawable.ic_abc_blue
-                                else R.drawable.ic_abc_white
+                                else R.drawable.ic_abc
                         }
                     }
 
@@ -134,7 +159,7 @@ class CatalogForOneSiteView(
                         sort.bind { sortType ->
                             backgroundResource =
                                 if (sortType == DATE) R.drawable.ic_date_range_blue
-                                else R.drawable.ic_date_range_white
+                                else R.drawable.ic_date_range
                         }
                     }
 
@@ -144,11 +169,11 @@ class CatalogForOneSiteView(
                         sort.bind { sortType ->
                             backgroundResource =
                                 if (sortType == POP) R.drawable.ic_rate_blue
-                                else R.drawable.ic_rate_white
+                                else R.drawable.ic_rate
                         }
                     }
 
-                    space { }.lparams(width = dip(34))
+                    space { }.lparams(width = dip(64))
 
                     btn {
                         // Сортировка по популярности
@@ -160,6 +185,17 @@ class CatalogForOneSiteView(
             }
 
             navigationView {
+                doOnApplyWindowInstets { v, insets, padding ->
+                    v.updatePadding(top = padding.top + insets.systemWindowInsetTop)
+                    if (insets.systemWindowInsetRight > insets.systemWindowInsetLeft) {
+                        rightPadding = insets.systemWindowInsetRight
+                        leftPadding = 0
+                    } else {
+                        rightPadding = 0
+                        leftPadding = insets.systemWindowInsetLeft
+                    }
+                    insets
+                }
                 verticalLayout {
                     viewPager {
                         include<TabLayout>(R.layout.tab_layout).apply {
@@ -171,6 +207,12 @@ class CatalogForOneSiteView(
                     }
 
                     button("Очистить") {
+                        doOnApplyWindowInstets { v, insets, padding ->
+                            v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                                bottomMargin = insets.systemWindowInsetBottom
+                            }
+                            insets
+                        }
                         onClick {
                             presenter.pagerAdapter.adapters.forEach { it.clearSelected() }
                         }
@@ -192,7 +234,6 @@ class CatalogForOneSiteView(
                 }
 
             }
-            toggle.drawerArrowDrawable = toggle.drawerArrowDrawable.apply { color = Color.WHITE }
             addDrawerListener(toggle)
             toggle.syncState()
 

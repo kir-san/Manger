@@ -3,14 +3,20 @@ package com.san.kir.manger.components.add_manga
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Spinner
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import com.san.kir.ankofork.AnkoContext
+import com.san.kir.ankofork.appcompat.toolbar
 import com.san.kir.ankofork.backgroundColorResource
+import com.san.kir.ankofork.design.themedAppBarLayout
 import com.san.kir.ankofork.dip
 import com.san.kir.ankofork.margin
 import com.san.kir.ankofork.matchParent
@@ -24,6 +30,7 @@ import com.san.kir.ankofork.sdk28.onClick
 import com.san.kir.ankofork.sdk28.scrollView
 import com.san.kir.ankofork.sdk28.spinner
 import com.san.kir.ankofork.sdk28.textView
+import com.san.kir.ankofork.support.nestedScrollView
 import com.san.kir.ankofork.verticalLayout
 import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.R
@@ -31,6 +38,7 @@ import com.san.kir.manger.extending.dialogs.ColorPicker
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.utils.ActivityView
 import com.san.kir.manger.utils.extensions.BaseActivity
+import com.san.kir.manger.utils.extensions.doOnApplyWindowInstets
 import com.san.kir.manger.utils.extensions.typeText
 import com.san.kir.manger.utils.extensions.typeTextMultiLine
 import com.san.kir.manger.utils.loadImage
@@ -55,11 +63,50 @@ class AddMangaView(private val act: AddMangaActivity) : ActivityView() {
     private lateinit var isUpdate: CheckBox
 
     override fun createView(ui: AnkoContext<BaseActivity>) = with(ui) {
-        linearLayout {
+        verticalLayout {
             lparams(width = matchParent, height = matchParent)
 
-            scrollView {
+            systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
+
+            doOnApplyWindowInstets { v, insets, _ ->
+                v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                    // Получаем размер выреза, если есть
+                    val cutoutRight = insets.displayCutout?.safeInsetRight ?: 0
+                    val cutoutLeft = insets.displayCutout?.safeInsetLeft ?: 0
+                    // Вычитаем из WindowInsets размер выреза, для fullscreen
+                    rightMargin = insets.systemWindowInsetRight - cutoutRight
+                    leftMargin = insets.systemWindowInsetLeft - cutoutLeft
+                }
+                insets
+            }
+
+            themedAppBarLayout(R.style.ThemeOverlay_AppCompat_DayNight_ActionBar) {
+                lparams(width = matchParent, height = wrapContent)
+
+                doOnApplyWindowInstets { v, insets, _ ->
+                    v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                        topMargin = insets.systemWindowInsetTop
+                    }
+                    insets
+                }
+
+                toolbar {
+                    lparams(width = matchParent, height = wrapContent)
+                    act.setSupportActionBar(this)
+                }
+            }
+
+            nestedScrollView {
                 lparams(width = matchParent, height = matchParent)
+                clipToPadding = true
+
+                doOnApplyWindowInstets { v, insets, padding ->
+                    v.updatePadding(
+                        bottom = padding.bottom + insets.systemWindowInsetBottom
+                    )
+                    insets
+                }
 
                 verticalLayout {
                     lparams(width = matchParent, height = wrapContent) {

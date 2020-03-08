@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.ProgressBar
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
+import androidx.core.view.updatePadding
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.work.WorkManager
@@ -17,6 +18,7 @@ import com.san.kir.ankofork.recyclerview.recyclerView
 import com.san.kir.ankofork.sdk28._LinearLayout
 import com.san.kir.manger.R
 import com.san.kir.manger.components.drawer.DrawerActivity
+import com.san.kir.manger.utils.extensions.doOnApplyWindowInstets
 import com.san.kir.manger.utils.extensions.gone
 import com.san.kir.manger.utils.extensions.showNever
 import com.san.kir.manger.utils.extensions.visible
@@ -48,6 +50,13 @@ class LatestChapterActivity : DrawerActivity() {
                 lparams(width = matchParent, height = matchParent)
                 layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
                 _adapter.into(this)
+
+                clipToPadding = false
+
+                doOnApplyWindowInstets { view, insets, padding ->
+                    view.updatePadding(bottom = padding.bottom + insets.systemWindowInsetBottom)
+                    insets
+                }
             }
         }
 

@@ -1,14 +1,18 @@
 package com.san.kir.manger.components.list_chapters
 
-import android.graphics.Color
+import android.graphics.Typeface
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintSet.PARENT_ID
+import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.san.kir.ankofork.AnkoContext
+import com.san.kir.ankofork.backgroundColorResource
 import com.san.kir.ankofork.constraint_layout.ConstraintSetBuilder.Side.BOTTOM
 import com.san.kir.ankofork.constraint_layout.ConstraintSetBuilder.Side.END
 import com.san.kir.ankofork.constraint_layout.ConstraintSetBuilder.Side.START
@@ -19,7 +23,6 @@ import com.san.kir.ankofork.constraint_layout.matchConstraint
 import com.san.kir.ankofork.dip
 import com.san.kir.ankofork.matchParent
 import com.san.kir.ankofork.padding
-import com.san.kir.ankofork.sdk28.backgroundColor
 import com.san.kir.ankofork.sdk28.button
 import com.san.kir.ankofork.sdk28.imageView
 import com.san.kir.ankofork.sdk28.onClick
@@ -32,6 +35,7 @@ import com.san.kir.manger.extending.dialogs.DeleteReadChaptersDialog
 import com.san.kir.manger.utils.ActivityView
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.extensions.BaseActivity
+import com.san.kir.manger.utils.extensions.doOnApplyWindowInstets
 import com.san.kir.manger.utils.loadImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -60,6 +64,16 @@ class ListChapterAboutView(private val act: ListChaptersActivity) : ActivityView
             }
 
             continueBtn = button {
+
+                doOnApplyWindowInstets { v, insets, _ ->
+                    v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                        rightMargin = dip(9)
+                        leftMargin = dip(9)
+                        bottomMargin = insets.systemWindowInsetBottom + dip(9)
+                    }
+                    insets
+                }
+
                 id = ID.generate()
                 isEnabled = false
                 padding = dip(16)
@@ -77,17 +91,18 @@ class ListChapterAboutView(private val act: ListChaptersActivity) : ActivityView
 
             info = textView(act.getString(R.string.list_chapters_about_read, 0, "", 0)) {
                 id = ID.generate()
-                backgroundColor = Color.argb(210, 0, 0, 0)
+                backgroundColorResource = R.color.inverseTextColor
                 padding = dip(18)
                 textSize = 18f
+                typeface = Typeface.DEFAULT_BOLD
             }.lparams(width = matchConstraint, height = wrapContent)
 
             applyConstraintSet {
                 continueBtn {
                     connect(
-                        START to START of PARENT_ID margin dip(9),
-                        BOTTOM to BOTTOM of PARENT_ID margin dip(9),
-                        END to END of PARENT_ID margin dip(9)
+                        START to START of PARENT_ID,
+                        BOTTOM to BOTTOM of PARENT_ID,
+                        END to END of PARENT_ID
                     )
                 }
                 startBtn {

@@ -4,6 +4,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
+import androidx.viewpager.widget.PagerTabStrip
 import com.san.kir.ankofork.include
 import com.san.kir.ankofork.sdk28._LinearLayout
 import com.san.kir.ankofork.startActivity
@@ -20,7 +21,7 @@ class ScheduleActivity : DrawerActivity() {
     override val _LinearLayout.customView: View
         get() = verticalLayout {
             viewPager {
-                include<androidx.viewpager.widget.PagerTabStrip>(R.layout.page_tab_strip)
+                include<PagerTabStrip>(R.layout.page_tab_strip)
                 adapter = SchedulePageAdapter(this@ScheduleActivity)
                 setTitle(R.string.main_menu_schedule)
             }
@@ -28,7 +29,7 @@ class ScheduleActivity : DrawerActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menu.add(0, 0, 0, R.string.schedule_activity_menu_add)
-            .setIcon(R.drawable.ic_add_white)
+            .setIcon(R.drawable.ic_add)
             .showAlways()
         return super.onCreateOptionsMenu(menu)
     }

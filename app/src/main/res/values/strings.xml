@@ -468,11 +468,14 @@
 
     <!-- Preference -->
 
-    <string name="settings_app_dark_theme_default">false</string>
-    <string name="settings_app_dark_theme_key">dark_theme</string>
-    <string name="settings_app_dark_theme_summary">Смена цветового оформления на темное</string>
-    <string name="settings_app_dark_theme_title">Темная тема</string>
-
+    <string name="settings_app_dark_theme_default">@string/settings_app_dark_theme_system</string>
+    <string name="settings_app_dark_theme_key">theme</string>
+    <string name="settings_app_dark_theme_summary">Смена темы оформления</string>
+    <string name="settings_app_dark_theme_title">Тема приложения</string>
+    <string name="settings_app_dark_theme_dark">dark</string>
+    <string name="settings_app_dark_theme_white">white</string>
+    <string name="settings_app_dark_theme_bettery">bettery</string>
+    <string name="settings_app_dark_theme_system">system</string>
 
     <string name="settings_library_title">Настройки библиотеки</string>
 
@@ -539,6 +542,20 @@
     <string name="settings_downloader_wifi_only_summary">Загружать главы только с помощью Wi-Fi</string>
     <string name="settings_downloader_wifi_only_title">Только Wi-Fi</string>
 
+    <string-array name="settings_app_dark_theme_array">
+        <item>Темная тема</item>
+        <item>Светлая тема</item>
+        <item>Темная тема при энергосбережении</item>
+        <item>Системные настройки</item>
+    </string-array>
+
+    <string-array name="settings_app_dark_theme_values">
+        <item>@string/settings_app_dark_theme_dark</item>
+        <item>@string/settings_app_dark_theme_white</item>
+        <item>@string/settings_app_dark_theme_bettery</item>
+        <item>@string/settings_app_dark_theme_system</item>
+    </string-array>
+
     <string-array name="settings_viewer_orientation_array">
         <item>Портретная</item>
         <item>Портретная обратная</item>
@@ -558,14 +575,17 @@
         <item>@string/settings_viewer_orientation_auto_port</item>
         <item>@string/settings_viewer_orientation_auto_land</item>
     </string-array>
+
     <string-array name="settings_viewer_control_default">
         <item>@string/settings_viewer_control_swipes</item>
     </string-array>
+
     <string-array name="settings_viewer_control_array">
         <item>Тапы по экрану</item>
         <item>Свайпы по экрану</item>
         <item>Кнопки громкости</item>
     </string-array>
+
     <string-array name="settings_viewer_control_values">
         <item>@string/settings_viewer_control_taps</item>
         <item>@string/settings_viewer_control_swipes</item>

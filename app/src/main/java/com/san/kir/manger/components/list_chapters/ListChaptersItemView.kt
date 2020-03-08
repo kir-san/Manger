@@ -94,7 +94,7 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
 
             deleteIndicator = imageView {
                 id = View.generateViewId()
-                backgroundResource = R.drawable.ic_action_delete_black
+                backgroundResource = R.drawable.ic_action_delete_t
                 visibleOrGone(false)
             }.lparams(width = dip(20), height = dip(20))
 
@@ -106,13 +106,13 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
 
             downloadBtn = imageView {
                 id = View.generateViewId()
-                backgroundResource = R.drawable.ic_file_download_black
+                backgroundResource = R.drawable.ic_file_download
                 visibility = View.GONE
             }.lparams(width = btnSize, height = btnSize)
 
             stopBtn = imageView {
                 id = View.generateViewId()
-                backgroundResource = R.drawable.ic_clear_black
+                backgroundResource = R.drawable.ic_clear
                 visibility = View.GONE
             }.lparams(width = btnSize, height = btnSize)
 
@@ -152,7 +152,7 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
 
                 status {
                     connect(
-                        START to END of indicator,
+                        START to END of indicator margin dip(3),
                         TOP to BOTTOM of name margin dip(3)
                     )
                 }

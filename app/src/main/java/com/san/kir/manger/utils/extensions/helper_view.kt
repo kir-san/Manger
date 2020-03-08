@@ -105,3 +105,14 @@ class SpecialViewPager : ViewPager {
 
 fun recordInitialPaddingForView(view: View) =
     Rect(view.paddingLeft, view.paddingTop, view.paddingRight, view.paddingBottom)
+
+class SquareImageView : AppCompatImageView {
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) :
+            super(context, attrs, defStyleAttr)
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, widthMeasureSpec)
+    }
+}

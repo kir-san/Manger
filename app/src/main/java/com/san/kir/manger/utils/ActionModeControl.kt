@@ -21,6 +21,7 @@ class ActionModeControl(private val act: BaseActivity) {
     fun hasFinish() = actionMode == null
 
     fun start(callback: ActionMode.Callback) {
+        act.supportActionBar?.hide()
         actionMode = act.startActionMode(callback)
     }
 }

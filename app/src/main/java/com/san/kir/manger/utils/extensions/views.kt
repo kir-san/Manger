@@ -14,8 +14,8 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.san.kir.ankofork.Binder
+import com.san.kir.ankofork.SubsamplingScaleImageView.SubsamplingScaleImageView
 import com.san.kir.ankofork.ankoView
 import com.san.kir.ankofork.bottomPadding
 import com.san.kir.ankofork.dialogs.AlertBuilder
@@ -40,13 +40,11 @@ inline fun ViewManager.bigImageView(init: SubsamplingScaleImageView.() -> Unit) 
         init()
     }
 
-inline fun ViewManager.squareFrameLayout(theme: Int = 0, init: _SquareFrameLayout.() -> Unit) =
-    ankoView(::_SquareFrameLayout, theme) {
-        init()
-    }
-
 inline fun ViewManager.roundedImageView(init: RoundedImageView.() -> Unit) =
     ankoView(::RoundedImageView, 0, init)
+
+inline fun ViewManager.squareImageView(init: SquareImageView.() -> Unit) =
+    ankoView(::SquareImageView, 0, init)
 
 fun ViewManager.labelView(text: Int, init: TextView.() -> Unit = {}) = textView(text) {
     textSize = 14f
@@ -128,12 +126,6 @@ fun View.goneOrVisible(isGone: Binder<Boolean>) {
 
 fun View.invisibleOrVisible(isInvisible: Boolean) {
     visibility = if (isInvisible) View.INVISIBLE else View.VISIBLE
-}
-
-fun View.visibleOrInvisible(isInvisible: Binder<Boolean>) {
-    isInvisible.bind {
-        visibility = if (it) View.VISIBLE else View.INVISIBLE
-    }
 }
 
 fun View.visible() {

@@ -76,6 +76,12 @@ class ViewerActivity : BaseActivity() {
 
         mView.setContentView(this) // Установка разметки
 
+        doFromSdk(28) {
+            window.attributes.layoutInDisplayCutoutMode =
+                if (cutout) WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+                else WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
+        }
+
         setSupportActionBar(mView.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // Кнопка назад в верхнем баре
         supportActionBar?.setShowHideAnimationEnabled(true) // Анимация скрытия, сокрытия
@@ -149,12 +155,6 @@ class ViewerActivity : BaseActivity() {
                 getString(R.string.settings_viewer_control_swipes) -> presenter.isSwipeControl.positive()
                 getString(R.string.settings_viewer_control_keys) -> isKeyControl = true
             }
-        }
-
-        doFromSdk(28) {
-            window.attributes.layoutInDisplayCutoutMode =
-                if (cutout) WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-                else WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
         }
 
         doFromSdk(Build.VERSION_CODES.LOLLIPOP) {

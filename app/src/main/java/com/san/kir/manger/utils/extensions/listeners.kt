@@ -4,7 +4,8 @@ import android.content.Context
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
-import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+import androidx.core.view.GestureDetectorCompat
+import com.san.kir.ankofork.SubsamplingScaleImageView.SubsamplingScaleImageView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -16,7 +17,7 @@ fun SubsamplingScaleImageView.onDoubleTapListener(init: __IPhotoView_OnDoubleTap
     val listener = __IPhotoView_OnDoubleTapListener()
     listener.init()
 
-    val gestureDetector = GestureDetector(this.context, listener)
+    val gestureDetector = GestureDetectorCompat(this.context, listener)
 
     setOnTouchListener { _, event ->
         gestureDetector.onTouchEvent(event)
@@ -85,8 +86,7 @@ fun androidx.recyclerview.widget.RecyclerView.onClick(click: (View, Int) -> Unit
             click.invoke(view, position)
         }
 
-        override fun onLongClick(view: View, position: Int) {
-        }
+        override fun onLongClick(view: View, position: Int) = Unit
     }
     addOnItemTouchListener(
         RecyclerViewTouchListeners(

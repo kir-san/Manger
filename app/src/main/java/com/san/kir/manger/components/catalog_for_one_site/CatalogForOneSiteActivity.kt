@@ -5,19 +5,20 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color
+import android.os.Build
 import android.view.Menu
 import androidx.activity.viewModels
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.lifecycleScope
-import com.san.kir.ankofork.defaultSharedPreferences
 import com.san.kir.ankofork.dialogs.alert
 import com.san.kir.ankofork.dialogs.okButton
+import com.san.kir.ankofork.doFromSdk
 import com.san.kir.ankofork.negative
 import com.san.kir.ankofork.positive
 import com.san.kir.ankofork.sdk28.onQueryTextListener
 import com.san.kir.ankofork.setContentView
-import com.san.kir.ankofork.support.onRefresh
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.utils.extensions.BaseActivity
@@ -58,19 +59,14 @@ class CatalogForOneSiteActivity : BaseActivity() {
 
     /* перезаписанные функции */
     override fun onCreate(savedInstanceState: android.os.Bundle?) {
-        val key = getString(R.string.settings_app_dark_theme_key)
-        val default = getString(R.string.settings_app_dark_theme_default) == "true"
-        val isDark = defaultSharedPreferences.getBoolean(key, default)
-        setTheme(if (isDark) R.style.AppThemeDark else R.style.AppTheme)
-
         super.onCreate(savedInstanceState)
 
-        view.setContentView(this)
-        // Присвоение адаптера
-        view.swipe.onRefresh {
-            reloadCatalogDialog()
-            view.swipe.isRefreshing = false
+        doFromSdk(Build.VERSION_CODES.LOLLIPOP) {
+            window.statusBarColor = ContextCompat.getColor(this, R.color.transparent_dark)
+            window.navigationBarColor = ContextCompat.getColor(this, R.color.transparent_dark2)
         }
+
+        view.setContentView(this)
 
         updateCatalog()
 

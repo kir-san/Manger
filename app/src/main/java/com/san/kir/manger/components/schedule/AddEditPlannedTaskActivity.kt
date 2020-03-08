@@ -1,22 +1,25 @@
 package com.san.kir.manger.components.schedule
 
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.doFromSdk
 import com.san.kir.ankofork.setContentView
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.PlannedTask
 import com.san.kir.manger.utils.enums.PlannedAddEdit
-import com.san.kir.manger.utils.extensions.ThemedActionBarActivity
+import com.san.kir.manger.utils.extensions.BaseActivity
 import com.san.kir.manger.utils.extensions.showAlways
 import com.san.kir.manger.view_models.AddEditPlannedTaskViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 // TODO добавить кнопку удалить
-class AddEditPlannedTaskActivity : ThemedActionBarActivity() {
+class AddEditPlannedTaskActivity : BaseActivity() {
     val mViewModel by viewModels<AddEditPlannedTaskViewModel>()
     private val mView by lazy { AddEditPlannedTaskView(this) }
     private var isEditMode = false
@@ -24,6 +27,12 @@ class AddEditPlannedTaskActivity : ThemedActionBarActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        doFromSdk(Build.VERSION_CODES.LOLLIPOP) {
+            window.statusBarColor = ContextCompat.getColor(this, R.color.transparent_dark)
+            window.navigationBarColor = ContextCompat.getColor(this, R.color.transparent_dark2)
+        }
+
         mView.setContentView(this)
 
         when {

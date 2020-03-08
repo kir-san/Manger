@@ -2,10 +2,15 @@ package com.san.kir.manger.components.list_chapters
 
 import android.graphics.Color
 import android.view.Gravity
+import android.view.ViewGroup
 import android.view.ViewManager
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.san.kir.ankofork.AnkoContext
 import com.san.kir.ankofork.dip
 import com.san.kir.ankofork.include
@@ -20,6 +25,7 @@ import com.san.kir.ankofork.verticalLayout
 import com.san.kir.manger.R
 import com.san.kir.manger.utils.ActivityView
 import com.san.kir.manger.utils.extensions.BaseActivity
+import com.san.kir.manger.utils.extensions.doOnApplyWindowInstets
 import com.san.kir.manger.utils.extensions.visibleOrGone
 
 class ListChapterView(private val act: ListChaptersActivity) : ActivityView() {
@@ -32,11 +38,20 @@ class ListChapterView(private val act: ListChaptersActivity) : ActivityView() {
             // Корень
             lparams(width = matchParent, height = matchParent)
 
+            doOnApplyWindowInstets { view, insets, padding ->
+                view.updatePadding(
+                    bottom = padding.bottom + insets.systemWindowInsetBottom
+                )
+                insets
+            }
+
             // Виджет списка глав (используется такой способ, так как по другому скроллБар не работает)
-            include<androidx.recyclerview.widget.RecyclerView>(R.layout.recycler_view) {
-                layoutManager = object : androidx.recyclerview.widget.LinearLayoutManager(ctx) {
+            include<RecyclerView>(R.layout.recycler_view) {
+
+                layoutManager = object : LinearLayoutManager(ctx) {
                     override fun supportsPredictiveItemAnimations() = false
                 }
+
                 act.mAdapter.into(this)
             }.lparams(width = matchParent, height = matchParent) {
                 weight = 1f
@@ -44,7 +59,6 @@ class ListChapterView(private val act: ListChaptersActivity) : ActivityView() {
 
             // Бар внизу экрана с кнопками сортировки и фильтрации
             linearLayout {
-                backgroundColor = Color.parseColor("#ff212121")
                 gravity = Gravity.CENTER_HORIZONTAL
                 visibleOrGone(vm.isVisibleBottom)
 
@@ -66,7 +80,7 @@ class ListChapterView(private val act: ListChaptersActivity) : ActivityView() {
                     vm.filter.bind {
                         backgroundResource =
                             if (it.isAll) R.drawable.ic_action_all_blue
-                            else R.drawable.ic_action_all_white
+                            else R.drawable.ic_action_all
                     }
                 }
 
@@ -76,7 +90,7 @@ class ListChapterView(private val act: ListChaptersActivity) : ActivityView() {
                     vm.filter.bind {
                         backgroundResource =
                             if (it.isRead) R.drawable.ic_action_read_blue
-                            else R.drawable.ic_action_read_white
+                            else R.drawable.ic_action_read
                     }
                 }
 
@@ -86,7 +100,7 @@ class ListChapterView(private val act: ListChaptersActivity) : ActivityView() {
                     vm.filter.bind {
                         backgroundResource =
                             if (it.isNot) R.drawable.ic_action_not_read_blue
-                            else R.drawable.ic_action_not_read_white
+                            else R.drawable.ic_action_not_read
                     }
                 }
 

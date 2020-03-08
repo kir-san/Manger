@@ -2,11 +2,13 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <SwitchPreference
+    <ListPreference
         android:key="@string/settings_app_dark_theme_key"
         android:defaultValue="@string/settings_app_dark_theme_default"
         android:summary="@string/settings_app_dark_theme_summary"
         android:title="@string/settings_app_dark_theme_title"
+        android:entries="@array/settings_app_dark_theme_array"
+        android:entryValues="@array/settings_app_dark_theme_values"
         />
 
     <PreferenceCategory

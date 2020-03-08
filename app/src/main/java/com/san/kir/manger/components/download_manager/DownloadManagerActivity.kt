@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.text.Html
 import android.view.View
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
@@ -43,14 +42,9 @@ class DownloadManagerActivity : DrawerActivity() {
                 withContext(Dispatchers.Main) {
                     supportActionBar?.title =
                         getString(R.string.main_menu_downloader_count, loadingCount)
-                    supportActionBar?.subtitle =
-                        Html.fromHtml(
-                            "<font color='#FFFFFF'>${getString(
-                                R.string.download_activity_subtitle,
-                                stoppedCount,
-                                completedCount
-                            )}</font>"
-                        )
+                    supportActionBar?.subtitle = getString(
+                        R.string.download_activity_subtitle, stoppedCount, completedCount
+                    )
                 }
             }
         }

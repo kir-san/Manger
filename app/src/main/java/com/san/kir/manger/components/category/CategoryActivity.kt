@@ -3,7 +3,11 @@ package com.san.kir.manger.components.category
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import androidx.activity.viewModels
+import androidx.core.view.setMargins
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import com.san.kir.ankofork.design.floatingActionButton
 import com.san.kir.ankofork.dip
 import com.san.kir.ankofork.matchParent
@@ -15,6 +19,7 @@ import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.R
 import com.san.kir.manger.components.drawer.DrawerActivity
 import com.san.kir.manger.room.entities.Category
+import com.san.kir.manger.utils.extensions.doOnApplyWindowInstets
 import com.san.kir.manger.view_models.CategoryViewModel
 
 class CategoryActivity : DrawerActivity() {
@@ -30,17 +35,30 @@ class CategoryActivity : DrawerActivity() {
                 setHasFixedSize(true)
                 layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
                 mAdapter.into(this)
+
+                clipToPadding = false
+
+                doOnApplyWindowInstets { view, insets, padding ->
+                    view.updatePadding(bottom = padding.bottom + insets.systemWindowInsetBottom)
+                    insets
+                }
             }
 
             floatingActionButton {
-                setImageResource(R.drawable.ic_add_white)
+                setImageResource(R.drawable.ic_add)
                 onClick {
                     addCategory()
                 }
+
+                doOnApplyWindowInstets { view, insets, padding ->
+                    view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                        bottomMargin = insets.systemWindowInsetBottom + dip(16)
+                    }
+                    insets
+                }
             }.lparams(width = wrapContent, height = wrapContent) {
-                gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-                bottomMargin = dip(5)
-                topMargin = dip(2)
+                gravity = Gravity.BOTTOM or Gravity.END
+                setMargins(dip(16))
             }
         }
 

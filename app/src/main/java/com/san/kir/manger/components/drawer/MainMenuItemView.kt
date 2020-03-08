@@ -7,7 +7,6 @@ import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.san.kir.ankofork.AnkoContext
-import com.san.kir.ankofork.defaultSharedPreferences
 import com.san.kir.ankofork.dip
 import com.san.kir.ankofork.margin
 import com.san.kir.ankofork.matchParent
@@ -61,15 +60,7 @@ class MainMenuItemView(private val act: BaseActivity, private val viewModel: Dra
         act.lifecycleScope.launch(Dispatchers.Main) {
             name.text = item.name
             type.setCounter(item.type)
-            val key = act.getString(R.string.settings_app_dark_theme_key)
-            val default = act.getString(R.string.settings_app_dark_theme_default) == "true"
-            val isDark = act.defaultSharedPreferences.getBoolean(key, default)
-            icon.setImageResource(
-                if (isDark)
-                    setDarkIcon(item.type)
-                else
-                    setWhiteIcon(item.type)
-            )
+            icon.setImageResource(setIcon(item.type))
         }
     }
 
@@ -112,29 +103,16 @@ class MainMenuItemView(private val act: BaseActivity, private val viewModel: Dra
         }
     }
 
-    private fun setDarkIcon(type: MainMenuType): Int = when (type) {
-        MainMenuType.Library -> R.drawable.ic_library_white
-        MainMenuType.Storage -> R.drawable.ic_storage_white
-        MainMenuType.Category -> R.drawable.ic_category_white
-        MainMenuType.Catalogs -> R.drawable.ic_catalogs_white
-        MainMenuType.Downloader -> R.drawable.ic_action_download_white
+    private fun setIcon(type: MainMenuType): Int = when (type) {
+        MainMenuType.Library -> R.drawable.ic_library
+        MainMenuType.Storage -> R.drawable.ic_storage
+        MainMenuType.Category -> R.drawable.ic_category
+        MainMenuType.Catalogs -> R.drawable.ic_catalogs
+        MainMenuType.Downloader -> R.drawable.ic_action_download
         MainMenuType.Latest -> R.drawable.ic_update
-        MainMenuType.Schedule -> R.drawable.ic_schedule_white
-        MainMenuType.Settings -> R.drawable.ic_settings_white
-        MainMenuType.Statistic -> R.drawable.ic_statistic_white
-        MainMenuType.Default -> R.drawable.ic_library_white
-    }
-
-    private fun setWhiteIcon(type: MainMenuType): Int = when (type) {
-        MainMenuType.Library -> R.drawable.ic_library_black
-        MainMenuType.Storage -> R.drawable.ic_storage_black
-        MainMenuType.Category -> R.drawable.ic_category_black
-        MainMenuType.Catalogs -> R.drawable.ic_catalogs_black
-        MainMenuType.Downloader -> R.drawable.ic_action_download_black
-        MainMenuType.Latest -> R.drawable.ic_update_black
-        MainMenuType.Schedule -> R.drawable.ic_schedule_black
-        MainMenuType.Settings -> R.drawable.ic_settings_black
-        MainMenuType.Statistic -> R.drawable.ic_statistic_black
-        MainMenuType.Default -> R.drawable.ic_library_black
+        MainMenuType.Schedule -> R.drawable.ic_schedule
+        MainMenuType.Settings -> R.drawable.ic_settings
+        MainMenuType.Statistic -> R.drawable.ic_statistic
+        MainMenuType.Default -> R.drawable.ic_library
     }
 }

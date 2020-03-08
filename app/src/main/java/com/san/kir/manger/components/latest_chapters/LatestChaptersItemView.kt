@@ -82,13 +82,13 @@ class LatestChaptersItemView(private val act: LatestChapterActivity) :
 
             downloadBtn = imageView {
                 id = View.generateViewId()
-                backgroundResource = R.drawable.ic_file_download_black
+                backgroundResource = R.drawable.ic_action_download
                 visibility = View.GONE
             }.lparams(width = btnSize, height = btnSize)
 
             stopBtn = imageView {
                 id = View.generateViewId()
-                backgroundResource = R.drawable.ic_clear_black
+                backgroundResource = R.drawable.ic_clear
                 visibility = View.GONE
             }.lparams(width = btnSize, height = btnSize)
 

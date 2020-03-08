@@ -33,17 +33,17 @@ class ListChaptersActionCallback(
     override fun onCreateActionMode(mode: ActionMode, menu: Menu?): Boolean {
         // Выделить все
         mode.menu.add(groupId, Id.selectAll, Id.selectAll, R.string.action_select_all)
-            .setIcon(R.drawable.ic_action_all_white)
+            .setIcon(R.drawable.ic_action_all)
             .showAlways()
 
         // Удалить выделенное
         mode.menu.add(groupId, Id.delete, 100, R.string.action_delete)
-            .setIcon(R.drawable.ic_action_delete_white)
+            .setIcon(R.drawable.ic_action_delete)
             .showIfRoom()
 
         // Скачать выделенное
         mode.menu.add(groupId, Id.download, 100, R.string.action_set_download)
-            .setIcon(R.drawable.ic_action_download_white)
+            .setIcon(R.drawable.ic_action_download)
             .showIfRoom()
 
         // Сделать прочитанными
@@ -147,6 +147,7 @@ class ListChaptersActionCallback(
         adapter.removeSelection() // Очистить выделение
         act.actionMode.clear()
         act.mViewModel.isVisibleBottom.item = true // Показать бар внизу экрана
+        act.supportActionBar?.show()
     }
 
     private fun actionTitle(): String {

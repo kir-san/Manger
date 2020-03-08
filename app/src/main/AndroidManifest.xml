@@ -63,7 +63,7 @@
             />
         <activity
             android:name=".components.list_chapters.ListChaptersActivity"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            android:theme="@style/AppTheme"
             />
 
         <activity
@@ -73,7 +73,7 @@
 
         <activity
             android:name=".components.add_manga.AddMangaActivity"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateHidden"
             />
         <activity
@@ -87,7 +87,7 @@
             />
         <activity
             android:name=".components.schedule.AddEditPlannedTaskActivity"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateHidden"
             />
         <activity
@@ -96,12 +96,12 @@
             />
         <activity
             android:name=".components.statistics.StatisticItemActivity"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            android:theme="@style/AppTheme"
             />
         <activity
             android:name=".components.sites_catalog.GlobalSearchActivity"
             android:label="@string/main_menu_search"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            android:theme="@style/AppTheme"
             />
 
         <service
@@ -121,7 +121,6 @@
             android:name="com.evernote.android.job.gcm.PlatformGcmService"
             android:enabled="true"
             tools:replace="android:enabled"/>
-        <service android:name=".services.MigrateLatestChapterToChapterService" />
 
     </application>
 </manifest>

@@ -1,20 +1,23 @@
 package com.san.kir.manger.components.drawer
 
 import android.content.Intent
-import android.graphics.Color
 import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.san.kir.ankofork.AnkoContextImpl
-import com.san.kir.ankofork.appcompat.themedToolbar
-import com.san.kir.ankofork.design.appBarLayout
+import com.san.kir.ankofork.appcompat.toolbar
 import com.san.kir.ankofork.design.navigationView
+import com.san.kir.ankofork.design.themedAppBarLayout
 import com.san.kir.ankofork.dip
 import com.san.kir.ankofork.leftPadding
 import com.san.kir.ankofork.matchParent
@@ -22,11 +25,10 @@ import com.san.kir.ankofork.padding
 import com.san.kir.ankofork.recyclerview.recyclerView
 import com.san.kir.ankofork.rightPadding
 import com.san.kir.ankofork.sdk28._LinearLayout
-import com.san.kir.ankofork.sdk28.backgroundColor
 import com.san.kir.ankofork.sdk28.backgroundResource
 import com.san.kir.ankofork.sdk28.imageView
+import com.san.kir.ankofork.sdk28.linearLayout
 import com.san.kir.ankofork.sdk28.textView
-import com.san.kir.ankofork.sdk28.themedLinearLayout
 import com.san.kir.ankofork.support.drawerLayout
 import com.san.kir.ankofork.topPadding
 import com.san.kir.ankofork.verticalLayout
@@ -46,6 +48,7 @@ import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.SimpleItemTouchHelperCallback
 import com.san.kir.manger.utils.enums.MainMenuType
 import com.san.kir.manger.utils.extensions.BaseActivity
+import com.san.kir.manger.utils.extensions.doOnApplyWindowInstets
 import com.san.kir.manger.utils.extensions.onClick
 import com.san.kir.manger.view_models.DrawerViewModel
 import kotlinx.coroutines.Dispatchers
@@ -86,14 +89,33 @@ class DrawerView(private val act: DrawerActivity) {
         return with(AnkoContextImpl(act, act, true)) {
             drawerLayout {
                 lparams(width = matchParent, height = matchParent)
-                fitsSystemWindows = true
-
+                systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        or View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
                 verticalLayout {
                     lparams(width = matchParent, height = matchParent)
 
-                    appBarLayout {
+                    doOnApplyWindowInstets { v, insets, _ ->
+                        v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                            // Получаем размер выреза, если есть
+                            val cutoutRight = insets.displayCutout?.safeInsetRight ?: 0
+                            val cutoutLeft = insets.displayCutout?.safeInsetLeft ?: 0
+                            // Вычитаем из WindowInsets размер выреза, для fullscreen
+                            rightMargin = insets.systemWindowInsetRight - cutoutRight
+                            leftMargin = insets.systemWindowInsetLeft - cutoutLeft
+                        }
+                        insets
+                    }
 
-                        toolbar = themedToolbar(R.style.ThemeOverlay_AppCompat_Dark) {
+                    themedAppBarLayout(R.style.ThemeOverlay_AppCompat_DayNight_ActionBar) {
+
+                        doOnApplyWindowInstets { v, insets, _ ->
+                            v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                                topMargin = insets.systemWindowInsetTop
+                            }
+                            insets
+                        }
+
+                        toolbar = toolbar {
                             lparams(width = matchParent, height = wrapContent)
                             act.setSupportActionBar(this)
                         }
@@ -103,10 +125,20 @@ class DrawerView(private val act: DrawerActivity) {
                 }
 
                 navigationView {
+                    doOnApplyWindowInstets { v, insets, padding ->
+                        v.updatePadding(top = padding.top + insets.systemWindowInsetTop)
+                        if (insets.systemWindowInsetRight > insets.systemWindowInsetLeft) {
+                            rightPadding = insets.systemWindowInsetRight
+                            leftPadding = 0
+                        } else {
+                            rightPadding = 0
+                            leftPadding = insets.systemWindowInsetLeft
+                        }
+                        insets
+                    }
                     verticalLayout {
-                        themedLinearLayout(R.style.ThemeOverlay_AppCompat_Dark) {
+                        linearLayout {
                             lparams(width = matchParent, height = wrapContent)
-                            backgroundColor = Color.parseColor("#ff212121") // material_grey_900
                             padding = dip(6)
 
                             // Иконка приложения
@@ -142,7 +174,7 @@ class DrawerView(private val act: DrawerActivity) {
                         recyclerView {
                             setHasFixedSize(true)
                             layoutManager =
-                                androidx.recyclerview.widget.LinearLayoutManager(context)
+                                LinearLayoutManager(context)
                             mItemTouchHelper.attachToRecyclerView(this)
                             adapter = mAdapter
                             overScrollMode = View.OVER_SCROLL_NEVER
@@ -154,7 +186,7 @@ class DrawerView(private val act: DrawerActivity) {
                         }
                     }
 
-                }.lparams(width = wrapContent, height = matchParent) {
+                }.lparams(width = matchParent, height = matchParent) {
                     gravity = GravityCompat.START
                 }
 
@@ -164,7 +196,7 @@ class DrawerView(private val act: DrawerActivity) {
                     R.string.navigation_drawer_close
                 ).apply {
                     addDrawerListener(this)
-                    drawerArrowDrawable = drawerArrowDrawable.apply { color = Color.WHITE }
+//                    drawerArrowDrawable = drawerArrowDrawable.apply { color = Color.WHITE }
                     syncState()
                 }
                 drawerLayout = this

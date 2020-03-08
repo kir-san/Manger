@@ -1,7 +1,6 @@
 package com.san.kir.manger.components.library
 
 import android.content.res.Resources
-import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -50,21 +49,8 @@ abstract class LibraryItemView(
         name.text = item.name
         if (item.color != 0) {
             try {
-                val drawableCompat = act.getDrawableCompat(item.color).apply {
-                    this?.alpha = 210
-                }
-                name.background = drawableCompat
-                notReadChapters.background = drawableCompat
                 root.background = act.getDrawableCompat(item.color)
             } catch (ex: Resources.NotFoundException) {
-                val newColor = Color.argb(
-                    210,
-                    Color.red(item.color),
-                    Color.green(item.color),
-                    Color.blue(item.color)
-                )
-                name.backgroundColor = newColor
-                notReadChapters.backgroundColor = newColor
                 root.backgroundColor = item.color
             }
         }

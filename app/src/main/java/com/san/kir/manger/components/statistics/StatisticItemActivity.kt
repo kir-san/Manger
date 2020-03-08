@@ -1,34 +1,38 @@
 package com.san.kir.manger.components.statistics
 
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import com.san.kir.ankofork.defaultSharedPreferences
+import com.san.kir.ankofork.doFromSdk
 import com.san.kir.ankofork.setContentView
 import com.san.kir.manger.R
-import com.san.kir.manger.utils.extensions.ThemedActionBarActivity
+import com.san.kir.manger.utils.extensions.BaseActivity
 import com.san.kir.manger.view_models.StatisticViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class StatisticItemActivity : ThemedActionBarActivity() {
+class StatisticItemActivity : BaseActivity() {
     val mViewModel by viewModels<StatisticViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val key = getString(R.string.settings_app_dark_theme_key)
-        val default = getString(R.string.settings_app_dark_theme_default) == "true"
-        val isDark = defaultSharedPreferences.getBoolean(key, default)
-        setTheme(if (isDark) R.style.AppThemeDark else R.style.AppTheme)
-
         super.onCreate(savedInstanceState)
 
-            lifecycleScope.launchWhenResumed {
+        doFromSdk(Build.VERSION_CODES.LOLLIPOP) {
+            window.statusBarColor = ContextCompat.getColor(this, R.color.transparent_dark)
+            window.navigationBarColor = ContextCompat.getColor(this, R.color.transparent_dark2)
+        }
+
+        lifecycleScope.launchWhenResumed {
             val manga = withContext(Dispatchers.Default) {
                 mViewModel.getStatisticItem(intent.getStringExtra("manga"))
             }
-            StatisticItemFullView(manga).setContentView(this@StatisticItemActivity)
+            val statisticItemFullView = StatisticItemFullView(manga)
+            statisticItemFullView.setContentView(this@StatisticItemActivity)
 
+            setSupportActionBar(statisticItemFullView.appbar)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
             supportActionBar?.title = manga.manga
         }

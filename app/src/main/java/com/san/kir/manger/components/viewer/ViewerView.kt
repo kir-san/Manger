@@ -70,8 +70,6 @@ class ViewerView(private val presenter: ViewerPresenter) : AnkoComponent<ViewerA
                 endToEnd = PARENT_ID
             }
 
-
-
             viewPager = specialViewPager {
                 id = ID.generate()
                 presenter.into(this)
@@ -98,6 +96,13 @@ class ViewerView(private val presenter: ViewerPresenter) : AnkoComponent<ViewerA
                 doOnApplyWindowInstets { v, insets, _ ->
                     v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                         topMargin = insets.systemWindowInsetTop
+
+                        // Получаем размер выреза, если есть
+                        val cutoutRight = insets.displayCutout?.safeInsetRight ?: 0
+                        val cutoutLeft = insets.displayCutout?.safeInsetLeft ?: 0
+                        // Вычитаем из WindowInsets размер выреза, для fullscreen
+                        rightMargin = insets.systemWindowInsetRight - cutoutRight
+                        leftMargin = insets.systemWindowInsetLeft - cutoutLeft
                     }
                     insets
                 }
@@ -117,6 +122,18 @@ class ViewerView(private val presenter: ViewerPresenter) : AnkoComponent<ViewerA
 
                 padding = dip(4)
                 backgroundColor = ContextCompat.getColor(this.context, R.color.transparent_dark)
+
+                doOnApplyWindowInstets { v, insets, _ ->
+                    v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                        // Получаем размер выреза, если есть
+                        val cutoutRight = insets.displayCutout?.safeInsetRight ?: 0
+                        val cutoutLeft = insets.displayCutout?.safeInsetLeft ?: 0
+                        // Вычитаем из WindowInsets размер выреза, для fullscreen
+                        rightMargin = insets.systemWindowInsetRight - cutoutRight
+                        leftMargin = insets.systemWindowInsetLeft - cutoutLeft
+                    }
+                    insets
+                }
 
                 textView {
                     id = Id.chapters

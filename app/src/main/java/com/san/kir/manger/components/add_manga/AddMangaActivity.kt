@@ -1,28 +1,35 @@
 package com.san.kir.manger.components.add_manga
 
 import android.R.id
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.doFromSdk
 import com.san.kir.ankofork.setContentView
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.MangaColumn
-import com.san.kir.manger.utils.extensions.ThemedActionBarActivity
+import com.san.kir.manger.utils.extensions.BaseActivity
 import com.san.kir.manger.utils.extensions.showAlways
 import com.san.kir.manger.view_models.AddMangaViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class AddMangaActivity : ThemedActionBarActivity() {
+class AddMangaActivity : BaseActivity() {
     private val mView by lazy { AddMangaView(this) }
     val mViewModel by viewModels<AddMangaViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        doFromSdk(Build.VERSION_CODES.LOLLIPOP) {
+            window.statusBarColor = ContextCompat.getColor(this, R.color.transparent_dark)
+            window.navigationBarColor = ContextCompat.getColor(this, R.color.transparent_dark2)
+        }
         mView.setContentView(this)
         setTitle(R.string.add_manga_title)
         when {

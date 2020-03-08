@@ -3,5 +3,9 @@
     <color name="colorPrimary">#3f51b5</color>
     <color name="colorPrimaryDark">#222e7a</color>
     <color name="colorAccent">#ff4081</color>
-    <color name="transparent_dark">#80000000</color>
+    <color name="transparent_dark">#4D000000</color>
+    <color name="transparent_dark2">#99000000</color>
+    <color name="iconColor">#F2000000</color>
+    <color name="inverseTextColor">#F2FFFFFF</color>
+    <color name="backgroundColor">#FFFFFF</color>
 </resources>

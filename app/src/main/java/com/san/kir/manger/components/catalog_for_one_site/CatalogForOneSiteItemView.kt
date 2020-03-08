@@ -69,7 +69,7 @@ class CatalogForOneSiteItemView(private val act: CatalogForOneSiteActivity) :
             }
 
             updBtn = imageView {
-                setImageResource(R.drawable.ic_action_update_white)
+                setImageResource(R.drawable.ic_action_update)
                 visibleOrGone(false)
             }.lparams(width = dip(35), height = dip(35)) {
                 margin = dip(16)

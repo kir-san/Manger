@@ -1,10 +1,12 @@
 package com.san.kir.manger.components.drawer
 
+import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
-import com.san.kir.ankofork.defaultSharedPreferences
 import com.san.kir.ankofork.dialogs.toast
+import com.san.kir.ankofork.doFromSdk
 import com.san.kir.ankofork.sdk28._LinearLayout
 import com.san.kir.manger.R
 import com.san.kir.manger.utils.extensions.BaseActivity
@@ -15,13 +17,12 @@ abstract class DrawerActivity : BaseActivity() {
     abstract val _LinearLayout.customView: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        val key = getString(R.string.settings_app_dark_theme_key)
-        val default = getString(R.string.settings_app_dark_theme_default) == "true"
-        val isDark = defaultSharedPreferences.getBoolean(key, default)
-        setTheme(if (isDark) R.style.AppThemeDark else R.style.AppTheme)
-
         super.onCreate(savedInstanceState)
+
+        doFromSdk(Build.VERSION_CODES.LOLLIPOP) {
+            window.statusBarColor = ContextCompat.getColor(this, R.color.transparent_dark)
+            window.navigationBarColor = ContextCompat.getColor(this, R.color.transparent_dark2)
+        }
 
         mView.createView(this) {
             customView

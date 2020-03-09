@@ -10,7 +10,7 @@ class LatestChapterViewModel(app: Application) : AndroidViewModel(app) {
     private val mChapterRepository = ChapterRepository(app)
     private val mDownloadRepository = DownloadRepository(app)
 
-    fun getLatestItems() = mChapterRepository.loadInUpdateItems()
+    fun items() = mChapterRepository.loadInUpdateItems()
     suspend fun delete(chapter: Chapter) = mChapterRepository.delete(chapter)
     suspend fun update(chapter: Chapter) = mChapterRepository.update(chapter)
     suspend fun hasNewChapters() = newChapters().isNotEmpty()

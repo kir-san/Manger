@@ -17,4 +17,11 @@
 
     <!--  AddManga  -->
     <item name="add_manga_menu_item_ready" type="id" />
+
+    <!--  LatestChapters  -->
+    <item name="latests_menu_download_new" type="id"/>
+    <item name="latests_menu_clean" type="id"/>
+    <item name="latests_menu_clean_read" type="id"/>
+    <item name="latests_menu_clean_download" type="id"/>
+
 </resources>

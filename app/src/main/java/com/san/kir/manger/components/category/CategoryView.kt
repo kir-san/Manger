@@ -16,7 +16,7 @@ import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.R
 import com.san.kir.manger.utils.extensions.doOnApplyWindowInstets
 
-class CategoryView(private val act: CategoryActivity) {
+class CategoryView(private val mAdapter: CategoryRecyclerPresenter) {
      fun view(view: LinearLayout) = with(view) {
          frameLayout {
              lparams(width = matchParent, height = matchParent)
@@ -25,7 +25,7 @@ class CategoryView(private val act: CategoryActivity) {
                  lparams(width = matchParent, height = matchParent)
                  setHasFixedSize(true)
                  layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
-                 act.mAdapter.into(this)
+                 mAdapter.into(this)
 
                  clipToPadding = false
 
@@ -38,7 +38,7 @@ class CategoryView(private val act: CategoryActivity) {
              floatingActionButton {
                  setImageResource(R.drawable.ic_add)
                  onClick {
-                     act.addCategory()
+                     mAdapter.addCategory()
                  }
 
                  doOnApplyWindowInstets { view, insets, _ ->

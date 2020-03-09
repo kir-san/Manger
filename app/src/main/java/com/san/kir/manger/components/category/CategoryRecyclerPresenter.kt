@@ -31,10 +31,14 @@ class CategoryRecyclerPresenter(private val act: CategoryActivity) : RecyclerPre
         swapItems()
     }
 
-    fun add(category: Category) = act.lifecycleScope.launch {
-        category.order = adapter.itemCount + 1
-        act.mViewModel.insert(category)
-        swapItems()
+    fun addCategory() {
+        CategoryEditDialog(act, Category()) { category ->
+            act.lifecycleScope.launch {
+                category.order = adapter.itemCount + 1
+                act.mViewModel.insert(category)
+                swapItems()
+            }
+        }
     }
 
     fun remove(cat: Category) = act.lifecycleScope.launch {
@@ -61,8 +65,7 @@ class CategoryRecyclerPresenter(private val act: CategoryActivity) : RecyclerPre
     }
 
     private fun RecyclerViewAdapterFactory.DraggableRecyclerViewAdapter<Category>.onItemMoveFun(
-        from: Int,
-        to: Int
+        from: Int, to: Int
     ) {
         act.lifecycleScope.launch(Dispatchers.Main) {
             withContext(Dispatchers.Default) {

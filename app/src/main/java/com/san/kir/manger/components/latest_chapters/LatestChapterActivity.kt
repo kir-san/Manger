@@ -4,21 +4,13 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.ProgressBar
 import androidx.activity.viewModels
-import androidx.core.content.ContextCompat
-import androidx.core.view.updatePadding
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.work.WorkManager
-import com.san.kir.ankofork.dip
-import com.san.kir.ankofork.horizontalProgressBar
-import com.san.kir.ankofork.matchParent
-import com.san.kir.ankofork.recyclerview.recyclerView
 import com.san.kir.ankofork.sdk28._LinearLayout
 import com.san.kir.manger.R
 import com.san.kir.manger.components.drawer.DrawerActivity
-import com.san.kir.manger.utils.extensions.doOnApplyWindowInstets
 import com.san.kir.manger.utils.extensions.gone
 import com.san.kir.manger.utils.extensions.showNever
 import com.san.kir.manger.utils.extensions.visible
@@ -32,40 +24,20 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class LatestChapterActivity : DrawerActivity() {
-    private val _adapter = LatestChaptersRecyclerPresenter(this)
-    private lateinit var action: ProgressBar
+    private val mAdapter = LatestChaptersRecyclerPresenter(this)
+    private val mView = LatestChapterView(mAdapter)
 
     val mViewModel by viewModels<LatestChapterViewModel>()
+
     override val _LinearLayout.customView: View
-        get() = this.apply {
-            action = horizontalProgressBar {
-                isIndeterminate = true
-                gone()
-                progressDrawable = ContextCompat.getDrawable(
-                    this@LatestChapterActivity,
-                    R.drawable.storage_progressbar
-                )
-            }.lparams(width = matchParent, height = dip(10))
-            recyclerView {
-                lparams(width = matchParent, height = matchParent)
-                layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
-                _adapter.into(this)
-
-                clipToPadding = false
-
-                doOnApplyWindowInstets { view, insets, padding ->
-                    view.updatePadding(bottom = padding.bottom + insets.systemWindowInsetBottom)
-                    insets
-                }
-            }
-        }
+        get() = mView.view(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         lifecycleScope.launchWhenCreated {
             mViewModel
-                .getLatestItems()
+                .items()
                 .collect { list ->
                     if (list.isNotEmpty())
                         title = getString(R.string.main_menu_latest_count, list.size)
@@ -80,36 +52,44 @@ class LatestChapterActivity : DrawerActivity() {
             .observe(this, Observer { works ->
                 if (works.isNotEmpty())
                     if (works.all { it.state.isFinished }) {
-                        action.gone()
+                        mView.action.gone()
                     } else {
-                        action.visible()
-                    } })
+                        mView.action.visible()
+                    }
+            })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menu.add(0, 0, 0, R.string.latest_chapter_download_new).showNever()
-        menu.add(1, 1, 1, R.string.latest_chapter_clean).showNever()
-        menu.add(1, 2, 2, R.string.latest_chapter_clean_read).showNever()
-        menu.add(1, 3, 3, R.string.latest_chapter_clean_download).showNever()
+        menu.add(0, R.id.latests_menu_download_new, 0, R.string.latest_chapter_download_new)
+            .showNever()
+        menu.add(1, R.id.latests_menu_clean, 1, R.string.latest_chapter_clean)
+            .showNever()
+        menu.add(1, R.id.latests_menu_clean_read, 2, R.string.latest_chapter_clean_read)
+            .showNever()
+        menu.add(1, R.id.latests_menu_clean_download, 3, R.string.latest_chapter_clean_download)
+            .showNever()
         return super.onCreateOptionsMenu(menu)
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         lifecycleScope.launch(Dispatchers.Main) {
-            menu.getItem(0).isEnabled = _adapter.hasNewChapters()
+            menu.findItem(R.id.latests_menu_download_new).isEnabled = mAdapter.hasNewChapters()
         }
         return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            0 -> {
-                _adapter.downloadNewChapters()
+            R.id.latests_menu_download_new -> {
+                mAdapter.downloadNewChapters()
                 item.isEnabled = false
             }
-            1 -> LatestClearWorker.addTask<AllLatestClearWorker>(this)
-            2 -> LatestClearWorker.addTask<ReadLatestClearWorker>(this)
-            3 -> LatestClearWorker.addTask<DownloadedLatestClearWorker>(this)
+            R.id.latests_menu_clean ->
+                LatestClearWorker.addTask<AllLatestClearWorker>(this)
+            R.id.latests_menu_clean_read ->
+                LatestClearWorker.addTask<ReadLatestClearWorker>(this)
+            R.id.latests_menu_clean_download ->
+                LatestClearWorker.addTask<DownloadedLatestClearWorker>(this)
         }
         return true
     }

@@ -9,29 +9,25 @@ import com.san.kir.manger.services.DownloadService
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class LatestChaptersRecyclerPresenter(private val act: LatestChapterActivity) :
     RecyclerPresenter() {
     private val adapter = RecyclerViewAdapterFactory
-//        .createSimple { LatestChaptersItemView(act) }
         .createPaging({ LatestChaptersItemView(act) },
                       { oldItem, newItem -> oldItem.id == newItem.id },
                       { oldItem, newItem -> oldItem == newItem })
+
     override fun into(recyclerView: RecyclerView) {
         super.into(recyclerView)
         recycler.adapter = adapter
 
         act.lifecycleScope.launchWhenResumed {
             act.mViewModel
-//                .getLatestItems()
-//                .collect { items ->
-//                    adapter.items = items
-//                    adapter.notifyDataSetChanged()
-//                }
                 .loadPagedItems()
-                .observe(act, Observer {  adapter.submitList(it) })
+                .collect { adapter.submitList(it) }
         }
 
 
@@ -56,7 +52,8 @@ class LatestChaptersRecyclerPresenter(private val act: LatestChapterActivity) :
         }).attachToRecyclerView(recyclerView)
     }
 
-    suspend fun hasNewChapters() = withContext(Dispatchers.Default) { act.mViewModel.hasNewChapters() }
+    suspend fun hasNewChapters() =
+        withContext(Dispatchers.Default) { act.mViewModel.hasNewChapters() }
 
     fun downloadNewChapters() = act.lifecycleScope.launch(Dispatchers.Main) {
         withContext(Dispatchers.Default) {

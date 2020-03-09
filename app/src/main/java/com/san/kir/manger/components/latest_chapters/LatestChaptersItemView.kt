@@ -38,7 +38,9 @@ import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.enums.DownloadStatus
 import com.san.kir.manger.utils.extensions.visibleOrGone
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -139,6 +141,7 @@ class LatestChaptersItemView(private val act: LatestChapterActivity) :
         }
     }
 
+    @ExperimentalCoroutinesApi
     override fun bind(item: Chapter, isSelected: Boolean, position: Int) {
         this.item = item
 
@@ -157,11 +160,9 @@ class LatestChaptersItemView(private val act: LatestChapterActivity) :
                 root.backgroundColor = color
             }
 
-            act.mViewModel.getDownloadItems(item).collect {
-                withContext(Dispatchers.Main) {
-                    changeVisibilityAndActions(it, item)
-                }
-            }
+            act.mViewModel.getDownloadItems(item)
+                .onEach { changeVisibilityAndActions(it, item) }
+                .flowOn(Dispatchers.Main)
         }
     }
 

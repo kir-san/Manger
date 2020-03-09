@@ -1,8 +1,6 @@
 package com.san.kir.ankofork.support
 
 import androidx.core.widget.NestedScrollView
-import androidx.fragment.app.FragmentTabHost
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager.widget.ViewPager
 
 
@@ -45,16 +43,7 @@ class __ViewPager_OnPageChangeListener : ViewPager.OnPageChangeListener {
 }
 
 @Suppress("unused")
-inline fun FragmentTabHost.onTabChanged(noinline l: (tabId: String?) -> Unit) {
-    setOnTabChangedListener(l)
-}
-
-@Suppress("unused")
 inline fun NestedScrollView.onScrollChange(noinline l: (v: NestedScrollView?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int) -> Unit) {
     setOnScrollChangeListener(l)
-}
-
-inline fun SwipeRefreshLayout.onRefresh(noinline l: () -> Unit) {
-    setOnRefreshListener(l)
 }
 

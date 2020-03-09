@@ -6,7 +6,6 @@ import android.view.ViewManager
 import androidx.core.widget.ContentLoadingProgressBar
 import androidx.core.widget.NestedScrollView
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager.widget.PagerTabStrip
 import androidx.viewpager.widget.PagerTitleStrip
 import androidx.viewpager.widget.ViewPager
@@ -18,7 +17,6 @@ internal object AnkoFactoriesSupportV4View {
     val PAGER_TAB_STRIP = { ctx: Context -> PagerTabStrip(ctx) }
     val PAGER_TITLE_STRIP = { ctx: Context -> PagerTitleStrip(ctx) }
     val CONTENT_LOADING_PROGRESS_BAR = { ctx: Context -> ContentLoadingProgressBar(ctx) }
-    val SWIPE_REFRESH_LAYOUT = { ctx: Context -> SwipeRefreshLayout(ctx) }
 }
 
 inline fun ViewManager.pagerTabStrip(): PagerTabStrip = pagerTabStrip {}
@@ -91,35 +89,6 @@ inline fun ViewManager.themedContentLoadingProgressBar(theme: Int = 0, init: (@A
 return ankoView(AnkoFactoriesSupportV4View.CONTENT_LOADING_PROGRESS_BAR, theme) { init() }
 }
 
-inline fun ViewManager.swipeRefreshLayout(): SwipeRefreshLayout = swipeRefreshLayout {}
-inline fun ViewManager.swipeRefreshLayout(init: (@AnkoViewDslMarker SwipeRefreshLayout).() -> Unit): SwipeRefreshLayout {
-    return ankoView(AnkoFactoriesSupportV4View.SWIPE_REFRESH_LAYOUT, theme = 0) { init() }
-}
-
-inline fun ViewManager.themedSwipeRefreshLayout(theme: Int = 0): SwipeRefreshLayout = themedSwipeRefreshLayout(theme) {}
-inline fun ViewManager.themedSwipeRefreshLayout(theme: Int = 0, init: (@AnkoViewDslMarker SwipeRefreshLayout).() -> Unit): SwipeRefreshLayout {
-return ankoView(AnkoFactoriesSupportV4View.SWIPE_REFRESH_LAYOUT, theme) { init() }
-}
-
-inline fun Context.swipeRefreshLayout(): SwipeRefreshLayout = swipeRefreshLayout {}
-inline fun Context.swipeRefreshLayout(init: (@AnkoViewDslMarker SwipeRefreshLayout).() -> Unit): SwipeRefreshLayout {
-    return ankoView(AnkoFactoriesSupportV4View.SWIPE_REFRESH_LAYOUT, theme = 0) { init() }
-}
-
-inline fun Context.themedSwipeRefreshLayout(theme: Int = 0): SwipeRefreshLayout = themedSwipeRefreshLayout(theme) {}
-inline fun Context.themedSwipeRefreshLayout(theme: Int = 0, init: (@AnkoViewDslMarker SwipeRefreshLayout).() -> Unit): SwipeRefreshLayout {
-return ankoView(AnkoFactoriesSupportV4View.SWIPE_REFRESH_LAYOUT, theme) { init() }
-}
-
-inline fun Activity.swipeRefreshLayout(): SwipeRefreshLayout = swipeRefreshLayout {}
-inline fun Activity.swipeRefreshLayout(init: (@AnkoViewDslMarker SwipeRefreshLayout).() -> Unit): SwipeRefreshLayout {
-    return ankoView(AnkoFactoriesSupportV4View.SWIPE_REFRESH_LAYOUT, theme = 0) { init() }
-}
-
-inline fun Activity.themedSwipeRefreshLayout(theme: Int = 0): SwipeRefreshLayout = themedSwipeRefreshLayout(theme) {}
-inline fun Activity.themedSwipeRefreshLayout(theme: Int = 0, init: (@AnkoViewDslMarker SwipeRefreshLayout).() -> Unit): SwipeRefreshLayout {
-return ankoView(AnkoFactoriesSupportV4View.SWIPE_REFRESH_LAYOUT, theme) { init() }
-}
 
 @PublishedApi
 internal object AnkoFactoriesSupportV4ViewGroup {

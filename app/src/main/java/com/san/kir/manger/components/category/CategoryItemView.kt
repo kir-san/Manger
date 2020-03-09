@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.lifecycle.lifecycleScope
 import com.san.kir.ankofork.AnkoContext
 import com.san.kir.ankofork.dialogs.alert
 import com.san.kir.ankofork.dip
@@ -21,6 +22,8 @@ import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 import com.san.kir.manger.utils.extensions.invisibleOrVisible
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class CategoryItemView(
     private val act: CategoryActivity,
@@ -85,8 +88,10 @@ class CategoryItemView(
             else R.drawable.ic_visibility_off
         visibleBtn.onClick {
             item.isVisible = !item.isVisible
-            act.mViewModel.categoryUpdate(item)
             toggleVisible(item.isVisible)
+            act.lifecycleScope.launch(Dispatchers.Default) {
+                act.mViewModel.update(item)
+            }
         }
 
         deleteBtn.invisibleOrVisible(item.name == CATEGORY_ALL)

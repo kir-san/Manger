@@ -26,43 +26,49 @@ class AddMangaActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         doFromSdk(Build.VERSION_CODES.LOLLIPOP) {
             window.statusBarColor = ContextCompat.getColor(this, R.color.transparent_dark)
             window.navigationBarColor = ContextCompat.getColor(this, R.color.transparent_dark2)
         }
+
         mView.setContentView(this)
-        setTitle(R.string.add_manga_title)
-        when {
-            intent.hasExtra(MangaColumn.unic) -> {
-                lifecycleScope.launch(Dispatchers.Main) {
-                    val manga = withContext(Dispatchers.Default) {
-                        val mangaUnic = intent.getStringExtra(MangaColumn.unic)
-                        mViewModel.getMangaItem(mangaUnic)
-                    }
-                    mView.setManga(manga)
+
+        // Получение переданных данных и получение манги на их основе
+        val mangaUnic = intent.getStringExtra(MangaColumn.unic)
+        if (mangaUnic?.isNotBlank() == true) {
+            lifecycleScope.launch(Dispatchers.Main) {
+                val manga = withContext(Dispatchers.Default) {
+                    mViewModel.getMangaItem(mangaUnic)
                 }
+                setManga(manga)
             }
-            else -> mView.setManga(Manga())
         }
+        else setManga(Manga())
 
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
     }
 
+    private fun setManga(manga: Manga) {
+        lifecycleScope.launchWhenResumed {
+            mView.setManga(manga)
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menu.add(0, 1, 1, R.string.add_manga_ready).showAlways()
+        menu.add(0, R.id.add_manga_menu_item_ready, 1, R.string.add_manga_ready).showAlways()
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             id.home -> onBackPressed()
-            1 -> {
-                lifecycleScope.launch(Dispatchers.Default) {
-                    mViewModel.update(mView.getManga())
-
+            R.id.add_manga_menu_item_ready -> {
+                lifecycleScope.launch(Dispatchers.Main) {
                     withContext(Dispatchers.Main) {
-                        onBackPressed()
+                        mViewModel.update(mView.getManga())
                     }
+                    onBackPressed()
                 }
             }
         }

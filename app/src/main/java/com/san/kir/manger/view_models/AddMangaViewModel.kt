@@ -10,14 +10,10 @@ class AddMangaViewModel(app: Application) : AndroidViewModel(app) {
     private val mMangaRepository = MangaRepository(app)
     private val mCategoryRepository = CategoryRepository(app)
 
-    fun getMangaItem(mangaUnic: String): Manga {
-        return mMangaRepository.getItem(mangaUnic)
-    }
+    suspend fun getMangaItem(mangaUnic: String) = mMangaRepository.getItem(mangaUnic)
 
     suspend fun update(manga: Manga) = mMangaRepository.update(manga)
 
-    fun getCategoryNames(): List<String> {
-        return mCategoryRepository.categoryNames()
-    }
+    suspend fun getCategoryNames() = mCategoryRepository.categoryNames()
 }
 

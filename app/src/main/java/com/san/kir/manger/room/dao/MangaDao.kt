@@ -13,7 +13,7 @@ interface MangaDao : BaseDao<Manga> {
     fun getItems(): List<Manga>
 
     @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.unic}` IS :unic")
-    fun getItem(unic: String): Manga
+    suspend fun getItem(unic: String): Manga
 
     @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.unic}` IS :unic")
     suspend fun getItemOrNull(unic: String): Manga?

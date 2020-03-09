@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--  List Chapters  -->
     <item name="list_chapter_menu_update" type="id" />
     <item name="list_chapter_menu_loadnext" type="id" />
     <item name="list_chapter_menu_loadnotread" type="id" />
@@ -7,8 +8,13 @@
     <item name="list_chapter_menu_changesort" type="id" />
     <item name="list_chapter_menu_isupdate" type="id" />
 
+    <!--  Library  -->
     <item name="library_viewpager" type="id" />
 
+    <!--  Viewer  -->
     <item name="viewer_menu_next" type="id" />
     <item name="viewer_menu_prev" type="id" />
+
+    <!--  AddManga  -->
+    <item name="add_manga_menu_item_ready" type="id" />
 </resources>

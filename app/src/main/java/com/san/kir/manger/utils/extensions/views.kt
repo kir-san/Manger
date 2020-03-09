@@ -6,6 +6,7 @@ import android.graphics.Typeface
 import android.os.Build
 import android.text.InputType
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewManager
 import android.widget.EditText
 import android.widget.ImageView
@@ -14,18 +15,24 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import com.san.kir.ankofork.Binder
 import com.san.kir.ankofork.SubsamplingScaleImageView.SubsamplingScaleImageView
 import com.san.kir.ankofork.ankoView
+import com.san.kir.ankofork.appcompat.toolbar
 import com.san.kir.ankofork.bottomPadding
+import com.san.kir.ankofork.design.themedAppBarLayout
 import com.san.kir.ankofork.dialogs.AlertBuilder
 import com.san.kir.ankofork.dip
 import com.san.kir.ankofork.doFromSdk
 import com.san.kir.ankofork.find
+import com.san.kir.ankofork.matchParent
 import com.san.kir.ankofork.sdk28.imageResource
 import com.san.kir.ankofork.sdk28.textColor
 import com.san.kir.ankofork.sdk28.textView
 import com.san.kir.ankofork.topPadding
+import com.san.kir.ankofork.wrapContent
+import com.san.kir.manger.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -176,6 +183,38 @@ fun View.requestApplyInsetsWhenAttached() {
 
             override fun onViewDetachedFromWindow(v: View) = Unit
         })
+    }
+}
+
+fun ViewManager.appBar(act: BaseActivity) {
+    themedAppBarLayout(R.style.ThemeOverlay_AppCompat_DayNight_ActionBar) {
+        lparams(width = matchParent, height = wrapContent)
+
+        doOnApplyWindowInstets { v, insets, _ ->
+            v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                topMargin = insets.systemWindowInsetTop
+            }
+            insets
+        }
+
+        toolbar {
+            lparams(width = matchParent, height = wrapContent)
+            act.setSupportActionBar(this)
+        }
+    }
+}
+
+fun View.applyInsetsForCutOut() {
+    doOnApplyWindowInstets { v, insets, _ ->
+        v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+            // Получаем размер выреза, если есть
+            val cutoutRight = insets.displayCutout?.safeInsetRight ?: 0
+            val cutoutLeft = insets.displayCutout?.safeInsetLeft ?: 0
+            // Вычитаем из WindowInsets размер выреза, для fullscreen
+            rightMargin = insets.systemWindowInsetRight - cutoutRight
+            leftMargin = insets.systemWindowInsetLeft - cutoutLeft
+        }
+        insets
     }
 }
 

@@ -40,6 +40,7 @@
         <activity
             android:name=".components.category.CategoryActivity"
             android:theme="@style/AppTheme"
+            android:label="@string/main_menu_category"
             />
         <activity
             android:name=".components.storage.StorageActivity"
@@ -75,6 +76,7 @@
             android:name=".components.add_manga.AddMangaActivity"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateHidden"
+            android:label="@string/add_manga_title"
             />
         <activity
             android:name=".components.settings.SettingActivity"

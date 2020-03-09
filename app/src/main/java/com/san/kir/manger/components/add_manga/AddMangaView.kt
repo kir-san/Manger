@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.res.Resources
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewManager
 import android.widget.ArrayAdapter
 import android.widget.CheckBox
 import android.widget.EditText
@@ -38,6 +39,8 @@ import com.san.kir.manger.extending.dialogs.ColorPicker
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.utils.ActivityView
 import com.san.kir.manger.utils.extensions.BaseActivity
+import com.san.kir.manger.utils.extensions.appBar
+import com.san.kir.manger.utils.extensions.applyInsetsForCutOut
 import com.san.kir.manger.utils.extensions.doOnApplyWindowInstets
 import com.san.kir.manger.utils.extensions.typeText
 import com.san.kir.manger.utils.extensions.typeTextMultiLine
@@ -69,42 +72,16 @@ class AddMangaView(private val act: AddMangaActivity) : ActivityView() {
             systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                     or View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
 
-            doOnApplyWindowInstets { v, insets, _ ->
-                v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                    // Получаем размер выреза, если есть
-                    val cutoutRight = insets.displayCutout?.safeInsetRight ?: 0
-                    val cutoutLeft = insets.displayCutout?.safeInsetLeft ?: 0
-                    // Вычитаем из WindowInsets размер выреза, для fullscreen
-                    rightMargin = insets.systemWindowInsetRight - cutoutRight
-                    leftMargin = insets.systemWindowInsetLeft - cutoutLeft
-                }
-                insets
-            }
+            applyInsetsForCutOut()
 
-            themedAppBarLayout(R.style.ThemeOverlay_AppCompat_DayNight_ActionBar) {
-                lparams(width = matchParent, height = wrapContent)
-
-                doOnApplyWindowInstets { v, insets, _ ->
-                    v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                        topMargin = insets.systemWindowInsetTop
-                    }
-                    insets
-                }
-
-                toolbar {
-                    lparams(width = matchParent, height = wrapContent)
-                    act.setSupportActionBar(this)
-                }
-            }
+            appBar(act)
 
             nestedScrollView {
                 lparams(width = matchParent, height = matchParent)
                 clipToPadding = true
 
                 doOnApplyWindowInstets { v, insets, padding ->
-                    v.updatePadding(
-                        bottom = padding.bottom + insets.systemWindowInsetBottom
-                    )
+                    v.updatePadding(bottom = padding.bottom + insets.systemWindowInsetBottom)
                     insets
                 }
 
@@ -136,8 +113,7 @@ class AddMangaView(private val act: AddMangaActivity) : ActivityView() {
                     }
 
                     textView(text = R.string.add_manga_categories)
-                    categories = spinner {
-                    }.lparams(width = matchParent, height = wrapContent) {
+                    categories = spinner().lparams(width = matchParent, height = wrapContent) {
                         bottomMargin = dip(8)
                     }
 
@@ -158,8 +134,7 @@ class AddMangaView(private val act: AddMangaActivity) : ActivityView() {
                     }
 
                     textView(text = R.string.add_manga_status)
-                    status = spinner {
-                    }.lparams(width = matchParent, height = wrapContent) {
+                    status = spinner().lparams(width = matchParent, height = wrapContent) {
                         bottomMargin = dip(8)
                     }
 
@@ -170,11 +145,10 @@ class AddMangaView(private val act: AddMangaActivity) : ActivityView() {
                         }
 
                     textView(text = R.string.add_manga_update)
-                    isUpdate = checkBox(R.string.add_manga_update_available).lparams(
-                        width = matchParent, height = wrapContent
-                    ) {
-                        bottomMargin = dip(8)
-                    }
+                    isUpdate = checkBox(R.string.add_manga_update_available)
+                        .lparams(width = matchParent, height = wrapContent) {
+                            bottomMargin = dip(8)
+                        }
 
                     textView(text = R.string.add_manga_color)
                     color = imageView {
@@ -186,83 +160,73 @@ class AddMangaView(private val act: AddMangaActivity) : ActivityView() {
                     textView(text = R.string.add_manga_logo)
                     logoText = editText().typeText()
                         .lparams(width = matchParent, height = wrapContent)
-                    logo = imageView {
-                    }.lparams(width = matchParent, height = dip(350))
+                    logo = imageView().lparams(width = matchParent, height = dip(350))
                 }
             }
             this@AddMangaView.ctx = context
         }
     }
 
+
     @SuppressLint("SetTextI18n")
-    fun setManga(manga: Manga) {
-        act.lifecycleScope.launchWhenResumed {
-            _manga = manga
-            val categoryNames = withContext(Dispatchers.Default) {
-                act.mViewModel.getCategoryNames()
-            }
-            val listStatus = listOf(
-                ctx.getString(R.string.manga_status_unknown),
-                ctx.getString(R.string.manga_status_continue),
-                ctx.getString(R.string.manga_status_complete)
-            )
+    suspend fun setManga(manga: Manga) {
+        _manga = manga
+        val categoryNames = act.mViewModel.getCategoryNames()
 
-            name.setText(manga.name)
-            authors.setText(manga.authors)
-            about.setText(manga.about)
-            genres.setText(manga.genres)
-            path.setText(manga.path)
-            site.setText(manga.host + manga.shortLink)
-            logoText.setText(manga.logo)
+        val listStatus = listOf(
+            ctx.getString(R.string.manga_status_unknown),
+            ctx.getString(R.string.manga_status_continue),
+            ctx.getString(R.string.manga_status_complete)
+        )
 
-            isUpdate.isChecked = manga.isUpdate
+        name.setText(manga.name)
+        authors.setText(manga.authors)
+        about.setText(manga.about)
+        genres.setText(manga.genres)
+        path.setText(manga.path)
+        site.setText(manga.host + manga.shortLink)
+        logoText.setText(manga.logo)
 
-            categories.adapter = ArrayAdapter(
-                categories.context, android.R.layout.simple_spinner_item, categoryNames
-            ).apply {
-                setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            }
+        isUpdate.isChecked = manga.isUpdate
 
-            categories.setSelection(categoryNames.indexOf(manga.categories))
-
-            status.adapter = ArrayAdapter<String>(
-                status.context, android.R.layout.simple_spinner_item, listStatus
-            ).apply {
-                setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            }
-            status.setSelection(listStatus.indexOf(manga.status))
-
-            if (manga.color != 0) {
-                color.backgroundColor = manga.color
-            }
-            _manga.color = manga.color
-            color.onClick {
-                ColorPicker(color.context, _manga.color) { newColor ->
-                    _manga.color = newColor
-                    color.backgroundColor = newColor
-                }
-            }
-
-            loadImage(manga.logo)
-                .beforeTry {
-                    try {
-                        logo.backgroundResource = if (manga.color != 0) manga.color
-                        else android.R.color.holo_green_dark
-                        true
-                    } catch (ex: Resources.NotFoundException) {
-                        logo.backgroundColor = manga.color
-                        false
-                    }
-                }
-                .onError {
-                    if (manga.color != 0) {
-                        logo.backgroundColor = manga.color
-                    } else {
-                        logo.backgroundColorResource = android.R.color.holo_green_dark
-                    }
-                }
-                .into(logo)
+        categories.adapter = ArrayAdapter(
+            categories.context, android.R.layout.simple_spinner_item, categoryNames
+        ).apply {
+            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
+
+        categories.setSelection(categoryNames.indexOf(manga.categories))
+
+        status.adapter = ArrayAdapter<String>(
+            status.context, android.R.layout.simple_spinner_item, listStatus
+        ).apply {
+            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        }
+        status.setSelection(listStatus.indexOf(manga.status))
+
+        if (manga.color != 0) {
+            color.backgroundColor = manga.color
+        }
+        _manga.color = manga.color
+        color.onClick {
+            ColorPicker(color.context, _manga.color) { newColor ->
+                _manga.color = newColor
+                color.backgroundColor = newColor
+            }
+        }
+
+        loadImage(manga.logo)
+            .beforeTry {
+                try {
+                    logo.backgroundResource = if (manga.color != 0) manga.color
+                    else android.R.color.holo_green_dark
+                    true
+                } catch (ex: Resources.NotFoundException) {
+                    logo.backgroundColor = manga.color
+                    false
+                }
+            }
+            .into(logo)
     }
 
     fun getManga(): Manga {

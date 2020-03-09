@@ -18,9 +18,9 @@ class LibraryViewModel(app: Application) : AndroidViewModel(app) {
 
     fun getMangas() = mMangaRepository.getItems()
 
-    fun getCategoryItems(): List<Category> {
+    suspend fun getCategoryItems(): List<Category> {
         if (!::mCategories.isInitialized) {
-            mCategories = mCategoryRepository.getItems()
+            mCategories = mCategoryRepository.items()
         }
 
         return mCategories

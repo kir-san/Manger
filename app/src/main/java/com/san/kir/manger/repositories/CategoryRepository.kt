@@ -7,24 +7,16 @@ import com.san.kir.manger.room.entities.Category
 import com.san.kir.manger.utils.SortLibraryUtil
 import com.san.kir.manger.utils.enums.MangaFilter
 import com.san.kir.manger.utils.enums.SortLibrary
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class CategoryRepository(context: Context) {
     private val db = getDatabase(context)
     private val mCategoryDao = db.categoryDao
 
-    fun getItems(): List<Category> {
-        return mCategoryDao.getItems()
-    }
 
-    fun loadItem(catName: String): LiveData<Category> {
-        return mCategoryDao.loadItem(catName)
-    }
-
-    fun loadItems(): LiveData<List<Category>> {
-        return mCategoryDao.loadItems()
-    }
+    fun loadItem(catName: String) = mCategoryDao.loadItem(catName)
+    fun loadItems() = mCategoryDao.loadItems()
 
     fun toFilter(category: Category): MangaFilter {
         return when (SortLibraryUtil.toType(category.typeSort)) {
@@ -49,12 +41,11 @@ class CategoryRepository(context: Context) {
         }
     }
 
-    fun categoryNames(): List<String> {
-        return getItems().map { it.name }
-    }
+    suspend fun items() = withContext(Dispatchers.Default) { mCategoryDao.getItems() }
+    suspend fun categoryNames() = items().map { it.name }
 
-    fun insert(vararg category: Category) = GlobalScope.launch { mCategoryDao.insert(*category) }
-    fun update(vararg category: Category) = GlobalScope.launch { mCategoryDao.update(*category) }
-    fun delete(vararg category: Category) = GlobalScope.launch { mCategoryDao.delete(*category) }
+    suspend fun insert(vararg category: Category) = mCategoryDao.insert(*category)
+    suspend fun update(vararg category: Category) = mCategoryDao.update(*category)
+    suspend fun delete(vararg category: Category) = mCategoryDao.delete(*category)
 }
 

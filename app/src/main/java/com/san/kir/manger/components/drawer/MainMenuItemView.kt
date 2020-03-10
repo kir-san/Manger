@@ -78,7 +78,9 @@ class MainMenuItemView(private val act: BaseActivity, private val viewModel: Dra
                 })
 
             MainMenuType.Category ->
-                viewModel.getCategoryData().observe(act, Observer { text = it?.size.toString() })
+                act.lifecycleScope.launchWhenCreated {
+                    viewModel.getCategoryData().collect { text = it?.size.toString() }
+                }
 
             MainMenuType.Catalogs ->
                 viewModel.getSiteData().observe(act, Observer { list ->

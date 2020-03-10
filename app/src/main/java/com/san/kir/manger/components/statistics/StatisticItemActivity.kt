@@ -6,6 +6,7 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.dialogs.toast
 import com.san.kir.ankofork.doFromSdk
 import com.san.kir.ankofork.setContentView
 import com.san.kir.manger.R
@@ -25,17 +26,27 @@ class StatisticItemActivity : BaseActivity() {
             window.navigationBarColor = ContextCompat.getColor(this, R.color.transparent_dark2)
         }
 
-        lifecycleScope.launchWhenResumed {
-            val manga = withContext(Dispatchers.Default) {
-                mViewModel.getStatisticItem(intent.getStringExtra("manga"))
-            }
-            val statisticItemFullView = StatisticItemFullView(manga)
-            statisticItemFullView.setContentView(this@StatisticItemActivity)
+        val string = intent.getStringExtra("manga")
 
-            setSupportActionBar(statisticItemFullView.appbar)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.title = manga.manga
+        string?.let {
+            lifecycleScope.launchWhenResumed {
+                val manga = withContext(Dispatchers.Default) {
+                    mViewModel.getStatisticItem(string)
+                }
+
+                val statisticItemFullView = StatisticItemFullView(manga)
+
+                statisticItemFullView.setContentView(this@StatisticItemActivity)
+
+                setSupportActionBar(statisticItemFullView.appbar)
+                supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                supportActionBar?.title = manga.manga
+            }
+        } ?: kotlin.run {
+            applicationContext.toast("Что-то пошло не так, попробуйте позже")
+            finishAffinity()
         }
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

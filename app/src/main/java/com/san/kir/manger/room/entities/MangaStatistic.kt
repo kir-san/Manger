@@ -1,11 +1,11 @@
 package com.san.kir.manger.room.entities
 
+import android.os.Parcel
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import android.os.Parcel
-import android.os.Parcelable
 
 @Entity(tableName = MangaStatisticColumn.tableName)
 data class MangaStatistic(
@@ -77,7 +77,7 @@ data class MangaStatistic(
     @Ignore
     constructor(parcel: Parcel) : this(
         parcel.readLong(),
-        parcel.readString(),
+        parcel.readString() ?: "",
         parcel.readInt(),
         parcel.readInt(),
         parcel.readInt(),

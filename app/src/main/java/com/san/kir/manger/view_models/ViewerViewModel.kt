@@ -28,8 +28,8 @@ class ViewerViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     suspend fun getChapterItems(mangaName: String) = mChapterRepository.getItems(mangaName)
-    fun getStatisticItem(mangaName: String) = mStatisticRepository.getItem(mangaName)
-    fun statisticUpdate(stats: MangaStatistic) = mStatisticRepository.update(stats)
+    suspend fun getStatisticItem(mangaName: String) = mStatisticRepository.getItem(mangaName)
+    suspend fun statisticUpdate(stats: MangaStatistic) = mStatisticRepository.update(stats)
     suspend fun update(chapter: Chapter) = mChapterRepository.update(chapter)
 }
 

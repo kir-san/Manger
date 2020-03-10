@@ -12,7 +12,7 @@ class StatisticViewModel(app: Application) : AndroidViewModel(app) {
 
     fun getStatisticAllTime() = mStatisticRepository.loadAllTime()
     fun getStatisticPagedItems() = mStatisticRepository.loadPagedItems()
-    fun getStatisticItem(string: String) = mStatisticRepository.getItem(string)
+    suspend fun getStatisticItem(string: String) = mStatisticRepository.getItem(string)
 
     suspend fun getMangaItemOrNull(item: MangaStatistic) =
         mMangaRepository.getItemOrNull(item.manga)

@@ -1,10 +1,10 @@
 package com.san.kir.manger.room.entities
 
+import android.os.Parcel
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import android.os.Parcel
-import android.os.Parcelable
 
 @Entity(tableName = "StorageItem")
 data class Storage(
@@ -30,12 +30,12 @@ data class Storage(
     constructor(parcel: Parcel) :
             this(
                 id = parcel.readLong(),
-                name = parcel.readString(),
-                path = parcel.readString(),
+                name = parcel.readString() ?: "",
+                path = parcel.readString() ?: "",
                 sizeFull = parcel.readDouble(),
                 sizeRead = parcel.readDouble(),
                 isNew = parcel.readByte() != 0.toByte(),
-                catalogName = parcel.readString()
+                catalogName = parcel.readString() ?: ""
             )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

@@ -6,6 +6,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import com.san.kir.manger.room.entities.MangaStatistic
 import com.san.kir.manger.room.entities.MangaStatisticColumn
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface StatisticDao : BaseDao<MangaStatistic> {
@@ -13,11 +14,11 @@ interface StatisticDao : BaseDao<MangaStatistic> {
     fun pagedItems(): DataSource.Factory<Int, MangaStatistic>
 
     @Query("SELECT * FROM ${MangaStatisticColumn.tableName} ORDER BY ${MangaStatisticColumn.allTime} DESC")
-    fun loadItems(): LiveData<List<MangaStatistic>>
+    fun loadItems(): Flow<List<MangaStatistic>>
 
     @Query("SELECT * FROM ${MangaStatisticColumn.tableName}")
-    fun getItems(): List<MangaStatistic>
+    suspend fun getItems(): List<MangaStatistic>
 
     @Query("SELECT * FROM ${MangaStatisticColumn.tableName} WHERE ${MangaStatisticColumn.manga} IS :unic")
-    fun getItem(unic: String): MangaStatistic
+    suspend fun getItem(unic: String): MangaStatistic
 }

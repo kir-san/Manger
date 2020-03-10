@@ -2,6 +2,7 @@ package com.san.kir.manger.room.migrations
 
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.san.kir.manger.room.columns.CategoryColumn
 import com.san.kir.manger.room.columns.DownloadColumn
 import com.san.kir.manger.room.entities.MangaStatisticColumn
 import com.san.kir.manger.room.entities.PlannedTaskColumn
@@ -204,17 +205,17 @@ val migrations: Array<Migration> = arrayOf(
     migrate(
         22, 23,
         "ALTER TABLE categories RENAME TO tmp_categories",
-        "CREATE TABLE `categories` (" +
-                "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                "`name` TEXT NOT NULL, " +
-                "`order` INTEGER NOT NULL, " +
-                "`isVisible` INTEGER NOT NULL, " +
-                "`typeSort` TEXT NOT NULL, " +
-                "`isReverseSort` INTEGER NOT NULL, " +
-                "`spanPortrait` INTEGER NOT NULL DEFAULT 2, " +
-                "'spanLandscape' INTEGER NOT NULL DEFAULT 3, " +
-                "`isListPortrait` INTEGER NOT NULL DEFAULT 1, " +
-                "`isListLandscape` INTEGER NOT NULL DEFAULT 1)",
+        "CREATE TABLE ${CategoryColumn.tableName} (" +
+                "${CategoryColumn.id} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "${CategoryColumn.name} TEXT NOT NULL, " +
+                "${CategoryColumn.order} INTEGER NOT NULL, " +
+                "${CategoryColumn.isVisible} INTEGER NOT NULL, " +
+                "${CategoryColumn.typeSort} TEXT NOT NULL, " +
+                "${CategoryColumn.isReverseSort} INTEGER NOT NULL, " +
+                "${CategoryColumn.spanPortrait} INTEGER NOT NULL DEFAULT 2, " +
+                "${CategoryColumn.spanLandscape} INTEGER NOT NULL DEFAULT 3, " +
+                "${CategoryColumn.isLargePortrait} INTEGER NOT NULL DEFAULT 1, " +
+                "${CategoryColumn.isLargeLandscape} INTEGER NOT NULL DEFAULT 1)",
         "INSERT INTO `categories`(" +
                 "`id`,`name`,`order`,`isVisible`,`typeSort`,`isReverseSort`) " +
                 "SELECT " +

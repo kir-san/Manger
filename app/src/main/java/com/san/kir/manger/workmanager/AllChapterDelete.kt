@@ -29,7 +29,7 @@ class AllChapterDelete(appContext: Context, workerParams: WorkerParameters) :
     }
 
     private fun deleteAllChapters(manga: Manga) {
-        val files = getFullPath(manga.path).listFiles().map { it.shortPath }
+        val files = getFullPath(manga.path).listFiles()!!.map { it.shortPath }
 
         delFiles(files.toList())
     }

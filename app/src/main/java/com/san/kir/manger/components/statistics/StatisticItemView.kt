@@ -29,6 +29,7 @@ import com.san.kir.manger.utils.extensions.roundedImageView
 import com.san.kir.manger.utils.extensions.visibleOrInvisible
 import com.san.kir.manger.utils.loadImage
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -102,10 +103,10 @@ class StatisticItemView(private val act: StatisticActivity) :
             }
 
             act.mViewModel.getStatisticAllTime()
-                .observe(act, Observer {
-                    progressBar.max = it?.toInt() ?: 0
+                .collect {
+                    progressBar.max = it.toInt()
                     progressBar.progress = item.allTime.toInt()
-                })
+                }
         }
     }
 

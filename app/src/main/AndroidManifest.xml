@@ -23,8 +23,7 @@
         android:largeHeap="true"
        >
         <activity
-            android:name=".components.drawer.Main"
-            android:label="@string/app_name"
+            android:name="com.san.kir.manger.components.library.LibraryActivity"
             android:theme="@style/AppTheme"
             >
             <intent-filter>
@@ -33,10 +32,6 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity
-            android:name=".components.library.LibraryActivity"
-            android:theme="@style/AppTheme"
-            />
         <activity
             android:name=".components.category.CategoryActivity"
             android:theme="@style/AppTheme"

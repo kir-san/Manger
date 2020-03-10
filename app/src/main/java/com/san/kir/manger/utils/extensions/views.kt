@@ -13,6 +13,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
@@ -202,6 +203,25 @@ fun ViewManager.appBar(act: BaseActivity) {
             act.setSupportActionBar(this)
         }
     }
+}
+
+fun ViewGroup.appBar(): Toolbar {
+    var tool = Toolbar(context)
+    themedAppBarLayout(R.style.ThemeOverlay_AppCompat_DayNight_ActionBar) {
+        lparams(width = matchParent, height = wrapContent)
+
+        doOnApplyWindowInstets { v, insets, _ ->
+            v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                topMargin = insets.systemWindowInsetTop
+            }
+            insets
+        }
+
+        tool = toolbar {
+            lparams(width = matchParent, height = wrapContent)
+        }
+    }
+    return tool
 }
 
 fun View.applyInsetsForCutOut() {

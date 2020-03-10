@@ -1,9 +1,12 @@
 package com.san.kir.manger.components.statistics
 
 import androidx.lifecycle.Observer
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView
 import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class StatisticRecyclerPresenter(private val act: StatisticActivity) : RecyclerPresenter() {
     private var adapter = RecyclerViewAdapterFactory
@@ -14,7 +17,9 @@ class StatisticRecyclerPresenter(private val act: StatisticActivity) : RecyclerP
     override fun into(recyclerView: RecyclerView) {
         super.into(recyclerView)
         recyclerView.adapter = this.adapter
-        act.mViewModel.getStatisticPagedItems()
-            .observe(act, Observer(adapter::submitList))
+        act.mViewModel.viewModelScope.launch {
+            act.mViewModel.getStatisticPagedItems()
+                .collect { adapter.submitList(it) }
+        }
     }
 }

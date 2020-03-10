@@ -28,6 +28,8 @@ import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.MangaStatistic
 import com.san.kir.manger.utils.TimeFormat
+import com.san.kir.manger.utils.extensions.appBar
+import com.san.kir.manger.utils.extensions.applyInsetsForCutOut
 import com.san.kir.manger.utils.extensions.bytesToMb
 import com.san.kir.manger.utils.extensions.doOnApplyWindowInstets
 import com.san.kir.manger.utils.extensions.formatDouble
@@ -42,31 +44,9 @@ class StatisticItemFullView(private val manga: MangaStatistic) :
             systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                     or View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
 
-            doOnApplyWindowInstets { view, insets, _ ->
-                // Получаем размер выреза, если есть
-                val cutoutRight = insets.displayCutout?.safeInsetRight ?: 0
-                val cutoutLeft = insets.displayCutout?.safeInsetLeft ?: 0
-                // Вычитаем из WindowInsets размер выреза, для fullscreen
-                view.updatePadding(
-                    left = insets.systemWindowInsetLeft - cutoutLeft,
-                    right = insets.systemWindowInsetRight - cutoutRight
-                )
-                insets
-            }
+            applyInsetsForCutOut()
 
-            themedAppBarLayout(R.style.ThemeOverlay_AppCompat_DayNight_ActionBar) {
-                id = View.generateViewId()
-                doOnApplyWindowInstets { v, insets, _ ->
-                    v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                        topMargin = insets.systemWindowInsetTop
-                    }
-                    insets
-                }
-
-                appbar = toolbar {
-                    lparams(width = matchParent, height = wrapContent)
-                }
-            }.lparams(width = matchParent, height = wrapContent)
+            appbar = appBar()
 
             nestedScrollView {
                 verticalLayout {

@@ -69,14 +69,6 @@ class DrawerView(private val act: DrawerActivity) {
                 }
                 mViewModel.mainMenuUpdate(*items.toTypedArray())
             })
-        .apply {
-            act.lifecycleScope.launch(Dispatchers.Main) {
-                items = withContext(Dispatchers.Default) {
-                    mViewModel.getMainMenuItems()
-                }
-                notifyDataSetChanged()
-            }
-        }
 
     private val mItemTouchHelper by lazy {
         ItemTouchHelper(SimpleItemTouchHelperCallback(mAdapter))
@@ -84,6 +76,15 @@ class DrawerView(private val act: DrawerActivity) {
 
     lateinit var drawerLayout: DrawerLayout
     private lateinit var toolbar: Toolbar
+
+    fun init() {
+        act.lifecycleScope.launch(Dispatchers.Main) {
+            mAdapter.items = withContext(Dispatchers.Default) {
+                mViewModel.getMainMenuItems()
+            }
+            mAdapter.notifyDataSetChanged()
+        }
+    }
 
     fun createView(act: BaseActivity, otherView: _LinearLayout.() -> View): View {
         return with(AnkoContextImpl(act, act, true)) {

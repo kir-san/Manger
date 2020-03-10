@@ -8,6 +8,7 @@ import android.widget.ProgressBar
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.viewpager.widget.PagerTabStrip
 import androidx.viewpager.widget.ViewPager
 import androidx.work.WorkManager
 import com.san.kir.ankofork.dialogs.longToast
@@ -55,15 +56,13 @@ class LibraryActivity : DrawerActivity() {
 
             viewPager = viewPager {
                 id = R.id.library_viewpager
-                include<androidx.viewpager.widget.PagerTabStrip>(R.layout.page_tab_strip)
+                include<PagerTabStrip>(R.layout.page_tab_strip)
                 adapter = pagerAdapter
             }
         }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        title = getString(R.string.main_menu_library)
-        action.visible()
+    override fun onPermissionGetting() {
+        super.onPermissionGetting()
         pagerAdapter.init.invokeOnCompletion {
             lifecycleScope.launchWhenResumed {
                 try {
@@ -85,6 +84,13 @@ class LibraryActivity : DrawerActivity() {
                 }
             }
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        title = getString(R.string.main_menu_library)
+        action.visible()
+
 
         viewPager.onPageChangeListener {
             onPageSelected {

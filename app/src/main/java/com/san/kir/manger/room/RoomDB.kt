@@ -1,11 +1,15 @@
 package com.san.kir.manger.room
 
+import android.content.ContentValues
 import android.content.Context
 import android.os.Environment
 import androidx.room.Database
+import androidx.room.OnConflictStrategy
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.sqlite.db.SupportSQLiteDatabase
+import com.san.kir.manger.room.columns.CategoryColumn
 import com.san.kir.manger.room.dao.CategoryDao
 import com.san.kir.manger.room.dao.ChapterDao
 import com.san.kir.manger.room.dao.DownloadDao
@@ -31,7 +35,10 @@ import com.san.kir.manger.room.type_converters.ChapterFilterTypeConverter
 import com.san.kir.manger.room.type_converters.FileConverter
 import com.san.kir.manger.room.type_converters.ListStringConverter
 import com.san.kir.manger.room.type_converters.MainMenuTypeConverter
+import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.enums.DIR
+import com.san.kir.manger.utils.enums.MainMenuType
+import com.san.kir.manger.utils.extensions.log
 import java.io.File
 
 @Database(
@@ -81,12 +88,60 @@ fun getDatabase(context: Context): RoomDB {
         synchronized(RoomDB::class.java) {
             if (!::sDb.isInitialized)
                 sDb = Room.databaseBuilder(
-                    context.applicationContext,
-                    RoomDB::class.java,
-                    File(Environment.getExternalStorageDirectory(), RoomDB.NAME).absolutePath
-                )
+                        context.applicationContext,
+                        RoomDB::class.java,
+                        File(Environment.getExternalStorageDirectory(), RoomDB.NAME).absolutePath
+                    )
                     .addMigrations(*migrations)
+                    .addCallback(Callback(context))
                     .build()
         }
     return sDb
+}
+
+class Callback(private val context: Context) : RoomDatabase.Callback() {
+    override fun onCreate(db: SupportSQLiteDatabase) {
+        super.onCreate(db)
+
+        log("db create")
+
+        db.addCategoryAll()
+        log("category ALL was added to db")
+
+        db.addMenuItems(context)
+        log("menuitems was added to db")
+
+    }
+
+
+
+    private fun SupportSQLiteDatabase.addCategoryAll() {
+        val cat = ContentValues()
+        cat.put(CategoryColumn.name, CATEGORY_ALL)
+        cat.put(CategoryColumn.order, 0)
+        cat.put(CategoryColumn.isVisible, true)
+        cat.put(CategoryColumn.typeSort, "")
+        cat.put(CategoryColumn.isReverseSort, true)
+        cat.put(CategoryColumn.spanPortrait, 2)
+        cat.put(CategoryColumn.spanLandscape, 3)
+        cat.put(CategoryColumn.isLargePortrait, true)
+        cat.put(CategoryColumn.isLargeLandscape, true)
+
+        insert(CategoryColumn.tableName, OnConflictStrategy.IGNORE, cat)
+    }
+
+    private fun SupportSQLiteDatabase.addMenuItems(ctx: Context) {
+        MainMenuType.values()
+            .filter { it != MainMenuType.Default }
+            .forEachIndexed { index, type ->
+
+                val item = ContentValues()
+                item.put("name", ctx.getString(type.stringId()))
+                item.put("isVisible", true)
+                item.put("'order'", index)
+                item.put("'type'", type.name)
+
+                insert("mainmenuitems", OnConflictStrategy.REPLACE, item)
+            }
+    }
 }

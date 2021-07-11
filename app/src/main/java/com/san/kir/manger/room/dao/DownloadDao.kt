@@ -19,6 +19,12 @@ interface DownloadDao : BaseDao<DownloadItem> {
         "SELECT * FROM ${DownloadColumn.tableName} " +
                 "ORDER BY ${DownloadColumn.status}, `${DownloadColumn.order}`"
     )
+    fun flowItems(): Flow<List<DownloadItem>>
+
+    @Query(
+        "SELECT * FROM ${DownloadColumn.tableName} " +
+                "ORDER BY ${DownloadColumn.status}, `${DownloadColumn.order}`"
+    )
     suspend fun items(): List<DownloadItem>
 
     @Query(

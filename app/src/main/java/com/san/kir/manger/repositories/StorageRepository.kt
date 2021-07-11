@@ -10,6 +10,7 @@ import com.san.kir.manger.utils.extensions.getFullPath
 import com.san.kir.manger.utils.extensions.lengthMb
 import com.san.kir.manger.utils.extensions.shortPath
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -25,8 +26,6 @@ class StorageRepository(context: Context) {
         return mStorageDao.loadItems()
     }
 
-
-
     fun loadItem(shortPath: String): LiveData<Storage?> {
         return mStorageDao.loadItem(shortPath)
     }
@@ -37,16 +36,9 @@ class StorageRepository(context: Context) {
     suspend fun items() = mStorageDao.items()
 
     fun flowItems() = mStorageDao.flowItems()
-    fun flowAllSize() = flowItems().map { list -> list.sumByDouble { item -> item.sizeFull } }
+    fun flowAllSize() = flowItems().map { list -> list.sumOf { item -> item.sizeFull } }
 
-    fun loadAllSize(): LiveData<Double> {
-        return Transformations.map(loadItems()) { list -> list.sumByDouble { it.sizeFull } }
-    }
-
-    fun loadItemWhere(shortPath: String): LiveData<Storage?> {
-        return loadItem(getFullPath(shortPath).shortPath)
-    }
-
+    @DelicateCoroutinesApi
     fun updateStorageItems() {
         if (asyncUpdates == null) {
             asyncUpdates = asyncUpdateStorageItems
@@ -67,12 +59,13 @@ class StorageRepository(context: Context) {
                 mChapterDao.getItems(it.unic)
                     .asSequence()
                     .filter { it.isRead }
-                    .sumByDouble { getFullPath(it.path).lengthMb }
+                    .sumOf { getFullPath(it.path).lengthMb }
             } ?: 0.0
         }
         return storage
     }
 
+    @DelicateCoroutinesApi
     private val asyncUpdateStorageItems: Deferred<Any>
         get() = GlobalScope.async(Dispatchers.Default) {
             val list = items()

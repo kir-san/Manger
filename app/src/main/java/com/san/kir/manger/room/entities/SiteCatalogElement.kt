@@ -1,9 +1,12 @@
 package com.san.kir.manger.room.entities
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 @Entity(tableName = "items")
 data class SiteCatalogElement(
     @PrimaryKey(autoGenerate = true) var id: Long,
@@ -25,26 +28,26 @@ data class SiteCatalogElement(
     var logo: String,
     var dateId: Int,
     var isFull: Boolean
-) {
+) : Parcelable {
     @Ignore
     constructor(
-        siteId: Int=0,
-        host: String="",
-        catalogName: String="",
-        name: String="",
-        shotLink: String="",
-        link: String="",
-        type: String="",
+        siteId: Int = 0,
+        host: String = "",
+        catalogName: String = "",
+        name: String = "",
+        shotLink: String = "",
+        link: String = "",
+        type: String = "",
         authors: List<String> = listOf(),
-        statusEdition: String="",
-        statusTranslate: String="",
-        volume: Int=0,
+        statusEdition: String = "",
+        statusTranslate: String = "",
+        volume: Int = 0,
         genres: MutableList<String> = mutableListOf(),
-        about: String="",
+        about: String = "",
         isAdded: Boolean = false,
-        populate: Int=0,
-        logo: String="",
-        dateId: Int=0,
+        populate: Int = 0,
+        logo: String = "",
+        dateId: Int = 0,
         isFull: Boolean = false
     ) : this(
         0,

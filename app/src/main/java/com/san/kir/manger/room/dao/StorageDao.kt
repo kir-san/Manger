@@ -15,6 +15,9 @@ interface StorageDao : BaseDao<Storage> {
     fun loadItems(): LiveData<List<Storage>>
 
     @Query("SELECT * FROM StorageItem WHERE path IS :shortPath")
+    fun flowItem(shortPath: String): Flow<Storage?>
+
+    @Query("SELECT * FROM StorageItem WHERE path IS :shortPath")
     fun loadItem(shortPath: String): LiveData<Storage?>
 
     @Query("SELECT * FROM StorageItem ORDER BY sizeFull DESC")

@@ -16,5 +16,7 @@ class SiteRepository(context: Context) {
     suspend fun insert(vararg site: Site) = mSiteDao.insert(*site)
     suspend fun delete(vararg site: Site) = mSiteDao.delete(*site)
     fun loadPagedItems() = LivePagedListBuilder(pagedItems(), 20).build()
+
+    fun loadItems() = mSiteDao.loadItems()
 }
 

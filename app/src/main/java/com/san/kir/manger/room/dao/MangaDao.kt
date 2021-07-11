@@ -6,6 +6,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.MangaColumn
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MangaDao : BaseDao<Manga> {
@@ -23,6 +24,9 @@ interface MangaDao : BaseDao<Manga> {
 
     @Query("SELECT * FROM `${MangaColumn.tableName}`")
     fun loadItems(): LiveData<List<Manga>>
+
+    @Query("SELECT * FROM `${MangaColumn.tableName}`")
+    fun flowItems(): Flow<List<Manga>>
 
     @Query("SELECT * FROM `${MangaColumn.tableName}` ORDER BY `${MangaColumn.id}` ASC")
     fun loadMangaAddTimeAsc(): DataSource.Factory<Int, Manga>

@@ -12,6 +12,7 @@ class DownloadRepository(context: Context) {
 
     suspend fun items() = mDownloadDao.items()
     fun loadItems() = mDownloadDao.loadItems()
+    fun flowItems() = mDownloadDao.flowItems()
 
     suspend fun getItems(status: Int) = mDownloadDao.getItems(status)
 

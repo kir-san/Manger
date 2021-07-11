@@ -6,21 +6,6 @@
         <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">shortEdges</item>
     </style>
 
-    <style name="AppTheme.ListChapter" parent="Theme.AppCompat.DayNight">
-        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">shortEdges</item>
-    </style>
-
-    <style name="AppTheme.ActionBar" parent="Theme.AppCompat.DayNight">
-        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">shortEdges</item>
-    </style>
-
-    <style name="Theme.AppCompat.Light.DarkActionBar.Fullscreen" parent="@style/Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowContentOverlay">@null</item>
-    </style>
-
     <style name="AppTheme.Viewer" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">true</item>
@@ -28,20 +13,9 @@
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/transparent_dark</item>
     </style>
 
-    <style name="MyTheme.Viewer.ActionBar" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar">
-        <item name="elevation" tools:targetApi="lollipop">0dp</item>
-        <item name="background">@color/transparent_dark</item>
-        <item name="android:windowActionBarOverlay">true</item>
-    </style>
-
     <style name="MyTheme.Viewer.ActionBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="elevation" tools:targetApi="lollipop">0dp</item>
         <item name="background">@color/transparent_dark</item>
     </style>
 
-    <style name="MyTheme.ActionBar" parent="Widget.AppCompat.ActionBar">
-        <item name="elevation" tools:targetApi="lollipop">0dp</item>
-        <item name="background">@color/transparent_dark</item>
-<!--        -->
-    </style>
 </resources>

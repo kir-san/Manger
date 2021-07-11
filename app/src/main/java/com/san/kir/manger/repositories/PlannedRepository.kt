@@ -5,8 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.paging.DataSource
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
-import com.san.kir.manger.room.getDatabase
 import com.san.kir.manger.room.entities.PlannedTask
+import com.san.kir.manger.room.getDatabase
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -38,4 +38,6 @@ class PlannedRepository(context: Context) {
     fun loadPagedItems(): LiveData<PagedList<PlannedTask>> {
         return LivePagedListBuilder(pagedItems(), 30).build()
     }
+
+    fun loadItems() = mPlannedDao.loadItems()
 }

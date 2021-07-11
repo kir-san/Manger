@@ -23,7 +23,6 @@ import java.util.regex.Pattern
 class MangaRepository(context: Context) {
     private val db = getDatabase(context)
     private val mMangaDao = db.mangaDao
-    private val mStatisticDao = db.statisticDao
 
     fun getItems(): List<Manga> {
         return mMangaDao.getItems()
@@ -31,42 +30,11 @@ class MangaRepository(context: Context) {
 
     suspend fun getItem(mangaUnic: String) = mMangaDao.getItem(mangaUnic)
 
-    fun getItemWhereShortLink(shortLink: String): Manga {
-        return mMangaDao.getItems().first { it.shortLink == shortLink }
-    }
-
     suspend fun getItemOrNull(unic: String) = mMangaDao.getItemOrNull(unic)
 
-    suspend fun insert(vararg manga: Manga) =  mMangaDao.insert(*manga)
-    suspend fun update(vararg manga: Manga) =  mMangaDao.update(*manga)
-    suspend fun delete(vararg manga: Manga) =  mMangaDao.delete(*manga)
-
-    fun loadMangas(cat: Category, filter: MangaFilter): LiveData<PagedList<Manga>> {
-        val source = if (cat.name == CATEGORY_ALL) {
-            when (filter) {
-                MangaFilter.ADD_TIME_ASC -> mMangaDao.loadMangaAddTimeAsc()
-                MangaFilter.ADD_TIME_DESC -> mMangaDao.loadMangaAddTimeDesc()
-                MangaFilter.ABC_SORT_ASC -> mMangaDao.loadMangaAbcSortAsc()
-                MangaFilter.ABC_SORT_DESC -> mMangaDao.loadMangaAbcSortDesc()
-                MangaFilter.POPULATE_ASC -> mMangaDao.loadMangaPopulateAsc()
-                MangaFilter.POPULATE_DESC -> mMangaDao.loadMangaPopulateDesc()
-            }
-        } else {
-            when (filter) {
-                MangaFilter.ADD_TIME_ASC -> mMangaDao.loadMangaWithCategoryAddTimeAsc(cat.name)
-                MangaFilter.ABC_SORT_ASC -> mMangaDao.loadMangaWithCategoryAbcSortAsc(cat.name)
-                MangaFilter.ADD_TIME_DESC -> mMangaDao.loadMangaWithCategoryAddTimeDesc(cat.name)
-                MangaFilter.ABC_SORT_DESC -> mMangaDao.loadMangaWithCategoryAbcSortDesc(cat.name)
-                MangaFilter.POPULATE_ASC -> mMangaDao.loadMangaWithCategoryPopulateAsc(cat.name)
-                MangaFilter.POPULATE_DESC -> mMangaDao.loadMangaWithCategoryPopulateDesc(cat.name)
-            }
-        }
-        return LivePagedListBuilder(source, 50).build()
-    }
-
-    fun getFromPath(shortPath: String): Manga? {
-        return getFromPath(getFullPath(shortPath))
-    }
+    suspend fun insert(vararg manga: Manga) = mMangaDao.insert(*manga)
+    suspend fun update(vararg manga: Manga) = mMangaDao.update(*manga)
+    suspend fun delete(vararg manga: Manga) = mMangaDao.delete(*manga)
 
     fun getFromPath(file: File): Manga? {
         return getItems().firstOrNull { getFullPath(it.path) == file }
@@ -91,26 +59,7 @@ class MangaRepository(context: Context) {
         return mMangaDao.loadItems()
     }
 
-    suspend fun addMangaToDb(
-        element: SiteCatalogElement,
-        category: String
-    ): Manga {
-        val updatingElement = ManageSites.getFullElement(element)
+    fun flowItems() = mMangaDao.flowItems()
 
-        val pat = Pattern.compile("[a-z/0-9]+-").matcher(updatingElement.shotLink)
-        var shortPath = element.shotLink
-        if (pat.find())
-            shortPath = element.shotLink.removePrefix(pat.group()).removeSuffix(".html")
-        val path = "${DIR.MANGA}/${element.catalogName}/$shortPath"
-        (getFullPath(path)).createDirs()
-
-        val manga = updatingElement.toManga(category = category, path = path)
-
-        manga.isAlternativeSite = ManageSites.getSite(element.link) is SiteCatalogAlternative
-
-        mMangaDao.insert(manga)
-        mStatisticDao.insert(MangaStatistic(manga = manga.unic))
-        return manga
-    }
 }
 

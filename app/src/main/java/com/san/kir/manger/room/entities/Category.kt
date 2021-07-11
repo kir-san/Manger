@@ -1,47 +1,45 @@
 package com.san.kir.manger.room.entities
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.san.kir.manger.room.columns.CategoryColumn
+import com.san.kir.manger.utils.SortLibraryUtil
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 @Entity(tableName = CategoryColumn.tableName)
-class Category {
-    @PrimaryKey(autoGenerate = true) var id = 0L
+data class Category(
+    @PrimaryKey(autoGenerate = true) var id: Long = 0L,
 
     @ColumnInfo(name = "name")
-    var name = ""
+    var name: String = "",
 
     @ColumnInfo(name = "order")
-    var order = 0
+    var order: Int = 0,
 
     @ColumnInfo(name = "isVisible")
-    var isVisible = true
+    var isVisible: Boolean = true,
 
     @ColumnInfo(name = "typeSort")
-    var typeSort = ""
+    var typeSort: String = SortLibraryUtil.abc,
 
     @ColumnInfo(name = "isReverseSort")
-    var isReverseSort = false
+    var isReverseSort: Boolean = false,
 
     @ColumnInfo(name = "spanPortrait")
-    var spanPortrait = 2
+    var spanPortrait: Int = 2,
 
     @ColumnInfo(name = "spanLandscape")
-    var spanLandscape = 3
+    var spanLandscape: Int = 3,
 
     @ColumnInfo(name = "isListPortrait")
-    var isLargePortrait = true
+    var isLargePortrait: Boolean = true,
 
     @ColumnInfo(name = "isListLandscape")
-    var isLargeLandscape = true
-
-    @Ignore constructor()
-    constructor(name: String, order: Int) {
-        this.name = name
-        this.order = order
-    }
-}
+    var isLargeLandscape: Boolean = true,
+) : Parcelable
 
 

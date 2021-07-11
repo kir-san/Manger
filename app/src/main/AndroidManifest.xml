@@ -21,30 +21,20 @@
         tools:ignore="GoogleAppIndexingWarning"
         tools:targetApi="n"
         android:largeHeap="true"
+        android:requestLegacyExternalStorage="true"
        >
-        <activity
-            android:name="com.san.kir.manger.components.library.LibraryActivity"
+
+        <activity android:name=".ui.MainActivity"
             android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustResize"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
         </activity>
-        <activity
-            android:name=".components.category.CategoryActivity"
-            android:theme="@style/AppTheme"
-            android:label="@string/main_menu_category"
-            />
-        <activity
-            android:name=".components.storage.StorageActivity"
-            android:theme="@style/AppTheme"
-            />
-        <activity
-            android:name=".components.sites_catalog.SiteCatalogActivity"
-            android:theme="@style/AppTheme"
-            />
         <activity
             android:name=".components.download_manager.DownloadManagerActivity"
             android:theme="@style/AppTheme"
@@ -59,11 +49,6 @@
             />
         <activity
             android:name=".components.list_chapters.ListChaptersActivity"
-            android:theme="@style/AppTheme"
-            />
-
-        <activity
-            android:name=".components.catalog_for_one_site.CatalogForOneSiteActivity"
             android:theme="@style/AppTheme"
             />
 
@@ -95,14 +80,8 @@
             android:name=".components.statistics.StatisticItemActivity"
             android:theme="@style/AppTheme"
             />
-        <activity
-            android:name=".components.sites_catalog.GlobalSearchActivity"
-            android:label="@string/main_menu_search"
-            android:theme="@style/AppTheme"
-            />
-
         <service
-            android:name=".components.catalog_for_one_site.CatalogForOneSiteUpdaterService"
+            android:name=".services.CatalogForOneSiteUpdaterService"
             />
         <service
             android:name=".services.DownloadService"

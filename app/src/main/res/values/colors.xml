@@ -7,5 +7,4 @@
     <color name="transparent_dark2">#99000000</color>
     <color name="iconColor">#F2000000</color>
     <color name="inverseTextColor">#F2FFFFFF</color>
-    <color name="backgroundColor">#FFFFFF</color>
 </resources>

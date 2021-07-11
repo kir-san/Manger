@@ -1,12 +1,12 @@
 package com.san.kir.manger.room
 
 import android.content.Context
-import android.os.Environment
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
+import com.san.kir.manger.App
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.room.dao.SiteCatalogDao
 import com.san.kir.manger.room.entities.SiteCatalogElement
@@ -39,7 +39,7 @@ abstract class CatalogDb : RoomDatabase() {
                 .databaseBuilder(
                     context.applicationContext,
                     CatalogDb::class.java,
-                    File(Environment.getExternalStorageDirectory(), NAME(catName)).absolutePath
+                    File(App.externalDir, NAME(catName)).absolutePath
                 )
                 .addMigrations(*Migrate.migrations)
                 .allowMainThreadQueries()

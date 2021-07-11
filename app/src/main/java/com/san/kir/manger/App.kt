@@ -11,15 +11,20 @@ import com.san.kir.manger.components.parsing.Translate
 import com.san.kir.manger.components.schedule.ScheduleJob
 import com.san.kir.manger.repositories.SiteRepository
 import com.san.kir.manger.utils.CATEGORY_ALL
+import dagger.hilt.android.HiltAndroidApp
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 @Suppress("unused")
+
+@HiltAndroidApp
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
 
         themeActivation()
 
+        externalDir = android.os.Environment.getExternalStorageDirectory()
         ManageSites.mSiteRepository = SiteRepository(this)
         FuelManager.instance.timeoutInMillisecond = TimeUnit.SECONDS.toMillis(30).toInt()
         JobManager.create(this).addJobCreator { ScheduleJob(it) }
@@ -49,5 +54,9 @@ class App : Application() {
                     AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
             }
         )
+    }
+
+    companion object {
+        var externalDir: File? = null
     }
 }

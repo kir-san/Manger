@@ -2,13 +2,13 @@ package com.san.kir.manger.room
 
 import android.content.ContentValues
 import android.content.Context
-import android.os.Environment
 import androidx.room.Database
 import androidx.room.OnConflictStrategy
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.san.kir.manger.App
 import com.san.kir.manger.room.columns.CategoryColumn
 import com.san.kir.manger.room.dao.CategoryDao
 import com.san.kir.manger.room.dao.ChapterDao
@@ -90,7 +90,7 @@ fun getDatabase(context: Context): RoomDB {
                 sDb = Room.databaseBuilder(
                         context.applicationContext,
                         RoomDB::class.java,
-                        File(Environment.getExternalStorageDirectory(), RoomDB.NAME).absolutePath
+                        File(App.externalDir, RoomDB.NAME).absolutePath
                     )
                     .addMigrations(*migrations)
                     .addCallback(Callback(context))

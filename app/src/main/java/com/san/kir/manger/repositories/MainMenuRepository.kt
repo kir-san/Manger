@@ -1,20 +1,17 @@
 package com.san.kir.manger.repositories
 
 import android.content.Context
-import com.san.kir.manger.room.getDatabase
 import com.san.kir.manger.room.entities.MainMenuItem
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import com.san.kir.manger.room.getDatabase
 
 class MainMenuRepository(context: Context) {
     private val db = getDatabase(context)
     private val mMainMenuDao = db.mainMenuDao
 
-    fun getItems(): List<MainMenuItem> {
-        return mMainMenuDao.getItems()
-    }
+    suspend fun getItems() = mMainMenuDao.getItems()
+    fun loadItems() = mMainMenuDao.loadItems()
 
-    fun insert(vararg menuItem: MainMenuItem) = GlobalScope.launch { mMainMenuDao.insert(*menuItem) }
-    fun update(vararg menuItem: MainMenuItem) = GlobalScope.launch { mMainMenuDao.update(*menuItem) }
-    fun delete(vararg menuItem: MainMenuItem) = GlobalScope.launch { mMainMenuDao.delete(*menuItem) }
+    suspend fun insert(vararg menuItem: MainMenuItem) = mMainMenuDao.insert(*menuItem)
+    suspend fun update(vararg menuItem: MainMenuItem) = mMainMenuDao.update(*menuItem)
+    suspend fun delete(vararg menuItem: MainMenuItem) = mMainMenuDao.delete(*menuItem)
 }

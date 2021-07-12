@@ -44,6 +44,9 @@ import com.san.kir.manger.R
 import com.san.kir.manger.data.datastore.FirstLaunchRepository
 import com.san.kir.manger.data.datastore.firstLaunchStore
 import com.san.kir.manger.ui.utils.ProvideWindowInsets
+import com.san.kir.manger.utils.enums.DIR
+import com.san.kir.manger.utils.extensions.createDirs
+import com.san.kir.manger.utils.extensions.getFullPath
 import com.san.kir.manger.workmanager.FirstInitAppWorker
 import com.san.kir.manger.workmanager.MigrateLatestChapterToChapterWorker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -117,14 +120,17 @@ fun RequiresPermission(onSuccess: @Composable () -> Unit) {
     when {
         // permission is granted
         storagePermissionState.hasPermission -> {
+            createNeedFolders()
             onSuccess()
         }
 
         storagePermissionState.shouldShowRationale || !storagePermissionState.permissionRequested -> {
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-                .background(Color.White)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+                    .padding(16.dp)
+            ) {
                 Column(modifier = Modifier.align(Alignment.Center)) {
                     if (doNotShowRationale) {
                         Text(stringResource(R.string.main_permission_error))
@@ -152,8 +158,6 @@ fun RequiresPermission(onSuccess: @Composable () -> Unit) {
     }
 }
 
-
-
-
-
-
+private fun createNeedFolders() {
+    DIR.ALL.forEach { dir -> getFullPath(dir).createDirs() }
+}

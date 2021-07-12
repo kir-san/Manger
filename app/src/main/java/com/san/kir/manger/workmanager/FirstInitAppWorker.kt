@@ -30,16 +30,11 @@ class FirstInitAppWorker(ctx: Context, params: WorkerParameters) :
     private val mSiteRepository by lazy { SiteRepository(applicationContext) }
 
     override suspend fun doWork(): Result {
-        createNeedFolders()
         updateMenuItems()
         insertMangaIntoStatistic()
         restoreSchedule()
         checkSiteCatalogs()
         return Result.success()
-    }
-
-    private fun createNeedFolders() {
-        DIR.ALL.forEach { dir -> getFullPath(dir).createDirs() }
     }
 
     private suspend fun updateMenuItems() {

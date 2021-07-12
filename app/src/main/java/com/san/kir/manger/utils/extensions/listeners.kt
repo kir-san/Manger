@@ -5,7 +5,7 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.view.GestureDetectorCompat
-import com.san.kir.ankofork.SubsamplingScaleImageView.SubsamplingScaleImageView
+import com.san.kir.ankofork.subsampling_scale_image_view.SubsamplingScaleImageView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope

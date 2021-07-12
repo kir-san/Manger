@@ -3,7 +3,6 @@ package com.san.kir.manger.components.statistics
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.san.kir.ankofork.sdk28._LinearLayout
 import com.san.kir.manger.R

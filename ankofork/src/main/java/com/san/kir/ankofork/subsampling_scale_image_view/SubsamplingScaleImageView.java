@@ -1,4 +1,4 @@
-package com.san.kir.ankofork.SubsamplingScaleImageView;
+package com.san.kir.ankofork.subsampling_scale_image_view;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -13,11 +13,9 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.os.Message;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -29,12 +27,12 @@ import android.view.View;
 import android.view.ViewParent;
 
 import com.san.kir.ankofork.R.styleable;
-import com.san.kir.ankofork.SubsamplingScaleImageView.decoder.CompatDecoderFactory;
-import com.san.kir.ankofork.SubsamplingScaleImageView.decoder.DecoderFactory;
-import com.san.kir.ankofork.SubsamplingScaleImageView.decoder.ImageDecoder;
-import com.san.kir.ankofork.SubsamplingScaleImageView.decoder.ImageRegionDecoder;
-import com.san.kir.ankofork.SubsamplingScaleImageView.decoder.SkiaImageDecoder;
-import com.san.kir.ankofork.SubsamplingScaleImageView.decoder.SkiaImageRegionDecoder;
+import com.san.kir.ankofork.subsampling_scale_image_view.decoder.CompatDecoderFactory;
+import com.san.kir.ankofork.subsampling_scale_image_view.decoder.DecoderFactory;
+import com.san.kir.ankofork.subsampling_scale_image_view.decoder.ImageDecoder;
+import com.san.kir.ankofork.subsampling_scale_image_view.decoder.ImageRegionDecoder;
+import com.san.kir.ankofork.subsampling_scale_image_view.decoder.SkiaImageDecoder;
+import com.san.kir.ankofork.subsampling_scale_image_view.decoder.SkiaImageRegionDecoder;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -50,6 +48,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.exifinterface.media.ExifInterface;
 
 /**
  * <p>
@@ -332,16 +331,14 @@ public class SubsamplingScaleImageView extends View {
         setDoubleTapZoomDpi(160);
         setMinimumTileDpi(320);
         setGestureDetector(context);
-        this.handler = new Handler(new Handler.Callback() {
-            public boolean handleMessage(Message message) {
-                if (message.what == MESSAGE_LONG_CLICK && onLongClickListener != null) {
-                    maxTouchCount = 0;
-                    SubsamplingScaleImageView.super.setOnLongClickListener(onLongClickListener);
-                    performLongClick();
-                    SubsamplingScaleImageView.super.setOnLongClickListener(null);
-                }
-                return true;
+        this.handler = new Handler(message -> {
+            if (message.what == MESSAGE_LONG_CLICK && onLongClickListener != null) {
+                maxTouchCount = 0;
+                SubsamplingScaleImageView.super.setOnLongClickListener(onLongClickListener);
+                performLongClick();
+                SubsamplingScaleImageView.super.setOnLongClickListener(null);
             }
+            return true;
         });
         // Handle XML attributes
         if (attr != null) {
@@ -1098,6 +1095,7 @@ public class SubsamplingScaleImageView extends View {
                     for (Tile tile : tileMapEntry.getValue()) {
                         if (tile.visible && (tile.loading || tile.bitmap == null)) {
                             hasMissingTiles = true;
+                            break;
                         }
                     }
                 }
@@ -1241,6 +1239,7 @@ public class SubsamplingScaleImageView extends View {
                     for (Tile tile : tileMapEntry.getValue()) {
                         if (tile.loading || tile.bitmap == null) {
                             baseLayerReady = false;
+                            break;
                         }
                     }
                 }
@@ -1459,7 +1458,7 @@ public class SubsamplingScaleImageView extends View {
             // Choose the smallest ratio as inSampleSize value, this will guarantee
             // a final image with both dimensions larger than or equal to the
             // requested height and width.
-            inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+            inSampleSize = Math.min(heightRatio, widthRatio);
         }
 
         // We want the actual sample size that will be used, so round down to nearest power of 2.
@@ -1612,7 +1611,7 @@ public class SubsamplingScaleImageView extends View {
         TilesInitTask(SubsamplingScaleImageView view, Context context, DecoderFactory<? extends ImageRegionDecoder> decoderFactory, Uri source) {
             this.viewRef = new WeakReference<>(view);
             this.contextRef = new WeakReference<>(context);
-            this.decoderFactoryRef = new WeakReference<DecoderFactory<? extends ImageRegionDecoder>>(decoderFactory);
+            this.decoderFactoryRef = new WeakReference<>(decoderFactory);
             this.source = source;
         }
 
@@ -1796,7 +1795,7 @@ public class SubsamplingScaleImageView extends View {
         BitmapLoadTask(SubsamplingScaleImageView view, Context context, DecoderFactory<? extends ImageDecoder> decoderFactory, Uri source, boolean preview) {
             this.viewRef = new WeakReference<>(view);
             this.contextRef = new WeakReference<>(context);
-            this.decoderFactoryRef = new WeakReference<DecoderFactory<? extends ImageDecoder>>(decoderFactory);
+            this.decoderFactoryRef = new WeakReference<>(decoderFactory);
             this.source = source;
             this.preview = preview;
         }

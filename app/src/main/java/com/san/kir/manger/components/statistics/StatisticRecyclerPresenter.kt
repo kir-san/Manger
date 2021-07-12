@@ -1,6 +1,5 @@
 package com.san.kir.manger.components.statistics
 
-import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView
 import com.san.kir.manger.utils.RecyclerPresenter

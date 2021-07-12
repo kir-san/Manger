@@ -3,35 +3,24 @@ package com.san.kir.manger.components.statistics
 import android.content.Context
 import android.graphics.Typeface
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
-import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.view.updateLayoutParams
-import androidx.core.view.updatePadding
 import com.san.kir.ankofork.AnkoComponent
 import com.san.kir.ankofork.AnkoContext
-import com.san.kir.ankofork.appcompat.toolbar
 import com.san.kir.ankofork.applyRecursively
 import com.san.kir.ankofork.bottomPadding
-import com.san.kir.ankofork.constraint_layout.matchConstraint
-import com.san.kir.ankofork.design.themedAppBarLayout
 import com.san.kir.ankofork.dip
-import com.san.kir.ankofork.matchParent
 import com.san.kir.ankofork.padding
-import com.san.kir.ankofork.sdk28.frameLayout
 import com.san.kir.ankofork.sdk28.textView
 import com.san.kir.ankofork.support.nestedScrollView
 import com.san.kir.ankofork.topPadding
 import com.san.kir.ankofork.verticalLayout
-import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.MangaStatistic
 import com.san.kir.manger.utils.TimeFormat
 import com.san.kir.manger.utils.extensions.appBar
 import com.san.kir.manger.utils.extensions.applyInsetsForCutOut
 import com.san.kir.manger.utils.extensions.bytesToMb
-import com.san.kir.manger.utils.extensions.doOnApplyWindowInstets
 import com.san.kir.manger.utils.extensions.formatDouble
 
 class StatisticItemFullView(private val manga: MangaStatistic) :

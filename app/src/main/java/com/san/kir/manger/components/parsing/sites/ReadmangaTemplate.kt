@@ -221,7 +221,8 @@ abstract class ReadmangaTemplate(private val siteRepository: SiteRepository) : S
 
             repeat(json.length()) { index ->
                 val jsonArray = json.getJSONArray(index)
-                val url = jsonArray.getString(1) +
+                val url =
+//                    jsonArray.getString(1) +
                         jsonArray.getString(0) +
                         jsonArray.getString(2)
                 list += url

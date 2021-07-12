@@ -1,4 +1,4 @@
-package com.san.kir.ankofork.SubsamplingScaleImageView;
+package com.san.kir.ankofork.subsampling_scale_image_view;
 
 import android.graphics.PointF;
 

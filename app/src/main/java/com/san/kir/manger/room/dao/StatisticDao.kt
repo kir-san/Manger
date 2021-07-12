@@ -1,6 +1,5 @@
 package com.san.kir.manger.room.dao
 
-import androidx.lifecycle.LiveData
 import androidx.paging.DataSource
 import androidx.room.Dao
 import androidx.room.Query

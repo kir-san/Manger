@@ -73,6 +73,10 @@ object Dependencies {
                 "com.google.accompanist:accompanist-pager:${Versions.Google.ACCOMPANIST}"
             const val ACCOMPANIST_PAGER_INDICATORS =
                 "com.google.accompanist:accompanist-pager-indicators:${Versions.Google.ACCOMPANIST}"
+            const val ACCOMPANIST_PERMISSIONS =
+                "com.google.accompanist:accompanist-permissions:${Versions.Google.ACCOMPANIST}"
+            const val ACCOMPANIST_SYSTEMUICONTROLLER =
+                "com.google.accompanist:accompanist-systemuicontroller:${Versions.Google.ACCOMPANIST}"
         }
 
         object Hilt {
@@ -100,8 +104,6 @@ object Dependencies {
     }
 
     object Other {
-        const val DSLPERMISSION =
-            "com.sagar:dslpermission:${Versions.DSLPERMISSION}"
         const val JSOUP =
             "org.jsoup:jsoup:${Versions.JSOUP}"
         const val ANDROID_JOB =

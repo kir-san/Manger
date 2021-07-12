@@ -58,4 +58,3 @@ class MangaDeleteWorker(appContext: Context, workerParams: WorkerParameters) :
         }
     }
 }
-

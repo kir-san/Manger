@@ -36,11 +36,11 @@ class ReadChapterDelete(appContext: Context, workerParams: WorkerParameters) :
 
     private suspend fun updateStorageItem(unic: String) {
         val manga = mMangaRepository.getItem(unic)
-        val storageItem = mStorageRepository.items().first { it.path == getFullPath(manga.path).shortPath }
+        val storageItem = mStorageRepository.items()
+            .first { it.path == getFullPath(manga.path).shortPath }
 
         mStorageRepository.update(
             mStorageRepository.getSizeAndIsNew(storageItem)
         )
     }
 }
-

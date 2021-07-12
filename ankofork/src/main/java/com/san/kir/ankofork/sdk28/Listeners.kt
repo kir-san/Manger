@@ -59,10 +59,12 @@ inline fun View.onLongClick(noinline l: (v: View?) -> Boolean) {
     setOnLongClickListener(l)
 }
 
+@Suppress("unused")
 inline fun CompoundButton.onCheckedChange(noinline l: (buttonView: CompoundButton?, isChecked: Boolean) -> Unit) {
     setOnCheckedChangeListener(l)
 }
 
+@Suppress("unused")
 inline fun RadioGroup.onCheckedChange(noinline l: (group: RadioGroup?, checkedId: Int) -> Unit) {
     setOnCheckedChangeListener(l)
 }
@@ -73,7 +75,7 @@ fun SearchView.onQueryTextListener(init: __SearchView_OnQueryTextListener.() -> 
     setOnQueryTextListener(listener)
 }
 
-@Suppress("ClassName")
+@Suppress("ClassName", "unused")
 class __SearchView_OnQueryTextListener : SearchView.OnQueryTextListener {
 
     private var _onQueryTextSubmit: ((String?) -> Boolean)? = null
@@ -94,40 +96,13 @@ class __SearchView_OnQueryTextListener : SearchView.OnQueryTextListener {
 
 }
 
-fun SearchView.onSuggestionListener(init: __SearchView_OnSuggestionListener.() -> Unit) {
-    val listener = __SearchView_OnSuggestionListener()
-    listener.init()
-    setOnSuggestionListener(listener)
-}
-
-@Suppress("ClassName")
-class __SearchView_OnSuggestionListener : SearchView.OnSuggestionListener {
-
-    private var _onSuggestionSelect: ((Int) -> Boolean)? = null
-
-    override fun onSuggestionSelect(position: Int) = _onSuggestionSelect?.invoke(position) ?: false
-
-    fun onSuggestionSelect(listener: (Int) -> Boolean) {
-        _onSuggestionSelect = listener
-    }
-
-    private var _onSuggestionClick: ((Int) -> Boolean)? = null
-
-    override fun onSuggestionClick(position: Int) = _onSuggestionClick?.invoke(position) ?: false
-
-    fun onSuggestionClick(listener: (Int) -> Boolean) {
-        _onSuggestionClick = listener
-    }
-
-}
-
 fun SeekBar.onSeekBarChangeListener(init: __SeekBar_OnSeekBarChangeListener.() -> Unit) {
     val listener = __SeekBar_OnSeekBarChangeListener()
     listener.init()
     setOnSeekBarChangeListener(listener)
 }
 
-@Suppress("ClassName")
+@Suppress("ClassName", "unused")
 class __SeekBar_OnSeekBarChangeListener : SeekBar.OnSeekBarChangeListener {
 
     private var _onProgressChanged: ((SeekBar?, Int, Boolean) -> Unit)? = null
@@ -162,6 +137,7 @@ class __SeekBar_OnSeekBarChangeListener : SeekBar.OnSeekBarChangeListener {
 
 }
 
+@Suppress("unused")
 inline fun TimePicker.onTimeChanged(noinline l: (view: TimePicker?, hourOfDay: Int, minute: Int) -> Unit) {
     setOnTimeChangedListener(l)
 }

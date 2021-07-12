@@ -5,19 +5,6 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.san.kir.ankofork.AnkoContext
 
-/**
- * Display the simple Toast message with the [Toast.LENGTH_SHORT] duration.
- *
- * @param message the message text resource.
- */
-inline fun AnkoContext<*>.toast(message: Int) = ctx.toast(message)
-
-/**
- * Display the simple Toast message with the [Toast.LENGTH_SHORT] duration.
- *
- * @param message the message text resource.
- */
-inline fun Fragment.toast(message: Int) = requireActivity().toast(message)
 
 /**
  * Display the simple Toast message with the [Toast.LENGTH_SHORT] duration.
@@ -29,20 +16,6 @@ inline fun Context.toast(message: Int): Toast = Toast
         .apply {
             show()
         }
-
-/**
- * Display the simple Toast message with the [Toast.LENGTH_SHORT] duration.
- *
- * @param message the message text.
- */
-inline fun AnkoContext<*>.toast(message: CharSequence) = ctx.toast(message)
-
-/**
- * Display the simple Toast message with the [Toast.LENGTH_SHORT] duration.
- *
- * @param message the message text.
- */
-inline fun Fragment.toast(message: CharSequence) = requireActivity().toast(message)
 
 /**
  * Display the simple Toast message with the [Toast.LENGTH_SHORT] duration.

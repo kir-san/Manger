@@ -24,4 +24,3 @@ class ReadLatestClearWorker(appContext: Context, workerParams: WorkerParameters)
         )
     }
 }
-

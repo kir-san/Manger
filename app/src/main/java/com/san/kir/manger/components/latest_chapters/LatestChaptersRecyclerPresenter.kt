@@ -1,6 +1,5 @@
 package com.san.kir.manger.components.latest_chapters
 
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView

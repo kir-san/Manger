@@ -1,4 +1,4 @@
-package com.san.kir.ankofork.SubsamplingScaleImageView.decoder;
+package com.san.kir.ankofork.subsampling_scale_image_view.decoder;
 
 
 import android.content.ContentResolver;
@@ -15,7 +15,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
 
-import com.san.kir.ankofork.SubsamplingScaleImageView.SubsamplingScaleImageView;
+import com.san.kir.ankofork.subsampling_scale_image_view.SubsamplingScaleImageView;
 
 import java.io.InputStream;
 import java.util.List;
@@ -28,7 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
- * Default implementation of {@link com.davemorrissey.labs.subscaleview.decoder.ImageRegionDecoder}
+ * Default implementation of {@link }
  * using Android's {@link android.graphics.BitmapRegionDecoder}, based on the Skia library. This
  * works well in most circumstances and has reasonable performance due to the cached decoder instance,
  * however it has some problems with grayscale, indexed and CMYK images.

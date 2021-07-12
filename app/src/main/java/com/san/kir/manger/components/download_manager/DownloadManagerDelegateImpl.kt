@@ -53,7 +53,7 @@ class DownloadManagerDelegateImpl(
         }
     }
 
-    override fun onComplete(item: DownloadItem) {
+    override suspend fun onComplete(item: DownloadItem) {
         item.status = DownloadStatus.completed
         job.post {
             mDownloadDao.update(item)

@@ -2,14 +2,14 @@ package com.san.kir.manger.utils.extensions
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.Environment
+import com.san.kir.manger.App
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.utils.ResultDeleting
 import java.io.File
 import java.io.FileOutputStream
 import java.util.*
 
-fun getFullPath(path: String): File = File(Environment.getExternalStorageDirectory(), path)
+fun getFullPath(path: String): File = File(App.externalDir, path)
 
 fun getCountPagesForChapterInMemory(shortPath: String): Int {
     val listFiles = getFullPath(shortPath)
@@ -22,7 +22,7 @@ fun getCountPagesForChapterInMemory(shortPath: String): Int {
 val imageExtensions = listOf("png", "jpg", "webp", "gif")
 
 fun checkExtension(fileName: String): Boolean {
-    return imageExtensions.any { fileName.toLowerCase(Locale.ROOT).endsWith(it) }
+    return imageExtensions.any { fileName.lowercase(Locale.ROOT).endsWith(it) }
 }
 
 fun bytesToMb(value: Long): Double = value.toDouble() / (1024.0 * 1024.0)

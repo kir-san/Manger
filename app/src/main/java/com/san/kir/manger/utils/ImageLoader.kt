@@ -6,6 +6,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.LruCache
 import android.widget.ImageView
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.result.Result
 import com.san.kir.manger.components.parsing.ManageSites
@@ -25,10 +27,10 @@ import java.io.File
 import java.util.concurrent.Executors
 
 class ImageLoader(private val url: String) {
-    private val pool =
-        Executors
-            .newFixedThreadPool(1)
-            .asCoroutineDispatcher()
+
+    private val pool = Executors
+        .newFixedThreadPool(1)
+        .asCoroutineDispatcher()
 
     private val mMemoryCache = MemoryCache()
     private val mDiskCache = DiskCache()
@@ -36,7 +38,7 @@ class ImageLoader(private val url: String) {
     private var color = -1
     private var errorResId = -1
     private var error: (() -> Unit)? = null
-    private var success: (() -> Unit)? = null
+    private var success: ((ImageBitmap) -> Unit)? = null
     private var trying: (() -> Boolean)? = null
 
     fun errorColor(color: Int): ImageLoader {
@@ -54,7 +56,7 @@ class ImageLoader(private val url: String) {
         return this
     }
 
-    fun onSuccess(action: () -> Unit): ImageLoader {
+    fun onSuccess(action: (ImageBitmap) -> Unit): ImageLoader {
         success = action
         return this
     }
@@ -71,49 +73,61 @@ class ImageLoader(private val url: String) {
             null
     }
 
-    private fun load(target: ImageView): Job {
+    fun start(): Job? {
+        return if (trying == null || !trying!!.invoke())
+            load()
+        else
+            null
+    }
+
+    private fun load(target: ImageView? = null): Job {
         return GlobalScope.launch(pool) {
             //        Получаем имя из url
             val name = getNameFromUrl(url)
 
             mMemoryCache.get(name)?.also {
                 withContext(Dispatchers.Main) {
-                    target.setImageBitmap(it)
-                    success?.invoke()
+                    target?.setImageBitmap(it)
+                    success?.invoke(it.asImageBitmap())
                 }
                 return@launch
             }
 
             getDiskBitmap(name)?.also {
                 withContext(Dispatchers.Main) {
-                    target.setImageBitmap(it)
-                    success?.invoke()
+                    target?.setImageBitmap(it)
+                    success?.invoke(it.asImageBitmap())
                 }
                 return@launch
             }
 
             getNetworkBitmap(url, name)?.also {
                 withContext(Dispatchers.Main) {
-                    target.setImageBitmap(it)
-                    success?.invoke()
+                    target?.setImageBitmap(it)
+                    success?.invoke(it.asImageBitmap())
                 }
                 return@launch
             } ?: run {
-                tryUpdateLogoLink(url, target.context)
+                target?.context?.let { tryUpdateLogoLink(url, it) }
             }
 
             withContext(Dispatchers.Main) {
                 // если картинка загрузилась с ошибкой
-                if (errorResId != -1) {
-                    // если была указана картинка для ошибки указываем ее
-                    try {
-                        target.setImageResource(errorResId)
-                    } catch (ex: Resources.NotFoundException) {
-                        target.setBackgroundColor(errorResId)
+                when {
+                    errorResId != -1 -> {
+                        // если была указана картинка для ошибки указываем ее
+                        try {
+                            target?.setImageResource(errorResId)
+                        } catch (ex: Resources.NotFoundException) {
+                            target?.setBackgroundColor(errorResId)
+                        }
                     }
-                } else if (color != -1) {
-                    // если был указан цвет для ошибки, то устанавливаем цвет
-                    target.setBackgroundColor(color)
+                    color != -1 -> {
+                        // если был указан цвет для ошибки, то устанавливаем цвет
+                        target?.setBackgroundColor(color)
+                    }
+                    else -> {
+                    }
                 }
             }
             error?.invoke()

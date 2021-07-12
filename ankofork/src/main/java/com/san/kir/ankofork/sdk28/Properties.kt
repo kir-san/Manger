@@ -40,7 +40,9 @@ var android.widget.TextView.lines: Int
 
 var android.widget.TextView.singleLine: Boolean
     @Deprecated(AnkoInternals.NO_GETTER, level = DeprecationLevel.ERROR) get() = AnkoInternals.noGetter()
-    set(v) = setSingleLine(v)
+    set(v) {
+        isSingleLine = v
+    }
 
 var android.widget.RelativeLayout.horizontalGravity: Int
     @Deprecated(AnkoInternals.NO_GETTER, level = DeprecationLevel.ERROR) get() = AnkoInternals.noGetter()

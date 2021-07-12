@@ -221,35 +221,3 @@ fun Context.email(email: String, subject: String = "", text: String = ""): Boole
     return false
 
 }
-
-inline fun AnkoContext<*>.makeCall(number: String): Boolean = ctx.makeCall(number)
-inline fun Fragment.makeCall(number: String): Boolean = requireActivity().makeCall(number)
-
-fun Context.makeCall(number: String): Boolean {
-    return try {
-        val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:$number"))
-        startActivity(intent)
-        true
-    } catch (e: Exception) {
-        e.printStackTrace()
-        false
-    }
-}
-
-inline fun AnkoContext<*>.sendSMS(number: String, text: String = ""): Boolean =
-    ctx.sendSMS(number, text)
-
-inline fun Fragment.sendSMS(number: String, text: String = ""): Boolean =
-    requireActivity().sendSMS(number, text)
-
-fun Context.sendSMS(number: String, text: String = ""): Boolean {
-    return return try {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("sms:$number"))
-        intent.putExtra("sms_body", text)
-        startActivity(intent)
-        true
-    } catch (e: Exception) {
-        e.printStackTrace()
-        false
-    }
-}

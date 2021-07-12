@@ -2,12 +2,10 @@ package com.san.kir.manger.components.list_chapters
 
 import android.graphics.Color
 import android.view.Gravity
-import android.view.ViewGroup
 import android.view.ViewManager
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
-import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView

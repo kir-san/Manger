@@ -44,7 +44,7 @@ class AddEditPlannedTaskActivity : BaseActivity() {
             intent.hasExtra(PlannedAddEdit.edit) -> {
                 setTitle(R.string.planned_task_title_change)
                 isEditMode = true
-                mView.setTask(intent.getParcelableExtra(PlannedAddEdit.edit))
+//                mView.setTask(intent.getParcelableExtra(PlannedAddEdit.edit))
             }
         }
 

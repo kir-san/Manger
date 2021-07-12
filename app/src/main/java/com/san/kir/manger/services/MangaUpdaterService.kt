@@ -138,7 +138,7 @@ class MangaUpdaterService : Service() {
                 else -> {
                     val task = intent.getParcelableExtra<Manga>("manga")
 
-                    if (task.isUpdate) {
+                    if (task!!.isUpdate) {
                         taskCounter = taskCounter + task
 
                         val intentSend = Intent(actionSend)

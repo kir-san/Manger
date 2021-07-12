@@ -42,7 +42,7 @@ class FirstInitAppWorker(ctx: Context, params: WorkerParameters) :
         DIR.ALL.forEach { dir -> getFullPath(dir).createDirs() }
     }
 
-    private fun updateMenuItems() {
+    private suspend fun updateMenuItems() {
         val items = mMainMenuRepository.getItems()
         MainMenuType.values()
             .filter { type ->

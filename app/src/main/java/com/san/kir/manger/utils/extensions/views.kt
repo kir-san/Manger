@@ -18,7 +18,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import com.san.kir.ankofork.Binder
-import com.san.kir.ankofork.SubsamplingScaleImageView.SubsamplingScaleImageView
 import com.san.kir.ankofork.ankoView
 import com.san.kir.ankofork.appcompat.toolbar
 import com.san.kir.ankofork.bottomPadding
@@ -31,6 +30,7 @@ import com.san.kir.ankofork.matchParent
 import com.san.kir.ankofork.sdk28.imageResource
 import com.san.kir.ankofork.sdk28.textColor
 import com.san.kir.ankofork.sdk28.textView
+import com.san.kir.ankofork.subsampling_scale_image_view.SubsamplingScaleImageView
 import com.san.kir.ankofork.topPadding
 import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.R

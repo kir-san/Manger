@@ -13,8 +13,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.github.kittinunf.fuel.Fuel
 import com.san.kir.ankofork.Binder
-import com.san.kir.ankofork.SubsamplingScaleImageView.ImageSource
-import com.san.kir.ankofork.SubsamplingScaleImageView.SubsamplingScaleImageView
+import com.san.kir.ankofork.subsampling_scale_image_view.ImageSource
+import com.san.kir.ankofork.subsampling_scale_image_view.SubsamplingScaleImageView
 import com.san.kir.ankofork.alignParentBottom
 import com.san.kir.ankofork.centerHorizontally
 import com.san.kir.ankofork.dip

@@ -2,9 +2,12 @@ package com.san.kir.manger.view_models
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.san.kir.manger.components.list_chapters.ChapterComparator
 import com.san.kir.manger.repositories.ChapterRepository
 import com.san.kir.manger.repositories.StatisticRepository
 import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.MangaStatistic
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -31,5 +34,23 @@ class ViewerViewModel(app: Application) : AndroidViewModel(app) {
     suspend fun getStatisticItem(mangaName: String) = mStatisticRepository.getItem(mangaName)
     suspend fun statisticUpdate(stats: MangaStatistic) = mStatisticRepository.update(stats)
     suspend fun update(chapter: Chapter) = mChapterRepository.update(chapter)
+
+    suspend fun getFirstNotReadChapter(manga: Manga): Chapter? {
+        var list = mChapterRepository.getItems(mangaUnic = manga.unic)
+
+        list = if (manga.isAlternativeSort) {
+            try {
+                list.sortedWith(ChapterComparator())
+            } catch (e: Exception) {
+                list
+            }
+        } else {
+            list
+        }
+
+        viewModelScope
+
+        return list.firstOrNull { !it.isRead }
+    }
 }
 

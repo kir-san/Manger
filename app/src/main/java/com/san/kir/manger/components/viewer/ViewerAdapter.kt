@@ -5,7 +5,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.viewpager.widget.PagerAdapter
 
-
 class ViewerAdapter(fm: FragmentManager) :
     androidx.fragment.app.FragmentStatePagerAdapter(fm) {
 
@@ -49,4 +48,31 @@ class ViewerAdapter(fm: FragmentManager) :
         return PagerAdapter.POSITION_NONE
     }
 }
+
+/* TODO
+These Fragments that were added with fragmentAdapter.addFragment() will be ignored entirely. If we assume similarly to #2 that we can safely communicate with fragments we created at our runtime, these fragments will definitely be unattached, and the app will crash.
+
+Fatal Exception: java.lang.IllegalStateException
+Fragment has not been attached yet
+
+In simpler cases, the solution is to instantiate the Fragment directly inside the getItem() call.
+* class MyFragmentPagerAdapter(
+    private val context: Context,
+    fragmentManager: FragmentManager
+) : FragmentPagerAdapter(fragmentManager) {
+    override fun getCount() = 2
+
+    override fun getItem(position: Int) = when(position) {
+        0 -> FirstFragment()
+        1 -> SecondFragment()
+        else -> throw IllegalStateException("Unexpected position $position")
+    }
+
+    override fun getPageTitle(position: Int): CharSequence = when(position) {
+        0 -> context.getString(R.string.first)
+        1 -> context.getString(R.string.second)
+        else -> throw IllegalStateException("Unexpected position $position")
+    }
+}
+* */
 

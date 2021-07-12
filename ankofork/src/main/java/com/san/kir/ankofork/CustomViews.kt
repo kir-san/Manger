@@ -56,27 +56,6 @@ inline fun Activity.verticalLayout(theme: Int = 0, init: (@AnkoViewDslMarker _Li
     return ankoView(AnkoFactoriesCustomViews.VERTICAL_LAYOUT_FACTORY, theme, init)
 }
 
-inline fun ViewManager.editText(constraints: InputConstraints, theme: Int = 0): EditText = editText(constraints, theme) {}
-inline fun ViewManager.editText(constraints: InputConstraints, theme: Int = 0, init: (@AnkoViewDslMarker EditText).() -> Unit): EditText {
-    val v = ankoView(AnkoFactoriesCustomViews.EDIT_TEXT, theme, init)
-    v.inputType = constraints.value
-    return v
-}
-
-inline fun Context.editText(constraints: InputConstraints, theme: Int = 0): EditText = editText(constraints, theme) {}
-inline fun Context.editText(constraints: InputConstraints, theme: Int = 0, init: (@AnkoViewDslMarker EditText).() -> Unit): EditText {
-    val v = ankoView(AnkoFactoriesCustomViews.EDIT_TEXT, theme, init)
-    v.inputType = constraints.value
-    return v
-}
-
-inline fun Activity.editText(constraints: InputConstraints, theme: Int = 0): EditText = editText(constraints, theme) {}
-inline fun Activity.editText(constraints: InputConstraints, theme: Int = 0, init: (@AnkoViewDslMarker EditText).() -> Unit): EditText {
-    val v = ankoView(AnkoFactoriesCustomViews.EDIT_TEXT, theme, init)
-    v.inputType = constraints.value
-    return v
-}
-
 inline fun ViewManager.horizontalProgressBar(theme: Int = 0): ProgressBar = horizontalProgressBar(theme) {}
 inline fun ViewManager.horizontalProgressBar(theme: Int = 0, init: (@AnkoViewDslMarker ProgressBar).() -> Unit): ProgressBar {
     return ankoView(AnkoFactoriesCustomViews.HORIZONTAL_PROGRESS_BAR_FACTORY, theme, init)

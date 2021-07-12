@@ -1,4 +1,4 @@
-package com.san.kir.manger.components.catalog_for_one_site
+package com.san.kir.manger.services
 
 import android.annotation.SuppressLint
 import android.app.IntentService
@@ -12,12 +12,12 @@ import com.san.kir.ankofork.intentFor
 import com.san.kir.ankofork.sdk28.notificationManager
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
-import com.san.kir.manger.components.sites_catalog.SiteCatalogActivity
 import com.san.kir.manger.repositories.MangaRepository
 import com.san.kir.manger.repositories.SiteCatalogRepository
 import com.san.kir.manger.repositories.SiteRepository
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.utils.ID
+import com.san.kir.manger.utils.extensions.log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -46,10 +46,14 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
     }
 
     private var notificationId = ID.generate()
+
+    /* TODO изменить переход
     private val actionGoToCatalogs by lazy {
         val intent = intentFor<SiteCatalogActivity>()
         PendingIntent.getActivity(this, 0, intent, 0)
     }
+    */
+
     private val actionCancelAll by lazy {
         val intent = intentFor<CatalogForOneSiteUpdaterService>().setAction(ACTION_CANCEL_ALL)
         val cancelAll = PendingIntent.getService(this, 0, intent, 0)
@@ -75,7 +79,7 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
             val importance = NotificationManager.IMPORTANCE_LOW
 
             NotificationChannel(channelId, name, importance).apply {
-                description = CatalogForOneSiteUpdaterService.description
+                description = Companion.description
                 notificationManager.createNotificationChannel(this)
             }
         }
@@ -87,41 +91,35 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
             stopSelf()
             isManualStop = true
         } else {
-            taskCounter = taskCounter + intent.getStringExtra("catalogName")
+//            taskCounter = taskCounter + intent.getStringExtra("catalogName")
         }
         return super.onStartCommand(intent, flags, startId)
     }
 
 
-    override fun onHandleIntent(intent: Intent) = runBlocking(Dispatchers.Default) {
+    override fun onHandleIntent(intent: Intent?) = runBlocking(Dispatchers.Default) {
         job = launch {
             try {
                 val siteRepository = SiteRepository(this@CatalogForOneSiteUpdaterService)
                 val mangaRepository = MangaRepository(this@CatalogForOneSiteUpdaterService)
                 val site = ManageSites.CATALOG_SITES
-                    .first { it.catalogName == intent.getStringExtra("catalogName") }
+                    .first { it.catalogName == intent!!.getStringExtra("catalogName") }
                 val siteDb = siteRepository.getItem(site.name)
 
-                with(
-                    NotificationCompat.Builder(
-                        this@CatalogForOneSiteUpdaterService, channelId
-                    )
-                ) {
+                with(NotificationCompat.Builder(this@CatalogForOneSiteUpdaterService, channelId)) {
                     setSmallIcon(R.drawable.ic_notification_update)
                     setContentTitle(
                         getString(R.string.catalog_fos_service_notify_title, taskCounter.size)
                     )
                     setContentText(
-                        getString(
-                            R.string.catalog_fos_service_notify_text,
-                            site.name
-                        )
+                        getString(R.string.catalog_fos_service_notify_text, site.name)
                     )
                     startForeground(notificationId, build())
                 }
 
 
                 var counter = 0
+                var percent = 0
                 val tempList = mutableListOf<SiteCatalogElement>()
 
                 site.init()
@@ -129,29 +127,37 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
                     .flowOn(Executors.newSingleThreadExecutor().asCoroutineDispatcher())
                     .onEach {
                         counter++
-                        with(
-                            NotificationCompat.Builder(
-                                this@CatalogForOneSiteUpdaterService, channelId
-                            )
-                        ) {
-                            setSmallIcon(R.drawable.ic_notification_update)
-                            setContentTitle(
-                                getString(
-                                    R.string.catalog_fos_service_notify_title_2,
-                                    taskCounter.size
+                        val new = ((counter.toFloat() / site.volume.toFloat()) * 100).toInt()
+                        if (new != percent) {
+                            percent = new
+                            with(
+                                NotificationCompat.Builder(
+                                    this@CatalogForOneSiteUpdaterService, channelId
                                 )
-                            )
-                            setContentText("${siteDb?.name}  ${((counter.toFloat() / site.volume.toFloat()) * 100).toInt()}%")
-                            setProgress(site.volume, counter, false)
-                            addAction(actionCancelAll)
-                            startForeground(notificationId, build())
+                            ) {
+                                setSmallIcon(R.drawable.ic_notification_update)
+                                setContentTitle(
+                                    getString(
+                                        R.string.catalog_fos_service_notify_title_2,
+                                        taskCounter.size
+                                    )
+                                )
+                                setContentText("${siteDb?.name}  ${percent}%")
+                                setProgress(site.volume, counter, false)
+                                addAction(actionCancelAll)
+                                startForeground(notificationId, build())
+                            }
                         }
+
+                        log("$it")
                     }
                     .map { el ->
                         el.isAdded = mangaRepository.contain(el)
                         el
                     }
                     .toList(tempList)
+
+                log("update finish. elements getting ${tempList.size}")
 
                 SiteCatalogRepository(
                     this@CatalogForOneSiteUpdaterService, site.catalogName
@@ -195,7 +201,7 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
                 setContentTitle(getString(R.string.catalog_fos_service_notify_manual_stop_title))
                 sendNeutralBroadcast()
             }
-            setContentIntent(actionGoToCatalogs)
+// TODO           setContentIntent(actionGoToCatalogs)
 
             stopForeground(false)
             notificationManager.cancel(notificationId)

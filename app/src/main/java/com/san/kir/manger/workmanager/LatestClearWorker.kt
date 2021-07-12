@@ -22,4 +22,3 @@ abstract class LatestClearWorker(appContext: Context, workerParams: WorkerParame
         }
     }
 }
-

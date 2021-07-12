@@ -1,0 +1,1327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AnalysisUIOptions">
+    <option name="SPLITTER_PROPORTION" value="0.5012285" />
+    <option name="SCOPE_TYPE" value="3" />
+  </component>
+  <component name="AndroidConfiguredLogFilters">
+    <filters>
+      <filter>
+        <option name="logLevel" value="verbose" />
+        <option name="logMessageIsRegex" value="false" />
+        <option name="logMessagePattern" value="manger" />
+        <option name="logTagPattern" value="ActivityManager" />
+        <option name="name" value="start time" />
+        <option name="packageNamePattern" value="" />
+        <option name="pid" value="" />
+      </filter>
+    </filters>
+  </component>
+  <component name="AndroidGradleBuildConfiguration">
+    <option name="COMMAND_LINE_OPTIONS" value="--stacktrace --debug" />
+  </component>
+  <component name="AndroidLayouts">
+    <shared>
+      <config>
+        <target>android-26</target>
+      </config>
+    </shared>
+  </component>
+  <component name="AndroidLogFilters">
+    <option name="TOOL_WINDOW_CUSTOM_FILTER" value="manger" />
+    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="No Filters" />
+    <option name="TOOL_WINDOW_REGEXP_FILTER" value="false" />
+    <option name="LOGCAT_FORMAT_STRING" value="%1$s %3$s %4$c/%5$s: %6$s" />
+  </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="AutomaticModuleUnloader">
+    <loaded-modules>
+      <module name="Manger" />
+      <module name="ankofork" />
+      <module name="app" />
+    </loaded-modules>
+  </component>
+  <component name="AvailableLibraryUpdateStorage">
+    <library-updates>
+      <library-update>
+        <group-id>com.squareup.leakcanary</group-id>
+        <name>leakcanary-android</name>
+        <version>2.0-beta-1</version>
+        <repository>Maven Central</repository>
+      </library-update>
+      <library-update>
+        <group-id>com.android.support</group-id>
+        <name>exifinterface</name>
+        <version>28.0.0</version>
+        <repository>Google,Android Repository</repository>
+      </library-update>
+      <library-update>
+        <group-id>com.davemorrissey.labs</group-id>
+        <name>subsampling-scale-image-view</name>
+        <version>3.10.0</version>
+        <repository>JCenter,Maven Central</repository>
+      </library-update>
+      <library-update>
+        <group-id>org.jetbrains.kotlin</group-id>
+        <name>kotlin-stdlib-jdk7</name>
+        <version>1.3.41</version>
+        <repository>JCenter,Maven Central</repository>
+      </library-update>
+      <library-update>
+        <group-id>org.jetbrains.kotlinx</group-id>
+        <name>kotlinx-coroutines-core</name>
+        <version>1.3.0-RC</version>
+        <repository>Maven Central</repository>
+      </library-update>
+      <library-update>
+        <group-id>com.android.support</group-id>
+        <name>support-vector-drawable</name>
+        <version>28.0.0</version>
+        <repository>Google,Android Repository</repository>
+      </library-update>
+      <library-update>
+        <group-id>android.arch.lifecycle</group-id>
+        <name>compiler</name>
+        <version>1.1.1</version>
+        <repository>Google</repository>
+      </library-update>
+      <library-update>
+        <group-id>org.jetbrains.kotlinx</group-id>
+        <name>kotlinx-coroutines-android</name>
+        <version>1.3.0-RC</version>
+        <repository>Maven Central</repository>
+      </library-update>
+      <library-update>
+        <group-id>android.arch.lifecycle</group-id>
+        <name>extensions</name>
+        <version>1.1.1</version>
+        <repository>Google</repository>
+      </library-update>
+      <library-update>
+        <group-id>android.arch.persistence.room</group-id>
+        <name>runtime</name>
+        <version>1.1.1</version>
+        <repository>Google</repository>
+      </library-update>
+      <library-update>
+        <group-id>com.android.support</group-id>
+        <name>support-media-compat</name>
+        <version>28.0.0</version>
+        <repository>Google,Android Repository</repository>
+      </library-update>
+      <library-update>
+        <group-id>com.google.android.gms</group-id>
+        <name>play-services-gcm</name>
+        <version>17.0.0</version>
+        <repository>Google,Google Repository</repository>
+      </library-update>
+      <library-update>
+        <group-id>com.android.support</group-id>
+        <name>recyclerview-v7</name>
+        <version>28.0.0</version>
+        <repository>Google,Android Repository</repository>
+      </library-update>
+      <library-update>
+        <group-id>com.android.support</group-id>
+        <name>appcompat-v7</name>
+        <version>28.0.0</version>
+        <repository>Google,Android Repository</repository>
+      </library-update>
+      <library-update>
+        <group-id>com.evernote</group-id>
+        <name>android-job</name>
+        <version>1.3.0-rc1</version>
+        <repository>JCenter,Maven Central</repository>
+      </library-update>
+      <library-update>
+        <group-id>com.android.support</group-id>
+        <name>design</name>
+        <version>28.0.0</version>
+        <repository>Google,Android Repository</repository>
+      </library-update>
+      <library-update>
+        <group-id>com.android.support</group-id>
+        <name>preference-v7</name>
+        <version>28.0.0</version>
+        <repository>Google,Android Repository</repository>
+      </library-update>
+      <library-update>
+        <group-id>org.jsoup</group-id>
+        <name>jsoup</name>
+        <version>1.12.1</version>
+        <repository>JCenter,Maven Central</repository>
+      </library-update>
+      <library-update>
+        <group-id>android.arch.persistence.room</group-id>
+        <name>compiler</name>
+        <version>1.1.1</version>
+        <repository>Google</repository>
+      </library-update>
+      <library-update>
+        <group-id>com.android.support</group-id>
+        <name>support-v4</name>
+        <version>28.0.0</version>
+        <repository>Google,Android Repository</repository>
+      </library-update>
+      <library-update>
+        <group-id>com.android.support.constraint</group-id>
+        <name>constraint-layout</name>
+        <version>2.0.0-beta2</version>
+        <repository>Google</repository>
+      </library-update>
+      <library-update>
+        <group-id>android.arch.paging</group-id>
+        <name>runtime</name>
+        <version>1.0.1</version>
+        <repository>Google</repository>
+      </library-update>
+    </library-updates>
+    <last-search-timestamp>1564664271376</last-search-timestamp>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="aa16c90f-3887-411a-b8b5-ea74202e318c" name="Default" comment="fix text`s validator">
+      <change beforePath="$PROJECT_DIR$/ankofork/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/ContextUtils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/ContextUtils.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/CustomViews.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/CustomViews.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/Helpers.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/Helpers.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/Intents.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/Intents.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/SubsamplingScaleImageView/ImageSource.java" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/subsampling_scale_image_view/ImageSource.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/SubsamplingScaleImageView/ImageViewState.java" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/subsampling_scale_image_view/ImageViewState.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/SubsamplingScaleImageView/SubsamplingScaleImageView.java" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/subsampling_scale_image_view/SubsamplingScaleImageView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/SubsamplingScaleImageView/decoder/CompatDecoderFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/subsampling_scale_image_view/decoder/CompatDecoderFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/SubsamplingScaleImageView/decoder/DecoderFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/subsampling_scale_image_view/decoder/DecoderFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/SubsamplingScaleImageView/decoder/ImageDecoder.java" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/subsampling_scale_image_view/decoder/ImageDecoder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/SubsamplingScaleImageView/decoder/ImageRegionDecoder.java" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/subsampling_scale_image_view/decoder/ImageRegionDecoder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/SubsamplingScaleImageView/decoder/SkiaImageDecoder.java" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/subsampling_scale_image_view/decoder/SkiaImageDecoder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/SubsamplingScaleImageView/decoder/SkiaImageRegionDecoder.java" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/subsampling_scale_image_view/decoder/SkiaImageRegionDecoder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/SubsamplingScaleImageView/decoder/SkiaPooledImageRegionDecoder.java" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/subsampling_scale_image_view/decoder/SkiaPooledImageRegionDecoder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/appcompat/Listeners.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/appcompat/Properties.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/appcompat/Properties.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/appcompat/Views.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/appcompat/Views.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/cardview/Views.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/cardview/Views.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/constraint_layout/Views.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/constraint_layout/Views.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/design/Listeners.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/design/Listeners.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/design/Views.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/design/Views.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/dialogs/SupportAlertBuilder.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/dialogs/Toasts.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/dialogs/Toasts.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/recyclerview/Views.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/recyclerview/Views.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/sdk28/Listeners.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/sdk28/Listeners.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/sdk28/Properties.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/sdk28/Properties.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/sdk28/Services.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/sdk28/Services.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/sdk28/Views.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/sdk28/Views.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/support/Views.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/support/Views.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/weakReferenceSupport.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/androidTest/java/LibraryScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/androidTest/java/LibraryScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/androidTest/java/libraryTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/androidTest/java/libraryTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/App.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/App.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/add_manga/AddMangaView.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/add_manga/AddMangaView.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/catalog_for_one_site/CatalogForOneSiteActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/catalog_for_one_site/CatalogForOneSiteActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/catalog_for_one_site/CatalogForOneSiteUpdaterService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/catalog_for_one_site/CatalogForOneSiteUpdaterService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/category/CategoryActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/category/CategoryActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/download_manager/ChapterDownloader.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/download_manager/ChapterDownloader.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/download_manager/DownloadManagerDelegateImpl.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/download_manager/DownloadManagerDelegateImpl.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/drawer/DrawerActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/drawer/DrawerActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/drawer/MainMenuItemView.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/drawer/MainMenuItemView.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/latest_chapters/LatestChaptersRecyclerPresenter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/latest_chapters/LatestChaptersRecyclerPresenter.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/library/LibraryActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/library/LibraryActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/list_chapters/ListChapterAboutView.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/list_chapters/ListChapterAboutView.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/list_chapters/ListChapterView.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/list_chapters/ListChapterView.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/list_chapters/ListChaptersItemView.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/list_chapters/ListChaptersItemView.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/parsing/sites/ReadmangaTemplate.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/parsing/sites/ReadmangaTemplate.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/schedule/AddEditPlannedTaskView.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/schedule/AddEditPlannedTaskView.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/schedule/ScheduleJob.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/schedule/ScheduleJob.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/statistics/StatisticActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/statistics/StatisticActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/statistics/StatisticItemFullView.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/statistics/StatisticItemFullView.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/statistics/StatisticItemView.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/statistics/StatisticItemView.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/statistics/StatisticRecyclerPresenter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/statistics/StatisticRecyclerPresenter.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/storage/StorageItemView.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/storage/StorageItemView.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/viewer/ViewPageFragments.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/viewer/ViewPageFragments.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/viewer/ViewerActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/viewer/ViewerActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/viewer/ViewerAdapter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/components/viewer/ViewerAdapter.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/repositories/CategoryRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/repositories/CategoryRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/repositories/StatisticRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/repositories/StatisticRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/repositories/StorageRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/repositories/StorageRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/room/CatalogDb.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/room/CatalogDb.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/room/RoomDB.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/room/RoomDB.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/room/dao/StatisticDao.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/room/dao/StatisticDao.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/services/AppUpdateService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/services/AppUpdateService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/services/DownloadService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/services/DownloadService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/utils/RecyclerViewAdapterFactory.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/utils/RecyclerViewAdapterFactory.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/utils/TimeFormat.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/utils/TimeFormat.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/utils/extensions/file.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/utils/extensions/file.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/utils/extensions/helper_file.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/utils/extensions/helper_file.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/utils/extensions/helper_layouts.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/utils/extensions/listeners.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/utils/extensions/listeners.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/utils/extensions/views.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/utils/extensions/views.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/view_models/AddEditPlannedTaskViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/view_models/AddEditPlannedTaskViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/view_models/CategoryViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/view_models/CategoryViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/view_models/DrawerViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/view_models/DrawerViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/view_models/ViewerViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/view_models/ViewerViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/workmanager/FirstInitAppWorker.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/workmanager/FirstInitAppWorker.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/workmanager/MigrateLatestChapterToChapterWorker.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/workmanager/MigrateLatestChapterToChapterWorker.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/workmanager/ReadChapterDelete.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/workmanager/ReadChapterDelete.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values-night/colors.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values-night/colors.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/colors.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/colors.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/styles.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/styles.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CompilerWorkspaceConfiguration">
+    <option name="PARALLEL_COMPILATION" value="true" />
+  </component>
+  <component name="ErrorTreeViewConfiguration">
+    <option name="autoscrollToSource" value="true" />
+    <option name="IS_AUTOSCROLL_TO_SOURCE" value="true" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[]" />
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <task path="$PROJECT_DIR$/app">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
+        <projects_view>
+          <tree_state>
+            <expand />
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="AnnotationType" />
+        <option value="Kotlin Interface" />
+        <option value="Kotlin Enum" />
+        <option value="resourceFile" />
+        <option value="layoutResourceFile" />
+        <option value="Kotlin Object" />
+        <option value="Kotlin File" />
+        <option value="layoutResourceFile_vertical" />
+        <option value="Kotlin Worksheet" />
+        <option value="Class" />
+        <option value="valueResourceFile" />
+        <option value="Kotlin Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="PUSH_AUTO_UPDATE" value="true" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="WARN_ABOUT_DETACHED_HEAD" value="false" />
+    <option name="RESET_MODE" value="HARD" />
+  </component>
+  <component name="KotlinCodeInsightWorkspaceSettings">
+    <option name="optimizeImportsOnTheFly" value="true" />
+  </component>
+  <component name="ProjectId" id="1YI4uAnexnZCY06DmlnzQYu7cXt" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="DEBUGGABLE_DEVICE" value="realme-rmx1971-d5cb3e51" />
+    <property name="DEBUGGABLE_PROCESS" value="com.san.kir.manger" />
+    <property name="DEBUGGER_ID" value="Java" />
+    <property name="DeviceAndSnapshotComboBoxAction.selectedDevice" value="d5cb3e51" />
+    <property name="DeviceAndSnapshotComboBoxAction.selectionTime" value="2020-03-10T01:26:26.593Z" />
+    <property name="Git.Branch.Popup.ShowAllRemotes" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="SHOW_ALL_PROCESSES" value="true" />
+    <property name="SONARLINT_PRECOMMIT_ANALYSIS" value="true" />
+    <property name="SearchEverywhereHistoryKey" value="downloads&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/java/com/san/kir/manger/components/download_manager/DownloadService.kt&#10;image&#9;null&#9;null&#10;list&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/java/com/san/kir/manger/components/list_chapters/ListChapterAboutView.kt&#10;librar&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/java/com/san/kir/manger/components/library/LibraryItemView.kt&#10;listchapteItem&#9;null&#9;null&#10;дшыесрфз&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/java/com/san/kir/manger/components/list_chapters/ListChaptersActivity.kt&#10;listchap&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/java/com/san/kir/manger/components/list_chapters/ListChaptersActivity.kt&#10;мшуцукМ&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/java/com/san/kir/manger/components/viewer/ViewerView.kt&#10;viewer&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/java/com/san/kir/manger/view_models/ViewerViewModel.kt&#10;activi&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/java/com/san/kir/manger/components/list_chapters/ListChaptersActivity.kt&#10;string&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/res/values/strings.xml&#10;build&#9;FILE&#9;file://C:/Projects/android/Manger/app/build.gradle&#10;library&#9;null&#9;null&#10;дфеуые&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/java/com/san/kir/manger/components/latest_chapters/LatestChaptersItemView.kt&#10;download&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/java/com/san/kir/manger/components/download_manager/DownloadManagerItemView.kt&#10;listchapter&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/java/com/san/kir/manger/components/list_chapters/ListChaptersItemView.kt&#10;downloaser&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/java/com/san/kir/manger/components/download_manager/DownloadService.kt&#10;listchai&#9;null&#9;null&#10;latestchaite&#9;null&#9;null&#10;migration&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/java/com/san/kir/manger/room/migrations/migrations.kt&#10;sitecatalo&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/java/com/san/kir/manger/components/sites_catalog/SiteCatalogItemView.kt&#10;bui&#9;FILE&#9;file://C:/Projects/android/Manger/app/build.gradle&#10;catalog&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/java/com/san/kir/manger/components/catalog_for_one_site/CatalogForOneSiteActivity.kt&#10;grad&#9;ACTION&#9;ActivateGradleToolWindow&#10;app&#9;RUN_CONFIGURATION&#9;app&#10;add&#9;null&#9;null&#10;Site&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/java/com/san/kir/manger/components/parsing/SiteCatalog.kt&#10;mangaUp&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/java/com/san/kir/manger/utils/MangaUpdaterService.kt&#10;cataloser&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/java/com/san/kir/manger/components/catalog_for_one_site/CatalogForOneSiteUpdaterService.kt&#10;catalogFor&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/java/com/san/kir/manger/components/catalog_for_one_site/CatalogForOneSiteActivity.kt&#10;catalogForO&#9;null&#9;null&#10;catas&#9;null&#9;null&#10;ьфтпф&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/java/com/san/kir/manger/components/parsing/sites/MangachanTemplate.kt&#10;migrat&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/java/com/san/kir/manger/room/migrations/migrations.kt&#10;manga&#9;null&#9;null&#10;chapterDown&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/java/com/san/kir/manger/components/download_manager/ChapterDownloader.kt&#10;вщцтдщф&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/java/com/san/kir/manger/components/download_manager/DownloadManagerRecyclerPresenter.kt&#10;downloadS&#9;null&#9;null&#10;gradle&#9;FILE&#9;file://C:/Projects/android/Manger/gradle.properties&#10;catalogfor&#9;null&#9;null&#10;sche&#9;null&#9;null&#10;sitecata&#9;null&#9;null&#10;service&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/java/com/san/kir/manger/utils/MangaUpdaterService.kt&#10;mangaup&#9;null&#9;null&#10;catase&#9;null&#9;null&#10;mainM&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/java/com/san/kir/manger/components/drawer/MainMenuItemView.kt&#10;дшизф&#9;null&#9;null&#10;мшуцук&#9;FILE&#9;file://C:/Projects/android/Manger/app/src/main/java/com/san/kir/manger/components/viewer/ViewerPresenter.kt&#10;дшикфкШ&#9;null&#9;null&#10;дшикфкн&#9;null&#9;null" />
+    <property name="VectorAssetImportPath" value="C:\Projects\android" />
+    <property name="android.project.structure.last.selected" value="app" />
+    <property name="android.project.structure.proportion" value="0.15" />
+    <property name="android.sdk.path" value="$PROJECT_DIR$/../../../MyInstallProgramms/AndroidSDK" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1540393032730" />
+    <property name="com.intellij.ide.scratch.LRUPopupBuilder$1/New Scratch File" value="kotlin" />
+    <property name="device.picker.selection" value="dba5da4f7d23" />
+    <property name="last.edited.regexp" value="2.6.1" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Manger.compose" />
+    <property name="not.eligible.for.single.variant.sync" value="true" />
+    <property name="oudtdated.runtime.suppressed.plugin.version" value="1.2.30-release-Studio3.0-1" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.17" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
+    <property name="settings.editor.selected.configurable" value="preferences.language.Kotlin" />
+    <property name="show.do.not.ask.upgrade.gradle.plugin" value="3.4.0" />
+    <property name="show.migrate.to.gradle.popup" value="false" />
+    <property name="sync.plugin.last.upgrade.timestamp" value="1561287772453" />
+  </component>
+  <component name="PsdUISettings">
+    <option name="MODULE_TAB" value="Default Config" />
+    <option name="LAST_EDITED_SIGNING_CONFIG" value="realese" />
+    <option name="LAST_EDITED_BUILD_TYPE" value="release" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
+      <recent name="com.san.kir.manger.services" />
+      <recent name="com.san.kir.manger.utils.enums" />
+      <recent name="com.san.kir.base.components.drawer" />
+      <recent name="com.san.kir.base.utils.enums" />
+      <recent name="com.san.kir.utils_lib.enums" />
+    </key>
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="com.san.kir.manger.repositories" />
+      <recent name="com.san.kir.manger.components.downloadManager" />
+      <recent name="com.san.kir.manger.components.parsing.sites" />
+      <recent name="com.san.kir.manger.components.statistics" />
+      <recent name="com.san.kir.manger.components.schedule" />
+    </key>
+    <key name="CreateKotlinClassDialog.RecentsKey">
+      <recent name="com.san.kir.manger.components.list_chapters" />
+      <recent name="com.san.kir.manger.components.sites_catalog" />
+    </key>
+    <key name="KotlinExtractInterfaceDialog.RECENT_KEYS">
+      <recent name="com.san.kir.manger.components.DownloadManager" />
+    </key>
+    <key name="android.template.packageName">
+      <recent name="com.san.kir.manger.components.Settings" />
+    </key>
+    <key name="CopyKotlinDeclarationDialog.RECENTS_KEY">
+      <recent name="com.san.kir.base.components.drawer" />
+      <recent name="com.san.kir.manger.components.parsing.sites" />
+      <recent name="com.san.kir.manger.components.DownloadManager.util" />
+      <recent name="com.san.kir.manger.components.DownloadManager.downloader" />
+      <recent name="com.san.kir.manger.components.DownloadManager.provider" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Projects\android\Manger\ankofork\src\main\java\com\san\kir\ankofork\percent" />
+      <recent name="C:\Projects\android\Manger\ankofork\src\main\java\com\san\kir\ankofork\appcompat" />
+      <recent name="C:\Projects\android\Manger\app\src\main\java\com\san\kir\manger\utils\extensions" />
+      <recent name="C:\Projects\android\Manger\app\src\main\java\com\san\kir\manger\extending\anko_extend" />
+      <recent name="C:\Projects\android\Manger\app\src\main\java\com\san\kir\manger\utils" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="com.san.kir.manger" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Projects\android\Manger\app\src\main\res\drawable" />
+      <recent name="C:\Projects\android\Manger\ankofork\src\main\java\com\san\kir\ankofork" />
+      <recent name="C:\Projects\android\Manger\app\src\main\res\layout" />
+      <recent name="C:\Projects\android\Manger\dblib\src\main\java\com\san\kir\dblib" />
+      <recent name="C:\Projects\android\Manger\app\src\main\java\com\san\kir\manger\room\models" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.san.kir.manger.dagger.scope" />
+    </key>
+    <key name="android.template.parentActivityClass">
+      <recent name="" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Gradle.Manger:app [assembleRelease]">
+    <configuration default="true" type="Applet">
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="&lt;template&gt;" type="JUnit" default="true" selected="false">
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+    </configuration>
+    <configuration default="true" type="JUnit" factoryName="JUnit">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <envs />
+      <patterns />
+      <method />
+    </configuration>
+    <configuration name="&lt;template&gt;" type="TestNG" default="true" selected="false">
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+    </configuration>
+    <configuration name="&lt;template&gt;" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" default="true" selected="false">
+      <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m -ea" />
+    </configuration>
+    <configuration default="true" type="AndroidJUnit" factoryName="Android JUnit">
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ListChaptersActivity" type="AndroidRunConfigurationType" factoryName="Android App" temporary="true">
+      <module name="Manger.app" />
+      <option name="DEPLOY" value="true" />
+      <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
+      <option name="DEPLOY_AS_INSTANT" value="false" />
+      <option name="ARTIFACT_NAME" value="" />
+      <option name="PM_INSTALL_OPTIONS" value="" />
+      <option name="ALL_USERS" value="false" />
+      <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
+      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
+      <option name="MODE" value="specific_activity" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
+      <option name="FORCE_STOP_RUNNING_APP" value="true" />
+      <option name="TARGET_SELECTION_MODE" value="DEVICE_AND_SNAPSHOT_COMBO_BOX" />
+      <option name="DEBUGGER_TYPE" value="Java" />
+      <Java />
+      <Profilers>
+        <option name="ADVANCED_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Sampled (Java)" />
+        <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
+        <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
+      </Profilers>
+      <option name="DEEP_LINK" value="" />
+      <option name="ACTIVITY_CLASS" value="com.san.kir.manger.components.list_chapters.ListChaptersActivity" />
+      <option name="SEARCH_ACTIVITY_IN_GLOBAL_SCOPE" value="false" />
+      <option name="SKIP_ACTIVITY_VALIDATION" value="false" />
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="AndroidRunConfigurationType" factoryName="Android App">
+      <option name="DEPLOY" value="true" />
+      <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
+      <option name="DEPLOY_AS_INSTANT" value="false" />
+      <option name="ARTIFACT_NAME" value="" />
+      <option name="PM_INSTALL_OPTIONS" value="" />
+      <option name="ALL_USERS" value="false" />
+      <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
+      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
+      <option name="MODE" value="default_activity" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
+      <option name="FORCE_STOP_RUNNING_APP" value="true" />
+      <option name="TARGET_SELECTION_MODE" value="SHOW_DIALOG" />
+      <option name="DEBUGGER_TYPE" value="Java" />
+      <Java />
+      <Profilers>
+        <option name="ADVANCED_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Sampled (Java)" />
+        <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
+        <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
+      </Profilers>
+      <option name="DEEP_LINK" value="" />
+      <option name="ACTIVITY_CLASS" value="" />
+      <option name="SEARCH_ACTIVITY_IN_GLOBAL_SCOPE" value="false" />
+      <option name="SKIP_ACTIVITY_VALIDATION" value="false" />
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
+      <module name="Manger.app" />
+      <option name="DEPLOY" value="true" />
+      <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
+      <option name="DEPLOY_AS_INSTANT" value="false" />
+      <option name="ARTIFACT_NAME" value="" />
+      <option name="PM_INSTALL_OPTIONS" value="" />
+      <option name="ALL_USERS" value="false" />
+      <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
+      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
+      <option name="MODE" value="default_activity" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
+      <option name="FORCE_STOP_RUNNING_APP" value="true" />
+      <option name="TARGET_SELECTION_MODE" value="SHOW_DIALOG" />
+      <option name="DEBUGGER_TYPE" value="Java" />
+      <Java />
+      <Profilers>
+        <option name="ADVANCED_PROFILING_ENABLED" value="true" />
+        <option name="STARTUP_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Sampled (Java)" />
+        <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
+        <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
+      </Profilers>
+      <option name="DEEP_LINK" value="" />
+      <option name="ACTIVITY_CLASS" value="" />
+      <option name="SEARCH_ACTIVITY_IN_GLOBAL_SCOPE" value="false" />
+      <option name="SKIP_ACTIVITY_VALIDATION" value="false" />
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="app2" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
+      <module name="Manger.app" />
+      <option name="DEPLOY" value="true" />
+      <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
+      <option name="DEPLOY_AS_INSTANT" value="false" />
+      <option name="ARTIFACT_NAME" value="" />
+      <option name="PM_INSTALL_OPTIONS" value="" />
+      <option name="ALL_USERS" value="false" />
+      <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
+      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
+      <option name="MODE" value="default_activity" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
+      <option name="FORCE_STOP_RUNNING_APP" value="true" />
+      <option name="TARGET_SELECTION_MODE" value="SHOW_DIALOG" />
+      <option name="DEBUGGER_TYPE" value="Java" />
+      <Java />
+      <Profilers>
+        <option name="ADVANCED_PROFILING_ENABLED" value="true" />
+        <option name="STARTUP_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Sample Java Methods" />
+        <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
+        <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
+      </Profilers>
+      <option name="DEEP_LINK" value="" />
+      <option name="ACTIVITY_CLASS" value="" />
+      <option name="SEARCH_ACTIVITY_IN_GLOBAL_SCOPE" value="false" />
+      <option name="SKIP_ACTIVITY_VALIDATION" value="false" />
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+        <option name="Gradle.BeforeRunTask" enabled="true" tasks="uninstallDebug" externalProjectPath="$PROJECT_DIR$/app" vmOptions="" scriptParameters="" />
+      </method>
+    </configuration>
+    <configuration name="LibraryTest" type="AndroidTestRunConfigurationType" factoryName="Android Instrumented Tests" temporary="true" nameIsGenerated="true">
+      <module name="Manger.app" />
+      <option name="TESTING_TYPE" value="2" />
+      <option name="METHOD_NAME" value="" />
+      <option name="CLASS_NAME" value="LibraryTest" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="INSTRUMENTATION_RUNNER_CLASS" value="" />
+      <option name="EXTRA_OPTIONS" value="" />
+      <option name="INCLUDE_GRADLE_EXTRA_OPTIONS" value="true" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
+      <option name="FORCE_STOP_RUNNING_APP" value="true" />
+      <option name="TARGET_SELECTION_MODE" value="DEVICE_AND_SNAPSHOT_COMBO_BOX" />
+      <option name="DEBUGGER_TYPE" value="Java" />
+      <Java />
+      <Profilers>
+        <option name="ADVANCED_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Sampled (Java)" />
+        <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
+        <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
+      </Profilers>
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Instrumented Tests">
+      <option name="TESTING_TYPE" value="0" />
+      <option name="METHOD_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="INSTRUMENTATION_RUNNER_CLASS" value="" />
+      <option name="EXTRA_OPTIONS" value="" />
+      <option name="INCLUDE_GRADLE_EXTRA_OPTIONS" value="true" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
+      <option name="FORCE_STOP_RUNNING_APP" value="true" />
+      <option name="TARGET_SELECTION_MODE" value="SHOW_DIALOG" />
+      <option name="DEBUGGER_TYPE" value="Java" />
+      <Java />
+      <Profilers>
+        <option name="ADVANCED_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Sampled (Java)" />
+        <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
+        <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
+      </Profilers>
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application">
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Manger [detekt]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="detekt" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="Manger [lintFix]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="lintFix" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="Manger:app [assembleRelease]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/app" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="assembleRelease" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <option name="filePath" />
+      <option name="vmParameters" />
+      <option name="alternativeJrePath" />
+      <option name="programParameters" />
+      <option name="passParentEnvs" value="true" />
+      <option name="workingDirectory" />
+      <option name="isAlternativeJrePathEnabled" value="false" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="WORKING_DIRECTORY" />
+      <module name="" />
+      <option name="filePath" />
+      <option name="vmParameters" />
+      <option name="alternativeJrePath" />
+      <option name="programParameters" />
+      <option name="passParentEnvs" value="true" />
+      <option name="workingDirectory" />
+      <option name="isAlternativeJrePathEnabled" value="false" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="WORKING_DIRECTORY" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Android App.app2" />
+      <item itemvalue="Android App.app" />
+      <item itemvalue="Android App.ListChaptersActivity" />
+      <item itemvalue="Android Instrumented Tests.LibraryTest" />
+      <item itemvalue="Gradle.Manger [detekt]" />
+      <item itemvalue="Gradle.Manger [lintFix]" />
+      <item itemvalue="Gradle.Manger:app [assembleRelease]" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Gradle.Manger:app [assembleRelease]" />
+        <item itemvalue="Android App.ListChaptersActivity" />
+        <item itemvalue="Android Instrumented Tests.LibraryTest" />
+        <item itemvalue="Gradle.Manger [detekt]" />
+        <item itemvalue="Gradle.Manger [lintFix]" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="aa16c90f-3887-411a-b8b5-ea74202e318c" name="Default" comment="" />
+      <created>1499440815790</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1499440815790</updated>
+    </task>
+    <task id="LOCAL-00129" summary="renaming">
+      <created>1552135662456</created>
+      <option name="number" value="00129" />
+      <option name="presentableId" value="LOCAL-00129" />
+      <option name="project" value="LOCAL" />
+      <updated>1552135662457</updated>
+    </task>
+    <task id="LOCAL-00130" summary="changed interaction with the download manager">
+      <created>1552135971133</created>
+      <option name="number" value="00130" />
+      <option name="presentableId" value="LOCAL-00130" />
+      <option name="project" value="LOCAL" />
+      <updated>1552135971133</updated>
+    </task>
+    <task id="LOCAL-00131" summary="changed adapter for pageview for filters">
+      <created>1552741360254</created>
+      <option name="number" value="00131" />
+      <option name="presentableId" value="LOCAL-00131" />
+      <option name="project" value="LOCAL" />
+      <updated>1552741360255</updated>
+    </task>
+    <task id="LOCAL-00132" summary="fix progressbar visibility">
+      <created>1552741434317</created>
+      <option name="number" value="00132" />
+      <option name="presentableId" value="LOCAL-00132" />
+      <option name="project" value="LOCAL" />
+      <updated>1552741434317</updated>
+    </task>
+    <task id="LOCAL-00133" summary="add new site catalog">
+      <created>1552741635368</created>
+      <option name="number" value="00133" />
+      <option name="presentableId" value="LOCAL-00133" />
+      <option name="project" value="LOCAL" />
+      <updated>1552741635368</updated>
+    </task>
+    <task id="LOCAL-00134" summary="Added a screen in the list of chapters for quick action with chapters and added a setting for displaying screen titles.">
+      <created>1554990259377</created>
+      <option name="number" value="00134" />
+      <option name="presentableId" value="LOCAL-00134" />
+      <option name="project" value="LOCAL" />
+      <updated>1554990259396</updated>
+    </task>
+    <task id="LOCAL-00135" summary="Only those filters are displayed where there are more than one elements.">
+      <created>1556887145988</created>
+      <option name="number" value="00135" />
+      <option name="presentableId" value="LOCAL-00135" />
+      <option name="project" value="LOCAL" />
+      <updated>1556887145989</updated>
+    </task>
+    <task id="LOCAL-00136" summary="refactoring">
+      <created>1556897494781</created>
+      <option name="number" value="00136" />
+      <option name="presentableId" value="LOCAL-00136" />
+      <option name="project" value="LOCAL" />
+      <updated>1556897494781</updated>
+    </task>
+    <task id="LOCAL-00137" summary="remove tracking orientation">
+      <created>1557143552527</created>
+      <option name="number" value="00137" />
+      <option name="presentableId" value="LOCAL-00137" />
+      <option name="project" value="LOCAL" />
+      <updated>1557143552527</updated>
+    </task>
+    <task id="LOCAL-00138" summary="updated logic of loading image, added button for update image">
+      <created>1557143732962</created>
+      <option name="number" value="00138" />
+      <option name="presentableId" value="LOCAL-00138" />
+      <option name="project" value="LOCAL" />
+      <updated>1557143732962</updated>
+    </task>
+    <task id="LOCAL-00139" summary="&quot;error&quot; and &quot;pause&quot; download merged to &quot;pause&quot;, update their dependencies">
+      <created>1557145499590</created>
+      <option name="number" value="00139" />
+      <option name="presentableId" value="LOCAL-00139" />
+      <option name="project" value="LOCAL" />
+      <updated>1557145499590</updated>
+    </task>
+    <task id="LOCAL-00140" summary="finish project">
+      <created>1561823094333</created>
+      <option name="number" value="00140" />
+      <option name="presentableId" value="LOCAL-00140" />
+      <option name="project" value="LOCAL" />
+      <updated>1561823094334</updated>
+    </task>
+    <task id="LOCAL-00141" summary="fork ankodsl for support androidx">
+      <created>1573127962065</created>
+      <option name="number" value="00141" />
+      <option name="presentableId" value="LOCAL-00141" />
+      <option name="project" value="LOCAL" />
+      <updated>1573127962066</updated>
+    </task>
+    <task id="LOCAL-00142" summary="from android to androidx">
+      <created>1573128204099</created>
+      <option name="number" value="00142" />
+      <option name="presentableId" value="LOCAL-00142" />
+      <option name="project" value="LOCAL" />
+      <updated>1573128204099</updated>
+    </task>
+    <task id="LOCAL-00143" summary="simple &quot;delete manga&quot; to workmanager variant">
+      <created>1573135700424</created>
+      <option name="number" value="00143" />
+      <option name="presentableId" value="LOCAL-00143" />
+      <option name="project" value="LOCAL" />
+      <updated>1573135700425</updated>
+    </task>
+    <task id="LOCAL-00144" summary="all &quot;clear&quot;s update to workmanager">
+      <created>1573186857710</created>
+      <option name="number" value="00144" />
+      <option name="presentableId" value="LOCAL-00144" />
+      <option name="project" value="LOCAL" />
+      <updated>1573186857710</updated>
+    </task>
+    <task id="LOCAL-00145" summary="first test">
+      <created>1573186918505</created>
+      <option name="number" value="00145" />
+      <option name="presentableId" value="LOCAL-00145" />
+      <option name="project" value="LOCAL" />
+      <updated>1573186918519</updated>
+    </task>
+    <task id="LOCAL-00146" summary="refactoring">
+      <created>1573186966548</created>
+      <option name="number" value="00146" />
+      <option name="presentableId" value="LOCAL-00146" />
+      <option name="project" value="LOCAL" />
+      <updated>1573186966549</updated>
+    </task>
+    <task id="LOCAL-00147" summary="change scope">
+      <created>1573187013783</created>
+      <option name="number" value="00147" />
+      <option name="presentableId" value="LOCAL-00147" />
+      <option name="project" value="LOCAL" />
+      <updated>1573187013783</updated>
+    </task>
+    <task id="LOCAL-00148" summary="added indication for tasks">
+      <created>1573187470925</created>
+      <option name="number" value="00148" />
+      <option name="presentableId" value="LOCAL-00148" />
+      <option name="project" value="LOCAL" />
+      <updated>1573187470925</updated>
+    </task>
+    <task id="LOCAL-00149" summary="add button for full clean manga`s folder">
+      <created>1573540344208</created>
+      <option name="number" value="00149" />
+      <option name="presentableId" value="LOCAL-00149" />
+      <option name="project" value="LOCAL" />
+      <updated>1573540344209</updated>
+    </task>
+    <task id="LOCAL-00150" summary="refactoring">
+      <created>1573540407077</created>
+      <option name="number" value="00150" />
+      <option name="presentableId" value="LOCAL-00150" />
+      <option name="project" value="LOCAL" />
+      <updated>1573540407078</updated>
+    </task>
+    <task id="LOCAL-00151" summary="fix update error">
+      <created>1573540896845</created>
+      <option name="number" value="00151" />
+      <option name="presentableId" value="LOCAL-00151" />
+      <option name="project" value="LOCAL" />
+      <updated>1573540896845</updated>
+    </task>
+    <task id="LOCAL-00152" summary="fix wrong action">
+      <created>1575805362703</created>
+      <option name="number" value="00152" />
+      <option name="presentableId" value="LOCAL-00152" />
+      <option name="project" value="LOCAL" />
+      <updated>1575805362704</updated>
+    </task>
+    <task id="LOCAL-00153" summary="fix problems after hide application and return:&#10;showing statusbar&#10;broken orientation&#10;broken progress of reading">
+      <created>1575807557710</created>
+      <option name="number" value="00153" />
+      <option name="presentableId" value="LOCAL-00153" />
+      <option name="project" value="LOCAL" />
+      <updated>1575807557710</updated>
+    </task>
+    <task id="LOCAL-00154" summary="refactoring">
+      <created>1575807665321</created>
+      <option name="number" value="00154" />
+      <option name="presentableId" value="LOCAL-00154" />
+      <option name="project" value="LOCAL" />
+      <updated>1575807665321</updated>
+    </task>
+    <task id="LOCAL-00155" summary="fix downloading chapters">
+      <created>1575898169997</created>
+      <option name="number" value="00155" />
+      <option name="presentableId" value="LOCAL-00155" />
+      <option name="project" value="LOCAL" />
+      <updated>1575898169998</updated>
+    </task>
+    <task id="LOCAL-00156" summary="refactoring">
+      <created>1576896470244</created>
+      <option name="number" value="00156" />
+      <option name="presentableId" value="LOCAL-00156" />
+      <option name="project" value="LOCAL" />
+      <updated>1576896470245</updated>
+    </task>
+    <task id="LOCAL-00157" summary="show/hide systembars with custombars">
+      <created>1576896542266</created>
+      <option name="number" value="00157" />
+      <option name="presentableId" value="LOCAL-00157" />
+      <option name="project" value="LOCAL" />
+      <updated>1576896542266</updated>
+    </task>
+    <task id="LOCAL-00158" summary="fix problem with db in first run app after installation">
+      <created>1576896722221</created>
+      <option name="number" value="00158" />
+      <option name="presentableId" value="LOCAL-00158" />
+      <option name="project" value="LOCAL" />
+      <updated>1576896722221</updated>
+    </task>
+    <task id="LOCAL-00159" summary="redesign viewer">
+      <created>1577080965547</created>
+      <option name="number" value="00159" />
+      <option name="presentableId" value="LOCAL-00159" />
+      <option name="project" value="LOCAL" />
+      <updated>1577080965548</updated>
+    </task>
+    <task id="LOCAL-00160" summary="add support cutout">
+      <created>1578040877464</created>
+      <option name="number" value="00160" />
+      <option name="presentableId" value="LOCAL-00160" />
+      <option name="project" value="LOCAL" />
+      <updated>1578040877465</updated>
+    </task>
+    <task id="LOCAL-00161" summary="fix">
+      <created>1578065650386</created>
+      <option name="number" value="00161" />
+      <option name="presentableId" value="LOCAL-00161" />
+      <option name="project" value="LOCAL" />
+      <updated>1578065650386</updated>
+    </task>
+    <task id="LOCAL-00162" summary="fix parser">
+      <created>1578065763824</created>
+      <option name="number" value="00162" />
+      <option name="presentableId" value="LOCAL-00162" />
+      <option name="project" value="LOCAL" />
+      <updated>1578065763824</updated>
+    </task>
+    <task id="LOCAL-00163" summary="add error handler">
+      <created>1578065917813</created>
+      <option name="number" value="00163" />
+      <option name="presentableId" value="LOCAL-00163" />
+      <option name="project" value="LOCAL" />
+      <updated>1578065917814</updated>
+    </task>
+    <task id="LOCAL-00164" summary="changing the way a manga is received">
+      <created>1578066052439</created>
+      <option name="number" value="00164" />
+      <option name="presentableId" value="LOCAL-00164" />
+      <option name="project" value="LOCAL" />
+      <updated>1578066052439</updated>
+    </task>
+    <task id="LOCAL-00165" summary="changing the way a logo is received">
+      <created>1578066326970</created>
+      <option name="number" value="00165" />
+      <option name="presentableId" value="LOCAL-00165" />
+      <option name="project" value="LOCAL" />
+      <updated>1578066326970</updated>
+    </task>
+    <task id="LOCAL-00166" summary="small fixes">
+      <created>1578066379452</created>
+      <option name="number" value="00166" />
+      <option name="presentableId" value="LOCAL-00166" />
+      <option name="project" value="LOCAL" />
+      <updated>1578066379452</updated>
+    </task>
+    <task id="LOCAL-00167" summary="updated showing panels">
+      <created>1582456333554</created>
+      <option name="number" value="00167" />
+      <option name="presentableId" value="LOCAL-00167" />
+      <option name="project" value="LOCAL" />
+      <updated>1582456333555</updated>
+    </task>
+    <task id="LOCAL-00168" summary="fix space for bars left/right">
+      <created>1582541681944</created>
+      <option name="number" value="00168" />
+      <option name="presentableId" value="LOCAL-00168" />
+      <option name="project" value="LOCAL" />
+      <updated>1582541681944</updated>
+    </task>
+    <task id="LOCAL-00169" summary="fix autohide bars">
+      <created>1582542468431</created>
+      <option name="number" value="00169" />
+      <option name="presentableId" value="LOCAL-00169" />
+      <option name="project" value="LOCAL" />
+      <updated>1582542468431</updated>
+    </task>
+    <task id="LOCAL-00170" summary="fix zoom image">
+      <created>1582545177823</created>
+      <option name="number" value="00170" />
+      <option name="presentableId" value="LOCAL-00170" />
+      <option name="project" value="LOCAL" />
+      <updated>1582545177823</updated>
+    </task>
+    <task id="LOCAL-00171" summary="migrate from service to worker">
+      <created>1582548829954</created>
+      <option name="number" value="00171" />
+      <option name="presentableId" value="LOCAL-00171" />
+      <option name="project" value="LOCAL" />
+      <updated>1582548829954</updated>
+    </task>
+    <task id="LOCAL-00172" summary="fix text`s validator">
+      <created>1582814394684</created>
+      <option name="number" value="00172" />
+      <option name="presentableId" value="LOCAL-00172" />
+      <option name="project" value="LOCAL" />
+      <updated>1582814394685</updated>
+    </task>
+    <task id="LOCAL-00173" summary="add support android 10&#10;use daynight theme&#10;update colors&#10;update icons&#10;fix ui">
+      <created>1583655402906</created>
+      <option name="number" value="00173" />
+      <option name="presentableId" value="LOCAL-00173" />
+      <option name="project" value="LOCAL" />
+      <updated>1583655402907</updated>
+    </task>
+    <task id="LOCAL-00174" summary="import SubsamplingScaleImageView for fix scaling">
+      <created>1583755068914</created>
+      <option name="number" value="00174" />
+      <option name="presentableId" value="LOCAL-00174" />
+      <option name="project" value="LOCAL" />
+      <updated>1583755068915</updated>
+    </task>
+    <task id="LOCAL-00175" summary="refactoring&#10;move task &quot;update manga for new category name&quot; to WorkManager&#10;replace livedata with kotlin flow">
+      <created>1583756514969</created>
+      <option name="number" value="00175" />
+      <option name="presentableId" value="LOCAL-00175" />
+      <option name="project" value="LOCAL" />
+      <updated>1583756514969</updated>
+    </task>
+    <task id="LOCAL-00176" summary="refactoring">
+      <created>1583761473054</created>
+      <option name="number" value="00176" />
+      <option name="presentableId" value="LOCAL-00176" />
+      <option name="project" value="LOCAL" />
+      <updated>1583761473054</updated>
+    </task>
+    <task id="LOCAL-00177" summary="refactoring&#10;remove activity main&#10;reorganized first launch initialization">
+      <created>1583844916971</created>
+      <option name="number" value="00177" />
+      <option name="presentableId" value="LOCAL-00177" />
+      <option name="project" value="LOCAL" />
+      <updated>1583844916971</updated>
+    </task>
+    <option name="localTasksCounter" value="178" />
+    <servers />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="BEK_SORT_TYPE" value="1" />
+              <option name="FILTERS">
+                <map>
+                  <entry key="text">
+                    <value>
+                      <list>
+                        <option value="" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list />
+          </value>
+        </entry>
+        <entry key="User">
+          <value>
+            <list />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="fix update error" />
+    <MESSAGE value="fix wrong action" />
+    <MESSAGE value="fix problems after hide application and return:&#10;showing statusbar&#10;broken orientation&#10;broken progress of reading" />
+    <MESSAGE value="fix downloading chapters" />
+    <MESSAGE value="show/hide systembars with custombars" />
+    <MESSAGE value="fix problem with db in first run app after installation" />
+    <MESSAGE value="redesign viewer" />
+    <MESSAGE value="add support cutout" />
+    <MESSAGE value="fix" />
+    <MESSAGE value="fix parser" />
+    <MESSAGE value="add error handler" />
+    <MESSAGE value="changing the way a manga is received" />
+    <MESSAGE value="changing the way a logo is received" />
+    <MESSAGE value="small fixes" />
+    <MESSAGE value="updated showing panels" />
+    <MESSAGE value="fix space for bars left/right" />
+    <MESSAGE value="fix autohide bars" />
+    <MESSAGE value="fix zoom image" />
+    <MESSAGE value="migrate from service to worker" />
+    <MESSAGE value="fix text`s validator" />
+    <MESSAGE value="add support android 10&#10;use daynight theme&#10;update colors&#10;update icons&#10;fix ui" />
+    <MESSAGE value="import SubsamplingScaleImageView for fix scaling" />
+    <MESSAGE value="refactoring&#10;move task &quot;update manga for new category name&quot; to WorkManager&#10;replace livedata with kotlin flow" />
+    <MESSAGE value="refactoring" />
+    <MESSAGE value="refactoring&#10;remove activity main&#10;reorganized first launch initialization" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactoring&#10;remove activity main&#10;reorganized first launch initialization" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="642" y="180" key="#com.intellij.openapi.keymap.impl.ui.EditKeymapsDialog" timestamp="1594432637851">
+      <screen x="0" y="0" width="1739" height="978" />
+    </state>
+    <state x="642" y="180" key="#com.intellij.openapi.keymap.impl.ui.EditKeymapsDialog/1920.0.1739.978/0.0.1739.978@0.0.1739.978" timestamp="1594432637851" />
+    <state x="550" y="225" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog" timestamp="1598013770373">
+      <screen x="0" y="0" width="1739" height="978" />
+    </state>
+    <state x="550" y="225" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/1920.0.1739.978/0.0.1739.978@0.0.1739.978" timestamp="1598013770373" />
+    <state x="600" y="236" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1594432721918">
+      <screen x="0" y="0" width="1739" height="978" />
+    </state>
+    <state x="600" y="236" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/1920.0.1739.978/0.0.1739.978@0.0.1739.978" timestamp="1594432721918" />
+    <state x="593" y="354" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1598014115055">
+      <screen x="0" y="0" width="1739" height="978" />
+    </state>
+    <state x="593" y="354" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/1920.0.1739.978/0.0.1739.978@0.0.1739.978" timestamp="1598014115055" />
+    <state x="645" y="260" key="FileChooserDialogImpl" timestamp="1597894158874">
+      <screen x="0" y="0" width="1739" height="978" />
+    </state>
+    <state x="645" y="260" key="FileChooserDialogImpl/1920.0.1739.978/0.0.1739.978@0.0.1739.978" timestamp="1597894158874" />
+    <state width="1127" height="236" key="GridCell.Tab.0.bottom" timestamp="1594432881004">
+      <screen x="0" y="0" width="1739" height="978" />
+    </state>
+    <state width="1127" height="236" key="GridCell.Tab.0.bottom/1920.0.1739.978/0.0.1739.978@0.0.1739.978" timestamp="1594432881004" />
+    <state width="1127" height="236" key="GridCell.Tab.0.center" timestamp="1594432881004">
+      <screen x="0" y="0" width="1739" height="978" />
+    </state>
+    <state width="1127" height="236" key="GridCell.Tab.0.center/1920.0.1739.978/0.0.1739.978@0.0.1739.978" timestamp="1594432881004" />
+    <state width="1127" height="236" key="GridCell.Tab.0.left" timestamp="1594432881003">
+      <screen x="0" y="0" width="1739" height="978" />
+    </state>
+    <state width="1127" height="236" key="GridCell.Tab.0.left/1920.0.1739.978/0.0.1739.978@0.0.1739.978" timestamp="1594432881003" />
+    <state width="1127" height="236" key="GridCell.Tab.0.right" timestamp="1594432881004">
+      <screen x="0" y="0" width="1739" height="978" />
+    </state>
+    <state width="1127" height="236" key="GridCell.Tab.0.right/1920.0.1739.978/0.0.1739.978@0.0.1739.978" timestamp="1594432881004" />
+    <state x="378" y="131" key="SettingsEditor" timestamp="1598013799537">
+      <screen x="0" y="0" width="1739" height="978" />
+    </state>
+    <state x="378" y="131" key="SettingsEditor/1920.0.1739.978/0.0.1739.978@0.0.1739.978" timestamp="1598013799537" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/app/build/generated/source/kapt/debug/com/san/kir/manger/room/dao/DownloadDao_Impl.java</url>
+          <line>509</line>
+          <option name="timeStamp" value="24" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/sdk19/src/main/java/Layouts.kt</url>
+          <line>954</line>
+          <option name="timeStamp" value="32" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/sdk19/src/main/java/Layouts.kt</url>
+          <line>1770</line>
+          <option name="timeStamp" value="34" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/sdk15/src/main/java/Layouts.kt</url>
+          <line>195</line>
+          <option name="timeStamp" value="35" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/ankofork/src/main/java/com/san/kir/ankofork/sdk15/src/main/java/Layouts.kt</url>
+          <line>297</line>
+          <option name="timeStamp" value="36" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/utils/extensions/helper_file.kt</url>
+          <line>47</line>
+          <option name="timeStamp" value="43" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="debuggerHistoryManager">
+    <expressions id="watch">
+      <expression>
+        <expression-string>manga</expression-string>
+        <language-id>kotlin</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+    </expressions>
+    <expressions id="breakpointLogExpression">
+      <expression>
+        <expression-string>log(&quot;lManager = $lManager&quot;)</expression-string>
+        <language-id>kotlin</language-id>
+        <custom-info>import com.san.kir.manger.utils.log</custom-info>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+    </expressions>
+  </component>
+</project>

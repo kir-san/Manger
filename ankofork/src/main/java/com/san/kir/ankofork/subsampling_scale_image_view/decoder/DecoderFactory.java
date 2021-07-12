@@ -1,4 +1,4 @@
-package com.san.kir.ankofork.SubsamplingScaleImageView.decoder;
+package com.san.kir.ankofork.subsampling_scale_image_view.decoder;
 
 import java.lang.reflect.InvocationTargetException;
 

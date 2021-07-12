@@ -9,6 +9,8 @@ import androidx.work.workDataOf
 import com.san.kir.manger.repositories.CategoryRepository
 import com.san.kir.manger.repositories.MangaRepository
 import com.san.kir.manger.room.entities.Category
+import com.san.kir.manger.utils.extensions.log
+import com.san.kir.manger.utils.extensions.logVar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
@@ -24,10 +26,14 @@ class UpdateCategoryInMangaWorker(appContext: Context, workerParameters: WorkerP
         val categoryName = inputData.getString(cat)
         val oldCategory = inputData.getString(oldCat)
 
+
+
         if (categoryName != null && oldCategory != null) {
             val category = withContext(Dispatchers.Default) {
                 mCategoryRepository.loadItem(categoryName).first()
             }
+            log("categoryName = ${category.name}")
+            oldCategory.logVar("oldCategory")
             kotlin.runCatching {
                 withContext(Dispatchers.Default) {
                     if (categoryName != oldCategory) {
@@ -69,6 +75,7 @@ class UpdateCategoryInMangaWorker(appContext: Context, workerParameters: WorkerP
                 .setInputData(data)
                 .build()
             WorkManager.getInstance(ctx).enqueue(task)
+            log("task is started")
         }
     }
 }

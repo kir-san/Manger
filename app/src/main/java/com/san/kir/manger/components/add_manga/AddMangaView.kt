@@ -4,20 +4,13 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.view.View
-import android.view.ViewGroup
-import android.view.ViewManager
 import android.widget.ArrayAdapter
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Spinner
-import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
-import androidx.lifecycle.lifecycleScope
 import com.san.kir.ankofork.AnkoContext
-import com.san.kir.ankofork.appcompat.toolbar
-import com.san.kir.ankofork.backgroundColorResource
-import com.san.kir.ankofork.design.themedAppBarLayout
 import com.san.kir.ankofork.dip
 import com.san.kir.ankofork.margin
 import com.san.kir.ankofork.matchParent
@@ -26,9 +19,7 @@ import com.san.kir.ankofork.sdk28.backgroundResource
 import com.san.kir.ankofork.sdk28.checkBox
 import com.san.kir.ankofork.sdk28.editText
 import com.san.kir.ankofork.sdk28.imageView
-import com.san.kir.ankofork.sdk28.linearLayout
 import com.san.kir.ankofork.sdk28.onClick
-import com.san.kir.ankofork.sdk28.scrollView
 import com.san.kir.ankofork.sdk28.spinner
 import com.san.kir.ankofork.sdk28.textView
 import com.san.kir.ankofork.support.nestedScrollView
@@ -45,8 +36,6 @@ import com.san.kir.manger.utils.extensions.doOnApplyWindowInstets
 import com.san.kir.manger.utils.extensions.typeText
 import com.san.kir.manger.utils.extensions.typeTextMultiLine
 import com.san.kir.manger.utils.loadImage
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 class AddMangaView(private val act: AddMangaActivity) : ActivityView() {
     private var _manga = Manga()
@@ -166,7 +155,6 @@ class AddMangaView(private val act: AddMangaActivity) : ActivityView() {
             this@AddMangaView.ctx = context
         }
     }
-
 
     @SuppressLint("SetTextI18n")
     suspend fun setManga(manga: Manga) {

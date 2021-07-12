@@ -1,7 +1,6 @@
 package com.san.kir.manger.components.list_chapters
 
 import android.graphics.Typeface
-import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
@@ -11,6 +10,9 @@ import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import com.github.razir.progressbutton.bindProgressButton
+import com.github.razir.progressbutton.hideProgress
+import com.github.razir.progressbutton.showProgress
 import com.san.kir.ankofork.AnkoContext
 import com.san.kir.ankofork.backgroundColorResource
 import com.san.kir.ankofork.constraint_layout.ConstraintSetBuilder.Side.BOTTOM
@@ -63,7 +65,7 @@ class ListChapterAboutView(private val act: ListChaptersActivity) : ActivityView
                 bottomToBottom = PARENT_ID
             }
 
-            continueBtn = button {
+            continueBtn = button(R.string.list_chapters_about_continue) {
 
                 doOnApplyWindowInstets { v, insets, _ ->
                     v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
@@ -74,8 +76,14 @@ class ListChapterAboutView(private val act: ListChaptersActivity) : ActivityView
                     insets
                 }
 
+                act.bindProgressButton(this)
+                showProgress {
+                    buttonTextRes = R.string.list_chapters_about_search_continue
+                    R.color.iconColor.also { progressColor = it }
+
+                }
+
                 id = ID.generate()
-                isEnabled = false
                 padding = dip(16)
             }.lparams(width = matchConstraint)
 
@@ -132,22 +140,10 @@ class ListChapterAboutView(private val act: ListChaptersActivity) : ActivityView
     }
 
     fun bind() {
-        continueBtn.onClick {
-            act.lifecycleScope.launch(Dispatchers.IO) {
-                act.startActivity<ViewerActivity>(
-                    "chapter" to /*withContext(Dispatchers.IO) {*/
-                        act.mViewModel.getFirstNotReadChapter(act.manga)
-                    /*}*/,
-                    "is" to act.manga.isAlternativeSort
-                )
-            }
-        }
         startBtn.onClick {
             act.lifecycleScope.launch(Dispatchers.IO) {
                 act.startActivity<ViewerActivity>(
-                    "chapter" to /*withContext(Dispatchers.IO) {*/
-                        act.mViewModel.getFirstChapter(act.manga)
-                    /*}*/,
+                    "chapter" to act.mViewModel.getFirstChapter(act.manga),
                     "is" to act.manga.isAlternativeSort
                 )
             }
@@ -172,9 +168,25 @@ class ListChapterAboutView(private val act: ListChaptersActivity) : ActivityView
                     )
 
                     withContext(Dispatchers.IO) { act.mViewModel.getFirstNotReadChapter(act.manga) }?.let {
-                        continueBtn.text =
-                            act.getString(R.string.list_chapters_about_continue, it.name)
                         continueBtn.isEnabled = true
+                        continueBtn.hideProgress(
+                            act.getString(
+                                R.string.list_chapters_about_continue,
+                                it.name
+                            )
+                        )
+                        continueBtn.onClick {
+                            act.lifecycleScope.launch(Dispatchers.IO) {
+                                act.startActivity<ViewerActivity>(
+                                    "manga" to act.manga,
+                                    "is" to act.manga.isAlternativeSort,
+                                    "continue" to true
+                                )
+                            }
+                        }
+                    } ?: kotlin.run {
+                        continueBtn.isEnabled = false
+                        continueBtn.hideProgress(act.getString(R.string.list_chapters_about_not_continue))
                     }
                 }
             }

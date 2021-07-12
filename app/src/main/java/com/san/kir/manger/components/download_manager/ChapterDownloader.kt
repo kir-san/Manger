@@ -153,7 +153,7 @@ class ChapterDownloader(private val task: DownloadItem, concurrent: Int, private
             Fuel.download(link)
                 .fileDestination { response, _ ->
                     contentLength = response.contentLength
-                    page.parentFile.createDirs()
+                    page.parentFile?.createDirs()
                     page.createNewFile()
                     page
                 }
@@ -185,7 +185,7 @@ class ChapterDownloader(private val task: DownloadItem, concurrent: Int, private
         fun onStarted(item: DownloadItem)
         fun onProgress(item: DownloadItem)
         fun onError(item: DownloadItem, cause: Throwable?)
-        fun onComplete(item: DownloadItem)
+        suspend fun onComplete(item: DownloadItem)
     }
 
     companion object {

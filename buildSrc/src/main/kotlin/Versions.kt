@@ -26,7 +26,6 @@ object Versions {
         const val WORKMANAGER = "2.7.0-alpha04"
         const val HILT = "2.37"
         const val DATASTORE = "1.0.0-beta01"
-        const val DATASTORE_PREFERENCES = "1.0.0-beta02"
         const val ROOM = "2.3.0"
         const val PAGING = "2.1.1" // На удаление
     }
@@ -55,7 +54,6 @@ object Versions {
 
     val JAVA = JavaVersion.VERSION_1_8
 
-    const val DSLPERMISSION = "2.0.3"
     const val JSOUP = "1.13.1"
     const val ANDROID_JOB = "1.4.2" // на удаление
     const val PROGRESSBUTTON = "2.0.1" // на удаление

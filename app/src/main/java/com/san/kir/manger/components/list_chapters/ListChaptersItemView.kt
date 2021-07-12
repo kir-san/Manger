@@ -67,8 +67,6 @@ class ListChaptersItemView(private val act: ListChaptersActivity) :
 
     private lateinit var item: Chapter
 
-    private lateinit var observer: Observer<DownloadItem?>
-
     override fun createView(ui: AnkoContext<ViewGroup>) = with(ui) {
         val btnSize = dip(40)
 

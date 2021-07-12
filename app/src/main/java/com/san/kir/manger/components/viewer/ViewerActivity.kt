@@ -20,23 +20,27 @@ import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import com.san.kir.ankofork.dialogs.longToast
 import com.san.kir.ankofork.doFromSdk
 import com.san.kir.ankofork.negative
 import com.san.kir.ankofork.positive
 import com.san.kir.ankofork.setContentView
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.utils.extensions.BaseActivity
 import com.san.kir.manger.utils.extensions.add
 import com.san.kir.manger.utils.extensions.boolean
+import com.san.kir.manger.utils.extensions.log
 import com.san.kir.manger.utils.extensions.showAlways
 import com.san.kir.manger.utils.extensions.string
 import com.san.kir.manger.utils.extensions.stringSet
 import com.san.kir.manger.view_models.ViewerViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
+import kotlinx.coroutines.withContext
 
 class ViewerActivity : BaseActivity() {
     companion object { // константы для сохранения настроек
@@ -89,10 +93,10 @@ class ViewerActivity : BaseActivity() {
         window.decorView.setOnSystemUiVisibilityChangeListener { visibility ->
             // Note that system bars will only be "visible" if none of the
             // LOW_PROFILE, HIDE_NAVIGATION, or FULLSCREEN flags are set.
-            if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
+            showHide = if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
                 supportActionBar!!.show() // Показать бар сверху
                 presenter.isBottomBar.positive()// Показать нижний бар
-                showHide = lifecycleScope.launch {
+                lifecycleScope.launch {
                     delay(4000L)
                     hideSystemUI()
                 }
@@ -100,7 +104,51 @@ class ViewerActivity : BaseActivity() {
                 supportActionBar!!.hide() //Скрыть бар сверху
                 presenter.isBottomBar.negative() // Скрыть нижний бар
                 showHide?.cancel()
-                showHide = null
+                null
+            }
+        }
+
+        lifecycleScope.launch(Dispatchers.Default) {
+            intent.apply {
+                isAlternative = getBooleanExtra("is", false)
+                if (hasExtra("continue")) {
+                    log("get continue")
+                    val manga = getParcelableExtra<Manga>("manga")
+                    if (manga != null) {
+                        val chapt = mViewModel.getFirstNotReadChapter(manga)
+                        if (chapt != null) {
+                            log("init with manga is ok")
+                            chapter = chapt
+                            presenter.configManager(chapter, isAlternative).invokeOnCompletion {
+                                presenter.isLoad.negative()
+                            }
+                        } else {
+                            log("chapter is not find")
+                            applicationContext.longToast("Нет глав для чтения")
+                            finishAffinity()
+                        }
+                    } else {
+                        log("manga is not find")
+                        applicationContext.longToast("Непредвиденная ошибка")
+                        finishAffinity()
+                    }
+                } else {
+                    val chapt = getParcelableExtra<Chapter>("chapter")
+                    if (chapt != null) {
+                        log("init with chapter is ok")
+                        chapter = chapt
+                        presenter.configManager(chapter, isAlternative).invokeOnCompletion {
+                            presenter.isLoad.negative()
+                        }
+                    } else {
+                        log("chapter is not find")
+                        applicationContext.longToast("Нет главы для чтения")
+                        finishAffinity()
+                    }
+                }
+                withContext(Dispatchers.Main) {
+                    title = chapter.name // Смена заголовка
+                }
             }
         }
     }
@@ -163,24 +211,12 @@ class ViewerActivity : BaseActivity() {
             window.navigationBarColor = color
         }
 
-        intent.apply {
-            chapter = getParcelableExtra("chapter")
-            isAlternative = getBooleanExtra("is", false)
-        }
-
-        title = chapter.name // Смена заголовка
         readTime = System.currentTimeMillis() // Старт отсчета времени чтения
 
         val point = Point() // Хранилище для данных экрана
         windowManager.defaultDisplay.getSize(point) // Сохранение данных в хранилище
         LEFT_PART_SCREEN = point.x / 3 // Установка данных
         RIGHT_PART_SCREEN = point.x * 2 / 3 // Установка данных
-
-        presenter.configManager(chapter, isAlternative).invokeOnCompletion {
-            presenter.isLoad.negative()
-        }
-
-
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
@@ -208,8 +244,8 @@ class ViewerActivity : BaseActivity() {
         return super.onPrepareOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item!!.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             android.R.id.home -> onBackPressed()
             R.id.viewer_menu_prev -> presenter.prevChapter()
             R.id.viewer_menu_next -> presenter.nextChapter()

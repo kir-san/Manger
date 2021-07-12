@@ -9,34 +9,6 @@ import android.os.Build
 
 open class AnkoException(message: String = "") : RuntimeException(message)
 
-/**
- * Return the grayscale color with the zero opacity using the single color value.
- * E.g., 0xC0 will be translated to 0xC0C0C0.
- */
-val Int.gray: Int
-    get() = this or (this shl 8) or (this shl 16)
-
-/**
- * Return the color with 0xFF opacity.
- * E.g., 0xabcdef will be translated to 0xFFabcdef.
- */
-val Int.opaque: Int
-    get() = this or 0xff000000.toInt()
-
-/**
- * Return the color with the given alpha value.
- * Examples:
- *   0xabcdef.withAlpha(0xCF) == 0xCFabcdef
- *   0xFFabcdef.withAlpha(0xCF) == 0xCFabcdef
- *
- * @param alpha the alpha channel value: [0x0..0xFF].
- * @return the color with the given alpha value applied.
- */
-fun Int.withAlpha(alpha: Int): Int {
-    require(alpha in 0..0xFF)
-    return this and 0x00FFFFFF or (alpha shl 24)
-}
-
 enum class ScreenSize {
     SMALL,
     NORMAL,
@@ -56,7 +28,6 @@ enum class UiMode {
 enum class Orientation {
     PORTRAIT,
     LANDSCAPE,
-    SQUARE
 }
 
 /**
@@ -202,14 +173,6 @@ inline fun <T: Any> Fragment.configuration(
                                             fromSdk, sdk, uiMode, nightMode, rightToLeft, smallestWidth)) f() else null
     }
     else null
-}
-
-/**
- * Execute [f] only if the current Android SDK version is [version] or older.
- * Do nothing otherwise.
- */
-inline fun doBeforeSdk(version: Int, f: () -> Unit) {
-    if (Build.VERSION.SDK_INT <= version) f()
 }
 
 /**

@@ -4,9 +4,9 @@ plugins {
     id(Plugins.ANDROID_APPLICATION)
     id(Plugins.HILT_ANDROID)
     id(Plugins.KOTLIN_ANDROID)
-    id(Plugins.KOTLIN_KAPT)
-    id( "org.jetbrains.kotlin.plugin.parcelize")
-    id("com.google.protobuf") version "0.8.12"
+    kotlin(Plugins.KAPT)
+    id(Plugins.PARCELIZE)
+    id(Plugins.PROTOBUF) version "0.8.12"
 }
 
 android {
@@ -135,6 +135,8 @@ dependencies {
         implementation(ACCOMPANIST_FLOWLAYOUT)
         implementation(ACCOMPANIST_PAGER)
         implementation(ACCOMPANIST_PAGER_INDICATORS)
+        implementation(ACCOMPANIST_PERMISSIONS)
+        implementation(ACCOMPANIST_SYSTEMUICONTROLLER)
     }
 
     Dependencies.AndroidX.Room.apply {
@@ -170,7 +172,6 @@ dependencies {
 
     Dependencies.Other.apply {
         implementation(JSOUP)
-        implementation(DSLPERMISSION)
         implementation(ANDROID_JOB)
         implementation(PROGRESSBUTTON)
     }

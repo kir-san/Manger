@@ -24,8 +24,6 @@ import androidx.fragment.app.Fragment
 import com.san.kir.ankofork.AnkoInternals
 import com.san.kir.ankofork.browse
 import com.san.kir.ankofork.email
-import com.san.kir.ankofork.makeCall
-import com.san.kir.ankofork.sendSMS
 import com.san.kir.ankofork.share
 
 fun Fragment.browse(url: String, newTask: Boolean = false): Boolean = requireActivity().browse(url, newTask)
@@ -35,9 +33,6 @@ fun Fragment.share(text: String, subject: String = ""): Boolean = requireActivit
 fun Fragment.email(email: String, subject: String = "", text: String = ""): Boolean =
         requireActivity().email(email, subject, text)
 
-fun Fragment.makeCall(number: String): Boolean = requireActivity().makeCall(number)
-
-fun Fragment.sendSMS(number: String, text: String = ""): Boolean = requireActivity().sendSMS(number, text)
 
 inline fun <reified T: Activity> Fragment.startActivity(vararg params: Pair<String, Any?>) {
     AnkoInternals.internalStartActivity(requireActivity(), T::class.java, params)

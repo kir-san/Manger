@@ -549,9 +549,13 @@ val migrations: Array<Migration> = arrayOf(
                 "isAlternativeSite INTEGER NOT NULL DEFAULT 0, " +
                 "shortLink TEXT NOT NULL DEFAULT ``)",
         "INSERT INTO manga(" +
-                "id, unic, host, name, authors, logo, about, categories, genres, path, status, site, color, populate, `order`, isAlternativeSort, isUpdate, chapterFilter, isAlternativeSite) " +
+                "id, unic, host, name, authors, logo, about, categories, genres, path, status, " +
+                "site, color, populate, `order`, isAlternativeSort, isUpdate, chapterFilter, " +
+                "isAlternativeSite) " +
                 "SELECT " +
-                "id, unic, host, name, authors, logo, about, categories, genres, path, status, site, color, populate, `order`, isAlternativeSort, isUpdate, chapterFilter, isAlternativeSite " +
+                "id, unic, host, name, authors, logo, about, categories, genres, path, status, " +
+                "site, color, populate, `order`, isAlternativeSort, isUpdate, chapterFilter, " +
+                "isAlternativeSite " +
                 "FROM tmp_manga",
         "DROP TABLE tmp_manga"
     ),

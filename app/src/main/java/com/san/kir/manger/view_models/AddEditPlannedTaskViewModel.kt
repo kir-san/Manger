@@ -6,7 +6,6 @@ import com.san.kir.manger.repositories.CategoryRepository
 import com.san.kir.manger.repositories.MangaRepository
 import com.san.kir.manger.repositories.PlannedRepository
 import com.san.kir.manger.repositories.SiteRepository
-import com.san.kir.manger.room.entities.Category
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.PlannedTask
 
@@ -28,10 +27,7 @@ class AddEditPlannedTaskViewModel(app: Application) : AndroidViewModel(app) {
         return mMangaRepository.getItems()
     }
 
-    fun getCategoryItems(): List<Category> {
-        return mCategoryRepository.getItems()
-    }
-
+    suspend fun getCategoryItems() = mCategoryRepository.items()
     suspend fun getSiteItems() = mSiteRepository.getItems()
 }
 

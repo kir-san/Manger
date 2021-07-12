@@ -1,4 +1,4 @@
-package com.san.kir.ankofork.SubsamplingScaleImageView.decoder;
+package com.san.kir.ankofork.subsampling_scale_image_view.decoder;
 
 import android.app.ActivityManager;
 import android.content.ContentResolver;
@@ -13,11 +13,10 @@ import android.graphics.BitmapRegionDecoder;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.net.Uri;
-import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.san.kir.ankofork.SubsamplingScaleImageView.SubsamplingScaleImageView;
+import com.san.kir.ankofork.subsampling_scale_image_view.SubsamplingScaleImageView;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -427,11 +426,7 @@ public class SkiaPooledImageRegionDecoder implements ImageRegionDecoder {
     }
 
     private int getNumberOfCores() {
-        if (Build.VERSION.SDK_INT >= 17) {
-            return Runtime.getRuntime().availableProcessors();
-        } else {
-            return getNumCoresOldPhones();
-        }
+        return Runtime.getRuntime().availableProcessors();
     }
 
     /**

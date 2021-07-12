@@ -3,6 +3,7 @@ package com.san.kir.manger.utils
 import android.content.Context
 import com.san.kir.manger.R
 
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 class TimeFormat(seconds: Long) {
     var days: Long = 0
     var hours: Long = 0

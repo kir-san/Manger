@@ -46,7 +46,6 @@ class CategoryEditViewModel @Inject constructor(
                 _oldCategoryName,
                 _hasChanges,
             ) { items, cat, hasCreatedNew, oldName, changes ->
-                log("update")
                 CategoryEditState(
                     category = cat,
                     hasCreatedNew = hasCreatedNew,
@@ -61,7 +60,7 @@ class CategoryEditViewModel @Inject constructor(
     }
 
     fun setCategory(category: Category?) = viewModelScope.launch(Dispatchers.Default) {
-        if (category != null) {
+        if (category != null && category != Category()) {
             _currentCategory.value = category
         } else {
             _hasCreatedNew.value = true
@@ -82,7 +81,7 @@ class CategoryEditViewModel @Inject constructor(
         isLargePortrait: Boolean? = null,
         spanPortrait: Int? = null,
         isLargeLandscape: Boolean? = null,
-        spanLandscape: Int? =null,
+        spanLandscape: Int? = null,
     ) = viewModelScope.launch {
         val cat = _currentCategory.value.copy()
         when {
@@ -96,6 +95,13 @@ class CategoryEditViewModel @Inject constructor(
             spanLandscape != null -> cat.spanLandscape = spanLandscape
         }
         _currentCategory.emit(cat)
+    }
+
+    fun nullChanges() {
+        _hasChanges.value = false
+    }
+
+    fun newChanges() {
         _hasChanges.value = true
     }
 
@@ -108,7 +114,6 @@ class CategoryEditViewModel @Inject constructor(
                 UpdateCategoryInMangaWorker.addTask(context, category, oldCategoryName)
             }
         }
-        _hasChanges.value = false
     }
 
     fun delete(): Job {

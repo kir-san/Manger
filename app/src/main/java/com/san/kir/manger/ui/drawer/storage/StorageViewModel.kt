@@ -1,24 +1,29 @@
 package com.san.kir.manger.ui.drawer.storage
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.san.kir.ankofork.dialogs.longToast
+import com.san.kir.manger.room.dao.MangaDao
+import com.san.kir.manger.room.dao.StorageDao
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.Storage
-import com.san.kir.manger.room.getDatabase
 import com.san.kir.manger.utils.extensions.getFullPath
-import com.san.kir.manger.utils.extensions.longToast
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class StorageViewModel(app: Application) : AndroidViewModel(app) {
-    private val storageDao = getDatabase(app).storageDao
+@HiltViewModel
+class StorageViewModel @Inject constructor(
+    private val context: Application,
+    private val storageDao: StorageDao,
+    private val mangaDao: MangaDao,
+) : ViewModel() {
     private var mangaList = listOf<Manga>()
 
     private val _state = MutableStateFlow(StorageViewState())
@@ -27,7 +32,7 @@ class StorageViewModel(app: Application) : AndroidViewModel(app) {
 
     init {
         viewModelScope.launch(Dispatchers.Default) {
-            mangaList = getDatabase(app).mangaDao.getItems()
+            mangaList = mangaDao.getItems()
             storageDao.flowItems()
                 .catch { t -> throw t }
                 .collect { items ->
@@ -53,7 +58,7 @@ class StorageViewModel(app: Application) : AndroidViewModel(app) {
                 storageDao.delete(item)
                 getFullPath(item.path).deleteRecursively()
             }.onFailure {
-                getApplication<Application>().longToast(it.toString())
+                context.longToast(it.toString())
             }
         }
     }

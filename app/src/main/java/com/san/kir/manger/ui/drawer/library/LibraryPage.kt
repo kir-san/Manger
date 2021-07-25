@@ -6,7 +6,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.GridCells
@@ -26,10 +25,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.CategoryWithMangas
-import com.san.kir.manger.ui.drawer.Catalogs
+import com.san.kir.manger.ui.drawer.CatalogsNavScreen
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalComposeUiApi
@@ -47,8 +48,7 @@ fun LibraryPage(
     val item = state.categories[index]
 
     Column(
-        Modifier
-            .fillMaxSize()
+        Modifier.fillMaxSize()
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -72,6 +72,12 @@ fun LibraryPage(
 @Composable
 private fun EmptyView(nav: NavController) {
     Column(
+        Modifier.padding(
+            rememberInsetsPaddingValues(
+                insets = LocalWindowInsets.current.systemBars,
+                applyBottom = false, applyTop = false
+            )
+        ),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -79,7 +85,7 @@ private fun EmptyView(nav: NavController) {
 
         Button(
             modifier = Modifier.padding(16.dp),
-            onClick = { nav.navigate(Catalogs.route) }) {
+            onClick = { nav.navigate(CatalogsNavScreen.route) }) {
             Text(
                 text = stringResource(id = R.string.library_help_go)
             )
@@ -105,14 +111,21 @@ private fun PageView(
         LazyVerticalGrid(
             cells = GridCells.Fixed(span),
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(3.dp)
+            contentPadding = rememberInsetsPaddingValues(
+                insets = LocalWindowInsets.current.systemBars, applyTop = false
+            ),
         ) {
             items(items = item.mangas) { manga ->
                 LibraryLargeItemView(manga, item.category.name, mainNav, state)
             }
         }
     else
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = rememberInsetsPaddingValues(
+                insets = LocalWindowInsets.current.systemBars, applyTop = false
+            ),
+        ) {
             items(items = item.mangas) { manga ->
                 LibrarySmallItemView(manga, item.category.name, mainNav, state)
             }

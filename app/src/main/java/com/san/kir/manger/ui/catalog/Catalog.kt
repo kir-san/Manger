@@ -11,7 +11,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -73,20 +72,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.google.accompanist.insets.navigationBarsWithImePadding
+import com.google.accompanist.insets.statusBarsPadding
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.components.parsing.SiteCatalog
 import com.san.kir.manger.ui.Catalog
 import com.san.kir.manger.ui.LocalBaseViewModel
-import com.san.kir.manger.ui.MainViewModel
 import com.san.kir.manger.ui.catalog.CatalogViewModel.Companion.DATE
 import com.san.kir.manger.ui.catalog.CatalogViewModel.Companion.NAME
 import com.san.kir.manger.ui.catalog.CatalogViewModel.Companion.POP
 import com.san.kir.manger.ui.utils.ListItem
 import com.san.kir.manger.ui.utils.MenuIcon
-import com.san.kir.manger.ui.utils.displayCutoutPadding
-import com.san.kir.manger.ui.utils.navigationBarsWithImePadding
-import com.san.kir.manger.ui.utils.statusBarsPadding
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import java.net.URLDecoder
@@ -324,7 +321,6 @@ private fun DrawerContent(viewState: CatalogViewState, viewModel: CatalogViewMod
         // Списки фильтров
         Column(
             modifier = Modifier
-                .displayCutoutPadding()
                 .statusBarsPadding()
         ) {
             Crossfade(

@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,10 +18,8 @@ import androidx.compose.material.DrawerValue
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
@@ -38,6 +37,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -49,14 +49,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.rememberInsetsPaddingValues
+import com.google.accompanist.insets.statusBarsPadding
+import com.google.accompanist.insets.ui.Scaffold
+import com.google.accompanist.insets.ui.TopAppBar
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.san.kir.ankofork.dialogs.toast
 import com.san.kir.manger.BuildConfig
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.MainMenuItem
 import com.san.kir.manger.ui.Drawer
-import com.san.kir.manger.ui.utils.displayCutoutPadding
-import com.san.kir.manger.ui.utils.statusBarsPadding
 import com.san.kir.manger.view_models.DrawerViewModel
 import com.san.kir.manger.view_models.TitleViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -84,15 +87,16 @@ fun DrawerScreen(
     Scaffold(
         topBar = { TopBar(scaffoldState, currentRoute, mainNav) },
         scaffoldState = scaffoldState,
-        drawerGesturesEnabled = false,
+        drawerGesturesEnabled = true,
         drawerContent = { DrawerContent(viewModel, scaffoldState, currentRoute, navControlller) },
-    ) {
+    ) { contentPadding ->
         // Переключаемая навигация
         NavHost(navController = navControlller, startDestination = "library") {
             ALL_SCREENS.forEach { screen ->
                 composable(
                     route = screen.route,
-                    content = { screen.content(navControlller, mainNav) })
+                    content = { screen.content(navControlller, mainNav, contentPadding) },
+                )
             }
         }
     }
@@ -150,8 +154,11 @@ private fun TopBar(
         actions = { MAP_SCREENS_ROUTE[currentRoute]?.actions?.invoke(this, mainNav) },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(0.dp)
-            .statusBarsPadding()
+            .statusBarsPadding(),
+        contentPadding = rememberInsetsPaddingValues(
+            insets = LocalWindowInsets.current.systemBars,
+            applyBottom = false, applyTop = false
+        )
     )
 }
 
@@ -171,13 +178,21 @@ private fun DrawerContent(
     val menuItems by viewModel.loadMainMenuItems().collectAsState(initial = listOf())
     val coroutineScope = rememberCoroutineScope()
 
+    val insets = LocalWindowInsets.current
+
+    val barsStart = with(LocalDensity.current) { insets.systemBars.left.toDp() }
+
     Column(
         modifier = Modifier
             .statusBarsPadding()
-            .displayCutoutPadding()
             .fillMaxHeight()
     ) {
-        Row(modifier = Modifier.padding(6.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier
+                .padding(6.dp)
+                .padding(start = barsStart),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Image(painterResource(id = R.mipmap.ic_launcher_foreground), "")
             Column {
                 Text(
@@ -187,7 +202,9 @@ private fun DrawerContent(
             }
         }
         // Навигация по пунктам приложения
-        LazyColumn {
+        LazyColumn(
+            contentPadding = PaddingValues(start = barsStart)
+        ) {
             itemsIndexed(items = menuItems) { index, item ->
                 MAP_SCREENS_TYPE[item.type]?.let { screen ->
                     MainMenuItemRows(index, menuItems.size, item, screen.icon, loadData(item)) {

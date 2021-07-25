@@ -48,8 +48,8 @@ import com.san.kir.manger.ui.AboutManga
 import com.san.kir.manger.ui.ListChapters
 import com.san.kir.manger.ui.StorageManga
 import com.san.kir.manger.ui.utils.MenuText
-import com.san.kir.manger.ui.utils.SquareImage
 import com.san.kir.manger.ui.utils.navigate
+import com.san.kir.manger.ui.utils.squareMaxSize
 import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.loadImage
 import com.san.kir.manger.workmanager.MangaDeleteWorker
@@ -78,9 +78,9 @@ private fun ItemView(
         modifier = Modifier
             .padding(3.dp)
             .fillMaxWidth()
-            .combinedClickable(onLongClick = {
-                expandedMenu = true
-            }, onClick = { mainNav.navigate(ListChapters, manga) })
+            .combinedClickable(
+                onLongClick = { expandedMenu = true },
+                onClick = { mainNav.navigate(ListChapters, manga) })
     ) {
         content()
     }
@@ -187,18 +187,20 @@ fun LibraryLargeItemView(
 
     ItemView(manga, mainNav, state) {
         Column(modifier = Modifier.fillMaxWidth()) {
-            SquareImage(
-                BitmapPainter(logoManga),
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentDescription = null,
-                contentScale = ContentScale.FillHeight,
-            )
+            Box(modifier = Modifier.squareMaxSize()) {
+                Image(
+                    BitmapPainter(logoManga),
+                    modifier = Modifier.fillMaxSize(),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                )
+            }
             Text(
                 text = manga.name,
                 maxLines = 1,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .background(backgroundColor)
                     .padding(bottom = 5.dp)
                     .padding(horizontal = 6.dp)
             )

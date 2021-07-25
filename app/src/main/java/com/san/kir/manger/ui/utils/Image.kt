@@ -28,44 +28,6 @@ import com.san.kir.manger.R
 import com.san.kir.manger.ui.manga_screens.StatusLogo
 import com.san.kir.manger.utils.loadImage
 
-@Composable
-fun SquareImage(
-    painter: Painter,
-    contentDescription: String?,
-    modifier: Modifier = Modifier,
-    alignment: Alignment = Alignment.Center,
-    contentScale: ContentScale = ContentScale.Fit,
-    alpha: Float = DefaultAlpha,
-    colorFilter: ColorFilter? = null
-) {
-    val semantics = if (contentDescription != null) {
-        Modifier.semantics {
-            this.contentDescription = contentDescription
-            this.role = Role.Image
-        }
-    } else {
-        Modifier
-    }
-
-    // Explicitly use a simple Layout implementation here as Spacer squashes any non fixed
-    // constraint with zero
-    Layout(
-        {},
-        modifier
-            .then(semantics)
-            .clipToBounds()
-            .paint(
-                painter,
-                alignment = alignment,
-                contentScale = contentScale,
-                alpha = alpha,
-                colorFilter = colorFilter
-            )
-    ) { _, constraints ->
-        layout(constraints.minWidth, constraints.minWidth) {}
-    }
-}
-
 @ExperimentalAnimationApi
 @Composable
 fun ImageWithStatus(image: String) {

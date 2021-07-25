@@ -16,56 +16,49 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.scopes.ViewModelScoped
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
-@InstallIn(ViewModelComponent::class)
+@InstallIn(SingletonComponent::class)
 object DataModule {
 
     @Provides
-    @ViewModelScoped
+    @Singleton
     fun provideAppDatabase(application: Application): RoomDB {
         return getDatabase(application)
     }
 
     @Provides
-    @ViewModelScoped
     fun provideMainMenuDao(database: RoomDB): MainMenuDao {
         return database.mainMenuDao
     }
 
     @Provides
-    @ViewModelScoped
     fun provideMangaDao(database: RoomDB): MangaDao {
         return database.mangaDao
     }
     @Provides
-    @ViewModelScoped
     fun provideStorageDao(database: RoomDB): StorageDao {
         return database.storageDao
     }
     @Provides
-    @ViewModelScoped
     fun provideCategoryDao(database: RoomDB): CategoryDao {
         return database.categoryDao
     }
     @Provides
-    @ViewModelScoped
     fun provideSiteDao(database: RoomDB): SiteDao {
         return database.siteDao
     }
     @Provides
-    @ViewModelScoped
     fun provideDownloadDao(database: RoomDB): DownloadDao {
         return database.downloadDao
     }
     @Provides
-    @ViewModelScoped
     fun provideChapterDao(database: RoomDB): ChapterDao {
         return database.chapterDao
     }
     @Provides
-    @ViewModelScoped
     fun providePlannedDao(database: RoomDB): PlannedDao {
         return database.plannedDao
     }

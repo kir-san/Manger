@@ -4,6 +4,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -30,9 +31,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Category
@@ -51,14 +53,21 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @Composable
 fun CategoriesScreen(
     mainNav: NavController,
+    contentPadding: PaddingValues,
     vm: TitleViewModel = hiltViewModel(mainNav.getBackStackEntry(Drawer.route)),
-    viewModel: CategoriesViewModel = hiltViewModel()
+    viewModel: CategoriesViewModel = hiltViewModel(),
 ) {
     vm.setTitle(stringResource(id = R.string.main_menu_category))
 
     val cats by viewModel.categories.collectAsState(emptyList())
 
-    LazyColumn {
+    LazyColumn(
+        contentPadding = rememberInsetsPaddingValues(
+            insets = LocalWindowInsets.current.systemBars,
+            applyTop = false,
+        ),
+        modifier = Modifier.padding(top = contentPadding.calculateTopPadding())
+    ) {
         itemsIndexed(items = cats, key = { _, c -> c.id }) { index, item ->
             CategoryItemView(index, cats.count(), item) {
                 mainNav.navigate(EditCategory, item)
@@ -69,7 +78,7 @@ fun CategoriesScreen(
 
 @Composable
 fun CategoryItemView(index: Int, max: Int, category: Category, onClick: () -> Unit) {
-    val viewModel: CategoriesViewModel = viewModel()
+    val viewModel: CategoriesViewModel = hiltViewModel()
     var visibleState by remember { mutableStateOf(category.isVisible) }
 
     Row(
@@ -125,6 +134,6 @@ fun CategoryItemView(index: Int, max: Int, category: Category, onClick: () -> Un
 fun CategoriesActions(mainNav: NavHostController) {
     MenuIcon(
         icon = Icons.Default.Add,
-        onClick = { mainNav.navigate(EditCategory) })
+        onClick = { mainNav.navigate(EditCategory, Category()) })
 }
 

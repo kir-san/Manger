@@ -11,16 +11,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 
 @Composable
-fun MenuIcon(icon: ImageVector, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    IconButton(onClick = onClick, modifier = modifier) {
+fun MenuIcon(
+    icon: ImageVector,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    onClick: () -> Unit
+) {
+    IconButton(onClick = onClick, modifier = modifier, enabled = enabled) {
         Icon(icon, "")
-    }
-}
-
-@Composable
-fun MenuIcon(icon: MutableState<ImageVector>, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    IconButton(onClick = onClick, modifier = modifier) {
-        Icon(icon.value, "")
     }
 }
 

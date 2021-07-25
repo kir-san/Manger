@@ -3,6 +3,7 @@ package com.san.kir.manger.ui.drawer
 import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Category
@@ -21,12 +22,10 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.MainMenuItem
-import com.san.kir.manger.ui.MainViewModel
 import com.san.kir.manger.ui.drawer.catalogs.CatalogsActions
 import com.san.kir.manger.ui.drawer.catalogs.CatalogsScreen
 import com.san.kir.manger.ui.drawer.categories.CategoriesActions
@@ -39,14 +38,15 @@ import com.san.kir.manger.utils.extensions.formatDouble
 import com.san.kir.manger.view_models.DrawerViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-sealed class AppScreen(
+sealed class DrawerNavScreen(
     val route: String,
     val type: MainMenuType,
     val icon: ImageVector,
     val actions: (@Composable RowScope.(mainNavController: NavHostController) -> Unit) = {},
     val content: @Composable (
         navController: NavHostController,
-        mainNavController: NavHostController
+        mainNavController: NavHostController,
+        contentPadding: PaddingValues,
     ) -> Unit
 )
 
@@ -57,10 +57,10 @@ sealed class AppScreen(
 @ExperimentalFoundationApi
 val ALL_SCREENS =
     listOf(
-        Library,
-        Storage,
-        Categories,
-        Catalogs,
+        LibraryNavScreen,
+        StorageNavScreen,
+        CategoriesNavScreen,
+        CatalogsNavScreen,
         Downloader,
         Latest,
         Settings,
@@ -89,11 +89,11 @@ val MAP_SCREENS_ROUTE = ALL_SCREENS.associateBy { it.route }
 @SuppressLint("RestrictedApi")
 @ExperimentalCoroutinesApi
 @ExperimentalFoundationApi
-object Library : AppScreen(
+object LibraryNavScreen : DrawerNavScreen(
     route = "library",
     type = MainMenuType.Library,
     icon = Icons.Default.LocalLibrary,
-    content = { nav, mainNav -> LibraryScreen(nav, mainNav) },
+    content = { nav, mainNav, cp -> LibraryScreen(nav, mainNav, cp) },
     actions = { mainNav -> LibraryActions(mainNav) }
 )
 
@@ -102,11 +102,11 @@ object Library : AppScreen(
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
 @ExperimentalAnimationApi
-object Storage : AppScreen(
+object StorageNavScreen : DrawerNavScreen(
     route = "storage",
     type = MainMenuType.Storage,
     icon = Icons.Default.Storage,
-    content = { _, mainNav -> StorageScreen(mainNav) }
+    content = { _, mainNav, cp -> StorageScreen(mainNav, cp) }
 )
 
 @ExperimentalCoroutinesApi
@@ -114,11 +114,11 @@ object Storage : AppScreen(
 @ExperimentalPagerApi
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
-object Categories : AppScreen(
-    route = "categorie",
+object CategoriesNavScreen : DrawerNavScreen(
+    route = "categories",
     type = MainMenuType.Category,
     icon = Icons.Default.Category,
-    content = { _, mainNav -> CategoriesScreen(mainNav) },
+    content = { _, mainNav, cp -> CategoriesScreen(mainNav, cp) },
     actions = { mainNav -> CategoriesActions(mainNav) }
 )
 
@@ -127,11 +127,11 @@ object Categories : AppScreen(
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalCoroutinesApi
-object Catalogs : AppScreen(
+object CatalogsNavScreen : DrawerNavScreen(
     route = "catalogs",
     type = MainMenuType.Catalogs,
     icon = Icons.Default.FormatListBulleted,
-    content = { _, mainNav -> CatalogsScreen(mainNav) },
+    content = { _, mainNav, cp -> CatalogsScreen(mainNav, cp) },
     actions = { CatalogsActions(it) }
 )
 
@@ -140,11 +140,11 @@ object Catalogs : AppScreen(
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalCoroutinesApi
-object Downloader : AppScreen(
+object Downloader : DrawerNavScreen(
     route = "downloader",
     type = MainMenuType.Downloader,
     icon = Icons.Default.GetApp,
-    content = { _, _ -> }
+    content = { _, _, _ -> }
 )
 
 @ExperimentalComposeUiApi
@@ -152,11 +152,11 @@ object Downloader : AppScreen(
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalCoroutinesApi
-object Latest : AppScreen(
+object Latest : DrawerNavScreen(
     route = "latest",
     type = MainMenuType.Latest,
     icon = Icons.Default.History,
-    content = {  _, _ -> }
+    content = { _, _, _ -> }
 )
 
 @ExperimentalComposeUiApi
@@ -164,11 +164,11 @@ object Latest : AppScreen(
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalCoroutinesApi
-object Settings : AppScreen(
+object Settings : DrawerNavScreen(
     route = "settings",
     type = MainMenuType.Settings,
     icon = Icons.Default.Settings,
-    content = { _, _ -> }
+    content = { _, _, _ -> }
 )
 
 @ExperimentalComposeUiApi
@@ -176,11 +176,11 @@ object Settings : AppScreen(
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalCoroutinesApi
-object Statistic : AppScreen(
+object Statistic : DrawerNavScreen(
     route = "statistic",
     type = MainMenuType.Statistic,
     icon = Icons.Default.Note,
-    content = { _, _ -> }
+    content = { _, _, _ -> }
 )
 
 @ExperimentalComposeUiApi
@@ -188,16 +188,18 @@ object Statistic : AppScreen(
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalCoroutinesApi
-object Schedule : AppScreen(
+object Schedule : DrawerNavScreen(
     route = "schedule",
     type = MainMenuType.Schedule,
     icon = Icons.Default.Schedule,
-    content = {  _, _ -> }
+    content = { _, _, _ -> }
 )
 
 @Composable
-fun loadData(item: MainMenuItem,
-             viewModel: DrawerViewModel = hiltViewModel()): String {
+fun loadData(
+    item: MainMenuItem,
+    viewModel: DrawerViewModel = hiltViewModel()
+): String {
     return when (item.type) {
         MainMenuType.Default,
         MainMenuType.Library -> {

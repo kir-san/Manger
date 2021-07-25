@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Checkbox
 import androidx.compose.material.OutlinedButton
@@ -20,7 +23,9 @@ import androidx.compose.material.Slider
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -36,6 +41,9 @@ import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.navigationBarsWithImePadding
+import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.EditCategory
 import com.san.kir.manger.ui.utils.MenuIcon
@@ -43,18 +51,23 @@ import com.san.kir.manger.ui.utils.RadioGroup
 import com.san.kir.manger.ui.utils.TopBarScreen
 import com.san.kir.manger.ui.utils.getElement
 import com.san.kir.manger.utils.SortLibraryUtil
+import com.san.kir.manger.utils.extensions.log
 import kotlin.math.roundToInt
 
 @ExperimentalAnimationApi
 @Composable
-fun CategoryEditScreen(nav: NavHostController) {
-    val viewModel: CategoryEditViewModel = hiltViewModel()
+fun CategoryEditScreen(
+    nav: NavHostController,
+    viewModel: CategoryEditViewModel = hiltViewModel()
+) {
     val viewState by viewModel.state.collectAsState()
 
     viewModel.setCategory(nav.getElement(EditCategory))
 
     var hasError by rememberSaveable { mutableStateOf(false) }
     var deleteDialog by rememberSaveable { mutableStateOf(false) }
+
+    val scrollState = rememberScrollState()
 
     TopBarScreen(
         nav = nav,
@@ -63,6 +76,15 @@ fun CategoryEditScreen(nav: NavHostController) {
             else R.string.category_dialog_title_edit
         ),
         actions = {
+            MenuIcon(
+                icon =
+                if (viewState.hasCreatedNew) Icons.Default.Create
+                else Icons.Default.Save,
+                enabled = viewState.hasChanges and hasError.not()
+            ) {
+                viewModel.save()
+                viewModel.nullChanges()
+            }
             // Удаление категории полностью
             if (viewState.hasAll.not())
                 MenuIcon(icon = Icons.Default.Delete) {
@@ -70,64 +92,44 @@ fun CategoryEditScreen(nav: NavHostController) {
                 }
 
         }
-    ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(16.dp)
-            ) {
-                TextWithValidate(viewModel, hasError) { hasError = it }
+    ) { contentPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .padding(top = contentPadding.calculateTopPadding() + 16.dp)
+                .navigationBarsWithImePadding()
+                .verticalScroll(scrollState)
+        ) {
+            TextWithValidate(viewModel, hasError) { hasError = it }
 
-                SpacerMain()
+            SpacerMain()
 
-                ChangeSortType(viewModel)
+            ChangeSortType(viewModel)
 
-                SpacerMain()
+            SpacerMain()
 
-                ChangeReverseSort(viewModel = viewModel)
+            ChangeReverseSort(viewModel = viewModel)
 
-                SpacerMain()
+            SpacerMain()
 
-                ChangeVisibility(viewModel)
+            ChangeVisibility(viewModel)
 
-                SpacerMain()
+            SpacerMain()
 
-                Text(text = stringResource(id = R.string.category_dialog_portrait))
+            Text(text = stringResource(id = R.string.category_dialog_portrait))
 
-                SpacerChild()
+            SpacerChild()
 
-                ChangePortraitOptions(viewModel)
+            ChangePortraitOptions(viewModel)
 
-                SpacerMain()
+            SpacerMain()
 
-                Text(text = stringResource(id = R.string.category_dialog_landscape))
+            Text(text = stringResource(id = R.string.category_dialog_landscape))
 
-                SpacerChild()
+            SpacerChild()
 
-                ChangeLandscapeOptions(viewModel)
-            }
-
-            // Кнопки действий с редактируемой категорией
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                // Применение внесенных изменений
-                TextButton(
-                    enabled = hasError.not() && viewState.hasChanges,
-                    onClick = { viewModel.save() }
-                ) {
-                    Text(
-                        text = stringResource(
-                            id = if (viewState.hasCreatedNew) R.string.category_dialog_create
-                            else R.string.category_dialog_edit
-                        ).toUpperCase(Locale.current)
-                    )
-                }
-            }
+            ChangeLandscapeOptions(viewModel)
         }
     }
 
@@ -165,11 +167,9 @@ private fun TextWithValidate(
     val viewState by viewModel.state.collectAsState()
 
     val tooShortString = stringResource(id = R.string.category_dialog_validate_length)
-    val oldNameString = stringResource(id = R.string.category_dialog_validate_equal)
     val nameIsBusyString = stringResource(id = R.string.category_dialog_validate_contain)
 
-    var validate = ""
-
+    var validate by rememberSaveable { mutableStateOf("") }
     var text by rememberSaveable { mutableStateOf(viewState.category.name) }
 
     viewModel.setCategoryProperty(name = text)
@@ -181,13 +181,13 @@ private fun TextWithValidate(
             changeHasError(true)
             validate = when {
                 it.length < 3 -> tooShortString
-                viewState.oldCategoryName == it -> oldNameString
                 viewState.categoryNames.contains(it) -> nameIsBusyString
                 else -> {
                     changeHasError(false)
                     ""
                 }
             }
+            viewModel.newChanges()
         },
         enabled = viewState.hasAll.not(),
         placeholder = { Text(stringResource(id = R.string.category_dialog_hint)) },
@@ -198,7 +198,7 @@ private fun TextWithValidate(
     AnimatedVisibility(visible = hasError && viewState.hasAll.not()) {
         Text(
             text = validate,
-            textAlign = TextAlign.End,
+            textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
             color = Color.Red,
         )
@@ -217,6 +217,7 @@ private fun ChangeSortType(
         state,
         onSelected = {
             state = it
+            viewModel.newChanges()
         },
         stateList = listOf(
             SortLibraryUtil.add,
@@ -242,7 +243,10 @@ private fun ChangeReverseSort(
 
     CheckBoxItem(
         state = state,
-        onChange = { state = it },
+        onChange = {
+            viewModel.newChanges()
+            state = it
+        },
         firstTextId = R.string.library_sort_dialog_reverse
     )
 }
@@ -258,7 +262,10 @@ private fun ChangeVisibility(
 
     CheckBoxItem(
         state = state.not(),
-        onChange = { state = it.not() },
+        onChange = {
+            viewModel.newChanges()
+            state = it.not()
+        },
         firstTextId = R.string.library_sort_dialog_visible
     )
 }
@@ -278,7 +285,10 @@ private fun ChangePortraitOptions(
 
     CheckBoxItem(
         state = isLarge,
-        onChange = { isLarge = it },
+        onChange = {
+            viewModel.newChanges()
+            isLarge = it
+        },
         firstTextId = R.string.category_dialog_large_cells,
         secondTextId = R.string.category_dialog_small_cells
     )
@@ -286,15 +296,16 @@ private fun ChangePortraitOptions(
     SpacerChild()
 
     AnimatedVisibility(isLarge) {
-        TextWithSlider(R.string.category_dialog_span_text, span, 5) { span = it }
+        TextWithSlider(R.string.category_dialog_span_text, span, 5) {
+            viewModel.newChanges()
+            span = it
+        }
     }
 }
 
 @ExperimentalAnimationApi
 @Composable
-private fun ChangeLandscapeOptions(
-    viewModel: CategoryEditViewModel
-) {
+private fun ChangeLandscapeOptions(viewModel: CategoryEditViewModel) {
     val viewState by viewModel.state.collectAsState()
 
     var isLarge by rememberSaveable { mutableStateOf(viewState.category.isLargeLandscape) }
@@ -305,7 +316,10 @@ private fun ChangeLandscapeOptions(
 
     CheckBoxItem(
         state = isLarge,
-        onChange = { isLarge = it },
+        onChange = {
+            viewModel.newChanges()
+            isLarge = it
+        },
         firstTextId = R.string.category_dialog_large_cells,
         secondTextId = R.string.category_dialog_small_cells
     )
@@ -313,7 +327,10 @@ private fun ChangeLandscapeOptions(
     SpacerChild()
 
     AnimatedVisibility(visible = isLarge) {
-        TextWithSlider(R.string.category_dialog_span_text, span, 7) { span = it }
+        TextWithSlider(R.string.category_dialog_span_text, span, 7) {
+            viewModel.newChanges()
+            span = it
+        }
     }
 }
 

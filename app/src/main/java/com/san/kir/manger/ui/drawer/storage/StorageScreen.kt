@@ -6,6 +6,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -36,18 +37,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Storage
 import com.san.kir.manger.ui.Drawer
-import com.san.kir.manger.ui.MainViewModel
 import com.san.kir.manger.ui.StorageManga
 import com.san.kir.manger.ui.utils.MenuText
 import com.san.kir.manger.ui.utils.StorageProgressBar
 import com.san.kir.manger.ui.utils.navigate
-import com.san.kir.manger.ui.utils.navigationBarsPadding
 import com.san.kir.manger.utils.extensions.formatDouble
 import com.san.kir.manger.utils.loadImage
 import com.san.kir.manger.view_models.TitleViewModel
@@ -64,9 +64,10 @@ import kotlin.math.roundToInt
 @Composable
 fun StorageScreen(
     mainNav: NavHostController,
-    vm: TitleViewModel = hiltViewModel(mainNav.getBackStackEntry(Drawer.route))
+    contentPadding: PaddingValues,
+    vm: TitleViewModel = hiltViewModel(mainNav.getBackStackEntry(Drawer.route)),
+    viewModel: StorageViewModel = hiltViewModel()
 ) {
-    val viewModel: StorageViewModel = viewModel()
     val viewState by viewModel.state.collectAsState()
 
     vm.setTitle(
@@ -84,9 +85,13 @@ fun StorageScreen(
         )
     )
 
-
-
-    LazyColumn(modifier = Modifier.navigationBarsPadding()) {
+    LazyColumn(
+        contentPadding = rememberInsetsPaddingValues(
+            insets = LocalWindowInsets.current.systemBars,
+            applyTop = false,
+        ),
+        modifier = Modifier.padding(top = contentPadding.calculateTopPadding())
+    ) {
         items(items = viewState.items, key = { storage -> storage.id }) { item ->
             ItemView(item, mainNav)
         }
@@ -96,8 +101,11 @@ fun StorageScreen(
 @ExperimentalComposeUiApi
 @ExperimentalAnimationApi
 @Composable
-fun ItemView(item: Storage, mainNav: NavHostController) {
-    val viewModel: StorageViewModel = viewModel()
+fun ItemView(
+    item: Storage,
+    mainNav: NavHostController,
+    viewModel: StorageViewModel = hiltViewModel()
+) {
     val viewState by viewModel.state.collectAsState()
 
     var showMenu by remember { mutableStateOf(false) }

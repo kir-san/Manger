@@ -6,6 +6,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -40,6 +41,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.github.kittinunf.result.coroutines.failure
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.san.kir.ankofork.startService
 import com.san.kir.manger.R
@@ -66,15 +69,22 @@ import kotlinx.coroutines.withContext
 @Composable
 fun CatalogsScreen(
     mainNav: NavHostController,
-    vm: TitleViewModel = hiltViewModel(mainNav.getBackStackEntry(Drawer.route))
+    contentPadding: PaddingValues,
+    vm: TitleViewModel = hiltViewModel(mainNav.getBackStackEntry(Drawer.route)),
+    viewModel: CatalogsViewModel = hiltViewModel()
 ) {
     vm.setTitle(stringResource(id = R.string.main_menu_catalogs))
 
-    val viewModel: CatalogsViewModel = viewModel()
-    val viewState by viewModel.state.collectAsState()
+    val siteList by viewModel.siteList.collectAsState(emptyList())
 
-    LazyColumn(modifier = Modifier) {
-        items(items = viewState.siteItems, key = { site -> site.id }) { item ->
+    LazyColumn(
+        contentPadding = rememberInsetsPaddingValues(
+            insets = LocalWindowInsets.current.systemBars,
+            applyTop = false,
+        ),
+        modifier = Modifier.padding(top = contentPadding.calculateTopPadding())
+    ) {
+        items(items = siteList, key = { site -> site.id }) { item ->
             ItemView(item) {
                 mainNav.navigate("${Catalog().base}/${item.name}")
             }
@@ -83,9 +93,7 @@ fun CatalogsScreen(
 }
 
 @Composable
-fun ItemView(item: Site, onClick: () -> Unit) {
-    val viewModel: CatalogsViewModel = viewModel()
-
+fun ItemView(item: Site, viewModel: CatalogsViewModel = hiltViewModel(), onClick: () -> Unit) {
     val context = LocalContext.current
     var isError by remember { mutableStateOf(false) }
     var isInit by remember { mutableStateOf(false) }
@@ -169,9 +177,8 @@ fun ItemView(item: Site, onClick: () -> Unit) {
 
 @ExperimentalAnimationApi
 @Composable
-fun CatalogsActions(mainNav: NavHostController) {
+fun CatalogsActions(mainNav: NavHostController, viewModel: CatalogsViewModel = hiltViewModel()) {
     val context = LocalContext.current
-    val viewModel: CatalogsViewModel = viewModel()
     var expanded by remember { mutableStateOf(false) }
 
     MenuIcon(

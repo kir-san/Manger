@@ -31,7 +31,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.asFlow
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.work.WorkManager
@@ -63,6 +62,7 @@ fun LibraryScreen(
     nav: NavController,
     mainNav: NavHostController,
     contentPadding: PaddingValues,
+    viewModel: LibraryViewModel = hiltViewModel(),
     vm: TitleViewModel = hiltViewModel(mainNav.getBackStackEntry(Drawer.route))
 ) {
     vm.setTitle(stringResource(id = R.string.main_menu_library))
@@ -70,7 +70,6 @@ fun LibraryScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    val viewModel: LibraryViewModel = viewModel()
     val viewState by viewModel.state.collectAsState()
 
     Column(

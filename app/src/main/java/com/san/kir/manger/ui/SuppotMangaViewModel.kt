@@ -1,22 +1,30 @@
 package com.san.kir.manger.ui
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.san.kir.ankofork.dialogs.longToast
 import com.san.kir.manger.components.parsing.ManageSites
+import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.room.entities.authorsList
 import com.san.kir.manger.room.entities.genresList
-import com.san.kir.manger.room.getDatabase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-abstract class AbstractMangaViewModel(app: Application): AndroidViewModel(app) {
-    private val mangaDao by lazy { getDatabase(app).mangaDao }
+@HiltViewModel
+class SuppotMangaViewModel @Inject constructor(
+    private val application: Application,
+    private val mangaDao: MangaDao,
+) : ViewModel() {
 
-    fun isContainManga(item: SiteCatalogElement): Boolean =
-        mangaDao.getItems().any { it.shortLink == item.shotLink }
+    suspend fun isContainManga(item: SiteCatalogElement): Boolean =
+        withContext(Dispatchers.Default) {
+            mangaDao.getItems().any { it.shortLink == item.shotLink }
+        }
 
     fun onlineUpdate(item: SiteCatalogElement) {
         viewModelScope.launch(Dispatchers.Default) {
@@ -30,7 +38,7 @@ abstract class AbstractMangaViewModel(app: Application): AndroidViewModel(app) {
             oldManga.shortLink = updItem.shotLink
             oldManga.status = updItem.statusEdition
             mangaDao.update(oldManga)
-            getApplication<Application>().longToast("Информация о манге ${item.name} обновлена")
+            application.longToast("Информация о манге ${item.name} обновлена")
         }
     }
 }

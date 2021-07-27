@@ -25,31 +25,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.san.kir.manger.room.entities.SiteCatalogElement
-import com.san.kir.manger.ui.AbstractMangaViewModel
 import com.san.kir.manger.ui.AddManga
 import com.san.kir.manger.ui.MangaInfo
+import com.san.kir.manger.ui.SuppotMangaViewModel
 import com.san.kir.manger.ui.catalog.btnSizeAddUpdate
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 @ExperimentalAnimationApi
 @Composable
 fun ListItem(
-    viewModel: AbstractMangaViewModel,
     item: SiteCatalogElement,
     firstName: String,
     secondName: String,
-    nav: NavHostController
+    nav: NavHostController,
+    viewModel: SuppotMangaViewModel = hiltViewModel()
 ) {
     var isAdded by remember { mutableStateOf(false) }
     var isUpdated by remember { mutableStateOf(false) }
 
     LaunchedEffect(item) {
-        val tempAdded = withContext(Dispatchers.Default) {
-            viewModel.isContainManga(item)
-        }
+        val tempAdded = viewModel.isContainManga(item)
         isAdded = !tempAdded
         isUpdated = tempAdded
     }
@@ -89,8 +86,7 @@ fun ListItem(
                     .size(btnSizeAddUpdate)
                     .align(Alignment.CenterVertically)
                     .clickable {
-                        nav.currentBackStackEntry?.arguments?.putParcelable(AddManga.element, item)
-                        nav.navigate(AddManga.route)
+                        nav.navigate(AddManga, item)
                     }
             )
 

@@ -1,25 +1,20 @@
 package com.san.kir.manger.ui.drawer.categories
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.san.kir.manger.room.dao.CategoryDao
 import com.san.kir.manger.room.entities.Category
-import com.san.kir.manger.room.getDatabase
 import com.san.kir.manger.utils.CATEGORY_ALL
-import com.san.kir.manger.utils.extensions.log
+import com.san.kir.manger.workmanager.RemoveCategoryWorker
 import com.san.kir.manger.workmanager.UpdateCategoryInMangaWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.collect
-
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -116,10 +111,8 @@ class CategoryEditViewModel @Inject constructor(
         }
     }
 
-    fun delete(): Job {
-        return viewModelScope.launch(Dispatchers.Default) {
-            categoryDao.delete(_currentCategory.value)
-        }
+    fun delete() {
+        RemoveCategoryWorker.addTask(context, _currentCategory.value)
     }
 }
 

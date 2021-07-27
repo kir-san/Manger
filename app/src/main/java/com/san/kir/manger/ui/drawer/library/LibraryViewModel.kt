@@ -1,14 +1,15 @@
 package com.san.kir.manger.ui.drawer.library
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.san.kir.manger.data.datastore.MainRepository
-import com.san.kir.manger.data.datastore.mainStore
+import com.san.kir.manger.room.dao.CategoryDao
+import com.san.kir.manger.room.dao.ChapterDao
+import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.entities.CategoryWithMangas
 import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.room.getDatabase
 import com.san.kir.manger.utils.CATEGORY_ALL
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,14 +17,15 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class LibraryViewModel(app: Application) : AndroidViewModel(app) {
-    private val categoryDao = getDatabase(app).categoryDao
-    private val chapterDao = getDatabase(app).chapterDao
-    private val mangaDao = getDatabase(app).mangaDao
-
-    private val dataStore = MainRepository(app.mainStore)
-
+@HiltViewModel
+class LibraryViewModel @Inject constructor(
+    private val categoryDao: CategoryDao,
+    private val chapterDao: ChapterDao,
+    private val mangaDao: MangaDao,
+    private val dataStore: MainRepository
+) : ViewModel() {
     private val isAction = MutableStateFlow(false)
 
     private val _state = MutableStateFlow(LibraryViewState())

@@ -4,8 +4,6 @@ import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,7 +19,6 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Slider
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Delete
@@ -35,15 +32,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.navigationBarsWithImePadding
-import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.EditCategory
 import com.san.kir.manger.ui.utils.MenuIcon
@@ -51,7 +44,6 @@ import com.san.kir.manger.ui.utils.RadioGroup
 import com.san.kir.manger.ui.utils.TopBarScreen
 import com.san.kir.manger.ui.utils.getElement
 import com.san.kir.manger.utils.SortLibraryUtil
-import com.san.kir.manger.utils.extensions.log
 import kotlin.math.roundToInt
 
 @ExperimentalAnimationApi
@@ -139,9 +131,8 @@ fun CategoryEditScreen(
             text = { Text(text = stringResource(id = R.string.category_item_question_delete)) },
             confirmButton = {
                 OutlinedButton(onClick = {
-                    viewModel.delete().invokeOnCompletion {
-                        nav.navigateUp()
-                    }
+                    viewModel.delete()
+                    nav.navigateUp()
                 }) {
                     Text(text = stringResource(id = R.string.category_item_question_delete_yes))
                 }

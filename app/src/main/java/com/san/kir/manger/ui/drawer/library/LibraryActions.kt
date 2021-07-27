@@ -12,7 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.san.kir.ankofork.startService
 import com.san.kir.manger.R
@@ -24,8 +24,10 @@ import com.san.kir.manger.ui.utils.MenuText
 
 @ExperimentalAnimationApi
 @Composable
-fun LibraryActions(mainNav: NavHostController) {
-    val viewModel: LibraryViewModel = viewModel()
+fun LibraryActions(
+    mainNav: NavHostController,
+    viewModel: LibraryViewModel = hiltViewModel()
+) {
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }

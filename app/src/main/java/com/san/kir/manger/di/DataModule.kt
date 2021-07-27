@@ -9,6 +9,7 @@ import com.san.kir.manger.room.dao.MainMenuDao
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.dao.PlannedDao
 import com.san.kir.manger.room.dao.SiteDao
+import com.san.kir.manger.room.dao.StatisticDao
 import com.san.kir.manger.room.dao.StorageDao
 import com.san.kir.manger.room.getDatabase
 import dagger.Module
@@ -61,5 +62,9 @@ object DataModule {
     @Provides
     fun providePlannedDao(database: RoomDB): PlannedDao {
         return database.plannedDao
+    }
+    @Provides
+    fun provideStatisticDao(database: RoomDB): StatisticDao {
+        return database.statisticDao
     }
 }

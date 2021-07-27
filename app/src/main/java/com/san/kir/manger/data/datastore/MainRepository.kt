@@ -8,8 +8,9 @@ import com.san.kir.manger.Main
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import java.io.IOException
+import javax.inject.Inject
 
-class MainRepository(private val mainStore: DataStore<Main>) {
+class MainRepository @Inject constructor(private val mainStore: DataStore<Main>) {
     private val TAG: String = "MainRepo"
 
     val data: Flow<Main> = mainStore.data

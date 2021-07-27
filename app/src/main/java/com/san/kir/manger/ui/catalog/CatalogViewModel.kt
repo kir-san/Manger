@@ -3,20 +3,15 @@ package com.san.kir.manger.ui.catalog
 import android.app.Application
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.san.kir.ankofork.dialogs.longToast
-import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.room.CatalogDb
+import com.san.kir.manger.room.dao.SiteDao
 import com.san.kir.manger.room.entities.SiteCatalogElement
-import com.san.kir.manger.room.entities.authorsList
-import com.san.kir.manger.room.entities.genresList
-import com.san.kir.manger.room.getDatabase
 import com.san.kir.manger.services.CatalogForOneSiteUpdaterService
-import com.san.kir.manger.ui.AbstractMangaViewModel
 import com.san.kir.manger.ui.catalog.CatalogViewModel.Companion.DATE
-import com.san.kir.manger.utils.extensions.log
 import com.san.kir.manger.utils.extensions.startForegroundService
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,16 +21,21 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.*
+import javax.inject.Inject
 
-class CatalogViewModel(app: Application) : AbstractMangaViewModel(app) {
+@HiltViewModel
+class CatalogViewModel @Inject constructor(
+    private val application: Application,
+    private val siteDao: SiteDao,
+) : ViewModel() {
     companion object {
         const val DATE = 0
         const val NAME = 1
         const val POP = 2
     }
 
-    private lateinit var db: CatalogDb
-    private val siteDao by lazy { getDatabase(app).siteDao }
+    private var db: CatalogDb? = null
+
     private var siteCatalog: String = ""
 
     private val searchText = MutableStateFlow("") // Сохранение информации о поисковом запросе
@@ -78,36 +78,39 @@ class CatalogViewModel(app: Application) : AbstractMangaViewModel(app) {
         siteCatalog: String,
     ) = viewModelScope.launch(Dispatchers.Default) {
         setAction(true)
-        if (!::db.isInitialized) {
-            db = CatalogDb.getDatabase(getApplication(), siteCatalog)
+
+        if (db == null) {
+            db = CatalogDb.getDatabase(application, siteCatalog)
         } else if (this@CatalogViewModel.siteCatalog != siteCatalog) {
-            db.close()
-            db = CatalogDb.getDatabase(getApplication(), siteCatalog)
+            db?.close()
+            db = CatalogDb.getDatabase(application, siteCatalog)
 
         }
 
         this@CatalogViewModel.siteCatalog = siteCatalog
 
-        val list = db.dao.loadItems().first()
-        backupCatalog.value = list
-        catalogFilter.value = listOf(
-            CatalogFilter(
-                name = "Жанры",
-                catalog = list.flatMap { it.genres }.toHashSet().sorted()
-            ),
-            CatalogFilter(
-                name = "Тип манги",
-                catalog = list.map { it.type }.toHashSet().sorted()
-            ),
-            CatalogFilter(
-                name = "Статус манги",
-                catalog = list.map { it.statusEdition }.toHashSet().sorted()
-            ),
-            CatalogFilter(
-                name = "Авторы",
-                catalog = list.flatMap { it.authors }.toHashSet().sorted()
+        db?.let {
+            val list = it.dao.loadItems().first()
+            backupCatalog.value = list
+            catalogFilter.value = listOf(
+                CatalogFilter(
+                    name = "Жанры",
+                    catalog = list.flatMap { it.genres }.toHashSet().sorted()
+                ),
+                CatalogFilter(
+                    name = "Тип манги",
+                    catalog = list.map { it.type }.toHashSet().sorted()
+                ),
+                CatalogFilter(
+                    name = "Статус манги",
+                    catalog = list.map { it.statusEdition }.toHashSet().sorted()
+                ),
+                CatalogFilter(
+                    name = "Авторы",
+                    catalog = list.flatMap { it.authors }.toHashSet().sorted()
+                )
             )
-        )
+        }
 
         siteDao.getItem(siteCatalog)?.let { site ->
             site.oldVolume = backupCatalog.value.size
@@ -168,7 +171,7 @@ class CatalogViewModel(app: Application) : AbstractMangaViewModel(app) {
     fun setAction(value: Boolean, service: Boolean = false) {
         if (value) {
             if (service && !CatalogForOneSiteUpdaterService.isContain(siteCatalog))
-                getApplication<Application>()
+                application
                     .startForegroundService<CatalogForOneSiteUpdaterService>("catalogName" to siteCatalog)
             _action.value = true
         } else if (!CatalogForOneSiteUpdaterService.isContain(siteCatalog)) {

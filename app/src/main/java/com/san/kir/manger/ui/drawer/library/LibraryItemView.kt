@@ -40,7 +40,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Manga
@@ -61,10 +61,9 @@ private fun ItemView(
     manga: Manga,
     mainNav: NavHostController,
     state: LibraryViewState,
-    content: @Composable () -> Unit
+    viewModel: LibraryViewModel = hiltViewModel(),
+    content: @Composable () -> Unit,
 ) {
-    mainNav.currentBackStackEntryFlow
-    val viewModel: LibraryViewModel = viewModel()
     val primaryColor = MaterialTheme.colors.primary
     var backgroundColor by remember { mutableStateOf(primaryColor) }
     var expandedMenu by remember { mutableStateOf(false) }
@@ -177,13 +176,13 @@ fun LibraryLargeItemView(
     manga: Manga,
     cat: String,
     mainNav: NavHostController,
-    state: LibraryViewState
+    state: LibraryViewState,
+    viewModel: LibraryViewModel = hiltViewModel()
 ) {
     var logoManga by remember { mutableStateOf(ImageBitmap(60, 60)) }
     var countNotRead by remember { mutableStateOf(0) }
     val primaryColor = MaterialTheme.colors.primary
     var backgroundColor by remember { mutableStateOf(primaryColor) }
-    val viewModel: LibraryViewModel = viewModel()
 
     ItemView(manga, mainNav, state) {
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -256,13 +255,13 @@ fun LibrarySmallItemView(
     manga: Manga,
     cat: String,
     mainNav: NavHostController,
-    state: LibraryViewState
+    state: LibraryViewState,
+    viewModel: LibraryViewModel = hiltViewModel()
 ) {
     var logoManga by remember { mutableStateOf(ImageBitmap(60, 60)) }
     var countNotRead by remember { mutableStateOf(0) }
     val primaryColor = MaterialTheme.colors.primary
     var backgroundColor by remember { mutableStateOf(primaryColor) }
-    val viewModel: LibraryViewModel = viewModel()
 
     val heightSize = 70.dp
 

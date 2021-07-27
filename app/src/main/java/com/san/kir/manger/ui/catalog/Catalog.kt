@@ -70,7 +70,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.google.accompanist.insets.statusBarsPadding
@@ -94,14 +94,16 @@ val btnSizeAddUpdate = 30.dp
 @ExperimentalFoundationApi
 @ExperimentalCoroutinesApi
 @Composable
-fun CatalogScreen(nav: NavHostController) {
+fun CatalogScreen(
+    nav: NavHostController,
+    viewModel: CatalogViewModel = hiltViewModel()
+) {
     val vm = LocalBaseViewModel.current
     val site =
         ManageSites.CATALOG_SITES.first {
             it.name == nav.currentBackStackEntry?.arguments?.getString(Catalog().siteName)
         }
 
-    val viewModel: CatalogViewModel = viewModel(key = "catalog")
     val viewState by viewModel.state.collectAsState()
     val action by viewModel.action.collectAsState()
     viewModel.setSite(site.catalogName)
@@ -131,7 +133,7 @@ fun CatalogScreen(nav: NavHostController) {
             if (action) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             LazyColumn {
                 items(items = viewState.items, key = { item -> item.id }) { item ->
-                    ListItem(viewModel, item, item.name, item.statusEdition, nav)
+                    ListItem(item, item.name, item.statusEdition, nav)
                 }
             }
         }
@@ -318,6 +320,7 @@ private fun DrawerContent(viewState: CatalogViewState, viewModel: CatalogViewMod
             mutableStateOf(viewState.filters.map { it.selected })
         }
 
+        // TODO исправить некоректную работу фильтров
         // Списки фильтров
         Column(
             modifier = Modifier

@@ -1,16 +1,19 @@
 package com.san.kir.manger.ui.manga_screens
 
-import android.app.Application
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.LinearProgressIndicator
@@ -29,34 +32,39 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
+import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.san.kir.ankofork.startService
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.components.parsing.SiteCatalogAlternative
+import com.san.kir.manger.room.dao.CategoryDao
+import com.san.kir.manger.room.dao.MangaDao
+import com.san.kir.manger.room.dao.StatisticDao
 import com.san.kir.manger.room.entities.Category
 import com.san.kir.manger.room.entities.MangaColumn
 import com.san.kir.manger.room.entities.MangaStatistic
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.room.entities.toManga
-import com.san.kir.manger.room.getDatabase
 import com.san.kir.manger.services.MangaUpdaterService
 import com.san.kir.manger.ui.AddManga
 import com.san.kir.manger.ui.utils.DialogText
 import com.san.kir.manger.ui.utils.TopBarScreen
-import com.san.kir.manger.ui.utils.imePadding
+import com.san.kir.manger.ui.utils.getElement
 import com.san.kir.manger.utils.enums.DIR
 import com.san.kir.manger.utils.extensions.createDirs
 import com.san.kir.manger.utils.extensions.getFullPath
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.util.regex.Pattern
+import javax.inject.Inject
 
 @ExperimentalAnimationApi
 @Composable
@@ -71,17 +79,20 @@ fun AddMangaScreen(nav: NavHostController) {
 
     TopBarScreen(
         nav = nav,
-        modifier = Modifier.imePadding(),
         title = stringResource(id = R.string.add_manga_screen_title)
-    ) {
-        AddMangaContent(item, nav)
+    ) { contentPadding ->
+        AddMangaContent(item, nav, contentPadding)
     }
 }
 
 @ExperimentalAnimationApi
 @Composable
-private fun AddMangaContent(item: SiteCatalogElement, nav: NavHostController) {
-    val viewModel: AddMangaViewModel = viewModel()
+private fun AddMangaContent(
+    item: SiteCatalogElement,
+    nav: NavHostController,
+    contentPadding: PaddingValues,
+    viewModel: AddMangaViewModel = hiltViewModel()
+) {
 
     var categories by remember { mutableStateOf(emptyList<String>()) }
     var validate by remember { mutableStateOf(categories) }
@@ -101,8 +112,11 @@ private fun AddMangaContent(item: SiteCatalogElement, nav: NavHostController) {
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(start = 10.dp, end = 10.dp)
+            .padding(top = contentPadding.calculateTopPadding() + 16.dp)
+            .navigationBarsWithImePadding()
+            .verticalScroll(rememberScrollState())
     ) {
 
         TextField(
@@ -200,10 +214,10 @@ private fun validate(
 private fun ContinueProcess(
     item: SiteCatalogElement,
     category: String,
-    closeBtn: MutableState<Boolean>
+    closeBtn: MutableState<Boolean>,
+    viewModel: AddMangaViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val viewModel: AddMangaViewModel = viewModel()
 
     var action by remember { mutableStateOf(true) }
     var process by remember { mutableStateOf(0) }
@@ -244,6 +258,7 @@ private fun ContinueProcess(
                 .padding(vertical = 5.dp)
         )
 
+    // TODO проверить причину не загрузки лого
     LaunchedEffect(true) {
         kotlin.runCatching {
             if (!viewModel.hasCategory(category)) {
@@ -285,12 +300,15 @@ private object ProcessStatus {
     const val allComplete = 5
 }
 
-class AddMangaViewModel(app: Application) : AndroidViewModel(app) {
-    private val db = getDatabase(app)
-
+@HiltViewModel
+class AddMangaViewModel @Inject constructor(
+    private val categoryDao: CategoryDao,
+    private val mangaDao: MangaDao,
+    private val statisticDao: StatisticDao,
+) : ViewModel() {
     suspend fun getCategories() =
         withContext(Dispatchers.IO) {
-            db.categoryDao.getItems().map { it.name }
+            categoryDao.getItems().map { it.name }
         }
 
     suspend fun hasCategory(category: String): Boolean {
@@ -298,7 +316,7 @@ class AddMangaViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     suspend fun addCategory(category: String) {
-        db.categoryDao.insert(
+        categoryDao.insert(
             Category(
                 name = category,
                 order = getCategories().size + 1
@@ -321,8 +339,8 @@ class AddMangaViewModel(app: Application) : AndroidViewModel(app) {
 
         manga.isAlternativeSite = ManageSites.getSite(item.link) is SiteCatalogAlternative
 
-        db.mangaDao.insert(manga)
-        db.statisticDao.insert(MangaStatistic(manga = manga.unic))
+        mangaDao.insert(manga)
+        statisticDao.insert(MangaStatistic(manga = manga.unic))
 
         path to manga
     }

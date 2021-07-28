@@ -1,13 +1,15 @@
 package com.san.kir.manger.ui.global_search
 
 import android.app.Application
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.components.parsing.SiteCatalog
 import com.san.kir.manger.room.CatalogDb
+import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.entities.SiteCatalogElement
-import com.san.kir.manger.room.getDatabase
-import com.san.kir.manger.ui.AbstractMangaViewModel
+import com.san.kir.manger.ui.SuppotMangaViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,12 +19,14 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Collections.emptyList
+import javax.inject.Inject
 
-class GlobalSearchViewModel(app: Application) : AbstractMangaViewModel(app) {
+@HiltViewModel
+class GlobalSearchViewModel @Inject constructor(
+    private val application: Application,
+) : ViewModel() {
     private val searchText = MutableStateFlow("")
     private val backupCatalog = MutableStateFlow(emptyList<SiteCatalogElement>())
-
-    private val mangaDao by lazy { getDatabase(app).mangaDao }
 
     // Индикатор фоновой работы
     private val _action = MutableStateFlow(true)
@@ -73,7 +77,7 @@ class GlobalSearchViewModel(app: Application) : AbstractMangaViewModel(app) {
 
     private suspend fun getItems(siteCatalog: SiteCatalog): List<SiteCatalogElement> =
         withContext(Dispatchers.Default) {
-            val db = CatalogDb.getDatabase(getApplication(), siteCatalog.catalogName)
+            val db = CatalogDb.getDatabase(application, siteCatalog.catalogName)
             val items = db.dao.getItems()
             db.close()
             items
@@ -83,8 +87,9 @@ class GlobalSearchViewModel(app: Application) : AbstractMangaViewModel(app) {
         searchText.value = value
     }
 
-    data class GlobalSearchViewState(
-        val items: List<SiteCatalogElement> = emptyList(),
-        val searchText: String = ""
-    )
 }
+
+data class GlobalSearchViewState(
+    val items: List<SiteCatalogElement> = emptyList(),
+    val searchText: String = ""
+)

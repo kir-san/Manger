@@ -9,10 +9,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Icon
 import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
@@ -26,40 +24,53 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.rememberInsetsPaddingValues
+import com.google.accompanist.insets.statusBarsPadding
+import com.google.accompanist.insets.ui.Scaffold
+import com.google.accompanist.insets.ui.TopAppBar
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.utils.ListItem
 import com.san.kir.manger.ui.utils.MenuIcon
-import com.san.kir.manger.ui.utils.navigationBarsWithImePadding
-import com.san.kir.manger.ui.utils.statusBarsPadding
 
+// TODO добавить меню для исключения ненужных каталогов
 @ExperimentalAnimationApi
 @Composable
-fun GlobalSearchScreen(nav: NavHostController) {
-//    doFromSdk(Build.VERSION_CODES.LOLLIPOP) {
-//        window.statusBarColor = ContextCompat.getColor(this, R.color.transparent_dark)
-//        window.navigationBarColor = ContextCompat.getColor(this, R.color.transparent_dark2)
-//    }
-
-
-    val viewModel: GlobalSearchViewModel = viewModel()
+fun GlobalSearchScreen(
+    nav: NavHostController,
+    viewModel: GlobalSearchViewModel = hiltViewModel()
+) {
     val action by viewModel.action.collectAsState()
     val viewState by viewModel.state.collectAsState()
 
     Scaffold(
-        modifier = Modifier.navigationBarsWithImePadding(),
         topBar = { TopBar(nav, viewState, viewModel) },
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it)
+                .padding(top = it.calculateTopPadding())
         ) {
-            if (action) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-            LazyColumn {
+            if (action || viewState.items.isEmpty()) LinearProgressIndicator(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        rememberInsetsPaddingValues(
+                            insets = LocalWindowInsets.current.systemBars,
+                            applyTop = false, applyBottom = false,
+                        )
+                    )
+            )
+            LazyColumn(
+                contentPadding = rememberInsetsPaddingValues(
+                    insets = LocalWindowInsets.current.systemBars,
+                    applyTop = false,
+                )
+            ) {
                 items(items = viewState.items, key = { item -> item.id }) { item ->
-                    ListItem(viewModel,item, item.name, item.catalogName, nav)
+                    ListItem(item, item.name, item.catalogName, nav)
                 }
             }
         }
@@ -71,10 +82,9 @@ fun GlobalSearchScreen(nav: NavHostController) {
 @Composable
 private fun TopBar(
     nav: NavHostController,
-    viewState: GlobalSearchViewModel.GlobalSearchViewState,
-    viewModel: GlobalSearchViewModel
+    viewState: GlobalSearchViewState,
+    viewModel: GlobalSearchViewModel,
 ) {
-    var search by rememberSaveable { mutableStateOf(false) }
     var searchText by rememberSaveable { mutableStateOf("") }
 
     viewModel.setSearchText(searchText)
@@ -97,7 +107,12 @@ private fun TopBar(
 
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(0.dp)
+                .padding(0.dp),
+
+            contentPadding = rememberInsetsPaddingValues(
+                insets = LocalWindowInsets.current.systemBars,
+                applyBottom = false, applyTop = false
+            )
         )
 
         TextField(
@@ -113,7 +128,12 @@ private fun TopBar(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(0.dp)
+                .padding(
+                    rememberInsetsPaddingValues(
+                        insets = LocalWindowInsets.current.systemBars,
+                        applyBottom = false, applyTop = false
+                    )
+                )
         )
     }
 }

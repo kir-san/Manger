@@ -4,10 +4,12 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
@@ -29,8 +31,11 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.navigationBarsHeight
+import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.san.kir.ankofork.browse
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
@@ -42,18 +47,24 @@ import com.san.kir.manger.ui.utils.DialogText
 import com.san.kir.manger.ui.utils.LabelText
 import com.san.kir.manger.ui.utils.TopBarScreen
 import com.san.kir.manger.ui.utils.getElement
+import com.san.kir.manger.ui.utils.navigate
 import com.san.kir.manger.utils.extensions.listStrToString
 import com.san.kir.manger.utils.loadImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import com.san.kir.manger.ui.utils.navigate
 
 @ExperimentalAnimationApi
 @Composable
-fun MangaInfoScreen(nav: NavHostController) {
-    val item = remember { mutableStateOf(nav.getElement(MangaInfo) ?: SiteCatalogElement()) }
+fun MangaInfoScreen(
+    nav: NavHostController,
+    viewModel: SuppotMangaViewModel = hiltViewModel(),
+) {
+    val item = remember {
+        mutableStateOf(
+            nav.getElement(MangaInfoNavigationDestination) ?: SiteCatalogElement()
+        )
+    }
 
-    val viewModel: CatalogViewModel = viewModel()
     var isAdded by remember { mutableStateOf(false) }
 
     LaunchedEffect(item) {
@@ -76,16 +87,17 @@ fun MangaInfoScreen(nav: NavHostController) {
                 }
             }
         }
-    ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            MangaInfoContent(item)
-        }
+    ) { contentPadding ->
+        MangaInfoContent(item, contentPadding)
     }
 }
 
 @ExperimentalAnimationApi
 @Composable
-private fun MangaInfoContent(item: MutableState<SiteCatalogElement>) {
+private fun MangaInfoContent(
+    item: MutableState<SiteCatalogElement>,
+    contentPadding: PaddingValues
+) {
     val ctx = LocalContext.current
 
     var element by item
@@ -94,15 +106,23 @@ private fun MangaInfoContent(item: MutableState<SiteCatalogElement>) {
     var statusLogo by remember { mutableStateOf(StatusLogo.Standart) }
     var logo by remember { mutableStateOf(ImageBitmap(60, 60)) }
 
-
-    if (isUpdate) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
     Column(
         modifier = Modifier
+            .fillMaxSize()
+            .padding(
+                rememberInsetsPaddingValues(
+                    insets = LocalWindowInsets.current.systemBars,
+                    applyStart = true, applyEnd = true,
+                    applyBottom = false, applyTop = false,
+                    additionalTop = contentPadding.calculateTopPadding(),
+                    additionalStart = 16.dp, additionalEnd = 16.dp
+                )
+            )
             .verticalScroll(rememberScrollState())
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(16.dp)
     ) {
+        if (isUpdate) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+        Spacer(modifier = Modifier.height(16.dp))
+
         LabelText(idRes = R.string.manga_info_dialog_name)
         DialogText(text = element.name)
 
@@ -149,6 +169,8 @@ private fun MangaInfoContent(item: MutableState<SiteCatalogElement>) {
             )
         }
         AnimatedVisibility(visible = isShowLogo) { Image(logo, null) }
+
+        Spacer(modifier = Modifier.navigationBarsHeight(16.dp))
     }
 
     LaunchedEffect(true) {

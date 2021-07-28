@@ -31,10 +31,10 @@ object Versions {
     }
 
     object Compose {
-        const val COMPOSE = "1.0.0-rc01"
+        const val COMPOSE = "1.0.0-rc02"
         const val ACTIVITY_COMPOSE = "1.3.0-beta02"
-        const val NAVIGATION_COMPOSE = "2.4.0-alpha03"
-        const val HILT_NAVIGATION_COMPOSE = "1.0.0-alpha02"
+        const val NAVIGATION_COMPOSE = "2.4.0-alpha04"
+        const val HILT_NAVIGATION_COMPOSE = "1.0.0-alpha03"
     }
 
     object Google {

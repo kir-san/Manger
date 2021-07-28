@@ -67,16 +67,20 @@ object Dependencies {
 
     object Google {
         object Accompanist {
-            const val ACCOMPANIST_FLOWLAYOUT =
+            const val FLOWLAYOUT =
                 "com.google.accompanist:accompanist-flowlayout:${Versions.Google.ACCOMPANIST}"
-            const val ACCOMPANIST_PAGER =
+            const val PAGER =
                 "com.google.accompanist:accompanist-pager:${Versions.Google.ACCOMPANIST}"
-            const val ACCOMPANIST_PAGER_INDICATORS =
+            const val PAGER_INDICATORS =
                 "com.google.accompanist:accompanist-pager-indicators:${Versions.Google.ACCOMPANIST}"
-            const val ACCOMPANIST_PERMISSIONS =
+            const val PERMISSIONS =
                 "com.google.accompanist:accompanist-permissions:${Versions.Google.ACCOMPANIST}"
-            const val ACCOMPANIST_SYSTEMUICONTROLLER =
+            const val SYSTEMUICONTROLLER =
                 "com.google.accompanist:accompanist-systemuicontroller:${Versions.Google.ACCOMPANIST}"
+            const val INSETS =
+                "com.google.accompanist:accompanist-insets:${Versions.Google.ACCOMPANIST}"
+            const val INSETS_UI =
+                "com.google.accompanist:accompanist-insets-ui:${Versions.Google.ACCOMPANIST}"
         }
 
         object Hilt {

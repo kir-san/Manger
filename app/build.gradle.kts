@@ -132,11 +132,13 @@ dependencies {
     }
 
     Dependencies.Google.Accompanist.apply {
-        implementation(ACCOMPANIST_FLOWLAYOUT)
-        implementation(ACCOMPANIST_PAGER)
-        implementation(ACCOMPANIST_PAGER_INDICATORS)
-        implementation(ACCOMPANIST_PERMISSIONS)
-        implementation(ACCOMPANIST_SYSTEMUICONTROLLER)
+        implementation(FLOWLAYOUT)
+        implementation(PAGER)
+        implementation(PAGER_INDICATORS)
+        implementation(PERMISSIONS)
+        implementation(SYSTEMUICONTROLLER)
+        implementation(INSETS)
+        implementation(INSETS_UI)
     }
 
     Dependencies.AndroidX.Room.apply {

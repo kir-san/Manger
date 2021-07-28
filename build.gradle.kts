@@ -22,8 +22,6 @@ allprojects {
     repositories {
         mavenCentral()
 //        maven { url "https://jitpack.io" }
-        // Used for lib "dslpermission"
-        jcenter()
         google()
     }
 }

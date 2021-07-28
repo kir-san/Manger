@@ -52,7 +52,7 @@ import com.san.kir.manger.room.entities.MangaStatistic
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.room.entities.toManga
 import com.san.kir.manger.services.MangaUpdaterService
-import com.san.kir.manger.ui.AddManga
+import com.san.kir.manger.ui.AddMangaNavigationDestination
 import com.san.kir.manger.ui.utils.DialogText
 import com.san.kir.manger.ui.utils.TopBarScreen
 import com.san.kir.manger.ui.utils.getElement
@@ -71,9 +71,7 @@ import javax.inject.Inject
 fun AddMangaScreen(nav: NavHostController) {
     val item by remember {
         mutableStateOf(
-            nav.previousBackStackEntry?.arguments?.getParcelable(
-                AddManga.element
-            ) ?: SiteCatalogElement()
+            nav.getElement(AddMangaNavigationDestination) ?: SiteCatalogElement()
         )
     }
 

@@ -26,11 +26,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import com.san.kir.ankofork.browse
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.ui.AboutManga
+import com.san.kir.manger.ui.AboutMangaNavigationDestination
 import com.san.kir.manger.ui.EditManga
 import com.san.kir.manger.ui.utils.DialogText
 import com.san.kir.manger.ui.utils.ImageWithStatus
@@ -48,7 +47,7 @@ import com.san.kir.manger.ui.utils.navigate
 @ExperimentalAnimationApi
 @Composable
 fun AboutMangaScreen(nav: NavController) {
-    val item = remember { mutableStateOf(nav.getElement(AboutManga) ?: Manga()) }
+    val item = remember { mutableStateOf(nav.getElement(AboutMangaNavigationDestination) ?: Manga()) }
 
     TopBarScreen(
         nav = nav,

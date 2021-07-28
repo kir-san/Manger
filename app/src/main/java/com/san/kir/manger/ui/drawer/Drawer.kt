@@ -59,7 +59,7 @@ import com.san.kir.ankofork.dialogs.toast
 import com.san.kir.manger.BuildConfig
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.MainMenuItem
-import com.san.kir.manger.ui.Drawer
+import com.san.kir.manger.ui.DrawerNavigationDestination
 import com.san.kir.manger.view_models.DrawerViewModel
 import com.san.kir.manger.view_models.TitleViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -130,7 +130,7 @@ private fun TopBar(
     currentRoute: String?,
     mainNav: NavHostController,
 ) {
-    val vm = hiltViewModel<TitleViewModel>(mainNav.getBackStackEntry(Drawer.route))
+    val vm = hiltViewModel<TitleViewModel>(mainNav.getBackStackEntry(DrawerNavigationDestination.route))
     val state by vm.state.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 

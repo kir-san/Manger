@@ -92,7 +92,7 @@ fun MangerApp(close: () -> Unit) {
                     )
                 }
 
-                NavHost(navController = mainNavController, startDestination = Drawer.route) {
+                NavHost(navController = mainNavController, startDestination = DrawerNavigationDestination.route) {
                     MAIN_ALL_SCREENS.forEach { screen ->
                         composable(
                             route = screen.route,

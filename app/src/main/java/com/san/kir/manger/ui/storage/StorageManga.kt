@@ -40,7 +40,7 @@ import androidx.work.WorkManager
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.Storage
-import com.san.kir.manger.ui.StorageManga
+import com.san.kir.manger.ui.StorageMangaNavigationDestination
 import com.san.kir.manger.ui.utils.StorageProgressBar
 import com.san.kir.manger.ui.utils.TopBarScreen
 import com.san.kir.manger.ui.utils.getElement
@@ -49,12 +49,11 @@ import com.san.kir.manger.workmanager.AllChapterDelete
 import com.san.kir.manger.workmanager.ChapterDeleteWorker
 import com.san.kir.manger.workmanager.ReadChapterDelete
 import kotlinx.coroutines.flow.collect
-import java.util.concurrent.Executors
 
 @ExperimentalAnimationApi
 @Composable
 fun StorageMangaScreen(nav: NavHostController) {
-    val item by remember { mutableStateOf(nav.getElement(StorageManga) ?: Manga()) }
+    val item by remember { mutableStateOf(nav.getElement(StorageMangaNavigationDestination) ?: Manga()) }
 
     TopBarScreen(
         nav = nav,

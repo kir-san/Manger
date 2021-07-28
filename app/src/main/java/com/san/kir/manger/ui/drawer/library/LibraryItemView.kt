@@ -44,9 +44,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.ui.AboutManga
+import com.san.kir.manger.ui.AboutMangaNavigationDestination
 import com.san.kir.manger.ui.ListChapters
-import com.san.kir.manger.ui.StorageManga
+import com.san.kir.manger.ui.StorageMangaNavigationDestination
 import com.san.kir.manger.ui.utils.MenuText
 import com.san.kir.manger.ui.utils.navigate
 import com.san.kir.manger.ui.utils.squareMaxSize
@@ -88,7 +88,7 @@ private fun ItemView(
     DropdownMenu(expanded = expandedMenu, onDismissRequest = { expandedMenu = false }) {
         MenuText(id = R.string.library_popupmenu_about, onClick = {
             expandedMenu = false
-            mainNav.navigate(AboutManga, manga)
+            mainNav.navigate(AboutMangaNavigationDestination, manga)
         })
 
         MenuText(id = R.string.library_popupmenu_set_category, onClick = {
@@ -98,7 +98,7 @@ private fun ItemView(
 
         MenuText(id = R.string.library_popupmenu_storage, onClick = {
             expandedMenu = false
-            mainNav.navigate(StorageManga, manga)
+            mainNav.navigate(StorageMangaNavigationDestination, manga)
         })
 
         MenuText(id = R.string.library_popupmenu_delete, onClick = {

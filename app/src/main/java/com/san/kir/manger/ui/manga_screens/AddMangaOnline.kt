@@ -30,11 +30,11 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
+import com.google.accompanist.insets.imePadding
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
-import com.san.kir.manger.ui.AddManga
+import com.san.kir.manger.ui.AddMangaNavigationDestination
 import com.san.kir.manger.ui.utils.TopBarScreen
-import com.san.kir.manger.ui.utils.imePadding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -130,9 +130,9 @@ fun AddMangaOnlineScreen(nav: NavHostController) {
                         isEnable.value = false
                         ManageSites.getElementOnline(inputText)?.also { item ->
                             nav.currentBackStackEntry?.arguments?.putParcelable(
-                                AddManga.element, item
+                                AddMangaNavigationDestination.element, item
                             )
-                            nav.navigate(AddManga.route)
+                            nav.navigate(AddMangaNavigationDestination.route)
                         } ?: run {
                             isError = true
                             check = false

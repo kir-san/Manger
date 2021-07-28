@@ -38,7 +38,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.san.kir.manger.R
-import com.san.kir.manger.ui.EditCategory
+import com.san.kir.manger.ui.EditCategoryNavigationDestination
 import com.san.kir.manger.ui.utils.MenuIcon
 import com.san.kir.manger.ui.utils.RadioGroup
 import com.san.kir.manger.ui.utils.TopBarScreen
@@ -54,12 +54,10 @@ fun CategoryEditScreen(
 ) {
     val viewState by viewModel.state.collectAsState()
 
-    viewModel.setCategory(nav.getElement(EditCategory))
+    viewModel.setCategory(nav.getElement(EditCategoryNavigationDestination))
 
     var hasError by rememberSaveable { mutableStateOf(false) }
     var deleteDialog by rememberSaveable { mutableStateOf(false) }
-
-    val scrollState = rememberScrollState()
 
     TopBarScreen(
         nav = nav,
@@ -91,7 +89,7 @@ fun CategoryEditScreen(
                 .padding(16.dp)
                 .padding(top = contentPadding.calculateTopPadding() + 16.dp)
                 .navigationBarsWithImePadding()
-                .verticalScroll(scrollState)
+                .verticalScroll(rememberScrollState())
         ) {
             TextWithValidate(viewModel, hasError) { hasError = it }
 

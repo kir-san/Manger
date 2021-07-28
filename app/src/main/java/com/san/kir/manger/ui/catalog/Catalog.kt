@@ -77,7 +77,7 @@ import com.google.accompanist.insets.statusBarsPadding
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.components.parsing.SiteCatalog
-import com.san.kir.manger.ui.Catalog
+import com.san.kir.manger.ui.CatalogNavigationDestination
 import com.san.kir.manger.ui.LocalBaseViewModel
 import com.san.kir.manger.ui.catalog.CatalogViewModel.Companion.DATE
 import com.san.kir.manger.ui.catalog.CatalogViewModel.Companion.NAME
@@ -101,7 +101,7 @@ fun CatalogScreen(
     val vm = LocalBaseViewModel.current
     val site =
         ManageSites.CATALOG_SITES.first {
-            it.name == nav.currentBackStackEntry?.arguments?.getString(Catalog().siteName)
+            it.name == nav.currentBackStackEntry?.arguments?.getString(CatalogNavigationDestination().siteName)
         }
 
     val viewState by viewModel.state.collectAsState()

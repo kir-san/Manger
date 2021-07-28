@@ -43,8 +43,8 @@ import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Storage
-import com.san.kir.manger.ui.Drawer
-import com.san.kir.manger.ui.StorageManga
+import com.san.kir.manger.ui.DrawerNavigationDestination
+import com.san.kir.manger.ui.StorageMangaNavigationDestination
 import com.san.kir.manger.ui.utils.MenuText
 import com.san.kir.manger.ui.utils.StorageProgressBar
 import com.san.kir.manger.ui.utils.navigate
@@ -65,7 +65,7 @@ import kotlin.math.roundToInt
 fun StorageScreen(
     mainNav: NavHostController,
     contentPadding: PaddingValues,
-    vm: TitleViewModel = hiltViewModel(mainNav.getBackStackEntry(Drawer.route)),
+    vm: TitleViewModel = hiltViewModel(mainNav.getBackStackEntry(DrawerNavigationDestination.route)),
     viewModel: StorageViewModel = hiltViewModel()
 ) {
     val viewState by viewModel.state.collectAsState()
@@ -121,7 +121,7 @@ fun ItemView(
                 viewModel
                     .mangaFromPath(item.path)
                     ?.let {
-                        mainNav.navigate(StorageManga, it)
+                        mainNav.navigate(StorageMangaNavigationDestination, it)
                     } ?: run {
                     showMenu = true
                 }

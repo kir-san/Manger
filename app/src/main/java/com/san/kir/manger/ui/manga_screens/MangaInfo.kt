@@ -40,9 +40,9 @@ import com.san.kir.ankofork.browse
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.room.entities.SiteCatalogElement
-import com.san.kir.manger.ui.AddManga
-import com.san.kir.manger.ui.MangaInfo
-import com.san.kir.manger.ui.catalog.CatalogViewModel
+import com.san.kir.manger.ui.AddMangaNavigationDestination
+import com.san.kir.manger.ui.MangaInfoNavigationDestination
+import com.san.kir.manger.ui.SuppotMangaViewModel
 import com.san.kir.manger.ui.utils.DialogText
 import com.san.kir.manger.ui.utils.LabelText
 import com.san.kir.manger.ui.utils.TopBarScreen
@@ -78,7 +78,7 @@ fun MangaInfoScreen(
         title = stringResource(id = R.string.manga_info_dialog_title),
         actions = {
             AnimatedVisibility(visible = isAdded) {
-                IconButton(onClick = { nav.navigate(AddManga, item.value) }) {
+                IconButton(onClick = { nav.navigate(AddMangaNavigationDestination, item.value) }) {
                     Icon(
                         Icons.Default.Add,
                         contentDescription = "add manga",

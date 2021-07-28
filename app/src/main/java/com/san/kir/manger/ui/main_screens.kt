@@ -20,7 +20,7 @@ import com.san.kir.manger.ui.manga_screens.MangaInfoScreen
 import com.san.kir.manger.ui.storage.StorageMangaScreen
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-sealed class MainAppScreen(
+sealed class ApplicationNavigationDestination(
     val route: String,
     val element: String = "",
     val arguments: List<NamedNavArgument> = emptyList(),
@@ -34,18 +34,18 @@ sealed class MainAppScreen(
 @ExperimentalFoundationApi
 val MAIN_ALL_SCREENS =
     listOf(
-        Drawer,
-        CatalogsSearch,
-        Catalog(),
+        DrawerNavigationDestination,
+        CatalogsSearchNavigationDestination,
+        CatalogNavigationDestination(),
         ListChapters,
 
         AddMangaOnline,
-        MangaInfo,
-        AddManga,
-        AboutManga,
+        MangaInfoNavigationDestination,
+        AddMangaNavigationDestination,
+        AboutMangaNavigationDestination,
         EditManga,
-        StorageManga,
-        EditCategory
+        StorageMangaNavigationDestination,
+        EditCategoryNavigationDestination
     )
 
 // Переключение по всем пунктам меню
@@ -54,14 +54,14 @@ val MAIN_ALL_SCREENS =
 @ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 @ExperimentalFoundationApi
-object Drawer : MainAppScreen(
+object DrawerNavigationDestination : ApplicationNavigationDestination(
     route = "drawer",
     content = { nav, close -> DrawerScreen(close, nav) }
 )
 
 // Глобальный поиск манги по доступным сайтам
 @ExperimentalAnimationApi
-object CatalogsSearch : MainAppScreen(
+object CatalogsSearchNavigationDestination : ApplicationNavigationDestination(
     route = "global_search",
     content = { nav, _ -> GlobalSearchScreen(nav) }
 )
@@ -70,14 +70,14 @@ object CatalogsSearch : MainAppScreen(
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalCoroutinesApi
-class Catalog(val siteName: String = "siteName", val base: String = "catalog") : MainAppScreen(
+class CatalogNavigationDestination(val siteName: String = "siteName", val base: String = "catalog") : ApplicationNavigationDestination(
     route = "$base/{$siteName}",
     arguments = listOf(navArgument(siteName) { type = NavType.StringType }),
     content = { nav, _ -> CatalogScreen(nav) }
 )
 
 // Экран глав манги
-object ListChapters : MainAppScreen(
+object ListChapters : ApplicationNavigationDestination(
     route = "list_chapters",
     element = "list_chapter_element",
     content = { _, _ -> }
@@ -85,14 +85,14 @@ object ListChapters : MainAppScreen(
 
 // Добавление манги по ссылке
 @ExperimentalAnimationApi
-object AddMangaOnline : MainAppScreen(
+object AddMangaOnline : ApplicationNavigationDestination(
     route = "add_manga_online",
     content = { nav, _ -> AddMangaOnlineScreen(nav) }
 )
 
 // Просмотр всей информации на сайте о манге
 @ExperimentalAnimationApi
-object MangaInfo : MainAppScreen(
+object MangaInfoNavigationDestination : ApplicationNavigationDestination(
     route = "manga_info",
     element = "element",
     content = { nav, _ -> MangaInfoScreen(nav) }
@@ -100,7 +100,7 @@ object MangaInfo : MainAppScreen(
 
 // Просмотр информации о манге
 @ExperimentalAnimationApi
-object AboutManga : MainAppScreen(
+object AboutMangaNavigationDestination : ApplicationNavigationDestination(
     route = "about_manga",
     element = "manga_element",
     content = { nav, _ -> AboutMangaScreen(nav) }
@@ -108,14 +108,14 @@ object AboutManga : MainAppScreen(
 
 // Добавление манги с выбором категории
 @ExperimentalAnimationApi
-object AddManga : MainAppScreen(
+object AddMangaNavigationDestination : ApplicationNavigationDestination(
     route = "add_manga",
     element = "add_manga_element",
     content = { nav, _ -> AddMangaScreen(nav) }
 )
 
 // Редактирование манги
-object EditManga : MainAppScreen(
+object EditManga : ApplicationNavigationDestination(
     route = "edit_manga",
     element = "edit_manga_element",
     content = { nav, _ -> }
@@ -123,14 +123,15 @@ object EditManga : MainAppScreen(
 
 // Просмотр информации о занимаемом объеме
 @ExperimentalAnimationApi
-object StorageManga : MainAppScreen(
+object StorageMangaNavigationDestination : ApplicationNavigationDestination(
     route = "storage_manga",
     element = "storage_manga_element",
     content = { nav, _ -> StorageMangaScreen(nav) }
 )
 
+// Редактирование параметров категории
 @ExperimentalAnimationApi
-object EditCategory : MainAppScreen(
+object EditCategoryNavigationDestination : ApplicationNavigationDestination(
     route = "edit_category",
     element = "edit_category_element",
     content = { nav, _ -> CategoryEditScreen(nav) }

@@ -28,8 +28,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.san.kir.manger.room.entities.SiteCatalogElement
-import com.san.kir.manger.ui.AddManga
-import com.san.kir.manger.ui.MangaInfo
+import com.san.kir.manger.ui.AddMangaNavigationDestination
+import com.san.kir.manger.ui.MangaInfoNavigationDestination
 import com.san.kir.manger.ui.SuppotMangaViewModel
 import com.san.kir.manger.ui.catalog.btnSizeAddUpdate
 
@@ -57,8 +57,8 @@ fun ListItem(
             .height(60.dp)
             .padding(horizontal = 16.dp)
             .clickable {
-                nav.currentBackStackEntry?.arguments?.putParcelable(MangaInfo.element, item)
-                nav.navigate(MangaInfo.route)
+                nav.currentBackStackEntry?.arguments?.putParcelable(MangaInfoNavigationDestination.element, item)
+                nav.navigate(MangaInfoNavigationDestination.route)
             }
     ) {
         Column(
@@ -86,7 +86,7 @@ fun ListItem(
                     .size(btnSizeAddUpdate)
                     .align(Alignment.CenterVertically)
                     .clickable {
-                        nav.navigate(AddManga, item)
+                        nav.navigate(AddMangaNavigationDestination, item)
                     }
             )
 

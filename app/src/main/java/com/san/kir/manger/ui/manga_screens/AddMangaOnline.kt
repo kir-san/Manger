@@ -3,15 +3,11 @@ package com.san.kir.manger.ui.manga_screens
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.LinearProgressIndicator
@@ -34,14 +30,10 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.imePadding
-import com.google.accompanist.insets.navigationBarsHeight
-import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.ui.AddMangaNavigationDestination
-import com.san.kir.manger.ui.utils.TopBarScreen
+import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -51,28 +43,11 @@ import kotlinx.coroutines.withContext
 @ExperimentalAnimationApi
 @Composable
 fun AddMangaOnlineScreen(nav: NavHostController) {
-    TopBarScreen(
+    TopBarScreenWithInsets(
         nav = nav,
         title = stringResource(R.string.library_add_manga_title)
-    ) { contentPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    rememberInsetsPaddingValues(
-                        insets = LocalWindowInsets.current.systemBars,
-                        applyStart = true, applyEnd = true,
-                        applyBottom = false, applyTop = false,
-                        additionalTop = contentPadding.calculateTopPadding(),
-                        additionalBottom = contentPadding.calculateBottomPadding(),
-                        additionalStart = 16.dp, additionalEnd = 16.dp
-                    )
-                )
-                .imePadding()
-                .verticalScroll(rememberScrollState())
-        ) {
-            AddMangaOnlineContent(nav)
-        }
+    ) {
+        AddMangaOnlineContent(nav)
     }
 }
 
@@ -96,8 +71,6 @@ fun ColumnScope.AddMangaOnlineContent(
     var inputText by remember { mutableStateOf("") }
     var check by remember { mutableStateOf(false) }
     val isEnable = remember { mutableStateOf(false) }
-
-    Spacer(modifier = Modifier.height(16.dp))
 
     OutlinedTextField(
         value = inputText,
@@ -179,10 +152,6 @@ fun ColumnScope.AddMangaOnlineContent(
             Text(text = stringResource(id = R.string.library_add_manga_add_btn))
         }
     }
-    if (LocalWindowInsets.current.ime.bottom <= 0)
-        Spacer(modifier = Modifier.navigationBarsHeight(16.dp))
-    else
-        Spacer(modifier = Modifier.height(16.dp))
 }
 
 private fun validateUrl(

@@ -4,16 +4,12 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.LinearProgressIndicator
@@ -38,7 +34,6 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
-import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.san.kir.ankofork.startService
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
@@ -54,7 +49,7 @@ import com.san.kir.manger.room.entities.toManga
 import com.san.kir.manger.services.MangaUpdaterService
 import com.san.kir.manger.ui.AddMangaNavigationDestination
 import com.san.kir.manger.ui.utils.DialogText
-import com.san.kir.manger.ui.utils.TopBarScreen
+import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
 import com.san.kir.manger.ui.utils.getElement
 import com.san.kir.manger.utils.enums.DIR
 import com.san.kir.manger.utils.extensions.createDirs
@@ -75,20 +70,19 @@ fun AddMangaScreen(nav: NavHostController) {
         )
     }
 
-    TopBarScreen(
+    TopBarScreenWithInsets(
         nav = nav,
         title = stringResource(id = R.string.add_manga_screen_title)
-    ) { contentPadding ->
-        AddMangaContent(item, nav, contentPadding)
+    ) {
+        AddMangaContent(item, nav)
     }
 }
 
 @ExperimentalAnimationApi
 @Composable
-private fun AddMangaContent(
+private fun ColumnScope.AddMangaContent(
     item: SiteCatalogElement,
     nav: NavHostController,
-    contentPadding: PaddingValues,
     viewModel: AddMangaViewModel = hiltViewModel()
 ) {
 
@@ -108,81 +102,72 @@ private fun AddMangaContent(
     var continueBtn by remember { mutableStateOf(true) }
     val closeBtn = remember { mutableStateOf(false) }
 
-    Column(
+    TextField(
+        value = inputText,
+        onValueChange = {
+            inputText = it
+            validate = validate(it, categories, isEnable, isNew)
+        },
+        singleLine = true,
         modifier = Modifier
-            .fillMaxSize()
-            .padding(start = 10.dp, end = 10.dp)
-            .padding(top = contentPadding.calculateTopPadding() + 16.dp)
-            .navigationBarsWithImePadding()
-            .verticalScroll(rememberScrollState())
-    ) {
+            .fillMaxWidth()
+            .padding(top = 10.dp, bottom = 3.dp),
+        placeholder = { Text(stringResource(id = R.string.add_manga_screen_item)) },
+    )
 
-        TextField(
-            value = inputText,
-            onValueChange = {
-                inputText = it
-                validate = validate(it, categories, isEnable, isNew)
-            },
-            singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 10.dp, bottom = 3.dp),
-            placeholder = { Text(stringResource(id = R.string.add_manga_screen_item)) },
+    AnimatedVisibility(visible = isNew.value) {
+        Text(
+            stringResource(id = R.string.add_manga_screen_add_new),
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colors.error,
+            modifier = Modifier.fillMaxWidth()
         )
+    }
 
-        AnimatedVisibility(visible = isNew.value) {
-            Text(
-                stringResource(id = R.string.add_manga_screen_add_new),
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colors.error,
-                modifier = Modifier.fillMaxWidth()
-            )
+    FlowRow(
+        modifier = Modifier.fillMaxWidth(),
+        mainAxisAlignment = FlowMainAxisAlignment.End,
+        crossAxisAlignment = FlowCrossAxisAlignment.End,
+    ) {
+        validate.forEach { item ->
+            Card(modifier = Modifier
+                .padding(5.dp)
+                .clickable {
+                    inputText = item
+                    validate = validate(item, categories, isEnable, isNew)
+                }) {
+                Text(item, modifier = Modifier.padding(6.dp))
+            }
         }
+    }
 
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            mainAxisAlignment = FlowMainAxisAlignment.End,
-            crossAxisAlignment = FlowCrossAxisAlignment.End,
-        ) {
-            validate.forEach { item ->
-                Card(modifier = Modifier
-                    .padding(5.dp)
-                    .clickable {
-                        inputText = item
-                        validate = validate(item, categories, isEnable, isNew)
-                    }) {
-                    Text(item, modifier = Modifier.padding(6.dp))
-                }
+    if (continueProcess) ContinueProcess(item, inputText, closeBtn)
+
+    Spacer(modifier = Modifier.weight(1f, true))
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.End
+    ) {
+        AnimatedVisibility(visible = continueBtn) {
+            Button(onClick = {
+                continueProcess = true
+                continueBtn = false
+            }, enabled = isEnable.value) {
+                Text(text = stringResource(id = R.string.add_manga_screen_continue))
             }
         }
 
-        if (continueProcess) ContinueProcess(item, inputText, closeBtn)
-
-        Spacer(modifier = Modifier.weight(1f, true))
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.End
-        ) {
-            AnimatedVisibility(visible = continueBtn) {
-                Button(onClick = {
-                    continueProcess = true
-                    continueBtn = false
-                }, enabled = isEnable.value) {
-                    Text(text = stringResource(id = R.string.add_manga_screen_continue))
-                }
-            }
-
-            AnimatedVisibility(visible = closeBtn.value) {
-                Button(onClick = { nav.popBackStack() }) {
-                    Text(text = stringResource(id = R.string.add_manga_close_btn))
-                }
+        AnimatedVisibility(visible = closeBtn.value) {
+            Button(onClick = { nav.popBackStack() }) {
+                Text(text = stringResource(id = R.string.add_manga_close_btn))
             }
         }
     }
 }
+
 
 private fun validate(
     text: String,

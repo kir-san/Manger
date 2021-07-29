@@ -3,15 +3,7 @@ package com.san.kir.manger.ui.manga_screens
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
@@ -30,12 +22,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.navigationBarsHeight
-import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.san.kir.ankofork.browse
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
@@ -45,7 +33,7 @@ import com.san.kir.manger.ui.MangaInfoNavigationDestination
 import com.san.kir.manger.ui.SuppotMangaViewModel
 import com.san.kir.manger.ui.utils.DialogText
 import com.san.kir.manger.ui.utils.LabelText
-import com.san.kir.manger.ui.utils.TopBarScreen
+import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
 import com.san.kir.manger.ui.utils.getElement
 import com.san.kir.manger.ui.utils.navigate
 import com.san.kir.manger.utils.extensions.listStrToString
@@ -73,7 +61,7 @@ fun MangaInfoScreen(
         }
     }
 
-    TopBarScreen(
+    TopBarScreenWithInsets(
         nav = nav,
         title = stringResource(id = R.string.manga_info_dialog_title),
         actions = {
@@ -87,8 +75,8 @@ fun MangaInfoScreen(
                 }
             }
         }
-    ) { contentPadding ->
-        MangaInfoContent(item, contentPadding)
+    ) {
+        MangaInfoContent(item)
     }
 }
 
@@ -96,7 +84,6 @@ fun MangaInfoScreen(
 @Composable
 private fun MangaInfoContent(
     item: MutableState<SiteCatalogElement>,
-    contentPadding: PaddingValues
 ) {
     val ctx = LocalContext.current
 
@@ -106,72 +93,54 @@ private fun MangaInfoContent(
     var statusLogo by remember { mutableStateOf(StatusLogo.Standart) }
     var logo by remember { mutableStateOf(ImageBitmap(60, 60)) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(
-                rememberInsetsPaddingValues(
-                    insets = LocalWindowInsets.current.systemBars,
-                    applyStart = true, applyEnd = true,
-                    applyBottom = false, applyTop = false,
-                    additionalTop = contentPadding.calculateTopPadding(),
-                    additionalStart = 16.dp, additionalEnd = 16.dp
-                )
-            )
-            .verticalScroll(rememberScrollState())
-    ) {
-        if (isUpdate) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-        Spacer(modifier = Modifier.height(16.dp))
+    if (isUpdate) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
 
-        LabelText(idRes = R.string.manga_info_dialog_name)
-        DialogText(text = element.name)
+    LabelText(idRes = R.string.manga_info_dialog_name)
+    DialogText(text = element.name)
 
-        LabelText(idRes = R.string.manga_info_dialog_authors)
-        DialogText(text = listStrToString(element.authors))
+    LabelText(idRes = R.string.manga_info_dialog_authors)
+    DialogText(text = listStrToString(element.authors))
 
-        LabelText(idRes = R.string.manga_info_dialog_type)
-        DialogText(text = element.type)
+    LabelText(idRes = R.string.manga_info_dialog_type)
+    DialogText(text = element.type)
 
-        LabelText(idRes = R.string.manga_info_dialog_status_edition)
-        DialogText(text = element.statusEdition)
+    LabelText(idRes = R.string.manga_info_dialog_status_edition)
+    DialogText(text = element.statusEdition)
 
-        LabelText(idRes = R.string.manga_info_dialog_volume)
+    LabelText(idRes = R.string.manga_info_dialog_volume)
+    DialogText(
+        text = stringResource(
+            R.string.catalog_for_one_site_prefix_volume, element.volume
+        )
+    )
+
+    LabelText(idRes = R.string.manga_info_dialog_status_translate)
+    DialogText(text = element.statusTranslate)
+
+    LabelText(idRes = R.string.manga_info_dialog_genres)
+    DialogText(text = listStrToString(element.genres))
+
+    LabelText(idRes = R.string.manga_info_dialog_link)
+    DialogText(text = element.link, color = Color.Blue) {
+        ctx.browse(element.link)
+    }
+
+    LabelText(idRes = R.string.manga_info_dialog_about)
+    DialogText(text = element.about)
+
+    LabelText(idRes = R.string.manga_info_dialog_logo)
+    AnimatedVisibility(visible = !isShowLogo) {
         DialogText(
             text = stringResource(
-                R.string.catalog_for_one_site_prefix_volume, element.volume
+                id = when (statusLogo) {
+                    StatusLogo.Standart -> R.string.manga_info_dialog_loading
+                    StatusLogo.Error -> R.string.manga_info_dialog_loading_failed
+                    StatusLogo.None -> R.string.manga_info_dialog_not_image
+                }
             )
         )
-
-        LabelText(idRes = R.string.manga_info_dialog_status_translate)
-        DialogText(text = element.statusTranslate)
-
-        LabelText(idRes = R.string.manga_info_dialog_genres)
-        DialogText(text = listStrToString(element.genres))
-
-        LabelText(idRes = R.string.manga_info_dialog_link)
-        DialogText(text = element.link, color = Color.Blue) {
-            ctx.browse(element.link)
-        }
-
-        LabelText(idRes = R.string.manga_info_dialog_about)
-        DialogText(text = element.about)
-
-        LabelText(idRes = R.string.manga_info_dialog_logo)
-        AnimatedVisibility(visible = !isShowLogo) {
-            DialogText(
-                text = stringResource(
-                    id = when (statusLogo) {
-                        StatusLogo.Standart -> R.string.manga_info_dialog_loading
-                        StatusLogo.Error -> R.string.manga_info_dialog_loading_failed
-                        StatusLogo.None -> R.string.manga_info_dialog_not_image
-                    }
-                )
-            )
-        }
-        AnimatedVisibility(visible = isShowLogo) { Image(logo, null) }
-
-        Spacer(modifier = Modifier.navigationBarsHeight(16.dp))
     }
+    AnimatedVisibility(visible = isShowLogo) { Image(logo, null) }
 
     LaunchedEffect(true) {
         kotlin.runCatching {

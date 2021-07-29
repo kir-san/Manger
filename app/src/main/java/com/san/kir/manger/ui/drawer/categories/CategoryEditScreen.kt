@@ -4,15 +4,11 @@ import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Checkbox
 import androidx.compose.material.OutlinedButton
@@ -36,12 +32,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.EditCategoryNavigationDestination
 import com.san.kir.manger.ui.utils.MenuIcon
 import com.san.kir.manger.ui.utils.RadioGroup
-import com.san.kir.manger.ui.utils.TopBarScreen
+import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
 import com.san.kir.manger.ui.utils.getElement
 import com.san.kir.manger.utils.SortLibraryUtil
 import kotlin.math.roundToInt
@@ -59,7 +54,7 @@ fun CategoryEditScreen(
     var hasError by rememberSaveable { mutableStateOf(false) }
     var deleteDialog by rememberSaveable { mutableStateOf(false) }
 
-    TopBarScreen(
+    TopBarScreenWithInsets(
         nav = nav,
         title = stringResource(
             if (viewState.hasCreatedNew) R.string.category_dialog_title_create
@@ -82,45 +77,36 @@ fun CategoryEditScreen(
                 }
 
         }
-    ) { contentPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-                .padding(top = contentPadding.calculateTopPadding() + 16.dp)
-                .navigationBarsWithImePadding()
-                .verticalScroll(rememberScrollState())
-        ) {
-            TextWithValidate(viewModel, hasError) { hasError = it }
+    ) {
+        TextWithValidate(viewModel, hasError) { hasError = it }
 
-            SpacerMain()
+        SpacerMain()
 
-            ChangeSortType(viewModel)
+        ChangeSortType(viewModel)
 
-            SpacerMain()
+        SpacerMain()
 
-            ChangeReverseSort(viewModel = viewModel)
+        ChangeReverseSort(viewModel = viewModel)
 
-            SpacerMain()
+        SpacerMain()
 
-            ChangeVisibility(viewModel)
+        ChangeVisibility(viewModel)
 
-            SpacerMain()
+        SpacerMain()
 
-            Text(text = stringResource(id = R.string.category_dialog_portrait))
+        Text(text = stringResource(id = R.string.category_dialog_portrait))
 
-            SpacerChild()
+        SpacerChild()
 
-            ChangePortraitOptions(viewModel)
+        ChangePortraitOptions(viewModel)
 
-            SpacerMain()
+        SpacerMain()
 
-            Text(text = stringResource(id = R.string.category_dialog_landscape))
+        Text(text = stringResource(id = R.string.category_dialog_landscape))
 
-            SpacerChild()
+        SpacerChild()
 
-            ChangeLandscapeOptions(viewModel)
-        }
+        ChangeLandscapeOptions(viewModel)
     }
 
     if (deleteDialog) {

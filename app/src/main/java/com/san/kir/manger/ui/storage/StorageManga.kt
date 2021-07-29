@@ -6,17 +6,12 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
@@ -41,15 +36,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.asFlow
 import androidx.navigation.NavHostController
 import androidx.work.WorkManager
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.navigationBarsHeight
-import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.Storage
 import com.san.kir.manger.ui.StorageMangaNavigationDestination
 import com.san.kir.manger.ui.utils.StorageProgressBar
-import com.san.kir.manger.ui.utils.TopBarScreen
+import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
 import com.san.kir.manger.ui.utils.getElement
 import com.san.kir.manger.utils.extensions.format
 import com.san.kir.manger.workmanager.AllChapterDelete
@@ -66,26 +58,11 @@ fun StorageMangaScreen(nav: NavHostController) {
         )
     }
 
-    TopBarScreen(
+    TopBarScreenWithInsets(
         nav = nav,
         title = item.name,
-    ) { contentPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    rememberInsetsPaddingValues(
-                        insets = LocalWindowInsets.current.systemBars,
-                        applyStart = true, applyEnd = true,
-                        applyBottom = false, applyTop = false,
-                        additionalTop = contentPadding.calculateTopPadding(),
-                        additionalStart = 16.dp, additionalEnd = 16.dp
-                    )
-                )
-                .verticalScroll(rememberScrollState())
-        ) {
-            StorageMangaContent(item)
-        }
+    ) {
+        StorageMangaContent(item)
     }
 }
 
@@ -102,8 +79,6 @@ fun StorageMangaContent(
 
     var action by remember { mutableStateOf(false) }
     var dialog by remember { mutableStateOf<DeleteStatus>(DeleteStatus.None) }
-
-    Spacer(modifier = Modifier.height(16.dp))
 
     StorageProgressBar(
         modifier = Modifier
@@ -173,8 +148,6 @@ fun StorageMangaContent(
                 }
             }
         )
-
-    Spacer(modifier = Modifier.navigationBarsHeight(16.dp))
 
     LaunchedEffect(action) {
         WorkManager.getInstance(ctx)

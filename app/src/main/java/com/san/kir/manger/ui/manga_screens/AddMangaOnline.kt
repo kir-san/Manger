@@ -4,10 +4,14 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.LinearProgressIndicator
@@ -30,19 +34,54 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
+import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.imePadding
+import com.google.accompanist.insets.navigationBarsHeight
+import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.ui.AddMangaNavigationDestination
 import com.san.kir.manger.ui.utils.TopBarScreen
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+// TODO добавить вставку из буфера обмена одной кнопкой с выводом содержимого
 @ExperimentalAnimationApi
 @Composable
 fun AddMangaOnlineScreen(nav: NavHostController) {
-    val scope = rememberCoroutineScope()
+    TopBarScreen(
+        nav = nav,
+        title = stringResource(R.string.library_add_manga_title)
+    ) { contentPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    rememberInsetsPaddingValues(
+                        insets = LocalWindowInsets.current.systemBars,
+                        applyStart = true, applyEnd = true,
+                        applyBottom = false, applyTop = false,
+                        additionalTop = contentPadding.calculateTopPadding(),
+                        additionalBottom = contentPadding.calculateBottomPadding(),
+                        additionalStart = 16.dp, additionalEnd = 16.dp
+                    )
+                )
+                .imePadding()
+                .verticalScroll(rememberScrollState())
+        ) {
+            AddMangaOnlineContent(nav)
+        }
+    }
+}
+
+@ExperimentalAnimationApi
+@Composable
+fun ColumnScope.AddMangaOnlineContent(
+    nav: NavHostController,
+    scope: CoroutineScope = rememberCoroutineScope(),
+) {
     var siteNames = remember { emptyList<String>() }
     var validate by remember { mutableStateOf(emptyList<String>()) }
     var isError by remember { mutableStateOf(false) }
@@ -58,94 +97,92 @@ fun AddMangaOnlineScreen(nav: NavHostController) {
     var check by remember { mutableStateOf(false) }
     val isEnable = remember { mutableStateOf(false) }
 
-    TopBarScreen(
-        nav = nav,
-        modifier = Modifier.imePadding(),
-        title = stringResource(R.string.library_add_manga_title)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            OutlinedTextField(
-                value = inputText,
-                onValueChange = {
-                    inputText = it
-                    validate = validateUrl(it, siteNames, isEnable)
-                    isError = false
-                },
-                singleLine = true,
-                isError = isError,
-                placeholder = { Text(hint) },
-                modifier = Modifier.fillMaxWidth(),
-            )
-            if (check)
-                LinearProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(15.dp)
-                        .padding(vertical = 5.dp)
-                )
+    Spacer(modifier = Modifier.height(16.dp))
 
-            AnimatedVisibility(visible = isError) {
-                Text(validError, textAlign = TextAlign.Center, color = MaterialTheme.colors.error)
-            }
+    OutlinedTextField(
+        value = inputText,
+        onValueChange = {
+            inputText = it
+            validate = validateUrl(it, siteNames, isEnable)
+            isError = false
+        },
+        singleLine = true,
+        isError = isError,
+        placeholder = { Text(hint) },
+        modifier = Modifier.fillMaxWidth(),
+    )
+    if (check)
+        LinearProgressIndicator(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(15.dp)
+                .padding(vertical = 5.dp)
+        )
 
-            AnimatedVisibility(visible = validate.isNotEmpty()) {
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    mainAxisAlignment = FlowMainAxisAlignment.End,
-                    crossAxisAlignment = FlowCrossAxisAlignment.End,
-                ) {
-                    validate.forEach { item ->
-                        Card(modifier = Modifier
-                            .padding(5.dp)
-                            .clickable {
-                                inputText = item
-                                validate = validateUrl(item, siteNames, isEnable)
-                            }) {
-                            Text(
-                                item,
-                                color = MaterialTheme.colors.error,
-                                modifier = Modifier.padding(6.dp)
-                            )
-                        }
-                    }
-                }
-            }
+    AnimatedVisibility(visible = isError) {
+        Text(validError, textAlign = TextAlign.Center, color = MaterialTheme.colors.error)
+    }
 
-            Spacer(modifier = Modifier.weight(1f, true))
-
-            FlowRow(
-                modifier = Modifier
-                    .padding(top = 16.dp)
-                    .fillMaxWidth(),
-                mainAxisAlignment = FlowMainAxisAlignment.End,
-                crossAxisAlignment = FlowCrossAxisAlignment.End,
-            ) {
-                Button(onClick = { nav.popBackStack() }, modifier = Modifier.padding(end = 16.dp)) {
-                    Text(text = stringResource(id = R.string.library_add_manga_cancel_btn))
-                }
-
-                Button(onClick = {
-                    scope.launch(Dispatchers.Default) {
-                        check = true
-                        isEnable.value = false
-                        ManageSites.getElementOnline(inputText)?.also { item ->
-                            nav.currentBackStackEntry?.arguments?.putParcelable(
-                                AddMangaNavigationDestination.element, item
-                            )
-                            nav.navigate(AddMangaNavigationDestination.route)
-                        } ?: run {
-                            isError = true
-                            check = false
-                        }
-
-
-                    }
-                }, enabled = isEnable.value) {
-                    Text(text = stringResource(id = R.string.library_add_manga_add_btn))
+    AnimatedVisibility(visible = validate.isNotEmpty()) {
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            mainAxisAlignment = FlowMainAxisAlignment.End,
+            crossAxisAlignment = FlowCrossAxisAlignment.End,
+        ) {
+            validate.forEach { item ->
+                Card(modifier = Modifier
+                    .padding(5.dp)
+                    .clickable {
+                        inputText = item
+                        validate = validateUrl(item, siteNames, isEnable)
+                    }) {
+                    Text(
+                        item,
+                        color = MaterialTheme.colors.error,
+                        modifier = Modifier.padding(6.dp)
+                    )
                 }
             }
         }
     }
+
+    Spacer(modifier = Modifier.weight(1f, true))
+
+    FlowRow(
+        modifier = Modifier
+            .padding(top = 16.dp)
+            .fillMaxWidth(),
+        mainAxisAlignment = FlowMainAxisAlignment.End,
+        crossAxisAlignment = FlowCrossAxisAlignment.End,
+    ) {
+        Button(onClick = { nav.popBackStack() }, modifier = Modifier.padding(end = 16.dp)) {
+            Text(text = stringResource(id = R.string.library_add_manga_cancel_btn))
+        }
+
+        Button(onClick = {
+            scope.launch(Dispatchers.Default) {
+                check = true
+                isEnable.value = false
+                ManageSites.getElementOnline(inputText)?.also { item ->
+                    nav.currentBackStackEntry?.arguments?.putParcelable(
+                        AddMangaNavigationDestination.element, item
+                    )
+                    nav.navigate(AddMangaNavigationDestination.route)
+                } ?: run {
+                    isError = true
+                    check = false
+                }
+
+
+            }
+        }, enabled = isEnable.value) {
+            Text(text = stringResource(id = R.string.library_add_manga_add_btn))
+        }
+    }
+    if (LocalWindowInsets.current.ime.bottom <= 0)
+        Spacer(modifier = Modifier.navigationBarsHeight(16.dp))
+    else
+        Spacer(modifier = Modifier.height(16.dp))
 }
 
 private fun validateUrl(

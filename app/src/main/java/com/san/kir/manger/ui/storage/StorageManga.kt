@@ -1,5 +1,6 @@
 package com.san.kir.manger.ui.storage
 
+import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
@@ -7,12 +8,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
@@ -33,10 +37,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.asFlow
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.work.WorkManager
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.navigationBarsHeight
+import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.Storage
@@ -53,16 +60,29 @@ import kotlinx.coroutines.flow.collect
 @ExperimentalAnimationApi
 @Composable
 fun StorageMangaScreen(nav: NavHostController) {
-    val item by remember { mutableStateOf(nav.getElement(StorageMangaNavigationDestination) ?: Manga()) }
+    val item by remember {
+        mutableStateOf(
+            nav.getElement(StorageMangaNavigationDestination) ?: Manga()
+        )
+    }
 
     TopBarScreen(
         nav = nav,
         title = item.name,
-    ) {
+    ) { contentPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(
+                    rememberInsetsPaddingValues(
+                        insets = LocalWindowInsets.current.systemBars,
+                        applyStart = true, applyEnd = true,
+                        applyBottom = false, applyTop = false,
+                        additionalTop = contentPadding.calculateTopPadding(),
+                        additionalStart = 16.dp, additionalEnd = 16.dp
+                    )
+                )
+                .verticalScroll(rememberScrollState())
         ) {
             StorageMangaContent(item)
         }
@@ -71,15 +91,19 @@ fun StorageMangaScreen(nav: NavHostController) {
 
 @ExperimentalAnimationApi
 @Composable
-fun StorageMangaContent(manga: Manga) {
-    val viewModel: StorageViewModel = viewModel()
-    val ctx = LocalContext.current
+fun StorageMangaContent(
+    manga: Manga,
+    viewModel: StorageViewModel = hiltViewModel(),
+    ctx: Context = LocalContext.current
+) {
 
     val generalSize by viewModel.generalSize().collectAsState(initial = 0.0)
     val storageItem by viewModel.storageWhere(manga.path).collectAsState(initial = Storage())
 
     var action by remember { mutableStateOf(false) }
     var dialog by remember { mutableStateOf<DeleteStatus>(DeleteStatus.None) }
+
+    Spacer(modifier = Modifier.height(16.dp))
 
     StorageProgressBar(
         modifier = Modifier
@@ -150,6 +174,8 @@ fun StorageMangaContent(manga: Manga) {
             }
         )
 
+    Spacer(modifier = Modifier.navigationBarsHeight(16.dp))
+
     LaunchedEffect(action) {
         WorkManager.getInstance(ctx)
             .getWorkInfosByTagLiveData(ChapterDeleteWorker.tag)
@@ -160,8 +186,6 @@ fun StorageMangaContent(manga: Manga) {
                 }
             }
     }
-
-
 }
 
 private val Modifier.sizeAndPadding: Modifier

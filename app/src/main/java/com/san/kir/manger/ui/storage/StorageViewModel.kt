@@ -1,23 +1,28 @@
 package com.san.kir.manger.ui.storage
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import com.san.kir.manger.room.dao.ChapterDao
+import com.san.kir.manger.room.dao.MangaDao
+import com.san.kir.manger.room.dao.StorageDao
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.Storage
-import com.san.kir.manger.room.getDatabase
 import com.san.kir.manger.utils.extensions.getFullPath
 import com.san.kir.manger.utils.extensions.lengthMb
 import com.san.kir.manger.utils.extensions.shortPath
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import java.io.File
+import javax.inject.Inject
 
-class StorageViewModel(app: Application) : AndroidViewModel(app) {
-    private val storageDao = getDatabase(app).storageDao
-    private val mangaDao = getDatabase(app).mangaDao
-    private val chapterDao = getDatabase(app).chapterDao
+@HiltViewModel
+class StorageViewModel @Inject constructor(
+    private val storageDao: StorageDao,
+    private val mangaDao: MangaDao,
+    private val chapterDao: ChapterDao,
+) : ViewModel() {
 
     fun generalSize(): Flow<Double> = storageDao.flowItems()
         .map { list -> list.sumOf { item -> item.sizeFull } }

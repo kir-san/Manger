@@ -1,11 +1,12 @@
 package com.san.kir.manger.ui.manga_screens
 
+import android.content.Context
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
@@ -26,6 +27,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.navigationBarsHeight
+import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.san.kir.ankofork.browse
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Manga
@@ -36,18 +40,19 @@ import com.san.kir.manger.ui.utils.ImageWithStatus
 import com.san.kir.manger.ui.utils.LabelText
 import com.san.kir.manger.ui.utils.TopBarScreen
 import com.san.kir.manger.ui.utils.getElement
+import com.san.kir.manger.ui.utils.navigate
 import com.san.kir.manger.utils.extensions.formatDouble
 import com.san.kir.manger.utils.extensions.getFullPath
 import com.san.kir.manger.utils.extensions.lengthMb
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import com.san.kir.manger.ui.utils.navigate
 
 
 @ExperimentalAnimationApi
 @Composable
 fun AboutMangaScreen(nav: NavController) {
-    val item = remember { mutableStateOf(nav.getElement(AboutMangaNavigationDestination) ?: Manga()) }
+    val item =
+        remember { mutableStateOf(nav.getElement(AboutMangaNavigationDestination) ?: Manga()) }
 
     TopBarScreen(
         nav = nav,
@@ -62,8 +67,21 @@ fun AboutMangaScreen(nav: NavController) {
             }
         }
 
-    ) {
-        Column(modifier = Modifier.fillMaxSize()) {
+    ) { contentPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    rememberInsetsPaddingValues(
+                        insets = LocalWindowInsets.current.systemBars,
+                        applyStart = true, applyEnd = true,
+                        applyBottom = false, applyTop = false,
+                        additionalTop = contentPadding.calculateTopPadding(),
+                        additionalStart = 16.dp, additionalEnd = 16.dp
+                    )
+                )
+                .verticalScroll(rememberScrollState())
+        ) {
             AboutMangaContent(item)
         }
     }
@@ -71,59 +89,50 @@ fun AboutMangaScreen(nav: NavController) {
 
 @ExperimentalAnimationApi
 @Composable
-private fun AboutMangaContent(item: MutableState<Manga>) {
-    val ctx = LocalContext.current
-
+private fun AboutMangaContent(
+    item: MutableState<Manga>,
+    ctx: Context = LocalContext.current
+) {
     val manga by item
 
     val calculateString = stringResource(id = R.string.about_manga_dialog_calculate)
     var size by remember { mutableStateOf(calculateString) }
 
+    Spacer(modifier = Modifier.height(16.dp))
 
+    LabelText(idRes = R.string.about_manga_dialog_name)
+    DialogText(text = manga.name)
 
-    Column(
-        modifier = Modifier
-            .verticalScroll(rememberScrollState())
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(16.dp)
-    ) {
-        LabelText(idRes = R.string.about_manga_dialog_name)
-        DialogText(text = manga.name)
+    LabelText(idRes = R.string.about_manga_dialog_category)
+    DialogText(text = manga.categories)
 
-        LabelText(idRes = R.string.about_manga_dialog_category)
-        DialogText(text = manga.categories)
+    LabelText(idRes = R.string.about_manga_dialog_authors)
+    DialogText(text = manga.authors)
 
-        LabelText(idRes = R.string.about_manga_dialog_authors)
-        DialogText(text = manga.authors)
+    LabelText(idRes = R.string.about_manga_dialog_status_edition)
+    DialogText(text = manga.status)
 
-        LabelText(idRes = R.string.about_manga_dialog_status_edition)
-        DialogText(text = manga.status)
+    LabelText(idRes = R.string.about_manga_dialog_genres)
+    DialogText(text = manga.genres)
 
-        LabelText(idRes = R.string.about_manga_dialog_genres)
-        DialogText(text = manga.genres)
+    LabelText(idRes = R.string.about_manga_dialog_storage)
+    DialogText(text = manga.path)
 
-        LabelText(idRes = R.string.about_manga_dialog_storage)
-        DialogText(text = manga.path)
+    LabelText(idRes = R.string.about_manga_dialog_volume)
+    DialogText(text = size)
 
-        LabelText(idRes = R.string.about_manga_dialog_volume)
-        DialogText(text = size)
+    LabelText(idRes = R.string.about_manga_dialog_link)
+    DialogText(
+        text = manga.host + manga.shortLink,
+        color = Color.Blue,
+        onClick = { ctx.browse(manga.host + manga.shortLink) }
+    )
 
-        LabelText(idRes = R.string.about_manga_dialog_link)
-        DialogText(
-            text = manga.host + manga.shortLink,
-            color = Color.Blue,
-            onClick = { ctx.browse(manga.host + manga.shortLink) }
-        )
+    LabelText(idRes = R.string.about_manga_dialog_about)
+    DialogText(manga.about)
 
-
-        LabelText(idRes = R.string.about_manga_dialog_about)
-        DialogText(manga.about)
-
-        LabelText(idRes = R.string.about_manga_dialog_logo)
-        ImageWithStatus(manga.logo)
-
-    }
+    LabelText(idRes = R.string.about_manga_dialog_logo)
+    ImageWithStatus(manga.logo)
 
     LaunchedEffect(item) {
         size = withContext(Dispatchers.Default) {
@@ -133,4 +142,6 @@ private fun AboutMangaContent(item: MutableState<Manga>) {
             )
         }
     }
+
+    Spacer(modifier = Modifier.navigationBarsHeight(16.dp))
 }

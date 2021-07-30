@@ -44,6 +44,8 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.san.kir.manger.R
 import com.san.kir.manger.data.datastore.FirstLaunchRepository
 import com.san.kir.manger.data.datastore.firstLaunchStore
+import com.san.kir.manger.ui.application_navigation.DrawerNavigationDestination
+import com.san.kir.manger.ui.application_navigation.MAIN_ALL_SCREENS
 import com.san.kir.manger.utils.enums.DIR
 import com.san.kir.manger.utils.extensions.createDirs
 import com.san.kir.manger.utils.extensions.getFullPath

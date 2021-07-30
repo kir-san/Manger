@@ -3,7 +3,7 @@ package com.san.kir.manger.ui.utils
 import android.os.Parcelable
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController
-import com.san.kir.manger.ui.ApplicationNavigationDestination
+import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination
 
 fun NavController.navigate(screen: ApplicationNavigationDestination, value: Parcelable? = null) {
     value?.let {

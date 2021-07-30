@@ -28,10 +28,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.san.kir.manger.room.entities.SiteCatalogElement
-import com.san.kir.manger.ui.AddMangaNavigationDestination
-import com.san.kir.manger.ui.MangaInfoNavigationDestination
+import com.san.kir.manger.ui.application_navigation.AddMangaNavigationDestination
+import com.san.kir.manger.ui.application_navigation.MangaInfoNavigationDestination
 import com.san.kir.manger.ui.SuppotMangaViewModel
-import com.san.kir.manger.ui.catalog.btnSizeAddUpdate
+import com.san.kir.manger.ui.application_navigation.catalog.btnSizeAddUpdate
 
 @ExperimentalAnimationApi
 @Composable

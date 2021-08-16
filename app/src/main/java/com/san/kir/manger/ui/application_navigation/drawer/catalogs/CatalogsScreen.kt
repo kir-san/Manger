@@ -1,8 +1,6 @@
 package com.san.kir.manger.ui.application_navigation.drawer.catalogs
 
 import android.graphics.BitmapFactory
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -30,7 +28,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -42,7 +39,6 @@ import androidx.navigation.NavHostController
 import com.github.kittinunf.result.coroutines.failure
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
-import com.google.accompanist.pager.ExperimentalPagerApi
 import com.san.kir.ankofork.startService
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
@@ -56,14 +52,8 @@ import com.san.kir.manger.ui.utils.MenuText
 import com.san.kir.manger.utils.loadImage
 import com.san.kir.manger.view_models.TitleViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.withContext
 
-@ExperimentalPagerApi
-@ExperimentalComposeUiApi
-@ExperimentalAnimationApi
-@ExperimentalFoundationApi
-@ExperimentalCoroutinesApi
 @Composable
 fun CatalogsScreen(
     mainNav: NavHostController,
@@ -173,7 +163,6 @@ fun ItemView(item: Site, viewModel: CatalogsViewModel = hiltViewModel(), onClick
 
 }
 
-@ExperimentalAnimationApi
 @Composable
 fun CatalogsActions(mainNav: NavHostController, viewModel: CatalogsViewModel = hiltViewModel()) {
     val context = LocalContext.current

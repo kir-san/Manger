@@ -1,7 +1,5 @@
 package com.san.kir.manger.ui.application_navigation.drawer.library
 
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +22,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -46,17 +43,12 @@ import com.san.kir.manger.ui.application_navigation.DrawerNavigationDestination
 import com.san.kir.manger.ui.application_navigation.drawer.CategoriesNavigationDestination
 import com.san.kir.manger.view_models.TitleViewModel
 import com.san.kir.manger.workmanager.MangaDeleteWorker
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 var currentCategoryWithMangas = CategoryWithMangas()
 
-@ExperimentalComposeUiApi
-@ExperimentalPagerApi
-@ExperimentalAnimationApi
-@ExperimentalFoundationApi
-@ExperimentalCoroutinesApi
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun LibraryScreen(
     nav: NavController,

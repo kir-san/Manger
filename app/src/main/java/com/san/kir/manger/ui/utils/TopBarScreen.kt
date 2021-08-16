@@ -42,7 +42,7 @@ fun TopBarScreenWithInsets(
                  TopAppBar(
                      title = { Text(text = title) },
                      navigationIcon = {
-                         IconButton(onClick = { nav?.popBackStack() }) {
+                         IconButton(onClick = { nav?.navigateUp() }) {
                              Icon(Icons.Default.ArrowBack, "")
                          }
                      },

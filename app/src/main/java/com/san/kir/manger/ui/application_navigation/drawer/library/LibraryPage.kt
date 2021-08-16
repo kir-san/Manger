@@ -2,7 +2,6 @@ package com.san.kir.manger.ui.application_navigation.drawer.library
 
 import android.content.res.Configuration
 import androidx.annotation.StringRes
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,7 +16,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
@@ -27,17 +25,10 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
-import com.google.accompanist.pager.ExperimentalPagerApi
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.CategoryWithMangas
 import com.san.kir.manger.ui.application_navigation.drawer.CatalogsNavigationDestination
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-@ExperimentalComposeUiApi
-@ExperimentalPagerApi
-@ExperimentalAnimationApi
-@ExperimentalCoroutinesApi
-@ExperimentalFoundationApi
 @Composable
 fun LibraryPage(
     index: Int,
@@ -64,11 +55,6 @@ fun LibraryPage(
     }
 }
 
-@ExperimentalPagerApi
-@ExperimentalComposeUiApi
-@ExperimentalAnimationApi
-@ExperimentalCoroutinesApi
-@ExperimentalFoundationApi
 @Composable
 private fun EmptyView(nav: NavController) {
     Column(
@@ -95,8 +81,7 @@ private fun EmptyView(nav: NavController) {
     }
 }
 
-@ExperimentalAnimationApi
-@ExperimentalFoundationApi
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PageView(
     item: CategoryWithMangas,

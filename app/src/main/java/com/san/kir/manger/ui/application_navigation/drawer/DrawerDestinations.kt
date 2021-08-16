@@ -1,8 +1,5 @@
 package com.san.kir.manger.ui.application_navigation.drawer
 
-import android.annotation.SuppressLint
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
@@ -18,12 +15,10 @@ import androidx.compose.material.icons.filled.Storage
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.google.accompanist.pager.ExperimentalPagerApi
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.MainMenuItem
 import com.san.kir.manger.ui.application_navigation.drawer.catalogs.CatalogsActions
@@ -36,7 +31,6 @@ import com.san.kir.manger.ui.application_navigation.drawer.storage.StorageScreen
 import com.san.kir.manger.utils.enums.MainMenuType
 import com.san.kir.manger.utils.extensions.formatDouble
 import com.san.kir.manger.view_models.DrawerViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 sealed class DrawerNavigationDestination(
     val route: String,
@@ -50,11 +44,6 @@ sealed class DrawerNavigationDestination(
     ) -> Unit
 )
 
-@ExperimentalComposeUiApi
-@ExperimentalPagerApi
-@ExperimentalAnimationApi
-@ExperimentalCoroutinesApi
-@ExperimentalFoundationApi
 val ALL_SCREENS =
     listOf(
         LibraryNavigationDestination,
@@ -68,27 +57,11 @@ val ALL_SCREENS =
         Schedule
     )
 
-@ExperimentalComposeUiApi
-@ExperimentalPagerApi
-@ExperimentalAnimationApi
-@ExperimentalCoroutinesApi
-@ExperimentalFoundationApi
 val MAP_SCREENS_TYPE = ALL_SCREENS.associateBy { it.type }
 
-@ExperimentalComposeUiApi
-@ExperimentalPagerApi
-@ExperimentalAnimationApi
-@ExperimentalCoroutinesApi
-@ExperimentalFoundationApi
 val MAP_SCREENS_ROUTE = ALL_SCREENS.associateBy { it.route }
 
 
-@ExperimentalComposeUiApi
-@ExperimentalPagerApi
-@ExperimentalAnimationApi
-@SuppressLint("RestrictedApi")
-@ExperimentalCoroutinesApi
-@ExperimentalFoundationApi
 object LibraryNavigationDestination : DrawerNavigationDestination(
     route = "library",
     type = MainMenuType.Library,
@@ -97,11 +70,6 @@ object LibraryNavigationDestination : DrawerNavigationDestination(
     actions = { mainNav -> LibraryActions(mainNav) }
 )
 
-@ExperimentalCoroutinesApi
-@ExperimentalPagerApi
-@ExperimentalFoundationApi
-@ExperimentalComposeUiApi
-@ExperimentalAnimationApi
 object StorageNavigationDestination : DrawerNavigationDestination(
     route = "storage",
     type = MainMenuType.Storage,
@@ -109,11 +77,6 @@ object StorageNavigationDestination : DrawerNavigationDestination(
     content = { _, mainNav, cp -> StorageScreen(mainNav, cp) }
 )
 
-@ExperimentalCoroutinesApi
-@ExperimentalComposeUiApi
-@ExperimentalPagerApi
-@ExperimentalFoundationApi
-@ExperimentalAnimationApi
 object CategoriesNavigationDestination : DrawerNavigationDestination(
     route = "categories",
     type = MainMenuType.Category,
@@ -122,11 +85,6 @@ object CategoriesNavigationDestination : DrawerNavigationDestination(
     actions = { mainNav -> CategoriesActions(mainNav) }
 )
 
-@ExperimentalComposeUiApi
-@ExperimentalPagerApi
-@ExperimentalAnimationApi
-@ExperimentalFoundationApi
-@ExperimentalCoroutinesApi
 object CatalogsNavigationDestination : DrawerNavigationDestination(
     route = "catalogs",
     type = MainMenuType.Catalogs,
@@ -135,11 +93,6 @@ object CatalogsNavigationDestination : DrawerNavigationDestination(
     actions = { CatalogsActions(it) }
 )
 
-@ExperimentalComposeUiApi
-@ExperimentalPagerApi
-@ExperimentalAnimationApi
-@ExperimentalFoundationApi
-@ExperimentalCoroutinesApi
 object Downloader : DrawerNavigationDestination(
     route = "downloader",
     type = MainMenuType.Downloader,
@@ -147,11 +100,6 @@ object Downloader : DrawerNavigationDestination(
     content = { _, _, _ -> }
 )
 
-@ExperimentalComposeUiApi
-@ExperimentalPagerApi
-@ExperimentalAnimationApi
-@ExperimentalFoundationApi
-@ExperimentalCoroutinesApi
 object Latest : DrawerNavigationDestination(
     route = "latest",
     type = MainMenuType.Latest,
@@ -159,11 +107,6 @@ object Latest : DrawerNavigationDestination(
     content = { _, _, _ -> }
 )
 
-@ExperimentalComposeUiApi
-@ExperimentalPagerApi
-@ExperimentalAnimationApi
-@ExperimentalFoundationApi
-@ExperimentalCoroutinesApi
 object Settings : DrawerNavigationDestination(
     route = "settings",
     type = MainMenuType.Settings,
@@ -171,11 +114,6 @@ object Settings : DrawerNavigationDestination(
     content = { _, _, _ -> }
 )
 
-@ExperimentalComposeUiApi
-@ExperimentalPagerApi
-@ExperimentalAnimationApi
-@ExperimentalFoundationApi
-@ExperimentalCoroutinesApi
 object Statistic : DrawerNavigationDestination(
     route = "statistic",
     type = MainMenuType.Statistic,
@@ -183,11 +121,6 @@ object Statistic : DrawerNavigationDestination(
     content = { _, _, _ -> }
 )
 
-@ExperimentalComposeUiApi
-@ExperimentalPagerApi
-@ExperimentalAnimationApi
-@ExperimentalFoundationApi
-@ExperimentalCoroutinesApi
 object Schedule : DrawerNavigationDestination(
     route = "schedule",
     type = MainMenuType.Schedule,

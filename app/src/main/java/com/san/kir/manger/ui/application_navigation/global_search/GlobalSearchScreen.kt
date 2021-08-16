@@ -1,6 +1,5 @@
 package com.san.kir.manger.ui.application_navigation.global_search
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,7 +35,6 @@ import com.san.kir.manger.ui.utils.ListItem
 import com.san.kir.manger.ui.utils.MenuIcon
 
 // TODO добавить меню для исключения ненужных каталогов
-@ExperimentalAnimationApi
 @Composable
 fun GlobalSearchScreen(
     nav: NavHostController,
@@ -78,7 +76,6 @@ fun GlobalSearchScreen(
 }
 
 // Верхняя панель
-@ExperimentalAnimationApi
 @Composable
 private fun TopBar(
     nav: NavHostController,

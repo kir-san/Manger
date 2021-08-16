@@ -4,7 +4,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -77,22 +76,18 @@ import com.google.accompanist.insets.statusBarsPadding
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.components.parsing.SiteCatalog
-import com.san.kir.manger.ui.application_navigation.CatalogNavigationDestination
 import com.san.kir.manger.ui.LocalBaseViewModel
+import com.san.kir.manger.ui.application_navigation.CatalogNavigationDestination
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogViewModel.Companion.DATE
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogViewModel.Companion.NAME
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogViewModel.Companion.POP
 import com.san.kir.manger.ui.utils.ListItem
 import com.san.kir.manger.ui.utils.MenuIcon
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import java.net.URLDecoder
 
 val btnSizeAddUpdate = 30.dp
 
-@ExperimentalAnimationApi
-@ExperimentalFoundationApi
-@ExperimentalCoroutinesApi
 @Composable
 fun CatalogScreen(
     nav: NavHostController,
@@ -250,7 +245,7 @@ private fun BottomBar(
 }
 
 // Верхняя панель
-@ExperimentalAnimationApi
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun TopBar(
     scaffoldState: ScaffoldState,

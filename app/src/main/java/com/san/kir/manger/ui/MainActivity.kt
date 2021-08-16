@@ -20,12 +20,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.components.ActivityComponent
 
 
-@ExperimentalPermissionsApi
-@ExperimentalPagerApi
-@ExperimentalFoundationApi
-@ExperimentalCoroutinesApi
-@ExperimentalComposeUiApi
-@ExperimentalAnimationApi
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 

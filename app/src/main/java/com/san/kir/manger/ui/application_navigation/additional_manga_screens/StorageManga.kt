@@ -49,7 +49,6 @@ import com.san.kir.manger.workmanager.ChapterDeleteWorker
 import com.san.kir.manger.workmanager.ReadChapterDelete
 import kotlinx.coroutines.flow.collect
 
-@ExperimentalAnimationApi
 @Composable
 fun StorageMangaScreen(nav: NavHostController) {
     val item by remember {
@@ -66,7 +65,7 @@ fun StorageMangaScreen(nav: NavHostController) {
     }
 }
 
-@ExperimentalAnimationApi
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun StorageMangaContent(
     manga: Manga,
@@ -117,7 +116,7 @@ fun StorageMangaContent(
         Row(verticalAlignment = Alignment.CenterVertically) {
             CircularProgressIndicator()
             Text(
-                text = stringResource(id = R.string.library_popupmenu_delete_read_chapters_deleting),
+                text = stringResource(id = R.string.library_popupmenu_delete_read_chapters_delete),
                 modifier = Modifier.padding(16.dp)
             )
         }

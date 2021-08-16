@@ -61,7 +61,6 @@ import kotlinx.coroutines.withContext
 import java.util.regex.Pattern
 import javax.inject.Inject
 
-@ExperimentalAnimationApi
 @Composable
 fun AddMangaScreen(nav: NavHostController) {
     val item by remember {
@@ -78,7 +77,7 @@ fun AddMangaScreen(nav: NavHostController) {
     }
 }
 
-@ExperimentalAnimationApi
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun ColumnScope.AddMangaContent(
     item: SiteCatalogElement,
@@ -192,7 +191,7 @@ private fun validate(
     }
 }
 
-@ExperimentalAnimationApi
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun ContinueProcess(
     item: SiteCatalogElement,

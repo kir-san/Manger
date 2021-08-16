@@ -1,6 +1,5 @@
 package com.san.kir.manger.ui.utils
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -28,12 +27,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.san.kir.manger.room.entities.SiteCatalogElement
+import com.san.kir.manger.ui.SuppotMangaViewModel
 import com.san.kir.manger.ui.application_navigation.AddMangaNavigationDestination
 import com.san.kir.manger.ui.application_navigation.MangaInfoNavigationDestination
-import com.san.kir.manger.ui.SuppotMangaViewModel
 import com.san.kir.manger.ui.application_navigation.catalog.btnSizeAddUpdate
 
-@ExperimentalAnimationApi
 @Composable
 fun ListItem(
     item: SiteCatalogElement,

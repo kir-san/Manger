@@ -1,7 +1,5 @@
 package com.san.kir.manger.ui.application_navigation.drawer.categories
 
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -26,7 +24,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -35,7 +32,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
-import com.google.accompanist.pager.ExperimentalPagerApi
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Category
 import com.san.kir.manger.ui.application_navigation.DrawerNavigationDestination
@@ -43,13 +39,7 @@ import com.san.kir.manger.ui.application_navigation.EditCategoryNavigationDestin
 import com.san.kir.manger.ui.utils.MenuIcon
 import com.san.kir.manger.ui.utils.navigate
 import com.san.kir.manger.view_models.TitleViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-@ExperimentalCoroutinesApi
-@ExperimentalFoundationApi
-@ExperimentalPagerApi
-@ExperimentalComposeUiApi
-@ExperimentalAnimationApi
 @Composable
 fun CategoriesScreen(
     mainNav: NavController,
@@ -129,7 +119,6 @@ fun CategoryItemView(index: Int, max: Int, category: Category, onClick: () -> Un
     }
 }
 
-@ExperimentalAnimationApi
 @Composable
 fun CategoriesActions(mainNav: NavHostController) {
     MenuIcon(

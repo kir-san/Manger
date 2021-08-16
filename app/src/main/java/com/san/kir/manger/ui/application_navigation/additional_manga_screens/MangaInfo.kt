@@ -41,7 +41,7 @@ import com.san.kir.manger.utils.loadImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-@ExperimentalAnimationApi
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MangaInfoScreen(
     nav: NavHostController,
@@ -80,7 +80,7 @@ fun MangaInfoScreen(
     }
 }
 
-@ExperimentalAnimationApi
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun MangaInfoContent(
     item: MutableState<SiteCatalogElement>,

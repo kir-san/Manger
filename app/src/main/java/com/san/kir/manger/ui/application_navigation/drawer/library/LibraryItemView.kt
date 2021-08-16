@@ -1,6 +1,5 @@
 package com.san.kir.manger.ui.application_navigation.drawer.library
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -45,7 +44,7 @@ import androidx.navigation.NavHostController
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.ui.application_navigation.AboutMangaNavigationDestination
-import com.san.kir.manger.ui.application_navigation.ListChapters
+import com.san.kir.manger.ui.application_navigation.ChaptersNavigationDestination
 import com.san.kir.manger.ui.application_navigation.StorageMangaNavigationDestination
 import com.san.kir.manger.ui.utils.MenuText
 import com.san.kir.manger.ui.utils.navigate
@@ -54,8 +53,7 @@ import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.loadImage
 import com.san.kir.manger.workmanager.MangaDeleteWorker
 
-@ExperimentalAnimationApi
-@ExperimentalFoundationApi
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ItemView(
     manga: Manga,
@@ -79,7 +77,7 @@ private fun ItemView(
             .fillMaxWidth()
             .combinedClickable(
                 onLongClick = { expandedMenu = true },
-                onClick = { mainNav.navigate(ListChapters, manga) })
+                onClick = { mainNav.navigate(ChaptersNavigationDestination, manga) })
     ) {
         content()
     }
@@ -169,8 +167,6 @@ private fun ItemView(
     }
 }
 
-@ExperimentalAnimationApi
-@ExperimentalFoundationApi
 @Composable
 fun LibraryLargeItemView(
     manga: Manga,
@@ -248,8 +244,6 @@ fun LibraryLargeItemView(
     }
 }
 
-@ExperimentalAnimationApi
-@ExperimentalFoundationApi
 @Composable
 fun LibrarySmallItemView(
     manga: Manga,

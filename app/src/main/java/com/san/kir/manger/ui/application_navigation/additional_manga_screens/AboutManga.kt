@@ -1,7 +1,6 @@
 package com.san.kir.manger.ui.application_navigation.additional_manga_screens
 
 import android.content.Context
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -36,7 +35,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 
-@ExperimentalAnimationApi
 @Composable
 fun AboutMangaScreen(nav: NavController) {
     val item =
@@ -60,7 +58,6 @@ fun AboutMangaScreen(nav: NavController) {
     }
 }
 
-@ExperimentalAnimationApi
 @Composable
 private fun AboutMangaContent(
     item: MutableState<Manga>,

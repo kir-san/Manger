@@ -15,7 +15,7 @@ import com.san.kir.manger.R
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.StatusLogo
 import com.san.kir.manger.utils.loadImage
 
-@ExperimentalAnimationApi
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun ImageWithStatus(image: String) {
     var isShowLogo by remember { mutableStateOf(false) }

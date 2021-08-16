@@ -1,6 +1,5 @@
 package com.san.kir.manger.ui.application_navigation.drawer.library
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -22,7 +21,6 @@ import com.san.kir.manger.ui.application_navigation.AddMangaOnlineNavigationDest
 import com.san.kir.manger.ui.utils.MenuIcon
 import com.san.kir.manger.ui.utils.MenuText
 
-@ExperimentalAnimationApi
 @Composable
 fun LibraryActions(
     mainNav: NavHostController,

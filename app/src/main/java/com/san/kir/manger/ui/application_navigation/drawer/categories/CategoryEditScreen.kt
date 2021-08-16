@@ -41,7 +41,6 @@ import com.san.kir.manger.ui.utils.getElement
 import com.san.kir.manger.utils.SortLibraryUtil
 import kotlin.math.roundToInt
 
-@ExperimentalAnimationApi
 @Composable
 fun CategoryEditScreen(
     nav: NavHostController,
@@ -132,7 +131,7 @@ fun CategoryEditScreen(
     }
 }
 
-@ExperimentalAnimationApi
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun TextWithValidate(
     viewModel: CategoryEditViewModel,
@@ -245,7 +244,7 @@ private fun ChangeVisibility(
     )
 }
 
-@ExperimentalAnimationApi
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun ChangePortraitOptions(
     viewModel: CategoryEditViewModel
@@ -278,7 +277,7 @@ private fun ChangePortraitOptions(
     }
 }
 
-@ExperimentalAnimationApi
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun ChangeLandscapeOptions(viewModel: CategoryEditViewModel) {
     val viewState by viewModel.state.collectAsState()

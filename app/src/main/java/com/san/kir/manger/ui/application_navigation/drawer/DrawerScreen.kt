@@ -1,8 +1,6 @@
 package com.san.kir.manger.ui.application_navigation.drawer
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,7 +31,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -54,7 +51,6 @@ import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
 import com.google.accompanist.insets.ui.TopAppBar
-import com.google.accompanist.pager.ExperimentalPagerApi
 import com.san.kir.ankofork.dialogs.toast
 import com.san.kir.manger.BuildConfig
 import com.san.kir.manger.R
@@ -62,14 +58,8 @@ import com.san.kir.manger.room.entities.MainMenuItem
 import com.san.kir.manger.ui.application_navigation.DrawerNavigationDestination
 import com.san.kir.manger.view_models.DrawerViewModel
 import com.san.kir.manger.view_models.TitleViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 
-@ExperimentalComposeUiApi
-@ExperimentalPagerApi
-@ExperimentalAnimationApi
-@ExperimentalFoundationApi
-@ExperimentalCoroutinesApi
 @Composable
 fun DrawerScreen(
     close: () -> Unit,
@@ -119,18 +109,13 @@ fun DrawerScreen(
 
 var backPressedTime = 0L
 
-@ExperimentalComposeUiApi
-@ExperimentalPagerApi
-@ExperimentalAnimationApi
-@ExperimentalCoroutinesApi
-@ExperimentalFoundationApi
 @Composable
 private fun TopBar(
     scaffoldState: ScaffoldState,
     currentRoute: String?,
     mainNav: NavHostController,
+    vm: TitleViewModel = hiltViewModel(mainNav.getBackStackEntry(DrawerNavigationDestination.route))
 ) {
-    val vm = hiltViewModel<TitleViewModel>(mainNav.getBackStackEntry(DrawerNavigationDestination.route))
     val state by vm.state.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -163,11 +148,6 @@ private fun TopBar(
 }
 
 // Боковое меню с выбором пунктов для навигации по приложению
-@ExperimentalComposeUiApi
-@ExperimentalPagerApi
-@ExperimentalAnimationApi
-@ExperimentalCoroutinesApi
-@ExperimentalFoundationApi
 @Composable
 private fun DrawerContent(
     viewModel: DrawerViewModel,

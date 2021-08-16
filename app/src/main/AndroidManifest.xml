@@ -47,10 +47,6 @@
             android:name=".components.viewer.ViewerActivity"
             android:theme="@style/AppTheme.Viewer"
             />
-        <activity
-            android:name=".components.list_chapters.ListChaptersActivity"
-            android:theme="@style/AppTheme"
-            />
 
         <activity
             android:name=".components.add_manga.AddMangaActivity"

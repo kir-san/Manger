@@ -1,99 +1,56 @@
 package com.san.kir.manger.room.entities
 
-import android.os.Parcel
 import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.san.kir.manger.room.columns.DownloadColumn
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 @Entity(tableName = DownloadColumn.tableName)
 data class DownloadItem(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = DownloadColumn.id)
-    var id: Long,
+    var id: Long = 0L,
 
     @ColumnInfo(name = DownloadColumn.manga)
-    var manga: String,
+    var manga: String = "",
 
     @ColumnInfo(name = DownloadColumn.name)
-    var name: String,
+    var name: String = "",
 
     @ColumnInfo(name = DownloadColumn.link)
-    var link: String,
+    var link: String = "",
 
     @ColumnInfo(name = DownloadColumn.path)
-    var path: String,
+    var path: String = "",
 
     @ColumnInfo(name = DownloadColumn.totalPages)
-    var totalPages: Int,
+    var totalPages: Int = 0,
 
     @ColumnInfo(name = DownloadColumn.downloadPages)
-    var downloadPages: Int,
+    var downloadPages: Int = 0,
 
     @ColumnInfo(name = DownloadColumn.totalSize)
-    var totalSize: Long,
+    var totalSize: Long = 0L,
 
     @ColumnInfo(name = DownloadColumn.downloadSize)
-    var downloadSize: Long,
+    var downloadSize: Long = 0L,
 
     @ColumnInfo(name = DownloadColumn.totalTime)
-    var totalTime: Long,
+    var totalTime: Long = 0L,
 
     @ColumnInfo(name = DownloadColumn.status)
-    var status: Int,
+    var status: Int = -1,
 
     @ColumnInfo(name = DownloadColumn.order)
-    var order: Long,
+    var order: Long = 0,
 
     @ColumnInfo(name = DownloadColumn.error)
-    var isError: Boolean
+    var isError: Boolean = false
 
-) : Parcelable {
-    @Ignore
-    constructor(parcel: Parcel) : this(
-        parcel.readLong(),
-        parcel.readString() ?: "",
-        parcel.readString() ?: "",
-        parcel.readString() ?: "",
-        parcel.readString() ?: "",
-        parcel.readInt(),
-        parcel.readInt(),
-        parcel.readLong(),
-        parcel.readLong(),
-        parcel.readLong(),
-        parcel.readInt(),
-        parcel.readLong(),
-        parcel.readByte() != 0.toByte()
-    )
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeLong(id)
-        parcel.writeString(manga)
-        parcel.writeString(name)
-        parcel.writeString(link)
-        parcel.writeString(path)
-        parcel.writeInt(totalPages)
-        parcel.writeInt(downloadPages)
-        parcel.writeLong(totalSize)
-        parcel.writeLong(downloadSize)
-        parcel.writeLong(totalTime)
-        parcel.writeInt(status)
-        parcel.writeLong(order)
-        parcel.writeByte(if (isError) 1 else 0)
-    }
-
-    override fun describeContents() = 0
-
-    companion object CREATOR : Parcelable.Creator<DownloadItem> {
-        override fun createFromParcel(parcel: Parcel) =
-            DownloadItem(parcel)
-
-        override fun newArray(size: Int): Array<DownloadItem?> = arrayOfNulls(size)
-    }
-
-}
+) : Parcelable
 
 fun Chapter.toDownloadItem() =
     DownloadItem(

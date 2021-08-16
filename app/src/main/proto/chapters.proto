@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option java_package = "com.san.kir.manger";
+option java_multiple_files = true;
+
+message Chapters {
+  bool isTitle = 1;
+  bool isIndividual = 2;
+  string filterStatus = 3;
+}

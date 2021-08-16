@@ -180,7 +180,7 @@
     <string name="main_menu_library">Библиотека</string>
     <string name="main_menu_library_count">Библиотека: %d</string>
     <string name="main_menu_storage">Хранилище</string>
-    <string name="main_menu_storage_size_mb">: %s Мб</string>
+    <string name="main_menu_storage_size_mb">%s Мб</string>
     <string name="main_menu_category">Категории</string>
     <string name="main_menu_catalogs">Каталоги</string>
     <string name="main_menu_downloader">Загрузчик</string>
@@ -225,11 +225,13 @@
     <string name="library_popupmenu_delete_read_chapters_message">Своими действиями вы хотите лишить себя такой кучи манги?</string>
     <string name="library_popupmenu_delete_all_chapters_message">Своими действиями вы хотите лишить себя всей манги?</string>
     <string name="library_popupmenu_delete_read_chapters_ok">Да</string>
-    <string name="library_popupmenu_delete_read_chapters_deleting">Удаление…</string>
     <string name="library_popupmenu_delete_read_chapters_delete_nothing">Удалять нечего</string>
     <string name="library_popupmenu_delete_read_chapters_delete">Удаляю…</string>
     <string name="library_popupmenu_delete_read_chapters_ready">Готово</string>
+    <string name="library_popupmenu_delete_read_chapters_btn_close">Закрыть</string>
     <string name="library_popupmenu_delete_read_chapters_no">Не, не</string>
+    <string name="library_no_categories">У вас скрыты все категории, вернитесь в пункт "Категории" и измените видимость у нужных</string>
+    <string name="library_to_categories">Перейти в категории</string>
     <string name="library_help">Библиотека пуста.\n Перейдите в каталоги\n и добавьте новой манги</string>
     <string name="library_help2">Или добавьте мангу с помощью ссылки на нее,\n используйте для этого\n кнопку с крестиком сверху</string>
     <string name="library_help_go">В КАТАЛОГИ</string>
@@ -275,8 +277,8 @@
     <string name="action_set_read">Пометить прочитаными</string>
     <string name="action_set_not_read">Пометить не прочитаными</string>
     <string name="action_update_pages">Обновить страницы</string>
-    <string name="action_select_prev">Выбрать все ниже</string>
-    <string name="action_select_next">Выбрать все выше</string>
+    <string name="action_select_below">Выбрать все ниже</string>
+    <string name="action_select_above">Выбрать все выше</string>
     <string name="action_full_delete">Удалить из базы данных</string>
     <string name="action_full_delete_title">Внимание!!!</string>
     <string name="action_full_delete_message">Данное действие приведет к удалению глав из базы данных. Все файлы и папки будут не тронуты, но приложение больше не будет видеть эти главы. Рекомендуется использовать это при появлении копий существующих глав.</string>
@@ -287,6 +289,8 @@
     <string name="list_chapters_about_not_continue">"Нет глав для чтения"</string>
     <string name="list_chapters_about_search_continue">"Поиск главы для чтения"</string>
     <string name="list_chapters_about_read">"Вы прочитали %1$d %2$s из %3$d"</string>
+    <string name="list_chapters_page_about">Описание</string>
+    <string name="list_chapters_page_list">Содержимое</string>
 
     <!--LatestChapter-->
     <string name="latest_chapter_download_new">Скачать новое</string>

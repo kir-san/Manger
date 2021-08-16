@@ -7,6 +7,10 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.components.schedule.ScheduleManager
+import com.san.kir.manger.data.datastore.ChaptersRepository
+import com.san.kir.manger.data.datastore.MainRepository
+import com.san.kir.manger.data.datastore.chaptersStore
+import com.san.kir.manger.data.datastore.mainStore
 import com.san.kir.manger.repositories.MainMenuRepository
 import com.san.kir.manger.repositories.MangaRepository
 import com.san.kir.manger.repositories.PlannedRepository
@@ -15,10 +19,8 @@ import com.san.kir.manger.repositories.StatisticRepository
 import com.san.kir.manger.room.entities.MainMenuItem
 import com.san.kir.manger.room.entities.MangaStatistic
 import com.san.kir.manger.room.entities.Site
-import com.san.kir.manger.utils.enums.DIR
+import com.san.kir.manger.utils.enums.ChapterFilter
 import com.san.kir.manger.utils.enums.MainMenuType
-import com.san.kir.manger.utils.extensions.createDirs
-import com.san.kir.manger.utils.extensions.getFullPath
 
 class FirstInitAppWorker(ctx: Context, params: WorkerParameters) :
     CoroutineWorker(ctx, params) {
@@ -34,6 +36,7 @@ class FirstInitAppWorker(ctx: Context, params: WorkerParameters) :
         insertMangaIntoStatistic()
         restoreSchedule()
         checkSiteCatalogs()
+        setDefaultValueForStore()
         return Result.success()
     }
 
@@ -113,6 +116,16 @@ class FirstInitAppWorker(ctx: Context, params: WorkerParameters) :
                 )
             }
         }
+    }
+
+    private suspend fun setDefaultValueForStore() {
+        val chStore = ChaptersRepository(applicationContext.chaptersStore)
+        chStore.setFilter(ChapterFilter.ALL_READ_ASC.name)
+        chStore.setIndividualFilter(true)
+        chStore.setTitleVisibility(true)
+
+        val mStore = MainRepository(applicationContext.mainStore)
+        mStore.setShowCategory(true)
     }
 
     companion object {

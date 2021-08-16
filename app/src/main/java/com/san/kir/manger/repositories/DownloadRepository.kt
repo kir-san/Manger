@@ -5,6 +5,7 @@ import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.room.getDatabase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 
 class DownloadRepository(context: Context) {
     private val db = getDatabase(context)
@@ -25,6 +26,7 @@ class DownloadRepository(context: Context) {
     fun loadItem(link: String): Flow<DownloadItem> {
         var lastObj: DownloadItem? = null
         return mDownloadDao.loadItem(link)
+            .map { item -> item?.let { return@let it } ?: DownloadItem() }
             .filter {
                 if (lastObj == null || lastObj != it) {
                     lastObj = it

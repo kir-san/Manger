@@ -15,6 +15,9 @@ interface ChapterDao : BaseDao<Chapter> {
     @Query("SELECT * FROM chapters WHERE manga IS :manga")
     suspend fun getItems(manga: String): List<Chapter>
 
+    @Query("SELECT * FROM chapters WHERE manga IS :manga")
+    fun loadItems(manga: String): Flow<List<Chapter>>
+
     @Query("SELECT * FROM chapters WHERE site IS :site")
     suspend fun getItem(site: String): Chapter?
 

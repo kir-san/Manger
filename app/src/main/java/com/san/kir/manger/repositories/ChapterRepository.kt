@@ -15,10 +15,6 @@ class ChapterRepository(context: Context) {
     suspend fun getItems() = mChapterDao.getItems()
     suspend fun getItems(mangaUnic: String) = mChapterDao.getItems(mangaUnic)
     suspend fun getItem(site: String) = mChapterDao.getItem(site)
-    suspend fun getItemsNotReadAsc(mangaUnic: String) = mChapterDao.getItemsNotReadAsc(mangaUnic)
-    suspend fun getItemsAsc(mangaUnic: String) = mChapterDao.getItemsAsc(mangaUnic)
-    suspend fun countNotRead(mangaUnic: String) =
-        mChapterDao.getItems(mangaUnic).filter { !it.isRead }.size
 
     suspend fun newChapters() = mChapterDao.getItems()
         .filter { it.isInUpdate }

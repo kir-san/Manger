@@ -62,6 +62,6 @@ interface DownloadDao : BaseDao<DownloadItem> {
         "SELECT * FROM ${DownloadColumn.tableName} " +
                 "WHERE ${DownloadColumn.link} IS :link"
     )
-    fun loadItem(link: String): Flow<DownloadItem>
+    fun loadItem(link: String): Flow<DownloadItem?>
 }
 

@@ -164,6 +164,7 @@ class ImageLoader(private val url: String) {
     }
 
     private fun getNetworkBitmap(url: String, name: String): Bitmap? {
+        if (url.isBlank()) return null
         val (_, _, result) = Fuel.download(url)
             .fileDestination { _, _ ->
                 val createFile = mDiskCache.createFile(name)

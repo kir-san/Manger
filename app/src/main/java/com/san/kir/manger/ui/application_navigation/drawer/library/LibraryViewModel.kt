@@ -9,6 +9,7 @@ import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.entities.CategoryWithMangas
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.utils.CATEGORY_ALL
+import com.san.kir.manger.utils.SortLibraryUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,9 +41,23 @@ class LibraryViewModel @Inject constructor(
                 dataStore.data
             ) { cats, isa, data ->
                 val categories = cats.filter { it.category.isVisible }
-                    .onEach {
-                        if (it.category.name == CATEGORY_ALL)
-                            it.mangas = mangaDao.getItems()
+                    .onEach { cats ->
+                        if (cats.category.name == CATEGORY_ALL)
+                            cats.mangas = mangaDao.getItems()
+                    }
+                    .onEach { cats ->
+
+                        val list =
+                            when (cats.category.typeSort) {
+                                SortLibraryUtil.add -> cats.mangas.sortedBy { it.id }
+                                SortLibraryUtil.abc -> cats.mangas.sortedBy { it.name }
+                                SortLibraryUtil.pop -> cats.mangas.sortedBy { it.populate }
+                                else -> cats.mangas
+                            }
+                        cats.mangas = if (cats.category.isReverseSort)
+                            list.reversed()
+                        else
+                            list
                     }
                 LibraryViewState(
                     categories = categories,

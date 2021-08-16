@@ -12,7 +12,7 @@ object Versions {
     object Kotlin {
         // Make sure to update `buildSrc/build.gradle.kts` when updating this
         const val STDLIB = "1.5.10"
-        const val COROUTINES = "1.5.0-native-mt"
+        const val COROUTINES = "1.5.1-native-mt"
     }
 
     object AndroidX {

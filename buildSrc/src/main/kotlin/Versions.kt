@@ -11,29 +11,28 @@ object Versions {
 
     object Kotlin {
         // Make sure to update `buildSrc/build.gradle.kts` when updating this
-        const val STDLIB = "1.5.10"
+        const val STDLIB = "1.5.21"
         const val COROUTINES = "1.5.1-native-mt"
     }
 
     object AndroidX {
-        const val CORE = "1.6.0-rc01"
-        const val APPCOMPAT = "1.4.0-alpha02"
+        const val CORE = "1.6.0"
+        const val APPCOMPAT = "1.4.0-alpha03"
         const val COLLECTION = "1.1.0"
         const val LIFECYCLE = "2.3.1"
         const val PREFERENCE = "1.1.1"
         const val VECTORDRAWABLE = "1.2.0-alpha02"
         const val CONSTRAINTLAYOUT = "2.0.0-beta4"
-        const val WORKMANAGER = "2.7.0-alpha04"
+        const val WORKMANAGER = "2.7.0-alpha05"
         const val HILT = "2.37"
-        const val DATASTORE = "1.0.0-beta01"
+        const val DATASTORE = "1.0.0"
         const val ROOM = "2.3.0"
         const val PAGING = "2.1.1" // На удаление
     }
 
     object Compose {
-        const val COMPOSE = "1.0.0-rc02"
-        const val ACTIVITY_COMPOSE = "1.3.0-beta02"
-        const val NAVIGATION_COMPOSE = "2.4.0-alpha04"
+        const val COMPOSE = "1.0.1"
+        const val ACTIVITY_COMPOSE = "1.3.1"
         const val HILT_NAVIGATION_COMPOSE = "1.0.0-alpha03"
     }
 
@@ -41,7 +40,7 @@ object Versions {
         const val MATERIAL = "1.3.0"
         const val PROTOBUF_JAVALITE = "3.11.0"
         const val PLAY_SERVICES_GCM = "17.0.0" // не менять версию
-        const val ACCOMPANIST = "0.13.0"
+        const val ACCOMPANIST = "0.16.1"
     }
 
     object Kittinunf {

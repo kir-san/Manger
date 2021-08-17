@@ -3,3 +3,5 @@
 /build
 /captures
 .externalNativeBuild
+/buildSrc/build
+/app/build

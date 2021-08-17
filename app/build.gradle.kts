@@ -127,7 +127,6 @@ dependencies {
         implementation(MATERIAL_ICONS_CORE)
         implementation(MATERIAL_ICONS_EXTENDED)
 
-        implementation(NAVIGATION)
         implementation(HILT_NAVIGATION)
     }
 
@@ -139,6 +138,7 @@ dependencies {
         implementation(SYSTEMUICONTROLLER)
         implementation(INSETS)
         implementation(INSETS_UI)
+        implementation(NAVIGATION_ANIMATION)
     }
 
     Dependencies.AndroidX.Room.apply {
@@ -182,7 +182,6 @@ dependencies {
     //Big Image Viewer
     //implementation("com.davemorrissey.labs:subsampling-scale-image-view:3.10.0")
 
-    //implementation "androidx.paging:paging-compose:1.0.0-alpha11"
 
     //debugImplementation "com.willowtreeapps.hyperion:hyperion-core:0.9.31"
     //debugImplementation "com.willowtreeapps.hyperion:hyperion-crash:0.9.31"

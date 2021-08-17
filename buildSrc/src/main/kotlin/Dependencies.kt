@@ -81,6 +81,8 @@ object Dependencies {
                 "com.google.accompanist:accompanist-insets:${Versions.Google.ACCOMPANIST}"
             const val INSETS_UI =
                 "com.google.accompanist:accompanist-insets-ui:${Versions.Google.ACCOMPANIST}"
+            const val NAVIGATION_ANIMATION =
+                "com.google.accompanist:accompanist-navigation-animation:${Versions.Google.ACCOMPANIST}"
         }
 
         object Hilt {
@@ -130,16 +132,13 @@ object Dependencies {
             "androidx.compose.foundation:foundation:${Versions.Compose.COMPOSE}"
         const val FOUNDATION_LAYOUT =
             "androidx.compose.foundation:foundation-layout:${Versions.Compose.COMPOSE}"
-        const val MATERIAL = "androidx.compose.material:material:${Versions.Compose.COMPOSE}"
+        const val MATERIAL =
+            "androidx.compose.material:material:${Versions.Compose.COMPOSE}"
         const val MATERIAL_ICONS_CORE =
             "androidx.compose.material:material-icons-core:${Versions.Compose.COMPOSE}"
         const val MATERIAL_ICONS_EXTENDED =
             "androidx.compose.material:material-icons-extended:${Versions.Compose.COMPOSE}"
 
-        const val ACTIVITY =
-            "androidx.activity:activity-compose:${Versions.Compose.ACTIVITY_COMPOSE}"
-        const val NAVIGATION =
-            "androidx.navigation:navigation-compose:${Versions.Compose.NAVIGATION_COMPOSE}"
         const val HILT_NAVIGATION =
             "androidx.hilt:hilt-navigation-compose:${Versions.Compose.HILT_NAVIGATION_COMPOSE}"
     }

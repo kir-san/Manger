@@ -76,13 +76,16 @@ import com.google.accompanist.insets.statusBarsPadding
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.components.parsing.SiteCatalog
+import com.san.kir.manger.room.entities.Site
 import com.san.kir.manger.ui.LocalBaseViewModel
-import com.san.kir.manger.ui.application_navigation.CatalogNavigationDestination
+import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination
+import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.Catalog
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogViewModel.Companion.DATE
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogViewModel.Companion.NAME
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogViewModel.Companion.POP
 import com.san.kir.manger.ui.utils.ListItem
 import com.san.kir.manger.ui.utils.MenuIcon
+import com.san.kir.manger.ui.utils.getElement
 import kotlinx.coroutines.launch
 import java.net.URLDecoder
 
@@ -95,9 +98,7 @@ fun CatalogScreen(
 ) {
     val vm = LocalBaseViewModel.current
     val site =
-        ManageSites.CATALOG_SITES.first {
-            it.name == nav.currentBackStackEntry?.arguments?.getString(CatalogNavigationDestination().siteName)
-        }
+        ManageSites.CATALOG_SITES.first { it.name == (nav.getElement(Catalog) ?: Site()).name }
 
     val viewState by viewModel.state.collectAsState()
     val action by viewModel.action.collectAsState()

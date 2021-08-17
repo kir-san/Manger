@@ -40,8 +40,8 @@ import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Storage
-import com.san.kir.manger.ui.application_navigation.DrawerNavigationDestination
-import com.san.kir.manger.ui.application_navigation.StorageMangaNavigationDestination
+import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.Drawer
+import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.StorageManga
 import com.san.kir.manger.ui.utils.MenuText
 import com.san.kir.manger.ui.utils.StorageProgressBar
 import com.san.kir.manger.ui.utils.navigate
@@ -56,7 +56,7 @@ import kotlin.math.roundToInt
 fun StorageScreen(
     mainNav: NavHostController,
     contentPadding: PaddingValues,
-    vm: TitleViewModel = hiltViewModel(mainNav.getBackStackEntry(DrawerNavigationDestination.route)),
+    vm: TitleViewModel = hiltViewModel(mainNav.getBackStackEntry(Drawer.route)),
     viewModel: StorageViewModel = hiltViewModel()
 ) {
     val viewState by viewModel.state.collectAsState()
@@ -110,11 +110,8 @@ private fun ItemView(
             .clickable {
                 viewModel
                     .mangaFromPath(item.path)
-                    ?.let {
-                        mainNav.navigate(StorageMangaNavigationDestination, it)
-                    } ?: run {
-                    showMenu = true
-                }
+                    ?.let { mainNav.navigate(StorageManga, it) }
+                    ?: run { showMenu = true }
             }
     ) {
         // Иконка манги, если для этой папки она еще есть

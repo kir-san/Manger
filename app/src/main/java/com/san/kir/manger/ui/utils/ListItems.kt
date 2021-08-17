@@ -28,8 +28,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.ui.SuppotMangaViewModel
-import com.san.kir.manger.ui.application_navigation.AddMangaNavigationDestination
-import com.san.kir.manger.ui.application_navigation.MangaInfoNavigationDestination
+import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.AddManga
+import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.MangaInfo
 import com.san.kir.manger.ui.application_navigation.catalog.btnSizeAddUpdate
 
 @Composable
@@ -54,10 +54,7 @@ fun ListItem(
             .fillMaxWidth()
             .height(60.dp)
             .padding(horizontal = 16.dp)
-            .clickable {
-                nav.currentBackStackEntry?.arguments?.putParcelable(MangaInfoNavigationDestination.element, item)
-                nav.navigate(MangaInfoNavigationDestination.route)
-            }
+            .clickable { nav.navigate(MangaInfo, item) }
     ) {
         Column(
             Modifier
@@ -83,9 +80,7 @@ fun ListItem(
                 modifier = Modifier
                     .size(btnSizeAddUpdate)
                     .align(Alignment.CenterVertically)
-                    .clickable {
-                        nav.navigate(AddMangaNavigationDestination, item)
-                    }
+                    .clickable { nav.navigate(AddManga, item) }
             )
 
         if (isUpdated)

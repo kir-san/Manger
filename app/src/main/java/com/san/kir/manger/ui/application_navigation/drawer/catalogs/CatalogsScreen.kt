@@ -44,11 +44,12 @@ import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.room.entities.Site
 import com.san.kir.manger.services.CatalogForOneSiteUpdaterService
-import com.san.kir.manger.ui.application_navigation.CatalogNavigationDestination
-import com.san.kir.manger.ui.application_navigation.CatalogsSearchNavigationDestination
-import com.san.kir.manger.ui.application_navigation.DrawerNavigationDestination
+import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.Catalog
+import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.CatalogsSearch
+import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.Drawer
 import com.san.kir.manger.ui.utils.MenuIcon
 import com.san.kir.manger.ui.utils.MenuText
+import com.san.kir.manger.ui.utils.navigate
 import com.san.kir.manger.utils.loadImage
 import com.san.kir.manger.view_models.TitleViewModel
 import kotlinx.coroutines.Dispatchers
@@ -58,7 +59,7 @@ import kotlinx.coroutines.withContext
 fun CatalogsScreen(
     mainNav: NavHostController,
     contentPadding: PaddingValues,
-    vm: TitleViewModel = hiltViewModel(mainNav.getBackStackEntry(DrawerNavigationDestination.route)),
+    vm: TitleViewModel = hiltViewModel(mainNav.getBackStackEntry(Drawer.route)),
     viewModel: CatalogsViewModel = hiltViewModel()
 ) {
     vm.setTitle(stringResource(id = R.string.main_menu_catalogs))
@@ -73,9 +74,7 @@ fun CatalogsScreen(
         modifier = Modifier.padding(top = contentPadding.calculateTopPadding())
     ) {
         items(items = siteList, key = { site -> site.id }) { item ->
-            ItemView(item) {
-                mainNav.navigate("${CatalogNavigationDestination().base}/${item.name}")
-            }
+            ItemView(item) { mainNav.navigate(Catalog, item) }
         }
     }
 }
@@ -170,7 +169,7 @@ fun CatalogsActions(mainNav: NavHostController, viewModel: CatalogsViewModel = h
 
     MenuIcon(
         icon = Icons.Default.Search,
-        onClick = { mainNav.navigate(CatalogsSearchNavigationDestination.route) })
+        onClick = { mainNav.navigate(CatalogsSearch) })
 
     MenuIcon(icon = Icons.Default.MoreVert, onClick = { expanded = true })
 

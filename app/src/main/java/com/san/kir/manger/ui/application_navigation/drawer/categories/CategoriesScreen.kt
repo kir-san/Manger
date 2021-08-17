@@ -34,8 +34,8 @@ import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Category
-import com.san.kir.manger.ui.application_navigation.DrawerNavigationDestination
-import com.san.kir.manger.ui.application_navigation.EditCategoryNavigationDestination
+import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.Drawer
+import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.EditCategory
 import com.san.kir.manger.ui.utils.MenuIcon
 import com.san.kir.manger.ui.utils.navigate
 import com.san.kir.manger.view_models.TitleViewModel
@@ -44,7 +44,7 @@ import com.san.kir.manger.view_models.TitleViewModel
 fun CategoriesScreen(
     mainNav: NavController,
     contentPadding: PaddingValues,
-    vm: TitleViewModel = hiltViewModel(mainNav.getBackStackEntry(DrawerNavigationDestination.route)),
+    vm: TitleViewModel = hiltViewModel(mainNav.getBackStackEntry(Drawer.route)),
     viewModel: CategoriesViewModel = hiltViewModel(),
 ) {
     vm.setTitle(stringResource(id = R.string.main_menu_category))
@@ -60,7 +60,7 @@ fun CategoriesScreen(
     ) {
         itemsIndexed(items = cats, key = { _, c -> c.id }) { index, item ->
             CategoryItemView(index, cats.count(), item) {
-                mainNav.navigate(EditCategoryNavigationDestination, item)
+                mainNav.navigate(EditCategory, item)
             }
         }
     }
@@ -123,6 +123,6 @@ fun CategoryItemView(index: Int, max: Int, category: Category, onClick: () -> Un
 fun CategoriesActions(mainNav: NavHostController) {
     MenuIcon(
         icon = Icons.Default.Add,
-        onClick = { mainNav.navigate(EditCategoryNavigationDestination, Category()) })
+        onClick = { mainNav.navigate(EditCategory, Category()) })
 }
 

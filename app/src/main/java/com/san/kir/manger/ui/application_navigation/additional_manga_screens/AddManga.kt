@@ -47,7 +47,7 @@ import com.san.kir.manger.room.entities.MangaStatistic
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.room.entities.toManga
 import com.san.kir.manger.services.MangaUpdaterService
-import com.san.kir.manger.ui.application_navigation.AddMangaNavigationDestination
+import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.AddManga
 import com.san.kir.manger.ui.utils.DialogText
 import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
 import com.san.kir.manger.ui.utils.getElement
@@ -63,11 +63,7 @@ import javax.inject.Inject
 
 @Composable
 fun AddMangaScreen(nav: NavHostController) {
-    val item by remember {
-        mutableStateOf(
-            nav.getElement(AddMangaNavigationDestination) ?: SiteCatalogElement()
-        )
-    }
+    val item by remember { mutableStateOf(nav.getElement(AddManga) ?: SiteCatalogElement()) }
 
     TopBarScreenWithInsets(
         nav = nav,

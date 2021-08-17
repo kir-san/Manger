@@ -39,7 +39,7 @@ import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.CategoryWithMangas
-import com.san.kir.manger.ui.application_navigation.DrawerNavigationDestination
+import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.Drawer
 import com.san.kir.manger.ui.application_navigation.drawer.CategoriesNavigationDestination
 import com.san.kir.manger.view_models.TitleViewModel
 import com.san.kir.manger.workmanager.MangaDeleteWorker
@@ -55,7 +55,7 @@ fun LibraryScreen(
     mainNav: NavHostController,
     contentPadding: PaddingValues,
     viewModel: LibraryViewModel = hiltViewModel(),
-    vm: TitleViewModel = hiltViewModel(mainNav.getBackStackEntry(DrawerNavigationDestination.route))
+    vm: TitleViewModel = hiltViewModel(mainNav.getBackStackEntry(Drawer.route))
 ) {
     vm.setTitle(stringResource(id = R.string.main_menu_library))
 

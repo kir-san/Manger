@@ -32,8 +32,9 @@ import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
-import com.san.kir.manger.ui.application_navigation.AddMangaNavigationDestination
+import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.AddManga
 import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
+import com.san.kir.manger.ui.utils.navigate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -136,10 +137,7 @@ fun ColumnScope.AddMangaOnlineContent(
                 check = true
                 isEnable.value = false
                 ManageSites.getElementOnline(inputText)?.also { item ->
-                    nav.currentBackStackEntry?.arguments?.putParcelable(
-                        AddMangaNavigationDestination.element, item
-                    )
-                    nav.navigate(AddMangaNavigationDestination.route)
+                    nav.navigate(AddManga, item)
                 } ?: run {
                     isError = true
                     check = false

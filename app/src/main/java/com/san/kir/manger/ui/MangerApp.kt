@@ -1,5 +1,6 @@
 package com.san.kir.manger.ui
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -28,28 +29,31 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.google.accompanist.insets.ProvideWindowInsets
+import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.san.kir.manger.R
 import com.san.kir.manger.data.datastore.FirstLaunchRepository
 import com.san.kir.manger.data.datastore.firstLaunchStore
-import com.san.kir.manger.ui.application_navigation.DrawerNavigationDestination
-import com.san.kir.manger.ui.application_navigation.MAIN_ALL_SCREENS
+import com.san.kir.manger.ui.application_navigation.applicationGraph
 import com.san.kir.manger.utils.enums.DIR
 import com.san.kir.manger.utils.extensions.createDirs
 import com.san.kir.manger.utils.extensions.getFullPath
 import com.san.kir.manger.workmanager.FirstInitAppWorker
 import com.san.kir.manger.workmanager.MigrateLatestChapterToChapterWorker
+import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(
+    ExperimentalPermissionsApi::class,
+    InternalCoroutinesApi::class,
+    ExperimentalAnimationApi::class
+)
 @Composable
 fun MangerApp(close: () -> Unit) {
     val mainNavController = rememberNavController()
@@ -84,14 +88,10 @@ fun MangerApp(close: () -> Unit) {
                     )
                 }
 
-                NavHost(navController = mainNavController, startDestination = DrawerNavigationDestination.route) {
-                    MAIN_ALL_SCREENS.forEach { screen ->
-                        composable(
-                            route = screen.route,
-                            arguments = screen.arguments,
-                            content = { screen.content(mainNavController, close) })
-                    }
-                }
+                AnimatedNavHost(
+                    navController = mainNavController,
+                    graph = mainNavController.applicationGraph(close)
+                )
             }
 
         }

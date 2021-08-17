@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.san.kir.manger.R
-import com.san.kir.manger.ui.application_navigation.EditCategoryNavigationDestination
+import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.EditCategory
 import com.san.kir.manger.ui.utils.MenuIcon
 import com.san.kir.manger.ui.utils.RadioGroup
 import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
@@ -48,7 +48,7 @@ fun CategoryEditScreen(
 ) {
     val viewState by viewModel.state.collectAsState()
 
-    viewModel.setCategory(nav.getElement(EditCategoryNavigationDestination))
+    viewModel.setCategory(nav.getElement(EditCategory))
 
     var hasError by rememberSaveable { mutableStateOf(false) }
     var deleteDialog by rememberSaveable { mutableStateOf(false) }

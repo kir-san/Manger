@@ -39,7 +39,7 @@ import androidx.work.WorkManager
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.Storage
-import com.san.kir.manger.ui.application_navigation.StorageMangaNavigationDestination
+import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.StorageManga
 import com.san.kir.manger.ui.utils.StorageProgressBar
 import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
 import com.san.kir.manger.ui.utils.getElement
@@ -51,11 +51,7 @@ import kotlinx.coroutines.flow.collect
 
 @Composable
 fun StorageMangaScreen(nav: NavHostController) {
-    val item by remember {
-        mutableStateOf(
-            nav.getElement(StorageMangaNavigationDestination) ?: Manga()
-        )
-    }
+    val item by remember { mutableStateOf(nav.getElement(StorageManga) ?: Manga()) }
 
     TopBarScreenWithInsets(
         nav = nav,

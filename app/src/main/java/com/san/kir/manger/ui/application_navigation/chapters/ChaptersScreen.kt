@@ -38,7 +38,7 @@ import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.services.MangaUpdaterService
 import com.san.kir.manger.ui.LocalBaseViewModel
 import com.san.kir.manger.ui.MainViewModel
-import com.san.kir.manger.ui.application_navigation.ChaptersNavigationDestination
+import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.Chapters
 import com.san.kir.manger.ui.utils.getElement
 import com.san.kir.manger.utils.extensions.longToast
 import kotlinx.coroutines.CoroutineScope
@@ -48,7 +48,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ChaptersScreen(
     nav: NavHostController,
-    manga: Manga = nav.getElement(ChaptersNavigationDestination) ?: Manga(),
+    manga: Manga = nav.getElement(Chapters) ?: Manga(),
     viewModel: ChaptersViewModel = chaptersViewModel(manga.unic)
 ) {
     val selectionMode by viewModel.selectionMode.collectAsState()

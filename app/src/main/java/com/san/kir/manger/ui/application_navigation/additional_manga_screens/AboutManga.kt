@@ -20,8 +20,8 @@ import androidx.navigation.NavController
 import com.san.kir.ankofork.browse
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.ui.application_navigation.AboutMangaNavigationDestination
-import com.san.kir.manger.ui.application_navigation.EditManga
+import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.AboutManga
+import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.EditManga
 import com.san.kir.manger.ui.utils.DialogText
 import com.san.kir.manger.ui.utils.ImageWithStatus
 import com.san.kir.manger.ui.utils.LabelText
@@ -38,7 +38,7 @@ import kotlinx.coroutines.withContext
 @Composable
 fun AboutMangaScreen(nav: NavController) {
     val item =
-        remember { mutableStateOf(nav.getElement(AboutMangaNavigationDestination) ?: Manga()) }
+        remember { mutableStateOf(nav.getElement(AboutManga) ?: Manga()) }
 
     TopBarScreenWithInsets(
         nav = nav,

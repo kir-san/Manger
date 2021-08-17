@@ -17,9 +17,10 @@ import com.san.kir.ankofork.startService
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.MangaColumn
 import com.san.kir.manger.services.MangaUpdaterService
-import com.san.kir.manger.ui.application_navigation.AddMangaOnlineNavigationDestination
+import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.AddMangaOnline
 import com.san.kir.manger.ui.utils.MenuIcon
 import com.san.kir.manger.ui.utils.MenuText
+import com.san.kir.manger.ui.utils.navigate
 
 @Composable
 fun LibraryActions(
@@ -31,7 +32,7 @@ fun LibraryActions(
     var expanded by remember { mutableStateOf(false) }
 
     MenuIcon(icon = Icons.Default.Add) {
-        mainNav.navigate(AddMangaOnlineNavigationDestination.route)
+        mainNav.navigate(AddMangaOnline)
     }
 
     MenuIcon(icon = Icons.Default.MoreVert) {

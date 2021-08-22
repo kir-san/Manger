@@ -17,7 +17,7 @@ interface MangaDao : BaseDao<Manga> {
     suspend fun getItem(unic: String): Manga
 
     @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.unic}` IS :unic")
-    fun loadItem(unic: String): Flow<Manga>
+    fun loadItem(unic: String): Flow<Manga?>
 
     @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.unic}` IS :unic")
     suspend fun getItemOrNull(unic: String): Manga?

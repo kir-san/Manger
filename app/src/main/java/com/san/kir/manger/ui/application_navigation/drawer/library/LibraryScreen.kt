@@ -40,7 +40,7 @@ import com.google.accompanist.pager.rememberPagerState
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.CategoryWithMangas
 import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.Drawer
-import com.san.kir.manger.ui.application_navigation.drawer.CategoriesNavigationDestination
+import com.san.kir.manger.ui.application_navigation.drawer.DrawerNavigationDestination.Categories
 import com.san.kir.manger.view_models.TitleViewModel
 import com.san.kir.manger.workmanager.MangaDeleteWorker
 import kotlinx.coroutines.flow.collect
@@ -126,7 +126,7 @@ fun LibraryScreen(
             Box(modifier = Modifier.fillMaxSize()) {
                 Column(modifier = Modifier.align(Alignment.Center)) {
                     Text(text = stringResource(id = R.string.library_no_categories))
-                    Button(onClick = { nav.navigate(CategoriesNavigationDestination.route) }) {
+                    Button(onClick = { nav.navigate(Categories.route) }) {
                         Text(text = stringResource(id = R.string.library_to_categories))
                     }
                 }

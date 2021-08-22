@@ -27,7 +27,7 @@ import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.CategoryWithMangas
-import com.san.kir.manger.ui.application_navigation.drawer.CatalogsNavigationDestination
+import com.san.kir.manger.ui.application_navigation.drawer.DrawerNavigationDestination.Catalogs
 
 @Composable
 fun LibraryPage(
@@ -71,7 +71,7 @@ private fun EmptyView(nav: NavController) {
 
         Button(
             modifier = Modifier.padding(16.dp),
-            onClick = { nav.navigate(CatalogsNavigationDestination.route) }) {
+            onClick = { nav.navigate(Catalogs.route) }) {
             Text(
                 text = stringResource(id = R.string.library_help_go)
             )

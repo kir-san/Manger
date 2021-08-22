@@ -6,7 +6,7 @@ object Versions {
         const val VERSION_NAME = "2.8.0"
         const val MIN_SDK = 21
         const val TARGET_SDK = 30
-        const val COMPILE_SDK = 30
+        const val COMPILE_SDK = 31
     }
 
     object Kotlin {
@@ -32,7 +32,6 @@ object Versions {
 
     object Compose {
         const val COMPOSE = "1.0.1"
-        const val ACTIVITY_COMPOSE = "1.3.1"
         const val HILT_NAVIGATION_COMPOSE = "1.0.0-alpha03"
     }
 
@@ -40,7 +39,7 @@ object Versions {
         const val MATERIAL = "1.3.0"
         const val PROTOBUF_JAVALITE = "3.11.0"
         const val PLAY_SERVICES_GCM = "17.0.0" // не менять версию
-        const val ACCOMPANIST = "0.16.1"
+        const val ACCOMPANIST = "0.17.0"
     }
 
     object Kittinunf {

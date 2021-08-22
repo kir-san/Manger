@@ -1,6 +1,7 @@
 package com.san.kir.manger.ui.application_navigation.drawer
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -42,31 +43,33 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
 import com.google.accompanist.insets.ui.TopAppBar
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.san.kir.ankofork.dialogs.toast
 import com.san.kir.manger.BuildConfig
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.MainMenuItem
 import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.Drawer
+import com.san.kir.manger.utils.enums.MainMenuType
+import com.san.kir.manger.utils.extensions.formatDouble
 import com.san.kir.manger.view_models.DrawerViewModel
 import com.san.kir.manger.view_models.TitleViewModel
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun DrawerScreen(
     close: () -> Unit,
     mainNav: NavHostController,
     viewModel: DrawerViewModel = hiltViewModel()
 ) {
-    val navControlller = rememberNavController()
+    val navControlller = rememberAnimatedNavController()
     val navBackStackEntry by navControlller.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
@@ -80,15 +83,10 @@ fun DrawerScreen(
         drawerGesturesEnabled = true,
         drawerContent = { DrawerContent(viewModel, scaffoldState, currentRoute, navControlller) },
     ) { contentPadding ->
-        // Переключаемая навигация
-        NavHost(navController = navControlller, startDestination = "library") {
-            ALL_SCREENS.forEach { screen ->
-                composable(
-                    route = screen.route,
-                    content = { screen.content(navControlller, mainNav, contentPadding) },
-                )
-            }
-        }
+        AnimatedNavHost(
+            navController = navControlller,
+            graph = navControlller.drawerGraph(mainNav, contentPadding)
+        )
     }
 
     BackHandler {
@@ -252,5 +250,46 @@ private fun MainMenuItemRows(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun loadData(
+    item: MainMenuItem,
+    viewModel: DrawerViewModel = hiltViewModel()
+): String {
+    return when (item.type) {
+        MainMenuType.Default,
+        MainMenuType.Library -> {
+            val count by viewModel.loadLibraryCounts().collectAsState(0)
+            count.toString()
+        }
+        MainMenuType.Storage -> {
+            val count by viewModel.loadStorageSizes().collectAsState(0.0)
+            stringResource(R.string.main_menu_storage_size_mb, formatDouble(count))
+        }
+        MainMenuType.Category -> {
+            val count by viewModel.loadCategoriesCount().collectAsState(0)
+            count.toString()
+        }
+        MainMenuType.Catalogs -> {
+            val size by viewModel.loadSiteCatalogSize().collectAsState(initial = 0)
+            val volume by viewModel.loadSiteCatalogVolume().collectAsState(initial = 0)
+            stringResource(id = R.string.main_menu_item_catalogs, size, volume)
+        }
+        MainMenuType.Downloader -> {
+            val count by viewModel.loadDownloadCount().collectAsState(initial = 0)
+            count.toString()
+        }
+        MainMenuType.Latest -> {
+            val count by viewModel.loadLatestCount().collectAsState(initial = 0)
+            count.toString()
+        }
+        MainMenuType.Schedule -> {
+            val count by viewModel.loadPlannedCount().collectAsState(initial = 0)
+            count.toString()
+        }
+        MainMenuType.Settings,
+        MainMenuType.Statistic -> ""
     }
 }

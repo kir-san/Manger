@@ -29,11 +29,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.rememberNavController
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -56,7 +56,6 @@ import kotlinx.coroutines.flow.collect
 )
 @Composable
 fun MangerApp(close: () -> Unit) {
-    val mainNavController = rememberNavController()
     RequiresPermission {
         MaterialTheme(colors = if (isSystemInDarkTheme()) darkColors() else lightColors()) {
             ProvideWindowInsets {
@@ -88,6 +87,7 @@ fun MangerApp(close: () -> Unit) {
                     )
                 }
 
+                val mainNavController = rememberAnimatedNavController()
                 AnimatedNavHost(
                     navController = mainNavController,
                     graph = mainNavController.applicationGraph(close)

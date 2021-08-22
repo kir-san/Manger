@@ -1,10 +1,10 @@
 package com.san.kir.manger.ui.application_navigation
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NamedNavArgument
-import androidx.navigation.compose.composable
 import androidx.navigation.createGraph
+import com.google.accompanist.navigation.animation.composable
 import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.Drawer
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.AboutMangaScreen
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.AddMangaOnlineScreen
@@ -20,7 +20,6 @@ import com.san.kir.manger.ui.application_navigation.global_search.GlobalSearchSc
 enum class ApplicationNavigationDestination(
     val route: String,
     val element: String = "",
-    val arguments: List<NamedNavArgument> = emptyList(),
     val content: @Composable (navController: NavHostController, close: () -> Unit) -> Unit
 ) {
     // BIG SCREENS //
@@ -101,12 +100,12 @@ enum class ApplicationNavigationDestination(
     )
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 fun NavHostController.applicationGraph(close: () -> Unit) =
     createGraph(Drawer.route, null) {
         ApplicationNavigationDestination.values().forEach { screen ->
             composable(
                 route = screen.route,
-                arguments = screen.arguments,
                 content = { screen.content(this@applicationGraph, close) })
         }
     }

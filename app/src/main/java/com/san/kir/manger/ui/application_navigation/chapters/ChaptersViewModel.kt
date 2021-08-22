@@ -237,23 +237,21 @@ class ChaptersViewModel @AssistedInject constructor(
 
         // подготовка списка глав с использованием фильтров и сортировки
         viewModelScope.launch(Dispatchers.Default) {
-            chapters
-                .zip(_manga) { list, manga ->
-                    if (manga.isAlternativeSort)
-                        return@zip list.sortedWith(ChapterComparator())
-                    list
+            combine(chapters, _manga, _filter) { chapters, manga, filter ->
+                var list = chapters
+                if (manga.isAlternativeSort) {
+                    list = list.sortedWith(ChapterComparator())
                 }
-                .catch { t -> throw t }
-                .zip(_filter) { list, filter ->
-                    when (filter) {
-                        ChapterFilter.ALL_READ_ASC -> list
-                        ChapterFilter.NOT_READ_ASC -> list.filter { !it.isRead }
-                        ChapterFilter.IS_READ_ASC -> list.filter { it.isRead }
-                        ChapterFilter.ALL_READ_DESC -> list.reversed()
-                        ChapterFilter.NOT_READ_DESC -> list.filter { !it.isRead }.reversed()
-                        ChapterFilter.IS_READ_DESC -> list.filter { it.isRead }.reversed()
-                    }
+
+                when (filter) {
+                    ChapterFilter.ALL_READ_ASC -> list
+                    ChapterFilter.NOT_READ_ASC -> list.filter { !it.isRead }
+                    ChapterFilter.IS_READ_ASC -> list.filter { it.isRead }
+                    ChapterFilter.ALL_READ_DESC -> list.reversed()
+                    ChapterFilter.NOT_READ_DESC -> list.filter { !it.isRead }.reversed()
+                    ChapterFilter.IS_READ_DESC -> list.filter { it.isRead }.reversed()
                 }
+            }
                 .catch { t -> throw t }
                 .collect { _prepareChapters.value = it }
         }

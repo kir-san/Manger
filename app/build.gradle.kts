@@ -44,7 +44,7 @@ android {
         create("release") {
             keyAlias = "kir-san"
             keyPassword = Private.KEY_PASSWORD
-            storeFile = file("C:/Projects/android/Key.jks")
+            storeFile = file("../Key.jks")
             storePassword = Private.KEYSTORE_PASSWORD
         }
     }

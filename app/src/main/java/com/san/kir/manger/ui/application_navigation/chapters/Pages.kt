@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.Button
@@ -118,9 +119,11 @@ fun AboutPageContent(
             contentScale = ContentScale.Crop,
         )
 
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .navigationBarsPadding()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
+        ) {
             // информация о прочитанных главах
             Text(
                 stringResource(
@@ -231,23 +234,22 @@ fun ListPageContent(
     val filter by viewModel.filter.collectAsState()
     val selectionMode by viewModel.selectionMode.collectAsState()
 
-    val defaultIconColor = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
-    val selectedIconColor = Color(0xff36a0da)
-
     Column(modifier = Modifier.fillMaxSize()) {
         LazyColumn(modifier = Modifier.weight(1f)) {
-            items(
-                count = chapters.count(),
-                key = { i -> chapters[i].id },
-            ) { index ->
-                ChaptersItemContent(chapters[index], selectedItems[index], index, nav, viewModel)
+            itemsIndexed(
+                items = chapters,
+                key = { _, ch -> ch.id },
+            ) { index, chapter ->
+                ChaptersItemContent(chapter, selectedItems[index], index, nav, viewModel)
             }
         }
 
         AnimatedVisibility(selectionMode.not()) {
-            BottomAppBar(modifier = Modifier
-                .fillMaxWidth()
-                .navigationBarsPadding()) {
+            BottomAppBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+            ) {
                 Spacer(modifier = Modifier.weight(1f))
 
                 // Смена порядка сортировки
@@ -265,36 +267,36 @@ fun ListPageContent(
                 Spacer(modifier = Modifier.weight(1f))
 
                 // Кнопка включения отображения всех глав
-                IconButton(onClick = { viewModel.changeFilter { f -> f.toAll() } },
-                           modifier = Modifier.padding(horizontal = 5.dp)) {
+                IconButton(
+                    onClick = { viewModel.changeFilter { f -> f.toAll() } },
+                    modifier = Modifier.padding(horizontal = 5.dp)
+                ) {
                     Icon(
                         Icons.Default.SelectAll, contentDescription = null,
-                        tint = animateColorAsState(
-                            if (filter.isAll) selectedIconColor else defaultIconColor
-                        ).value
+                        tint = animatedColor(filter.isAll)
                     )
                 }
 
                 // Кнопка включения отображения только прочитанных глав
-                IconButton(onClick = { viewModel.changeFilter { f -> f.toRead() } },
-                           modifier = Modifier.padding(horizontal = 5.dp)) {
+                IconButton(
+                    onClick = { viewModel.changeFilter { f -> f.toRead() } },
+                    modifier = Modifier.padding(horizontal = 5.dp)
+                ) {
                     Icon(
                         Icons.Default.Visibility, contentDescription = null,
-                        tint = animateColorAsState(
-                            if (filter.isRead) selectedIconColor else defaultIconColor
-                        ).value
+                        tint = animatedColor(filter.isRead)
                     )
                 }
 
 
                 // Кнопка включения отображения только не прочитанных глав
-                IconButton(onClick = { viewModel.changeFilter { f -> f.toNot() } },
-                           modifier = Modifier.padding(horizontal = 5.dp)) {
+                IconButton(
+                    onClick = { viewModel.changeFilter { f -> f.toNot() } },
+                    modifier = Modifier.padding(horizontal = 5.dp)
+                ) {
                     Icon(
                         Icons.Default.VisibilityOff, contentDescription = null,
-                        tint = animateColorAsState(
-                            if (filter.isNot) selectedIconColor else defaultIconColor
-                        ).value
+                        tint = animatedColor(filter.isNot)
                     )
                 }
 
@@ -389,3 +391,10 @@ private fun ProgressDeletingChaptersDialog(
     }
 }
 
+@Composable
+fun animatedColor(state: Boolean): Color {
+    val defaultIconColor = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+    val selectedIconColor = Color(0xff36a0da)
+    return animateColorAsState(targetValue = if (state) selectedIconColor else defaultIconColor)
+        .value
+}

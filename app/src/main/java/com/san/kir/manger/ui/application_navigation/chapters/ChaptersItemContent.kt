@@ -17,6 +17,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -141,10 +142,13 @@ fun ChaptersItemContent(
             ) {
                 // downloadIndicator
                 AnimatedVisibility(downloadIndicator) {
-                    CircularProgressIndicator(modifier = Modifier.size(20.dp))
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(19.dp),
+                        strokeWidth = ProgressIndicatorDefaults.StrokeWidth - 1.dp
+                    )
                 }
 
-                Spacer(modifier = Modifier.width(3.dp))
+                Spacer(modifier = Modifier.width(5.dp))
 
                 // status
                 AnimatedVisibility(downloadIndicator.not()) {

@@ -40,7 +40,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -113,7 +112,7 @@ class ChaptersViewModel @AssistedInject constructor(
 
     fun deleteSelectedItems() = viewModelScope.launch(Dispatchers.Default) {
         var count = 0
-        _selectedItems.value.zip(prepareChapters.value).forEachIndexed { i, (b, chapter) ->
+        _selectedItems.value.zip(_prepareChapters.value).forEachIndexed { i, (b, chapter) ->
             if (b && chapter.action == ChapterStatus.DELETE) {
                 delChapters(chapter)
                 count++
@@ -131,7 +130,7 @@ class ChaptersViewModel @AssistedInject constructor(
     }
 
     fun downloadSelectedItems() = viewModelScope.launch(Dispatchers.Default) {
-        _selectedItems.value.zip(prepareChapters.value).forEach { (b, chapter) ->
+        _selectedItems.value.zip(_prepareChapters.value).forEach { (b, chapter) ->
             if (b && chapter.action == ChapterStatus.DOWNLOADABLE)
                 DownloadService.addOrStart(context, chapter.toDownloadItem())
         }
@@ -139,17 +138,15 @@ class ChaptersViewModel @AssistedInject constructor(
     }
 
     fun fullDeleteSelectedItems() = viewModelScope.launch(Dispatchers.Default) {
-        val count = chapterDao.delete(
-            *_selectedItems.value
-                .zip(prepareChapters.value)
-                .filter { (b, _) -> b }
-                .map { (_, ch) -> ch }
-                .toTypedArray()
-        )
+        _selectedItems.value
+            .zip(_prepareChapters.value)
+            .filter { (b, _) -> b }
+            .map { (_, ch) -> ch }
+            .forEach { chapterDao.delete(it) }
     }
 
     fun setReadStatus(state: Boolean) = viewModelScope.launch(Dispatchers.Default) {
-        _selectedItems.value.zip(prepareChapters.value).forEachIndexed { i, (b, chapter) ->
+        _selectedItems.value.zip(_prepareChapters.value).forEachIndexed { i, (b, chapter) ->
             if (b) {
                 chapter.isRead = state
                 chapterDao.update(chapter)
@@ -159,7 +156,7 @@ class ChaptersViewModel @AssistedInject constructor(
     }
 
     fun updatePagesForSelectedItems() = viewModelScope.launch(Dispatchers.Default) {
-        _selectedItems.value.zip(prepareChapters.value).forEachIndexed { i, (b, chapter) ->
+        _selectedItems.value.zip(_prepareChapters.value).forEachIndexed { i, (b, chapter) ->
             if (b) {
                 chapter.pages = ManageSites.pages(chapter)
                 chapterDao.update(chapter)

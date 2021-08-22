@@ -70,7 +70,7 @@ private fun Actions(
     changeAction: (Boolean) -> Unit,
     context: Context = LocalContext.current,
 ) {
-    val manga by viewModel.manga.collectAsState(Manga())
+    val manga by viewModel.manga.collectAsState()
 
     var expanded by remember { mutableStateOf(false) }
     val visibleUpdate by remember(manga) { mutableStateOf(manga.isUpdate) }

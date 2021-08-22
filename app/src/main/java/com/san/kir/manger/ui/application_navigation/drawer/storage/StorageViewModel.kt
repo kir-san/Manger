@@ -4,8 +4,10 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.san.kir.ankofork.dialogs.longToast
+import com.san.kir.manger.room.dao.ChapterDao
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.dao.StorageDao
+import com.san.kir.manger.room.dao.searchNewItems
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.Storage
 import com.san.kir.manger.utils.extensions.getFullPath
@@ -23,6 +25,7 @@ class StorageViewModel @Inject constructor(
     private val context: Application,
     private val storageDao: StorageDao,
     private val mangaDao: MangaDao,
+    private val chapterDao: ChapterDao,
 ) : ViewModel() {
     private var mangaList = listOf<Manga>()
 
@@ -45,6 +48,10 @@ class StorageViewModel @Inject constructor(
                         items = items,
                     )
                 }
+        }
+
+        viewModelScope.launch(Dispatchers.Default) {
+            storageDao.searchNewItems(mangaDao, chapterDao)
         }
     }
 

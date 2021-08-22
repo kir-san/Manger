@@ -36,19 +36,6 @@ class StorageRepository(context: Context) {
     suspend fun items() = mStorageDao.items()
 
     fun flowItems() = mStorageDao.flowItems()
-    fun flowAllSize() = flowItems().map { list -> list.sumOf { item -> item.sizeFull } }
-
-    @DelicateCoroutinesApi
-    fun updateStorageItems() {
-        if (asyncUpdates == null) {
-            asyncUpdates = asyncUpdateStorageItems
-        } else {
-            asyncUpdates?.let {
-                if (!it.isActive)
-                    it.start()
-            }
-        }
-    }
 
     suspend fun getSizeAndIsNew(storage: Storage): Storage {
         val file = getFullPath(storage.path)
@@ -65,29 +52,4 @@ class StorageRepository(context: Context) {
         return storage
     }
 
-    @DelicateCoroutinesApi
-    private val asyncUpdateStorageItems: Deferred<Any>
-        get() = GlobalScope.async(Dispatchers.Default) {
-            val list = items()
-            val storageList = getFullPath(DIR.MANGA)
-                .listFiles()
-            if (list.isEmpty() || storageList.size != list.size) {
-                storageList.forEach { dir ->
-                    dir.listFiles().forEach { item ->
-                        if (list.none { it.name == item.name }) {
-                            insert(
-                                Storage(
-                                    name = item.name,
-                                    path = item.shortPath,
-                                    catalogName = dir.name
-                                )
-                            )
-                        }
-                    }
-                }
-            }
-            list.onEach { update(getSizeAndIsNew(it)) }
-        }
-
-    private var asyncUpdates: Deferred<Any>? = null
 }

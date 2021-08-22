@@ -6,7 +6,9 @@ import androidx.room.Dao
 import androidx.room.Query
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.MangaColumn
+import com.san.kir.manger.utils.extensions.getFullPath
 import kotlinx.coroutines.flow.Flow
+import java.io.File
 
 @Dao
 interface MangaDao : BaseDao<Manga> {
@@ -43,4 +45,8 @@ interface MangaDao : BaseDao<Manga> {
     @Query("SELECT * FROM `${MangaColumn.tableName}` ORDER BY `${MangaColumn.populate}` DESC")
     fun loadMangaPopulateAsc(): DataSource.Factory<Int, Manga>
 
+}
+
+fun MangaDao.getFromPath(file: File): Manga? {
+    return getItems().firstOrNull { getFullPath(it.path) == file }
 }

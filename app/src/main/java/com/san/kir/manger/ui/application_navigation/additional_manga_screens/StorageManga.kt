@@ -65,7 +65,7 @@ fun StorageMangaScreen(nav: NavHostController) {
 @Composable
 fun StorageMangaContent(
     manga: Manga,
-    viewModel: StorageViewModel = hiltViewModel(),
+    viewModel: StorageMangaViewModel = hiltViewModel(),
     ctx: Context = LocalContext.current
 ) {
 

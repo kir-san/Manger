@@ -5,3 +5,4 @@
 .externalNativeBuild
 /buildSrc/build
 /app/build
+/.idea/sonarlint

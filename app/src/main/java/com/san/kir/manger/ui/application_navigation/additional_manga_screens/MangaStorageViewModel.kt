@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class StorageMangaViewModel @Inject constructor(
+class MangaStorageViewModel @Inject constructor(
     private val storageDao: StorageDao,
     private val mangaDao: MangaDao,
     private val chapterDao: ChapterDao,

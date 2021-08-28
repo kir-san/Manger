@@ -42,18 +42,18 @@ import kotlinx.coroutines.withContext
 
 // TODO добавить вставку из буфера обмена одной кнопкой с выводом содержимого
 @Composable
-fun AddMangaOnlineScreen(nav: NavHostController) {
+fun MangaAddOnlineScreen(nav: NavHostController) {
     TopBarScreenWithInsets(
         nav = nav,
         title = stringResource(R.string.library_add_manga_title)
     ) {
-        AddMangaOnlineContent(nav)
+        MangaAddOnlineContent(nav)
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun ColumnScope.AddMangaOnlineContent(
+fun ColumnScope.MangaAddOnlineContent(
     nav: NavHostController,
     scope: CoroutineScope = rememberCoroutineScope(),
 ) {

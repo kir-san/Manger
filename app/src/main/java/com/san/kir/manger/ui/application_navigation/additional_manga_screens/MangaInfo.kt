@@ -91,43 +91,39 @@ private fun MangaInfoContent(
 
     if (isUpdate) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
 
-    LabelText(idRes = R.string.manga_info_dialog_name)
-    DialogText(text = element.name)
+    LabelText(R.string.manga_info_dialog_name)
+    DialogText(element.name)
 
-    LabelText(idRes = R.string.manga_info_dialog_authors)
-    DialogText(text = listStrToString(element.authors))
+    LabelText(R.string.manga_info_dialog_authors)
+    DialogText(listStrToString(element.authors))
 
-    LabelText(idRes = R.string.manga_info_dialog_type)
-    DialogText(text = element.type)
+    LabelText(R.string.manga_info_dialog_type)
+    DialogText(element.type)
 
-    LabelText(idRes = R.string.manga_info_dialog_status_edition)
-    DialogText(text = element.statusEdition)
+    LabelText(R.string.manga_info_dialog_status_edition)
+    DialogText(element.statusEdition)
 
-    LabelText(idRes = R.string.manga_info_dialog_volume)
-    DialogText(
-        text = stringResource(
-            R.string.catalog_for_one_site_prefix_volume, element.volume
-        )
-    )
+    LabelText(R.string.manga_info_dialog_volume)
+    DialogText(stringResource(R.string.catalog_for_one_site_prefix_volume, element.volume))
 
-    LabelText(idRes = R.string.manga_info_dialog_status_translate)
-    DialogText(text = element.statusTranslate)
+    LabelText(R.string.manga_info_dialog_status_translate)
+    DialogText(element.statusTranslate)
 
-    LabelText(idRes = R.string.manga_info_dialog_genres)
-    DialogText(text = listStrToString(element.genres))
+    LabelText(R.string.manga_info_dialog_genres)
+    DialogText(listStrToString(element.genres))
 
-    LabelText(idRes = R.string.manga_info_dialog_link)
-    DialogText(text = element.link, color = Color.Blue) {
+    LabelText(R.string.manga_info_dialog_link)
+    DialogText(element.link, color = Color.Blue) {
         ctx.browse(element.link)
     }
 
-    LabelText(idRes = R.string.manga_info_dialog_about)
-    DialogText(text = element.about)
+    LabelText(R.string.manga_info_dialog_about)
+    DialogText(element.about)
 
-    LabelText(idRes = R.string.manga_info_dialog_logo)
+    LabelText(R.string.manga_info_dialog_logo)
     AnimatedVisibility(visible = !isShowLogo) {
         DialogText(
-            text = stringResource(
+            stringResource(
                 id = when (statusLogo) {
                     StatusLogo.Standart -> R.string.manga_info_dialog_loading
                     StatusLogo.Error -> R.string.manga_info_dialog_loading_failed

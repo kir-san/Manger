@@ -29,56 +29,39 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.san.kir.ankofork.startService
 import com.san.kir.manger.R
-import com.san.kir.manger.components.parsing.ManageSites
-import com.san.kir.manger.components.parsing.SiteCatalogAlternative
-import com.san.kir.manger.room.dao.CategoryDao
-import com.san.kir.manger.room.dao.MangaDao
-import com.san.kir.manger.room.dao.StatisticDao
-import com.san.kir.manger.room.entities.Category
 import com.san.kir.manger.room.entities.MangaColumn
-import com.san.kir.manger.room.entities.MangaStatistic
 import com.san.kir.manger.room.entities.SiteCatalogElement
-import com.san.kir.manger.room.entities.toManga
 import com.san.kir.manger.services.MangaUpdaterService
 import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.AddManga
 import com.san.kir.manger.ui.utils.DialogText
 import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
 import com.san.kir.manger.ui.utils.getElement
-import com.san.kir.manger.utils.enums.DIR
-import com.san.kir.manger.utils.extensions.createDirs
-import com.san.kir.manger.utils.extensions.getFullPath
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
-import java.util.regex.Pattern
-import javax.inject.Inject
 
 @Composable
-fun AddMangaScreen(nav: NavHostController) {
+fun MangaAddScreen(nav: NavHostController) {
     val item by remember { mutableStateOf(nav.getElement(AddManga) ?: SiteCatalogElement()) }
 
     TopBarScreenWithInsets(
         nav = nav,
         title = stringResource(id = R.string.add_manga_screen_title)
     ) {
-        AddMangaContent(item, nav)
+        MangaAddContent(item, nav)
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-private fun ColumnScope.AddMangaContent(
+private fun ColumnScope.MangaAddContent(
     item: SiteCatalogElement,
     nav: NavHostController,
-    viewModel: AddMangaViewModel = hiltViewModel()
+    viewModel: MangaAddViewModel = hiltViewModel()
 ) {
 
     var categories by remember { mutableStateOf(emptyList<String>()) }
@@ -193,7 +176,7 @@ private fun ContinueProcess(
     item: SiteCatalogElement,
     category: String,
     closeBtn: MutableState<Boolean>,
-    viewModel: AddMangaViewModel = hiltViewModel()
+    viewModel: MangaAddViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
 
@@ -278,52 +261,3 @@ private object ProcessStatus {
     const val allComplete = 5
 }
 
-@HiltViewModel
-class AddMangaViewModel @Inject constructor(
-    private val categoryDao: CategoryDao,
-    private val mangaDao: MangaDao,
-    private val statisticDao: StatisticDao,
-) : ViewModel() {
-    suspend fun getCategories() =
-        withContext(Dispatchers.IO) {
-            categoryDao.getItems().map { it.name }
-        }
-
-    suspend fun hasCategory(category: String): Boolean {
-        return getCategories().any { it.contains(category) }
-    }
-
-    suspend fun addCategory(category: String) {
-        categoryDao.insert(
-            Category(
-                name = category,
-                order = getCategories().size + 1
-            )
-        )
-    }
-
-    suspend fun updateSiteElement(
-        item: SiteCatalogElement,
-        category: String
-    ) = withContext(Dispatchers.IO) {
-        val updatedElement = ManageSites.getFullElement(item)
-        val pat = Pattern.compile("[a-z/0-9]+-").matcher(updatedElement.shotLink)
-        var shortPath = item.shotLink
-        if (pat.find())
-            shortPath = item.shotLink.removePrefix(pat.group()).removeSuffix(".html")
-        val path = "${DIR.MANGA}/${item.catalogName}/$shortPath"
-
-        val manga = updatedElement.toManga(category = category, path = path)
-
-        manga.isAlternativeSite = ManageSites.getSite(item.link) is SiteCatalogAlternative
-
-        mangaDao.insert(manga)
-        statisticDao.insert(MangaStatistic(manga = manga.unic))
-
-        path to manga
-    }
-
-    fun createDirs(path: String): Boolean {
-        return (getFullPath(path)).createDirs()
-    }
-}

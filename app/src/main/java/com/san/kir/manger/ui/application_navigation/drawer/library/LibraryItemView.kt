@@ -62,8 +62,10 @@ private fun ItemView(
     viewModel: LibraryViewModel = hiltViewModel(),
     content: @Composable () -> Unit,
 ) {
-    val primaryColor = MaterialTheme.colors.primary
-    var backgroundColor by remember { mutableStateOf(primaryColor) }
+    val defaultColor = MaterialTheme.colors.primary
+    var backgroundColor by remember {
+        mutableStateOf(runCatching { Color(manga.color) }.getOrDefault(defaultColor))
+    }
     var expandedMenu by remember { mutableStateOf(false) }
     var expandedCategory by remember { mutableStateOf(false) }
     var deleteDialog by remember { mutableStateOf(false) }
@@ -154,16 +156,6 @@ private fun ItemView(
             title = { Text(text = stringResource(id = R.string.library_popupmenu_delete_title)) },
             text = { Text(text = stringResource(id = R.string.library_popupmenu_delete_message)) }
         )
-    }
-
-    LaunchedEffect(manga) {
-        if (manga.color != 0) {
-            backgroundColor = try {
-                Color(manga.color)
-            } catch (e: Exception) {
-                primaryColor
-            }
-        }
     }
 }
 

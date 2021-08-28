@@ -50,22 +50,22 @@ import com.san.kir.manger.workmanager.ReadChapterDelete
 import kotlinx.coroutines.flow.collect
 
 @Composable
-fun StorageMangaScreen(nav: NavHostController) {
+fun MangaStorageScreen(nav: NavHostController) {
     val item by remember { mutableStateOf(nav.getElement(StorageManga) ?: Manga()) }
 
     TopBarScreenWithInsets(
         nav = nav,
         title = item.name,
     ) {
-        StorageMangaContent(item)
+        MangaStorageContent(item)
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun StorageMangaContent(
+fun MangaStorageContent(
     manga: Manga,
-    viewModel: StorageMangaViewModel = hiltViewModel(),
+    viewModel: MangaStorageViewModel = hiltViewModel(),
     ctx: Context = LocalContext.current
 ) {
 

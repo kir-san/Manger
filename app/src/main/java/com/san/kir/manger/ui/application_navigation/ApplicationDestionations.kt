@@ -6,11 +6,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.createGraph
 import com.google.accompanist.navigation.animation.composable
 import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.Drawer
-import com.san.kir.manger.ui.application_navigation.additional_manga_screens.AboutMangaScreen
-import com.san.kir.manger.ui.application_navigation.additional_manga_screens.AddMangaOnlineScreen
-import com.san.kir.manger.ui.application_navigation.additional_manga_screens.AddMangaScreen
+import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaAboutScreen
+import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaAddOnlineScreen
+import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaAddScreen
+import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaEditScreen
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaInfoScreen
-import com.san.kir.manger.ui.application_navigation.additional_manga_screens.StorageMangaScreen
+import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaStorageScreen
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogScreen
 import com.san.kir.manger.ui.application_navigation.chapters.ChaptersScreen
 import com.san.kir.manger.ui.application_navigation.drawer.DrawerScreen
@@ -54,7 +55,7 @@ enum class ApplicationNavigationDestination(
     // Добавление манги по ссылке
     AddMangaOnline(
         route = "add_manga_online",
-        content = { nav, _ -> AddMangaOnlineScreen(nav) }
+        content = { nav, _ -> MangaAddOnlineScreen(nav) }
     ),
 
     // Просмотр всей информации на сайте о манге
@@ -68,14 +69,14 @@ enum class ApplicationNavigationDestination(
     AboutManga(
         route = "about_manga",
         element = "manga_element",
-        content = { nav, _ -> AboutMangaScreen(nav) }
+        content = { nav, _ -> MangaAboutScreen(nav) }
     ),
 
     // Добавление манги с выбором категории
     AddManga(
         route = "add_manga",
         element = "add_manga_element",
-        content = { nav, _ -> AddMangaScreen(nav) }
+        content = { nav, _ -> MangaAddScreen(nav) }
     ),
 
     // Редактирование манги
@@ -89,7 +90,7 @@ enum class ApplicationNavigationDestination(
     StorageManga(
         route = "storage_manga",
         element = "storage_manga_element",
-        content = { nav, _ -> StorageMangaScreen(nav) }
+        content = { nav, _ -> MangaStorageScreen(nav) }
     ),
 
     // Редактирование параметров категории

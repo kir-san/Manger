@@ -8,7 +8,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,15 +35,14 @@ import kotlinx.coroutines.withContext
 
 
 @Composable
-fun AboutMangaScreen(nav: NavController) {
-    val item =
-        remember { mutableStateOf(nav.getElement(AboutManga) ?: Manga()) }
+fun MangaAboutScreen(nav: NavController) {
+    val item by remember { mutableStateOf(nav.getElement(AboutManga) ?: Manga()) }
 
     TopBarScreenWithInsets(
         nav = nav,
         title = stringResource(id = R.string.manga_info_dialog_title),
         actions = {
-            IconButton(onClick = { nav.navigate(EditManga, item.value) }) {
+            IconButton(onClick = { nav.navigate(EditManga, item) }) {
                 Icon(
                     Icons.Default.Edit,
                     contentDescription = "edit manga",
@@ -54,16 +52,15 @@ fun AboutMangaScreen(nav: NavController) {
         }
 
     ) {
-        AboutMangaContent(item)
+        MangaAboutContent(item)
     }
 }
 
 @Composable
-private fun AboutMangaContent(
-    item: MutableState<Manga>,
+private fun MangaAboutContent(
+    manga: Manga,
     ctx: Context = LocalContext.current
 ) {
-    val manga by item
 
     val calculateString = stringResource(id = R.string.about_manga_dialog_calculate)
     var size by remember { mutableStateOf(calculateString) }
@@ -102,7 +99,7 @@ private fun AboutMangaContent(
     LabelText(idRes = R.string.about_manga_dialog_logo)
     ImageWithStatus(manga.logo)
 
-    LaunchedEffect(item) {
+    LaunchedEffect(manga) {
         size = withContext(Dispatchers.Default) {
             ctx.getString(
                 R.string.library_page_item_size,

@@ -3,14 +3,11 @@ package com.san.kir.manger.ui.application_navigation.drawer.categories
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.AlertDialog
-import androidx.compose.material.Checkbox
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Slider
@@ -34,6 +31,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.EditCategory
+import com.san.kir.manger.ui.utils.CheckBoxText
 import com.san.kir.manger.ui.utils.MenuIcon
 import com.san.kir.manger.ui.utils.RadioGroup
 import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
@@ -146,7 +144,7 @@ private fun TextWithValidate(
     var validate by rememberSaveable { mutableStateOf("") }
     var text by rememberSaveable { mutableStateOf(viewState.category.name) }
 
-    viewModel.setCategoryProperty(name = text)
+    viewModel.update { name = text }
 
     OutlinedTextField(
         value = text,
@@ -185,7 +183,7 @@ private fun ChangeSortType(
 ) {
     val viewState by viewModel.state.collectAsState()
     var state by rememberSaveable { mutableStateOf(viewState.category.typeSort) }
-    viewModel.setCategoryProperty(typeSort = state)
+    viewModel.update { typeSort = state }
 
     RadioGroup(
         state,
@@ -213,9 +211,9 @@ private fun ChangeReverseSort(
     val viewState by viewModel.state.collectAsState()
 
     var state by rememberSaveable { mutableStateOf(viewState.category.isReverseSort) }
-    viewModel.setCategoryProperty(isReverseSort = state)
+    viewModel.update { isReverseSort = state }
 
-    CheckBoxItem(
+    CheckBoxText(
         state = state,
         onChange = {
             viewModel.newChanges()
@@ -232,9 +230,9 @@ private fun ChangeVisibility(
     val viewState by viewModel.state.collectAsState()
 
     var state by rememberSaveable { mutableStateOf(viewState.category.isVisible) }
-    viewModel.setCategoryProperty(isVisible = state)
+    viewModel.update { isVisible = state }
 
-    CheckBoxItem(
+    CheckBoxText(
         state = state.not(),
         onChange = {
             viewModel.newChanges()
@@ -252,12 +250,12 @@ private fun ChangePortraitOptions(
     val viewState by viewModel.state.collectAsState()
 
     var isLarge by rememberSaveable { mutableStateOf(viewState.category.isLargePortrait) }
-    viewModel.setCategoryProperty(isLargePortrait = isLarge)
+    viewModel.update { isLargePortrait = isLarge }
 
     var span by rememberSaveable { mutableStateOf(viewState.category.spanPortrait) }
-    viewModel.setCategoryProperty(spanPortrait = span)
+    viewModel.update { spanPortrait = span }
 
-    CheckBoxItem(
+    CheckBoxText(
         state = isLarge,
         onChange = {
             viewModel.newChanges()
@@ -283,12 +281,12 @@ private fun ChangeLandscapeOptions(viewModel: CategoryEditViewModel) {
     val viewState by viewModel.state.collectAsState()
 
     var isLarge by rememberSaveable { mutableStateOf(viewState.category.isLargeLandscape) }
-    viewModel.setCategoryProperty(isLargeLandscape = isLarge)
+    viewModel.update { isLargeLandscape = isLarge }
 
     var span by rememberSaveable { mutableStateOf(viewState.category.spanLandscape) }
-    viewModel.setCategoryProperty(spanLandscape = span)
+    viewModel.update { spanLandscape = span }
 
-    CheckBoxItem(
+    CheckBoxText(
         state = isLarge,
         onChange = {
             viewModel.newChanges()
@@ -308,36 +306,6 @@ private fun ChangeLandscapeOptions(viewModel: CategoryEditViewModel) {
     }
 }
 
-@Composable
-private fun CheckBoxItem(
-    state: Boolean,
-    onChange: (Boolean) -> Unit,
-    @StringRes firstTextId: Int,
-    @StringRes secondTextId: Int = -1,
-) {
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .clickable { onChange(state.not()) }) {
-
-        Checkbox(
-            checked = state,
-            onCheckedChange = onChange,
-            modifier = Modifier.padding(end = 10.dp)
-        )
-
-        if (secondTextId == -1)
-            Text(text = stringResource(id = firstTextId))
-        else
-            Text(
-                text = stringResource(
-                    id = if (state)
-                        firstTextId
-                    else
-                        secondTextId
-                )
-            )
-    }
-}
 
 @Composable
 private fun TextWithSlider(

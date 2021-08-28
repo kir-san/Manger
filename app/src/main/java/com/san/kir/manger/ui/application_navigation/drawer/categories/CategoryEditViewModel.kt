@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -68,28 +69,8 @@ class CategoryEditViewModel @Inject constructor(
         return Category(order = categoryDao.getItems().count() + 1)
     }
 
-    fun setCategoryProperty(
-        name: String? = null,
-        typeSort: String? = null,
-        isReverseSort: Boolean? = null,
-        isVisible: Boolean? = null,
-        isLargePortrait: Boolean? = null,
-        spanPortrait: Int? = null,
-        isLargeLandscape: Boolean? = null,
-        spanLandscape: Int? = null,
-    ) = viewModelScope.launch {
-        val cat = _currentCategory.value.copy()
-        when {
-            name != null -> cat.name = name
-            typeSort != null -> cat.typeSort = typeSort
-            isReverseSort != null -> cat.isReverseSort = isReverseSort
-            isVisible != null -> cat.isVisible = isVisible
-            isLargePortrait != null -> cat.isLargePortrait = isLargePortrait
-            spanPortrait != null -> cat.spanPortrait = spanPortrait
-            isLargeLandscape != null -> cat.isLargeLandscape = isLargeLandscape
-            spanLandscape != null -> cat.spanLandscape = spanLandscape
-        }
-        _currentCategory.emit(cat)
+    fun update(action: Category.() -> Unit) {
+        _currentCategory.update { it.apply { action } }
     }
 
     fun nullChanges() {

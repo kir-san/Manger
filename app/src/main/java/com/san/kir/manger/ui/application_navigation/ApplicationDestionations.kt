@@ -82,7 +82,7 @@ enum class ApplicationNavigationDestination(
     EditManga(
         route = "edit_manga",
         element = "edit_manga_element",
-        content = { nav, _ -> }
+        content = { nav, _ -> MangaEditScreen(nav) }
     ),
 
     // Просмотр информации о занимаемом объеме

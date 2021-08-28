@@ -47,13 +47,6 @@
             android:name=".components.viewer.ViewerActivity"
             android:theme="@style/AppTheme.Viewer"
             />
-
-        <activity
-            android:name=".components.add_manga.AddMangaActivity"
-            android:theme="@style/AppTheme"
-            android:windowSoftInputMode="stateHidden"
-            android:label="@string/add_manga_title"
-            />
         <activity
             android:name=".components.settings.SettingActivity"
             android:label="@string/main_menu_settings"

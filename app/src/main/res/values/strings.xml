@@ -69,7 +69,7 @@
     для хранения манги для возможности читать ее в любой момент. Для работы требуется ваше согласие.</string>
 
     <!-- AddManga -->
-    <string name="add_manga_title">Редактор манги</string>
+    <string name="edit_manga_title">Редактор манги</string>
     <string name="add_manga_ready">Готово</string>
     <string name="add_manga_name">Название</string>
     <string name="add_manga_author">Автор</string>

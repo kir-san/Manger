@@ -42,7 +42,6 @@ class CategoryRepository(context: Context) {
     }
 
     suspend fun items() = withContext(Dispatchers.Default) { mCategoryDao.getItems() }
-    suspend fun categoryNames() = items().map { it.name }
 
     suspend fun insert(vararg category: Category) = mCategoryDao.insert(*category)
     suspend fun update(vararg category: Category) = mCategoryDao.update(*category)

@@ -37,8 +37,9 @@ fun ListItem(
     item: SiteCatalogElement,
     firstName: String,
     secondName: String,
-    nav: NavHostController,
-    viewModel: SuppotMangaViewModel = hiltViewModel()
+    viewModel: SuppotMangaViewModel = hiltViewModel(),
+    navAddAction: () -> Unit,
+    navInfoAction: () -> Unit,
 ) {
     var isAdded by remember { mutableStateOf(false) }
     var isUpdated by remember { mutableStateOf(false) }
@@ -54,7 +55,7 @@ fun ListItem(
             .fillMaxWidth()
             .height(60.dp)
             .padding(horizontal = 16.dp)
-            .clickable { nav.navigate(MangaInfo, item) }
+            .clickable { navInfoAction() }
     ) {
         Column(
             Modifier
@@ -80,7 +81,7 @@ fun ListItem(
                 modifier = Modifier
                     .size(btnSizeAddUpdate)
                     .align(Alignment.CenterVertically)
-                    .clickable { nav.navigate(AddManga, item) }
+                    .clickable { navAddAction() }
             )
 
         if (isUpdated)

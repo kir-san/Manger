@@ -8,12 +8,21 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.darkColors
+import androidx.compose.material.lightColors
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 import androidx.core.view.WindowCompat
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.san.kir.manger.services.CatalogForOneSiteUpdaterService
 import com.san.kir.manger.services.MangaUpdaterService
-import com.san.kir.manger.ui.application_navigation.chapters.ChaptersActionViewModel
-import com.san.kir.manger.ui.application_navigation.chapters.ChaptersViewModel
+import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaStorageViewModel
+import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewModel
+import com.san.kir.manger.ui.application_navigation.library.chapters.ChaptersActionViewModel
+import com.san.kir.manger.ui.application_navigation.library.chapters.ChaptersViewModel
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,6 +37,8 @@ class MainActivity : ComponentActivity() {
     interface ViewModelFactoryProvider {
         fun chaptersActionViewModelFactory(): ChaptersActionViewModel.Factory
         fun chaptersViewModelFactory(): ChaptersViewModel.Factory
+        fun catalogViewModelFactory(): CatalogViewModel.Factory
+        fun mangaStorageViewModelFactory(): MangaStorageViewModel.Factory
     }
 
     private val mainViewModel: MainViewModel by viewModels()
@@ -60,10 +71,25 @@ class MainActivity : ComponentActivity() {
             registerReceiver(chaptersReceiver, this)
         }
 
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         setContent {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
             CompositionLocalProvider(LocalBaseViewModel provides mainViewModel) {
-                MangerApp(::closeActivity)
+                MaterialTheme(colors = if (isSystemInDarkTheme()) darkColors() else lightColors()) {
+                    // Remember a SystemUiController
+                    val systemUiController = rememberSystemUiController()
+                    val useDarkIcons = MaterialTheme.colors.isLight
+
+                    SideEffect {
+                        // Update all of the system bar colors to be transparent, and use
+                        // dark icons if we're in light theme
+                        systemUiController.setSystemBarsColor(
+                            color = Color.Transparent,
+                            darkIcons = useDarkIcons
+                        )
+                    }
+                    MangerApp()
+                }
             }
         }
     }
@@ -72,10 +98,6 @@ class MainActivity : ComponentActivity() {
         unregisterReceiver(catalogReceiver)
         unregisterReceiver(chaptersReceiver)
         super.onDestroy()
-    }
-
-    private fun closeActivity() {
-        finishAffinity()
     }
 }
 

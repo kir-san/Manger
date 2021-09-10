@@ -38,18 +38,14 @@ import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.MangaColumn
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.services.MangaUpdaterService
-import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.AddManga
 import com.san.kir.manger.ui.utils.DialogText
 import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
-import com.san.kir.manger.ui.utils.getElement
 import kotlinx.coroutines.delay
 
 @Composable
-fun MangaAddScreen(nav: NavHostController) {
-    val item by remember { mutableStateOf(nav.getElement(AddManga) ?: SiteCatalogElement()) }
-
+fun MangaAddScreen(nav: NavHostController, item: SiteCatalogElement) {
     TopBarScreenWithInsets(
-        nav = nav,
+        navigationButtonListener = { nav.navigateUp() },
         title = stringResource(id = R.string.add_manga_screen_title)
     ) {
         MangaAddContent(item, nav)
@@ -139,7 +135,7 @@ private fun ColumnScope.MangaAddContent(
         }
 
         AnimatedVisibility(visible = closeBtn.value) {
-            Button(onClick = { nav.popBackStack() }) {
+            Button(onClick = { nav.navigateUp() }) {
                 Text(text = stringResource(id = R.string.add_manga_close_btn))
             }
         }

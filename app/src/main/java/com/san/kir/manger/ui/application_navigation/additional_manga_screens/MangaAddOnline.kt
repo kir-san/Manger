@@ -44,7 +44,7 @@ import kotlinx.coroutines.withContext
 @Composable
 fun MangaAddOnlineScreen(nav: NavHostController) {
     TopBarScreenWithInsets(
-        nav = nav,
+        navigationButtonListener = { nav.navigateUp() },
         title = stringResource(R.string.library_add_manga_title)
     ) {
         MangaAddOnlineContent(nav)
@@ -128,7 +128,7 @@ fun ColumnScope.MangaAddOnlineContent(
         mainAxisAlignment = FlowMainAxisAlignment.End,
         crossAxisAlignment = FlowCrossAxisAlignment.End,
     ) {
-        Button(onClick = { nav.popBackStack() }, modifier = Modifier.padding(end = 16.dp)) {
+        Button(onClick = { nav.navigateUp() }, modifier = Modifier.padding(end = 16.dp)) {
             Text(text = stringResource(id = R.string.library_add_manga_cancel_btn))
         }
 

@@ -37,9 +37,6 @@ import androidx.lifecycle.asFlow
 import androidx.navigation.NavHostController
 import androidx.work.WorkManager
 import com.san.kir.manger.R
-import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.room.entities.Storage
-import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.StorageManga
 import com.san.kir.manger.ui.utils.StorageProgressBar
 import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
 import com.san.kir.manger.ui.utils.getElement
@@ -50,12 +47,15 @@ import com.san.kir.manger.workmanager.ReadChapterDelete
 import kotlinx.coroutines.flow.collect
 
 @Composable
-fun MangaStorageScreen(nav: NavHostController) {
-    val item by remember { mutableStateOf(nav.getElement(StorageManga) ?: Manga()) }
+fun MangaStorageScreen(
+    nav: NavHostController,
+    viewModel: MangaStorageViewModel
+) {
+    val manga by viewModel.manga.collectAsState()
 
-    TopBarScreenWithInsets(
-        nav = nav,
-        title = item.name,
+    TopBarScreenContent(
+        navHostController = nav,
+        title = manga.name,
     ) {
         MangaStorageContent(item)
     }

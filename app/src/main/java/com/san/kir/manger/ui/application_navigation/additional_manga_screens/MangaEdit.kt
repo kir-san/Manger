@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.san.kir.manger.R
 import com.san.kir.manger.room.dao.CategoryDao
 import com.san.kir.manger.room.dao.MangaDao
@@ -63,11 +63,15 @@ import javax.inject.Inject
 
 
 @Composable
-fun MangaEditScreen(nav: NavController, viewModel: EditMangaViewModel = hiltViewModel()) {
-    var item = rememberSaveable { nav.getElement(EditManga) ?: Manga() }
+fun MangaEditScreen(
+    nav: NavHostController,
+    item: Manga,
+    viewModel: MangaEditViewModel = hiltViewModel()
+) {
+    var manga = remember { item }
 
     TopBarScreenWithInsets(
-        nav = nav,
+        navigationButtonListener = { nav.navigateUp() },
         title = stringResource(id = R.string.edit_manga_title),
         actions = {
             IconButton(onClick = { /* save manga */

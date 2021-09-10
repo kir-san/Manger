@@ -15,12 +15,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.san.kir.ankofork.browse
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.AboutManga
-import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.EditManga
+import com.san.kir.manger.ui.application_navigation.library.LibraryNavTarget
 import com.san.kir.manger.ui.utils.DialogText
 import com.san.kir.manger.ui.utils.ImageWithStatus
 import com.san.kir.manger.ui.utils.LabelText
@@ -35,14 +34,15 @@ import kotlinx.coroutines.withContext
 
 
 @Composable
-fun MangaAboutScreen(nav: NavController) {
-    val item by remember { mutableStateOf(nav.getElement(AboutManga) ?: Manga()) }
-
+fun MangaAboutScreen(nav: NavHostController, item: Manga) {
     TopBarScreenWithInsets(
-        nav = nav,
+        modifier = Modifier,
+        navigationButtonListener = { nav.navigateUp() },
         title = stringResource(id = R.string.manga_info_dialog_title),
         actions = {
-            IconButton(onClick = { nav.navigate(EditManga, item) }) {
+            IconButton(onClick = {
+                nav.navigate(LibraryNavTarget.Edit, item)
+            }) {
                 Icon(
                     Icons.Default.Edit,
                     contentDescription = "edit manga",

@@ -29,8 +29,7 @@ import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.ui.SuppotMangaViewModel
-import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.AddManga
-import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.MangaInfo
+import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
 import com.san.kir.manger.ui.utils.DialogText
 import com.san.kir.manger.ui.utils.LabelText
 import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
@@ -58,11 +57,11 @@ fun MangaInfoScreen(
     }
 
     TopBarScreenWithInsets(
-        nav = nav,
+        navigationButtonListener = { nav.navigateUp() },
         title = stringResource(id = R.string.manga_info_dialog_title),
         actions = {
             AnimatedVisibility(visible = isAdded) {
-                IconButton(onClick = { nav.navigate(AddManga, item.value) }) {
+                IconButton(onClick = { nav.navigate(CatalogsNavTarget.AddLocal, item) }) {
                     Icon(
                         Icons.Default.Add,
                         contentDescription = "add manga",

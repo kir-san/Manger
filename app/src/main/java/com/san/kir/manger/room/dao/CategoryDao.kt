@@ -1,6 +1,6 @@
 package com.san.kir.manger.room.dao
 
-import androidx.paging.DataSource
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
@@ -23,4 +23,8 @@ abstract class CategoryDao :
     @Transaction
     @Query("SELECT * FROM `categories` ORDER BY `order`")
     abstract fun loadItemsAdds(): Flow<List<CategoryWithMangas>>
+
+    @Transaction
+    @Query("SELECT * FROM `categories` ORDER BY `order`")
+    abstract fun allItemsByOrder(): PagingSource<Int, CategoryWithMangas>
 }

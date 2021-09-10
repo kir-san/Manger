@@ -1,18 +1,15 @@
 package com.san.kir.manger.ui.application_navigation.storage.main
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.DropdownMenu
@@ -33,20 +30,21 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.rememberInsetsPaddingValues
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.items
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Storage
 import com.san.kir.manger.ui.application_navigation.storage.StorageNavTarget
 import com.san.kir.manger.ui.utils.MenuText
 import com.san.kir.manger.ui.utils.StorageProgressBar
+import com.san.kir.manger.ui.utils.TopBarScreenList
 import com.san.kir.manger.ui.utils.navigate
 import com.san.kir.manger.utils.extensions.formatDouble
 import com.san.kir.manger.utils.loadImage
-import com.san.kir.manger.view_models.TitleViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
@@ -57,6 +55,7 @@ fun StorageScreen(
     viewModel: StorageViewModel = hiltViewModel()
 ) {
     val viewState by viewModel.state.collectAsState()
+    val allStorage = viewModel.allStorage.collectAsLazyPagingItems()
 
     TopBarScreenList(
         navHostController = nav,
@@ -73,8 +72,8 @@ fun StorageScreen(
             viewState.storageCounts
         )
     ) {
-        items(items = viewState.items, key = { storage -> storage.id }) { item ->
-            ItemView(item, mainNav)
+        items(items = allStorage) { item ->
+            item?.let { ItemView(nav, item, viewModel) }
         }
     }
 }
@@ -105,15 +104,27 @@ private fun ItemView(
             }
     ) {
         // Иконка манги, если для этой папки она еще есть
-        Image(
-            logo,
-            contentDescription = "",
-            modifier = Modifier
-                .padding(3.dp)
-                .clip(CircleShape)
-                .size(60.dp),
-            contentScale = ContentScale.Crop
-        )
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.size(60.dp)
+        ) {
+            Image(
+                logo,
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(3.dp)
+                    .clip(CircleShape)
+                    .size(60.dp),
+                contentScale = ContentScale.Crop
+            )
+            if (!isExists) {
+                Text(
+                    text = stringResource(id = R.string.storage_not_in_bd),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
 
         Column(
             modifier = Modifier
@@ -141,12 +152,6 @@ private fun ItemView(
                     ), modifier = Modifier.weight(1f, true),
                     style = MaterialTheme.typography.subtitle1
                 )
-                AnimatedVisibility(visible = isExists) {
-                    Text(
-                        text = stringResource(id = R.string.storage_not_in_bd),
-//                        style = MaterialTheme.typography.h3
-                    )
-                }
             }
             // Прогрессбар занимаемого места
             StorageProgressBar(

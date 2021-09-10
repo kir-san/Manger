@@ -3,6 +3,9 @@ package com.san.kir.manger.ui.application_navigation.storage.main
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
 import com.san.kir.ankofork.dialogs.longToast
 import com.san.kir.manger.room.dao.ChapterDao
 import com.san.kir.manger.room.dao.MangaDao
@@ -33,6 +36,16 @@ class StorageViewModel @Inject constructor(
     val state: StateFlow<StorageViewState>
         get() = _state
 
+    val allStorage = Pager(
+        config = PagingConfig(
+            pageSize = 30,
+            enablePlaceholders = true,
+            maxSize = 100,
+        )
+    ) {
+        storageDao.allItemsBySizeFull()
+    }.flow.cachedIn(viewModelScope)
+
     init {
         viewModelScope.launch(Dispatchers.Default) {
             mangaList = mangaDao.getItems()
@@ -45,7 +58,6 @@ class StorageViewModel @Inject constructor(
                     _state.value = StorageViewState(
                         storageSize = sizes,
                         storageCounts = count,
-                        items = items,
                     )
                 }
         }
@@ -75,5 +87,4 @@ class StorageViewModel @Inject constructor(
 data class StorageViewState(
     val storageSize: Double = 0.0,
     val storageCounts: Int = 0,
-    val items: List<Storage> = emptyList(),
 )

@@ -1,6 +1,7 @@
 package com.san.kir.manger.room.dao
 
 import androidx.lifecycle.LiveData
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
 import com.san.kir.manger.room.entities.Storage
@@ -16,7 +17,7 @@ interface StorageDao : BaseDao<Storage> {
     fun flowItems(): Flow<List<Storage>>
 
     @Query("SELECT * FROM StorageItem ORDER BY sizeFull DESC")
-    fun loadItems(): LiveData<List<Storage>>
+    fun allItemsBySizeFull(): PagingSource<Int, Storage>
 
     @Query("SELECT * FROM StorageItem WHERE path IS :shortPath")
     fun flowItem(shortPath: String): Flow<Storage?>

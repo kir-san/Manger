@@ -58,14 +58,21 @@ android {
             buildConfigField("String", "EXAMPLE", "\"release\"")
         }
         getByName("debug") {
-            isMinifyEnabled = true
-            isShrinkResources = true
             signingConfig = signingConfigs.getByName("release")
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
             extra["enableCrashlytics"] = false
 
             applicationIdSuffix = ".debug"
             buildConfigField("String", "EXAMPLE", "\"debug\"")
+        }
+        create("benchmark") {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            extra["enableCrashlytics"] = false
+            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+
+            signingConfig = signingConfigs.getByName("release")
+            isDebuggable = false
         }
     }
 
@@ -188,6 +195,19 @@ dependencies {
 
     // Use the most recent version of Compose available.
     // debugImplementation 'org.jetbrains.kotlin:kotlin-reflect:1.5.20'
+    testImplementation("junit:junit:4.12")
+
+    androidTestImplementation("androidx.test:core:1.4.0")
+    androidTestImplementation("androidx.test:rules:1.4.0")
+    androidTestImplementation("androidx.test.ext:junit:1.1.3")
+    androidTestImplementation("androidx.test:runner:1.4.0")
+    androidTestImplementation("com.google.truth:truth:1.0.1")
+    androidTestImplementation("androidx.benchmark:benchmark-junit4:1.0.0")
+
+    // Test rules and transitive dependencies:
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:${Versions.Compose.COMPOSE}")
+// Needed for createComposeRule, but not createAndroidComposeRule:
+    debugImplementation("androidx.compose.ui:ui-test-manifest:${Versions.Compose.COMPOSE}")
 }
 
 protobuf {

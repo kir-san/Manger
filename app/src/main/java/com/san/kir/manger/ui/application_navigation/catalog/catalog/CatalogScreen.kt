@@ -99,7 +99,6 @@ fun CatalogScreen(
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val coroutineScope = rememberCoroutineScope()
     val errorDialog = remember { mutableStateOf(false) }
-    val reloadDialog = remember { mutableStateOf(false) }
 
     when (vm.catalogReceiver.collectAsState().value) {
         "destroy" -> viewModel.setAction(false)
@@ -108,10 +107,10 @@ fun CatalogScreen(
 
     Scaffold(
         modifier = Modifier.navigationBarsWithImePadding(),
-        topBar = { TopBar(scaffoldState, viewState, site, viewModel) },
+        topBar = { TopBar(scaffoldState, viewState, viewModel) },
         scaffoldState = scaffoldState,
         drawerContent = { DrawerContent(viewState, viewModel) },
-        bottomBar = { BottomBar(viewModel, reloadDialog) }) {
+        bottomBar = { BottomBar(viewModel) }) {
 
         Column(
             modifier = Modifier
@@ -143,7 +142,6 @@ fun CatalogScreen(
         }
     }
 
-    ReloadDialog(reloadDialog, viewModel)
     ErrorReloadDialog(errorDialog, viewModel)
 }
 
@@ -200,10 +198,9 @@ private fun ReloadDialog(
 
 // Нижняя панель с кнопками сортировки списка
 @Composable
-private fun BottomBar(
-    viewModel: CatalogViewModel,
-    reloadDialog: MutableState<Boolean>,
-) {
+private fun BottomBar(viewModel: CatalogViewModel) {
+    val reloadDialog = remember { mutableStateOf(false) }
+
     var reverse by rememberSaveable { mutableStateOf(false) }
     viewModel.setIsReversed(reverse)
 
@@ -241,6 +238,8 @@ private fun BottomBar(
             )
         }
     }
+
+    ReloadDialog(reloadDialog, viewModel)
 }
 
 // Верхняя панель
@@ -249,7 +248,6 @@ private fun BottomBar(
 private fun TopBar(
     scaffoldState: ScaffoldState,
     viewState: CatalogViewState,
-    site: SiteCatalog,
     viewModel: CatalogViewModel
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -266,7 +264,7 @@ private fun TopBar(
     ) {
         TopAppBar(
             title = {
-                Text(text = "${site.name}: ${viewState.items.size}")
+                Text(text = "${viewState.catalogName}: ${viewState.items.size}")
             },
             navigationIcon = {
                 MenuIcon(icon = Icons.Default.Menu) {

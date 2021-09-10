@@ -32,18 +32,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.asFlow
 import androidx.navigation.NavHostController
 import androidx.work.WorkManager
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.utils.StorageProgressBar
-import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
-import com.san.kir.manger.ui.utils.getElement
+import com.san.kir.manger.ui.utils.TopBarScreenContent
 import com.san.kir.manger.utils.extensions.format
-import com.san.kir.manger.workmanager.AllChapterDelete
 import com.san.kir.manger.workmanager.ChapterDeleteWorker
-import com.san.kir.manger.workmanager.ReadChapterDelete
 import kotlinx.coroutines.flow.collect
 
 @Composable
@@ -57,20 +53,19 @@ fun MangaStorageScreen(
         navHostController = nav,
         title = manga.name,
     ) {
-        MangaStorageContent(item)
+        MangaStorageContent(viewModel)
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun MangaStorageContent(
-    manga: Manga,
-    viewModel: MangaStorageViewModel = hiltViewModel(),
+private fun MangaStorageContent(
+    viewModel: MangaStorageViewModel,
     ctx: Context = LocalContext.current
 ) {
 
-    val generalSize by viewModel.generalSize().collectAsState(initial = 0.0)
-    val storageItem by viewModel.storageWhere(manga.path).collectAsState(initial = Storage())
+    val generalSize by viewModel.generalSize.collectAsState(0.0)
+    val storageItem by viewModel.storage.collectAsState()
 
     var action by remember { mutableStateOf(false) }
     var dialog by remember { mutableStateOf<DeleteStatus>(DeleteStatus.None) }
@@ -128,13 +123,8 @@ fun MangaStorageContent(
             confirmButton = {
                 DialogBtn(id = R.string.library_popupmenu_delete_read_chapters_ok) {
                     action = true
+                    viewModel.deleteChapters(dialog)
                     dialog = DeleteStatus.None
-                    when (dialog) {
-                        DeleteStatus.All ->
-                            ChapterDeleteWorker.addTask<AllChapterDelete>(ctx, manga)
-                        DeleteStatus.Read ->
-                            ChapterDeleteWorker.addTask<ReadChapterDelete>(ctx, manga)
-                    }
                 }
             },
             dismissButton = {
@@ -208,7 +198,7 @@ private fun DialogBtn(id: Int, onClick: () -> Unit) {
     }
 }
 
-private sealed class DeleteStatus {
+sealed class DeleteStatus {
     object Read : DeleteStatus()
     object All : DeleteStatus()
     object None : DeleteStatus()

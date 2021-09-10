@@ -1,9 +1,12 @@
 package com.san.kir.manger.ui.application_navigation.catalog.catalog
 
 import android.app.Application
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
@@ -11,9 +14,13 @@ import com.san.kir.manger.room.CatalogDb
 import com.san.kir.manger.room.dao.SiteDao
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.services.CatalogForOneSiteUpdaterService
-import com.san.kir.manger.ui.application_navigation.catalog.CatalogViewModel.Companion.DATE
+import com.san.kir.manger.ui.MainActivity
+import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewModel.Companion.DATE
 import com.san.kir.manger.utils.extensions.startForegroundService
-import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,20 +30,13 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.*
-import javax.inject.Inject
 
-@HiltViewModel
-class CatalogViewModel @Inject constructor(
+class CatalogViewModel @AssistedInject constructor(
+    @Assisted private val siteName: String,
     private val application: Application,
     private val siteDao: SiteDao,
     private val manager: SiteCatalogsManager,
 ) : ViewModel() {
-    companion object {
-        const val DATE = 0
-        const val NAME = 1
-        const val POP = 2
-    }
-
     private var db: CatalogDb? = null
 
     private val siteCatalog by lazy { manager.catalog.first { it.name == siteName }.catalogName }
@@ -57,6 +57,46 @@ class CatalogViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.Default) {
+            setAction(true)
+
+            if (db == null) {
+                db = CatalogDb.getDatabase(application, siteCatalog, manager)
+            } else if (this@CatalogViewModel.siteCatalog != siteCatalog) {
+                db?.close()
+                db = CatalogDb.getDatabase(application, siteCatalog, manager)
+
+            }
+
+            db?.let {
+                val list = it.dao.loadItems().first()
+                backupCatalog.value = list
+                catalogFilter.value = listOf(
+                    CatalogFilter(
+                        name = "Жанры",
+                        catalog = list.flatMap { it.genres }.toHashSet().sorted()
+                    ),
+                    CatalogFilter(
+                        name = "Тип манги",
+                        catalog = list.map { it.type }.toHashSet().sorted()
+                    ),
+                    CatalogFilter(
+                        name = "Статус манги",
+                        catalog = list.map { it.statusEdition }.toHashSet().sorted()
+                    ),
+                    CatalogFilter(
+                        name = "Авторы",
+                        catalog = list.flatMap { it.authors }.toHashSet().sorted()
+                    )
+                )
+            }
+
+            siteDao.getItem(siteCatalog)?.let { site ->
+                site.oldVolume = backupCatalog.value.size
+                siteDao.update(site)
+            }
+        }
+
+        viewModelScope.launch(Dispatchers.Default) {
             combine(
                 backupCatalog, catalogFilter, searchText, sort, filters
             ) { backupCatalog, catalogFilter, searchText, sort, filters ->
@@ -68,56 +108,13 @@ class CatalogViewModel @Inject constructor(
                     filters = catalogFilter,
                     searchText = searchText,
                     sortType = sort.type,
-                    isReversed = sort.isReversed
+                    isReversed = sort.isReversed,
+                    catalogName = siteName,
                 )
             }.catch { t -> throw t }.collect {
                 setAction(false)
                 _state.value = it
             }
-        }
-    }
-
-    fun setSite(
-        siteCatalog: String,
-    ) = viewModelScope.launch(Dispatchers.Default) {
-        setAction(true)
-
-            if (db == null) {
-                db = CatalogDb.getDatabase(application, siteCatalog, manager)
-            } else if (this@CatalogViewModel.siteCatalog != siteCatalog) {
-                db?.close()
-                db = CatalogDb.getDatabase(application, siteCatalog, manager)
-
-        }
-
-        this@CatalogViewModel.siteCatalog = siteCatalog
-
-        db?.let {
-            val list = it.dao.loadItems().first()
-            backupCatalog.value = list
-            catalogFilter.value = listOf(
-                CatalogFilter(
-                    name = "Жанры",
-                    catalog = list.flatMap { it.genres }.toHashSet().sorted()
-                ),
-                CatalogFilter(
-                    name = "Тип манги",
-                    catalog = list.map { it.type }.toHashSet().sorted()
-                ),
-                CatalogFilter(
-                    name = "Статус манги",
-                    catalog = list.map { it.statusEdition }.toHashSet().sorted()
-                ),
-                CatalogFilter(
-                    name = "Авторы",
-                    catalog = list.flatMap { it.authors }.toHashSet().sorted()
-                )
-            )
-        }
-
-        siteDao.getItem(siteCatalog)?.let { site ->
-            site.oldVolume = backupCatalog.value.size
-            siteDao.update(site)
         }
     }
 
@@ -171,16 +168,17 @@ class CatalogViewModel @Inject constructor(
         filters.value = emptyList()
     }
 
-    fun setAction(value: Boolean, service: Boolean = false) {
-        if (value) {
-            if (service && !CatalogForOneSiteUpdaterService.isContain(siteCatalog))
-                application
-                    .startForegroundService<CatalogForOneSiteUpdaterService>("catalogName" to siteCatalog)
-            _action.value = true
-        } else if (!CatalogForOneSiteUpdaterService.isContain(siteCatalog)) {
-            _action.value = false
+    fun setAction(value: Boolean, service: Boolean = false) =
+        viewModelScope.launch(Dispatchers.Default) {
+            if (value) {
+                if (service && !CatalogForOneSiteUpdaterService.isContain(siteCatalog))
+                    application
+                        .startForegroundService<CatalogForOneSiteUpdaterService>("catalogName" to siteCatalog)
+                _action.value = true
+            } else if (!CatalogForOneSiteUpdaterService.isContain(siteCatalog)) {
+                _action.value = false
+            }
         }
-    }
 
     fun setSortType(value: Int) {
         sort.value = CatalogSort(isReversed = sort.value.isReversed, type = value)
@@ -211,6 +209,37 @@ class CatalogViewModel @Inject constructor(
 //        filters.value = newNamed
         viewModelScope.launch { filters.emit(newNamed) }
     }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(siteName: String): CatalogViewModel
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    companion object {
+        const val DATE = 0
+        const val NAME = 1
+        const val POP = 2
+
+        fun provideFactory(
+            assistedFactory: Factory,
+            siteName: String
+        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                return assistedFactory.create(siteName) as T
+            }
+        }
+    }
+}
+
+@Composable
+fun catalogViewModel(siteName: String): CatalogViewModel {
+    val factory = EntryPointAccessors.fromActivity(
+        LocalContext.current as MainActivity,
+        MainActivity.ViewModelFactoryProvider::class.java,
+    ).catalogViewModelFactory()
+
+    return viewModel(factory = CatalogViewModel.provideFactory(factory, siteName))
 }
 
 data class CatalogSort(
@@ -223,7 +252,8 @@ data class CatalogViewState(
     val filters: List<CatalogFilter> = emptyList(),
     val isReversed: Boolean = false,
     val sortType: Int = DATE,
-    val searchText: String = ""
+    val searchText: String = "",
+    val catalogName: String = ""
 )
 
 data class CatalogFilter(

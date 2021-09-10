@@ -15,7 +15,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,19 +25,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.san.kir.manger.R
-import com.san.kir.manger.components.parsing.ManageSites
-import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.AddManga
+import com.san.kir.manger.components.parsing.SiteCatalogsManager
+import com.san.kir.manger.room.entities.SiteCatalogElement
+import com.san.kir.manger.ui.application_navigation.library.LibraryNavTarget
 import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
 import com.san.kir.manger.ui.utils.navigate
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 // TODO добавить вставку из буфера обмена одной кнопкой с выводом содержимого
 @Composable
@@ -56,17 +60,12 @@ fun MangaAddOnlineScreen(nav: NavHostController) {
 fun ColumnScope.MangaAddOnlineContent(
     nav: NavHostController,
     scope: CoroutineScope = rememberCoroutineScope(),
+    viewModel: MangaAddOnlineViewModel = hiltViewModel(),
 ) {
-    var siteNames = remember { emptyList<String>() }
-    var validate by remember { mutableStateOf(emptyList<String>()) }
+    var validate by remember { mutableStateOf(viewModel.siteNames) }
     var isError by remember { mutableStateOf(false) }
     val validError = stringResource(id = R.string.library_add_manga_error)
     val hint = stringResource(id = R.string.library_add_manga_hint)
-
-    LaunchedEffect(true) {
-        siteNames = withContext(Dispatchers.IO) { ManageSites.CATALOG_SITES.map { it.catalogName } }
-        validate = siteNames
-    }
 
     var inputText by remember { mutableStateOf("") }
     var check by remember { mutableStateOf(false) }
@@ -76,7 +75,7 @@ fun ColumnScope.MangaAddOnlineContent(
         value = inputText,
         onValueChange = {
             inputText = it
-            validate = validateUrl(it, siteNames, isEnable)
+            validate = validateUrl(it, viewModel.siteNames, isEnable)
             isError = false
         },
         singleLine = true,
@@ -107,7 +106,7 @@ fun ColumnScope.MangaAddOnlineContent(
                     .padding(5.dp)
                     .clickable {
                         inputText = item
-                        validate = validateUrl(item, siteNames, isEnable)
+                        validate = validateUrl(item, viewModel.siteNames, isEnable)
                     }) {
                     Text(
                         item,
@@ -133,11 +132,11 @@ fun ColumnScope.MangaAddOnlineContent(
         }
 
         Button(onClick = {
-            scope.launch(Dispatchers.Default) {
+            scope.launch {
                 check = true
                 isEnable.value = false
-                ManageSites.getElementOnline(inputText)?.also { item ->
-                    nav.navigate(AddManga, item)
+                viewModel.elementOnline(inputText)?.also { item ->
+                    nav.navigate(LibraryNavTarget.AddLocal, item)
                 } ?: run {
                     isError = true
                     check = false
@@ -186,5 +185,23 @@ private fun validateUrl(
     else {
         isEnable.value = false
         siteNames
+    }
+}
+
+@HiltViewModel
+class MangaAddOnlineViewModel @Inject constructor(
+    private val manager: SiteCatalogsManager
+) : ViewModel() {
+    var siteNames: List<String> = listOf()
+        private set
+
+    init {
+        viewModelScope.launch(Dispatchers.Default) {
+            siteNames = manager.catalog.map { it.catalogName }
+        }
+    }
+
+    suspend fun elementOnline(url: String): SiteCatalogElement? {
+        return manager.getElementOnline(url)
     }
 }

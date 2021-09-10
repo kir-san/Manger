@@ -8,6 +8,9 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.Operation
+import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.san.kir.ankofork.doFromSdk
 import com.san.kir.ankofork.sdk28.notificationManager
@@ -107,6 +110,18 @@ class MigrateLatestChapterToChapterWorker(context: Context, parameters: WorkerPa
             mChannel.description =
                 "Copy information from LatestChapter to Chapter and delete LatestChapter from database"
             notificationManager.createNotificationChannel(mChannel)
+        }
+    }
+
+    companion object {
+        const val tag = "migrate latest chapters"
+
+        fun addTask(ctx: Context): Operation {
+            val task =
+                OneTimeWorkRequestBuilder<MigrateLatestChapterToChapterWorker>()
+                    .addTag(tag)
+                    .build()
+            return WorkManager.getInstance(ctx).enqueue(task)
         }
     }
 }

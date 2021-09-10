@@ -14,6 +14,7 @@ import androidx.compose.material.TabRow
 import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +42,7 @@ import com.san.kir.manger.ui.MainViewModel
 import com.san.kir.manger.utils.extensions.longToast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 @Composable
@@ -92,19 +94,21 @@ private fun ReceiverHandler(
     vm: MainViewModel = LocalBaseViewModel.current,
     changeAction: (Boolean) -> Unit,
 ) {
-    val message by vm.chaptersReceiver.collectAsState()
-
-    if (manga.unic == message.mangaName) {
-        if (message.countNew == -1) {
-            ctx.longToast(R.string.list_chapters_message_error)
-        } else {
-            if (message.isFoundNew.not()) {
-                ctx.longToast(R.string.list_chapters_message_no_found)
-            } else {
-                ctx.longToast(R.string.list_chapters_message_count_new, message.countNew)
+    LaunchedEffect("receiver") {
+        vm.chaptersReceiver.onEach { message ->
+            if (manga.unic == message.mangaName) {
+                if (message.countNew == -1) {
+                    ctx.longToast(R.string.list_chapters_message_error)
+                } else {
+                    if (message.isFoundNew.not()) {
+                        ctx.longToast(R.string.list_chapters_message_no_found)
+                    } else {
+                        ctx.longToast(R.string.list_chapters_message_count_new, message.countNew)
+                    }
+                }
+                changeAction(false)
             }
         }
-        changeAction(false)
     }
 }
 

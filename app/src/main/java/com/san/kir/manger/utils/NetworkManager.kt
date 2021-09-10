@@ -1,10 +1,11 @@
 package com.san.kir.manger.utils
 
-import android.content.Context
+import android.app.Application
 import com.san.kir.manger.utils.extensions.isNetworkAvailable
 import com.san.kir.manger.utils.extensions.isOnWifi
+import javax.inject.Inject
 
-class NetworkManager(private val context: Context) {
+class NetworkManager @Inject constructor(private val context: Application) {
 
     @Volatile
     var isWifi = false

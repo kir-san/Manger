@@ -35,7 +35,6 @@ import com.san.kir.manger.utils.extensions.log
 import com.san.kir.manger.utils.extensions.showAlways
 import com.san.kir.manger.utils.extensions.string
 import com.san.kir.manger.utils.extensions.stringSet
-import com.san.kir.manger.view_models.ViewerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -57,7 +56,6 @@ class ViewerActivity : BaseActivity() {
     private var isKeyControl = false // Кнопки громкости
 
     var chapter = Chapter()
-    private var isAlternative = false
 
     val presenter by lazy { ViewerPresenter(this) }
     val mView by lazy { ViewerView(presenter) }
@@ -108,9 +106,17 @@ class ViewerActivity : BaseActivity() {
             }
         }
 
+        /*
+        * Обработка полученных данных для конфигурации менеджера
+        * возможные варианты запуска:
+        * - continue, manga - продолжить чтение с первой не прочитанной главы
+        * - !continue, manga - начать чтение с начала
+        * - !continue, chapter - продолжить чтение с текущей главы
+        * - все остальные варианты закрывают просмоторщик
+        * */
         lifecycleScope.launch(Dispatchers.Default) {
             intent.apply {
-                isAlternative = getBooleanExtra("is", false)
+                val isAlternative = getBooleanExtra("is", false)
                 if (hasExtra("continue")) {
                     log("get continue")
                     val manga = getParcelableExtra<Manga>("manga")
@@ -125,25 +131,44 @@ class ViewerActivity : BaseActivity() {
                         } else {
                             log("chapter is not find")
                             applicationContext.longToast("Нет глав для чтения")
-                            finishAffinity()
+                            finish()
                         }
                     } else {
                         log("manga is not find")
                         applicationContext.longToast("Непредвиденная ошибка")
-                        finishAffinity()
+                        finish()
                     }
                 } else {
                     val chapt = getParcelableExtra<Chapter>("chapter")
-                    if (chapt != null) {
-                        log("init with chapter is ok")
-                        chapter = chapt
-                        presenter.configManager(chapter, isAlternative).invokeOnCompletion {
-                            presenter.isLoad.negative()
+                    val manga = getParcelableExtra<Manga>("manga")
+
+                    when {
+                        chapt != null -> {
+                            log("init with chapter is ok")
+                            chapter = chapt
+                            presenter.configManager(chapter, isAlternative).invokeOnCompletion {
+                                presenter.isLoad.negative()
+                            }
                         }
-                    } else {
-                        log("chapter is not find")
-                        applicationContext.longToast("Нет главы для чтения")
-                        finishAffinity()
+                        manga != null -> {
+                            val chap = mViewModel.getFirstChapter(manga)
+                            if (chap != null) {
+                                log("init with manga is ok")
+                                chapter = chap
+                                presenter.configManager(chapter, isAlternative).invokeOnCompletion {
+                                    presenter.isLoad.negative()
+                                }
+                            } else {
+                                log("chapter is not find")
+                                applicationContext.longToast("Нет глав для чтения")
+                                finish()
+                            }
+                        }
+                        else -> {
+                            log("chapter or manga is not find")
+                            applicationContext.longToast("Нет главы для чтения")
+                            finish()
+                        }
                     }
                 }
                 withContext(Dispatchers.Main) {

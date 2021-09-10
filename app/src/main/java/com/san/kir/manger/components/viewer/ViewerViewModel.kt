@@ -1,16 +1,15 @@
-package com.san.kir.manger.view_models
+package com.san.kir.manger.components.viewer
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.san.kir.manger.components.list_chapters.ChapterComparator
+import com.san.kir.manger.utils.ChapterComparator
 import com.san.kir.manger.repositories.ChapterRepository
 import com.san.kir.manger.repositories.StatisticRepository
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.MangaStatistic
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlin.math.max
 
@@ -19,7 +18,7 @@ class ViewerViewModel(app: Application) : AndroidViewModel(app) {
     private val mChapterRepository = ChapterRepository(app)
 
     fun updateStatisticInfo(mangaName: String, time: Long) {
-        GlobalScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(Dispatchers.Default) {
             val stats = mStatisticRepository.getItem(mangaName)
             stats.lastTime = time
             stats.allTime = stats.allTime + time
@@ -48,9 +47,21 @@ class ViewerViewModel(app: Application) : AndroidViewModel(app) {
             list
         }
 
-        viewModelScope
-
         return list.firstOrNull { !it.isRead }
+    }
+
+    suspend fun getFirstChapter(manga: Manga): Chapter {
+        var list = mChapterRepository.getItems(mangaUnic = manga.unic)
+
+        if (manga.isAlternativeSort) {
+            list = list.sortedWith(ChapterComparator())
+        }
+
+        val chapter = list.first()
+        chapter.progress = 0
+        update(chapter)
+
+        return list.first()
     }
 }
 

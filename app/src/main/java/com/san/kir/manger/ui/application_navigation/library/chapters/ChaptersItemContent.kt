@@ -39,9 +39,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.san.kir.ankofork.dialogs.longToast
 import com.san.kir.ankofork.dialogs.toast
+import com.san.kir.ankofork.startActivity
 import com.san.kir.manger.R
+import com.san.kir.manger.components.viewer.ViewerActivity
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.DownloadItem
+import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.countPages
 import com.san.kir.manger.room.entities.toDownloadItem
 import com.san.kir.manger.services.DownloadService
@@ -105,13 +108,10 @@ fun ChaptersItemContent(
                             if (chapter.pages.isNullOrEmpty() || chapter.pages.any { it.isBlank() }) {
                                 context.longToast(R.string.list_chapters_open_not_exists)
                             } else {
-                                // go to viewer
-                                /*
-                                * act.startActivity<ViewerActivity>(
-                            "chapter" to chapter,
-                            "is" to act.manga.isAlternativeSort
-                        )
-                                * */
+                                context.startActivity<ViewerActivity>(
+                                    "chapter" to chapter,
+                                    "is" to manga.isAlternativeSort
+                                )
                             }
                         }
                     } else viewModel.onSelectItem(index)

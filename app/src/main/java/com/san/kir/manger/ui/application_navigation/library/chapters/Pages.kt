@@ -59,7 +59,9 @@ import androidx.lifecycle.asFlow
 import androidx.navigation.NavHostController
 import androidx.work.WorkManager
 import com.google.accompanist.insets.navigationBarsPadding
+import com.san.kir.ankofork.startActivity
 import com.san.kir.manger.R
+import com.san.kir.manger.components.viewer.ViewerActivity
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.utils.loadImage
 import com.san.kir.manger.workmanager.ChapterDeleteWorker
@@ -157,13 +159,11 @@ fun AboutPageContent(
                 // Чтение манги с начала
                 Button(
                     onClick = {
-                        /*TODO
-              act.startActivity<ViewerActivity>(
-              "chapter" to act.mViewModel.getFirstChapter(act.manga),
-              "is" to act.manga.isAlternativeSort
-          )*/
-                    }, modifier = Modifier
-                        .weight(1f)
+                        context.startActivity<ViewerActivity>(
+                            "manga" to manga,
+                            "is" to manga.isAlternativeSort
+                        )
+                    }, modifier = Modifier.weight(1f)
                 ) {
                     Text(text = stringResource(id = R.string.list_chapters_about_start))
                 }
@@ -171,14 +171,12 @@ fun AboutPageContent(
             }
             // Продолжение чтения
             Button(
-                onClick = { /*TODO
-                act.lifecycleScope.launch(Dispatchers.IO) {
-                                act.startActivity<ViewerActivity>(
-                                    "manga" to act.manga,
-                                    "is" to act.manga.isAlternativeSort,
-                                    "continue" to true
-                                )
-                            }*/
+                onClick = {
+                    context.startActivity<ViewerActivity>(
+                        "manga" to manga,
+                        "is" to manga.isAlternativeSort,
+                        "continue" to true
+                    )
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -227,6 +225,7 @@ fun AboutPageContent(
 fun ListPageContent(
     viewModel: ChaptersViewModel,
 ) {
+    val manga by viewModel.manga.collectAsState()
     val chapters by viewModel.prepareChapters.collectAsState()
     val selectedItems by viewModel.selectedItems.collectAsState()
     val filter by viewModel.filter.collectAsState()
@@ -238,7 +237,7 @@ fun ListPageContent(
                 items = chapters,
                 key = { _, ch -> ch.id },
             ) { index, chapter ->
-                ChaptersItemContent(chapter, selectedItems[index], index, nav, viewModel)
+                ChaptersItemContent(manga, chapter, selectedItems[index], index, viewModel)
             }
         }
 

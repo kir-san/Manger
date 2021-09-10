@@ -8,8 +8,11 @@ import com.san.kir.manger.FirstLaunch
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import java.io.IOException
+import javax.inject.Inject
 
-class FirstLaunchRepository(private val firstLaunchStore: DataStore<FirstLaunch>) {
+class FirstLaunchRepository @Inject constructor(
+    private val firstLaunchStore: DataStore<FirstLaunch>
+) {
     private val TAG: String = "FirstLaunchRepo"
 
     val data: Flow<FirstLaunch> = firstLaunchStore.data

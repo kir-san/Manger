@@ -5,4 +5,5 @@ object Plugins {
     const val KAPT = "kapt"
     const val PARCELIZE = "org.jetbrains.kotlin.plugin.parcelize"
     const val PROTOBUF = "com.google.protobuf"
+    const val KSP = "com.google.devtools.ksp"
 }

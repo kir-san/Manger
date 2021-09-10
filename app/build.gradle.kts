@@ -1,10 +1,13 @@
-import com.google.protobuf.gradle.*
+import com.google.protobuf.gradle.generateProtoTasks
+import com.google.protobuf.gradle.protobuf
+import com.google.protobuf.gradle.protoc
 
 plugins {
     id(Plugins.ANDROID_APPLICATION)
     id(Plugins.HILT_ANDROID)
     id(Plugins.KOTLIN_ANDROID)
     kotlin(Plugins.KAPT)
+//    id(Plugins.KSP)
     id(Plugins.PARCELIZE)
     id(Plugins.PROTOBUF) version "0.8.12"
 }
@@ -83,6 +86,7 @@ android {
 
     kotlinOptions {
         jvmTarget = Versions.JAVA.toString()
+        freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
     }
 
     buildFeatures {
@@ -109,7 +113,6 @@ dependencies {
         implementation(PREFERENCE)
         implementation(VECTORDRAWABLE)
         implementation(CONSTRAINTLAYOUT)
-        implementation(PAGING)
     }
 
     Dependencies.Google.apply {
@@ -123,8 +126,15 @@ dependencies {
         kapt(HILT_COMPILER)
     }
 
+    Dependencies.AndroidX.Hilt.apply {
+        implementation(HILT_WORK)
+        kapt(HILT_COMPILER)
+    }
+
     Dependencies.Compose.apply {
         implementation(UI)
+        implementation(UI_TOOLING)
+        implementation(UI_TOOLING_PREVIEW)
         implementation(RUNTIME)
         implementation(COMPILER)
         implementation(ANIMATION)
@@ -135,6 +145,7 @@ dependencies {
         implementation(MATERIAL_ICONS_EXTENDED)
 
         implementation(HILT_NAVIGATION)
+        implementation(PAGING_COMPOSE)
     }
 
     Dependencies.Google.Accompanist.apply {

@@ -49,6 +49,13 @@ object Dependencies {
                 "androidx.datastore:datastore:${Versions.AndroidX.DATASTORE}"
         }
 
+        object Hilt {
+            const val HILT_COMPILER =
+                "androidx.hilt:hilt-compiler:${Versions.AndroidX.HILT}"
+            const val HILT_WORK =
+                "androidx.hilt:hilt-work:${Versions.AndroidX.HILT}"
+        }
+
         const val CORE =
             "androidx.core:core-ktx:${Versions.AndroidX.CORE}"
         const val APPCOMPAT =
@@ -57,8 +64,6 @@ object Dependencies {
             "androidx.collection:collection-ktx:${Versions.AndroidX.COLLECTION}"
         const val PREFERENCE =
             "androidx.preference:preference-ktx:${Versions.AndroidX.PREFERENCE}"
-        const val PAGING =
-            "androidx.paging:paging-runtime-ktx:${Versions.AndroidX.PAGING}"
         const val VECTORDRAWABLE =
             "androidx.vectordrawable:vectordrawable:${Versions.AndroidX.VECTORDRAWABLE}"
         const val CONSTRAINTLAYOUT =
@@ -87,9 +92,9 @@ object Dependencies {
 
         object Hilt {
             const val HILT_ANDROID =
-                "com.google.dagger:hilt-android:${Versions.AndroidX.HILT}"
+                "com.google.dagger:hilt-android:${Versions.Google.HILT}"
             const val HILT_COMPILER =
-                "com.google.dagger:hilt-compiler:${Versions.AndroidX.HILT}"
+                "com.google.dagger:hilt-compiler:${Versions.Google.HILT}"
         }
 
         const val PROTOBUF =
@@ -116,12 +121,15 @@ object Dependencies {
             "com.evernote:android-job:${Versions.ANDROID_JOB}"
         const val PROGRESSBUTTON =
             "com.github.razir.progressbutton:progressbutton:${Versions.PROGRESSBUTTON}"
-
     }
 
     object Compose {
         const val UI =
             "androidx.compose.ui:ui:${Versions.Compose.COMPOSE}"
+        const val UI_TOOLING =
+            "androidx.compose.ui:ui-tooling:${Versions.Compose.COMPOSE}"
+        const val UI_TOOLING_PREVIEW =
+            "androidx.compose.ui:ui-tooling-preview:${Versions.Compose.COMPOSE}"
         const val RUNTIME =
             "androidx.compose.runtime:runtime:${Versions.Compose.COMPOSE}"
         const val COMPILER =
@@ -141,6 +149,8 @@ object Dependencies {
 
         const val HILT_NAVIGATION =
             "androidx.hilt:hilt-navigation-compose:${Versions.Compose.HILT_NAVIGATION_COMPOSE}"
+        const val PAGING_COMPOSE =
+            "androidx.paging:paging-compose:${Versions.Compose.PAGING}"
     }
 
 }

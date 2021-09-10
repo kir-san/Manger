@@ -94,6 +94,7 @@ fun ItemView(item: Site, viewModel: CatalogsViewModel, onClick: () -> Unit) {
             Icons.Default.DeviceUnknown, "",
             tint = MaterialTheme.colors.error,
             modifier = Modifier
+                .padding(end = 8.dp)
                 .size(15.dp)
                 .align(Alignment.CenterVertically)
         )
@@ -101,6 +102,7 @@ fun ItemView(item: Site, viewModel: CatalogsViewModel, onClick: () -> Unit) {
         if (isInit) CircularProgressIndicator(
             strokeWidth = 2.dp,
             modifier = Modifier
+                .padding(end = 8.dp)
                 .size(15.dp)
                 .align(Alignment.CenterVertically)
         )
@@ -111,7 +113,6 @@ fun ItemView(item: Site, viewModel: CatalogsViewModel, onClick: () -> Unit) {
             ),
             style = MaterialTheme.typography.caption,
             modifier = Modifier
-                .padding(10.dp)
                 .align(Alignment.CenterVertically)
         )
     }

@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.sp
 fun LabelText(idRes: Int) {
     Text(
         text = stringResource(id = idRes),
-        fontSize = 14.sp,
+        fontSize = 15.sp,
         modifier = Modifier.padding(bottom = 0.dp, top = 5.dp)
     )
 }
@@ -46,7 +46,7 @@ fun LabelText(idRes: Int) {
 fun DialogText(text: String, color: Color = Color.Unspecified, onClick: (() -> Unit) = {}) {
     Text(
         text = text,
-        fontSize = 15.sp,
+        fontSize = 16.sp,
         fontWeight = FontWeight.Bold,
         color = color,
         modifier = Modifier.clickable(onClick = onClick)

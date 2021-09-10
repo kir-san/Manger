@@ -67,7 +67,8 @@ fun CategoryItemView(index: Int, max: Int, category: Category, onClick: () -> Un
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .clickable(onClick = onClick)
+            .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
 

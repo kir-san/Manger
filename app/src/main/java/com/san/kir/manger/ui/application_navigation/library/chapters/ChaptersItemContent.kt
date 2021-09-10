@@ -125,7 +125,7 @@ fun ChaptersItemContent(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(12.dp)
+                .padding(10.dp)
         ) {
             // name
             Text(
@@ -145,9 +145,9 @@ fun ChaptersItemContent(
                         modifier = Modifier.size(19.dp),
                         strokeWidth = ProgressIndicatorDefaults.StrokeWidth - 1.dp
                     )
-                }
 
-                Spacer(modifier = Modifier.width(5.dp))
+                    Spacer(modifier = Modifier.width(5.dp))
+                }
 
                 // status
                 AnimatedVisibility(downloadIndicator.not()) {
@@ -182,7 +182,8 @@ fun ChaptersItemContent(
                 AnimatedVisibility(deleteIndicator && downloadIndicator.not()) {
                     Icon(
                         Icons.Default.Delete,
-                        contentDescription = "indicator for available deleting"
+                        contentDescription = "indicator for available deleting",
+                        modifier = Modifier.padding(end = 4.dp).size(18.dp),
                     )
                 }
 

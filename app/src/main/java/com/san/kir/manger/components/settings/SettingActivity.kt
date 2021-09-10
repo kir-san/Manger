@@ -2,37 +2,38 @@ package com.san.kir.manger.components.settings
 
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.updateLayoutParams
 import com.san.kir.ankofork.defaultSharedPreferences
-import com.san.kir.ankofork.sdk28._LinearLayout
 import com.san.kir.ankofork.sdk28.frameLayout
+import com.san.kir.ankofork.ui
 import com.san.kir.manger.R
-import com.san.kir.manger.components.drawer.DrawerActivity
 import com.san.kir.manger.services.DownloadService
 import com.san.kir.manger.utils.ID
+import com.san.kir.manger.utils.extensions.BaseActivity
 import com.san.kir.manger.utils.extensions.doOnApplyWindowInstets
 
-class SettingActivity : DrawerActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
+class SettingActivity : BaseActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
     private val content = ID.generate()
-
-    override val _LinearLayout.customView: View
-        get() = frameLayout {
-            id = content
-            doOnApplyWindowInstets { v, insets, _ ->
-                v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                    bottomMargin = insets.systemWindowInsetBottom
-                }
-                insets
-            }
-        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setTitle(R.string.main_menu_settings)
+
+        ui {
+            frameLayout {
+                id = content
+                doOnApplyWindowInstets { v, insets, _ ->
+                    v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                        bottomMargin = insets.systemWindowInsetBottom
+                    }
+                    insets
+                }
+            }
+        }
+
 
         supportFragmentManager.beginTransaction()
             .replace(content, PrefFragment())

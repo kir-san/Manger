@@ -25,14 +25,14 @@ fun MenuIcon(
 }
 
 @Composable
-fun MenuText(text: String, onClick: () -> Unit) {
-    DropdownMenuItem(onClick = onClick) {
+fun MenuText(text: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
+    DropdownMenuItem(onClick = onClick, modifier = modifier) {
         Text(text = text)
     }
 }
 
 @Composable
-fun MenuText(id: Int, onClick: () -> Unit) = MenuText(stringResource(id = id), onClick)
+fun MenuText(id: Int, modifier: Modifier = Modifier, onClick: () -> Unit) = MenuText(stringResource(id = id), modifier, onClick)
 
 @Composable
 fun CheckedMenuText(

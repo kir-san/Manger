@@ -25,12 +25,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.ui.SuppotMangaViewModel
-import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.AddManga
-import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.MangaInfo
-import com.san.kir.manger.ui.application_navigation.catalog.btnSizeAddUpdate
+import com.san.kir.manger.ui.application_navigation.catalog.catalog.btnSizeAddUpdate
 
 @Composable
 fun ListItem(

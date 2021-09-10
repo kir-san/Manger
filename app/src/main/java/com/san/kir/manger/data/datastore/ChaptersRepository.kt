@@ -11,12 +11,12 @@ import java.io.IOException
 import javax.inject.Inject
 
 class ChaptersRepository @Inject constructor(private val store: DataStore<Chapters>) {
-    private val TAG: String = "ChaptersRepo"
+    private val tag: String = "ChaptersRepo"
 
     val data: Flow<Chapters> = store.data
         .catch { exception ->
             if (exception is IOException) {
-                Log.e(TAG, "Error reading sort order preferences.", exception)
+                Log.e(tag, "Error reading sort order preferences.", exception)
                 emit(Chapters.getDefaultInstance())
             } else {
                 throw exception

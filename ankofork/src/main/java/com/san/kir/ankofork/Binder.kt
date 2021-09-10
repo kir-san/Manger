@@ -17,13 +17,6 @@ data class Action<in T>(
 
 class Binder<T>(initValue: T) {
 
-    constructor(
-        initValue: T, context: CoroutineContext = Dispatchers.Main,
-        binding: suspend (item: T) -> Unit
-    ) : this(initValue) {
-        bind(context, binding)
-    }
-
     private val _channel = Channel<T>(1)
     private var _bound = SparseArray<Action<T>>()
     private var _item: T = initValue

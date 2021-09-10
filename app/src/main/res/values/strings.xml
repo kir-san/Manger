@@ -219,6 +219,7 @@
     <string name="library_popupmenu_delete_ok">Конечно</string>
     <string name="library_popupmenu_delete_ok_with_files">Конечно, c файлами</string>
     <string name="library_popupmenu_delete_no">Никогда</string>
+    <string name="library_popupmenu_title">Выбранная манга: %s</string>
     <string name="library_popupmenu_set_category">Сменить категорию</string>
     <string name="library_popupmenu_delete_read_chapters">Удалить прочитанное</string>
     <string name="library_popupmenu_delete_all">Очистить папку</string>

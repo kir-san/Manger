@@ -1,7 +1,6 @@
 package com.san.kir.manger.repositories
 
 import android.content.Context
-import androidx.paging.LivePagedListBuilder
 import com.san.kir.manger.room.entities.Site
 import com.san.kir.manger.room.getDatabase
 
@@ -15,7 +14,7 @@ class SiteRepository(context: Context) {
     suspend fun update(vararg site: Site?) = mSiteDao.update(*site)
     suspend fun insert(vararg site: Site) = mSiteDao.insert(*site)
     suspend fun delete(vararg site: Site) = mSiteDao.delete(*site)
-    fun loadPagedItems() = LivePagedListBuilder(pagedItems(), 20).build()
+//    fun loadPagedItems() = LivePagedListBuilder(pagedItems(), 20).build()
 
     fun loadItems() = mSiteDao.loadItems()
 }

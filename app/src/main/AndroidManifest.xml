@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          package="com.san.kir.manger">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.san.kir.manger">
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:name=".App"
@@ -15,77 +15,57 @@
         android:fullBackupContent="@xml/backup_descriptor"
         android:icon="@mipmap/icon_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
+        android:requestLegacyExternalStorage="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning"
-        tools:targetApi="n"
-        android:largeHeap="true"
-        android:requestLegacyExternalStorage="true"
-       >
+        tools:targetApi="n">
 
-        <activity android:name=".ui.MainActivity"
+        <profileable
+            android:shell="true"
+            tools:targetApi="q" />
+
+        <activity
+            android:name=".ui.MainActivity"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustResize"
-            >
+            android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
         </activity>
         <activity
             android:name=".components.download_manager.DownloadManagerActivity"
-            android:theme="@style/AppTheme"
-            />
-        <activity
-            android:name=".components.latest_chapters.LatestChapterActivity"
-            android:theme="@style/AppTheme"
-            />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".components.viewer.ViewerActivity"
-            android:theme="@style/AppTheme.Viewer"
-            />
+            android:theme="@style/AppTheme.Viewer" />
         <activity
             android:name=".components.settings.SettingActivity"
             android:label="@string/main_menu_settings"
-            android:theme="@style/AppTheme">
-        </activity>
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".components.schedule.ScheduleActivity"
-            android:theme="@style/AppTheme"
-            />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".components.schedule.AddEditPlannedTaskActivity"
             android:theme="@style/AppTheme"
-            android:windowSoftInputMode="stateHidden"
-            />
-        <activity
-            android:name=".components.statistics.StatisticActivity"
-            android:theme="@style/AppTheme"
-            />
-        <activity
-            android:name=".components.statistics.StatisticItemActivity"
-            android:theme="@style/AppTheme"
-            />
-        <service
-            android:name=".services.CatalogForOneSiteUpdaterService"
-            />
-        <service
-            android:name=".services.DownloadService"
-            />
-        <service
-            android:name=".services.MangaUpdaterService"
-            />
-        <service
-            android:name=".services.AppUpdateService"
-            />
+            android:windowSoftInputMode="stateHidden" />
+
+        <service android:name=".services.CatalogForOneSiteUpdaterService" />
+        <service android:name=".services.DownloadService" />
+        <service android:name=".services.MangaUpdaterService" />
+        <service android:name=".services.AppUpdateService" />
 
         <service
             android:name="com.evernote.android.job.gcm.PlatformGcmService"
             android:enabled="true"
-            tools:replace="android:enabled"/>
+            tools:replace="android:enabled" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"

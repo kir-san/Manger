@@ -1,15 +1,12 @@
 package com.san.kir.manger.ui.application_navigation.catalog.main
 
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.DropdownMenu
@@ -29,26 +26,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.github.kittinunf.result.coroutines.failure
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.rememberInsetsPaddingValues
-import com.san.kir.ankofork.startService
 import com.san.kir.manger.R
-import com.san.kir.manger.components.parsing.ManageSites
 import com.san.kir.manger.room.entities.Site
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
 import com.san.kir.manger.ui.utils.MenuIcon
 import com.san.kir.manger.ui.utils.MenuText
+import com.san.kir.manger.ui.utils.TopBarScreenList
 import com.san.kir.manger.ui.utils.navigate
-import com.san.kir.manger.utils.loadImage
-import com.san.kir.manger.view_models.TitleViewModel
+import com.san.kir.manger.ui.utils.rememberImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

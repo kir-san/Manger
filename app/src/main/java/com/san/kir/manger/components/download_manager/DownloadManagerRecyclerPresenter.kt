@@ -21,12 +21,12 @@ class DownloadManagerRecyclerPresenter(private val act: DownloadManagerActivity)
     override fun into(recyclerView: RecyclerView) {
         super.into(recyclerView)
         recyclerView.adapter = adapter
-        act.mViewModel.getDownloadItems().observe(act, Observer { items ->
+        act.mViewModel.getDownloadItems().observe(act) { items ->
             items?.let {
                 adapter.items = it
                 adapter.notifyDataSetChanged()
             }
-        })
+        }
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
             0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
         ) {

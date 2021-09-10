@@ -5,7 +5,9 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.lifecycle.ViewModel
 import com.san.kir.manger.services.MangaUpdaterService
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
@@ -18,14 +20,16 @@ class MainViewModel @Inject constructor() : ViewModel() {
         _catalogReceiver.value = value ?: ""
     }
 
-    private val _chaptersReceiver = MutableStateFlow(ChaptersMessage())
-    val chaptersReceiver = _chaptersReceiver.asStateFlow()
+    private val _chaptersReceiver = MutableSharedFlow<ChaptersMessage>()
+    val chaptersReceiver = _chaptersReceiver.asSharedFlow()
 
     fun chaptersReceiver(intent: Intent) {
-        _chaptersReceiver.value = ChaptersMessage(
-            mangaName = intent.getStringExtra(MangaUpdaterService.ITEM_NAME) ?: "",
-            isFoundNew = intent.getBooleanExtra(MangaUpdaterService.IS_FOUND_NEW, false),
-            countNew = intent.getIntExtra(MangaUpdaterService.COUNT_NEW, 0),
+        _chaptersReceiver.tryEmit(
+            ChaptersMessage(
+                mangaName = intent.getStringExtra(MangaUpdaterService.ITEM_NAME) ?: "",
+                isFoundNew = intent.getBooleanExtra(MangaUpdaterService.IS_FOUND_NEW, false),
+                countNew = intent.getIntExtra(MangaUpdaterService.COUNT_NEW, 0),
+            )
         )
     }
 }

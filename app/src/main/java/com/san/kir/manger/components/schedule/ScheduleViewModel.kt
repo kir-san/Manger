@@ -1,4 +1,4 @@
-package com.san.kir.manger.view_models
+package com.san.kir.manger.components.schedule
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -13,9 +13,9 @@ class ScheduleViewModel(app: Application) : AndroidViewModel(app) {
     private val mPlannedRepository = PlannedRepository(app)
     private val mMangaRepository = MangaRepository(app)
 
-    fun getPlannedItems(): LiveData<PagedList<PlannedTask>> {
-        return mPlannedRepository.loadPagedItems()
-    }
+//    fun getPlannedItems(): LiveData<PagedList<PlannedTask>> {
+//        return mPlannedRepository.loadPagedItems()
+//    }
 
     fun plannedUpdate(item: PlannedTask) {
         mPlannedRepository.update(item)

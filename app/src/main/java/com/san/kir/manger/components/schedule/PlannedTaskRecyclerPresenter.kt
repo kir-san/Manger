@@ -6,15 +6,15 @@ import com.san.kir.manger.utils.RecyclerPresenter
 import com.san.kir.manger.utils.RecyclerViewAdapterFactory
 
 class PlannedTaskRecyclerPresenter(private val act: ScheduleActivity) : RecyclerPresenter() {
-    private val adapter = RecyclerViewAdapterFactory
+    private val adapter = RecyclerViewAdapterFactory/*
         .createPaging({ PlannedTaskItemView(act) },
                       { oldItem, newItem -> oldItem.id == newItem.id },
-                      { oldItem, newItem -> oldItem == newItem })
+                      { oldItem, newItem -> oldItem == newItem })*/
 
     override fun into(recyclerView: RecyclerView) {
         super.into(recyclerView)
-        recycler.adapter = adapter
-        act.mViewModel.getPlannedItems()
-            .observe(act, Observer(adapter::submitList))
+//        recycler.adapter = adapter
+//        act.mViewModel.getPlannedItems()
+//            .observe(act, Observer(adapter::submitList))
     }
 }

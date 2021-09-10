@@ -3,13 +3,9 @@ package com.san.kir.manger.utils
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
-import android.util.SparseBooleanArray
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.AbstractComposeView
-import androidx.paging.PagedList
-import androidx.paging.PagedListAdapter
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.san.kir.ankofork.AnkoComponent
 import com.san.kir.ankofork.AnkoContext
@@ -30,25 +26,6 @@ object RecyclerViewAdapterFactory {
         view: () -> AnkoView<T>,
         itemMove: ItemMove<T>?
     ) = DraggableRecyclerViewAdapter(view, itemMove)
-
-    fun <T> createDraggableCompose(
-        view: ComposeView<T>,
-        itemMove: ItemMoveCompose<T>?
-    ) = DraggableRecyclerViewAdapterCompose(view, itemMove)
-
-    fun <T> createPaging(
-        view: () -> AnkoView<T>,
-        areItemsTheSame: (oldItem: T, newItem: T) -> Boolean,
-        areContentsTheSame: (oldItem: T, newItem: T) -> Boolean
-    ) = RecyclerPagingAdapter(view, object : DiffUtil.ItemCallback<T>() {
-        override fun areItemsTheSame(oldItem: T, newItem: T): Boolean {
-            return areItemsTheSame(oldItem, newItem)
-        }
-
-        override fun areContentsTheSame(oldItem: T, newItem: T): Boolean {
-            return areContentsTheSame(oldItem, newItem)
-        }
-    })
 
     open class DraggableRecyclerViewAdapter<T>(
         private val view: () -> AnkoView<T>,
@@ -132,47 +109,6 @@ object RecyclerViewAdapterFactory {
 
         override fun getItemId(position: Int) = items[position].hashCode().toLong()
         override fun getItemViewType(position: Int) = position
-    }
-
-    // Адаптер для использования с paging library
-    @Suppress("MemberVisibilityCanBePrivate")
-    class RecyclerPagingAdapter<T>(
-        val view: () -> AnkoView<T>,
-        diffCallback: DiffUtil.ItemCallback<T>
-    ) : PagedListAdapter<T, ViewHolder<T>>(diffCallback) {
-        init {
-            setHasStableIds(true)
-        }
-
-        private var listener: ((PagedList<T>?) -> Unit)? = null
-        val selectedItems = SparseBooleanArray()
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder<T> {
-            return ViewHolder(view(), parent)
-        }
-
-        override fun onBindViewHolder(holder: ViewHolder<T>, position: Int) {
-            holder.bind(getItem(position), selectedItems[position])
-        }
-
-        override fun onViewAttachedToWindow(holder: ViewHolder<T>) {
-            holder.onAttached()
-        }
-
-        override fun onViewDetachedFromWindow(holder: ViewHolder<T>) {
-            holder.onDetached()
-        }
-
-        fun item(position: Int): T? = getItem(position)
-        override fun getItemId(position: Int) = getItem(position).hashCode().toLong()
-        override fun getItemViewType(position: Int) = position
-
-        fun onListChanged(listener: ((PagedList<T>?) -> Unit)) {
-            this.listener = listener
-        }
-
-        override fun onCurrentListChanged(currentList: PagedList<T>?) {
-            listener?.invoke(currentList)
-        }
     }
 
     class ViewHolder<in T>(val view: AnkoView<T>, parent: ViewGroup) :

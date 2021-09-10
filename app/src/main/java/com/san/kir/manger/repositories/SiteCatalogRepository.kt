@@ -1,11 +1,12 @@
 package com.san.kir.manger.repositories
 
 import android.content.Context
+import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.room.CatalogDb
 import com.san.kir.manger.room.entities.SiteCatalogElement
 
-class SiteCatalogRepository(context: Context, catalogName: String) {
-    private val db = CatalogDb.getDatabase(context, catalogName)
+class SiteCatalogRepository(context: Context, catalogName: String, manager: SiteCatalogsManager) {
+    private val db = CatalogDb.getDatabase(context, catalogName, manager)
     private val mDao = db.dao
 
     suspend fun items() = mDao.getItems()

@@ -20,7 +20,6 @@ import com.san.kir.ankofork.matchParent
 import com.san.kir.ankofork.padding
 import com.san.kir.ankofork.recyclerview.recyclerView
 import com.san.kir.ankofork.sdk28.editText
-import com.san.kir.ankofork.sdk28.linearLayout
 import com.san.kir.ankofork.sdk28.onClick
 import com.san.kir.ankofork.sdk28.radioButton
 import com.san.kir.ankofork.sdk28.radioGroup
@@ -51,9 +50,9 @@ import kotlinx.coroutines.runBlocking
 
 //TODO переписать инициализацию данных
 class AddEditPlannedTaskView(private val act: AddEditPlannedTaskActivity) : ActivityView() {
-    private lateinit var listManga: List<Manga>
-    private lateinit var categoryList: Array<String>
-    private lateinit var catalogList: Array<String>
+    private var listManga: List<Manga>
+    private var categoryList: Array<String>
+    private var catalogList: Array<String>
 
     init {
         runBlocking(Dispatchers.Default) {

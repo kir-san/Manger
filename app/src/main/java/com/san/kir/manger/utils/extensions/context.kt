@@ -45,10 +45,6 @@ fun Context.isNetworkAvailable(): Boolean {
     return activeNetworkInfo != null && activeNetworkInfo.isConnected
 }
 
-fun Context.getDrawableCompat(layoutRes: Int): Drawable? {
-    return ContextCompat.getDrawable(this, layoutRes)
-}
-
 fun Context.quantitySimple(@PluralsRes id: Int, quantity: Int): String {
     return resources.getQuantityString(id, quantity, quantity)
 }

@@ -75,7 +75,6 @@ fun CategoryItemView(index: Int, max: Int, category: Category, onClick: () -> Un
         Text(
             category.name, modifier = Modifier
                 .weight(1f, true)
-                .clickable(onClick = onClick)
         )
 
         Row(

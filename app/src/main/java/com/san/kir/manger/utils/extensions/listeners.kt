@@ -108,42 +108,6 @@ fun android.widget.CompoundButton.onCheckedChange(
     }
 }
 
-fun onClickListener(
-    context: CoroutineContext = Dispatchers.Main,
-    handler: suspend CoroutineScope.(v: View?) -> Unit
-): View.OnClickListener {
-    return View.OnClickListener { v ->
-        GlobalScope.launch(context) {
-            handler(v)
-        }
-    }
-}
-
-fun onLongClickListener(
-    context: CoroutineContext = Dispatchers.Main,
-    handler: suspend CoroutineScope.(v: View?) -> Unit
-): View.OnLongClickListener {
-    return View.OnLongClickListener { v ->
-        GlobalScope.launch(context) {
-            handler(v)
-        }
-        return@OnLongClickListener true
-    }
-}
-
-fun View.onLongClick(
-    context: CoroutineContext = Dispatchers.Main,
-    returnValue: Boolean = false,
-    handler: suspend CoroutineScope.(v: View?) -> Unit
-) {
-    setOnLongClickListener { v ->
-        GlobalScope.launch(context) {
-            handler(v)
-        }
-        returnValue
-    }
-}
-
 @Suppress("ClassName", "unused")
 class SubsamplingScaleImageView_OnImageEventListener :
     SubsamplingScaleImageView.OnImageEventListener {

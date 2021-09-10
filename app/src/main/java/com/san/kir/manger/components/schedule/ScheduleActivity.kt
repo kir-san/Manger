@@ -14,7 +14,6 @@ import com.san.kir.manger.R
 import com.san.kir.manger.components.drawer.DrawerActivity
 import com.san.kir.manger.utils.enums.PlannedAddEdit
 import com.san.kir.manger.utils.extensions.showAlways
-import com.san.kir.manger.view_models.ScheduleViewModel
 
 class ScheduleActivity : DrawerActivity() {
     val mViewModel by viewModels<ScheduleViewModel>()

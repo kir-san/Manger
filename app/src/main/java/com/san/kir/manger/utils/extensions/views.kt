@@ -51,9 +51,6 @@ inline fun ViewManager.bigImageView(init: SubsamplingScaleImageView.() -> Unit) 
 inline fun ViewManager.roundedImageView(init: RoundedImageView.() -> Unit) =
     ankoView(::RoundedImageView, 0, init)
 
-inline fun ViewManager.squareImageView(init: SquareImageView.() -> Unit) =
-    ankoView(::SquareImageView, 0, init)
-
 fun ViewManager.labelView(text: Int, init: TextView.() -> Unit = {}) = textView(text) {
     textSize = 14f
     bottomPadding = 0
@@ -75,16 +72,6 @@ fun ViewManager.textViewBold16Size(text: Int, init: TextView.() -> Unit = {}): T
         setTypeface(typeface, Typeface.BOLD)
         init()
     }
-}
-
-fun EditText.typeText(): EditText {
-    inputType = InputType.TYPE_CLASS_TEXT
-    return this
-}
-
-fun EditText.typeTextMultiLine(): EditText {
-    inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE
-    return this
 }
 
 
@@ -110,14 +97,6 @@ fun View.visibleOrGone(isVisible: Binder<Boolean>) {
     }
 }
 
-fun View.visibleOrGone(isVisible1: Binder<Boolean>, isVisible2: Binder<Boolean>) {
-    isVisible1.bind { arg1 ->
-        isVisible2.bind { arg2 ->
-            visibility = if (arg1 || arg2) View.VISIBLE else View.GONE
-        }
-    }
-}
-
 fun View.visibleOrGone(isVisible: Boolean) {
     visibility = if (isVisible) View.VISIBLE else View.GONE
 }
@@ -132,10 +111,6 @@ fun View.goneOrVisible(isGone: Binder<Boolean>) {
     }
 }
 
-fun View.invisibleOrVisible(isInvisible: Boolean) {
-    visibility = if (isInvisible) View.INVISIBLE else View.VISIBLE
-}
-
 fun View.visible() {
     visibility = View.VISIBLE
 }
@@ -148,16 +123,8 @@ fun View.gone() {
     visibility = View.GONE
 }
 
-fun SearchView.setButton(resId: Int) {
-    find<ImageView>(androidx.appcompat.R.id.search_button).imageResource = resId
-}
-
 fun SearchView.setCloseButton(resId: Int) {
     find<ImageView>(androidx.appcompat.R.id.search_close_btn).imageResource = resId
-}
-
-fun SearchView.setTextColor(color: Int) {
-    find<TextView>(androidx.appcompat.R.id.search_src_text).textColor = color
 }
 
 fun View.doOnApplyWindowInstets(block: (View, WindowInsetsCompat, Rect) -> WindowInsetsCompat) {
@@ -186,61 +153,3 @@ fun View.requestApplyInsetsWhenAttached() {
         })
     }
 }
-
-fun ViewManager.appBar(act: BaseActivity) {
-    themedAppBarLayout(R.style.ThemeOverlay_AppCompat_DayNight_ActionBar) {
-        lparams(width = matchParent, height = wrapContent)
-
-        doOnApplyWindowInstets { v, insets, _ ->
-            v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                topMargin = insets.systemWindowInsetTop
-            }
-            insets
-        }
-
-        toolbar {
-            lparams(width = matchParent, height = wrapContent)
-            act.setSupportActionBar(this)
-        }
-    }
-}
-
-fun ViewGroup.appBar(): Toolbar {
-    var tool = Toolbar(context)
-    themedAppBarLayout(R.style.ThemeOverlay_AppCompat_DayNight_ActionBar) {
-        lparams(width = matchParent, height = wrapContent)
-
-        doOnApplyWindowInstets { v, insets, _ ->
-            v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                topMargin = insets.systemWindowInsetTop
-            }
-            insets
-        }
-
-        tool = toolbar {
-            lparams(width = matchParent, height = wrapContent)
-        }
-    }
-    return tool
-}
-
-fun View.applyInsetsForCutOut() {
-    doOnApplyWindowInstets { v, insets, _ ->
-        v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-            // Получаем размер выреза, если есть
-            val cutoutRight = insets.displayCutout?.safeInsetRight ?: 0
-            val cutoutLeft = insets.displayCutout?.safeInsetLeft ?: 0
-            // Вычитаем из WindowInsets размер выреза, для fullscreen
-            rightMargin = insets.systemWindowInsetRight - cutoutRight
-            leftMargin = insets.systemWindowInsetLeft - cutoutLeft
-        }
-        insets
-    }
-}
-
-
-
-
-
-
-

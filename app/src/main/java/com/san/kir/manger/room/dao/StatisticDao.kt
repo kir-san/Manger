@@ -1,6 +1,6 @@
 package com.san.kir.manger.room.dao
 
-import androidx.paging.DataSource
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
 import com.san.kir.manger.room.entities.MangaStatistic
@@ -9,8 +9,11 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface StatisticDao : BaseDao<MangaStatistic> {
-    @Query("SELECT * FROM ${MangaStatisticColumn.tableName} ORDER BY ${MangaStatisticColumn.allTime} DESC")
-    fun pagedItems(): DataSource.Factory<Int, MangaStatistic>
+    @Query(
+        "SELECT * FROM ${MangaStatisticColumn.tableName} " +
+                "ORDER BY ${MangaStatisticColumn.allTime} DESC"
+    )
+    fun allItemsByAllTime(): PagingSource<Int, MangaStatistic>
 
     @Query("SELECT * FROM ${MangaStatisticColumn.tableName} ORDER BY ${MangaStatisticColumn.allTime} DESC")
     fun loadItems(): Flow<List<MangaStatistic>>

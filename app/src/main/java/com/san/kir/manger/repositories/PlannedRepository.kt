@@ -1,10 +1,7 @@
 package com.san.kir.manger.repositories
 
 import android.content.Context
-import androidx.lifecycle.LiveData
 import androidx.paging.DataSource
-import androidx.paging.LivePagedListBuilder
-import androidx.paging.PagedList
 import com.san.kir.manger.room.entities.PlannedTask
 import com.san.kir.manger.room.getDatabase
 import kotlinx.coroutines.GlobalScope
@@ -35,9 +32,9 @@ class PlannedRepository(context: Context) {
     fun delete(vararg plannedTask: PlannedTask) =
         GlobalScope.launch { mPlannedDao.delete(*plannedTask) }
 
-    fun loadPagedItems(): LiveData<PagedList<PlannedTask>> {
-        return LivePagedListBuilder(pagedItems(), 30).build()
-    }
+//    fun loadPagedItems(): LiveData<PagedList<PlannedTask>> {
+//        return LivePagedListBuilder(pagedItems(), 30).build()
+//    }
 
     fun loadItems() = mPlannedDao.loadItems()
 }

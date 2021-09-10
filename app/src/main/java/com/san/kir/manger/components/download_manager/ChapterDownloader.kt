@@ -1,8 +1,8 @@
 package com.san.kir.manger.components.download_manager
 
 import com.github.kittinunf.fuel.Fuel
-import com.san.kir.manger.components.parsing.ManageSites
-import com.san.kir.manger.room.RoomDB
+import com.san.kir.manger.components.parsing.SiteCatalogsManager
+import com.san.kir.manger.room.dao.ChapterDao
 import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.utils.JobContext
 import com.san.kir.manger.utils.extensions.createDirs
@@ -14,7 +14,12 @@ import java.util.concurrent.Executors.newFixedThreadPool
 import java.util.regex.Pattern
 
 
-class ChapterDownloader(private val task: DownloadItem, concurrent: Int, private val db: RoomDB) {
+class ChapterDownloader(
+    private val manager: SiteCatalogsManager,
+    private val task: DownloadItem,
+    concurrent: Int,
+    private val chapterDao: ChapterDao,
+) {
     var delegate: Delegate? = null
 
     private var totalPages = 0
@@ -27,6 +32,7 @@ class ChapterDownloader(private val task: DownloadItem, concurrent: Int, private
 
     @Volatile
     private var interrupted: Boolean = false
+
     @Volatile
     var terminated: Boolean = false
 
@@ -78,7 +84,7 @@ class ChapterDownloader(private val task: DownloadItem, concurrent: Int, private
 
         if (interrupted) return
 
-        val pages = ManageSites.pages(getDownloadItem())
+        val pages = manager.pages(getDownloadItem())
 
         if (interrupted) return
 
@@ -98,7 +104,7 @@ class ChapterDownloader(private val task: DownloadItem, concurrent: Int, private
                 }.join()
             }
         } else {
-            db.chapterDao.getItem(getDownloadItem().link)?.let {
+            chapterDao.getItem(getDownloadItem().link)?.let {
 
                 lock.withLock {
                     totalPages = it.pages.size

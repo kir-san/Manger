@@ -1,11 +1,11 @@
 package com.san.kir.manger.components.parsing.sites
 
-import com.san.kir.manger.components.parsing.ManageSites
+import com.san.kir.manger.components.parsing.Parsing
 import com.san.kir.manger.components.parsing.SiteCatalogClassic
 import com.san.kir.manger.components.parsing.Status
 import com.san.kir.manger.components.parsing.Translate
 import com.san.kir.manger.components.parsing.getShortLink
-import com.san.kir.manger.repositories.SiteRepository
+import com.san.kir.manger.room.dao.SiteDao
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.room.entities.Manga
@@ -16,16 +16,19 @@ import kotlinx.coroutines.flow.flow
 import org.jsoup.nodes.Element
 import java.util.regex.Pattern
 
-class Unicomics(siteRepository: SiteRepository) : SiteCatalogClassic() {
+class Unicomics(
+    private val parsing: Parsing,
+    siteDao: SiteDao
+) : SiteCatalogClassic() {
     override val name: String = "UniComics"
     override val catalogName: String = "unicomics.ru"
     override val siteCatalog: String = "$host/map"
-    override var volume = siteRepository.getItem(name)?.volume ?: 0
+    override var volume = siteDao.getItem(name)?.volume ?: 0
     override var oldVolume = volume
 
     override suspend fun init(): Unicomics {
         if (!isInit) {
-            val doc = ManageSites.getDocument(siteCatalog)
+            val doc = parsing.getDocument(siteCatalog)
             volume = doc.select(".content .block table tr a").size
             isInit = true
         }
@@ -49,7 +52,7 @@ class Unicomics(siteRepository: SiteRepository) : SiteCatalogClassic() {
            onFailure = { null })
 
     override suspend fun getFullElement(element: SiteCatalogElement): SiteCatalogElement {
-        val doc = ManageSites.getDocument(element.link)
+        val doc = parsing.getDocument(element.link)
 
         val info = doc.select(".content .left_container .info")
         element.name = info.select("h1").text()
@@ -95,7 +98,7 @@ class Unicomics(siteRepository: SiteRepository) : SiteCatalogClassic() {
     }
 
     override fun getCatalog() = flow {
-        val doc = ManageSites.getDocument(siteCatalog).select(".content .block table tr a")
+        val doc = parsing.getDocument(siteCatalog).select(".content .block table tr a")
 
         doc.forEach { link ->
             emit(simpleParseElement(link))
@@ -119,7 +122,7 @@ class Unicomics(siteRepository: SiteRepository) : SiteCatalogClassic() {
     private fun getChapters(url: String): List<Element> {
         var links = listOf<Element>()
 
-        var doc = ManageSites.getDocument(url)
+        var doc = parsing.getDocument(url)
 
         var counter = 1
         var oldSize = 0
@@ -132,7 +135,7 @@ class Unicomics(siteRepository: SiteRepository) : SiteCatalogClassic() {
 
             oldSize = links.size
 
-            doc = ManageSites.getDocument("$url/page/$counter")
+            doc = parsing.getDocument("$url/page/$counter")
         }
 
         return links
@@ -143,7 +146,7 @@ class Unicomics(siteRepository: SiteRepository) : SiteCatalogClassic() {
         getFullPath(item.path).createDirs()
 
         val shortLink = getShortLink(item.link)
-        var doc = ManageSites.getDocument(host + shortLink)
+        var doc = parsing.getDocument(host + shortLink)
 
         val matcher = Pattern.compile("\"paginator1\", (\\d+)")
             .matcher(doc.body().html())
@@ -162,7 +165,7 @@ class Unicomics(siteRepository: SiteRepository) : SiteCatalogClassic() {
 
             if (counter > size) break
 
-            doc = ManageSites.getDocument("${host + shortLink}/$counter")
+            doc = parsing.getDocument("${host + shortLink}/$counter")
         }
 
         return list

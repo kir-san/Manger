@@ -1,11 +1,11 @@
 package com.san.kir.manger.components.parsing.sites
 
-import com.san.kir.manger.components.parsing.ManageSites
+import com.san.kir.manger.components.parsing.Parsing
 import com.san.kir.manger.components.parsing.SiteCatalogClassic
 import com.san.kir.manger.components.parsing.Status
 import com.san.kir.manger.components.parsing.Translate
 import com.san.kir.manger.components.parsing.getShortLink
-import com.san.kir.manger.repositories.SiteRepository
+import com.san.kir.manger.room.dao.SiteDao
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.room.entities.Manga
@@ -17,7 +17,10 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.util.regex.Pattern
 
-abstract class MangachanTemplate(private val siteRepository: SiteRepository) :
+abstract class MangachanTemplate(
+    private val parsing: Parsing,
+    private val siteDao: SiteDao
+) :
     SiteCatalogClassic() {
 
     override val siteCatalog: String
@@ -25,8 +28,8 @@ abstract class MangachanTemplate(private val siteRepository: SiteRepository) :
 
     override suspend fun init(): MangachanTemplate {
         if (!isInit) {
-            oldVolume = siteRepository.getItem(name)?.volume ?: 0
-            val doc = ManageSites.getDocument(siteCatalog)
+            oldVolume = siteDao.getItem(name)?.volume ?: 0
+            val doc = parsing.getDocument(siteCatalog)
             volume = doc.select("#pagination > b").text().split(" ").first().toInt()
             isInit = true
         }
@@ -36,7 +39,7 @@ abstract class MangachanTemplate(private val siteRepository: SiteRepository) :
     override suspend fun getElementOnline(url: String): SiteCatalogElement? = runCatching {
         val element = SiteCatalogElement()
 
-        val doc = ManageSites.getDocument(url)
+        val doc = parsing.getDocument(url)
 
         element.host = host
         element.catalogName = catalogName
@@ -177,12 +180,12 @@ abstract class MangachanTemplate(private val siteRepository: SiteRepository) :
     }
 
     override fun getCatalog() = flow {
-        var docLocal: Document = ManageSites.getDocument(siteCatalog)
+        var docLocal: Document = parsing.getDocument(siteCatalog)
 
         fun isGetNext(): Boolean {
             val next = docLocal.select("#pagination > a:contains(Вперед)").attr("href")
             if (next.isNotEmpty())
-                docLocal = ManageSites.getDocument(siteCatalog + next)
+                docLocal = parsing.getDocument(siteCatalog + next)
 
             return next.isNotEmpty()
         }
@@ -195,7 +198,7 @@ abstract class MangachanTemplate(private val siteRepository: SiteRepository) :
     }
 
     override suspend fun chapters(manga: Manga) =
-        ManageSites.getDocument(host + manga.shortLink)
+        parsing.getDocument(host + manga.shortLink)
             .select(".table_cha")
             .select("tr")
             .filter { it.select("a").text().isNotEmpty() }
@@ -221,7 +224,7 @@ abstract class MangachanTemplate(private val siteRepository: SiteRepository) :
 
         val shortLink = getShortLink(item.link)
 
-        val doc = ManageSites.getDocument(host + shortLink)
+        val doc = parsing.getDocument(host + shortLink)
         val content = doc.select("#content").html()
         // с помощью регулярных выражений ищу нужные данные
         val pat = Pattern.compile("\"fullimg\":\\[.+").matcher(content)

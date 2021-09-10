@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import com.san.kir.manger.App
-import com.san.kir.manger.components.parsing.ManageSites
+import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.room.dao.SiteCatalogDao
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.room.type_converters.ListStringConverter
@@ -26,8 +26,8 @@ abstract class CatalogDb : RoomDatabase() {
         const val VERSION = 1
         val NAME: (String) -> String = { "${DIR.CATALOGS}/$it.db" }
 
-        fun getDatabase(context: Context, catalogName: String): CatalogDb {
-            val first = ManageSites.CATALOG_SITES.first { it.catalogName == catalogName }
+        fun getDatabase(context: Context, catalogName: String, manager: SiteCatalogsManager): CatalogDb {
+            val first = manager.catalog.first { it.catalogName == catalogName }
             var catName = first.catalogName
             first.allCatalogName
                 .firstOrNull { getFullPath(NAME(it)).exists() }

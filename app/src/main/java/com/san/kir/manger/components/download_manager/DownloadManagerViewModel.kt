@@ -1,4 +1,4 @@
-package com.san.kir.manger.view_models
+package com.san.kir.manger.components.download_manager
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

@@ -87,5 +87,21 @@
             android:enabled="true"
             tools:replace="android:enabled"/>
 
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <!-- disable default -->
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="@string/androidx_startup"
+                tools:node="remove" />
+            <!-- enable custom -->
+            <meta-data
+                android:name="com.san.kir.manger.workmanager.CustomWorkManagerInitializer"
+                android:value="@string/androidx_startup" />
+        </provider>
+
     </application>
 </manifest>

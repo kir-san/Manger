@@ -3,8 +3,7 @@ package com.san.kir.manger.components.viewer
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.san.kir.manger.components.list_chapters.ChapterComparator
-import com.san.kir.manger.components.parsing.ManageSites
+import com.san.kir.manger.utils.ChapterComparator
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.MangaStatistic
 import com.san.kir.manger.utils.extensions.getFullPath
@@ -97,7 +96,7 @@ class ChaptersList(private val act: ViewerActivity) {
     private suspend fun updatePagesList() {
         if (chapter().pages.isNullOrEmpty() ||
             chapter().pages.any { it.isBlank() }) {
-            chapter().pages = ManageSites.pages(chapter())
+//            chapter().pages = SiteCatalogsManager.pages(chapter())
             act.mViewModel.update(chapter())
         }
 

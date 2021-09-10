@@ -1,16 +1,16 @@
 package com.san.kir.manger.components.parsing.sites
 
-import com.san.kir.manger.components.parsing.ManageSites
+import com.san.kir.manger.components.parsing.Parsing
 import com.san.kir.manger.components.parsing.SiteCatalogAlternative
 import com.san.kir.manger.components.parsing.Status
 import com.san.kir.manger.components.parsing.Translate
 import com.san.kir.manger.components.parsing.getShortLink
-import com.san.kir.manger.repositories.SiteRepository
+import com.san.kir.manger.room.dao.SiteDao
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.SiteCatalogElement
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.joinAll
@@ -21,28 +21,31 @@ import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 import java.util.concurrent.Executors
 
-class Acomics(private val siteRepository: SiteRepository) : SiteCatalogAlternative() {
+class Acomics(
+    private val parsing: Parsing,
+    private val siteDao: SiteDao
+) : SiteCatalogAlternative() {
     override val name: String = "Авторский комикс"
     override val catalogName: String = "acomics.ru"
     override val host: String
         get() = "https://$catalogName"
     override val siteCatalog: String =
         "$host/comics?categories=&ratings[]=1&ratings[]=2&ratings[]=3&ratings[]=4&ratings[]=5&ratings[]=6&type=0&updatable=0&issue_count=1&sort=last_update"
-    override var volume = siteRepository.getItem(name)?.volume ?: 0
+    override var volume = siteDao.getItem(name)?.volume ?: 0
     override var oldVolume = volume
 
     private val contentTemplate = "#contentMargin .list-loadable"
 
     override suspend fun init(): Acomics {
         if (!isInit) {
-            oldVolume = siteRepository.getItem(name)?.volume ?: 0
+            oldVolume = siteDao.getItem(name)?.volume ?: 0
 
             var docLocal = Elements()
             var i = 357
             volume = 3560
 
             fun isGetNext(): Boolean {
-                val document = ManageSites.getDocument(siteCatalog + "&skip=${10 * i}")
+                val document = parsing.getDocument(siteCatalog + "&skip=${10 * i}")
 
                 docLocal = document.select(contentTemplate)
 
@@ -68,7 +71,7 @@ class Acomics(private val siteRepository: SiteRepository) : SiteCatalogAlternati
         element.shotLink = url.split(catalogName).last()
         element.link = url
 
-        val doc = ManageSites.getDocument("$url/about")
+        val doc = parsing.getDocument("$url/about")
         element.name = doc.select("#container .serial a img").attr("alt")
         element.about = doc.select("#contentMargin .about-summary > p > span").text()
 
@@ -79,7 +82,7 @@ class Acomics(private val siteRepository: SiteRepository) : SiteCatalogAlternati
            onFailure = { null })
 
     override suspend fun getFullElement(element: SiteCatalogElement): SiteCatalogElement {
-        val doc = ManageSites.getDocument("${element.link}/about")
+        val doc = parsing.getDocument("${element.link}/about")
 
         element.statusEdition = Status.UNKNOWN
         element.statusTranslate = Translate.UNKNOWN
@@ -134,11 +137,11 @@ class Acomics(private val siteRepository: SiteRepository) : SiteCatalogAlternati
     }
 
     override fun getCatalog() = flow {
-        var docLocal = ManageSites.getDocument(siteCatalog).select(contentTemplate)
+        var docLocal = parsing.getDocument(siteCatalog).select(contentTemplate)
         var i = 0
 
         fun isGetNext(): Boolean {
-            val document = ManageSites.getDocument(siteCatalog + "&skip=${10 * i}")
+            val document = parsing.getDocument(siteCatalog + "&skip=${10 * i}")
             docLocal = document.select(contentTemplate)
 
             return docLocal.none { it.text().isBlank() }
@@ -162,29 +165,32 @@ class Acomics(private val siteRepository: SiteRepository) : SiteCatalogAlternati
         )
     }
 
+    private val pool = Executors.newFixedThreadPool(4).asCoroutineDispatcher()
+    private val scope = CoroutineScope(pool)
+
     override suspend fun pages(item: DownloadItem): List<String> {
         val shortLink = getShortLink(item.link)
 
-        var docLocal = ManageSites.getDocument("${host + shortLink}/content")
+        var docLocal = parsing.getDocument("${host + shortLink}/content")
             .select("#contentMargin .serial-content table td a")
         var i = 0
         var list = listOf<String>()
 
         fun isGetNext(): Boolean {
-            val document = ManageSites.getDocument("${host + shortLink}/content" + "?skip=${10 * i}")
+            val document = parsing.getDocument("${host + shortLink}/content" + "?skip=${10 * i}")
             docLocal = document.select("#contentMargin .serial-content table td a")
 
             return docLocal.size != 0
         }
 
-        val pool = Executors.newFixedThreadPool(4).asCoroutineDispatcher()
+
         val lock = Mutex()
 
         do {
             docLocal.map { element ->
-                GlobalScope.launch(pool) {
+                scope.launch {
                     val url = element.attr("href")
-                    val document = ManageSites.getDocument(url)
+                    val document = parsing.getDocument(url)
                     val link = host + document.select("#mainImage").attr("src")
 
                     lock.withLock {

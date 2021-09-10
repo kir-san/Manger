@@ -1,11 +1,11 @@
 package com.san.kir.manger.components.parsing.sites
 
-import com.san.kir.manger.components.parsing.ManageSites
+import com.san.kir.manger.components.parsing.Parsing
 import com.san.kir.manger.components.parsing.SiteCatalogClassic
 import com.san.kir.manger.components.parsing.Status
 import com.san.kir.manger.components.parsing.Translate
 import com.san.kir.manger.components.parsing.getShortLink
-import com.san.kir.manger.repositories.SiteRepository
+import com.san.kir.manger.room.dao.SiteDao
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.room.entities.Manga
@@ -20,18 +20,21 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.util.regex.Pattern
 
-class Allhentai(siteRepository: SiteRepository) : SiteCatalogClassic() {
+class Allhentai(
+    private val parsing: Parsing,
+    siteDao: SiteDao
+) : SiteCatalogClassic() {
     override val name = "All Hentai"
     override val catalogName = "allhentai.ru"
     override val siteCatalog = "$host/list?sortType=created"
-    override var volume = siteRepository.getItem(name)?.volume ?: 0
+    override var volume = siteDao.getItem(name)?.volume ?: 0
     override var oldVolume = volume
 
     private val statusComplete = "Выпуск завершен"
 
     override suspend fun init(): Allhentai {
         if (!isInit) {
-            val doc = ManageSites.getDocument("$host/list")
+            val doc = parsing.getDocument("$host/list")
             volume =
                 doc.select("#mangaBox .leftContent .pagination .step").last().text().toInt() * 70
             isInit = true
@@ -42,7 +45,7 @@ class Allhentai(siteRepository: SiteRepository) : SiteCatalogClassic() {
     override suspend fun getElementOnline(url: String): SiteCatalogElement? = runCatching {
         val element = SiteCatalogElement()
 
-        val doc = ManageSites.getDocument(url)
+        val doc = parsing.getDocument(url)
 
         element.host = host
         element.catalogName = catalogName
@@ -76,7 +79,7 @@ class Allhentai(siteRepository: SiteRepository) : SiteCatalogClassic() {
 
     ////
     override suspend fun getFullElement(element: SiteCatalogElement): SiteCatalogElement {
-        val rootDoc = ManageSites.getDocument(element.link)
+        val rootDoc = parsing.getDocument(element.link)
         val doc = rootDoc.select("div.leftContent")
 
         // Список авторов
@@ -151,7 +154,8 @@ class Allhentai(siteRepository: SiteRepository) : SiteCatalogClassic() {
 
         kotlin.runCatching {
             element.populate =
-                (elem.select(".desc .star-rate .rating").attr("title").split(" ").first().toFloat() * 10_000).toInt()
+                (elem.select(".desc .star-rate .rating").attr("title").split(" ").first()
+                    .toFloat() * 10_000).toInt()
         }.onFailure {
             element.populate = 0
         }
@@ -160,12 +164,12 @@ class Allhentai(siteRepository: SiteRepository) : SiteCatalogClassic() {
     }
 
     override fun getCatalog() = flow {
-        var docLocal: Document = ManageSites.getDocument(siteCatalog)
+        var docLocal: Document = parsing.getDocument(siteCatalog)
 
         fun isGetNext(): Boolean {
             val next = docLocal.select("#mangaBox .pagination a.nextLink").attr("href")
             return if (next.isNotEmpty()) {
-                docLocal = ManageSites.getDocument(host + next)
+                docLocal = parsing.getDocument(host + next)
                 true
             } else
                 false
@@ -180,7 +184,7 @@ class Allhentai(siteRepository: SiteRepository) : SiteCatalogClassic() {
 
     ///
     override suspend fun chapters(manga: Manga) =
-        ManageSites.getDocument(host + manga.shortLink)
+        parsing.getDocument(host + manga.shortLink)
             .select(".chapters-link table tbody tr")
             .map {
                 val select = it.select("a")
@@ -202,7 +206,7 @@ class Allhentai(siteRepository: SiteRepository) : SiteCatalogClassic() {
 
         val shortLink = getShortLink(item.link)
 
-        val doc = ManageSites.getDocument(host + shortLink)
+        val doc = parsing.getDocument(host + shortLink)
 
         // с помощью регулярных выражений ищу нужные данные
         val pat = Pattern.compile("rm_h.init.+").matcher(doc.body().html())

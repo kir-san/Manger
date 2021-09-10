@@ -1,11 +1,13 @@
 package com.san.kir.manger.components.parsing.sites
 
-import com.san.kir.manger.components.parsing.ManageSites
+import com.san.kir.manger.components.parsing.Parsing
+import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.components.parsing.SiteCatalogClassic
 import com.san.kir.manger.components.parsing.Status
 import com.san.kir.manger.components.parsing.Translate
 import com.san.kir.manger.components.parsing.getShortLink
 import com.san.kir.manger.repositories.SiteRepository
+import com.san.kir.manger.room.dao.SiteDao
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.room.entities.Manga
@@ -19,7 +21,10 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.util.regex.Pattern
 
-abstract class ReadmangaTemplate(private val siteRepository: SiteRepository) : SiteCatalogClassic() {
+abstract class ReadmangaTemplate(
+    private val parsing: Parsing,
+    private val siteDao: SiteDao
+) : SiteCatalogClassic() {
     override val siteCatalog
         get() = "$host/list?sortType=created"
 
@@ -35,8 +40,8 @@ abstract class ReadmangaTemplate(private val siteRepository: SiteRepository) : S
 
     override suspend fun init(): ReadmangaTemplate {
         if (!isInit) {
-            oldVolume = siteRepository.getItem(name)?.volume ?: 0
-            val doc = ManageSites.getDocument(siteCatalog)
+            oldVolume = siteDao.getItem(name)?.volume ?: 0
+            val doc = parsing.getDocument(siteCatalog)
             volume = doc.select("#mangaBox .leftContent .pagination a.step")
                 .last {
                     val text = it.attr("href")
@@ -56,7 +61,7 @@ abstract class ReadmangaTemplate(private val siteRepository: SiteRepository) : S
         return kotlin.runCatching {
             val element = SiteCatalogElement()
 
-            val doc = ManageSites.getDocument(url)
+            val doc = parsing.getDocument(url)
 
             element.host = host
             element.catalogName = catalogName
@@ -87,7 +92,7 @@ abstract class ReadmangaTemplate(private val siteRepository: SiteRepository) : S
 
     override suspend fun getFullElement(element: SiteCatalogElement): SiteCatalogElement {
 
-        val doc = ManageSites.getDocument(element.link).select("div.leftContent")
+        val doc = parsing.getDocument(element.link).select("div.leftContent")
 
         element.type = "Манга"
         doc.select(".flex-row .subject-meta .elem_tag").forEach {
@@ -163,12 +168,12 @@ abstract class ReadmangaTemplate(private val siteRepository: SiteRepository) : S
     }
 
     override fun getCatalog() = flow {
-        var docLocal: Document = ManageSites.getDocument(siteCatalog)
+        var docLocal: Document = parsing.getDocument(siteCatalog)
 
         fun isGetNext(): Boolean {
             val next = docLocal.select(".pagination > a.nextLink").attr("href")
             if (next.isNotEmpty())
-                docLocal = ManageSites.getDocument(host + next)
+                docLocal = parsing.getDocument(host + next)
             return next.isNotEmpty()
         }
 
@@ -182,7 +187,7 @@ abstract class ReadmangaTemplate(private val siteRepository: SiteRepository) : S
 
 
     override suspend fun chapters(manga: Manga) =
-        ManageSites.getDocument(host + manga.shortLink)
+        parsing.getDocument(host + manga.shortLink)
             .select("div.leftContent .chapters-link")
             .select("tr")
             .filter { it.select("a").text().isNotEmpty() }
@@ -207,7 +212,7 @@ abstract class ReadmangaTemplate(private val siteRepository: SiteRepository) : S
 
         val shortLink = getShortLink(item.link)
 
-        val doc = ManageSites.getDocument("$host$shortLink?mature=1")
+        val doc = parsing.getDocument("$host$shortLink?mature=1")
         // с помощью регулярных выражений ищу нужные данные
         val pat = Pattern.compile("rm_h.init.+").matcher(doc.body().html())
         // если данные найдены то продолжаю
@@ -223,8 +228,8 @@ abstract class ReadmangaTemplate(private val siteRepository: SiteRepository) : S
                 val jsonArray = json.getJSONArray(index)
                 val url =
 //                    jsonArray.getString(1) +
-                        jsonArray.getString(0) +
-                        jsonArray.getString(2)
+                    jsonArray.getString(0) +
+                            jsonArray.getString(2)
                 list += url
             }
         }

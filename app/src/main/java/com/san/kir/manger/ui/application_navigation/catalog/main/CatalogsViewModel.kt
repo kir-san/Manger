@@ -4,7 +4,8 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.kittinunf.result.coroutines.SuspendableResult
-import com.san.kir.manger.components.parsing.ManageSites
+import com.san.kir.ankofork.startService
+import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.components.parsing.SiteCatalog
 import com.san.kir.manger.repositories.SiteCatalogRepository
 import com.san.kir.manger.room.dao.CategoryDao
@@ -13,14 +14,13 @@ import com.san.kir.manger.room.dao.SiteDao
 import com.san.kir.manger.room.entities.Category
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.Site
+import com.san.kir.manger.services.CatalogForOneSiteUpdaterService
 import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.SortLibraryUtil
 import com.san.kir.manger.utils.enums.MangaFilter
 import com.san.kir.manger.utils.enums.SortLibrary
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -31,33 +31,19 @@ class CatalogsViewModel @Inject constructor(
     private val siteDao: SiteDao,
     private val categoryDao: CategoryDao,
     private val mangaDao: MangaDao,
+    private val manager: SiteCatalogsManager,
 ) : ViewModel() {
     val siteList = siteDao.loadItems()
 
-    /*init {
-        viewModelScope.launch {
-            combine(
-                siteDao.loadItems(),
-                loadVisibleManga()
-            ) { sites, _ ->
-                CatalogsViewState(
-                    siteItems = sites
-                )
-            }
-                .catch { t -> throw t }
-                .collect { _state.value = it }
-        }
-    }*/
-
     fun update() = viewModelScope.launch(Dispatchers.Default) {
-        ManageSites.CATALOG_SITES.forEach {
+        manager.catalog.forEach {
             it.isInit = false
             save(it)
         }
     }
 
     fun site(site: Site): SiteCatalog {
-        return ManageSites.CATALOG_SITES.first {
+        return manager.catalog.first {
             it.allCatalogName.any { s ->
                 s == site.catalogName
             }
@@ -71,7 +57,8 @@ class CatalogsViewModel @Inject constructor(
             with(siteDao) {
                 getItem(site.name)?.let {
                     // Сохраняем новое значение количества элементов
-                    val siteCatalogRepository = SiteCatalogRepository(context, site.catalogName)
+                    val siteCatalogRepository =
+                        SiteCatalogRepository(context, site.catalogName, manager)
                     it.oldVolume = siteCatalogRepository.items().size
                     it.volume = site.volume
                     // Обновляем наш сайт в базе данных
@@ -79,12 +66,6 @@ class CatalogsViewModel @Inject constructor(
                     siteCatalogRepository.close()
                 }
             }
-        }
-    }
-
-    private fun loadVisibleManga(): Flow<List<List<Manga>>> {
-        return combine(categoryDao.loadItems(), mangaDao.flowItems()) { cats, mangas ->
-            cats.filter { it.isVisible }.map { cat -> mangas.loadMangas(cat) }
         }
     }
 
@@ -136,8 +117,11 @@ class CatalogsViewModel @Inject constructor(
             )
         }
     }
-}
 
-data class CatalogsViewState(
-    val siteItems: List<Site> = emptyList()
-)
+    fun updateCatalogs() {
+        manager.catalog.forEach {
+            if (!CatalogForOneSiteUpdaterService.isContain(it.catalogName))
+                context.startService<CatalogForOneSiteUpdaterService>("catalogName" to it.catalogName)
+        }
+    }
+}

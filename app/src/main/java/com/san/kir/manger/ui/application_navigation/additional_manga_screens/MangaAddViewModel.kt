@@ -1,7 +1,7 @@
 package com.san.kir.manger.ui.application_navigation.additional_manga_screens
 
 import androidx.lifecycle.ViewModel
-import com.san.kir.manger.components.parsing.ManageSites
+import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.components.parsing.SiteCatalogAlternative
 import com.san.kir.manger.room.dao.CategoryDao
 import com.san.kir.manger.room.dao.MangaDao
@@ -24,6 +24,7 @@ class MangaAddViewModel @Inject constructor(
     private val categoryDao: CategoryDao,
     private val mangaDao: MangaDao,
     private val statisticDao: StatisticDao,
+    private val manager: SiteCatalogsManager,
 ) : ViewModel() {
     suspend fun getCategories() =
         withContext(Dispatchers.IO) {
@@ -47,7 +48,7 @@ class MangaAddViewModel @Inject constructor(
         item: SiteCatalogElement,
         category: String
     ) = withContext(Dispatchers.IO) {
-        val updatedElement = ManageSites.getFullElement(item)
+        val updatedElement = manager.getFullElement(item)
         val pat = Pattern.compile("[a-z/0-9]+-").matcher(updatedElement.shotLink)
         var shortPath = item.shotLink
         if (pat.find())
@@ -56,7 +57,7 @@ class MangaAddViewModel @Inject constructor(
 
         val manga = updatedElement.toManga(category = category, path = path)
 
-        manga.isAlternativeSite = ManageSites.getSite(item.link) is SiteCatalogAlternative
+        manga.isAlternativeSite = manager.getSite(item.link) is SiteCatalogAlternative
 
         mangaDao.insert(manga)
         statisticDao.insert(MangaStatistic(manga = manga.unic))

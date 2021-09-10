@@ -5,6 +5,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.room.CatalogDb
 import com.san.kir.manger.room.dao.SiteDao
 import com.san.kir.manger.room.entities.SiteCatalogElement
@@ -27,6 +29,7 @@ import javax.inject.Inject
 class CatalogViewModel @Inject constructor(
     private val application: Application,
     private val siteDao: SiteDao,
+    private val manager: SiteCatalogsManager,
 ) : ViewModel() {
     companion object {
         const val DATE = 0
@@ -36,7 +39,7 @@ class CatalogViewModel @Inject constructor(
 
     private var db: CatalogDb? = null
 
-    private var siteCatalog: String = ""
+    private val siteCatalog by lazy { manager.catalog.first { it.name == siteName }.catalogName }
 
     private val searchText = MutableStateFlow("") // Сохранение информации о поисковом запросе
     private val sort = MutableStateFlow(CatalogSort()) // Порядок сортировки и тип сортировки
@@ -79,11 +82,11 @@ class CatalogViewModel @Inject constructor(
     ) = viewModelScope.launch(Dispatchers.Default) {
         setAction(true)
 
-        if (db == null) {
-            db = CatalogDb.getDatabase(application, siteCatalog)
-        } else if (this@CatalogViewModel.siteCatalog != siteCatalog) {
-            db?.close()
-            db = CatalogDb.getDatabase(application, siteCatalog)
+            if (db == null) {
+                db = CatalogDb.getDatabase(application, siteCatalog, manager)
+            } else if (this@CatalogViewModel.siteCatalog != siteCatalog) {
+                db?.close()
+                db = CatalogDb.getDatabase(application, siteCatalog, manager)
 
         }
 

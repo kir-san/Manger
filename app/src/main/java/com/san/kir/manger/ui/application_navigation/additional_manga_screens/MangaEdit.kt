@@ -48,13 +48,11 @@ import com.san.kir.manger.R
 import com.san.kir.manger.room.dao.CategoryDao
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.ui.application_navigation.ApplicationNavigationDestination.EditManga
 import com.san.kir.manger.ui.utils.CheckBoxText
 import com.san.kir.manger.ui.utils.DropDownTextField
 import com.san.kir.manger.ui.utils.ImageWithStatus
 import com.san.kir.manger.ui.utils.LabelText
 import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
-import com.san.kir.manger.ui.utils.getElement
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
@@ -75,7 +73,7 @@ fun MangaEditScreen(
         title = stringResource(id = R.string.edit_manga_title),
         actions = {
             IconButton(onClick = { /* save manga */
-                viewModel.update(item)
+                viewModel.update(manga)
                 nav.navigateUp()
             }) {
                 Icon(
@@ -87,12 +85,12 @@ fun MangaEditScreen(
         }
 
     ) {
-        EditMangaContent(item) { item = it }
+        MangaEditContent(manga) { manga = it }
     }
 }
 
 @Composable
-private fun EditMangaContent(
+private fun MangaEditContent(
     manga: Manga,
     change: (Manga) -> Unit,
 ) {
@@ -138,7 +136,7 @@ private fun EditMangaContent(
 
 @Composable
 fun CategoryDropDownTextField(
-    viewModel: EditMangaViewModel = hiltViewModel(),
+    viewModel: MangaEditViewModel = hiltViewModel(),
     manga: Manga,
     change: (Manga) -> Unit,
 ) {
@@ -153,7 +151,7 @@ fun CategoryDropDownTextField(
 
 @Composable
 fun StatusDropDownTextField(
-    viewModel: EditMangaViewModel = hiltViewModel(),
+    viewModel: MangaEditViewModel = hiltViewModel(),
     manga: Manga,
     change: (Manga) -> Unit,
 ) {
@@ -290,7 +288,7 @@ private fun TextField(
 
 
 @HiltViewModel
-class EditMangaViewModel @Inject constructor(
+class MangaEditViewModel @Inject constructor(
     ctx: Application,
     categoryDao: CategoryDao,
     private val mangaDao: MangaDao,

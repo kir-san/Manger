@@ -11,7 +11,7 @@ import androidx.core.app.NotificationCompat
 import com.san.kir.ankofork.intentFor
 import com.san.kir.ankofork.sdk28.notificationManager
 import com.san.kir.manger.R
-import com.san.kir.manger.components.parsing.ManageSites
+import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.repositories.MangaRepository
 import com.san.kir.manger.repositories.SiteCatalogRepository
 import com.san.kir.manger.repositories.SiteRepository
@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.util.concurrent.Executors
+import javax.inject.Inject
 
 class CatalogForOneSiteUpdaterService : IntentService(TAG) {
     companion object {
@@ -70,6 +71,9 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
     private var isError = false
     private var isManualStop = false
 
+    @Inject
+    lateinit var manager: SiteCatalogsManager
+
     @SuppressLint("InlinedApi")
     override fun onCreate() {
         super.onCreate()
@@ -79,7 +83,7 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
             val importance = NotificationManager.IMPORTANCE_LOW
 
             NotificationChannel(channelId, name, importance).apply {
-                description = Companion.description
+                description = description
                 notificationManager.createNotificationChannel(this)
             }
         }
@@ -102,7 +106,7 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
             try {
                 val siteRepository = SiteRepository(this@CatalogForOneSiteUpdaterService)
                 val mangaRepository = MangaRepository(this@CatalogForOneSiteUpdaterService)
-                val site = ManageSites.CATALOG_SITES
+                val site = manager.catalog
                     .first { it.catalogName == intent!!.getStringExtra("catalogName") }
                 val siteDb = siteRepository.getItem(site.name)
 
@@ -160,7 +164,7 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
                 log("update finish. elements getting ${tempList.size}")
 
                 SiteCatalogRepository(
-                    this@CatalogForOneSiteUpdaterService, site.catalogName
+                    this@CatalogForOneSiteUpdaterService, site.catalogName, manager
                 ).apply {
                     clearDb()
                     insert(*tempList.toTypedArray())

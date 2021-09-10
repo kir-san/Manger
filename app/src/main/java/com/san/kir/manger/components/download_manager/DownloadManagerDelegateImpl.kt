@@ -1,19 +1,19 @@
 package com.san.kir.manger.components.download_manager
 
-import com.san.kir.manger.room.RoomDB
+import com.san.kir.manger.room.dao.DownloadDao
+import com.san.kir.manger.room.dao.StatisticDao
 import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.utils.JobContext
 import com.san.kir.manger.utils.enums.DownloadStatus
+import javax.inject.Inject
 
-class DownloadManagerDelegateImpl(
-    private val uiJob: JobContext,
+class DownloadManagerDelegateImpl @Inject constructor(
     private val job: JobContext,
     private val listener: DownloadListener,
     private val iteratorProcessor: IteratorProcessor,
-    dbManager: RoomDB
+    private val downloadDao: DownloadDao,
+    private val statisticDao: StatisticDao,
 ) : DownloadManager.Delegate {
-    private val mDownloadDao = dbManager.downloadDao
-    private val mStatisticDao = dbManager.statisticDao
 
     override fun onDownloadRemovedFromManager(item: DownloadItem) {
         job.post {
@@ -26,47 +26,39 @@ class DownloadManagerDelegateImpl(
     override fun onStarted(item: DownloadItem) {
         item.status = DownloadStatus.loading
         job.post {
-            mDownloadDao.update(item)
+            downloadDao.update(item)
         }
-        uiJob.post {
-            listener.onProgress(item)
-        }
+        listener.onProgress(item)
     }
 
     override fun onProgress(item: DownloadItem) {
         job.post {
-            mDownloadDao.update(item)
+            downloadDao.update(item)
         }
-        uiJob.post {
-            listener.onProgress(item)
-        }
+        listener.onProgress(item)
     }
 
     override fun onError(item: DownloadItem, cause: Throwable?) {
         item.status = DownloadStatus.pause
         item.isError = true
         job.post {
-            mDownloadDao.update(item)
+            downloadDao.update(item)
         }
-        uiJob.post {
-            listener.onError(item, cause)
-        }
+        listener.onError(item, cause)
     }
 
     override suspend fun onComplete(item: DownloadItem) {
         item.status = DownloadStatus.completed
         job.post {
-            mDownloadDao.update(item)
+            downloadDao.update(item)
         }
 
-        val stat = mStatisticDao.getItem(item.manga)
+        val stat = statisticDao.getItem(item.manga)
         stat.downloadSize = stat.downloadSize.plus(item.downloadSize)
         stat.downloadTime = stat.downloadTime.plus(item.totalTime)
         job.post {
-            mStatisticDao.update(stat)
+            statisticDao.update(stat)
         }
-        uiJob.post {
-            listener.onCompleted(item)
-        }
+        listener.onCompleted(item)
     }
 }

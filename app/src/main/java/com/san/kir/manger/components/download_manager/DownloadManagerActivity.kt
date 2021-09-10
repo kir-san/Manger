@@ -16,7 +16,6 @@ import com.san.kir.manger.R
 import com.san.kir.manger.components.drawer.DrawerActivity
 import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.utils.enums.DownloadStatus
-import com.san.kir.manger.view_models.DownloadManagerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

@@ -9,7 +9,7 @@ import com.san.kir.manger.components.parsing.sites.Readmanga
 import com.san.kir.manger.components.parsing.sites.Selfmanga
 import com.san.kir.manger.components.parsing.sites.Unicomics
 import com.san.kir.manger.components.parsing.sites.Yaoichan
-import com.san.kir.manger.repositories.SiteRepository
+import com.san.kir.manger.room.dao.SiteDao
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.room.entities.Manga
@@ -19,32 +19,36 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import javax.inject.Inject
 
-object ManageSites {
-
-    lateinit var mSiteRepository: SiteRepository
-
-    val CATALOG_SITES by lazy {
-        listOf(
-            Mangachan(mSiteRepository),
-            Readmanga(mSiteRepository),
-            Mintmanga(mSiteRepository),
-            Selfmanga(mSiteRepository),
-            Allhentai(mSiteRepository),
-            Yaoichan(mSiteRepository),
-            Unicomics(mSiteRepository),
-            Acomics(mSiteRepository)
-        )
-    }
-
+class Parsing @Inject constructor() {
     fun getDocument(url: String): Document {
         val (_, _, result) = Fuel.get(url).responseString()
         result.fold({}, { throw it })
         return Jsoup.parse(result.component1())
     }
+}
+
+class SiteCatalogsManager @Inject constructor(
+    private val siteDao: SiteDao,
+    parsing: Parsing,
+) {
+
+    val catalog by lazy {
+        listOf(
+            Mangachan(parsing, siteDao),
+            Readmanga(parsing, siteDao),
+            Mintmanga(parsing, siteDao),
+            Selfmanga(parsing, siteDao),
+            Allhentai(parsing, siteDao),
+            Yaoichan(parsing, siteDao),
+            Unicomics(parsing, siteDao),
+            Acomics(parsing, siteDao)
+        )
+    }
 
     fun getSite(link: String): SiteCatalog {
-        return CATALOG_SITES.first {
+        return catalog.first {
             it.allCatalogName.any { s ->
                 link.contains(s)
             }
@@ -59,7 +63,7 @@ object ManageSites {
     // Загрузка полной информации для элемента в каталоге
     suspend fun getFullElement(simpleElement: SiteCatalogElement) =
         withContext(Dispatchers.Default) {
-            CATALOG_SITES.first { it.allCatalogName.any { s -> s == simpleElement.catalogName } }
+            catalog.first { it.allCatalogName.any { s -> s == simpleElement.catalogName } }
                 .getFullElement(simpleElement)
         }
 
@@ -72,13 +76,14 @@ object ManageSites {
 
     suspend fun pages(chapter: Chapter) = pages(chapter.toDownloadItem())
 
-    suspend fun getElementOnline(url: String): SiteCatalogElement? {
-        var lUrl = url
-        getSite(lUrl).also {
-            if (!lUrl.contains("http://")) {
+    suspend fun getElementOnline(url: String): SiteCatalogElement? =
+        withContext(Dispatchers.Default) {
+            var lUrl = url
+
+            if (!lUrl.contains("http")) {
                 lUrl = "http://$lUrl"
             }
-            return it.getElementOnline(lUrl)
+
+            return@withContext getSite(lUrl).getElementOnline(lUrl)
         }
-    }
 }

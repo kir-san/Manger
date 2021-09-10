@@ -19,9 +19,8 @@ import androidx.core.app.NotificationCompat
 import com.san.kir.ankofork.intentFor
 import com.san.kir.ankofork.sdk28.notificationManager
 import com.san.kir.manger.R
-import com.san.kir.manger.components.latest_chapters.LatestChapterActivity
-import com.san.kir.manger.components.list_chapters.SearchDuplicate
-import com.san.kir.manger.components.parsing.ManageSites
+import com.san.kir.manger.utils.SearchDuplicate
+import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.components.parsing.getShortLink
 import com.san.kir.manger.repositories.ChapterRepository
 import com.san.kir.manger.repositories.MangaRepository
@@ -29,11 +28,15 @@ import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.extensions.log
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
+@SuppressLint("UnspecifiedImmutableFlag")
+@AndroidEntryPoint
 class MangaUpdaterService : Service() {
     companion object {
         const val ACTION_CANCEL_ALL = "kir.san.manger.MangaUpdaterService.CANCEL_ALL"
@@ -59,13 +62,14 @@ class MangaUpdaterService : Service() {
 
     @Volatile
     private lateinit var mServiceLopper: Looper
+
     @Volatile
     private lateinit var mServiceHandler: ServiceHandler
 
-    private val actionGoToLatest by lazy {
-        val intent = intentFor<LatestChapterActivity>()
-        PendingIntent.getActivity(this, 0, intent, 0)
-    }
+//    private val actionGoToLatest by lazy {
+//        val intent = intentFor<LatestChapterActivity>()
+//        PendingIntent.getActivity(this, 0, intent, 0)
+//    }
     private val actionCancelAll by lazy {
         val intent = intentFor<MangaUpdaterService>().setAction(ACTION_CANCEL_ALL)
         val cancelAll = PendingIntent.getService(this, 0, intent, 0)
@@ -79,6 +83,8 @@ class MangaUpdaterService : Service() {
             .build()
     }
 
+    @Inject
+    lateinit var manager: SiteCatalogsManager
     private var progress = 0 // Прогресс проверенных манг
     private var error = 0 // Счетчик закончившихся с ошибкой
     private var fullCountNew = 0 // Количество новых глав
@@ -164,7 +170,7 @@ class MangaUpdaterService : Service() {
         val builder = NotificationCompat.Builder(this, channelId)
             .setContentTitle(getString(R.string.manga_update_notify_update_ready))
             .setSmallIcon(R.drawable.ic_notification_update)
-            .setContentIntent(actionGoToLatest)
+//            .setContentIntent(actionGoToLatest)
 
         val notify = NotificationCompat.InboxStyle(builder)
             .addLine(
@@ -211,7 +217,7 @@ class MangaUpdaterService : Service() {
 
             log("chapters")
 
-            ManageSites.chapters(mangaDB).let { new ->
+            manager.chapters(mangaDB).let { new ->
                 if (oldChapters.isEmpty()) { // Если глав не было до обновления
                     newChapters = new
                 } else {
@@ -233,7 +239,7 @@ class MangaUpdaterService : Service() {
             if (newChapters.isNotEmpty()) {
                 log("not empty")
                 newChapters.reversed().forEach {
-                    it.pages = ManageSites.pages(it)
+                    it.pages = manager.pages(it)
                     it.isInUpdate = true
                     mChapterRepository.insert(it)
                 }
@@ -279,7 +285,7 @@ class MangaUpdaterService : Service() {
             }
             .onEach {
                 launch(Dispatchers.Default) {
-                    it.pages = ManageSites.pages(it)
+                    it.pages = manager.pages(it)
                 }.join()
             }
             .apply {
@@ -289,14 +295,14 @@ class MangaUpdaterService : Service() {
 
     private suspend fun checkLinkInManga(mangaDB: Manga) {
         if (mangaDB.shortLink.isEmpty()) {
-            val site = ManageSites.getSite(mangaDB.host)
+            val site = manager.getSite(mangaDB.host)
 
             mangaDB.host = site.host
             mangaDB.shortLink = site.getShortLink(mangaDB.site)
 
             mMangaRepository.update(mangaDB)
         } else {
-            val site = ManageSites.getSite(mangaDB.host)
+            val site = manager.getSite(mangaDB.host)
 
             mangaDB.host = site.host
 

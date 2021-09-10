@@ -50,6 +50,7 @@ class ChaptersViewModel @AssistedInject constructor(
     private val chapterStore: ChaptersRepository,
     private val downloadDao: DownloadDao,
     private val context: Application,
+    private val manager: SiteCatalogsManager,
 ) : ViewModel() {
     private val _oneTimeFlag = MutableStateFlow(true)
     private val _manga = MutableStateFlow(Manga())
@@ -158,7 +159,7 @@ class ChaptersViewModel @AssistedInject constructor(
     fun updatePagesForSelectedItems() = viewModelScope.launch(Dispatchers.Default) {
         _selectedItems.value.zip(_prepareChapters.value).forEachIndexed { i, (b, chapter) ->
             if (b) {
-                chapter.pages = ManageSites.pages(chapter)
+                chapter.pages = manager.pages(chapter)
                 chapterDao.update(chapter)
             }
         }

@@ -1,35 +1,26 @@
 package com.san.kir.manger.components.download_manager
 
-import android.content.Context
+import com.san.kir.manger.room.dao.DownloadDao
 import com.san.kir.manger.room.entities.DownloadItem
-import com.san.kir.manger.room.getDatabase
 import com.san.kir.manger.utils.JobContext
 import com.san.kir.manger.utils.NetworkManager
 import com.san.kir.manger.utils.enums.DownloadStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import java.util.concurrent.Executors
+import javax.inject.Inject
 
-class ChapterLoader(context: Context) {
-    private val uiJob = JobContext(Executors.newSingleThreadExecutor())
-    private val job = JobContext(Executors.newSingleThreadExecutor())
-    private val listeners = ListenerProvider()
-    private val networkManager = NetworkManager(context)
-    private val mDbManager = getDatabase(context)
-    private val downloadManager = DownloadManager(mDbManager, 1)
-    private val iteratorProcessor =
-        IteratorProcessor(job, downloadManager, networkManager, mDbManager)
-    private val mDownloadDao = mDbManager.downloadDao
-
+class ChapterLoader @Inject constructor(
+    private val job: JobContext,
+    private val networkManager: NetworkManager,
+    private val downloadManager: DownloadManager,
+    private val iteratorProcessor: IteratorProcessor,
+    private val downloadDao: DownloadDao,
+    private val listeners: ListenerProvider,
+    delegateImpl: DownloadManagerDelegateImpl,
+) {
     init {
-        downloadManager.delegate = DownloadManagerDelegateImpl(
-            uiJob,
-            job,
-            listeners.mainListener,
-            iteratorProcessor,
-            mDbManager
-        )
+        downloadManager.delegate = delegateImpl
     }
 
     fun add(task: DownloadItem) {
@@ -38,13 +29,11 @@ class ChapterLoader(context: Context) {
             task.status = DownloadStatus.queued
             task.isError = false
 
-            mDownloadDao.insert(task)
+            downloadDao.insert(task)
 
             startIteratorProcessor()
 
-            uiJob.post {
-                listeners.mainListener.onQueued(task)
-            }
+            listeners.mainListener.onQueued(task)
 
             if (!networkManager.isAvailable()) {
                 pause(task)
@@ -66,18 +55,16 @@ class ChapterLoader(context: Context) {
         job.post {
             val lTask =
                 if (task.id != 0L) task
-                else mDownloadDao.getItem(task.link)
+                else downloadDao.getItem(task.link)
 
 
             if (lTask == null) {
-                uiJob.post {
-                    listeners.mainListener.onError(task, null)
-                }
+                listeners.mainListener.onError(task, null)
                 return@post
             }
 
             lTask.status = DownloadStatus.queued
-            mDownloadDao.update(lTask)
+            downloadDao.update(lTask)
 
             if (isDownloading(lTask.id)) {
                 cancelDownload(lTask.id)
@@ -85,11 +72,9 @@ class ChapterLoader(context: Context) {
             if (canPauseDownload(lTask)) {
                 lTask.status = DownloadStatus.pause
             }
-            mDownloadDao.update(lTask)
+            downloadDao.update(lTask)
 
-            uiJob.post {
-                listeners.mainListener.onPaused(lTask)
-            }
+            listeners.mainListener.onPaused(lTask)
         }
     }
 
@@ -97,13 +82,11 @@ class ChapterLoader(context: Context) {
         job.post {
             val lTask =
                 if (task.id != 0L) task
-                else mDownloadDao.getItem(task.link)
+                else downloadDao.getItem(task.link)
 
 
             if (lTask == null) {
-                uiJob.post {
-                    listeners.mainListener.onError(task, null)
-                }
+                listeners.mainListener.onError(task, null)
                 return@post
             }
 
@@ -115,13 +98,11 @@ class ChapterLoader(context: Context) {
             lTask.status = DownloadStatus.queued
             lTask.isError = false
 
-            mDownloadDao.update(lTask)
+            downloadDao.update(lTask)
 
             startIteratorProcessor()
 
-            uiJob.post {
-                listeners.mainListener.onQueued(lTask)
-            }
+            listeners.mainListener.onQueued(lTask)
 
             if (!networkManager.isAvailable()) {
                 pause(lTask)
@@ -131,28 +112,26 @@ class ChapterLoader(context: Context) {
 
     fun pauseAll() {
         job.post {
-            val loading = mDownloadDao.getItems().filter { canPauseDownload(it) }
+            val loading = downloadDao.getItems().filter { canPauseDownload(it) }
             if (loading.isNotEmpty()) {
                 loading.forEach {
                     it.status = DownloadStatus.queued
-                    mDownloadDao.update(it)
+                    downloadDao.update(it)
                 }
             }
 
             downloadManager.cancelAll()
             iteratorProcessor.stop()
 
-            val downloads = mDownloadDao.getItems().filter { canPauseDownload(it) }
+            val downloads = downloadDao.getItems().filter { canPauseDownload(it) }
             if (downloads.isNotEmpty()) {
                 downloads.forEach {
                     it.status = DownloadStatus.pause
                 }
-                mDownloadDao.update(*downloads.toTypedArray())
+                downloadDao.update(*downloads.toTypedArray())
 
-                uiJob.post {
-                    downloads.forEach {
-                        listeners.mainListener.onPaused(it)
-                    }
+                downloads.forEach {
+                    listeners.mainListener.onPaused(it)
                 }
             }
         }
@@ -161,22 +140,20 @@ class ChapterLoader(context: Context) {
     fun startAll() {
         job.post {
             val downloads =
-                mDownloadDao.getItems()
+                downloadDao.getItems()
                     .filter { canResumeDownload(it) }
             if (downloads.isNotEmpty()) {
                 downloads.forEach {
                     it.status = DownloadStatus.queued
                     it.isError = false
                 }
-                mDownloadDao.update(*downloads.toTypedArray())
+                downloadDao.update(*downloads.toTypedArray())
             }
 
             iteratorProcessor.start()
 
-            uiJob.post {
-                downloads.forEach {
-                    listeners.mainListener.onQueued(it)
-                }
+            downloads.forEach {
+                listeners.mainListener.onQueued(it)
             }
         }
     }
@@ -186,21 +163,15 @@ class ChapterLoader(context: Context) {
         iteratorProcessor.stop()
         downloadManager.close()
         job.close()
-        uiJob.close()
     }
 
     fun <T : Any> addListener(tag: T, listener: DownloadListener) {
         listeners.addListener(tag, listener)
     }
 
-    @Suppress("unused")
-    fun <T : Any> removeListeners(tag: T) {
-        listeners.removeListeners(tag)
-    }
-
     suspend fun hasTask(task: DownloadItem): Boolean {
         val containedItem = withContext(job.coroutineContext + Dispatchers.Default) {
-            mDownloadDao.getItem(
+            downloadDao.getItem(
                 task.link
             )
         }
@@ -240,11 +211,6 @@ class ChapterLoader(context: Context) {
 
     private fun canResumeDownload(task: DownloadItem): Boolean {
         return task.status == DownloadStatus.pause
-    }
-
-    @Suppress("unused")
-    private fun canCompleteDownload(task: DownloadItem): Boolean {
-        return task.status == DownloadStatus.completed
     }
 
     private suspend fun startIteratorProcessor() {

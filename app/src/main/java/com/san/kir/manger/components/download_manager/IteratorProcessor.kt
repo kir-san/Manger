@@ -1,6 +1,6 @@
 package com.san.kir.manger.components.download_manager
 
-import com.san.kir.manger.room.RoomDB
+import com.san.kir.manger.room.dao.DownloadDao
 import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.utils.JobContext
 import com.san.kir.manger.utils.NetworkManager
@@ -9,15 +9,15 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import javax.inject.Inject
 
-class IteratorProcessor(
+class IteratorProcessor @Inject constructor(
     private val job: JobContext,
     private val manager: DownloadManager,
     private val networkManager: NetworkManager,
-    dbManager: RoomDB
+    private val downloadDao: DownloadDao
 ) {
     private val priorityQueueIntervalInMilliseconds = 500L
-    private val mDownloadDao = dbManager.downloadDao
 
     private val lock = Mutex()
     private var j: Job? = null
@@ -48,9 +48,9 @@ class IteratorProcessor(
     }
 
     private suspend fun getIterator(): Iterator<DownloadItem> {
-        var queuedList = mDownloadDao.getItems(DownloadStatus.queued)
+        var queuedList = downloadDao.getItems(DownloadStatus.queued)
         if (isRetry) {
-            queuedList = queuedList + mDownloadDao.getErrorItems()
+            queuedList = queuedList + downloadDao.getErrorItems()
         }
         return queuedList.iterator()
     }

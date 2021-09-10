@@ -3,7 +3,7 @@ package com.san.kir.manger.ui.application_navigation.catalog.global_search
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.san.kir.manger.components.parsing.ManageSites
+import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.components.parsing.SiteCatalog
 import com.san.kir.manger.room.CatalogDb
 import com.san.kir.manger.room.entities.SiteCatalogElement
@@ -22,6 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class GlobalSearchViewModel @Inject constructor(
     private val application: Application,
+    private val manager: SiteCatalogsManager,
 ) : ViewModel() {
     private val searchText = MutableStateFlow("")
     private val backupCatalog = MutableStateFlow(emptyList<SiteCatalogElement>())
@@ -54,9 +55,7 @@ class GlobalSearchViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.Default) {
             kotlin.runCatching {
                 _action.value = true
-                backupCatalog.value =
-                    ManageSites.CATALOG_SITES
-                        .flatMap { getItems(it) }
+                backupCatalog.value = manager.catalog.flatMap { getItems(it) }
             }.onFailure { exception ->
                 exception.printStackTrace()
             }
@@ -75,7 +74,7 @@ class GlobalSearchViewModel @Inject constructor(
 
     private suspend fun getItems(siteCatalog: SiteCatalog): List<SiteCatalogElement> =
         withContext(Dispatchers.Default) {
-            val db = CatalogDb.getDatabase(application, siteCatalog.catalogName)
+            val db = CatalogDb.getDatabase(application, siteCatalog.catalogName, manager)
             val items = db.dao.getItems()
             db.close()
             items

@@ -24,13 +24,16 @@ import com.san.kir.manger.utils.extensions.bytesToMb
 import com.san.kir.manger.utils.extensions.formatDouble
 import com.san.kir.manger.utils.extensions.log
 import com.san.kir.manger.utils.extensions.startForegroundServiceIntent
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
+import javax.inject.Inject
 
-
+@SuppressLint("UnspecifiedImmutableFlag")
+@AndroidEntryPoint
 class DownloadService : Service(), DownloadListener, CoroutineScope {
     companion object {
         private const val ACTION_PAUSE_ALL = "kir.san.manger.DownloadService.PAUSE_ALL"
@@ -121,29 +124,8 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
         }
     }
 
-    private val downloadManager by lazy {
-        ChapterLoader(applicationContext).also {
-            it.addListener(this, this)
-            defaultSharedPreferences.apply {
-                val concurrentKey = getString(R.string.settings_downloader_parallel_key)
-                val concurrentDefault =
-                    getString(R.string.settings_downloader_parallel_default) == "true"
-                val isParallel = getBoolean(concurrentKey, concurrentDefault)
-                it.setConcurrentPages(if (isParallel) 4 else 1)
-
-                val retryKey = getString(R.string.settings_downloader_retry_key)
-                val retryDefault = getString(R.string.settings_downloader_retry_default) == "true"
-                val isRetry = getBoolean(retryKey, retryDefault)
-                it.setRetryOnError(isRetry)
-
-                val wifiKey = getString(R.string.settings_downloader_wifi_only_key)
-                val wifiDefault =
-                    getString(R.string.settings_downloader_wifi_only_default) == "true"
-                val isWifi = getBoolean(wifiKey, wifiDefault)
-                it.isWifiOnly(isWifi)
-            }
-        }
-    }
+    @Inject
+    lateinit var downloadManager: ChapterLoader
 
     private var channelId = ""
     private var notificationId = ID.generate()
@@ -182,9 +164,29 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
 
     override val coroutineContext = job + dispatcher
 
-    @SuppressLint("InlinedApi")
     override fun onCreate() {
         super.onCreate()
+
+        downloadManager.addListener(this, this)
+        defaultSharedPreferences.apply {
+            val concurrentKey = getString(R.string.settings_downloader_parallel_key)
+            val concurrentDefault =
+                getString(R.string.settings_downloader_parallel_default) == "true"
+            val isParallel = getBoolean(concurrentKey, concurrentDefault)
+            downloadManager.setConcurrentPages(if (isParallel) 4 else 1)
+
+            val retryKey = getString(R.string.settings_downloader_retry_key)
+            val retryDefault = getString(R.string.settings_downloader_retry_default) == "true"
+            val isRetry = getBoolean(retryKey, retryDefault)
+            downloadManager.setRetryOnError(isRetry)
+
+            val wifiKey = getString(R.string.settings_downloader_wifi_only_key)
+            val wifiDefault =
+                getString(R.string.settings_downloader_wifi_only_default) == "true"
+            val isWifi = getBoolean(wifiKey, wifiDefault)
+            downloadManager.isWifiOnly(isWifi)
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel()
         }
@@ -201,7 +203,7 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
         this.channelId = channelId
     }
 
-    override fun onBind(intent: Intent?) = null
+    override fun onBind(intent: Intent?): Nothing? = null
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         when (intent.action) {

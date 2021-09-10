@@ -1,6 +1,5 @@
 package com.san.kir.manger.utils
 
-import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -10,15 +9,13 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.result.Result
-import com.san.kir.manger.components.parsing.ManageSites
-import com.san.kir.manger.repositories.MangaRepository
 import com.san.kir.manger.utils.enums.DIR
 import com.san.kir.manger.utils.extensions.createDirs
 import com.san.kir.manger.utils.extensions.getFullPath
 import com.san.kir.manger.utils.extensions.imageExtensions
 import com.san.kir.manger.utils.extensions.log
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -27,29 +24,17 @@ import java.io.File
 import java.util.concurrent.Executors
 
 class ImageLoader(private val url: String) {
-
     private val pool = Executors
         .newFixedThreadPool(1)
         .asCoroutineDispatcher()
 
-    private val mMemoryCache = MemoryCache()
-    private val mDiskCache = DiskCache()
+    private val scope = CoroutineScope(pool)
 
     private var color = -1
     private var errorResId = -1
     private var error: (() -> Unit)? = null
     private var success: ((ImageBitmap) -> Unit)? = null
     private var trying: (() -> Boolean)? = null
-
-    fun errorColor(color: Int): ImageLoader {
-        this.color = color
-        return this
-    }
-
-    fun errorResId(errorResId: Int): ImageLoader {
-        this.errorResId = errorResId
-        return this
-    }
 
     fun onError(action: () -> Unit): ImageLoader {
         error = action
@@ -58,11 +43,6 @@ class ImageLoader(private val url: String) {
 
     fun onSuccess(action: (ImageBitmap) -> Unit): ImageLoader {
         success = action
-        return this
-    }
-
-    fun beforeTry(action: () -> Boolean): ImageLoader {
-        trying = action
         return this
     }
 
@@ -81,11 +61,11 @@ class ImageLoader(private val url: String) {
     }
 
     private fun load(target: ImageView? = null): Job {
-        return GlobalScope.launch(pool) {
+        return scope.launch {
             //        Получаем имя из url
             val name = getNameFromUrl(url)
 
-            mMemoryCache.get(name)?.also {
+            Cache.mMemoryCache.get(name)?.also {
                 withContext(Dispatchers.Main) {
                     target?.setImageBitmap(it)
                     success?.invoke(it.asImageBitmap())
@@ -108,7 +88,7 @@ class ImageLoader(private val url: String) {
                 }
                 return@launch
             } ?: run {
-                target?.context?.let { tryUpdateLogoLink(url, it) }
+//                target?.context?.let { tryUpdateLogoLink(url, it) }
             }
 
             withContext(Dispatchers.Main) {
@@ -146,7 +126,7 @@ class ImageLoader(private val url: String) {
 
     private fun getDiskBitmap(name: String): Bitmap? {
         decode(name)?.also {
-            mMemoryCache.put(name, it)
+            Cache.mMemoryCache.put(name, it)
             return it
         }
 
@@ -154,7 +134,7 @@ class ImageLoader(private val url: String) {
     }
 
     private fun decode(name: String): Bitmap? {
-        val f = mDiskCache.get(name)
+        val f = Cache.mDiskCache.get(name)
         return if (f.exists() && f.length() > 0) {
             BitmapFactory.decodeFile(f.absolutePath)
         } else {
@@ -167,7 +147,7 @@ class ImageLoader(private val url: String) {
         if (url.isBlank()) return null
         val (_, _, result) = Fuel.download(url)
             .fileDestination { _, _ ->
-                val createFile = mDiskCache.createFile(name)
+                val createFile = Cache.mDiskCache.createFile(name)
                 createFile
             }
             .response()
@@ -182,15 +162,19 @@ class ImageLoader(private val url: String) {
         }
     }
 
-    private suspend fun tryUpdateLogoLink(url: String, context: Context) {
-        val mangaRepository = MangaRepository(context)
-        mangaRepository.getFromLogoUrl(url)?.also { manga ->
-            ManageSites.getElementOnline(manga.host + manga.shortLink)?.also { element ->
+    /*private suspend fun tryUpdateLogoLink(url: String) {
+        mangaDao.getItems().firstOrNull { it.logo == url }?.also { manga ->
+            manager.getElementOnline(manga.host + manga.shortLink)?.also { element ->
                 manga.logo = element.logo
-                mangaRepository.update(manga)
+                mangaDao.update(manga)
             }
         }
-    }
+    }*/
+}
+
+private object Cache {
+    val mMemoryCache = MemoryCache()
+    val mDiskCache = DiskCache()
 }
 
 private class MemoryCache : LruCache<String, Bitmap>(cacheSize) {

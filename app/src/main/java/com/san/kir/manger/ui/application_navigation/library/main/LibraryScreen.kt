@@ -1,7 +1,7 @@
 package com.san.kir.manger.ui.application_navigation.library.main
 
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,7 +22,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.rememberDrawerState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
@@ -42,14 +41,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.statusBarsPadding
-import com.google.accompanist.insets.ui.Scaffold
-import com.google.accompanist.insets.ui.TopAppBar
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.google.accompanist.pager.ExperimentalPagerApi
 import com.san.kir.ankofork.dialogs.toast
 import com.san.kir.manger.BuildConfig
 import com.san.kir.manger.R
@@ -59,8 +53,7 @@ import com.san.kir.manger.ui.application_navigation.MainNavTarget
 import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
 import com.san.kir.manger.utils.enums.MainMenuType
 import com.san.kir.manger.utils.extensions.formatDouble
-import com.san.kir.manger.view_models.DrawerViewModel
-import com.san.kir.manger.view_models.TitleViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 var backPressedTime = 0L
@@ -125,7 +118,7 @@ private fun DrawerContent(
                 .padding(start = barsStart),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(painterResource(id = R.mipmap.ic_launcher_foreground), "")
+            Image(painterResource(R.mipmap.ic_launcher_foreground), "")
             Column {
                 Text(
                     text = stringResource(id = R.string.app_name_version, BuildConfig.VERSION_NAME)

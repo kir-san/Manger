@@ -64,12 +64,9 @@ fun CatalogsScreen(
 }
 
 @Composable
-fun ItemView(item: Site, viewModel: CatalogsViewModel = hiltViewModel(), onClick: () -> Unit) {
-    val context = LocalContext.current
+fun ItemView(item: Site, viewModel: CatalogsViewModel, onClick: () -> Unit) {
     var isError by remember { mutableStateOf(false) }
     var isInit by remember { mutableStateOf(false) }
-    var icon by remember { mutableStateOf(ImageBitmap(60, 60)) }
-
 
     Row(
         modifier = Modifier
@@ -77,9 +74,11 @@ fun ItemView(item: Site, viewModel: CatalogsViewModel = hiltViewModel(), onClick
             .clickable(onClick = onClick)
     ) {
         Image(
-            icon, "", modifier = Modifier
-                .size(60.dp)
-                .padding(10.dp)
+            rememberImage("http://www.google.com/s2/favicons?domain=${item.host}"), "",
+            modifier = Modifier
+                .padding(vertical = 10.dp)
+                .padding(end = 8.dp)
+                .size(50.dp)
         )
 
         Column(
@@ -117,20 +116,8 @@ fun ItemView(item: Site, viewModel: CatalogsViewModel = hiltViewModel(), onClick
         )
     }
 
-    LaunchedEffect(key1 = true) {
-        if (item.host.isNotEmpty()) {
-            loadImage("http://www.google.com/s2/favicons?domain=${item.host}") {
-                onSuccess { icon = it }
-                onError {
-                    val errorImage =
-                        BitmapFactory.decodeResource(context.resources, R.drawable.ic_error)
-                    if (errorImage != null) icon = errorImage.asImageBitmap()
-                }
-                start()
-            }
-        }
-
-        val site = withContext(Dispatchers.IO) { viewModel.site(item) }
+    LaunchedEffect(true) {
+        val site = withContext(Dispatchers.Default) { viewModel.site(item) }
         if (site.isInit.not()) {
             isError = false
             isInit = true
@@ -165,10 +152,7 @@ fun CatalogsActions(nav: NavHostController, viewModel: CatalogsViewModel) {
 
         MenuText(id = R.string.catalog_for_one_site_update_catalog_contain, onClick = {
             expanded = false
-            ManageSites.CATALOG_SITES.forEach {
-                if (!CatalogForOneSiteUpdaterService.isContain(it.catalogName))
-                    context.startService<CatalogForOneSiteUpdaterService>("catalogName" to it.catalogName)
-            }
+            viewModel.updateCatalogs()
         })
     }
 

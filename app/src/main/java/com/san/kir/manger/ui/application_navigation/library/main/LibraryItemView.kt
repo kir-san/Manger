@@ -7,33 +7,26 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.AlertDialog
 import androidx.compose.material.Card
-import androidx.compose.material.DropdownMenu
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -41,6 +34,7 @@ import androidx.navigation.NavHostController
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.ui.application_navigation.library.LibraryNavTarget
 import com.san.kir.manger.ui.utils.navigate
+import com.san.kir.manger.ui.utils.rememberImage
 import com.san.kir.manger.ui.utils.squareMaxSize
 import com.san.kir.manger.utils.CATEGORY_ALL
 
@@ -78,7 +72,7 @@ fun LibraryLargeItemView(
     cat: String,
     viewModel: LibraryViewModel
 ) {
-    var logoManga by remember { mutableStateOf(ImageBitmap(60, 60)) }
+    val showCategory by viewModel.showCategory.collectAsState(false)
     var countNotRead by remember { mutableStateOf(0) }
     val primaryColor = MaterialTheme.colors.primary
     var backgroundColor by remember { mutableStateOf(primaryColor) }
@@ -87,7 +81,7 @@ fun LibraryLargeItemView(
         Column(modifier = Modifier.fillMaxWidth()) {
             Box(modifier = Modifier.squareMaxSize()) {
                 Image(
-                    BitmapPainter(logoManga),
+                    rememberImage(manga.logo),
                     modifier = Modifier.fillMaxSize(),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
@@ -116,26 +110,20 @@ fun LibraryLargeItemView(
                         .padding(4.dp)
                 )
 
-                if (cat == CATEGORY_ALL && state.isShowCategory)
+                if (cat == CATEGORY_ALL && showCategory)
                     Text(
                         text = manga.categories,
-                        color = backgroundColor,
+                        color = primaryColor,
                         modifier = Modifier
                             .padding(end = 3.dp)
-                            .background(MaterialTheme.colors.contentColorFor(backgroundColor))
-                            .padding(horizontal = 3.dp)
+                            .background(MaterialTheme.colors.contentColorFor(primaryColor))
+                            .padding(start = 3.dp, bottom = 1.dp, end = 3.dp)
                     )
             }
         }
     }
 
     LaunchedEffect(manga) {
-        loadImage(manga.logo) {
-            onSuccess { image ->
-                logoManga = image
-            }
-            start()
-        }
         if (manga.color != 0) {
             backgroundColor = try {
                 Color(manga.color)
@@ -154,7 +142,7 @@ fun LibrarySmallItemView(
     cat: String,
     viewModel: LibraryViewModel
 ) {
-    var logoManga by remember { mutableStateOf(ImageBitmap(60, 60)) }
+    val showCategory by viewModel.showCategory.collectAsState(false)
     var countNotRead by remember { mutableStateOf(0) }
     val primaryColor = MaterialTheme.colors.primary
     var backgroundColor by remember { mutableStateOf(primaryColor) }
@@ -168,13 +156,11 @@ fun LibrarySmallItemView(
                 .padding(3.dp)
         ) {
             Image(
-                logoManga,
+                rememberImage(manga.logo),
                 modifier = Modifier
                     .padding(2.dp)
-                    .clip(CircleShape)
                     .size(heightSize),
                 contentDescription = null,
-                contentScale = ContentScale.Crop,
             )
             Text(
                 text = manga.name,
@@ -195,7 +181,7 @@ fun LibrarySmallItemView(
                 fontWeight = FontWeight.Bold
             )
         }
-        if (cat == CATEGORY_ALL && state.isShowCategory)
+        if (cat == CATEGORY_ALL && showCategory)
             Box(
                 contentAlignment = Alignment.BottomEnd,
                 modifier = Modifier
@@ -213,12 +199,6 @@ fun LibrarySmallItemView(
     }
 
     LaunchedEffect(manga) {
-        loadImage(manga.logo) {
-            onSuccess { image ->
-                logoManga = image
-            }
-            start()
-        }
         if (manga.color != 0) {
             backgroundColor = try {
                 Color(manga.color)

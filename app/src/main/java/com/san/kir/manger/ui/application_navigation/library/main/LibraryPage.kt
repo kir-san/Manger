@@ -112,6 +112,8 @@ private fun PageView(
                 LibrarySmallItemView(nav, manga, item.category.name, viewModel)
             }
         }
+
+    LibraryDropUpMenu(nav, viewModel)
 }
 
 @Composable

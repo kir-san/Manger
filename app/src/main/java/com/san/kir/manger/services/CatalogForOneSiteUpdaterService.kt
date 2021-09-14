@@ -18,6 +18,7 @@ import com.san.kir.manger.repositories.SiteRepository
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.extensions.log
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -30,6 +31,7 @@ import kotlinx.coroutines.runBlocking
 import java.util.concurrent.Executors
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class CatalogForOneSiteUpdaterService : IntentService(TAG) {
     companion object {
         const val ACTION_CATALOG_UPDATER_SERVICE =
@@ -41,7 +43,7 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
         private const val channelId = "CatalogUpdaterId"
         private const val TAG = "CatalogForOneSiteUpdaterService"
         private const val name = "CatalogForOneSiteUpdaterServiceName"
-        private const val description = "CatalogForOneSiteUpdaterServiceDescription"
+        private const val descriptions = "CatalogForOneSiteUpdaterServiceDescription"
         private var taskCounter = listOf<String>()
         fun isContain(catalogName: String) = taskCounter.contains(catalogName)
     }
@@ -83,7 +85,7 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
             val importance = NotificationManager.IMPORTANCE_LOW
 
             NotificationChannel(channelId, name, importance).apply {
-                description = description
+                description = descriptions
                 notificationManager.createNotificationChannel(this)
             }
         }

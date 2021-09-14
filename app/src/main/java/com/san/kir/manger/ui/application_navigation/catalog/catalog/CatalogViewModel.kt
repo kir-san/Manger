@@ -177,6 +177,8 @@ class CatalogViewModel @AssistedInject constructor(
                 _action.value = true
             } else if (!CatalogForOneSiteUpdaterService.isContain(siteCatalog)) {
                 _action.value = false
+            } else {
+                _action.value = false
             }
         }
 

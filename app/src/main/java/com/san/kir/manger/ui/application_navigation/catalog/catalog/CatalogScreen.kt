@@ -103,6 +103,7 @@ fun CatalogScreen(
     when (vm.catalogReceiver.collectAsState().value) {
         "destroy" -> viewModel.setAction(false)
         "error" -> errorDialog.value = true
+        else -> viewModel.setAction(true)
     }
 
     Scaffold(

@@ -28,6 +28,12 @@ class MainRepository @Inject constructor(private val mainStore: DataStore<Main>)
             preference.toBuilder().setIsShowCatagery(state).build()
         }
     }
+
+    suspend fun setTheme(state: String) {
+        mainStore.updateData { preference ->
+            preference.toBuilder().setTheme(state).build()
+        }
+    }
 }
 
 val Context.mainStore: DataStore<Main> by dataStore(

@@ -7,6 +7,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.Operation
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.components.schedule.ScheduleManager
 import com.san.kir.manger.data.datastore.ChaptersRepository
@@ -28,7 +29,7 @@ import dagger.assisted.AssistedInject
 
 @HiltWorker
 class FirstInitAppWorker @AssistedInject constructor(
-    @Assisted ctx: Context,
+    @Assisted private val ctx: Context,
     @Assisted params: WorkerParameters,
     private val mainMenuDao: MainMenuDao,
     private val statisticDao: StatisticDao,
@@ -134,6 +135,7 @@ class FirstInitAppWorker @AssistedInject constructor(
 
         val mStore = MainRepository(applicationContext.mainStore)
         mStore.setShowCategory(true)
+        mStore.setTheme(ctx.getString(R.string.settings_app_dark_theme_default))
     }
 
     companion object {

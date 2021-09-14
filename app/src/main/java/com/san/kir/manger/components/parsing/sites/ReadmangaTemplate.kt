@@ -1,12 +1,10 @@
 package com.san.kir.manger.components.parsing.sites
 
 import com.san.kir.manger.components.parsing.Parsing
-import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.components.parsing.SiteCatalogClassic
 import com.san.kir.manger.components.parsing.Status
 import com.san.kir.manger.components.parsing.Translate
 import com.san.kir.manger.components.parsing.getShortLink
-import com.san.kir.manger.repositories.SiteRepository
 import com.san.kir.manger.room.dao.SiteDao
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.DownloadItem
@@ -113,10 +111,10 @@ abstract class ReadmangaTemplate(
 
         element.about = doc.select("meta[itemprop=description]").attr("content")
 
-        log(doc.select(".expandable .subject-cower img").toString())
+        log(doc.select(".expandable .subject-cover img").toString())
 
         // Ссылка на лого
-        element.logo = doc.select(".expandable .subject-cower img").attr("data-full")
+        element.logo = doc.select(".expandable .subject-cover img").attr("src")
 
         element.isFull = true
 
@@ -212,17 +210,22 @@ abstract class ReadmangaTemplate(
 
         val shortLink = getShortLink(item.link)
 
+        log("link = ${item.link}")
+        log("fulllink = $host$shortLink?mature=1")
+
         val doc = parsing.getDocument("$host$shortLink?mature=1")
         // с помощью регулярных выражений ищу нужные данные
         val pat = Pattern.compile("rm_h.init.+").matcher(doc.body().html())
         // если данные найдены то продолжаю
         if (pat.find()) {
             // избавляюсь от ненужного и разделяю строку в список и отправляю
-            val data = pat.group()
-                .removeSuffix(", 0, false);")
-                .removePrefix("rm_h.init( ")
+            val data = "[" + pat.group()
+                .removeSuffix(");")
+                .removePrefix("rm_h.initReader( ") + "]"
 
-            val json = JSONArray(data)
+//            log("data = $data")
+
+            val json = JSONArray(data).getJSONArray(1)
 
             repeat(json.length()) { index ->
                 val jsonArray = json.getJSONArray(index)

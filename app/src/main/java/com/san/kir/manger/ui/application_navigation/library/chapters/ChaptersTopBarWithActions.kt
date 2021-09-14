@@ -54,7 +54,8 @@ fun ChaptersTopBar(
             .fillMaxWidth()
             .padding(0.dp),
         actions = {
-            Actions(chaptersActionViewModel(manga.unic), changeAction)
+            if (manga.unic.isNotBlank())
+                Actions(chaptersActionViewModel(manga.unic), changeAction)
         },
         contentPadding = rememberInsetsPaddingValues(
             insets = LocalWindowInsets.current.systemBars,

@@ -26,6 +26,7 @@ import com.san.kir.manger.ui.application_navigation.categories.categoriesNavGrap
 import com.san.kir.manger.ui.application_navigation.latest.LatestScreen
 import com.san.kir.manger.ui.application_navigation.library.LibraryNavTarget
 import com.san.kir.manger.ui.application_navigation.library.libraryNavGraph
+import com.san.kir.manger.ui.application_navigation.settings.SettingsScreen
 import com.san.kir.manger.ui.application_navigation.startapp.StartAppScreen
 import com.san.kir.manger.ui.application_navigation.statistic.StatisticNavTarget
 import com.san.kir.manger.ui.application_navigation.statistic.statisticNavGraph
@@ -169,7 +170,7 @@ fun NavGraphBuilder.mainNavGraph(nav: NavHostController) {
     }
 
     composable(route = MainNavTarget.Settings.route) {
-        LocalContext.current.startActivity<SettingActivity>()
+        SettingsScreen(nav)
     }
 
     navigation(

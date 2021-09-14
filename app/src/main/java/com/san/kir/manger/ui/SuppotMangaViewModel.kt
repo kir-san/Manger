@@ -39,7 +39,9 @@ class SuppotMangaViewModel @Inject constructor(
             oldManga.shortLink = updItem.shotLink
             oldManga.status = updItem.statusEdition
             mangaDao.update(oldManga)
-            application.longToast("Информация о манге ${item.name} обновлена")
+            withContext(Dispatchers.Main) {
+                application.longToast("Информация о манге ${item.name} обновлена")
+            }
         }
     }
 

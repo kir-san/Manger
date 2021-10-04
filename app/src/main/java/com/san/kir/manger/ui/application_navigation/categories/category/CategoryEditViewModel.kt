@@ -55,14 +55,15 @@ class CategoryEditViewModel @Inject constructor(
         }
     }
 
-    fun setCategory(category: Category?) = viewModelScope.launch(Dispatchers.Default) {
-        if (category != null && category != Category()) {
-            _currentCategory.value = category
+    fun setCategory(categoryName: String) = viewModelScope.launch(Dispatchers.Default) {
+
+        if (categoryName.isNotEmpty()) {
+            _currentCategory.value = categoryDao.getItems().first { it.name == categoryName }
         } else {
             _hasCreatedNew.value = true
             _currentCategory.value = createNewCategory()
         }
-        _oldCategoryName.value = category?.name ?: ""
+        _oldCategoryName.value = categoryName
     }
 
     private suspend fun createNewCategory(): Category {

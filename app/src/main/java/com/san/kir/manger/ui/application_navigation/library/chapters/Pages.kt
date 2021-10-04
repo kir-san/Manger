@@ -61,6 +61,7 @@ import androidx.work.WorkManager
 import com.google.accompanist.insets.navigationBarsPadding
 import com.san.kir.ankofork.startActivity
 import com.san.kir.manger.R
+import com.san.kir.manger.components.parsing.SiteCatalogAlternative
 import com.san.kir.manger.components.viewer.ViewerActivity
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.utils.loadImage
@@ -76,7 +77,12 @@ sealed class ChapterPages(
     val content: @Composable (NavHostController, ChaptersViewModel) -> Unit
 )
 
-val CHAPTER_PAGES = listOf(AboutPage, ListPage)
+fun chapterPages(isAlternative: Boolean): List<ChapterPages> {
+    return if (isAlternative)
+        listOf(AboutPage)
+    else
+        listOf(AboutPage, ListPage)
+}
 
 object AboutPage : ChapterPages(
     nameId = R.string.list_chapters_page_about,

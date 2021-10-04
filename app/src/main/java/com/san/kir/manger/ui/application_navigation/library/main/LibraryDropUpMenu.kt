@@ -77,7 +77,7 @@ fun LibraryDropUpMenu(nav: NavHostController, viewModel: LibraryViewModel) {
 
             MenuText(id = R.string.library_popupmenu_about, onClick = {
                 viewModel.changeSelectedManga(false)
-                nav.navigate(LibraryNavTarget.About, state.manga)
+                nav.navigate(LibraryNavTarget.About, state.manga.unic)
             })
 
             DropdownMenuItem(onClick = {

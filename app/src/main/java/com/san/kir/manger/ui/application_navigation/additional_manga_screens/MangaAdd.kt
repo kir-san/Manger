@@ -29,18 +29,33 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.san.kir.ankofork.startService
 import com.san.kir.manger.R
+import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.room.entities.MangaColumn
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.services.MangaUpdaterService
+import com.san.kir.manger.ui.MainActivity
 import com.san.kir.manger.ui.utils.DialogText
 import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.EntryPointAccessors
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 @Composable
 fun MangaAddScreen(nav: NavHostController, item: SiteCatalogElement) {
@@ -257,3 +272,44 @@ private object ProcessStatus {
     const val allComplete = 5
 }
 
+class SiteCatalogItemViewModel @AssistedInject constructor(
+    @Assisted private val url: String,
+    private val manager: SiteCatalogsManager,
+) : ViewModel() {
+    private val _item = MutableStateFlow(SiteCatalogElement())
+    val item = _item.asStateFlow()
+
+    init {
+        // инициация манги
+        viewModelScope.launch(Dispatchers.Default) {
+            manager.getElementOnline(url)?.also { _item.update { it } }
+        }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(url: String): SiteCatalogItemViewModel
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    companion object {
+        fun provideFactory(
+            assistedFactory: Factory,
+            url: String
+        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                return assistedFactory.create(url) as T
+            }
+        }
+    }
+}
+
+@Composable
+fun siteCatalogItemViewModel(url: String): SiteCatalogItemViewModel {
+    val factory = EntryPointAccessors.fromActivity(
+        LocalContext.current as MainActivity,
+        MainActivity.ViewModelFactoryProvider::class.java,
+    ).siteCatalogItemViewModelFactory()
+
+    return viewModel(factory = SiteCatalogItemViewModel.provideFactory(factory, url))
+}

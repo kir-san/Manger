@@ -57,7 +57,7 @@ fun MangaInfoScreen(
         title = stringResource(id = R.string.manga_info_dialog_title),
         actions = {
             AnimatedVisibility(visible = isAdded) {
-                IconButton(onClick = { nav.navigate(CatalogsNavTarget.AddLocal, item) }) {
+                IconButton(onClick = { nav.navigate(CatalogsNavTarget.AddLocal, item.link) }) {
                     Icon(
                         Icons.Default.Add,
                         contentDescription = "add manga",

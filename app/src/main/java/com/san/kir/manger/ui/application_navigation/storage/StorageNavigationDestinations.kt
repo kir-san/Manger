@@ -8,6 +8,7 @@ import com.san.kir.manger.ui.application_navigation.additional_manga_screens.Man
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.mangaStorageViewModel
 import com.san.kir.manger.ui.application_navigation.storage.main.StorageScreen
 import com.san.kir.manger.ui.utils.MangaItem
+import com.san.kir.manger.ui.utils.NavItem
 import com.san.kir.manger.ui.utils.NavTarget
 import com.san.kir.manger.ui.utils.getElement
 
@@ -17,8 +18,8 @@ sealed class StorageNavTarget : NavTarget {
     }
 
     object Storage : StorageNavTarget() {
-        override val base: String = "manga_storage/"
-        override val route: String = "$base{${MangaItem.value}}"
+        override val base: String = "manga_storage"
+        override val item: NavItem = MangaItem
     }
 }
 

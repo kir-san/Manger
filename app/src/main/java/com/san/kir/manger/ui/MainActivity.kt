@@ -21,9 +21,12 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.san.kir.manger.services.CatalogForOneSiteUpdaterService
 import com.san.kir.manger.services.MangaUpdaterService
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaStorageViewModel
+import com.san.kir.manger.ui.application_navigation.additional_manga_screens.SiteCatalogItemViewModel
 import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewModel
+import com.san.kir.manger.ui.application_navigation.categories.OnlyCategoryViewModel
 import com.san.kir.manger.ui.application_navigation.library.chapters.ChaptersActionViewModel
 import com.san.kir.manger.ui.application_navigation.library.chapters.ChaptersViewModel
+import com.san.kir.manger.ui.application_navigation.statistic.OnlyStatisticViewModel
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,6 +43,10 @@ class MainActivity : ComponentActivity() {
         fun chaptersViewModelFactory(): ChaptersViewModel.Factory
         fun catalogViewModelFactory(): CatalogViewModel.Factory
         fun mangaStorageViewModelFactory(): MangaStorageViewModel.Factory
+        fun onlyMangaViewModelFactory(): OnlyMangaViewModel.Factory
+        fun onlyCategoryViewModelFactory(): OnlyCategoryViewModel.Factory
+        fun siteCatalogItemViewModelFactory(): SiteCatalogItemViewModel.Factory
+        fun onlyStatisticViewModelFactory(): OnlyStatisticViewModel.Factory
     }
 
     private val mainViewModel: MainViewModel by viewModels()

@@ -52,7 +52,7 @@ fun ColumnScope.LibraryContent(
     if (isAction) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
 
     if (isEmpty.not() && categories.isNotEmpty()) {
-        val pagerState = rememberPagerState(pageCount = categoryNames.size)
+        val pagerState = rememberPagerState()
         viewModel.changeCurrentCategory(categories[pagerState.currentPage])
 
         // Название вкладок
@@ -88,6 +88,7 @@ fun ColumnScope.LibraryContent(
         }
         // Перелистываемые вкладки
         HorizontalPager(
+            count = categoryNames.size,
             state = pagerState,
             modifier = Modifier
                 .fillMaxWidth()

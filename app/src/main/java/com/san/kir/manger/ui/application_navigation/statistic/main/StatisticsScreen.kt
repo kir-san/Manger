@@ -55,7 +55,7 @@ fun StatisticsScreen(
         items(items = allItems, key = { storage -> storage.id }) { item ->
             item?.let {
                 ItemView(item, viewModel) {
-                    nav.navigate(StatisticNavTarget.Statistic, item)
+                    nav.navigate(StatisticNavTarget.Statistic, item.manga)
                 }
             }
         }

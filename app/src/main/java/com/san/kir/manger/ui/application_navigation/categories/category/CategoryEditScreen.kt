@@ -42,12 +42,9 @@ import kotlin.math.roundToInt
 // Редактирование параметров категории
 fun CategoryEditScreen(
     nav: NavHostController,
-    item: Category,
-    viewModel: CategoryEditViewModel = hiltViewModel()
+    viewModel: CategoryEditViewModel
 ) {
     val viewState by viewModel.state.collectAsState()
-
-    viewModel.setCategory(item)
 
     var hasError by rememberSaveable { mutableStateOf(false) }
     var deleteDialog by rememberSaveable { mutableStateOf(false) }

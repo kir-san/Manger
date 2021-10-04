@@ -18,6 +18,9 @@ interface StatisticDao : BaseDao<MangaStatistic> {
     @Query("SELECT * FROM ${MangaStatisticColumn.tableName} ORDER BY ${MangaStatisticColumn.allTime} DESC")
     fun loadItems(): Flow<List<MangaStatistic>>
 
+    @Query("SELECT * FROM ${MangaStatisticColumn.tableName} WHERE ${MangaStatisticColumn.manga} IS :unic")
+    fun loadItem(unic: String): Flow<MangaStatistic>
+
     @Query("SELECT * FROM ${MangaStatisticColumn.tableName}")
     suspend fun getItems(): List<MangaStatistic>
 

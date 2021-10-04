@@ -47,13 +47,13 @@ fun CategoriesScreen(
         actions = {
             MenuIcon(
                 icon = Icons.Default.Add,
-                onClick = { nav.navigate(CategoriesNavTarget.Category, Category()) })
+                onClick = { nav.navigate(CategoriesNavTarget.Category, "") })
 
         }
     ) {
         itemsIndexed(items = cats, key = { _, c -> c.id }) { index, item ->
             CategoryItemView(index, cats.count(), item) {
-                nav.navigate(CategoriesNavTarget.Category, item)
+                nav.navigate(CategoriesNavTarget.Category, item.name)
             }
         }
     }

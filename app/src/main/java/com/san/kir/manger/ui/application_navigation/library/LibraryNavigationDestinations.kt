@@ -1,22 +1,26 @@
 package com.san.kir.manger.ui.application_navigation.library
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.composable
-import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaAboutScreen
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaAddOnlineScreen
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaAddScreen
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaEditScreen
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaStorageScreen
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.mangaStorageViewModel
+import com.san.kir.manger.ui.application_navigation.additional_manga_screens.siteCatalogItemViewModel
 import com.san.kir.manger.ui.application_navigation.library.chapters.ChaptersScreen
 import com.san.kir.manger.ui.application_navigation.library.chapters.chaptersViewModel
 import com.san.kir.manger.ui.application_navigation.library.main.LibraryScreen
+import com.san.kir.manger.ui.onlyMangaViewModel
 import com.san.kir.manger.ui.utils.MangaItem
+import com.san.kir.manger.ui.utils.NavItem
 import com.san.kir.manger.ui.utils.NavTarget
+import com.san.kir.manger.ui.utils.SiteCatalogItem
 import com.san.kir.manger.ui.utils.getElement
 
 sealed class LibraryNavTarget : NavTarget {
@@ -25,8 +29,8 @@ sealed class LibraryNavTarget : NavTarget {
     }
 
     object Chapters : LibraryNavTarget() {
-        override val base: String = "chapters/"
-        override val route: String = "$base{${MangaItem.value}}"
+        override val base: String = "chapters"
+        override val item: NavItem = MangaItem
     }
 
     object AddOnline : LibraryNavTarget() {
@@ -35,22 +39,21 @@ sealed class LibraryNavTarget : NavTarget {
 
     object AddLocal : LibraryNavTarget() {
         override val route: String = "add_local"
-        override val savedItem: String = route + "_item"
     }
 
     object About : LibraryNavTarget() {
-        override val route: String = "about"
-        override val savedItem: String = route + "_item"
+        override val base: String = "about"
+        override val item: NavItem = MangaItem
     }
 
     object Edit : LibraryNavTarget() {
-        override val route: String = "edit"
-        override val savedItem: String = route + "_item"
+        override val base: String = "edit"
+        override val item: NavItem = MangaItem
     }
 
     object Storage : LibraryNavTarget() {
-        override val base: String = "manga_storage/"
-        override val route: String = "$base{${MangaItem.value}}"
+        override val base: String = "manga_storage"
+        override val item: NavItem = MangaItem
     }
 }
 
@@ -83,27 +86,37 @@ fun NavGraphBuilder.libraryNavGraph(nav: NavHostController) {
     composable(
         route = LibraryNavTarget.AddLocal.route,
         content = {
-            val item = nav.getElement(LibraryNavTarget.AddLocal) ?: SiteCatalogElement()
+            val item = nav.getElement(SiteCatalogItem) ?: ""
+            val viewModel = siteCatalogItemViewModel(url = item)
 
-            MangaAddScreen(nav, item)
+            val element by viewModel.item.collectAsState()
+
+            MangaAddScreen(nav, element)
         }
     )
 
     composable(
         route = LibraryNavTarget.About.route,
         content = {
-            val item = nav.getElement(LibraryNavTarget.About) ?: Manga()
+            val item = nav.getElement(MangaItem) ?: ""
+            val viewModel = onlyMangaViewModel(mangaUnic = item)
 
-            MangaAboutScreen(nav, item)
+            val manga by viewModel.manga.collectAsState()
+
+
+            MangaAboutScreen(nav, manga)
         }
     )
 
     composable(
         route = LibraryNavTarget.Edit.route,
         content = {
-            val item = nav.getElement(LibraryNavTarget.Edit) ?: Manga()
+            val item = nav.getElement(MangaItem) ?: ""
+            val viewModel = onlyMangaViewModel(mangaUnic = item)
 
-            MangaEditScreen(nav, item)
+            val manga by viewModel.manga.collectAsState()
+
+            MangaEditScreen(nav, manga)
         }
     )
 

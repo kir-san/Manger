@@ -123,10 +123,10 @@ fun CatalogScreen(
                 items(items = viewState.items, key = { item -> item.id }) { item ->
                     ListItem(item, item.name, item.statusEdition,
                              navAddAction = {
-                                 nav.navigate(CatalogsNavTarget.AddLocal, item)
+                                 nav.navigate(CatalogsNavTarget.AddLocal, item.link)
                              },
                              navInfoAction = {
-                                 nav.navigate(CatalogsNavTarget.Info, item)
+                                 nav.navigate(CatalogsNavTarget.Info, item.link)
                              })
                 }
             }

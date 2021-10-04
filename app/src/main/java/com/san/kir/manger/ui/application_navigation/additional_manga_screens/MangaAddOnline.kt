@@ -135,8 +135,8 @@ fun ColumnScope.MangaAddOnlineContent(
             scope.launch {
                 check = true
                 isEnable.value = false
-                viewModel.elementOnline(inputText)?.also { item ->
-                    nav.navigate(LibraryNavTarget.AddLocal, item)
+                viewModel.elementOnline(inputText)?.also {
+                    nav.navigate(LibraryNavTarget.AddLocal, inputText)
                 } ?: run {
                     isError = true
                     check = false

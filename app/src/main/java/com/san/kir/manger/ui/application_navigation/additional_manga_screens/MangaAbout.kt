@@ -42,7 +42,7 @@ fun MangaAboutScreen(nav: NavHostController, item: Manga) {
         title = stringResource(id = R.string.manga_info_dialog_title),
         actions = {
             IconButton(onClick = {
-                nav.navigate(LibraryNavTarget.Edit, item)
+                nav.navigate(LibraryNavTarget.Edit, item.unic)
             }) {
                 Icon(
                     Icons.Default.Edit,

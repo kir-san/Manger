@@ -124,9 +124,8 @@ fun ColumnScope.ChaptersContent(
     val isTitle by viewModel.isTitle.collectAsState(true)
     val manga by viewModel.manga.collectAsState()
 
-    val pagerState =
-        if (manga.isAlternativeSite) rememberPagerState(pageCount = 1)
-        else rememberPagerState(pageCount = 2)
+    val pagerState = rememberPagerState()
+    val pages = chapterPages(manga.isAlternativeSite)
 
     // ПрогрессБар для отображения фоновых операций
     if (action || chapters.isEmpty()) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
@@ -147,8 +146,7 @@ fun ColumnScope.ChaptersContent(
                     )
                 )
         ) {
-            repeat(pagerState.pageCount) { index ->
-                val item = CHAPTER_PAGES[index]
+            pages.forEachIndexed { index, item ->
                 Tab(
                     selected = pagerState.currentPage == index,
                     text = { Text(text = stringResource(id = item.nameId)) },
@@ -157,8 +155,12 @@ fun ColumnScope.ChaptersContent(
             }
         }
 
-    HorizontalPager(state = pagerState, modifier = Modifier.weight(1f)) { index ->
-        CHAPTER_PAGES[index].content(nav, viewModel)
+    HorizontalPager(
+        count = pages.size,
+        state = pagerState,
+        modifier = Modifier.weight(1f)
+    ) { index ->
+        pages[index].content(nav, viewModel)
     }
 
 }

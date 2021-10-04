@@ -1,7 +1,6 @@
 package com.san.kir.manger.components.download_manager
 
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
-import com.san.kir.manger.room.RoomDB
 import com.san.kir.manger.room.dao.ChapterDao
 import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.utils.JobContext
@@ -9,15 +8,16 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.util.concurrent.Executors
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class DownloadManager @Inject constructor(
     private val manager: SiteCatalogsManager,
     private val chapterDao: ChapterDao,
 ) {
     private val lock = Mutex()
     private val concurrentLimit: Int = 1
-    private val executor =
-        JobContext(Executors.newFixedThreadPool(concurrentLimit))
+    private val executor = JobContext(Executors.newFixedThreadPool(concurrentLimit))
     private val currentDownloadsMap = hashMapOf<Long, ChapterDownloader>()
 
     private var concurrentPages: Int = 4
@@ -34,7 +34,6 @@ class DownloadManager @Inject constructor(
             }
 
             val chapterDownloader = getNewChapterDownloader(task)
-            chapterDownloader.delegate = delegate
             downloadCounter += 1
             currentDownloadsMap[task.id] = chapterDownloader
             return try {
@@ -125,7 +124,7 @@ class DownloadManager @Inject constructor(
     }
 
     private fun getNewChapterDownloader(task: DownloadItem): ChapterDownloader {
-        return ChapterDownloader(manager, task, concurrentPages, chapterDao)
+        return ChapterDownloader(manager, task, concurrentPages, chapterDao, delegate)
     }
 
     interface Delegate : ChapterDownloader.Delegate {

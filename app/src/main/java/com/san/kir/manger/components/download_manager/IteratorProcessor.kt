@@ -10,7 +10,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class IteratorProcessor @Inject constructor(
     private val job: JobContext,
     private val manager: DownloadManager,

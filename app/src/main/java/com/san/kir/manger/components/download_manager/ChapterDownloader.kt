@@ -7,6 +7,7 @@ import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.utils.JobContext
 import com.san.kir.manger.utils.extensions.createDirs
 import com.san.kir.manger.utils.extensions.getFullPath
+import com.san.kir.manger.utils.extensions.log
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.io.File
@@ -19,9 +20,8 @@ class ChapterDownloader(
     private val task: DownloadItem,
     concurrent: Int,
     private val chapterDao: ChapterDao,
+    private val delegate: Delegate?
 ) {
-    var delegate: Delegate? = null
-
     private var totalPages = 0
     private var downloadPages = 0
     private var downloadSize = 0L
@@ -162,6 +162,9 @@ class ChapterDownloader(
                     page.parentFile?.createDirs()
                     page.createNewFile()
                     page
+                }
+                .progress { readBytes, totalBytes ->
+                    log("link = $link\nreadBytes = $readBytes, totalBytes = $totalBytes")
                 }
                 .response()
 

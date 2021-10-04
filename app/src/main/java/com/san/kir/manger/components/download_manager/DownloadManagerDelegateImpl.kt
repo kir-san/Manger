@@ -6,7 +6,9 @@ import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.utils.JobContext
 import com.san.kir.manger.utils.enums.DownloadStatus
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class DownloadManagerDelegateImpl @Inject constructor(
     private val job: JobContext,
     private val listener: DownloadListener,

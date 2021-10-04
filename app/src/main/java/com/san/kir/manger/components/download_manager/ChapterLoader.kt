@@ -169,6 +169,10 @@ class ChapterLoader @Inject constructor(
         listeners.addListener(tag, listener)
     }
 
+    fun clearListeners() {
+        listeners.clear()
+    }
+
     suspend fun hasTask(task: DownloadItem): Boolean {
         val containedItem = withContext(job.coroutineContext + Dispatchers.Default) {
             downloadDao.getItem(

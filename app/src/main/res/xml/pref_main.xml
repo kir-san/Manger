@@ -4,12 +4,6 @@
 
     <PreferenceCategory
         android:title="@string/settings_library_title">
-        <SwitchPreference
-            android:defaultValue="@string/settings_library_show_category_default"
-            android:key="@string/settings_library_show_category_key"
-            android:summary="@string/settings_library_show_category_summary"
-            android:title="@string/settings_library_show_category_title"
-            />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -57,26 +51,6 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Настройки загрузчика">
-        <SwitchPreference
-            android:key="@string/settings_downloader_parallel_key"
-            android:defaultValue="@string/settings_downloader_parallel_default"
-            android:summary="@string/settings_downloader_parallel_summary"
-            android:title="@string/settings_downloader_parallel_title"
-            />
-
-        <SwitchPreference
-            android:key="@string/settings_downloader_retry_key"
-            android:defaultValue="@string/settings_downloader_retry_default"
-            android:summary="@string/settings_downloader_retry_summary"
-            android:title="@string/settings_downloader_retry_title"
-            />
-
-        <SwitchPreference
-            android:key="@string/settings_downloader_wifi_only_key"
-            android:defaultValue="@string/settings_downloader_wifi_only_default"
-            android:summary="@string/settings_downloader_wifi_only_summary"
-            android:title="@string/settings_downloader_wifi_only_title"
-            />
     </PreferenceCategory>
 
 </PreferenceScreen>

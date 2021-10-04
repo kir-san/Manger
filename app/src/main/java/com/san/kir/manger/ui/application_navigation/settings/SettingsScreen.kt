@@ -1,7 +1,6 @@
 package com.san.kir.manger.ui.application_navigation.settings
 
 import android.app.Application
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Modifier.Companion
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
@@ -41,6 +41,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.san.kir.manger.R
+import com.san.kir.manger.data.datastore.DownloadRepository
 import com.san.kir.manger.data.datastore.MainRepository
 import com.san.kir.manger.ui.utils.RadioGroup
 import com.san.kir.manger.ui.utils.TopBarScreenContent
@@ -49,7 +50,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -69,9 +69,42 @@ fun SettingsScreen(
             title = R.string.settings_app_dark_theme_title,
             subtitle = R.string.settings_app_dark_theme_summary,
             initialValue = theme,
-        ) { viewModel.setTheme(it) }
+            onCheckedChange = { viewModel.setTheme(it) }
+        )
         Divider()
 
+        val showCategory by viewModel.showCategory.collectAsState()
+        TogglePreferenceItem(
+            title = R.string.settings_library_show_category_title,
+            subtitle = R.string.settings_library_show_category_summary,
+            initialValue = showCategory,
+            onCheckedChange = { viewModel.setShowCategory(it) }
+        )
+        Divider()
+
+        val concurrent by viewModel.concurrent.collectAsState()
+        TogglePreferenceItem(
+            title = R.string.settings_downloader_parallel_title,
+            subtitle = R.string.settings_downloader_parallel_summary,
+            initialValue = concurrent,
+            onCheckedChange = { viewModel.setConcurrent(it) }
+        )
+
+        val retry by viewModel.retry.collectAsState()
+        TogglePreferenceItem(
+            title = R.string.settings_downloader_retry_title,
+            subtitle = R.string.settings_downloader_retry_summary,
+            initialValue = retry,
+            onCheckedChange = { viewModel.setRetry(it) }
+        )
+
+        val wifi by viewModel.wifi.collectAsState()
+        TogglePreferenceItem(
+            title = R.string.settings_downloader_wifi_only_title,
+            subtitle = R.string.settings_downloader_wifi_only_summary,
+            initialValue = wifi,
+            onCheckedChange = { viewModel.setWifi(it) }
+        )
     }
 }
 
@@ -199,6 +232,7 @@ fun TemplatePreferenceItem(
 class SettingsViewModel @Inject constructor(
     ctx: Application,
     private val main: MainRepository,
+    private val download: DownloadRepository
 ) : ViewModel() {
     private val _theme = MutableStateFlow(true)
     val theme = _theme.asStateFlow()
@@ -207,11 +241,49 @@ class SettingsViewModel @Inject constructor(
         main.setTheme(value)
     }
 
+    private val _showCategory = MutableStateFlow(true)
+    val showCategory = _showCategory.asStateFlow()
+
+    fun setShowCategory(value: Boolean) = viewModelScope.launch {
+        main.setShowCategory(value)
+    }
+
+    private val _concurrent = MutableStateFlow(true)
+    val concurrent = _concurrent.asStateFlow()
+
+    fun setConcurrent(value: Boolean) = viewModelScope.launch {
+        download.setConcurrent(value)
+    }
+
+    private val _retry = MutableStateFlow(false)
+    val retry = _retry.asStateFlow()
+
+    fun setRetry(value: Boolean) = viewModelScope.launch {
+        download.setRetry(value)
+    }
+
+    private val _wifi = MutableStateFlow(false)
+    val wifi = _wifi.asStateFlow()
+
+    fun setWifi(value: Boolean) = viewModelScope.launch {
+        download.setWifi(value)
+    }
+
     init {
         viewModelScope.launch(Dispatchers.Default) {
             main.data
                 .collect { data ->
                     _theme.update { data.theme }
+                    _showCategory.update { data.isShowCatagery }
+                }
+        }
+
+        viewModelScope.launch(Dispatchers.Default) {
+            download.data
+                .collect { data ->
+                    _concurrent.update { data.concurrent }
+                    _retry.update { data.retry }
+                    _wifi.update { data.wifi }
                 }
         }
     }

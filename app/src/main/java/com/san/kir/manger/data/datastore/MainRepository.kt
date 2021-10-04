@@ -29,7 +29,7 @@ class MainRepository @Inject constructor(private val mainStore: DataStore<Main>)
         }
     }
 
-    suspend fun setTheme(state: String) {
+    suspend fun setTheme(state: Boolean) {
         mainStore.updateData { preference ->
             preference.toBuilder().setTheme(state).build()
         }

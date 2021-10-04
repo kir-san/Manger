@@ -18,6 +18,7 @@ import com.san.kir.manger.R
 import com.san.kir.manger.components.download_manager.ChapterLoader
 import com.san.kir.manger.components.download_manager.DownloadListener
 import com.san.kir.manger.components.download_manager.DownloadManagerActivity
+import com.san.kir.manger.data.datastore.DownloadRepository
 import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.extensions.bytesToMb
@@ -28,6 +29,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -44,10 +46,6 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
 
         private const val ACTION_ADD = "kir.san.manger.DownloadService.ADD"
         private const val ACTION_ADD_OR_START = "kir.san.manger.DownloadService.ADD_OR_START"
-
-        private const val ACTION_CONCURRENT = "kir.san.manger.DownloadService.CONCURRENT"
-        private const val ACTION_SET_RETRY = "kir.san.manger.DownloadService.SET_RETRY"
-        private const val ACTION_IS_WIFI = "kir.san.manger.DownloadService.IS_WIFI"
 
         private const val TAG = "DownloadService"
 
@@ -93,39 +91,15 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
             )
         }
 
-        fun setConcurrentPages(ctx: Context, concurrentPages: Int) {
-            with(ctx) {
-                startService(
-                    intentFor<DownloadService>("item" to concurrentPages).setAction(
-                        ACTION_CONCURRENT
-                    )
-                )
-            }
-        }
-
-        fun setRetryOnError(ctx: Context, isRetry: Boolean) {
-            with(ctx) {
-                startService(
-                    intentFor<DownloadService>("item" to isRetry).setAction(
-                        ACTION_SET_RETRY
-                    )
-                )
-            }
-        }
-
-        fun isWifiOnly(ctx: Context, isWifi: Boolean) {
-            with(ctx) {
-                startService(
-                    intentFor<DownloadService>("item" to isWifi).setAction(
-                        ACTION_IS_WIFI
-                    )
-                )
-            }
-        }
     }
 
     @Inject
     lateinit var downloadManager: ChapterLoader
+
+    @Inject
+    lateinit var downloadStore: DownloadRepository
+
+    private val notificationManager by lazy { NotificationManagerCompat.from(this) }
 
     private var channelId = ""
     private var notificationId = ID.generate()
@@ -168,23 +142,13 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
         super.onCreate()
 
         downloadManager.addListener(this, this)
-        defaultSharedPreferences.apply {
-            val concurrentKey = getString(R.string.settings_downloader_parallel_key)
-            val concurrentDefault =
-                getString(R.string.settings_downloader_parallel_default) == "true"
-            val isParallel = getBoolean(concurrentKey, concurrentDefault)
-            downloadManager.setConcurrentPages(if (isParallel) 4 else 1)
 
-            val retryKey = getString(R.string.settings_downloader_retry_key)
-            val retryDefault = getString(R.string.settings_downloader_retry_default) == "true"
-            val isRetry = getBoolean(retryKey, retryDefault)
-            downloadManager.setRetryOnError(isRetry)
-
-            val wifiKey = getString(R.string.settings_downloader_wifi_only_key)
-            val wifiDefault =
-                getString(R.string.settings_downloader_wifi_only_default) == "true"
-            val isWifi = getBoolean(wifiKey, wifiDefault)
-            downloadManager.isWifiOnly(isWifi)
+        launch {
+            downloadStore.data.collect { data ->
+                downloadManager.setConcurrentPages(if (data.concurrent) 4 else 1)
+                downloadManager.setRetryOnError(data.retry)
+                downloadManager.isWifiOnly(data.wifi)
+            }
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -232,18 +196,6 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
                 }
             }
 
-            ACTION_CONCURRENT -> launch {
-                val item = intent.getIntExtra("item", 4)
-                downloadManager.setConcurrentPages(item)
-            }
-            ACTION_SET_RETRY -> launch {
-                val item = intent.getBooleanExtra("item", false)
-                downloadManager.setRetryOnError(item)
-            }
-            ACTION_IS_WIFI -> launch {
-                val item = intent.getBooleanExtra("item", false)
-                downloadManager.isWifiOnly(item)
-            }
         }
         return super.onStartCommand(intent, flags, startId)
     }

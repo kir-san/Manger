@@ -7,13 +7,11 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.Operation
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.components.schedule.ScheduleManager
 import com.san.kir.manger.data.datastore.ChaptersRepository
+import com.san.kir.manger.data.datastore.DownloadRepository
 import com.san.kir.manger.data.datastore.MainRepository
-import com.san.kir.manger.data.datastore.chaptersStore
-import com.san.kir.manger.data.datastore.mainStore
 import com.san.kir.manger.room.dao.MainMenuDao
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.dao.PlannedDao
@@ -37,6 +35,9 @@ class FirstInitAppWorker @AssistedInject constructor(
     private val plannedDao: PlannedDao,
     private val siteDao: SiteDao,
     private val siteCatalogsManager: SiteCatalogsManager,
+    private val chStore: ChaptersRepository,
+    private val mStore: MainRepository,
+    private val dStore: DownloadRepository,
 ) : CoroutineWorker(ctx, params) {
 
     override suspend fun doWork(): Result {
@@ -128,14 +129,16 @@ class FirstInitAppWorker @AssistedInject constructor(
     }
 
     private suspend fun setDefaultValueForStore() {
-        val chStore = ChaptersRepository(applicationContext.chaptersStore)
         chStore.setFilter(ChapterFilter.ALL_READ_ASC.name)
         chStore.setIndividualFilter(true)
         chStore.setTitleVisibility(true)
 
-        val mStore = MainRepository(applicationContext.mainStore)
         mStore.setShowCategory(true)
-        mStore.setTheme(ctx.getString(R.string.settings_app_dark_theme_default))
+        mStore.setTheme(true)
+
+        dStore.setConcurrent(true)
+        dStore.setRetry(false)
+        dStore.setWifi(false)
     }
 
     companion object {

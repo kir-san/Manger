@@ -3,9 +3,11 @@ package com.san.kir.manger.di
 import android.app.Application
 import androidx.datastore.core.DataStore
 import com.san.kir.manger.Chapters
+import com.san.kir.manger.Download
 import com.san.kir.manger.FirstLaunch
 import com.san.kir.manger.Main
 import com.san.kir.manger.data.datastore.chaptersStore
+import com.san.kir.manger.data.datastore.downloadStore
 import com.san.kir.manger.data.datastore.firstLaunchStore
 import com.san.kir.manger.data.datastore.mainStore
 import dagger.Module
@@ -29,5 +31,10 @@ object DataStoreModule {
     @Provides
     fun provideFirstLaunchDataStore(application: Application): DataStore<FirstLaunch> {
         return application.firstLaunchStore
+    }
+
+    @Provides
+    fun provideDownloadDataStore(application: Application): DataStore<Download> {
+        return application.downloadStore
     }
 }

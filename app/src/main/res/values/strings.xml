@@ -484,8 +484,6 @@
 
     <string name="settings_library_title">Настройки библиотеки</string>
 
-    <string name="settings_library_show_category_default">true</string>
-    <string name="settings_library_show_category_key">show_category</string>
     <string name="settings_library_show_category_summary">Отображение названия категории у каждой манги в категории \'Все\'</string>
     <string name="settings_library_show_category_title">Отображение категории</string>
 
@@ -532,34 +530,14 @@
 
     <string name="settings_downloader_title">Настройки загрузчика</string>
 
-    <string name="settings_downloader_parallel_default">true</string>
-    <string name="settings_downloader_parallel_key">downloader_parallel</string>
     <string name="settings_downloader_parallel_summary">Загрузка нескольких странниц одновременно. Ускорение загрузки</string>
     <string name="settings_downloader_parallel_title">Параллельная загрузка</string>
 
-    <string name="settings_downloader_retry_default">false</string>
-    <string name="settings_downloader_retry_key">downloader_retry</string>
     <string name="settings_downloader_retry_summary">Перезапуск загрузок если произошла ошибка при загрузке</string>
     <string name="settings_downloader_retry_title">Повторять при ошибке</string>
 
-    <string name="settings_downloader_wifi_only_default">false</string>
-    <string name="settings_downloader_wifi_only_key">downloader_wifi_only</string>
     <string name="settings_downloader_wifi_only_summary">Загружать главы только с помощью Wi-Fi</string>
     <string name="settings_downloader_wifi_only_title">Только Wi-Fi</string>
-
-    <string-array name="settings_app_dark_theme_array">
-        <item>Темная тема</item>
-        <item>Светлая тема</item>
-        <item>Темная тема при энергосбережении</item>
-        <item>Системные настройки</item>
-    </string-array>
-
-    <string-array name="settings_app_dark_theme_values">
-        <item>@string/settings_app_dark_theme_dark</item>
-        <item>@string/settings_app_dark_theme_white</item>
-        <item>@string/settings_app_dark_theme_bettery</item>
-        <item>@string/settings_app_dark_theme_system</item>
-    </string-array>
 
     <string-array name="settings_viewer_orientation_array">
         <item>Портретная</item>

@@ -19,9 +19,10 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
 import androidx.compose.material.ProvideTextStyle
+import androidx.compose.material.Switch
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
@@ -60,14 +61,13 @@ fun SettingsScreen(
 ) {
     TopBarScreenContent(
         navHostController = nav,
-        title = stringResource(R.string.main_menu_settings)
+        title = stringResource(R.string.main_menu_settings),
+        additionalPadding = 0.dp
     ) {
         val theme by viewModel.theme.collectAsState()
-        ListPreferenceItem(
+        TogglePreferenceItem(
             title = R.string.settings_app_dark_theme_title,
             subtitle = R.string.settings_app_dark_theme_summary,
-            entries = R.array.settings_app_dark_theme_array,
-            entryValues = R.array.settings_app_dark_theme_values,
             initialValue = theme,
         ) { viewModel.setTheme(it) }
         Divider()
@@ -104,11 +104,34 @@ fun ListPreferenceItem(
                 )
             },
             buttons = {
-                OutlinedButton(onClick = { dialog = false }) {
-                    Text("CANCEL")
+                Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+                    TextButton(
+                        modifier = Modifier.padding(bottom = 16.dp, end = 16.dp),
+                        onClick = { dialog = false }) {
+                        Text("CANCEL")
+                    }
                 }
             }
         )
+    }
+}
+
+@Composable
+fun TogglePreferenceItem(
+    title: Int,
+    subtitle: Int,
+    initialValue: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+
+    TemplatePreferenceItem(
+        title = title, subtitle = subtitle,
+        action = {
+            Switch(
+                checked = initialValue,
+                onCheckedChange = { onCheckedChange(it) })
+        }) {
+
     }
 }
 
@@ -141,7 +164,7 @@ fun TemplatePreferenceItem(
                 }
             }
             Column(
-                modifier = Modifier.Companion.weight(1f),
+                modifier = Companion.weight(1f),
                 verticalArrangement = Arrangement.Center,
             ) {
                 ProvideTextStyle(value = MaterialTheme.typography.subtitle1) {
@@ -177,35 +200,16 @@ class SettingsViewModel @Inject constructor(
     ctx: Application,
     private val main: MainRepository,
 ) : ViewModel() {
-    private val _theme = MutableStateFlow(ctx.getString(R.string.settings_app_dark_theme_default))
+    private val _theme = MutableStateFlow(true)
     val theme = _theme.asStateFlow()
 
-    fun setTheme(value: String) = viewModelScope.launch {
+    fun setTheme(value: Boolean) = viewModelScope.launch {
         main.setTheme(value)
     }
 
     init {
         viewModelScope.launch(Dispatchers.Default) {
             main.data
-                .onEach { data ->
-//                    if (data.theme.isEmpty())
-//                        main.setTheme(ctx.getString(R.string.settings_app_dark_theme_default))
-
-                    AppCompatDelegate.setDefaultNightMode(
-                        when (data.theme) {
-                            ctx.getString(R.string.settings_app_dark_theme_dark) ->
-                                AppCompatDelegate.MODE_NIGHT_YES
-                            ctx.getString(R.string.settings_app_dark_theme_white) ->
-                                AppCompatDelegate.MODE_NIGHT_NO
-                            ctx.getString(R.string.settings_app_dark_theme_bettery) ->
-                                AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
-                            ctx.getString(R.string.settings_app_dark_theme_system) ->
-                                AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                            else ->
-                                AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                        }
-                    )
-                }
                 .collect { data ->
                     _theme.update { data.theme }
                 }

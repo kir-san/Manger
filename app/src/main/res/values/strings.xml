@@ -479,14 +479,8 @@
 
     <!-- Preference -->
 
-    <string name="settings_app_dark_theme_default">@string/settings_app_dark_theme_system</string>
-    <string name="settings_app_dark_theme_key">theme</string>
-    <string name="settings_app_dark_theme_summary">Смена темы оформления</string>
-    <string name="settings_app_dark_theme_title">Тема приложения</string>
-    <string name="settings_app_dark_theme_dark">dark</string>
-    <string name="settings_app_dark_theme_white">white</string>
-    <string name="settings_app_dark_theme_bettery">bettery</string>
-    <string name="settings_app_dark_theme_system">system</string>
+    <string name="settings_app_dark_theme_summary">Активировать оформление приложения в темных цветах</string>
+    <string name="settings_app_dark_theme_title">Темная тема</string>
 
     <string name="settings_library_title">Настройки библиотеки</string>
 

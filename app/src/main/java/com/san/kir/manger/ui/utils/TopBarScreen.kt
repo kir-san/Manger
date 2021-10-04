@@ -152,6 +152,7 @@ fun TopBarScreenContent(
     scaffoldState: ScaffoldState? = null,
     title: String = "",
     subtitle: String = "",
+    additionalPadding: Dp = 16.dp,
     actions: @Composable RowScope.() -> Unit = {},
     drawerContent: @Composable (ColumnScope.() -> Unit)? = null,
     content: @Composable (ColumnScope.() -> Unit)? = null,
@@ -165,6 +166,7 @@ fun TopBarScreenContent(
         actions = actions,
         content = content,
         drawerContent = drawerContent,
+        additionalPadding = additionalPadding
     )
 }
 

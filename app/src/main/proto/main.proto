@@ -5,5 +5,5 @@ option java_multiple_files = true;
 
 message Main {
   bool isShowCatagery = 1;
-  string theme = 2;
+  bool theme = 2;
 }

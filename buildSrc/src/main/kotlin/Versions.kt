@@ -11,7 +11,7 @@ object Versions {
 
     object Kotlin {
         // Make sure to update `buildSrc/build.gradle.kts` when updating this
-        const val STDLIB = "1.5.21"
+        const val STDLIB = "1.5.30"
         const val COROUTINES = "1.5.1-native-mt"
     }
 
@@ -30,7 +30,7 @@ object Versions {
     }
 
     object Compose {
-        const val COMPOSE = "1.0.2"
+        const val COMPOSE = "1.0.3"
         const val HILT_NAVIGATION_COMPOSE = "1.0.0-alpha03"
         const val PAGING = "1.0.0-alpha12"
     }

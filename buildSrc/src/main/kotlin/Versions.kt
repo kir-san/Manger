@@ -17,6 +17,7 @@ object Versions {
 
     object AndroidX {
         const val CORE = "1.6.0"
+        const val SPLASH = "1.0.0-alpha02"
         const val APPCOMPAT = "1.4.0-alpha03"
         const val COLLECTION = "1.1.0"
         const val LIFECYCLE = "2.3.1"

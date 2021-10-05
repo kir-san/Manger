@@ -108,6 +108,7 @@ dependencies {
 
     Dependencies.AndroidX.apply {
         implementation(CORE)
+        implementation(SPLASH)
         implementation(APPCOMPAT)
         implementation(COLLECTION)
         implementation(PREFERENCE)

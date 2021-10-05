@@ -58,6 +58,8 @@ object Dependencies {
 
         const val CORE =
             "androidx.core:core-ktx:${Versions.AndroidX.CORE}"
+        const val SPLASH =
+            "androidx.core:core-splashscreen:${Versions.AndroidX.SPLASH}"
         const val APPCOMPAT =
             "androidx.appcompat:appcompat:${Versions.AndroidX.APPCOMPAT}"
         const val COLLECTION =

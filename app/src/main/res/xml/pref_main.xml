@@ -23,31 +23,6 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/settings_viewer_title">
-        <ListPreference
-            android:defaultValue="@string/settings_viewer_orientation_default"
-            android:entries="@array/settings_viewer_orientation_array"
-            android:entryValues="@array/settings_viewer_orientation_values"
-            android:key="@string/settings_viewer_orientation_key"
-            android:summary="@string/settings_viewer_orientation_summary"
-            android:title="@string/settings_viewer_orientation_title"
-            />
-
-        <MultiSelectListPreference
-            android:defaultValue="@array/settings_viewer_control_default"
-            android:entries="@array/settings_viewer_control_array"
-            android:entryValues="@array/settings_viewer_control_values"
-            android:key="@string/settings_viewer_control_key"
-            android:summary="@string/settings_viewer_control_summary"
-            android:title="@string/settings_viewer_control_title"
-            />
-
-        <SwitchPreference
-            android:enabled="true" tools:targetApi="p"
-            android:key="@string/settings_viewer_cutout_key"
-            android:defaultValue="@string/settings_viewer_cutout_default"
-            android:summary="@string/settings_viewer_cutout_summary"
-            android:title="@string/settings_viewer_cutout_title"
-            />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Настройки загрузчика">

@@ -77,9 +77,34 @@ fun SettingsScreen(
         TogglePreferenceItem(
             title = R.string.settings_library_show_category_title,
             subtitle = R.string.settings_library_show_category_summary,
-            initialValue = showCategory,
-            onCheckedChange = { viewModel.setShowCategory(it) }
+            initialValue = viewModel.showCategory,
+            onCheckedChange = { viewModel.showCategory = it }
         )
+        Divider()
+
+        ListPreferenceItem(
+            title = R.string.settings_viewer_orientation_title,
+            subtitle = R.string.settings_viewer_orientation_summary,
+            entries = R.array.settings_viewer_orientation_array,
+            entryValues = R.array.settings_viewer_orientation_values,
+            initialValue = viewModel.orientation,
+            onValueChange = { viewModel.orientation = it }
+        )
+
+        MultiSelectListPreferenceItem(
+            title = R.string.settings_viewer_control_title,
+            subtitle = R.string.settings_viewer_control_summary,
+            entries = R.array.settings_viewer_control_array,
+            value = viewModel.control,
+        )
+
+        TogglePreferenceItem(
+            title = R.string.settings_viewer_cutout_title,
+            subtitle = R.string.settings_viewer_cutout_summary,
+            initialValue = viewModel.cutout,
+            onCheckedChange = { viewModel.cutout = it }
+        )
+
         Divider()
 
         val concurrent by viewModel.concurrent.collectAsState()
@@ -131,7 +156,10 @@ fun ListPreferenceItem(
             text = {
                 RadioGroup(
                     state = initialValue,
-                    onSelected = { onValueChange(it) },
+                    onSelected = {
+                        onValueChange(it)
+                        dialog = false
+                    },
                     stateList = stringArrayResource(entryValues).toList(),
                     textList = stringArrayResource(entries).toList()
                 )
@@ -148,6 +176,51 @@ fun ListPreferenceItem(
         )
     }
 }
+
+@Composable
+fun MultiSelectListPreferenceItem(
+    title: Int,
+    subtitle: Int,
+    entries: Int,
+    value: MutableList<Boolean>,
+) {
+    var dialog by remember { mutableStateOf(false) }
+    TemplatePreferenceItem(title = title, subtitle = subtitle) {
+        dialog = true
+    }
+
+    if (dialog) {
+        AlertDialog(
+            onDismissRequest = { dialog = false },
+            title = {
+                Text(stringResource(title))
+            },
+            text = {
+                val textList = stringArrayResource(entries).toList()
+
+                Column {
+                    textList.forEachIndexed { index, text ->
+                        CheckBoxText(
+                            state = value[index],
+                            onChange = { value[index] = it },
+                            firstText = text
+                        )
+                    }
+                }
+            },
+            buttons = {
+                Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+                    TextButton(
+                        modifier = Modifier.padding(bottom = 16.dp, end = 16.dp),
+                        onClick = { dialog = false }) {
+                        Text("CLOSE")
+                    }
+                }
+            }
+        )
+    }
+}
+
 
 @Composable
 fun TogglePreferenceItem(
@@ -211,19 +284,19 @@ fun TemplatePreferenceItem(
                 }
             }
         }
-        if (action != null) {
+        if (action != null)
             Divider(
                 modifier = Modifier
                     .padding(vertical = 4.dp)
                     .height(56.dp)
                     .width(1.dp),
             )
-            Box(
-                modifier = Modifier.size(64.dp),
-                contentAlignment = Alignment.Center,
-            ) {
+        Box(
+            modifier = Modifier.size(64.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (action != null)
                 action()
-            }
         }
     }
 }

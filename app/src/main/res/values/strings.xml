@@ -314,6 +314,8 @@
     <string name="download_view_internet_off">Нет доступа в интернет</string>
 
     <!--DownloadService-->
+    <string name="download_service_title">Сервис загрузки манги</string>
+    <string name="download_service_message">Нажмите на уведомление для перехода в загрузки</string>
     <string name="download_service_queue">Очередь: %d</string>
     <string name="download_service_complete_title">Загрузка завершена</string>
     <string name="download_service_complete_title_error">Загрузка прервана c ошибкой</string>
@@ -503,8 +505,6 @@
 
     <string name="settings_viewer_title">Настройки читалки</string>
 
-    <string name="settings_viewer_orientation_default">@string/settings_viewer_orientation_auto</string>
-    <string name="settings_viewer_orientation_key">viewer_orientation</string>
     <string name="settings_viewer_orientation_summary">Выбранная ориентация экрана будет использоваться при чтении манги</string>
     <string name="settings_viewer_orientation_title">Ориентация</string>
     <string name="settings_viewer_orientation_port">port</string>
@@ -515,15 +515,12 @@
     <string name="settings_viewer_orientation_auto_port">auto_port</string>
     <string name="settings_viewer_orientation_auto_land">auto_land</string>
 
-    <string name="settings_viewer_control_key">viewer_control</string>
     <string name="settings_viewer_control_summary">Выбор способа перелистывания страниц</string>
     <string name="settings_viewer_control_title">Управление</string>
     <string name="settings_viewer_control_taps">taps</string>
     <string name="settings_viewer_control_swipes">swipes</string>
     <string name="settings_viewer_control_keys">keys</string>
 
-    <string name="settings_viewer_cutout_default">true</string>
-    <string name="settings_viewer_cutout_key">cutout</string>
     <string name="settings_viewer_cutout_summary">Будет ли использоваться зона выреза или она будет закрашена черной полосой</string>
     <string name="settings_viewer_cutout_title">Использовать зону выреза</string>
 
@@ -559,20 +556,10 @@
         <item>@string/settings_viewer_orientation_auto_land</item>
     </string-array>
 
-    <string-array name="settings_viewer_control_default">
-        <item>@string/settings_viewer_control_swipes</item>
-    </string-array>
-
     <string-array name="settings_viewer_control_array">
         <item>Тапы по экрану</item>
         <item>Свайпы по экрану</item>
         <item>Кнопки громкости</item>
-    </string-array>
-
-    <string-array name="settings_viewer_control_values">
-        <item>@string/settings_viewer_control_taps</item>
-        <item>@string/settings_viewer_control_swipes</item>
-        <item>@string/settings_viewer_control_keys</item>
     </string-array>
 
 </resources>

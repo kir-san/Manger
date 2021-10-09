@@ -97,13 +97,27 @@ fun DropDownTextField(
     }
 }
 
-
 @Composable
 fun CheckBoxText(
     state: Boolean,
     onChange: (Boolean) -> Unit,
     @StringRes firstTextId: Int,
     @StringRes secondTextId: Int = -1,
+) {
+    CheckBoxText(
+        state = state,
+        onChange = onChange,
+        firstText = stringResource(firstTextId),
+        secondText = if (secondTextId != -1) stringResource(id = secondTextId) else ""
+    )
+}
+
+@Composable
+fun CheckBoxText(
+    state: Boolean,
+    onChange: (Boolean) -> Unit,
+    firstText: String,
+    secondText: String = "",
 ) {
     Row(modifier = Modifier
         .fillMaxWidth()
@@ -115,16 +129,15 @@ fun CheckBoxText(
             modifier = Modifier.padding(end = 10.dp)
         )
 
-        if (secondTextId == -1)
-            Text(text = stringResource(id = firstTextId))
+        if (secondText.isEmpty())
+            Text(text = firstText)
         else
             Text(
-                text = stringResource(
-                    id = if (state)
-                        firstTextId
-                    else
-                        secondTextId
-                )
+                text = if (state)
+                    firstText
+                else
+                    secondText
+
             )
     }
 }

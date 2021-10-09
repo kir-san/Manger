@@ -7,11 +7,13 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.Operation
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.components.schedule.ScheduleManager
 import com.san.kir.manger.data.datastore.ChaptersRepository
 import com.san.kir.manger.data.datastore.DownloadRepository
 import com.san.kir.manger.data.datastore.MainRepository
+import com.san.kir.manger.data.datastore.ViewerRepository
 import com.san.kir.manger.room.dao.MainMenuDao
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.dao.PlannedDao
@@ -35,9 +37,10 @@ class FirstInitAppWorker @AssistedInject constructor(
     private val plannedDao: PlannedDao,
     private val siteDao: SiteDao,
     private val siteCatalogsManager: SiteCatalogsManager,
-    private val chStore: ChaptersRepository,
-    private val mStore: MainRepository,
-    private val dStore: DownloadRepository,
+    private val chapterStore: ChaptersRepository,
+    private val mainStore: MainRepository,
+    private val downloadStore: DownloadRepository,
+    private val viewerStore: ViewerRepository,
 ) : CoroutineWorker(ctx, params) {
 
     override suspend fun doWork(): Result {
@@ -129,16 +132,20 @@ class FirstInitAppWorker @AssistedInject constructor(
     }
 
     private suspend fun setDefaultValueForStore() {
-        chStore.setFilter(ChapterFilter.ALL_READ_ASC.name)
-        chStore.setIndividualFilter(true)
-        chStore.setTitleVisibility(true)
+        chapterStore.setFilter(ChapterFilter.ALL_READ_ASC.name)
+        chapterStore.setIndividualFilter(true)
+        chapterStore.setTitleVisibility(true)
 
-        mStore.setShowCategory(true)
-        mStore.setTheme(true)
+        mainStore.setShowCategory(true)
+        mainStore.setTheme(true)
 
-        dStore.setConcurrent(true)
-        dStore.setRetry(false)
-        dStore.setWifi(false)
+        downloadStore.setConcurrent(true)
+        downloadStore.setRetry(false)
+        downloadStore.setWifi(false)
+
+        viewerStore.setOrientation(ctx.getString(R.string.settings_viewer_orientation_auto_land))
+        viewerStore.setCutOut(true)
+        viewerStore.setControl(taps = false, swipes = true, keys = false)
     }
 
     companion object {

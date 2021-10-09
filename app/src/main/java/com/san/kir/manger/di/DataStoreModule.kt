@@ -6,10 +6,12 @@ import com.san.kir.manger.Chapters
 import com.san.kir.manger.Download
 import com.san.kir.manger.FirstLaunch
 import com.san.kir.manger.Main
+import com.san.kir.manger.Viewer
 import com.san.kir.manger.data.datastore.chaptersStore
 import com.san.kir.manger.data.datastore.downloadStore
 import com.san.kir.manger.data.datastore.firstLaunchStore
 import com.san.kir.manger.data.datastore.mainStore
+import com.san.kir.manger.data.datastore.viewerStore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,5 +38,10 @@ object DataStoreModule {
     @Provides
     fun provideDownloadDataStore(application: Application): DataStore<Download> {
         return application.downloadStore
+    }
+
+    @Provides
+    fun provideViewerDataStore(application: Application): DataStore<Viewer> {
+        return application.viewerStore
     }
 }

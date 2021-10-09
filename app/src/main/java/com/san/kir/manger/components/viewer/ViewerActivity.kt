@@ -47,7 +47,10 @@ class ViewerActivity : BaseActivity() {
         var RIGHT_PART_SCREEN = 0 // Правая часть экрана
     }
 
-    val mViewModel by viewModels<ViewerViewModel>()
+    val mViewModel: ViewerViewModel by viewModels()
+
+    @Inject
+    lateinit var viewerStore: ViewerRepository
 
     private var showHide: Job? = Job()
 
@@ -62,27 +65,11 @@ class ViewerActivity : BaseActivity() {
 
     private var readTime = 0L
 
-    private val orientation by string(
-        R.string.settings_viewer_orientation_key, R.string.settings_viewer_orientation_default
-    )
-    private val controlKey by stringSet(
-        R.string.settings_viewer_control_key, R.array.settings_viewer_control_default
-    )
-    private var cutout by boolean(
-        R.string.settings_viewer_cutout_key, R.string.settings_viewer_cutout_default
-    )
-
     @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         mView.setContentView(this) // Установка разметки
-
-        doFromSdk(28) {
-            window.attributes.layoutInDisplayCutoutMode =
-                if (cutout) WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-                else WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
-        }
 
         setSupportActionBar(mView.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // Кнопка назад в верхнем баре
@@ -211,22 +198,30 @@ class ViewerActivity : BaseActivity() {
         super.onResume()
 
         // Загрузка настроек
-        requestedOrientation = when (orientation) {
-            getString(R.string.settings_viewer_orientation_auto) -> SCREEN_ORIENTATION_SENSOR
-            getString(R.string.settings_viewer_orientation_port) -> SCREEN_ORIENTATION_PORTRAIT
-            getString(R.string.settings_viewer_orientation_port_rev) -> SCREEN_ORIENTATION_REVERSE_PORTRAIT
-            getString(R.string.settings_viewer_orientation_land) -> SCREEN_ORIENTATION_LANDSCAPE
-            getString(R.string.settings_viewer_orientation_land_rev) -> SCREEN_ORIENTATION_REVERSE_LANDSCAPE
-            getString(R.string.settings_viewer_orientation_auto_port) -> SCREEN_ORIENTATION_SENSOR_PORTRAIT
-            getString(R.string.settings_viewer_orientation_auto_land) -> SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-            else -> SCREEN_ORIENTATION_SENSOR
-        }
+        lifecycleScope.launchWhenResumed {
+            viewerStore.data.collect { data ->
+                requestedOrientation = when (data.orientation) {
+                    getString(R.string.settings_viewer_orientation_auto) -> SCREEN_ORIENTATION_SENSOR
+                    getString(R.string.settings_viewer_orientation_port) -> SCREEN_ORIENTATION_PORTRAIT
+                    getString(R.string.settings_viewer_orientation_port_rev) -> SCREEN_ORIENTATION_REVERSE_PORTRAIT
+                    getString(R.string.settings_viewer_orientation_land) -> SCREEN_ORIENTATION_LANDSCAPE
+                    getString(R.string.settings_viewer_orientation_land_rev) -> SCREEN_ORIENTATION_REVERSE_LANDSCAPE
+                    getString(R.string.settings_viewer_orientation_auto_port) -> SCREEN_ORIENTATION_SENSOR_PORTRAIT
+                    getString(R.string.settings_viewer_orientation_auto_land) -> SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+                    else -> SCREEN_ORIENTATION_SENSOR
+                }
 
-        controlKey.forEach {
-            when (it) {
-                getString(R.string.settings_viewer_control_taps) -> isTapControl = true
-                getString(R.string.settings_viewer_control_swipes) -> presenter.isSwipeControl.positive()
-                getString(R.string.settings_viewer_control_keys) -> isKeyControl = true
+                doFromSdk(28) {
+                    window.attributes.layoutInDisplayCutoutMode =
+                        if (data.cutout) WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+                        else WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
+                }
+
+                with(data.control) {
+                    isTapControl = taps
+                    presenter.isSwipeControl.item = swipes
+                    isKeyControl = keys
+                }
             }
         }
 

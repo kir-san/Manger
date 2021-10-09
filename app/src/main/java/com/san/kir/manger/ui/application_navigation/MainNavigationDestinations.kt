@@ -12,13 +12,10 @@ import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Storage
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.navigation
 import com.google.accompanist.navigation.animation.composable
-import com.san.kir.ankofork.startActivity
-import com.san.kir.manger.components.settings.SettingActivity
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
 import com.san.kir.manger.ui.application_navigation.catalog.catalogsNavGraph
 import com.san.kir.manger.ui.application_navigation.categories.CategoriesNavTarget

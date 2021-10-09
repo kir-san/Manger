@@ -38,7 +38,7 @@ object Versions {
 
     object Google {
         const val MATERIAL = "1.3.0"
-        const val PROTOBUF_JAVALITE = "3.11.0"
+        const val PROTOBUF_JAVALITE = "3.18.0"
         const val PLAY_SERVICES_GCM = "17.0.0" // не менять версию
         const val ACCOMPANIST = "0.19.0"
         const val HILT = "2.37"

@@ -9,7 +9,7 @@ plugins {
     kotlin(Plugins.KAPT)
 //    id(Plugins.KSP)
     id(Plugins.PARCELIZE)
-    id(Plugins.PROTOBUF) version "0.8.12"
+    id(Plugins.PROTOBUF) version "0.8.17"
 }
 
 android {
@@ -202,8 +202,9 @@ dependencies {
     //implementation("com.davemorrissey.labs:subsampling-scale-image-view:3.10.0")
 
 
-    //debugImplementation "com.willowtreeapps.hyperion:hyperion-core:0.9.31"
-    //debugImplementation "com.willowtreeapps.hyperion:hyperion-crash:0.9.31"
+    debugImplementation("com.willowtreeapps.hyperion:hyperion-core:0.9.31")
+    debugImplementation("com.willowtreeapps.hyperion:hyperion-crash:0.9.31")
+//    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.7")
 
     // Use the most recent version of Compose available.
     // debugImplementation 'org.jetbrains.kotlin:kotlin-reflect:1.5.20'
@@ -224,7 +225,7 @@ dependencies {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.10.0"
+        artifact = "com.google.protobuf:protoc:3.18.0"
     }
     generateProtoTasks {
         all().forEach { task ->

@@ -23,8 +23,6 @@ class App : Application() {
         AppInitializer.getInstance(this)
             .initializeComponent(CustomWorkManagerInitializer::class.java)
 
-        themeActivation()
-
         externalDir = android.os.Environment.getExternalStorageDirectory()
         FuelManager.instance.timeoutInMillisecond = TimeUnit.SECONDS.toMillis(30).toInt()
         JobManager.create(this).addJobCreator { ScheduleJob(it) }
@@ -33,27 +31,6 @@ class App : Application() {
         Status.init(this)
         Translate.init(this)
         CATEGORY_ALL = getString(R.string.category_all)
-    }
-
-    private fun themeActivation() {
-        val pref = defaultSharedPreferences
-        val key = getString(R.string.settings_app_dark_theme_key)
-        AppCompatDelegate.setDefaultNightMode(
-            when (pref.getString(
-                key, getString(R.string.settings_app_dark_theme_default)
-            )) {
-                getString(R.string.settings_app_dark_theme_dark) ->
-                    AppCompatDelegate.MODE_NIGHT_YES
-                getString(R.string.settings_app_dark_theme_white) ->
-                    AppCompatDelegate.MODE_NIGHT_NO
-                getString(R.string.settings_app_dark_theme_bettery) ->
-                    AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
-                getString(R.string.settings_app_dark_theme_system) ->
-                    AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                else ->
-                    AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-            }
-        )
     }
 
     companion object {

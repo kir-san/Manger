@@ -19,7 +19,7 @@ import com.san.kir.manger.components.download_manager.ChapterLoader
 import com.san.kir.manger.components.download_manager.DownloadListener
 import com.san.kir.manger.components.download_manager.DownloadManagerActivity
 import com.san.kir.manger.data.datastore.DownloadRepository
-import com.san.kir.manger.room.entities.DownloadItem
+import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.extensions.bytesToMb
 import com.san.kir.manger.utils.extensions.formatDouble
@@ -44,9 +44,6 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
         private const val ACTION_START_ALL = "kir.san.manger.DownloadService.START_ALL"
         private const val ACTION_START = "kir.san.manger.DownloadService.START"
 
-        private const val ACTION_ADD = "kir.san.manger.DownloadService.ADD"
-        private const val ACTION_ADD_OR_START = "kir.san.manger.DownloadService.ADD_OR_START"
-
         private const val TAG = "DownloadService"
 
         fun startAll(ctx: Context) = with(ctx) {
@@ -55,7 +52,7 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
             )
         }
 
-        fun start(ctx: Context, item: DownloadItem) = with(ctx) {
+        fun start(ctx: Context, item: Chapter) = with(ctx) {
             startForegroundServiceIntent(
                 intentFor<DownloadService>("item" to item).setAction(ACTION_START)
             )
@@ -69,7 +66,7 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
             }
         }
 
-        fun pause(ctx: Context, item: DownloadItem) {
+        fun pause(ctx: Context, item: Chapter) {
             with(ctx) {
                 startService(
                     intentFor<DownloadService>("item" to item).setAction(
@@ -78,19 +75,6 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
                 )
             }
         }
-
-        fun add(ctx: Context, item: DownloadItem) = with(ctx) {
-            startForegroundServiceIntent(
-                intentFor<DownloadService>("item" to item).setAction(ACTION_ADD)
-            )
-        }
-
-        fun addOrStart(ctx: Context, item: DownloadItem) = with(ctx) {
-            startForegroundServiceIntent(
-                intentFor<DownloadService>("item" to item).setAction(ACTION_ADD_OR_START)
-            )
-        }
-
     }
 
     @Inject
@@ -173,26 +157,17 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
         when (intent.action) {
             ACTION_PAUSE_ALL -> downloadManager.pauseAll()
             ACTION_PAUSE -> launch {
-                val item = intent.getParcelableExtra<DownloadItem>("item")
+                val item = intent.getParcelableExtra<Chapter>("item")
                 item?.let {
                     downloadManager.pause(it)
                 }
             }
 
             ACTION_START_ALL -> downloadManager.startAll()
-            ACTION_START, ACTION_ADD_OR_START -> launch {
-                val item = intent.getParcelableExtra<DownloadItem>("item")
+            ACTION_START -> launch {
+                val item = intent.getParcelableExtra<Chapter>("item")
                 item?.let {
-                    downloadManager.addOrStart(it)
-                }
-            }
-
-            ACTION_ADD -> launch {
-                val item = intent.getParcelableExtra<DownloadItem>("item")
-                item?.let {
-                    if (!downloadManager.hasTask(it)) {
-                        downloadManager.add(it)
-                    }
+                    downloadManager.start(it)
                 }
             }
 
@@ -208,7 +183,7 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
         job.cancel()
     }
 
-    override fun onQueued(item: DownloadItem) {
+    override fun onQueued(item: Chapter) {
         log("onQueued item = $item")
         totalCount++
         queueCount++
@@ -217,12 +192,12 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
         }
     }
 
-    override fun onProgress(item: DownloadItem) {
+    override fun onProgress(item: Chapter) {
         log("onProgress item = $item")
         sendProgressNotification(item)
     }
 
-    override fun onPaused(item: DownloadItem) {
+    override fun onPaused(item: Chapter) {
         log("onPaused item = $item")
         queueCount--
         totalCount--
@@ -233,7 +208,7 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
 
     }
 
-    override fun onError(item: DownloadItem, cause: Throwable?) {
+    override fun onError(item: Chapter, cause: Throwable?) {
         errorCount++
         queueCount--
         if (queueCount == 0)
@@ -242,7 +217,7 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
             clearCounters()
     }
 
-    override fun onCompleted(item: DownloadItem) {
+    override fun onCompleted(item: Chapter) {
         queueCount--
         totalSize += item.downloadSize
         totalTime += item.totalTime
@@ -250,7 +225,7 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
             sendCompleteNotification()
     }
 
-    private fun sendStartNotification(item: DownloadItem) {
+    private fun sendStartNotification(item: Chapter) {
         if (queueCount == 1) {
             with(NotificationCompat.Builder(this, channelId)) {
                 setSmallIcon(R.drawable.ic_notification_download)
@@ -264,7 +239,7 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
         }
     }
 
-    private fun sendProgressNotification(item: DownloadItem) {
+    private fun sendProgressNotification(item: Chapter) {
         with(NotificationCompat.Builder(this, channelId)) {
             setSmallIcon(R.drawable.ic_notification_download)
             setContentTitle(getString(R.string.download_service_queue, queueCount))

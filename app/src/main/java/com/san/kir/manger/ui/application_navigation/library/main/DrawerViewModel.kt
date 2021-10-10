@@ -4,13 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.san.kir.manger.room.dao.CategoryDao
 import com.san.kir.manger.room.dao.ChapterDao
-import com.san.kir.manger.room.dao.DownloadDao
 import com.san.kir.manger.room.dao.MainMenuDao
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.dao.PlannedDao
 import com.san.kir.manger.room.dao.SiteDao
 import com.san.kir.manger.room.dao.StorageDao
-import com.san.kir.manger.utils.enums.DownloadStatus
+import com.san.kir.manger.utils.enums.DownloadState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
@@ -26,7 +25,6 @@ class DrawerViewModel @Inject constructor(
     private val storageDao: StorageDao,
     private val categorDao: CategoryDao,
     private val siteDao: SiteDao,
-    private val downloadDao: DownloadDao,
     private val chapterDao: ChapterDao,
     private val plannedDao: PlannedDao,
 ) : ViewModel() {
@@ -41,8 +39,8 @@ class DrawerViewModel @Inject constructor(
     fun loadSiteCatalogVolume() =
         siteDao.loadItems().map { l -> l.sumOf { s -> s.volume } }.flowOn(Dispatchers.Default)
 
-    fun loadDownloadCount() = downloadDao.flowItems().map { l ->
-        l.filter { d -> d.status == DownloadStatus.queued || d.status == DownloadStatus.loading }
+    fun loadDownloadCount() = chapterDao.loadAllItems().map { l ->
+        l.filter { d -> d.status == DownloadState.QUEUED || d.status == DownloadState.LOADING }
     }.map { it.size }.flowOn(Dispatchers.Default)
 
     fun loadLatestCount() =

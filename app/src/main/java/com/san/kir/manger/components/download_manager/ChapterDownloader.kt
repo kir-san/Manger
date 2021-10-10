@@ -2,8 +2,7 @@ package com.san.kir.manger.components.download_manager
 
 import com.github.kittinunf.fuel.Fuel
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
-import com.san.kir.manger.room.dao.ChapterDao
-import com.san.kir.manger.room.entities.DownloadItem
+import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.utils.JobContext
 import com.san.kir.manger.utils.extensions.createDirs
 import com.san.kir.manger.utils.extensions.getFullPath
@@ -14,12 +13,10 @@ import java.io.File
 import java.util.concurrent.Executors.newFixedThreadPool
 import java.util.regex.Pattern
 
-
 class ChapterDownloader(
     private val manager: SiteCatalogsManager,
-    private val task: DownloadItem,
+    private val task: Chapter,
     concurrent: Int,
-    private val chapterDao: ChapterDao,
     private val delegate: Delegate?
 ) {
     private var totalPages = 0
@@ -36,7 +33,7 @@ class ChapterDownloader(
     @Volatile
     var terminated: Boolean = false
 
-    suspend fun getDownloadItem(): DownloadItem {
+    suspend fun getDownloadItem(): Chapter {
         lock.withLock {
             task.totalPages = totalPages
             task.downloadPages = downloadPages
@@ -104,23 +101,18 @@ class ChapterDownloader(
                 }.join()
             }
         } else {
-            chapterDao.getItem(getDownloadItem().link)?.let {
+            lock.withLock {
+                totalPages = task.pages.size
+            }
 
-                lock.withLock {
-                    totalPages = it.pages.size
-                }
+            delegate?.onProgress(getDownloadItem())
 
-                delegate?.onProgress(getDownloadItem())
+            if (interrupted) return
 
-                if (interrupted) return
-
-                it.pages.forEach { url ->
-                    executor.post {
-                        pageDownload(prepareUrl(url), downloadPath)
-                    }.join()
-                }
-            } ?: run {
-
+            task.pages.forEach { url ->
+                executor.post {
+                    pageDownload(prepareUrl(url), downloadPath)
+                }.join()
             }
         }
 
@@ -180,7 +172,7 @@ class ChapterDownloader(
 
     private fun sizeOfPageFromUrl(link: String): Long? {
         val res = Fuel.get(link).response()
-        res.third.fold(
+        res.third.fold<Long?>(
             success = {
                 return res.second.contentLength
             },
@@ -188,13 +180,14 @@ class ChapterDownloader(
                 return null
             }
         )
+        return null
     }
 
     interface Delegate {
-        fun onStarted(item: DownloadItem)
-        fun onProgress(item: DownloadItem)
-        fun onError(item: DownloadItem, cause: Throwable?)
-        suspend fun onComplete(item: DownloadItem)
+        fun onStarted(item: Chapter)
+        fun onProgress(item: Chapter)
+        fun onError(item: Chapter, cause: Throwable?)
+        suspend fun onComplete(item: Chapter)
     }
 
     companion object {

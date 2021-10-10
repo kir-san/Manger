@@ -128,10 +128,10 @@ class DownloadManagerItemView(private val act: DownloadManagerActivity) :
                 progressBar.isIndeterminate = item.status == DownloadStatus.queued
 
                 startBtn.onClick {
-                    DownloadService.start(act, item)
+//                    DownloadService.start(act, item)
                 }
                 stopBtn.onClick {
-                    DownloadService.pause(act, item)
+//                    DownloadService.pause(act, item)
                 }
 
                 if (item.status == DownloadStatus.loading) {

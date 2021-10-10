@@ -25,7 +25,7 @@ class StorageRepository(context: Context) {
             storage.sizeFull = file.lengthMb
             storage.isNew = manga == null
             storage.sizeRead = manga?.let { it ->
-                mChapterDao.getItems(it.unic)
+                mChapterDao.getItemsWhereManga(it.unic)
                     .asSequence()
                     .filter { it.isRead }
                     .sumOf { getFullPath(it.path).lengthMb }

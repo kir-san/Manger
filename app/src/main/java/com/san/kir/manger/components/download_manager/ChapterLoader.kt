@@ -1,13 +1,11 @@
 package com.san.kir.manger.components.download_manager
 
-import com.san.kir.manger.room.dao.DownloadDao
-import com.san.kir.manger.room.entities.DownloadItem
+import com.san.kir.manger.room.dao.ChapterDao
+import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.utils.JobContext
 import com.san.kir.manger.utils.NetworkManager
-import com.san.kir.manger.utils.enums.DownloadStatus
-import kotlinx.coroutines.Dispatchers
+import com.san.kir.manger.utils.enums.DownloadState
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ChapterLoader @Inject constructor(
@@ -15,7 +13,7 @@ class ChapterLoader @Inject constructor(
     private val networkManager: NetworkManager,
     private val downloadManager: DownloadManager,
     private val iteratorProcessor: IteratorProcessor,
-    private val downloadDao: DownloadDao,
+    private val chapterDao: ChapterDao,
     private val listeners: ListenerProvider,
     delegateImpl: DownloadManagerDelegateImpl,
 ) {
@@ -23,13 +21,35 @@ class ChapterLoader @Inject constructor(
         downloadManager.delegate = delegateImpl
     }
 
-    fun add(task: DownloadItem) {
+    fun pause(task: Chapter) {
         job.post {
+
+            task.status = DownloadState.QUEUED
+            chapterDao.update(task)
+
+            if (isDownloading(task.id)) {
+                cancelDownload(task.id)
+            }
+            if (canPauseDownload(task)) {
+                task.status = DownloadState.PAUSED
+            }
+            chapterDao.update(task)
+
+            listeners.mainListener.onPaused(task)
+        }
+    }
+
+    fun start(task: Chapter) {
+        job.post {
+            if (isDownloading(task.id)) {
+                cancelDownload(task.id)
+            }
+
             task.order = System.currentTimeMillis()
-            task.status = DownloadStatus.queued
+            task.status = DownloadState.QUEUED
             task.isError = false
 
-            downloadDao.insert(task)
+            chapterDao.update(task)
 
             startIteratorProcessor()
 
@@ -41,94 +61,25 @@ class ChapterLoader @Inject constructor(
         }
     }
 
-    fun addOrStart(task: DownloadItem) {
-        job.post {
-            if (hasTask(task)) {
-                start(task)
-            } else {
-                add(task)
-            }
-        }
-    }
-
-    fun pause(task: DownloadItem) {
-        job.post {
-            val lTask =
-                if (task.id != 0L) task
-                else downloadDao.getItem(task.link)
-
-
-            if (lTask == null) {
-                listeners.mainListener.onError(task, null)
-                return@post
-            }
-
-            lTask.status = DownloadStatus.queued
-            downloadDao.update(lTask)
-
-            if (isDownloading(lTask.id)) {
-                cancelDownload(lTask.id)
-            }
-            if (canPauseDownload(lTask)) {
-                lTask.status = DownloadStatus.pause
-            }
-            downloadDao.update(lTask)
-
-            listeners.mainListener.onPaused(lTask)
-        }
-    }
-
-    fun start(task: DownloadItem) {
-        job.post {
-            val lTask =
-                if (task.id != 0L) task
-                else downloadDao.getItem(task.link)
-
-
-            if (lTask == null) {
-                listeners.mainListener.onError(task, null)
-                return@post
-            }
-
-            if (isDownloading(lTask.id)) {
-                cancelDownload(lTask.id)
-            }
-
-            lTask.order = System.currentTimeMillis()
-            lTask.status = DownloadStatus.queued
-            lTask.isError = false
-
-            downloadDao.update(lTask)
-
-            startIteratorProcessor()
-
-            listeners.mainListener.onQueued(lTask)
-
-            if (!networkManager.isAvailable()) {
-                pause(lTask)
-            }
-        }
-    }
-
     fun pauseAll() {
         job.post {
-            val loading = downloadDao.getItems().filter { canPauseDownload(it) }
+            val loading = chapterDao.getItems().filter { canPauseDownload(it) }
             if (loading.isNotEmpty()) {
                 loading.forEach {
-                    it.status = DownloadStatus.queued
-                    downloadDao.update(it)
+                    it.status = DownloadState.QUEUED
+                    chapterDao.update(it)
                 }
             }
 
             downloadManager.cancelAll()
             iteratorProcessor.stop()
 
-            val downloads = downloadDao.getItems().filter { canPauseDownload(it) }
+            val downloads = chapterDao.getItems().filter { canPauseDownload(it) }
             if (downloads.isNotEmpty()) {
                 downloads.forEach {
-                    it.status = DownloadStatus.pause
+                    it.status = DownloadState.PAUSED
                 }
-                downloadDao.update(*downloads.toTypedArray())
+                chapterDao.update(*downloads.toTypedArray())
 
                 downloads.forEach {
                     listeners.mainListener.onPaused(it)
@@ -140,14 +91,14 @@ class ChapterLoader @Inject constructor(
     fun startAll() {
         job.post {
             val downloads =
-                downloadDao.getItems()
+                chapterDao.getItems()
                     .filter { canResumeDownload(it) }
             if (downloads.isNotEmpty()) {
                 downloads.forEach {
-                    it.status = DownloadStatus.queued
+                    it.status = DownloadState.QUEUED
                     it.isError = false
                 }
-                downloadDao.update(*downloads.toTypedArray())
+                chapterDao.update(*downloads.toTypedArray())
             }
 
             iteratorProcessor.start()
@@ -158,6 +109,7 @@ class ChapterLoader @Inject constructor(
         }
     }
 
+    @Suppress("unused")
     fun stop() = runBlocking {
         listeners.clear()
         iteratorProcessor.stop()
@@ -171,15 +123,6 @@ class ChapterLoader @Inject constructor(
 
     fun clearListeners() {
         listeners.clear()
-    }
-
-    suspend fun hasTask(task: DownloadItem): Boolean {
-        val containedItem = withContext(job.coroutineContext + Dispatchers.Default) {
-            downloadDao.getItem(
-                task.link
-            )
-        }
-        return containedItem != null
     }
 
     fun setConcurrentPages(concurrent: Int) {
@@ -209,12 +152,12 @@ class ChapterLoader @Inject constructor(
         return downloadManager.cancel(id)
     }
 
-    private fun canPauseDownload(task: DownloadItem): Boolean {
-        return task.status == DownloadStatus.loading || task.status == DownloadStatus.queued
+    private fun canPauseDownload(task: Chapter): Boolean {
+        return task.status == DownloadState.LOADING || task.status == DownloadState.QUEUED
     }
 
-    private fun canResumeDownload(task: DownloadItem): Boolean {
-        return task.status == DownloadStatus.pause
+    private fun canResumeDownload(task: Chapter): Boolean {
+        return task.status == DownloadState.PAUSED
     }
 
     private suspend fun startIteratorProcessor() {

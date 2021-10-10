@@ -1,10 +1,10 @@
 package com.san.kir.manger.components.download_manager
 
-import com.san.kir.manger.room.dao.DownloadDao
-import com.san.kir.manger.room.entities.DownloadItem
+import com.san.kir.manger.room.dao.ChapterDao
+import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.utils.JobContext
 import com.san.kir.manger.utils.NetworkManager
-import com.san.kir.manger.utils.enums.DownloadStatus
+import com.san.kir.manger.utils.enums.DownloadState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
@@ -17,7 +17,7 @@ class IteratorProcessor @Inject constructor(
     private val job: JobContext,
     private val manager: DownloadManager,
     private val networkManager: NetworkManager,
-    private val downloadDao: DownloadDao
+    private val chapterDao: ChapterDao
 ) {
     private val priorityQueueIntervalInMilliseconds = 500L
 
@@ -49,10 +49,10 @@ class IteratorProcessor @Inject constructor(
         }
     }
 
-    private suspend fun getIterator(): Iterator<DownloadItem> {
-        var queuedList = downloadDao.getItems(DownloadStatus.queued)
+    private suspend fun getIterator(): Iterator<Chapter> {
+        var queuedList = chapterDao.getItemsWhereStatus(DownloadState.QUEUED)
         if (isRetry) {
-            queuedList = queuedList + downloadDao.getErrorItems()
+            queuedList = queuedList + chapterDao.getErrorItems()
         }
         return queuedList.iterator()
     }

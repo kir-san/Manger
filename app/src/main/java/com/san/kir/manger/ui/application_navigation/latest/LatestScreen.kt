@@ -6,7 +6,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.DropdownMenu
@@ -54,19 +52,14 @@ import com.san.kir.ankofork.dialogs.longToast
 import com.san.kir.ankofork.dialogs.toast
 import com.san.kir.manger.R
 import com.san.kir.manger.room.dao.ChapterDao
-import com.san.kir.manger.room.dao.DownloadDao
 import com.san.kir.manger.room.entities.Chapter
-import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.room.entities.action
-import com.san.kir.manger.room.entities.countPages
-import com.san.kir.manger.room.entities.toDownloadItem
 import com.san.kir.manger.services.DownloadService
 import com.san.kir.manger.ui.utils.MenuIcon
 import com.san.kir.manger.ui.utils.MenuText
 import com.san.kir.manger.ui.utils.TopBarScreenList
 import com.san.kir.manger.utils.enums.ChapterStatus
-import com.san.kir.manger.utils.enums.DownloadStatus
-import com.san.kir.manger.utils.extensions.delChapters
+import com.san.kir.manger.utils.enums.DownloadState
 import com.san.kir.manger.utils.extensions.log
 import com.san.kir.manger.utils.extensions.quantitySimple
 import com.san.kir.manger.workmanager.AllLatestClearWorker
@@ -80,12 +73,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @Composable
@@ -193,24 +184,23 @@ private fun LatestItemContent(
     context: Context = LocalContext.current,
 ) {
     val selectionMode by viewModel.selectionMode.collectAsState()
-    val downloadItem by viewModel.getDownloadItem(chapter).collectAsState(DownloadItem())
 
-    val downloadIndicator by remember(downloadItem) {
+    val downloadIndicator by remember(chapter) {
         mutableStateOf(
-            downloadItem.status == DownloadStatus.queued
-                    || downloadItem.status == DownloadStatus.loading
+            chapter.status == DownloadState.QUEUED
+                    || chapter.status == DownloadState.LOADING
         )
     }
-    val queueIndicator by remember(downloadItem) {
-        mutableStateOf(downloadItem.status == DownloadStatus.queued)
+    val queueIndicator by remember(chapter) {
+        mutableStateOf(chapter.status == DownloadState.QUEUED)
     }
-    val loadingIndicator by remember(downloadItem) {
-        mutableStateOf(downloadItem.status == DownloadStatus.loading)
+    val loadingIndicator by remember(chapter) {
+        mutableStateOf(chapter.status == DownloadState.LOADING)
     }
-    val downloadPercent by remember(downloadItem) {
+    val downloadPercent by remember(chapter) {
         mutableStateOf(
-            if (downloadItem.totalPages == 0) 0
-            else downloadItem.downloadPages * 100 / downloadItem.totalPages
+            if (chapter.totalPages == 0) 0
+            else chapter.downloadPages * 100 / chapter.totalPages
         )
     }
 
@@ -315,7 +305,7 @@ private fun LatestItemContent(
         AnimatedVisibility(downloadIndicator.not()) {
             IconButton(
                 onClick = {
-                    DownloadService.addOrStart(context, chapter.toDownloadItem())
+                    DownloadService.start(context, chapter)
                 },
             ) {
                 Icon(Icons.Default.Download, contentDescription = "download button")
@@ -326,7 +316,7 @@ private fun LatestItemContent(
         AnimatedVisibility(downloadIndicator) {
             IconButton(
                 onClick = {
-                    DownloadService.pause(context, chapter.toDownloadItem())
+                    DownloadService.pause(context, chapter)
                 },
             ) {
                 Icon(Icons.Default.Close, contentDescription = "cancel download button")
@@ -340,7 +330,6 @@ private fun LatestItemContent(
 class LatestViewModel @Inject constructor(
     private val context: Application,
     private val chapterDao: ChapterDao,
-    private val downloadDao: DownloadDao,
 ) : ViewModel() {
     private val _allITems = MutableStateFlow(listOf<Chapter>())
     val allItems = _allITems.asStateFlow()
@@ -394,13 +383,10 @@ class LatestViewModel @Inject constructor(
 
     fun downloadNewChapters() = viewModelScope.launch(Dispatchers.Default) {
         _newChapters.value.onEach { chapter ->
-            DownloadService.addOrStart(context, chapter.toDownloadItem())
+            DownloadService.start(context, chapter)
         }
     }
 
-    fun getDownloadItem(item: Chapter) = downloadDao.loadItem(item.site).filterNotNull()
-
-    // for selection mode
     private val _selectionMode = MutableStateFlow(false)
     val selectionMode = _selectionMode.asStateFlow()
     private val _selectedItems = MutableStateFlow(listOf<Boolean>())

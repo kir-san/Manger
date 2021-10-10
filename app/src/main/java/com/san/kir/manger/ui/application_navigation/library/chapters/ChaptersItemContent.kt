@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -43,12 +42,10 @@ import com.san.kir.ankofork.startActivity
 import com.san.kir.manger.R
 import com.san.kir.manger.components.viewer.ViewerActivity
 import com.san.kir.manger.room.entities.Chapter
-import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.countPages
-import com.san.kir.manger.room.entities.toDownloadItem
 import com.san.kir.manger.services.DownloadService
-import com.san.kir.manger.utils.enums.DownloadStatus
+import com.san.kir.manger.utils.enums.DownloadState
 import com.san.kir.manger.utils.extensions.log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -64,27 +61,26 @@ fun ChaptersItemContent(
     context: Context = LocalContext.current,
 ) {
     val selectionMode by viewModel.selectionMode.collectAsState()
-    val downloadItem by viewModel.getDownloadItem(chapter).collectAsState(DownloadItem())
 
     var countPagesInMemory by remember { mutableStateOf(0) }
     val deleteIndicator by remember(countPagesInMemory) { mutableStateOf(countPagesInMemory > 0) }
 
-    val downloadIndicator by remember(downloadItem) {
+    val downloadIndicator by remember(chapter) {
         mutableStateOf(
-            downloadItem.status == DownloadStatus.queued
-                    || downloadItem.status == DownloadStatus.loading
+            chapter.status == DownloadState.QUEUED
+                    || chapter.status == DownloadState.LOADING
         )
     }
-    val queueIndicator by remember(downloadItem) {
-        mutableStateOf(downloadItem.status == DownloadStatus.queued)
+    val queueIndicator by remember(chapter) {
+        mutableStateOf(chapter.status == DownloadState.QUEUED)
     }
-    val loadingIndicator by remember(downloadItem) {
-        mutableStateOf(downloadItem.status == DownloadStatus.loading)
+    val loadingIndicator by remember(chapter) {
+        mutableStateOf(chapter.status == DownloadState.LOADING)
     }
-    val downloadPercent by remember(downloadItem) {
+    val downloadPercent by remember(chapter) {
         mutableStateOf(
-            if (downloadItem.totalPages == 0) 0
-            else downloadItem.downloadPages * 100 / downloadItem.totalPages
+            if (chapter.totalPages == 0) 0
+            else chapter.downloadPages * 100 / chapter.totalPages
         )
     }
 
@@ -142,11 +138,11 @@ fun ChaptersItemContent(
                 // downloadIndicator
                 AnimatedVisibility(downloadIndicator) {
                     CircularProgressIndicator(
-                        modifier = Modifier.size(19.dp),
+                        modifier = Modifier
+                            .size(19.dp)
+                            .padding(end = 5.dp),
                         strokeWidth = ProgressIndicatorDefaults.StrokeWidth - 1.dp
                     )
-
-                    Spacer(modifier = Modifier.width(5.dp))
                 }
 
                 // status
@@ -183,7 +179,9 @@ fun ChaptersItemContent(
                     Icon(
                         Icons.Default.Delete,
                         contentDescription = "indicator for available deleting",
-                        modifier = Modifier.padding(end = 4.dp).size(18.dp),
+                        modifier = Modifier
+                            .padding(end = 4.dp)
+                            .size(18.dp),
                     )
                 }
 
@@ -200,7 +198,7 @@ fun ChaptersItemContent(
         AnimatedVisibility(downloadIndicator.not()) {
             IconButton(
                 onClick = {
-                    DownloadService.addOrStart(context, chapter.toDownloadItem())
+                    DownloadService.start(context, chapter)
                 },
             ) {
                 Icon(Icons.Default.Download, contentDescription = "download button")
@@ -211,7 +209,7 @@ fun ChaptersItemContent(
         AnimatedVisibility(downloadIndicator) {
             IconButton(
                 onClick = {
-                    DownloadService.pause(context, chapter.toDownloadItem())
+                    DownloadService.pause(context, chapter)
                 },
             ) {
                 Icon(Icons.Default.Close, contentDescription = "cancel download button")
@@ -219,7 +217,7 @@ fun ChaptersItemContent(
         }
     }
 
-    LaunchedEffect(chapter) {
+    LaunchedEffect(chapter.status) {
         withContext(Dispatchers.Default) {
             countPagesInMemory = chapter.countPages
         }

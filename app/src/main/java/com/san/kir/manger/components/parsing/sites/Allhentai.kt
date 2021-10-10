@@ -193,7 +193,7 @@ class Allhentai(
                     manga = manga.unic,
                     name = select.text(),
                     date = it.select("td.hidden-xxs").text(),
-                    site = if (link.contains(host)) link else host + link,
+                    link = if (link.contains(host)) link else host + link,
                     path = "${manga.path}/${select.text()}"
                 )
             }

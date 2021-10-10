@@ -39,7 +39,7 @@ class DownloadManagerRecyclerPresenter(private val act: DownloadManagerActivity)
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
                 act.lifecycleScope.launch(Dispatchers.Default) {
-                    DownloadService.pause(act, adapter.items[position])
+//                    DownloadService.pause(act, adapter.items[position])
                     act.mViewModel.delete(adapter.items[position])
                     adapter.items = adapter.items - adapter.items[position]
                     withContext(Dispatchers.Main) {

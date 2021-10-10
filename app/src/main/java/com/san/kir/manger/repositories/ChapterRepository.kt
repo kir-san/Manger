@@ -9,8 +9,8 @@ class ChapterRepository(context: Context) {
     private val mChapterDao = db.chapterDao
 
     suspend fun getItems() = mChapterDao.getItems()
-    suspend fun getItems(mangaUnic: String) = mChapterDao.getItems(mangaUnic)
-    suspend fun getItem(site: String) = mChapterDao.getItem(site)
+    suspend fun getItems(mangaUnic: String) = mChapterDao.getItemsWhereManga(mangaUnic)
+    suspend fun getItem(site: String) = mChapterDao.getItemWhereLink(site)
 
     suspend fun insert(vararg chapter: Chapter) = mChapterDao.insert(*chapter)
     suspend fun update(vararg chapter: Chapter) = mChapterDao.update(*chapter)

@@ -211,7 +211,7 @@ abstract class MangachanTemplate(
                     manga = manga.unic,
                     name = name,
                     date = it.select(".date").text(),
-                    site = host + it.select("a").attr("href"),
+                    link = host + it.select("a").attr("href"),
                     path = "${manga.path}/$name"
                 )
             }

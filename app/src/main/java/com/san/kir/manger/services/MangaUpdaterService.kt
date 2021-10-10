@@ -223,11 +223,11 @@ class MangaUpdaterService : Service() {
                 } else {
                     new.forEach { chapter ->
                         // Если глава отсутствует в базе данных то добавить
-                        if (oldChapters.none { oldChapter -> chapter.site == oldChapter.site }) {
+                        if (oldChapters.none { oldChapter -> chapter.link == oldChapter.link }) {
                             newChapters = newChapters + chapter
                         } else {
                             val tempChapter =
-                                oldChapters.first { oldChapter -> chapter.site == oldChapter.site }
+                                oldChapters.first { oldChapter -> chapter.link == oldChapter.link }
                             tempChapter.path = chapter.path
                             mChapterRepository.update(tempChapter)
                         }

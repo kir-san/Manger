@@ -7,3 +7,7 @@ object DownloadStatus {
     const val completed = 4
     const val unknown = -1
 }
+
+enum class DownloadState {
+    LOADING, QUEUED, PAUSED, COMPLETED, UNKNOWN
+}

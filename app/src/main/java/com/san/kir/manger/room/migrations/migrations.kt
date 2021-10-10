@@ -4,9 +4,11 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.san.kir.manger.room.columns.CategoryColumn
 import com.san.kir.manger.room.columns.DownloadColumn
+import com.san.kir.manger.room.entities.ChaptersColumn
 import com.san.kir.manger.room.entities.MangaStatisticColumn
 import com.san.kir.manger.room.entities.PlannedTaskColumn
 import com.san.kir.manger.utils.enums.ChapterFilter
+import com.san.kir.manger.utils.enums.DownloadState
 
 
 private fun migrate(from: Int, to: Int, vararg sql: String) =
@@ -579,5 +581,40 @@ val migrations: Array<Migration> = arrayOf(
                 "id, manga, name, date, path, isRead, site, progress, pages " +
                 "FROM tmp_chapters",
         "DROP TABLE tmp_chapters"
+    ),
+    migrate(
+        36, 37,
+        "ALTER TABLE ${ChaptersColumn.tableName} RENAME TO ${ChaptersColumn.tableName}_tmp",
+        "CREATE TABLE `${ChaptersColumn.tableName}` (" +
+                "`${ChaptersColumn.id}` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "`${ChaptersColumn.manga}` TEXT NOT NULL, " +
+                "`${ChaptersColumn.name}` TEXT NOT NULL, " +
+                "`${ChaptersColumn.date}` TEXT NOT NULL, " +
+                "`${ChaptersColumn.path}` TEXT NOT NULL, " +
+                "`${ChaptersColumn.isRead}` INTEGER NOT NULL, " +
+                "`${ChaptersColumn.site}` TEXT NOT NULL, " +
+                "`${ChaptersColumn.progress}` INTEGER NOT NULL, " +
+                "`${ChaptersColumn.pages}` TEXT NOT NULL DEFAULT ``, " +
+                "`${ChaptersColumn.isInUpdate}` INTEGER NOT NULL DEFAULT 0, " +
+                "`${ChaptersColumn.totalPages}` INTEGER NOT NULL DEFAULT 0, " +
+                "`${ChaptersColumn.downloadPages}` INTEGER NOT NULL DEFAULT 0, " +
+                "`${ChaptersColumn.totalSize}` INTEGER NOT NULL DEFAULT 0, " +
+                "`${ChaptersColumn.downloadSize}` INTEGER NOT NULL DEFAULT 0, " +
+                "`${ChaptersColumn.totalTime}` INTEGER NOT NULL DEFAULT 0, " +
+                "`${ChaptersColumn.status}` TEXT NOT NULL DEFAULT ${DownloadState.UNKNOWN.name}, " +
+                "`${ChaptersColumn.order}` INTEGER NOT NULL DEFAULT 0, " +
+                "`${ChaptersColumn.error}` INTEGER NOT NULL DEFAULT 0)",
+        "INSERT INTO `${ChaptersColumn.tableName}`(" +
+                "${ChaptersColumn.id}, ${ChaptersColumn.manga}, ${ChaptersColumn.name}, " +
+                "${ChaptersColumn.date}, ${ChaptersColumn.path}, ${ChaptersColumn.isRead}, " +
+                "${ChaptersColumn.site}, ${ChaptersColumn.progress}, ${ChaptersColumn.pages}, " +
+                "${ChaptersColumn.isInUpdate}) " +
+                "SELECT " +
+                "${ChaptersColumn.id}, ${ChaptersColumn.manga}, ${ChaptersColumn.name}, " +
+                "${ChaptersColumn.date}, ${ChaptersColumn.path}, ${ChaptersColumn.isRead}, " +
+                "${ChaptersColumn.site}, ${ChaptersColumn.progress}, ${ChaptersColumn.pages}, " +
+                "${ChaptersColumn.isInUpdate} " +
+                "FROM ${ChaptersColumn.tableName}_tmp",
+        "DROP TABLE ${ChaptersColumn.tableName}_tmp"
     )
 )

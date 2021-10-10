@@ -22,7 +22,7 @@ class LatestChapter {
         manga = chapter.manga
         name = chapter.name
         date = chapter.date
-        site = chapter.site
+        site = chapter.link
         path = chapter.path
     }
 }

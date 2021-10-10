@@ -159,7 +159,7 @@ class Acomics(
             Chapter(
                 manga = manga.unic,
                 name = manga.unic,
-                site = host + manga.shortLink,
+                link = host + manga.shortLink,
                 path = manga.path + "/" + manga.unic
             )
         )

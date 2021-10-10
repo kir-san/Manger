@@ -13,7 +13,6 @@ import com.san.kir.manger.room.dao.ChapterDao
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.action
-import com.san.kir.manger.room.entities.toDownloadItem
 import com.san.kir.manger.services.DownloadService
 import com.san.kir.manger.ui.MainActivity
 import com.san.kir.manger.utils.enums.ChapterStatus
@@ -55,7 +54,7 @@ class ChaptersActionViewModel @AssistedInject constructor(
             .getItemsNotReadAsc(mangaUnic)
             .first { it.action == ChapterStatus.DOWNLOADABLE }
 
-        DownloadService.addOrStart(context, chapter.toDownloadItem())
+        DownloadService.start(context, chapter)
     }
 
     fun downloadAllNotReadChapters() = viewModelScope.launch(Dispatchers.Default) {
@@ -63,7 +62,7 @@ class ChaptersActionViewModel @AssistedInject constructor(
             .getItemsNotReadAsc(mangaUnic)
             .filter { it.action == ChapterStatus.DOWNLOADABLE }
             .onEach { chapter ->
-                DownloadService.addOrStart(context, chapter.toDownloadItem())
+                DownloadService.start(context, chapter)
             }
             .size
 
@@ -80,7 +79,7 @@ class ChaptersActionViewModel @AssistedInject constructor(
             .getItemsNotReadAsc(mangaUnic)
             .filter { it.action == ChapterStatus.DOWNLOADABLE }
             .onEach { chapter ->
-                DownloadService.addOrStart(context, chapter.toDownloadItem())
+                DownloadService.start(context, chapter)
             }
             .size
         withContext(Dispatchers.Main) {

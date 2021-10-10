@@ -9,19 +9,16 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.san.kir.ankofork.dialogs.toast
 import com.san.kir.manger.R
-import com.san.kir.manger.utils.ChapterComparator
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.data.datastore.ChaptersRepository
 import com.san.kir.manger.room.dao.ChapterDao
-import com.san.kir.manger.room.dao.DownloadDao
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.entities.Chapter
-import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.action
-import com.san.kir.manger.room.entities.toDownloadItem
 import com.san.kir.manger.services.DownloadService
 import com.san.kir.manger.ui.MainActivity
+import com.san.kir.manger.utils.ChapterComparator
 import com.san.kir.manger.utils.enums.ChapterFilter
 import com.san.kir.manger.utils.enums.ChapterStatus
 import com.san.kir.manger.utils.extensions.delChapters
@@ -48,7 +45,6 @@ class ChaptersViewModel @AssistedInject constructor(
     private val chapterDao: ChapterDao,
     private val mangaDao: MangaDao,
     private val chapterStore: ChaptersRepository,
-    private val downloadDao: DownloadDao,
     private val context: Application,
     private val manager: SiteCatalogsManager,
 ) : ViewModel() {
@@ -133,7 +129,7 @@ class ChaptersViewModel @AssistedInject constructor(
     fun downloadSelectedItems() = viewModelScope.launch(Dispatchers.Default) {
         _selectedItems.value.zip(_prepareChapters.value).forEach { (b, chapter) ->
             if (b && chapter.action == ChapterStatus.DOWNLOADABLE)
-                DownloadService.addOrStart(context, chapter.toDownloadItem())
+                DownloadService.start(context, chapter)
         }
         removeSelection()
     }
@@ -259,7 +255,7 @@ class ChaptersViewModel @AssistedInject constructor(
     }
 
     suspend fun getFirstNotReadChapters(manga: Manga): Chapter? = withContext(Dispatchers.Default) {
-        var list = chapterDao.getItems(manga.unic)
+        var list = chapterDao.getItemsWhereManga(manga.unic)
         list = if (manga.isAlternativeSort)
             try {
                 list.sortedWith(ChapterComparator())
@@ -270,10 +266,6 @@ class ChaptersViewModel @AssistedInject constructor(
 
         list.firstOrNull { !it.isRead }
     }
-
-    fun getDownloadItem(chapter: Chapter) = downloadDao
-        .loadItem(chapter.site)
-        .map { item -> item?.let { return@let it } ?: DownloadItem() }
 
     @AssistedFactory
     interface Factory {

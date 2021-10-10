@@ -28,7 +28,7 @@ suspend fun Storage.getSizeAndIsNew(mangaDao: MangaDao, chapterDao: ChapterDao):
         sizeFull = file.lengthMb
         isNew = manga == null
         sizeRead = manga?.let { it ->
-            chapterDao.getItems(it.unic)
+            chapterDao.getItemsWhereManga(it.unic)
                 .asSequence()
                 .filter { it.isRead }
                 .sumOf { getFullPath(it.path).lengthMb }

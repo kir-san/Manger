@@ -1,8 +1,7 @@
 package com.san.kir.manger.components.download_manager
 
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
-import com.san.kir.manger.room.dao.ChapterDao
-import com.san.kir.manger.room.entities.DownloadItem
+import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.utils.JobContext
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -13,7 +12,6 @@ import javax.inject.Singleton
 @Singleton
 class DownloadManager @Inject constructor(
     private val manager: SiteCatalogsManager,
-    private val chapterDao: ChapterDao,
 ) {
     private val lock = Mutex()
     private val concurrentLimit: Int = 1
@@ -26,7 +24,7 @@ class DownloadManager @Inject constructor(
 
     var delegate: Delegate? = null
 
-    suspend fun start(task: DownloadItem): Boolean {
+    suspend fun start(task: Chapter): Boolean {
         lock.withLock {
             if (currentDownloadsMap.containsKey(task.id)
                 || downloadCounter >= concurrentLimit) {
@@ -123,11 +121,11 @@ class DownloadManager @Inject constructor(
         downloadCounter = 0
     }
 
-    private fun getNewChapterDownloader(task: DownloadItem): ChapterDownloader {
-        return ChapterDownloader(manager, task, concurrentPages, chapterDao, delegate)
+    private fun getNewChapterDownloader(task: Chapter): ChapterDownloader {
+        return ChapterDownloader(manager, task, concurrentPages, delegate)
     }
 
     interface Delegate : ChapterDownloader.Delegate {
-        fun onDownloadRemovedFromManager(item: DownloadItem)
+        fun onDownloadRemovedFromManager(item: Chapter)
     }
 }

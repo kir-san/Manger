@@ -32,6 +32,7 @@ import com.san.kir.manger.room.entities.Site
 import com.san.kir.manger.room.entities.Storage
 import com.san.kir.manger.room.migrations.migrations
 import com.san.kir.manger.room.type_converters.ChapterFilterTypeConverter
+import com.san.kir.manger.room.type_converters.DownloadStateTypeConverter
 import com.san.kir.manger.room.type_converters.FileConverter
 import com.san.kir.manger.room.type_converters.ListStringConverter
 import com.san.kir.manger.room.type_converters.MainMenuTypeConverter
@@ -61,12 +62,13 @@ import java.io.File
     FileConverter::class,
     ListStringConverter::class,
     MainMenuTypeConverter::class,
-    ChapterFilterTypeConverter::class
+    ChapterFilterTypeConverter::class,
+    DownloadStateTypeConverter::class,
 )
 abstract class RoomDB : RoomDatabase() {
     companion object {
         const val NAME = "${DIR.PROFILE}/profile.db"
-        const val VERSION = 36
+        const val VERSION = 37
     }
 
     abstract val siteDao: SiteDao

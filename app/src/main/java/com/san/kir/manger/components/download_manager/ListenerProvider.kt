@@ -1,9 +1,7 @@
 package com.san.kir.manger.components.download_manager
 
-import com.san.kir.manger.room.entities.DownloadItem
+import com.san.kir.manger.room.entities.Chapter
 import java.util.*
-import javax.inject.Inject
-import kotlin.collections.HashMap
 
 class ListenerProvider {
     private val listeners =
@@ -12,20 +10,20 @@ class ListenerProvider {
         Collections.synchronizedSet(mutableSetOf<String>())
 
     val mainListener = object : DownloadListener {
-        override fun onQueued(item: DownloadItem) {
+        override fun onQueued(item: Chapter) {
             listeners.forEach {
                 it.onQueued(item)
             }
         }
 
-        override fun onCompleted(item: DownloadItem) {
+        override fun onCompleted(item: Chapter) {
             listeners.forEach {
                 it.onCompleted(item)
             }
         }
 
         override fun onError(
-            item: DownloadItem,
+            item: Chapter,
             cause: Throwable?
         ) {
             listeners.forEach {
@@ -33,13 +31,13 @@ class ListenerProvider {
             }
         }
 
-        override fun onProgress(item: DownloadItem) {
+        override fun onProgress(item: Chapter) {
             listeners.forEach {
                 it.onProgress(item)
             }
         }
 
-        override fun onPaused(item: DownloadItem) {
+        override fun onPaused(item: Chapter) {
             listeners.forEach {
                 it.onPaused(item)
             }

@@ -198,7 +198,7 @@ abstract class ReadmangaTemplate(
                     manga = manga.unic,
                     name = name,
                     date = it.select("td").last().text(),
-                    site = host + it.select("a").attr("href"),
+                    link = host + it.select("a").attr("href"),
                     path = "${manga.path}/$name"
                 )
             }

@@ -113,7 +113,7 @@ class Unicomics(
                 Chapter(
                     manga = manga.unic,
                     name = name,
-                    site = if (link.contains(host)) link else host + link,
+                    link = if (link.contains(host)) link else host + link,
                     path = "${manga.path}/${name}"
                 )
             }

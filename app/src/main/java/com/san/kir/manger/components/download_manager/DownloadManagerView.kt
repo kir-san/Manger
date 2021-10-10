@@ -9,6 +9,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.updateLayoutParams
+import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.san.kir.ankofork.above
@@ -31,12 +33,16 @@ import com.san.kir.ankofork.support.nestedScrollView
 import com.san.kir.ankofork.verticalLayout
 import com.san.kir.ankofork.wrapContent
 import com.san.kir.manger.R
+import com.san.kir.manger.data.datastore.DownloadRepository
+import com.san.kir.manger.data.datastore.downloadStore
 import com.san.kir.manger.extending.dialogs.ClearDownloadsMenu
 import com.san.kir.manger.services.DownloadService
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.extensions.doOnApplyWindowInstets
 import com.san.kir.manger.utils.extensions.isNetworkAvailable
 import com.san.kir.manger.utils.extensions.isOnWifi
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class DownloadManagerView(private val act: DownloadManagerActivity) {
     private object Id {
@@ -62,7 +68,7 @@ class DownloadManagerView(private val act: DownloadManagerActivity) {
                             layoutManager =
                                 LinearLayoutManager(context)
                             allAdapter(act).into(this)
-                        }.lparams(width = matchParent, height= wrapContent)
+                        }.lparams(width = matchParent, height = wrapContent)
                     }
                 }
                 bind()
@@ -120,26 +126,29 @@ class DownloadManagerView(private val act: DownloadManagerActivity) {
     }
 
     private fun CoordinatorLayout.bind() {
-        val wifiKey = act.getString(R.string.settings_downloader_wifi_only_key)
-        val wifiDefault =
-            act.getString(R.string.settings_downloader_wifi_only_default) == "true"
-        val isWifi = act.defaultSharedPreferences.getBoolean(wifiKey, wifiDefault)
+        val downloadStore = DownloadRepository(context.downloadStore)
 
         var snack: Snackbar? = null
-        act.updateNetwork.bind {
-            snack?.let { s ->
-                if (s.isShown) s.dismiss()
-            }
-            when {
-                isWifi && !act.isOnWifi() -> {
-                    snack = this@bind.indefiniteSnackbar(R.string.download_view_wifi_off)
-                }
-                !act.isNetworkAvailable() -> {
-                    snack = this@bind.indefiniteSnackbar(R.string.download_view_internet_off)
-                }
-            }
+        findViewTreeLifecycleOwner()?.lifecycleScope?.launch {
+            downloadStore.data.collect { data ->
+                act.updateNetwork.bind {
+                    snack?.let { s ->
+                        if (s.isShown) s.dismiss()
+                    }
+                    when {
+                        data.wifi && !act.isOnWifi() -> {
+                            snack = this@bind.indefiniteSnackbar(R.string.download_view_wifi_off)
+                        }
+                        !act.isNetworkAvailable() -> {
+                            snack =
+                                this@bind.indefiniteSnackbar(R.string.download_view_internet_off)
+                        }
+                    }
 
+                }
+            }
         }
+
     }
 
     private fun ViewManager.btn(action: ImageButton.() -> Unit): ImageButton {

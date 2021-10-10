@@ -100,7 +100,7 @@ class LibraryViewModel @Inject constructor(
     }
 
     suspend fun countNotRead(mangaUnic: String) =
-        chapterDao.getItems(mangaUnic).filter { !it.isRead }.size
+        chapterDao.getItemsWhereManga(mangaUnic).filter { !it.isRead }.size
 
     fun update(manga: Manga) {
         viewModelScope.launch(Dispatchers.Default) {

@@ -11,9 +11,8 @@ import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import com.san.kir.ankofork.defaultSharedPreferences
+import androidx.core.app.NotificationManagerCompat
 import com.san.kir.ankofork.intentFor
-import com.san.kir.ankofork.sdk28.notificationManager
 import com.san.kir.manger.R
 import com.san.kir.manger.components.download_manager.ChapterLoader
 import com.san.kir.manger.components.download_manager.DownloadListener
@@ -138,6 +137,20 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel()
         }
+
+        setForeground()
+    }
+
+    private fun setForeground() {
+        with(NotificationCompat.Builder(this, channelId)) {
+            setSmallIcon(R.drawable.ic_notification_download)
+            setContentTitle(getString(R.string.download_service_title))
+            setContentText(getString(R.string.download_service_message))
+            setContentIntent(actionGoToDownloads)
+            priority = NotificationCompat.PRIORITY_MIN
+            setAutoCancel(true)
+            startForeground(ID.generate(), build())
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -172,14 +185,15 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
             }
 
         }
-        return super.onStartCommand(intent, flags, startId)
+        return START_NOT_STICKY
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        stopForeground(false)
-        downloadManager.stop()
-        stopSelf()
+        clearCounters()
+        downloadManager.pauseAll()
+        downloadManager.clearListeners()
+//        downloadManager.stop()
         job.cancel()
     }
 
@@ -253,15 +267,14 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
 
     private fun sendCompleteNotification() {
         val notify = when {
-            errorCount > 0 &&
-                    errorCount == totalCount -> NotificationCompat.Builder(this, channelId).apply {
-                setSmallIcon(R.drawable.ic_notification_download)
-                setContentTitle(getString(R.string.download_service_complete_title_error))
-                setContentText(getString(R.string.download_service_complete_text_error))
-                setContentIntent(actionGoToDownloads)
-            }.build()
-            queueCount == 0 &&
-                    totalCount > 0 -> {
+            errorCount > 0 && errorCount == totalCount ->
+                NotificationCompat.Builder(this, channelId).apply {
+                    setSmallIcon(R.drawable.ic_notification_download)
+                    setContentTitle(getString(R.string.download_service_complete_title_error))
+                    setContentText(getString(R.string.download_service_complete_text_error))
+                    setContentIntent(actionGoToDownloads)
+                }.build()
+            queueCount == 0 && totalCount > 0 -> {
                 val builder = NotificationCompat.Builder(this, channelId).apply {
                     setSmallIcon(R.drawable.ic_notification_download)
                     setContentTitle(getString(R.string.download_service_complete_title))
@@ -274,20 +287,20 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
                 addSizeAndTimeLine(notify)
                 notify.build()
             }
-            queueCount == 0 &&
-                    totalCount == 0 -> NotificationCompat.Builder(this, channelId).apply {
-                setSmallIcon(R.drawable.ic_notification_download)
-                setContentTitle(getString(R.string.download_service_complete_title_paused))
-                setContentText(getString(R.string.download_service_complete_text_paused))
-                setContentIntent(actionGoToDownloads)
-            }.build()
+            queueCount == 0 && totalCount == 0 ->
+                NotificationCompat.Builder(this, channelId).apply {
+                    setSmallIcon(R.drawable.ic_notification_download)
+                    setContentTitle(getString(R.string.download_service_complete_title_paused))
+                    setContentText(getString(R.string.download_service_complete_text_paused))
+                    setContentIntent(actionGoToDownloads)
+                }.build()
             else -> null
         }
 
-        stopForeground(false)
-        notificationManager.cancel(notificationId)
-        notificationManager.notify(notificationId, notify)
-        clearCounters()
+        if (notify != null) {
+            notificationManager.notify(notificationId++, notify)
+            setForeground()
+        }
     }
 
     private fun addSizeAndTimeLine(notify: NotificationCompat.InboxStyle) {

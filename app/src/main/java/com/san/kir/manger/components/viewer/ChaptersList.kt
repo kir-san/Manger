@@ -7,9 +7,11 @@ import com.san.kir.manger.utils.ChapterComparator
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.MangaStatistic
 import com.san.kir.manger.utils.extensions.getFullPath
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.Executors
 
 // класс для управления страницами и главами
@@ -21,7 +23,7 @@ class ChaptersList(private val act: ViewerActivity) {
     private var positionStat = 0
 
     suspend fun init(chapter: Chapter, isAlternative: Boolean) {
-        val list = act.mViewModel.getChapterItems(chapter.manga)
+        val list = withContext(Dispatchers.Main) { act.mViewModel.getChapterItems(chapter.manga) }
 
         listChapter = if (isAlternative) {
             list.sortedWith(ChapterComparator())

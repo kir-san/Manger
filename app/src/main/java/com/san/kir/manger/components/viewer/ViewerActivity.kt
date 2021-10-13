@@ -26,21 +26,25 @@ import com.san.kir.ankofork.negative
 import com.san.kir.ankofork.positive
 import com.san.kir.ankofork.setContentView
 import com.san.kir.manger.R
+import com.san.kir.manger.Viewer
+import com.san.kir.manger.data.datastore.ViewerRepository
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.utils.extensions.BaseActivity
 import com.san.kir.manger.utils.extensions.add
-import com.san.kir.manger.utils.extensions.boolean
 import com.san.kir.manger.utils.extensions.log
 import com.san.kir.manger.utils.extensions.showAlways
-import com.san.kir.manger.utils.extensions.string
-import com.san.kir.manger.utils.extensions.stringSet
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
+import kotlin.properties.Delegates
 
+@AndroidEntryPoint
 class ViewerActivity : BaseActivity() {
     companion object { // константы для сохранения настроек
         var LEFT_PART_SCREEN = 0 // Левая часть экрана
@@ -58,7 +62,9 @@ class ViewerActivity : BaseActivity() {
     var isTapControl = false // Нажатия на экран
     private var isKeyControl = false // Кнопки громкости
 
-    var chapter = Chapter()
+    var chapter by Delegates.observable(Chapter()) { _, _, new ->
+        mViewModel.setChapter(new)
+    }
 
     val presenter by lazy { ViewerPresenter(this) }
     val mView by lazy { ViewerView(presenter) }
@@ -101,47 +107,26 @@ class ViewerActivity : BaseActivity() {
         * - !continue, chapter - продолжить чтение с текущей главы
         * - все остальные варианты закрывают просмоторщик
         * */
-        lifecycleScope.launch(Dispatchers.Default) {
+        lifecycleScope.launch(Dispatchers.Main) {
             intent.apply {
                 val isAlternative = getBooleanExtra("is", false)
-                if (hasExtra("continue")) {
-                    log("get continue")
-                    val manga = getParcelableExtra<Manga>("manga")
-                    if (manga != null) {
-                        val chapt = mViewModel.getFirstNotReadChapter(manga)
-                        if (chapt != null) {
-                            log("init with manga is ok")
-                            chapter = chapt
-                            presenter.configManager(chapter, isAlternative).invokeOnCompletion {
-                                presenter.isLoad.negative()
-                            }
-                        } else {
-                            log("chapter is not find")
-                            applicationContext.longToast("Нет глав для чтения")
-                            finish()
-                        }
-                    } else {
-                        log("manga is not find")
-                        applicationContext.longToast("Непредвиденная ошибка")
-                        finish()
-                    }
-                } else {
-                    val chapt = getParcelableExtra<Chapter>("chapter")
-                    val manga = getParcelableExtra<Manga>("manga")
 
-                    when {
-                        chapt != null -> {
-                            log("init with chapter is ok")
-                            chapter = chapt
-                            presenter.configManager(chapter, isAlternative).invokeOnCompletion {
-                                presenter.isLoad.negative()
-                            }
-                        }
-                        manga != null -> {
-                            val chap = mViewModel.getFirstChapter(manga)
-                            if (chap != null) {
+                val tempChapter = mViewModel.getChapter()
+                if (tempChapter != null) {
+                    log("restore chapter")
+                    chapter = tempChapter
+                    presenter.configManager(chapter, isAlternative).invokeOnCompletion {
+                        presenter.isLoad.negative()
+                    }
+                } else
+                    if (hasExtra("continue")) {
+                        log("get continue")
+                        val manga = getParcelableExtra<Manga>("manga")
+                        if (manga != null) {
+                            val chapt = mViewModel.getFirstNotReadChapter(manga)
+                            if (chapt != null) {
                                 log("init with manga is ok")
-                                chapter = chap
+                                chapter = chapt
                                 presenter.configManager(chapter, isAlternative).invokeOnCompletion {
                                     presenter.isLoad.negative()
                                 }
@@ -150,19 +135,56 @@ class ViewerActivity : BaseActivity() {
                                 applicationContext.longToast("Нет глав для чтения")
                                 finish()
                             }
-                        }
-                        else -> {
-                            log("chapter or manga is not find")
-                            applicationContext.longToast("Нет главы для чтения")
+                        } else {
+                            log("manga is not find")
+                            applicationContext.longToast("Непредвиденная ошибка")
                             finish()
                         }
+                    } else {
+
+                        val chapt = getParcelableExtra<Chapter>("chapter")
+                        val manga = getParcelableExtra<Manga>("manga")
+
+                        when {
+                            chapt != null -> {
+                                log("init with chapter is ok")
+                                chapter = chapt
+                                presenter.configManager(chapter, isAlternative).invokeOnCompletion {
+                                    presenter.isLoad.negative()
+                                }
+                            }
+                            manga != null -> {
+                                val chap = mViewModel.getFirstChapter(manga)
+                                if (chap != null) {
+                                    log("init with manga is ok")
+                                    chapter = chap
+                                    presenter.configManager(chapter, isAlternative)
+                                        .invokeOnCompletion {
+                                            presenter.isLoad.negative()
+                                        }
+                                } else {
+                                    log("chapter is not find")
+                                    applicationContext.longToast("Нет глав для чтения")
+                                    finish()
+                                }
+                            }
+                            else -> {
+                                log("chapter or manga is not find")
+                                applicationContext.longToast("Нет главы для чтения")
+                                finish()
+                            }
+                        }
                     }
-                }
                 withContext(Dispatchers.Main) {
                     title = chapter.name // Смена заголовка
                 }
             }
         }
+    }
+
+    override fun onBackPressed() {
+        mViewModel.clearChapter()
+        super.onBackPressed()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {

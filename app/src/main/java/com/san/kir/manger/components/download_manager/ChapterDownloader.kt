@@ -147,18 +147,26 @@ class ChapterDownloader(
             delegate?.onProgress(getDownloadItem())
         } else if (!interrupted) {
             var contentLength = 0L
+            var tryCount = 3
 
-            Fuel.download(link)
-                .fileDestination { response, _ ->
-                    contentLength = response.contentLength
-                    page.parentFile?.createDirs()
-                    page.createNewFile()
-                    page
-                }
-                .progress { readBytes, totalBytes ->
-                    log("link = $link\nreadBytes = $readBytes, totalBytes = $totalBytes")
-                }
-                .response()
+            // 3 попытки загрузить изображение
+            while(tryCount != 0) {
+                tryCount--
+                Fuel.download(link)
+                    .fileDestination { response, _ ->
+                        contentLength = response.contentLength
+                        page.parentFile?.createDirs()
+                        page.createNewFile()
+                        page
+                    }
+//                .progress { readBytes, totalBytes ->
+//                    log("link = $link\nreadBytes = $readBytes, totalBytes = $totalBytes")
+//                }
+                    .response()
+
+                // Если размер исходного и загруженного одинаков, то страница загружена
+                if (page.exists() && page.length() == contentLength) break
+            }
 
             if (interrupted) return
 

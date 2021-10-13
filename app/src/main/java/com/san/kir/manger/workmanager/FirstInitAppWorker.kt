@@ -8,6 +8,7 @@ import androidx.work.Operation
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.san.kir.manger.R
+import com.san.kir.manger.Viewer
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.components.schedule.ScheduleManager
 import com.san.kir.manger.data.datastore.ChaptersRepository
@@ -143,7 +144,7 @@ class FirstInitAppWorker @AssistedInject constructor(
         downloadStore.setRetry(false)
         downloadStore.setWifi(false)
 
-        viewerStore.setOrientation(ctx.getString(R.string.settings_viewer_orientation_auto_land))
+        viewerStore.setOrientation(Viewer.Orientation.AUTO_LAND)
         viewerStore.setCutOut(true)
         viewerStore.setControl(taps = false, swipes = true, keys = false)
     }

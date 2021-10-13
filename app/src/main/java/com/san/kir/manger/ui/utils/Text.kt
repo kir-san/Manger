@@ -118,15 +118,18 @@ fun CheckBoxText(
     onChange: (Boolean) -> Unit,
     firstText: String,
     secondText: String = "",
+    modifier: Modifier = Modifier
 ) {
     Row(modifier = Modifier
         .fillMaxWidth()
-        .clickable { onChange(state.not()) }) {
+        .clickable { onChange(state.not()) },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
 
         Checkbox(
             checked = state,
             onCheckedChange = onChange,
-            modifier = Modifier.padding(end = 10.dp)
+            modifier = modifier.padding(end = 10.dp)
         )
 
         if (secondText.isEmpty())

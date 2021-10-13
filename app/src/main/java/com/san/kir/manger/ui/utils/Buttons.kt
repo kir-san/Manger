@@ -9,6 +9,7 @@ import androidx.compose.material.RadioButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -16,14 +17,16 @@ fun <T> RadioGroup(
     state: T,
     onSelected: (T) -> Unit,
     stateList: List<T>,
-    textList: List<String>
+    textList: List<String>,
+    verticalPadding: Dp = 5.dp,
 ) {
     Column {
         stateList.zip(textList).forEach { (s, text) ->
             Row(modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 5.dp)
-                .clickable { onSelected(s) }) {
+                .padding(vertical = verticalPadding)
+                .clickable { onSelected(s) })
+            {
                 RadioButton(selected = state == s, onClick = { onSelected(s) })
                 Text(text, modifier = Modifier.padding(horizontal = 10.dp))
             }

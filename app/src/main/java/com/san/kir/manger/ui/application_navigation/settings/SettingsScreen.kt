@@ -1,6 +1,5 @@
 package com.san.kir.manger.ui.application_navigation.settings
 
-import android.app.Application
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,10 +7,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
@@ -22,9 +19,19 @@ import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.CompareArrows
+import androidx.compose.material.icons.filled.ContentCut
+import androidx.compose.material.icons.filled.CropLandscape
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.ErrorOutline
+import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Title
+import androidx.compose.material.icons.filled.VideogameAsset
+import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,24 +42,15 @@ import androidx.compose.ui.Modifier.Companion
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.san.kir.manger.R
-import com.san.kir.manger.data.datastore.DownloadRepository
-import com.san.kir.manger.data.datastore.MainRepository
+import com.san.kir.manger.Viewer
+import com.san.kir.manger.ui.utils.CheckBoxText
 import com.san.kir.manger.ui.utils.RadioGroup
 import com.san.kir.manger.ui.utils.TopBarScreenContent
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @Composable
 fun SettingsScreen(
@@ -64,29 +62,56 @@ fun SettingsScreen(
         title = stringResource(R.string.main_menu_settings),
         additionalPadding = 0.dp
     ) {
-        val theme by viewModel.theme.collectAsState()
+
         TogglePreferenceItem(
             title = R.string.settings_app_dark_theme_title,
             subtitle = R.string.settings_app_dark_theme_summary,
-            initialValue = theme,
-            onCheckedChange = { viewModel.setTheme(it) }
+            icon = Icons.Default.DarkMode,
+            initialValue = viewModel.theme,
+            onCheckedChange = { viewModel.theme = it }
         )
+
         Divider()
 
-        val showCategory by viewModel.showCategory.collectAsState()
+        PreferenceTitle(R.string.settings_list_chapter_title)
+
+        TogglePreferenceItem(
+            title = R.string.settings_list_chapter_filter_title,
+            subtitle = R.string.settings_list_chapter_filter_summary,
+            icon = Icons.Default.FilterList,
+            initialValue = viewModel.filter,
+            onCheckedChange = { viewModel.filter = it }
+        )
+
+        TogglePreferenceItem(
+            title = R.string.settings_list_chapter_title_title,
+            subtitle = R.string.settings_list_chapter_title_summary,
+            icon = Icons.Default.Title,
+            initialValue = viewModel.title,
+            onCheckedChange = { viewModel.title = it }
+        )
+
+        Divider()
+
+        PreferenceTitle(R.string.settings_library_title)
+
         TogglePreferenceItem(
             title = R.string.settings_library_show_category_title,
             subtitle = R.string.settings_library_show_category_summary,
+            icon = Icons.Default.Category,
             initialValue = viewModel.showCategory,
             onCheckedChange = { viewModel.showCategory = it }
         )
         Divider()
 
+        PreferenceTitle(R.string.settings_viewer_title)
+
         ListPreferenceItem(
             title = R.string.settings_viewer_orientation_title,
             subtitle = R.string.settings_viewer_orientation_summary,
+            icon = Icons.Default.CropLandscape,
             entries = R.array.settings_viewer_orientation_array,
-            entryValues = R.array.settings_viewer_orientation_values,
+            entryValues = Viewer.Orientation.values().toList(),
             initialValue = viewModel.orientation,
             onValueChange = { viewModel.orientation = it }
         )
@@ -94,6 +119,7 @@ fun SettingsScreen(
         MultiSelectListPreferenceItem(
             title = R.string.settings_viewer_control_title,
             subtitle = R.string.settings_viewer_control_summary,
+            icon = Icons.Default.VideogameAsset,
             entries = R.array.settings_viewer_control_array,
             value = viewModel.control,
         )
@@ -101,49 +127,53 @@ fun SettingsScreen(
         TogglePreferenceItem(
             title = R.string.settings_viewer_cutout_title,
             subtitle = R.string.settings_viewer_cutout_summary,
+            icon = Icons.Default.ContentCut,
             initialValue = viewModel.cutout,
             onCheckedChange = { viewModel.cutout = it }
         )
 
         Divider()
 
-        val concurrent by viewModel.concurrent.collectAsState()
+        PreferenceTitle(R.string.settings_downloader_title)
+
         TogglePreferenceItem(
             title = R.string.settings_downloader_parallel_title,
             subtitle = R.string.settings_downloader_parallel_summary,
-            initialValue = concurrent,
-            onCheckedChange = { viewModel.setConcurrent(it) }
+            icon = Icons.Default.CompareArrows,
+            initialValue = viewModel.concurrent,
+            onCheckedChange = { viewModel.concurrent = it }
         )
 
-        val retry by viewModel.retry.collectAsState()
         TogglePreferenceItem(
             title = R.string.settings_downloader_retry_title,
             subtitle = R.string.settings_downloader_retry_summary,
-            initialValue = retry,
-            onCheckedChange = { viewModel.setRetry(it) }
+            icon = Icons.Default.ErrorOutline,
+            initialValue = viewModel.retry,
+            onCheckedChange = { viewModel.retry = it }
         )
 
-        val wifi by viewModel.wifi.collectAsState()
         TogglePreferenceItem(
             title = R.string.settings_downloader_wifi_only_title,
             subtitle = R.string.settings_downloader_wifi_only_summary,
-            initialValue = wifi,
-            onCheckedChange = { viewModel.setWifi(it) }
+            icon = Icons.Default.Wifi,
+            initialValue = viewModel.wifi,
+            onCheckedChange = { viewModel.wifi = it }
         )
     }
 }
 
 @Composable
-fun ListPreferenceItem(
+fun <T> ListPreferenceItem(
     title: Int,
     subtitle: Int,
+    icon: ImageVector? = null,
     entries: Int,
-    entryValues: Int,
-    initialValue: String,
-    onValueChange: (String) -> Unit,
+    entryValues: List<T>,
+    initialValue: T,
+    onValueChange: (T) -> Unit,
 ) {
     var dialog by remember { mutableStateOf(false) }
-    TemplatePreferenceItem(title = title, subtitle = subtitle) {
+    TemplatePreferenceItem(title = title, subtitle = subtitle, icon = icon) {
         dialog = true
     }
 
@@ -160,8 +190,9 @@ fun ListPreferenceItem(
                         onValueChange(it)
                         dialog = false
                     },
-                    stateList = stringArrayResource(entryValues).toList(),
-                    textList = stringArrayResource(entries).toList()
+                    stateList = entryValues,
+                    textList = stringArrayResource(entries).toList(),
+                    verticalPadding = 8.dp,
                 )
             },
             buttons = {
@@ -181,11 +212,12 @@ fun ListPreferenceItem(
 fun MultiSelectListPreferenceItem(
     title: Int,
     subtitle: Int,
+    icon: ImageVector? = null,
     entries: Int,
     value: MutableList<Boolean>,
 ) {
     var dialog by remember { mutableStateOf(false) }
-    TemplatePreferenceItem(title = title, subtitle = subtitle) {
+    TemplatePreferenceItem(title = title, subtitle = subtitle, icon = icon) {
         dialog = true
     }
 
@@ -203,7 +235,8 @@ fun MultiSelectListPreferenceItem(
                         CheckBoxText(
                             state = value[index],
                             onChange = { value[index] = it },
-                            firstText = text
+                            firstText = text,
+                            modifier = Modifier.padding(vertical = 8.dp)
                         )
                     }
                 }
@@ -226,18 +259,40 @@ fun MultiSelectListPreferenceItem(
 fun TogglePreferenceItem(
     title: Int,
     subtitle: Int,
+    icon: ImageVector? = null,
     initialValue: Boolean,
     onCheckedChange: (Boolean) -> Unit,
 ) {
 
     TemplatePreferenceItem(
         title = title, subtitle = subtitle,
+        icon = icon,
         action = {
             Switch(
                 checked = initialValue,
                 onCheckedChange = { onCheckedChange(it) })
         }) {
 
+    }
+}
+
+@Composable
+fun PreferenceTitle(id: Int) {
+    Column {
+        Box(
+            contentAlignment = Alignment.CenterStart,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 64.dp, bottom = 8.dp, top = 16.dp)
+        ) {
+            Text(
+                text = stringResource(id),
+//                fontSize = 14.sp,
+                color = MaterialTheme.colors.secondary,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier
+            )
+        }
     }
 }
 
@@ -251,7 +306,9 @@ fun TemplatePreferenceItem(
     onClick: () -> Unit,
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
     ) {
         Row(
             modifier = Modifier
@@ -284,80 +341,13 @@ fun TemplatePreferenceItem(
                 }
             }
         }
-        if (action != null)
-            Divider(
-                modifier = Modifier
-                    .padding(vertical = 4.dp)
-                    .height(56.dp)
-                    .width(1.dp),
-            )
+
         Box(
             modifier = Modifier.size(64.dp),
             contentAlignment = Alignment.Center,
         ) {
             if (action != null)
                 action()
-        }
-    }
-}
-
-@HiltViewModel
-class SettingsViewModel @Inject constructor(
-    ctx: Application,
-    private val main: MainRepository,
-    private val download: DownloadRepository
-) : ViewModel() {
-    private val _theme = MutableStateFlow(true)
-    val theme = _theme.asStateFlow()
-
-    fun setTheme(value: Boolean) = viewModelScope.launch {
-        main.setTheme(value)
-    }
-
-    private val _showCategory = MutableStateFlow(true)
-    val showCategory = _showCategory.asStateFlow()
-
-    fun setShowCategory(value: Boolean) = viewModelScope.launch {
-        main.setShowCategory(value)
-    }
-
-    private val _concurrent = MutableStateFlow(true)
-    val concurrent = _concurrent.asStateFlow()
-
-    fun setConcurrent(value: Boolean) = viewModelScope.launch {
-        download.setConcurrent(value)
-    }
-
-    private val _retry = MutableStateFlow(false)
-    val retry = _retry.asStateFlow()
-
-    fun setRetry(value: Boolean) = viewModelScope.launch {
-        download.setRetry(value)
-    }
-
-    private val _wifi = MutableStateFlow(false)
-    val wifi = _wifi.asStateFlow()
-
-    fun setWifi(value: Boolean) = viewModelScope.launch {
-        download.setWifi(value)
-    }
-
-    init {
-        viewModelScope.launch(Dispatchers.Default) {
-            main.data
-                .collect { data ->
-                    _theme.update { data.theme }
-                    _showCategory.update { data.isShowCatagery }
-                }
-        }
-
-        viewModelScope.launch(Dispatchers.Default) {
-            download.data
-                .collect { data ->
-                    _concurrent.update { data.concurrent }
-                    _retry.update { data.retry }
-                    _wifi.update { data.wifi }
-                }
         }
     }
 }

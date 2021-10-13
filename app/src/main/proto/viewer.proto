@@ -4,7 +4,17 @@ option java_package = "com.san.kir.manger";
 option java_multiple_files = true;
 
 message Viewer {
-  string orientation = 1;
+  enum Orientation {
+    PORT = 0;
+    PORT_REV = 1;
+    LAND = 2;
+    LAND_REV = 3;
+    AUTO = 4;
+    AUTO_PORT = 5;
+    AUTO_LAND = 6;
+  }
+
+  Orientation orientation = 1;
   bool cutout = 2;
 
   message Control {

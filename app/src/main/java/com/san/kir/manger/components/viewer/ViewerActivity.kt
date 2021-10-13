@@ -201,14 +201,14 @@ class ViewerActivity : BaseActivity() {
         lifecycleScope.launchWhenResumed {
             viewerStore.data.collect { data ->
                 requestedOrientation = when (data.orientation) {
-                    getString(R.string.settings_viewer_orientation_auto) -> SCREEN_ORIENTATION_SENSOR
-                    getString(R.string.settings_viewer_orientation_port) -> SCREEN_ORIENTATION_PORTRAIT
-                    getString(R.string.settings_viewer_orientation_port_rev) -> SCREEN_ORIENTATION_REVERSE_PORTRAIT
-                    getString(R.string.settings_viewer_orientation_land) -> SCREEN_ORIENTATION_LANDSCAPE
-                    getString(R.string.settings_viewer_orientation_land_rev) -> SCREEN_ORIENTATION_REVERSE_LANDSCAPE
-                    getString(R.string.settings_viewer_orientation_auto_port) -> SCREEN_ORIENTATION_SENSOR_PORTRAIT
-                    getString(R.string.settings_viewer_orientation_auto_land) -> SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-                    else -> SCREEN_ORIENTATION_SENSOR
+                    Viewer.Orientation.PORT -> SCREEN_ORIENTATION_PORTRAIT
+                    Viewer.Orientation.LAND -> SCREEN_ORIENTATION_LANDSCAPE
+                    Viewer.Orientation.AUTO -> SCREEN_ORIENTATION_SENSOR
+                    Viewer.Orientation.PORT_REV -> SCREEN_ORIENTATION_REVERSE_PORTRAIT
+                    Viewer.Orientation.LAND_REV -> SCREEN_ORIENTATION_REVERSE_LANDSCAPE
+                    Viewer.Orientation.AUTO_PORT -> SCREEN_ORIENTATION_SENSOR_PORTRAIT
+                    Viewer.Orientation.AUTO_LAND -> SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+                    Viewer.Orientation.UNRECOGNIZED -> SCREEN_ORIENTATION_SENSOR_LANDSCAPE
                 }
 
                 doFromSdk(28) {

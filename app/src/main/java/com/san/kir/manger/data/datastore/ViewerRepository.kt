@@ -24,7 +24,7 @@ class ViewerRepository @Inject constructor(private val store: DataStore<Viewer>)
             }
         }
 
-    suspend fun setOrientation(state: String) {
+    suspend fun setOrientation(state: Viewer.Orientation) {
         store.updateData { preference ->
             preference.toBuilder().setOrientation(state).build()
         }

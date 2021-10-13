@@ -492,13 +492,9 @@
 
     <string name="settings_list_chapter_title">Настройки списка глав</string>
 
-    <string name="settings_list_chapter_filter_default">true</string>
-    <string name="settings_list_chapter_filter_key">chapter_filter</string>
     <string name="settings_list_chapter_filter_summary">Фильтрация в списке глав общая для всей манги или независимая</string>
     <string name="settings_list_chapter_filter_title">Индивидуальная фильтрация глав</string>
 
-    <string name="settings_list_chapter_title_default">true</string>
-    <string name="settings_list_chapter_title_key">chapter_title</string>
     <string name="settings_list_chapter_title_summary">Переключение видимости названия вкладок</string>
     <string name="settings_list_chapter_title_title">Отображение названия вкладок</string>
 
@@ -507,13 +503,6 @@
 
     <string name="settings_viewer_orientation_summary">Выбранная ориентация экрана будет использоваться при чтении манги</string>
     <string name="settings_viewer_orientation_title">Ориентация</string>
-    <string name="settings_viewer_orientation_port">port</string>
-    <string name="settings_viewer_orientation_port_rev">port_rev</string>
-    <string name="settings_viewer_orientation_land">land</string>
-    <string name="settings_viewer_orientation_land_rev">land_rev</string>
-    <string name="settings_viewer_orientation_auto">auto</string>
-    <string name="settings_viewer_orientation_auto_port">auto_port</string>
-    <string name="settings_viewer_orientation_auto_land">auto_land</string>
 
     <string name="settings_viewer_control_summary">Выбор способа перелистывания страниц</string>
     <string name="settings_viewer_control_title">Управление</string>
@@ -544,16 +533,6 @@
         <item>Автоматическая</item>
         <item>Автоматическая портретная</item>
         <item>Автоматическая ландшафтная</item>
-    </string-array>
-
-    <string-array name="settings_viewer_orientation_values">
-        <item>@string/settings_viewer_orientation_port</item>
-        <item>@string/settings_viewer_orientation_port_rev</item>
-        <item>@string/settings_viewer_orientation_land</item>
-        <item>@string/settings_viewer_orientation_land_rev</item>
-        <item>@string/settings_viewer_orientation_auto</item>
-        <item>@string/settings_viewer_orientation_auto_port</item>
-        <item>@string/settings_viewer_orientation_auto_land</item>
     </string-array>
 
     <string-array name="settings_viewer_control_array">

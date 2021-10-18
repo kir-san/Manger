@@ -12,13 +12,16 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.app.TaskStackBuilder
+import androidx.core.net.toUri
 import com.san.kir.ankofork.intentFor
 import com.san.kir.manger.R
 import com.san.kir.manger.components.download_manager.ChapterLoader
 import com.san.kir.manger.components.download_manager.DownloadListener
-import com.san.kir.manger.components.download_manager.DownloadManagerActivity
 import com.san.kir.manger.data.datastore.DownloadRepository
 import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.ui.MainActivity
+import com.san.kir.manger.ui.application_navigation.MainNavTarget
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.extensions.bytesToMb
 import com.san.kir.manger.utils.extensions.formatDouble
@@ -88,8 +91,18 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
     private var notificationId = ID.generate()
 
     private val actionGoToDownloads by lazy {
-        val intent = intentFor<DownloadManagerActivity>()
-        PendingIntent.getActivity(this, 0, intent, 0)
+//        val intent = intentFor<DownloadManagerActivity>()
+//        PendingIntent.getActivity(this, 0, intent, 0)
+        val deepLinkIntent = Intent(
+            Intent.ACTION_VIEW,
+            MainNavTarget.Downloader.deepLink.toUri(),
+            this,
+            MainActivity::class.java
+        )
+        TaskStackBuilder.create(this).run {
+            addNextIntentWithParentStack(deepLinkIntent)
+            getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+        }
     }
     private val actionPauseAll by lazy {
         val intent = intentFor<DownloadService>().setAction(ACTION_PAUSE_ALL)

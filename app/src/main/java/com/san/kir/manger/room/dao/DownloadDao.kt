@@ -36,13 +36,6 @@ interface DownloadDao : BaseDao<DownloadItem> {
 
     @Query(
         "SELECT * FROM ${DownloadColumn.tableName} " +
-                "WHERE ${DownloadColumn.error} IS 0 " +
-                "ORDER BY `${DownloadColumn.order}`"
-    )
-    suspend fun getErrorItems(): List<DownloadItem>
-
-    @Query(
-        "SELECT * FROM ${DownloadColumn.tableName} " +
                 "WHERE ${DownloadColumn.status} IS :status1 " +
                 "AND ${DownloadColumn.status} IS :status2 " +
                 "ORDER BY `${DownloadColumn.order}`"

@@ -14,12 +14,14 @@ import androidx.compose.material.icons.filled.Storage
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import com.google.accompanist.navigation.animation.composable
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
 import com.san.kir.manger.ui.application_navigation.catalog.catalogsNavGraph
 import com.san.kir.manger.ui.application_navigation.categories.CategoriesNavTarget
 import com.san.kir.manger.ui.application_navigation.categories.categoriesNavGraph
+import com.san.kir.manger.ui.application_navigation.download.DownloadScreen
 import com.san.kir.manger.ui.application_navigation.latest.LatestScreen
 import com.san.kir.manger.ui.application_navigation.library.LibraryNavTarget
 import com.san.kir.manger.ui.application_navigation.library.libraryNavGraph
@@ -88,6 +90,7 @@ sealed class MainNavTarget(
         icon = Icons.Default.GetApp
     ) {
         override val route = "downloader"
+        val deepLink = "DownloaderDeepLink"
     }
 
     object Latest : MainNavTarget(
@@ -155,11 +158,11 @@ fun NavGraphBuilder.mainNavGraph(nav: NavHostController) {
         catalogsNavGraph(nav)
     }
 
-    navigation(
-        startDestination = CatalogsNavTarget.Main.route,
-        route = MainNavTarget.Downloader.route
+    composable(
+        route = MainNavTarget.Downloader.route,
+        deepLinks = listOf(navDeepLink { uriPattern = MainNavTarget.Downloader.deepLink })
     ) {
-        catalogsNavGraph(nav)
+        DownloadScreen(nav)
     }
 
     composable(route = MainNavTarget.Latest.route) {

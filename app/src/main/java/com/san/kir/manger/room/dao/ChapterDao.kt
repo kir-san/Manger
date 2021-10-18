@@ -61,5 +61,12 @@ interface ChapterDao : BaseDao<Chapter> {
                 "ORDER BY ${ChaptersColumn.id} DESC"
     )
     fun loadAllItems(): Flow<List<Chapter>>
+
+    @Query(
+        "SELECT * FROM ${ChaptersColumn.tableName} " +
+                "WHERE `${ChaptersColumn.status}` IS NOT `${DownloadState.UNKNOWN.name}` " +
+                "ORDER BY ${ChaptersColumn.status},`${ChaptersColumn.order}`"
+    )
+    fun loadDownloadItems(): Flow<List<Chapter>>
 }
 

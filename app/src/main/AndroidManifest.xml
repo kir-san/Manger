@@ -40,9 +40,6 @@
 
         </activity>
         <activity
-            android:name=".components.download_manager.DownloadManagerActivity"
-            android:theme="@style/AppTheme" />
-        <activity
             android:name=".components.viewer.ViewerActivity"
             android:theme="@style/AppTheme.Viewer" />
         <activity

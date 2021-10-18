@@ -22,6 +22,7 @@ import com.san.kir.manger.R
 import com.san.kir.manger.utils.SearchDuplicate
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.components.parsing.getShortLink
+import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.repositories.ChapterRepository
 import com.san.kir.manger.repositories.MangaRepository
 import com.san.kir.manger.room.entities.Chapter
@@ -29,6 +30,7 @@ import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.extensions.log
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -82,6 +84,10 @@ class MangaUpdaterService : Service() {
             )
             .build()
     }
+
+    @DefaultDispatcher
+    @Inject
+    lateinit var default: CoroutineDispatcher
 
     @Inject
     lateinit var manager: SiteCatalogsManager
@@ -209,7 +215,7 @@ class MangaUpdaterService : Service() {
 
             updatePagesInChapters(mangaDB)
 
-            val oldChapters = withContext(Dispatchers.Default) {
+            val oldChapters = withContext(default) {
                 mChapterRepository.getItems(mangaDB.unic)
             }
 
@@ -275,7 +281,7 @@ class MangaUpdaterService : Service() {
         }
     }
 
-    private suspend fun updatePagesInChapters(mangaDB: Manga) = withContext(Dispatchers.Default) {
+    private suspend fun updatePagesInChapters(mangaDB: Manga) = withContext(default) {
         mChapterRepository
             .getItems(mangaDB.unic)
             .filter {
@@ -284,7 +290,7 @@ class MangaUpdaterService : Service() {
                         || it.pages.any { chap -> chap.isBlank() }
             }
             .onEach {
-                launch(Dispatchers.Default) {
+                launch(default) {
                     it.pages = manager.pages(it)
                 }.join()
             }

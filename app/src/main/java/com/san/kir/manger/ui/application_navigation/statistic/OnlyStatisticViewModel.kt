@@ -6,16 +6,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.san.kir.manger.room.dao.CategoryDao
+import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.room.dao.StatisticDao
-import com.san.kir.manger.room.entities.Category
 import com.san.kir.manger.room.entities.MangaStatistic
 import com.san.kir.manger.ui.MainActivity
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.EntryPointAccessors
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
@@ -25,13 +24,14 @@ import kotlinx.coroutines.launch
 class OnlyStatisticViewModel @AssistedInject constructor(
     @Assisted private val mangaName: String,
     private val statisticDao: StatisticDao,
+    @DefaultDispatcher private val default: CoroutineDispatcher,
 ) : ViewModel() {
     private val _statistic = MutableStateFlow(MangaStatistic())
     val statistic = _statistic.asStateFlow()
 
     init {
         // инициация манги
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(default) {
             statisticDao.loadItem(mangaName).filterNotNull().collect { statistic ->
                 _statistic.value = statistic
             }

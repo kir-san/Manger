@@ -15,6 +15,7 @@ import com.san.kir.ankofork.dialogs.toast
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.data.datastore.ChaptersRepository
+import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.room.dao.ChapterDao
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.entities.Chapter
@@ -31,7 +32,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.EntryPointAccessors
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -44,7 +45,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -55,6 +55,7 @@ class ChaptersViewModel @AssistedInject constructor(
     private val chapterStore: ChaptersRepository,
     private val context: Application,
     private val manager: SiteCatalogsManager,
+    @DefaultDispatcher private val default: CoroutineDispatcher,
 ) : ViewModel() {
     private val _oneTimeFlag = MutableStateFlow(true)
     private val _manga = MutableStateFlow(Manga())
@@ -119,7 +120,7 @@ class ChaptersViewModel @AssistedInject constructor(
                 selectedItems = selectedItems.toMutableList().apply { set(i, false) }
             }
         }
-        withContext(Dispatchers.Main) {
+        withContext(default) {
             if (count == 0) {
                 context.toast(R.string.list_chapters_selection_del_error)
             } else {
@@ -167,7 +168,7 @@ class ChaptersViewModel @AssistedInject constructor(
 
     init {
         // инициация манги
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(default) {
             log("init manga $mangaUnic")
             combine(
                 _oneTimeFlag,
@@ -184,7 +185,7 @@ class ChaptersViewModel @AssistedInject constructor(
             }
         }
         // инициация фильтра
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(default) {
             combine(chapterStore.data, _manga) { store, manga ->
                 if (store.isIndividual) {
                     manga.chapterFilter
@@ -198,7 +199,7 @@ class ChaptersViewModel @AssistedInject constructor(
                 }
         }
         // Прослушивание фильтра для сохранения
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(default) {
             combine(chapterStore.data, filter) { store, filter ->
                 if (store.isIndividual) {
                     _manga.value = _manga.value.apply {
@@ -222,7 +223,7 @@ class ChaptersViewModel @AssistedInject constructor(
             }.launchIn(viewModelScope)
 
         // подготовка списка глав с использованием фильтров и сортировки
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(default) {
             combine(chapters, _manga, _filter) { chapters, manga, filter ->
                 var list = chapters
                 if (manga.isAlternativeSort) {
@@ -247,7 +248,7 @@ class ChaptersViewModel @AssistedInject constructor(
                 .map { it.count() }
                 .onEach { count ->
                     if (selectedItems.count() != count) {
-                        withContext(Dispatchers.Main) {
+                        withContext(default) {
                             log("set selected items")
                             selectedItems = List(count) { false }
                         }
@@ -257,7 +258,7 @@ class ChaptersViewModel @AssistedInject constructor(
         }
     }
 
-    suspend fun getFirstNotReadChapters(manga: Manga): Chapter? = withContext(Dispatchers.Default) {
+    suspend fun getFirstNotReadChapters(manga: Manga): Chapter? = withContext(default) {
         var list = chapterDao.getItemsWhereManga(manga.unic)
         list = if (manga.isAlternativeSort)
             try {

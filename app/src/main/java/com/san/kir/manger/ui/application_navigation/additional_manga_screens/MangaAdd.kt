@@ -40,6 +40,7 @@ import com.google.accompanist.flowlayout.FlowRow
 import com.san.kir.ankofork.startService
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
+import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.room.entities.MangaColumn
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.services.MangaUpdaterService
@@ -50,7 +51,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.EntryPointAccessors
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -275,13 +276,14 @@ private object ProcessStatus {
 class SiteCatalogItemViewModel @AssistedInject constructor(
     @Assisted private val url: String,
     private val manager: SiteCatalogsManager,
+    @DefaultDispatcher private val default: CoroutineDispatcher,
 ) : ViewModel() {
     private val _item = MutableStateFlow(SiteCatalogElement())
     val item = _item.asStateFlow()
 
     init {
         // инициация манги
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(default) {
             manager.getElementOnline(url)?.also { _item.update { it } }
         }
     }

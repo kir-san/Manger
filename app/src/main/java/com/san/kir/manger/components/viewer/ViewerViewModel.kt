@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.repositories.ChapterRepository
 import com.san.kir.manger.repositories.StatisticRepository
 import com.san.kir.manger.room.entities.Chapter
@@ -11,6 +12,7 @@ import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.MangaStatistic
 import com.san.kir.manger.utils.ChapterComparator
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -20,7 +22,8 @@ import kotlin.math.max
 @HiltViewModel
 class ViewerViewModel @Inject constructor(
     app: Application,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    @DefaultDispatcher private val default: CoroutineDispatcher
 ) : ViewModel() {
     private val mStatisticRepository = StatisticRepository(app)
     private val mChapterRepository = ChapterRepository(app)
@@ -32,7 +35,7 @@ class ViewerViewModel @Inject constructor(
     fun clearChapter() = savedStateHandle.remove<Chapter>(chapterKey)
 
     fun updateStatisticInfo(mangaName: String, time: Long) {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(default) {
             val stats = mStatisticRepository.getItem(mangaName)
             stats.lastTime = time
             stats.allTime = stats.allTime + time
@@ -44,13 +47,13 @@ class ViewerViewModel @Inject constructor(
     }
 
     suspend fun getChapterItems(mangaName: String) =
-        withContext(Dispatchers.Default) { mChapterRepository.getItems(mangaName) }
+        withContext(default) { mChapterRepository.getItems(mangaName) }
 
     suspend fun getStatisticItem(mangaName: String) = mStatisticRepository.getItem(mangaName)
     suspend fun statisticUpdate(stats: MangaStatistic) = mStatisticRepository.update(stats)
     suspend fun update(chapter: Chapter) = mChapterRepository.update(chapter)
 
-    suspend fun getFirstNotReadChapter(manga: Manga): Chapter? = withContext(Dispatchers.Default) {
+    suspend fun getFirstNotReadChapter(manga: Manga): Chapter? = withContext(default) {
         var list = mChapterRepository.getItems(mangaUnic = manga.unic)
 
         list = if (manga.isAlternativeSort) {
@@ -66,7 +69,7 @@ class ViewerViewModel @Inject constructor(
         list.firstOrNull { !it.isRead }
     }
 
-    suspend fun getFirstChapter(manga: Manga): Chapter = withContext(Dispatchers.Default) {
+    suspend fun getFirstChapter(manga: Manga): Chapter = withContext(default) {
         var list = mChapterRepository.getItems(mangaUnic = manga.unic)
 
         if (manga.isAlternativeSort) {

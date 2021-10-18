@@ -11,7 +11,9 @@ import com.san.kir.manger.data.datastore.ChaptersRepository
 import com.san.kir.manger.data.datastore.DownloadRepository
 import com.san.kir.manger.data.datastore.MainRepository
 import com.san.kir.manger.data.datastore.ViewerRepository
+import com.san.kir.manger.di.DefaultDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filterNotNull
@@ -31,6 +33,7 @@ class SettingsViewModel @Inject constructor(
     private val download: DownloadRepository,
     private val viewer: ViewerRepository,
     private val chapters: ChaptersRepository,
+    @DefaultDispatcher private val default: CoroutineDispatcher,
 ) : ViewModel() {
     var theme by mutableStateOf(true, main::setTheme)
     var showCategory by mutableStateOf(true, main::setShowCategory)
@@ -47,13 +50,13 @@ class SettingsViewModel @Inject constructor(
     var filter by mutableStateOf(true, chapters::setIndividualFilter)
 
     init {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(default) {
             val main = main.data.filterNotNull().first()
             val download = download.data.filterNotNull().first()
             val viewer = viewer.data.filterNotNull().first()
             val chapters = chapters.data.filterNotNull().first()
 
-            withContext(Dispatchers.Main) {
+            withContext(default) {
                 theme = main.theme
                 showCategory = main.isShowCatagery
 

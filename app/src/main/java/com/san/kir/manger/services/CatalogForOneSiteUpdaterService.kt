@@ -12,6 +12,7 @@ import com.san.kir.ankofork.intentFor
 import com.san.kir.ankofork.sdk28.notificationManager
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
+import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.repositories.MangaRepository
 import com.san.kir.manger.repositories.SiteCatalogRepository
 import com.san.kir.manger.repositories.SiteRepository
@@ -19,6 +20,7 @@ import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.extensions.log
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -76,6 +78,10 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
     @Inject
     lateinit var manager: SiteCatalogsManager
 
+    @DefaultDispatcher
+    @Inject
+    lateinit var default: CoroutineDispatcher
+
     @SuppressLint("InlinedApi")
     override fun onCreate() {
         super.onCreate()
@@ -103,7 +109,7 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
     }
 
 
-    override fun onHandleIntent(intent: Intent?) = runBlocking(Dispatchers.Default) {
+    override fun onHandleIntent(intent: Intent?) = runBlocking(default) {
         job = launch {
             try {
                 val siteRepository = SiteRepository(this@CatalogForOneSiteUpdaterService)

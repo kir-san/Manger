@@ -5,9 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.components.parsing.SiteCatalog
+import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.room.CatalogDb
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +25,7 @@ import javax.inject.Inject
 class GlobalSearchViewModel @Inject constructor(
     private val application: Application,
     private val manager: SiteCatalogsManager,
+    @DefaultDispatcher private val default: CoroutineDispatcher,
 ) : ViewModel() {
     private val searchText = MutableStateFlow("")
     private val backupCatalog = MutableStateFlow(emptyList<SiteCatalogElement>())
@@ -37,7 +40,7 @@ class GlobalSearchViewModel @Inject constructor(
         get() = _state
 
     init {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(default) {
             combine(
                 backupCatalog, searchText
             ) { backupCatalog, searchText ->
@@ -52,7 +55,7 @@ class GlobalSearchViewModel @Inject constructor(
                 _state.value = it
             }
         }
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(default) {
             kotlin.runCatching {
                 _action.value = true
                 backupCatalog.value = manager.catalog.flatMap { getItems(it) }
@@ -73,7 +76,7 @@ class GlobalSearchViewModel @Inject constructor(
     }
 
     private suspend fun getItems(siteCatalog: SiteCatalog): List<SiteCatalogElement> =
-        withContext(Dispatchers.Default) {
+        withContext(default) {
             val db = CatalogDb.getDatabase(application, siteCatalog.catalogName, manager)
             val items = db.dao.getItems()
             db.close()

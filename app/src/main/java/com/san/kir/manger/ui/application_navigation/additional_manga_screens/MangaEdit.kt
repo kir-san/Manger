@@ -45,6 +45,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.san.kir.manger.R
+import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.room.dao.CategoryDao
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.entities.Manga
@@ -54,7 +55,7 @@ import com.san.kir.manger.ui.utils.ImageWithStatus
 import com.san.kir.manger.ui.utils.LabelText
 import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -292,6 +293,7 @@ class MangaEditViewModel @Inject constructor(
     ctx: Application,
     categoryDao: CategoryDao,
     private val mangaDao: MangaDao,
+    @DefaultDispatcher private val default: CoroutineDispatcher
 ) : ViewModel() {
     val categoryNames = categoryDao.loadItems().map { l -> l.map { it.name } }
     val statuses by lazy {
@@ -302,5 +304,5 @@ class MangaEditViewModel @Inject constructor(
         )
     }
 
-    fun update(manga: Manga) = viewModelScope.launch(Dispatchers.Default) { mangaDao.update(manga) }
+    fun update(manga: Manga) = viewModelScope.launch(default) { mangaDao.update(manga) }
 }

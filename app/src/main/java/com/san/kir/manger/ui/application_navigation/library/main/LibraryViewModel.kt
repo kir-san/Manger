@@ -6,6 +6,7 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
 import com.san.kir.manger.data.datastore.MainRepository
+import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.room.dao.CategoryDao
 import com.san.kir.manger.room.dao.ChapterDao
 import com.san.kir.manger.room.dao.MangaDao
@@ -15,6 +16,7 @@ import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.SortLibraryUtil
 import com.san.kir.manger.workmanager.MangaDeleteWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,7 +34,8 @@ class LibraryViewModel @Inject constructor(
     categoryDao: CategoryDao,
     private val chapterDao: ChapterDao,
     private val mangaDao: MangaDao,
-    dataStore: MainRepository
+    dataStore: MainRepository,
+    @DefaultDispatcher private val default: CoroutineDispatcher
 ) : ViewModel() {
     private val _isAction = MutableStateFlow(false)
     val isAction = _isAction.asStateFlow()
@@ -46,18 +49,18 @@ class LibraryViewModel @Inject constructor(
     private val _selectedManga = MutableStateFlow(SelectedManga())
     val selectedManga = _selectedManga.asStateFlow()
 
-    val showCategory = dataStore.data.map { it.isShowCatagery }.flowOn(Dispatchers.Default)
+    val showCategory = dataStore.data.map { it.isShowCatagery }.flowOn(default)
 
     val categories = categoryDao.loadItems()
         .map { l -> l.map { it.name } }
-        .flowOn(Dispatchers.Default)
+        .flowOn(default)
 
     val categoryNames = categoryDao.loadItems()
         .map { data ->
             data.filter { it.isVisible }
                 .map { it.name }
         }
-        .flowOn(Dispatchers.Default)
+        .flowOn(default)
 
 
     val preparedCategories = categoryDao
@@ -83,10 +86,10 @@ class LibraryViewModel @Inject constructor(
                         list
                 }
         }
-        .flowOn(Dispatchers.Default)
+        .flowOn(default)
 
     init {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(default) {
             WorkManager
                 .getInstance(context)
                 .getWorkInfosByTagLiveData(MangaDeleteWorker.tag)
@@ -103,13 +106,13 @@ class LibraryViewModel @Inject constructor(
         chapterDao.getItemsWhereManga(mangaUnic).filter { !it.isRead }.size
 
     fun update(manga: Manga) {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(default) {
             mangaDao.update(manga)
         }
     }
 
     fun changeCurrentCategory(newCategoryWithMangas: CategoryWithMangas) {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(default) {
             _currentCategoryWithManga.update { newCategoryWithMangas }
         }
     }

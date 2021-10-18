@@ -6,13 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.entities.Manga
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.EntryPointAccessors
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
@@ -22,13 +23,14 @@ import kotlinx.coroutines.launch
 class OnlyMangaViewModel @AssistedInject constructor(
     @Assisted private val mangaUnic: String,
     private val mangaDao: MangaDao,
+    @DefaultDispatcher private val default: CoroutineDispatcher,
 ) : ViewModel() {
     private val _manga = MutableStateFlow(Manga())
     val manga = _manga.asStateFlow()
 
     init {
         // инициация манги
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(default) {
             mangaDao.loadItem(mangaUnic).filterNotNull().collect { manga ->
                 _manga.value = manga
             }

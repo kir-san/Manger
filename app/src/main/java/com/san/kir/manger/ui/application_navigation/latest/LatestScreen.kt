@@ -51,6 +51,7 @@ import androidx.work.WorkManager
 import com.san.kir.ankofork.dialogs.longToast
 import com.san.kir.ankofork.dialogs.toast
 import com.san.kir.manger.R
+import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.room.dao.ChapterDao
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.action
@@ -67,6 +68,7 @@ import com.san.kir.manger.workmanager.DownloadedLatestClearWorker
 import com.san.kir.manger.workmanager.LatestClearWorker
 import com.san.kir.manger.workmanager.ReadLatestClearWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -330,6 +332,7 @@ private fun LatestItemContent(
 class LatestViewModel @Inject constructor(
     private val context: Application,
     private val chapterDao: ChapterDao,
+    @DefaultDispatcher private val default: CoroutineDispatcher,
 ) : ViewModel() {
     private val _allITems = MutableStateFlow(listOf<Chapter>())
     val allItems = _allITems.asStateFlow()
@@ -339,7 +342,7 @@ class LatestViewModel @Inject constructor(
     val hasNewChapters = _hasNewChapters.asStateFlow()
 
     init {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(default) {
             chapterDao.loadAllItems()
                 .onEach { list -> _allITems.update { list } }
                 .map { list ->
@@ -354,7 +357,7 @@ class LatestViewModel @Inject constructor(
         }
 
         // обновление размера списка выделеных элементов
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(default) {
             allItems.map { it.count() }.collect { count ->
                 _selectedItems.update { old ->
                     if (old.count() != count) {
@@ -367,7 +370,7 @@ class LatestViewModel @Inject constructor(
         }
 
         // активация и дезактивация режима выделения
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(default) {
             combine(
                 _selectedItems.map { array -> array.count { it } },
                 _selectionMode
@@ -381,7 +384,7 @@ class LatestViewModel @Inject constructor(
         }
     }
 
-    fun downloadNewChapters() = viewModelScope.launch(Dispatchers.Default) {
+    fun downloadNewChapters() = viewModelScope.launch(default) {
         _newChapters.value.onEach { chapter ->
             DownloadService.start(context, chapter)
         }
@@ -391,13 +394,13 @@ class LatestViewModel @Inject constructor(
     val selectionMode = _selectionMode.asStateFlow()
     private val _selectedItems = MutableStateFlow(listOf<Boolean>())
     val selectedItems = _selectedItems.asStateFlow()
-    fun onSelectItem(index: Int) = viewModelScope.launch(Dispatchers.Default) {
+    fun onSelectItem(index: Int) = viewModelScope.launch(default) {
         _selectedItems.update { old ->
             old.toMutableList().apply { set(index, get(index).not()) }
         }
     }
 
-    fun deleteSelectedItems() = viewModelScope.launch(Dispatchers.Default) {
+    fun deleteSelectedItems() = viewModelScope.launch(default) {
         _selectedItems.value.zip(allItems.value).forEachIndexed { i, (b, chapter) ->
             if (b) {
                 chapter.isInUpdate = false

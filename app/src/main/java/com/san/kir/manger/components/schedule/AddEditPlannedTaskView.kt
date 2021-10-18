@@ -112,8 +112,7 @@ class AddEditPlannedTaskView(private val act: AddEditPlannedTaskActivity) : Acti
                 )
                 insets
             }
-
-            themedAppBarLayout(R.style.ThemeOverlay_AppCompat_DayNight_ActionBar) {
+            themedAppBarLayout(/*R.style.ThemeOverlay_AppCompat_DayNight_ActionBar*/) {
 
                 doOnApplyWindowInstets { v, insets, _ ->
                     v.updateLayoutParams<ViewGroup.MarginLayoutParams> {

@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.san.kir.ankofork.dialogs.toast
 import com.san.kir.manger.R
+import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.room.dao.ChapterDao
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.entities.Manga
@@ -20,6 +21,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.EntryPointAccessors
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,13 +36,14 @@ class ChaptersActionViewModel @AssistedInject constructor(
     private val mangaDao: MangaDao,
     private val chapterDao: ChapterDao,
     private val context: Application,
+    @DefaultDispatcher private val default: CoroutineDispatcher,
 ) : ViewModel() {
 
     private val _manga = MutableStateFlow(Manga())
     val manga = _manga.asStateFlow()
 
     init {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(default) {
             mangaDao.loadItem(mangaUnic)
                 .filterNotNull()
                 .collect { manga ->
@@ -49,7 +52,7 @@ class ChaptersActionViewModel @AssistedInject constructor(
         }
     }
 
-    fun downloadNextNotReadChapter() = viewModelScope.launch(Dispatchers.Default) {
+    fun downloadNextNotReadChapter() = viewModelScope.launch(default) {
         val chapter = chapterDao
             .getItemsNotReadAsc(mangaUnic)
             .first { it.action == ChapterStatus.DOWNLOADABLE }
@@ -57,7 +60,7 @@ class ChaptersActionViewModel @AssistedInject constructor(
         DownloadService.start(context, chapter)
     }
 
-    fun downloadAllNotReadChapters() = viewModelScope.launch(Dispatchers.Default) {
+    fun downloadAllNotReadChapters() = viewModelScope.launch(default) {
         val count = chapterDao
             .getItemsNotReadAsc(mangaUnic)
             .filter { it.action == ChapterStatus.DOWNLOADABLE }
@@ -66,7 +69,7 @@ class ChaptersActionViewModel @AssistedInject constructor(
             }
             .size
 
-        withContext(Dispatchers.Main) {
+        withContext(default) {
             if (count == 0)
                 context.toast(R.string.list_chapters_selection_load_error)
             else
@@ -74,7 +77,7 @@ class ChaptersActionViewModel @AssistedInject constructor(
         }
     }
 
-    fun downloadAllChapters() = viewModelScope.launch(Dispatchers.Default) {
+    fun downloadAllChapters() = viewModelScope.launch(default) {
         val count = chapterDao
             .getItemsNotReadAsc(mangaUnic)
             .filter { it.action == ChapterStatus.DOWNLOADABLE }
@@ -82,7 +85,7 @@ class ChaptersActionViewModel @AssistedInject constructor(
                 DownloadService.start(context, chapter)
             }
             .size
-        withContext(Dispatchers.Main) {
+        withContext(default) {
             if (count == 0)
                 context.toast(R.string.list_chapters_selection_load_error)
             else
@@ -90,7 +93,7 @@ class ChaptersActionViewModel @AssistedInject constructor(
         }
     }
 
-    fun updateManga(action: (Manga) -> Manga) = viewModelScope.launch(Dispatchers.Default) {
+    fun updateManga(action: (Manga) -> Manga) = viewModelScope.launch(default) {
         mangaDao.update(_manga.updateAndGet(action))
     }
 

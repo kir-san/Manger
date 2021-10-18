@@ -5,12 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.san.kir.ankofork.dialogs.longToast
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
+import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.room.entities.authorsList
 import com.san.kir.manger.room.entities.genresList
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -19,16 +20,17 @@ import javax.inject.Inject
 class SuppotMangaViewModel @Inject constructor(
     private val application: Application,
     private val mangaDao: MangaDao,
-    private val manager: SiteCatalogsManager
+    private val manager: SiteCatalogsManager,
+    @DefaultDispatcher private val default: CoroutineDispatcher,
 ) : ViewModel() {
 
     suspend fun isContainManga(item: SiteCatalogElement): Boolean =
-        withContext(Dispatchers.Default) {
+        withContext(default) {
             mangaDao.getItems().any { it.shortLink == item.shotLink }
         }
 
     fun onlineUpdate(item: SiteCatalogElement) {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(default) {
             val oldManga = mangaDao.getItems().first { it.shortLink == item.shotLink }
             val updItem = manager.getFullElement(item)
             oldManga.authorsList = updItem.authors
@@ -39,7 +41,7 @@ class SuppotMangaViewModel @Inject constructor(
             oldManga.shortLink = updItem.shotLink
             oldManga.status = updItem.statusEdition
             mangaDao.update(oldManga)
-            withContext(Dispatchers.Main) {
+            withContext(default) {
                 application.longToast("Информация о манге ${item.name} обновлена")
             }
         }

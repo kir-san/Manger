@@ -29,13 +29,13 @@ class UpdateCategoryInMangaWorker(appContext: Context, workerParameters: WorkerP
 
 
         if (categoryName != null && oldCategory != null) {
-            val category = withContext(Dispatchers.Default) {
+            val category = withContext(default) {
                 mCategoryRepository.loadItem(categoryName).first()
             }
             log("categoryName = ${category.name}")
             oldCategory.logVar("oldCategory")
             kotlin.runCatching {
-                withContext(Dispatchers.Default) {
+                withContext(default) {
                     if (categoryName != oldCategory) {
                         mMangaRepository.update(
                             *mMangaRepository

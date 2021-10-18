@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
+import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.room.CatalogDb
 import com.san.kir.manger.room.dao.SiteDao
 import com.san.kir.manger.room.entities.SiteCatalogElement
@@ -21,7 +22,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.EntryPointAccessors
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -36,6 +37,7 @@ class CatalogViewModel @AssistedInject constructor(
     private val application: Application,
     private val siteDao: SiteDao,
     private val manager: SiteCatalogsManager,
+    @DefaultDispatcher private val default: CoroutineDispatcher,
 ) : ViewModel() {
     private var db: CatalogDb? = null
 
@@ -56,7 +58,7 @@ class CatalogViewModel @AssistedInject constructor(
         get() = _state
 
     init {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(default) {
             setAction(true)
 
             if (db == null) {
@@ -96,7 +98,7 @@ class CatalogViewModel @AssistedInject constructor(
             }
         }
 
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(default) {
             combine(
                 backupCatalog, catalogFilter, searchText, sort, filters
             ) { backupCatalog, catalogFilter, searchText, sort, filters ->
@@ -169,7 +171,7 @@ class CatalogViewModel @AssistedInject constructor(
     }
 
     fun setAction(value: Boolean, service: Boolean = false) =
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(default) {
             if (value) {
                 if (service && !CatalogForOneSiteUpdaterService.isContain(siteCatalog))
                     application

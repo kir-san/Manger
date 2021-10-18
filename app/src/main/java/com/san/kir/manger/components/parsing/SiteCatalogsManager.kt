@@ -9,13 +9,14 @@ import com.san.kir.manger.components.parsing.sites.Readmanga
 import com.san.kir.manger.components.parsing.sites.Selfmanga
 import com.san.kir.manger.components.parsing.sites.Unicomics
 import com.san.kir.manger.components.parsing.sites.Yaoichan
+import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.room.dao.SiteDao
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.room.entities.toDownloadItem
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -32,6 +33,7 @@ class Parsing @Inject constructor() {
 class SiteCatalogsManager @Inject constructor(
     private val siteDao: SiteDao,
     parsing: Parsing,
+    @DefaultDispatcher private val default: CoroutineDispatcher,
 ) {
 
     val catalog by lazy {
@@ -62,7 +64,7 @@ class SiteCatalogsManager @Inject constructor(
 
     // Загрузка полной информации для элемента в каталоге
     suspend fun getFullElement(simpleElement: SiteCatalogElement) =
-        withContext(Dispatchers.Default) {
+        withContext(default) {
             catalog.first { it.allCatalogName.any { s -> s == simpleElement.catalogName } }
                 .getFullElement(simpleElement)
         }
@@ -77,7 +79,7 @@ class SiteCatalogsManager @Inject constructor(
     suspend fun pages(chapter: Chapter) = pages(chapter.toDownloadItem())
 
     suspend fun getElementOnline(url: String): SiteCatalogElement? =
-        withContext(Dispatchers.Default) {
+        withContext(default) {
             var lUrl = url
 
             if (!lUrl.contains("http")) {

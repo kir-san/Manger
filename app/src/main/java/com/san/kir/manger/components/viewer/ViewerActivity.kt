@@ -19,6 +19,9 @@ import android.view.View
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import com.san.kir.ankofork.dialogs.longToast
 import com.san.kir.ankofork.doFromSdk
@@ -28,6 +31,7 @@ import com.san.kir.ankofork.setContentView
 import com.san.kir.manger.R
 import com.san.kir.manger.Viewer
 import com.san.kir.manger.data.datastore.ViewerRepository
+import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.utils.extensions.BaseActivity
@@ -35,7 +39,7 @@ import com.san.kir.manger.utils.extensions.add
 import com.san.kir.manger.utils.extensions.log
 import com.san.kir.manger.utils.extensions.showAlways
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -52,6 +56,10 @@ class ViewerActivity : BaseActivity() {
     }
 
     val mViewModel: ViewerViewModel by viewModels()
+
+    @DefaultDispatcher
+    @Inject
+    lateinit var default: CoroutineDispatcher
 
     @Inject
     lateinit var viewerStore: ViewerRepository
@@ -107,7 +115,7 @@ class ViewerActivity : BaseActivity() {
         * - !continue, chapter - продолжить чтение с текущей главы
         * - все остальные варианты закрывают просмоторщик
         * */
-        lifecycleScope.launch(Dispatchers.Main) {
+        lifecycleScope.launch(default) {
             intent.apply {
                 val isAlternative = getBooleanExtra("is", false)
 
@@ -175,7 +183,7 @@ class ViewerActivity : BaseActivity() {
                             }
                         }
                     }
-                withContext(Dispatchers.Main) {
+                withContext(default) {
                     title = chapter.name // Смена заголовка
                 }
             }
@@ -202,20 +210,21 @@ class ViewerActivity : BaseActivity() {
     }
 
     private fun hideSystemUI() {
-        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE
-                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_FULLSCREEN)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowInsetsControllerCompat(window, window.decorView).let { controller ->
+            controller.hide(WindowInsetsCompat.Type.systemBars())
+            controller.systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
     }
 
     private fun showSystemUI() {
-        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+        WindowCompat.setDecorFitsSystemWindows(window, true)
+        WindowInsetsControllerCompat(window, window.decorView)
+            .show(WindowInsetsCompat.Type.systemBars())
     }
 
+    @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
     override fun onResume() {
         super.onResume()
 
@@ -257,8 +266,8 @@ class ViewerActivity : BaseActivity() {
 
         val point = Point() // Хранилище для данных экрана
         windowManager.defaultDisplay.getSize(point) // Сохранение данных в хранилище
-        LEFT_PART_SCREEN = point.x / 3 // Установка данных
-        RIGHT_PART_SCREEN = point.x * 2 / 3 // Установка данных
+        LEFT_PART_SCREEN = point.x * 2 / 5 // Установка данных
+        RIGHT_PART_SCREEN = point.x * 3 / 5 // Установка данных
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {

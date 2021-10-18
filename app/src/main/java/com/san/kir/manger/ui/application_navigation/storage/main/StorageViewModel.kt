@@ -7,6 +7,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.san.kir.ankofork.dialogs.longToast
+import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.room.dao.ChapterDao
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.dao.StorageDao
@@ -15,6 +16,7 @@ import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.Storage
 import com.san.kir.manger.utils.extensions.getFullPath
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,6 +31,7 @@ class StorageViewModel @Inject constructor(
     private val storageDao: StorageDao,
     private val mangaDao: MangaDao,
     private val chapterDao: ChapterDao,
+    @DefaultDispatcher private val default: CoroutineDispatcher,
 ) : ViewModel() {
     private var mangaList = listOf<Manga>()
 
@@ -47,7 +50,7 @@ class StorageViewModel @Inject constructor(
     }.flow.cachedIn(viewModelScope)
 
     init {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(default) {
             mangaList = mangaDao.getItems()
             storageDao.flowItems()
                 .catch { t -> throw t }
@@ -62,7 +65,7 @@ class StorageViewModel @Inject constructor(
                 }
         }
 
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(default) {
             storageDao.searchNewItems(mangaDao, chapterDao)
         }
     }
@@ -72,7 +75,7 @@ class StorageViewModel @Inject constructor(
     }
 
     fun delete(item: Storage) {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(default) {
             kotlin.runCatching {
                 storageDao.delete(item)
                 getFullPath(item.path).deleteRecursively()

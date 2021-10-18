@@ -48,7 +48,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun ChaptersScreen(nav: NavHostController, viewModel: ChaptersViewModel) {
 
-    val selectionMode by viewModel.selectionMode.collectAsState()
     val manga by viewModel.manga.collectAsState()
 
     var action by rememberSaveable { mutableStateOf(false) }
@@ -56,7 +55,7 @@ fun ChaptersScreen(nav: NavHostController, viewModel: ChaptersViewModel) {
     Scaffold(
         modifier = Modifier,
         topBar = {
-            if (selectionMode)
+            if (viewModel.selectionMode)
                 SelectionModeChaptersTopBar(viewModel) { state -> action = state }
             else
                 ChaptersTopBar(nav, viewModel) { state -> action = state }

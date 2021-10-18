@@ -2,6 +2,10 @@ package com.san.kir.manger.ui.application_navigation.library.chapters
 
 import android.app.Application
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -22,6 +26,7 @@ import com.san.kir.manger.utils.ChapterComparator
 import com.san.kir.manger.utils.enums.ChapterFilter
 import com.san.kir.manger.utils.enums.ChapterStatus
 import com.san.kir.manger.utils.extensions.delChapters
+import com.san.kir.manger.utils.extensions.log
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -33,9 +38,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -54,8 +62,7 @@ class ChaptersViewModel @AssistedInject constructor(
 
     val isTitle = chapterStore.data.map { it.isTitle }
 
-    private val _selectionMode = MutableStateFlow(false)
-    val selectionMode = _selectionMode.asStateFlow()
+    var selectionMode by mutableStateOf(false)
 
     // фильтры для списка глав
     private val _filter = MutableStateFlow(ChapterFilter.ALL_READ_ASC)
@@ -67,53 +74,49 @@ class ChaptersViewModel @AssistedInject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val chapters = _manga.flatMapLatest { manga -> chapterDao.loadItems(manga.unic) }
 
-    private val _prepareChapters = MutableStateFlow(listOf<Chapter>())
-    val prepareChapters = _prepareChapters.asStateFlow()
+    var prepareChapters by mutableStateOf<List<Chapter>>(listOf())
+        private set
 
     // for selection mode
-    private val _selectedItems = MutableStateFlow(listOf<Boolean>())
-    val selectedItems = _selectedItems.asStateFlow()
-    fun onSelectItem(index: Int) = viewModelScope.launch(Dispatchers.Default) {
-        _selectedItems.update { old ->
-            old.toMutableList().apply { set(index, get(index).not()) }
-        }
+    var selectedItems by mutableStateOf<List<Boolean>>(listOf())
+        private set
+
+    fun onSelectItem(index: Int) = viewModelScope.launch {
+        selectedItems = selectedItems.toMutableList().apply { set(index, get(index).not()) }
     }
 
-    fun selectAllItems() = viewModelScope.launch(Dispatchers.Default) {
-        _selectedItems.update { old -> List(old.count()) { true } }
+    fun selectAllItems() = viewModelScope.launch {
+        selectedItems = List(selectedItems.count()) { true }
     }
 
-    fun removeSelection() = viewModelScope.launch(Dispatchers.Default) {
-        _selectedItems.update { old -> List(old.count()) { false } }
+    fun removeSelection() = viewModelScope.launch {
+        selectedItems = List(selectedItems.count()) { false }
     }
 
-    fun selectBelowItems() = viewModelScope.launch(Dispatchers.Default) {
-        val countSelectedItems = selectedItems.value.count { it }
+    fun selectBelowItems() = viewModelScope.launch {
+        val countSelectedItems = selectedItems.count { it }
         if (countSelectedItems == 1) {
-            val start = selectedItems.value.indexOf(true)
-            _selectedItems.update { old ->
-                List(start) { false } + List(old.count() - start) { true }
-            }
+            val start = selectedItems.indexOf(true)
+            selectedItems = List(start) { false } + List(selectedItems.count() - start) { true }
         }
     }
 
-    fun selectAboveItems() = viewModelScope.launch(Dispatchers.Default) {
-        val countSelectedItems = selectedItems.value.count { it }
+    fun selectAboveItems() = viewModelScope.launch {
+        val countSelectedItems = selectedItems.count { it }
         if (countSelectedItems == 1) {
-            val start = selectedItems.value.indexOf(true)
-            _selectedItems.update { old ->
-                List(start + 1) { true } + List(old.count() - start - 1) { false }
-            }
+            val start = selectedItems.indexOf(true)
+            selectedItems =
+                List(start + 1) { true } + List(selectedItems.count() - start - 1) { false }
         }
     }
 
-    fun deleteSelectedItems() = viewModelScope.launch(Dispatchers.Default) {
+    fun deleteSelectedItems() = viewModelScope.launch {
         var count = 0
-        _selectedItems.value.zip(_prepareChapters.value).forEachIndexed { i, (b, chapter) ->
+        selectedItems.zip(prepareChapters).forEachIndexed { i, (b, chapter) ->
             if (b && chapter.action == ChapterStatus.DELETE) {
                 delChapters(chapter)
                 count++
-                _selectedItems.update { old -> old.toMutableList().apply { set(i, false) } }
+                selectedItems = selectedItems.toMutableList().apply { set(i, false) }
             }
         }
         withContext(Dispatchers.Main) {
@@ -126,24 +129,24 @@ class ChaptersViewModel @AssistedInject constructor(
         removeSelection()
     }
 
-    fun downloadSelectedItems() = viewModelScope.launch(Dispatchers.Default) {
-        _selectedItems.value.zip(_prepareChapters.value).forEach { (b, chapter) ->
+    fun downloadSelectedItems() = viewModelScope.launch {
+        selectedItems.zip(prepareChapters).forEach { (b, chapter) ->
             if (b && chapter.action == ChapterStatus.DOWNLOADABLE)
                 DownloadService.start(context, chapter)
         }
         removeSelection()
     }
 
-    fun fullDeleteSelectedItems() = viewModelScope.launch(Dispatchers.Default) {
-        _selectedItems.value
-            .zip(_prepareChapters.value)
+    fun fullDeleteSelectedItems() = viewModelScope.launch {
+        selectedItems
+            .zip(prepareChapters)
             .filter { (b, _) -> b }
             .map { (_, ch) -> ch }
             .forEach { chapterDao.delete(it) }
     }
 
-    fun setReadStatus(state: Boolean) = viewModelScope.launch(Dispatchers.Default) {
-        _selectedItems.value.zip(_prepareChapters.value).forEachIndexed { i, (b, chapter) ->
+    fun setReadStatus(state: Boolean) = viewModelScope.launch {
+        selectedItems.zip(prepareChapters).forEachIndexed { i, (b, chapter) ->
             if (b) {
                 chapter.isRead = state
                 chapterDao.update(chapter)
@@ -152,8 +155,8 @@ class ChaptersViewModel @AssistedInject constructor(
         removeSelection()
     }
 
-    fun updatePagesForSelectedItems() = viewModelScope.launch(Dispatchers.Default) {
-        _selectedItems.value.zip(_prepareChapters.value).forEachIndexed { i, (b, chapter) ->
+    fun updatePagesForSelectedItems() = viewModelScope.launch {
+        selectedItems.zip(prepareChapters).forEachIndexed { i, (b, chapter) ->
             if (b) {
                 chapter.pages = manager.pages(chapter)
                 chapterDao.update(chapter)
@@ -165,6 +168,7 @@ class ChaptersViewModel @AssistedInject constructor(
     init {
         // инициация манги
         viewModelScope.launch(Dispatchers.Default) {
+            log("init manga $mangaUnic")
             combine(
                 _oneTimeFlag,
                 mangaDao.loadItem(mangaUnic).filterNotNull(),
@@ -206,31 +210,16 @@ class ChaptersViewModel @AssistedInject constructor(
                 }
             }.collect()
         }
-        // обновление размера списка выделеных элементов
-        viewModelScope.launch(Dispatchers.Default) {
-            chapters.map { it.count() }.collect { count ->
-                _selectedItems.update { old ->
-                    if (old.count() != count) {
-                        List(count) { false }
-                    } else {
-                        old
-                    }
-                }
-            }
-        }
         // активация и дезактивация режима выделения
-        viewModelScope.launch(Dispatchers.Default) {
-            combine(
-                _selectedItems.map { array -> array.count { it } },
-                _selectionMode
-            ) { selectedCount, mode ->
-                if (selectedCount > 0 && mode.not()) {
-                    _selectionMode.update { true }
-                } else if (selectedCount <= 0 && mode) {
-                    _selectionMode.update { false }
+        snapshotFlow { selectionMode to selectedItems }
+            .map { (mode, list) -> mode to list.count { it } }
+            .onEach { (mode, count) ->
+                if (count > 0 && mode.not()) {
+                    selectionMode = true
+                } else if (count <= 0 && mode) {
+                    selectionMode = false
                 }
-            }.collect()
-        }
+            }.launchIn(viewModelScope)
 
         // подготовка списка глав с использованием фильтров и сортировки
         viewModelScope.launch(Dispatchers.Default) {
@@ -249,8 +238,22 @@ class ChaptersViewModel @AssistedInject constructor(
                     ChapterFilter.IS_READ_DESC -> list.filter { it.isRead }.reversed()
                 }
             }
+                .distinctUntilChanged()
                 .catch { t -> throw t }
-                .collect { _prepareChapters.value = it }
+                .onEach {
+                    prepareChapters = it
+                }
+                // обновление размера списка выделеных элементов
+                .map { it.count() }
+                .onEach { count ->
+                    if (selectedItems.count() != count) {
+                        withContext(Dispatchers.Main) {
+                            log("set selected items")
+                            selectedItems = List(count) { false }
+                        }
+                    }
+                }
+                .collect()
         }
     }
 

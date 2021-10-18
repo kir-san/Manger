@@ -16,7 +16,6 @@ import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.SelectAll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,13 +41,12 @@ fun SelectionModeChaptersTopBar(
     context: Context = LocalContext.current,
     changeAction: (Boolean) -> Unit,
 ) {
-    val selectedItems by viewModel.selectedItems.collectAsState()
 
     TopAppBar(
         title = {
             Text(
                 context.quantitySimple(
-                    R.plurals.list_chapters_action_selected, selectedItems.count { it }
+                    R.plurals.list_chapters_action_selected, viewModel.selectedItems.count { it }
                 )
             )
         },
@@ -77,7 +75,6 @@ private fun Actions(
     viewModel: ChaptersViewModel,
     changeAction: (Boolean) -> Unit,
 ) {
-    val selectedItems by viewModel.selectedItems.collectAsState()
     var expanded by remember { mutableStateOf(false) }
     var deleteDialog by remember { mutableStateOf(false) }
     var fullDeleteDialog by remember { mutableStateOf(false) }
@@ -125,7 +122,7 @@ private fun Actions(
             }
         }
 
-        if (selectedItems.count { it } == 1) {
+        if (viewModel.selectedItems.count { it } == 1) {
             MenuText(id = R.string.action_select_above) {
                 expanded = false
                 viewModel.selectAboveItems()

@@ -52,7 +52,7 @@ fun StatisticsScreen(
             R.string.statistic_subtitle, TimeFormat(allTime).toString(context)
         ),
     ) {
-        items(items = allItems, key = { storage -> storage.id }) { item ->
+        items(items = allItems, key = { stat -> stat.id }) { item ->
             item?.let {
                 ItemView(item, viewModel) {
                     nav.navigate(StatisticNavTarget.Statistic, item.manga)

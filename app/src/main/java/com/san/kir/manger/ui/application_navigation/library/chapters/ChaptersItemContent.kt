@@ -23,12 +23,10 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -60,9 +58,12 @@ fun ChaptersItemContent(
     viewModel: ChaptersViewModel,
     context: Context = LocalContext.current,
 ) {
-    val selectionMode by viewModel.selectionMode.collectAsState()
+    val countPagesInMemory by produceState(initialValue = 0, chapter, manga) {
+        withContext(Dispatchers.Default) {
+            value = chapter.countPages
+        }
+    }
 
-    var countPagesInMemory by remember { mutableStateOf(0) }
     val deleteIndicator by remember(countPagesInMemory) { mutableStateOf(countPagesInMemory > 0) }
 
     val downloadIndicator by remember(chapter) {
@@ -97,7 +98,7 @@ fun ChaptersItemContent(
             .fillMaxWidth()
             .combinedClickable(
                 onClick = {
-                    if (selectionMode.not()) {
+                    if (viewModel.selectionMode.not()) {
                         if (downloadIndicator) {
                             context.toast(R.string.list_chapters_open_is_download)
                         } else {
@@ -214,12 +215,6 @@ fun ChaptersItemContent(
             ) {
                 Icon(Icons.Default.Close, contentDescription = "cancel download button")
             }
-        }
-    }
-
-    LaunchedEffect(chapter.status) {
-        withContext(Dispatchers.Default) {
-            countPagesInMemory = chapter.countPages
         }
     }
 }

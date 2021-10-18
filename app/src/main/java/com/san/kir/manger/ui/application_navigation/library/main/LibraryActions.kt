@@ -57,6 +57,7 @@ fun LibraryActions(
         }
 
         MenuText(id = R.string.library_menu_update) {
+            // TODO add app`s update search
             expanded = false
         }
     }

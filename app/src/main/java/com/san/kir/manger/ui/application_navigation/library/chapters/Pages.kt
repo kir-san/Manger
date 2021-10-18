@@ -61,7 +61,6 @@ import androidx.work.WorkManager
 import com.google.accompanist.insets.navigationBarsPadding
 import com.san.kir.ankofork.startActivity
 import com.san.kir.manger.R
-import com.san.kir.manger.components.parsing.SiteCatalogAlternative
 import com.san.kir.manger.components.viewer.ViewerActivity
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.utils.loadImage
@@ -232,22 +231,27 @@ fun ListPageContent(
     viewModel: ChaptersViewModel,
 ) {
     val manga by viewModel.manga.collectAsState()
-    val chapters by viewModel.prepareChapters.collectAsState()
-    val selectedItems by viewModel.selectedItems.collectAsState()
     val filter by viewModel.filter.collectAsState()
-    val selectionMode by viewModel.selectionMode.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(modifier = Modifier.weight(1f)) {
-            itemsIndexed(
-                items = chapters,
-                key = { _, ch -> ch.id },
-            ) { index, chapter ->
-                ChaptersItemContent(manga, chapter, selectedItems[index], index, viewModel)
+        if (viewModel.prepareChapters.isNotEmpty() && viewModel.selectedItems.isNotEmpty()) {
+            LazyColumn(modifier = Modifier.weight(1f)) {
+                itemsIndexed(
+                    items = viewModel.prepareChapters,
+                    key = { _, ch -> ch.id },
+                ) { index, chapter ->
+                    ChaptersItemContent(
+                        manga,
+                        chapter,
+                        viewModel.selectedItems[index],
+                        index,
+                        viewModel
+                    )
+                }
             }
         }
 
-        AnimatedVisibility(selectionMode.not()) {
+        AnimatedVisibility(viewModel.selectionMode.not()) {
             BottomAppBar(
                 modifier = Modifier
                     .fillMaxWidth()

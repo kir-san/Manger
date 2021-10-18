@@ -37,6 +37,7 @@ import com.san.kir.manger.utils.extensions.convertImagesToPng
 import com.san.kir.manger.utils.extensions.createDirs
 import com.san.kir.manger.utils.extensions.goneOrVisible
 import com.san.kir.manger.utils.extensions.isOkPng
+import com.san.kir.manger.utils.extensions.log
 import com.san.kir.manger.utils.extensions.onDoubleTapListener
 import com.san.kir.manger.utils.extensions.showAlways
 import com.san.kir.manger.utils.extensions.visibleOrGone
@@ -128,9 +129,12 @@ class ViewerPageFragment : Fragment() {
         }
     }
 
+    // TODO перед загрузкой страниц обновлять ссылку
     private suspend fun getImage(force: Boolean): ImageSource {
         return withContext(Dispatchers.Default) {
             val name = ChapterDownloader.nameFromUrl(page.link)
+
+            log(page.link)
 
             var file = File(page.fullPath, name)
 
@@ -155,7 +159,7 @@ class ViewerPageFragment : Fragment() {
 
             Fuel.download(ChapterDownloader.prepareUrl(page.link))
                 .fileDestination { _, _ ->
-                    (file.parentFile).createDirs()
+                    file.parentFile?.createDirs()
                     file.createNewFile()
                     file
                 }

@@ -86,11 +86,13 @@ fun DownloadScreen(
         subtitle = stringResource(
             R.string.download_activity_subtitle, viewModel.stoppedCount, viewModel.completedCount
         ),
+        additionalPadding = 0.dp
     ) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
+                .weight(1f),
+            contentPadding = PaddingValues(top = 10.dp, start = 10.dp, end = 10.dp)
         ) {
             items(count = viewModel.items.size, key = { i -> viewModel.items[i].id }) { index ->
                 ItemView(viewModel.items[index], viewModel)
@@ -134,13 +136,12 @@ fun DownloadScreen(
 
                     // Кнопка очистки списка загрузок
                     IconButton(onClick = { expandSetter(true) }) {
+                        ClearDownloadsMenu(expandValue, expandSetter)
                         Icon(Icons.Filled.Delete, contentDescription = null)
                     }
 
                     Spacer(modifier = Modifier.weight(1f))
                 }
-
-                ClearDownloadsMenu(expandValue, expandSetter)
             }
         }
     }
@@ -152,19 +153,19 @@ private fun ItemView(
     viewModel: DownloadViewModel,
     ctx: Context = LocalContext.current,
 ) {
-    val heightSize = 45.dp
+    val heightSize = 40.dp
     val errorSize = 15.dp
 
     val manga by viewModel.manga(item).collectAsState(Manga())
 
-    val offsetX = remember { Animatable(0f) }
+//    val offsetX = remember { Animatable(0f) }
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(80.dp)
-            .swipeToDelete(offsetX, 100f) {
-                viewModel.remove(item)
-            }
+            .height(60.dp)
+        /* .swipeToDelete(offsetX, 100f) {
+             viewModel.remove(item)
+         }*/
     ) {
         Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxHeight()) {
             Image(
@@ -261,11 +262,8 @@ fun ClearDownloadsMenu(
     changeExpand: (Boolean) -> Unit,
     viewModel: DownloadViewModel = hiltViewModel(),
 ) {
-    if (expanded)
-        Popup(
-            alignment = Alignment.CenterEnd,
-            onDismissRequest = { changeExpand(false) },
-        ) {
+    DropdownMenu(expanded = expanded, onDismissRequest = { changeExpand(false) }) {
+        Column {
             MenuText(R.string.download_activity_option_submenu_clean_completed) {
                 viewModel.clearCompletedDownloads()
                 changeExpand(false)
@@ -283,6 +281,7 @@ fun ClearDownloadsMenu(
                 changeExpand(false)
             }
         }
+    }
 }
 
 fun Modifier.swipeToDelete(

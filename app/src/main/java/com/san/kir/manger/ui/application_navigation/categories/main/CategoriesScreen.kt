@@ -68,14 +68,14 @@ fun CategoryItemView(index: Int, max: Int, category: Category, onClick: () -> Un
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = 12.dp),
+            .padding(vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
 
         // Название категории
         Text(
-            category.name, modifier = Modifier
-                .weight(1f, true)
+            category.name,
+            modifier = Modifier.weight(1f, true)
         )
 
         Row(

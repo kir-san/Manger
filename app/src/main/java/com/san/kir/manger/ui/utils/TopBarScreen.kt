@@ -44,7 +44,7 @@ fun TopBarScreenWithInsets(
     scaffoldState: ScaffoldState? = null,
     title: String = "",
     subtitle: String = "",
-    additionalPadding: Dp = 16.dp,
+    additionalPadding: Dp = 10.dp,
     actions: @Composable RowScope.() -> Unit = {},
     listContent: (LazyListScope.() -> Unit)? = null,
     drawerContent: @Composable (ColumnScope.() -> Unit)? = null,
@@ -136,6 +136,7 @@ fun TopBarScreenWithInsets(
                 contentPadding = rememberInsetsPaddingValues(
                     insets = LocalWindowInsets.current.systemBars,
                     applyTop = false,
+                    additionalTop = additionalPadding
                 ),
             ) {
                 listCon()
@@ -152,7 +153,7 @@ fun TopBarScreenContent(
     scaffoldState: ScaffoldState? = null,
     title: String = "",
     subtitle: String = "",
-    additionalPadding: Dp = 16.dp,
+    additionalPadding: Dp = 10.dp,
     actions: @Composable RowScope.() -> Unit = {},
     drawerContent: @Composable (ColumnScope.() -> Unit)? = null,
     content: @Composable (ColumnScope.() -> Unit)? = null,
@@ -174,7 +175,7 @@ fun TopBarScreenContent(
 fun TopBarScreenList(
     navHostController: NavHostController,
     modifier: Modifier = Modifier,
-    additionalPadding: Dp = 16.dp,
+    additionalPadding: Dp = 10.dp,
     title: String = "",
     subtitle: String = "",
     actions: @Composable RowScope.() -> Unit = {},

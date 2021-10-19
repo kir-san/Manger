@@ -50,7 +50,7 @@ object Versions {
     }
 
     // Make sure to update `buildSrc/build.gradle.kts` when updating this
-    const val GRADLE = "7.1.0-alpha10"
+    const val GRADLE = "7.1.0-beta01"
 
     val JAVA = JavaVersion.VERSION_1_8
 

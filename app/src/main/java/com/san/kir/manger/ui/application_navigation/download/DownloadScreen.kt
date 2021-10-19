@@ -11,6 +11,7 @@ import androidx.compose.foundation.gestures.horizontalDrag
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.BottomAppBar
+import androidx.compose.material.DropdownMenu
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
@@ -107,7 +109,7 @@ fun DownloadScreen(
                 }
             }
             NetworkState.OK -> {
-                val (expandValue, expandSetter) = mutableStateOf(false)
+                val (expandValue, expandSetter) = remember { mutableStateOf(false) }
 
                 // Массовое управление загрузками
                 BottomAppBar(
@@ -183,7 +185,7 @@ private fun ItemView(
                 }
         }
 
-        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
+        Column(modifier = Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.Center) {
             Text(stringResource(R.string.download_item_name, item.manga, item.name), maxLines = 1)
             Text(
                 when (item.status) {

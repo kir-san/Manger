@@ -91,7 +91,7 @@ class DownloadViewModel @Inject constructor(
                     NetworkState.NOT_WIFI
                 }
             } else {
-                if (cell)
+                if (cell || wifi)
                     NetworkState.OK
                 else
                     NetworkState.NOT_CELLURAR
@@ -152,27 +152,26 @@ enum class NetworkState {
 }
 
 class CellularNetwork @Inject constructor(context: Application) : TemplateNetwork(
-    context,
-    NetworkRequest.Builder()
-        .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+    context, NetworkCapabilities.TRANSPORT_CELLULAR
 )
 
 class WifiNetwork @Inject constructor(context: Application) : TemplateNetwork(
-    context,
-    NetworkRequest.Builder()
-        .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+    context, NetworkCapabilities.TRANSPORT_WIFI,
 )
 
 abstract class TemplateNetwork(
     private val context: Application,
-    request: NetworkRequest.Builder = NetworkRequest.Builder()
+    networkTransport: Int,
 ) : ConnectivityManager.NetworkCallback() {
 
-    private val _state = MutableStateFlow(true)
+    private val request =
+        NetworkRequest.Builder().addTransportType(networkTransport).build()
+
+    private val _state = MutableStateFlow(false)
     val state = _state.asStateFlow()
 
     init {
-        context.connectivityManager.registerNetworkCallback(request.build(), this)
+        context.connectivityManager.registerNetworkCallback(request, this)
     }
 
     fun stop() {

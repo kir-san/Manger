@@ -62,7 +62,7 @@ class DownloadViewModel @Inject constructor(
         private set
 
     init {
-        chapterDao.loadDownloadItems()
+        chapterDao.loadDownloadItemsWhereStatusNot()
             .distinctUntilChanged()
             .onEach { withContext(main) { items = it } }
             .onEach { list ->

@@ -64,9 +64,9 @@ interface ChapterDao : BaseDao<Chapter> {
 
     @Query(
         "SELECT * FROM ${ChaptersColumn.tableName} " +
-                "WHERE `${ChaptersColumn.status}` IS NOT `${DownloadState.UNKNOWN.name}` " +
+                "WHERE `${ChaptersColumn.status}` IS NOT :status " +
                 "ORDER BY ${ChaptersColumn.status},`${ChaptersColumn.order}`"
     )
-    fun loadDownloadItems(): Flow<List<Chapter>>
+    fun loadDownloadItemsWhereStatusNot(status: DownloadState = DownloadState.UNKNOWN): Flow<List<Chapter>>
 }
 

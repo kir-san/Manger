@@ -2,7 +2,6 @@ object Dependencies {
     object Kotlin {
         const val STDLIB =
             "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.Kotlin.STDLIB}"
-
         const val COROUTINES_CORE =
             "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.Kotlin.COROUTINES}"
         const val COROUTINES_ANDROID =
@@ -18,6 +17,8 @@ object Dependencies {
                 "androidx.room:room-compiler:${Versions.AndroidX.ROOM}"
             const val ROOM_KTX =
                 "androidx.room:room-ktx:${Versions.AndroidX.ROOM}"
+            const val ROOM_PAGING =
+                "androidx.room:room-paging:${Versions.AndroidX.ROOM}"
         }
 
         object Lifecycle {

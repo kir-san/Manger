@@ -7,7 +7,7 @@ plugins {
     id(Plugins.HILT_ANDROID)
     id(Plugins.KOTLIN_ANDROID)
     kotlin(Plugins.KAPT)
-//    id(Plugins.KSP)
+    id(Plugins.KSP) version Versions.Kotlin.KSP
     id(Plugins.PARCELIZE)
     id(Plugins.PROTOBUF) version "0.8.17"
 }
@@ -161,9 +161,10 @@ dependencies {
     }
 
     Dependencies.AndroidX.Room.apply {
-        kapt(ROOM_COMPILER)
+        ksp(ROOM_COMPILER)
         implementation(ROOM_RUNTIME)
         implementation(ROOM_KTX)
+        implementation(ROOM_PAGING)
     }
 
     Dependencies.AndroidX.Lifecycle.apply {

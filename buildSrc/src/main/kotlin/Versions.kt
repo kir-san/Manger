@@ -11,8 +11,9 @@ object Versions {
 
     object Kotlin {
         // Make sure to update `buildSrc/build.gradle.kts` when updating this
-        const val STDLIB = "1.5.30"
+        const val STDLIB = "1.5.31"
         const val COROUTINES = "1.5.1-native-mt"
+        const val KSP = "1.5.31-1.0.0"
     }
 
     object AndroidX {
@@ -24,16 +25,16 @@ object Versions {
         const val PREFERENCE = "1.1.1"
         const val VECTORDRAWABLE = "1.2.0-alpha02"
         const val CONSTRAINTLAYOUT = "2.0.0-beta4"
-        const val WORKMANAGER = "2.7.0-beta01"
+        const val WORKMANAGER = "2.7.0"
         const val HILT = "1.0.0"
         const val DATASTORE = "1.0.0"
-        const val ROOM = "2.3.0"
+        const val ROOM = "2.4.0-beta01"
     }
 
     object Compose {
-        const val COMPOSE = "1.0.3"
+        const val COMPOSE = "1.0.4"
         const val HILT_NAVIGATION_COMPOSE = "1.0.0-alpha03"
-        const val PAGING = "1.0.0-alpha12"
+        const val PAGING = "1.0.0-alpha14"
     }
 
     object Google {

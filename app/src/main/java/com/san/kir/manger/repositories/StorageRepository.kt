@@ -17,8 +17,6 @@ class StorageRepository(context: Context) {
     suspend fun delete(vararg storage: Storage) = mStorageDao.delete(*storage)
     suspend fun items() = mStorageDao.items()
 
-    fun flowItems() = mStorageDao.flowItems()
-
     suspend fun getSizeAndIsNew(storage: Storage): Storage {
         val file = getFullPath(storage.path)
         mMangaRepository.getFromPath(file).let { manga ->

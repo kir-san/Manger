@@ -28,19 +28,6 @@ inline fun Context.toast(message: CharSequence): Toast = Toast
             show()
         }
 
-/**
- * Display the simple Toast message with the [Toast.LENGTH_LONG] duration.
- *
- * @param message the message text resource.
- */
-inline fun AnkoContext<*>.longToast(message: Int) = ctx.longToast(message)
-
-/**
- * Display the simple Toast message with the [Toast.LENGTH_LONG] duration.
- *
- * @param message the message text resource.
- */
-inline fun Fragment.longToast(message: Int) = requireActivity().longToast(message)
 
 /**
  * Display the simple Toast message with the [Toast.LENGTH_LONG] duration.
@@ -52,20 +39,6 @@ inline fun Context.longToast(message: Int): Toast = Toast
         .apply {
             show()
         }
-
-/**
- * Display the simple Toast message with the [Toast.LENGTH_LONG] duration.
- *
- * @param message the message text.
- */
-inline fun AnkoContext<*>.longToast(message: CharSequence) = ctx.longToast(message)
-
-/**
- * Display the simple Toast message with the [Toast.LENGTH_LONG] duration.
- *
- * @param message the message text.
- */
-inline fun Fragment.longToast(message: CharSequence) = requireActivity().longToast(message)
 
 /**
  * Display the simple Toast message with the [Toast.LENGTH_LONG] duration.

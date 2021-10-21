@@ -19,8 +19,6 @@ class MangaRepository(context: Context) {
 
     suspend fun getItem(mangaUnic: String) = mMangaDao.getItem(mangaUnic)
 
-    suspend fun getItemOrNull(unic: String) = mMangaDao.getItemOrNull(unic)
-
     suspend fun insert(vararg manga: Manga) = mMangaDao.insert(*manga)
     suspend fun update(vararg manga: Manga) = mMangaDao.update(*manga)
     suspend fun delete(vararg manga: Manga) = mMangaDao.delete(*manga)
@@ -33,18 +31,8 @@ class MangaRepository(context: Context) {
         return if (category == CATEGORY_ALL)
             getItems()
         else
-            mMangaDao.loadMangaWhereCategoryNotAll(category)
+            mMangaDao.getMangaWhereCategoryNotAll(category)
     }
-
-    fun contain(item: SiteCatalogElement): Boolean {
-        return getItems().any { it.shortLink == item.shotLink }
-    }
-
-    fun loadItems(): LiveData<List<Manga>> {
-        return mMangaDao.loadItems()
-    }
-
-    fun flowItems() = mMangaDao.flowItems()
 
 }
 

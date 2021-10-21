@@ -26,6 +26,7 @@ import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewM
 import com.san.kir.manger.ui.application_navigation.categories.OnlyCategoryViewModel
 import com.san.kir.manger.ui.application_navigation.library.chapters.ChaptersActionViewModel
 import com.san.kir.manger.ui.application_navigation.library.chapters.ChaptersViewModel
+import com.san.kir.manger.ui.application_navigation.schedule.PlannedTaskViewModel
 import com.san.kir.manger.ui.application_navigation.statistic.OnlyStatisticViewModel
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn

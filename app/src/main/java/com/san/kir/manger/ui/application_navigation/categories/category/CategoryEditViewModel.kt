@@ -58,7 +58,6 @@ class CategoryEditViewModel @Inject constructor(
     }
 
     fun setCategory(categoryName: String) = viewModelScope.launch(default) {
-
         if (categoryName.isNotEmpty()) {
             _currentCategory.value = categoryDao.getItems().first { it.name == categoryName }
         } else {

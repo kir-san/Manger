@@ -11,10 +11,6 @@ class PlannedRepository(context: Context) {
     private val db = getDatabase(context)
     private val mPlannedDao = db.plannedDao
 
-    fun pagedItems(): DataSource.Factory<Int, PlannedTask> {
-        return mPlannedDao.pagedItems()
-    }
-
     fun getItems(): List<PlannedTask> {
         return mPlannedDao.getItems()
     }
@@ -31,10 +27,6 @@ class PlannedRepository(context: Context) {
 
     fun delete(vararg plannedTask: PlannedTask) =
         GlobalScope.launch { mPlannedDao.delete(*plannedTask) }
-
-//    fun loadPagedItems(): LiveData<PagedList<PlannedTask>> {
-//        return LivePagedListBuilder(pagedItems(), 30).build()
-//    }
 
     fun loadItems() = mPlannedDao.loadItems()
 }

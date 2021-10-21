@@ -18,21 +18,16 @@ package com.san.kir.ankofork
 
 import android.app.Activity
 import android.app.Service
-import android.app.UiModeManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
-import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
-import android.util.AttributeSet
 import android.view.ContextThemeWrapper
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewManager
 import java.io.Serializable
-import java.util.*
 
 object AnkoInternals {
     const val NO_GETTER: String = "Property does not have a getter"
@@ -65,16 +60,6 @@ object AnkoInternals {
         }
     }
 
-    fun applyRecursively(v: View, style: (View) -> Unit) {
-        style(v)
-        if (v is ViewGroup) {
-            val maxIndex = v.childCount - 1
-            for (i in 0 .. maxIndex) {
-                v.getChildAt(i)?.let { applyRecursively(it, style) }
-            }
-        }
-    }
-
     fun getContext(manager: ViewManager): Context = when (manager) {
         is ViewGroup -> manager.context
         is AnkoContext<*> -> manager.ctx
@@ -89,16 +74,6 @@ object AnkoInternals {
         val dsl = AnkoContextImpl(ctx, this, setContentView)
         dsl.init()
         return dsl
-    }
-
-    // Some constants not present in Android SDK v.15
-    private object InternalConfiguration {
-        const val SCREENLAYOUT_LAYOUTDIR_MASK = 0xC0
-        const val SCREENLAYOUT_LAYOUTDIR_SHIFT = 6
-        const val SCREENLAYOUT_LAYOUTDIR_RTL = 0x02 shl SCREENLAYOUT_LAYOUTDIR_SHIFT
-
-        const val UI_MODE_TYPE_APPLIANCE = 0x05
-        const val UI_MODE_TYPE_WATCH = 0x06
     }
 
     @JvmStatic
@@ -118,28 +93,11 @@ object AnkoInternals {
     }
 
     @JvmStatic
-    fun internalStartActivityForResult(
-            act: Activity,
-            activity: Class<out Activity>,
-            requestCode: Int,
-            params: Array<out Pair<String, Any?>>
-    ) {
-        act.startActivityForResult(createIntent(act, activity, params), requestCode)
-    }
-
-    @JvmStatic
     fun internalStartService(
             ctx: Context,
             service: Class<out Service>,
             params: Array<out Pair<String, Any?>>
     ): ComponentName? = ctx.startService(createIntent(ctx, service, params))
-
-    @JvmStatic
-    fun internalStopService(
-            ctx: Context,
-            service: Class<out Service>,
-            params: Array<out Pair<String, Any?>>
-    ): Boolean = ctx.stopService(createIntent(ctx, service, params))
 
     @JvmStatic
     private fun fillIntentArguments(intent: Intent, params: Array<out Pair<String, Any?>>) {
@@ -175,120 +133,6 @@ object AnkoInternals {
             }
             return@forEach
         }
-    }
-
-    @JvmStatic
-    fun <T : View> initiateView(ctx: Context, viewClass: Class<T>): T {
-        fun getConstructor1() = viewClass.getConstructor(Context::class.java)
-        fun getConstructor2() = viewClass.getConstructor(Context::class.java, AttributeSet::class.java)
-
-        return try {
-            getConstructor1().newInstance(ctx)
-        } catch (e: NoSuchMethodException) {
-            try {
-                getConstructor2().newInstance(ctx, null)
-            } catch (e: NoSuchMethodException) {
-                throw AnkoException("Can't initiate View of class ${viewClass.name}: can't find proper constructor")
-            }
-        }
-
-    }
-
-    @JvmStatic
-    fun testConfiguration(
-        ctx: Context,
-        screenSize: ScreenSize?,
-        density: ClosedRange<Int>?,
-        language: String?,
-        orientation: Orientation?,
-        long: Boolean?,
-        fromSdk: Int?,
-        sdk: Int?,
-        uiMode: UiMode?,
-        nightMode: Boolean?,
-        rightToLeft: Boolean?,
-        smallestWidth: Int?
-    ): Boolean {
-        val config = ctx.resources?.configuration
-
-        if (screenSize != null) {
-            if (config == null) return false
-            when (config.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK) {
-                Configuration.SCREENLAYOUT_SIZE_UNDEFINED -> {}
-                Configuration.SCREENLAYOUT_SIZE_SMALL -> if (screenSize != ScreenSize.SMALL) return false
-                Configuration.SCREENLAYOUT_SIZE_NORMAL -> if (screenSize != ScreenSize.NORMAL) return false
-                Configuration.SCREENLAYOUT_SIZE_LARGE -> if (screenSize != ScreenSize.LARGE) return false
-                Configuration.SCREENLAYOUT_SIZE_XLARGE -> if (screenSize != ScreenSize.XLARGE) return false
-            }
-        }
-
-        if (density != null) {
-            val currentDensityDpi = ctx.resources?.displayMetrics?.densityDpi ?: return false
-            if (currentDensityDpi !in density || currentDensityDpi == density.endInclusive) return false
-        }
-
-        if (language != null) {
-            val locale = Locale.getDefault()
-            val currentLanguage = if (language.indexOf('_') >= 0) locale.toString() else locale.language
-            if (currentLanguage != language) return false
-        }
-
-        if (orientation != null) {
-            if (config == null) return false
-            when (config.orientation) {
-                Configuration.ORIENTATION_LANDSCAPE -> if (orientation != Orientation.LANDSCAPE) return false
-                Configuration.ORIENTATION_PORTRAIT -> if (orientation != Orientation.PORTRAIT) return false
-            }
-        }
-
-        if (long != null) {
-            if (config == null) return false
-            val currentLong = config.screenLayout and Configuration.SCREENLAYOUT_LONG_MASK
-            if (currentLong == Configuration.SCREENLAYOUT_LONG_YES && !long) return false
-            if (currentLong == Configuration.SCREENLAYOUT_LONG_NO && long) return false
-        }
-
-        if (fromSdk != null && Build.VERSION.SDK_INT < fromSdk) return false
-
-        if (sdk != null && Build.VERSION.SDK_INT != sdk) return false
-
-        if (uiMode != null) {
-            if (config == null) return false
-            when (config.uiMode and Configuration.UI_MODE_TYPE_MASK) {
-                Configuration.UI_MODE_TYPE_NORMAL -> if (uiMode != UiMode.NORMAL) return false
-                Configuration.UI_MODE_TYPE_DESK -> if (uiMode != UiMode.DESK) return false
-                Configuration.UI_MODE_TYPE_CAR -> if (uiMode != UiMode.CAR) return false
-                Configuration.UI_MODE_TYPE_TELEVISION -> if (uiMode != UiMode.TELEVISION) return false
-                InternalConfiguration.UI_MODE_TYPE_APPLIANCE -> if (uiMode != UiMode.APPLIANCE) return false
-                InternalConfiguration.UI_MODE_TYPE_WATCH -> if (uiMode != UiMode.WATCH) return false
-            }
-        }
-
-        if (nightMode != null) {
-            val uiModeManager = ctx.getSystemService(Context.UI_MODE_SERVICE) as? UiModeManager ?: return false
-
-            val currentMode = uiModeManager.nightMode
-            if (currentMode == UiModeManager.MODE_NIGHT_YES && !nightMode) return false
-            if (currentMode == UiModeManager.MODE_NIGHT_NO && nightMode) return false
-        }
-
-        if (rightToLeft != null) {
-            if (config == null) return false
-            val rtlMode = (config.screenLayout and
-                    InternalConfiguration.SCREENLAYOUT_LAYOUTDIR_MASK) == InternalConfiguration.SCREENLAYOUT_LAYOUTDIR_RTL
-            if (rtlMode != rightToLeft) return false
-        }
-
-        if (smallestWidth != null) {
-            if (config == null) return false
-
-            if (config.smallestScreenWidthDp == Configuration.SMALLEST_SCREEN_WIDTH_DP_UNDEFINED) {
-                if (smallestWidth != Configuration.SMALLEST_SCREEN_WIDTH_DP_UNDEFINED) return false
-            }
-            else if (config.smallestScreenWidthDp < smallestWidth) return false
-        }
-
-        return true
     }
 
 }

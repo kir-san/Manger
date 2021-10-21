@@ -25,7 +25,6 @@ import com.san.kir.manger.ui.utils.DialogText
 import com.san.kir.manger.ui.utils.ImageWithStatus
 import com.san.kir.manger.ui.utils.LabelText
 import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
-import com.san.kir.manger.ui.utils.getElement
 import com.san.kir.manger.ui.utils.navigate
 import com.san.kir.manger.utils.extensions.formatDouble
 import com.san.kir.manger.utils.extensions.getFullPath

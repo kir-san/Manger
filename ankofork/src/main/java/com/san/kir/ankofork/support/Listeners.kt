@@ -1,6 +1,5 @@
 package com.san.kir.ankofork.support
 
-import androidx.core.widget.NestedScrollView
 import androidx.viewpager.widget.ViewPager
 
 
@@ -10,7 +9,7 @@ fun ViewPager.onPageChangeListener(init: __ViewPager_OnPageChangeListener.() -> 
     addOnPageChangeListener(listener)
 }
 
-@Suppress("ClassName", "unused")
+@Suppress("ClassName")
 class __ViewPager_OnPageChangeListener : ViewPager.OnPageChangeListener {
     private var _onPageScrolled: ((Int, Float, Int) -> Unit)? = null
     private var _onPageSelected: ((Int) -> Unit)? = null
@@ -18,10 +17,6 @@ class __ViewPager_OnPageChangeListener : ViewPager.OnPageChangeListener {
 
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
         _onPageScrolled?.invoke(position, positionOffset, positionOffsetPixels)
-    }
-
-    fun onPageScrolled(listener: (Int, Float, Int) -> Unit) {
-        _onPageScrolled = listener
     }
 
     override fun onPageSelected(position: Int) {
@@ -36,14 +31,5 @@ class __ViewPager_OnPageChangeListener : ViewPager.OnPageChangeListener {
         _onPageScrollStateChanged?.invoke(state)
     }
 
-    fun onPageScrollStateChanged(listener: (Int) -> Unit) {
-        _onPageScrollStateChanged = listener
-    }
-
-}
-
-@Suppress("unused")
-inline fun NestedScrollView.onScrollChange(noinline l: (v: NestedScrollView?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int) -> Unit) {
-    setOnScrollChangeListener(l)
 }
 

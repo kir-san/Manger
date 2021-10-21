@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.startup.AppInitializer
 import com.evernote.android.job.JobManager
 import com.github.kittinunf.fuel.core.FuelManager
-import com.san.kir.ankofork.defaultSharedPreferences
 import com.san.kir.manger.components.parsing.Status
 import com.san.kir.manger.components.parsing.Translate
 import com.san.kir.manger.components.schedule.ScheduleJob

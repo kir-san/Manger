@@ -31,11 +31,13 @@ class ScheduleJob(private val tag: String) : Job() {
                     }
                 }
                 PlannedType.CATEGORY -> {
-                    val categories = MangaRepository(context).getItemsWhere(task.category)
-                    categories.forEach {
-                        context.startForegroundService<MangaUpdaterService>(MangaColumn.tableName to it)
+                    GlobalScope.launch {
+                        val categories = MangaRepository(context).getItemsWhere(task.category)
+                        categories.forEach {
+                            context.startForegroundService<MangaUpdaterService>(MangaColumn.tableName to it)
+                        }
+                        ScheduleManager().add(task)
                     }
-                    ScheduleManager().add(task)
                 }
                 PlannedType.GROUP -> {
                     GlobalScope.launch {
@@ -55,10 +57,6 @@ class ScheduleJob(private val tag: String) : Job() {
                 }
                 PlannedType.APP -> {
                     context.startForegroundService<AppUpdateService>()
-                }
-                else -> {
-                    log("Тип не соответсвует действительности")
-                    return Result.FAILURE
                 }
             }
         } catch (ex: Exception) {

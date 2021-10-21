@@ -47,6 +47,7 @@ class MainActivity : ComponentActivity() {
         fun onlyCategoryViewModelFactory(): OnlyCategoryViewModel.Factory
         fun siteCatalogItemViewModelFactory(): SiteCatalogItemViewModel.Factory
         fun onlyStatisticViewModelFactory(): OnlyStatisticViewModel.Factory
+        fun plannedTaskViewModelFactory(): PlannedTaskViewModel.Factory
     }
 
     private val mainViewModel: MainViewModel by viewModels()

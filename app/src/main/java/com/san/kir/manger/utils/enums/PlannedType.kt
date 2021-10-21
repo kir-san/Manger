@@ -1,20 +1,36 @@
 package com.san.kir.manger.utils.enums
 
-import android.content.Context
 import com.san.kir.manger.R
+import java.util.*
 
-object PlannedType {
-    const val MANGA = 1
-    const val GROUP = 2
-    const val CATEGORY = 3
-    const val CATALOG = 4
-    const val APP = 5
+enum class PlannedType(
+    val order: Int,
+    val text: Int
+) {
+    MANGA(1, R.string.planned_type_manga),
+    GROUP(2, R.string.planned_type_group),
+    CATEGORY(3, R.string.planned_type_category),
+    CATALOG(4, R.string.planned_type_catalog),
+    APP(5, R.string.planned_type_app)
+}
 
-    fun map(context: Context) = mapOf(
-        context.getString(R.string.planned_type_manga) to MANGA,
-        context.getString(R.string.planned_type_group) to GROUP,
-        context.getString(R.string.planned_type_category) to CATEGORY,
-        context.getString(R.string.planned_type_catalog) to CATALOG,
-        context.getString(R.string.planned_type_app) to APP
-    )
+enum class PlannedPeriod(
+    val order: Int,
+    val text: Int,
+) {
+    DAY(1, R.string.planned_period_day),
+    WEEK(2, R.string.planned_period_week)
+}
+
+enum class PlannedWeek(
+    val order: Int,
+    val text: Int,
+) {
+    MONDAY(Calendar.MONDAY, R.string.planned_week_monday),
+    TUESDAY(Calendar.TUESDAY, R.string.planned_week_tuesday),
+    WEDNESDAY(Calendar.WEDNESDAY, R.string.planned_week_wednesday),
+    THURSDAY(Calendar.THURSDAY, R.string.planned_week_thursday),
+    FRIDAY(Calendar.FRIDAY, R.string.planned_week_friday),
+    SATURDAY(Calendar.SATURDAY, R.string.planned_week_saturday),
+    SUNDAY(Calendar.SUNDAY, R . string . planned_week_sunday),
 }

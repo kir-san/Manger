@@ -2,95 +2,59 @@ package com.san.kir.manger.room.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import android.os.Parcel
 import android.os.Parcelable
 import com.san.kir.manger.utils.enums.PlannedPeriod
 import com.san.kir.manger.utils.enums.PlannedType
+import com.san.kir.manger.utils.enums.PlannedWeek
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 @Entity(tableName = PlannedTaskColumn.tableName)
-class PlannedTask() : Parcelable {
+data class PlannedTask(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = PlannedTaskColumn.id)
-    var id = 0L
+    var id: Long = 0L,
+
     @ColumnInfo(name = PlannedTaskColumn.manga)
-    var manga = ""
+    var manga: String = "",
+
     @ColumnInfo(name = PlannedTaskColumn.groupName)
-    var groupName = ""
+    var groupName: String = "",
+
     @ColumnInfo(name = PlannedTaskColumn.groupContent)
-    var groupContent = ""
+    var groupContent: String = "",
+
     @ColumnInfo(name = PlannedTaskColumn.category)
-    var category = ""
+    var category: String = "",
+
     @ColumnInfo(name = PlannedTaskColumn.catalog)
-    var catalog = ""
+    var catalog: String = "",
+
     @ColumnInfo(name = PlannedTaskColumn.type)
-    var type = PlannedType.MANGA
+    var type: PlannedType = PlannedType.MANGA,
+
     @ColumnInfo(name = PlannedTaskColumn.isEnabled)
-    var isEnabled = false
+    var isEnabled: Boolean = false,
+
     @ColumnInfo(name = PlannedTaskColumn.period)
-    var period = PlannedPeriod.DAY
+    var period: PlannedPeriod = PlannedPeriod.DAY,
+
     @ColumnInfo(name = PlannedTaskColumn.dayOfWeek)
-    var dayOfWeek = 0
+    var dayOfWeek: PlannedWeek = PlannedWeek.MONDAY,
+
     @ColumnInfo(name = PlannedTaskColumn.hour)
-    var hour = 0
+    var hour: Int = 0,
+
     @ColumnInfo(name = PlannedTaskColumn.minute)
-    var minute = 0
+    var minute: Int = 0,
+
     @ColumnInfo(name = PlannedTaskColumn.addedTime)
-    var addedTime = 0L
+    var addedTime: Long = 0L,
+
     @ColumnInfo(name = PlannedTaskColumn.errorMessage)
-    var errorMessage = ""
-
-    @Ignore
-    constructor(parcel: Parcel) : this() {
-        id = parcel.readLong()
-        manga = parcel.readString() ?: ""
-        groupName = parcel.readString() ?: ""
-        groupContent = parcel.readString() ?: ""
-        category = parcel.readString() ?: ""
-        catalog = parcel.readString() ?: ""
-        type = parcel.readInt()
-        isEnabled = parcel.readByte() != 0.toByte()
-        period = parcel.readInt()
-        dayOfWeek = parcel.readInt()
-        hour = parcel.readInt()
-        minute = parcel.readInt()
-        addedTime = parcel.readLong()
-        errorMessage = parcel.readString() ?: ""
-    }
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeLong(id)
-        parcel.writeString(manga)
-        parcel.writeString(groupName)
-        parcel.writeString(groupContent)
-        parcel.writeString(category)
-        parcel.writeString(catalog)
-        parcel.writeInt(type)
-        parcel.writeByte(if (isEnabled) 1 else 0)
-        parcel.writeInt(period)
-        parcel.writeInt(dayOfWeek)
-        parcel.writeInt(hour)
-        parcel.writeInt(minute)
-        parcel.writeLong(addedTime)
-        parcel.writeString(errorMessage)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<PlannedTask> {
-        override fun createFromParcel(parcel: Parcel): PlannedTask {
-            return PlannedTask(parcel)
-        }
-
-        override fun newArray(size: Int): Array<PlannedTask?> {
-            return arrayOfNulls(size)
-        }
-    }
-
-}
+    var errorMessage: String = "",
+) : Parcelable
 
 var PlannedTask.mangaList: List<String>
     get() = groupContent.split(",").map { it.trim() }

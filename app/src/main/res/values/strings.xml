@@ -370,7 +370,7 @@
 
     <!--AvailableUpdate-->
     <string name="available_update_name">Разрешенные к обновлению</string>
-    <string name="available_update_category_name">Категория %s</string>
+    <string name="available_update_category_name">Категория: %s</string>
 
     <!--PlannedTask-->
     <string name="planned_task_name">Запланированные задачи</string>
@@ -445,7 +445,6 @@
     <string name="planned_task_update_text_friday">каждую пятницу</string>
     <string name="planned_task_update_text_saturday">каждую субботу</string>
     <string name="planned_task_update_text_sunday">каждое воскресение</string>
-    <string name="planned_task_update_text_unknown">Черт знает когда оно обновляется</string>
 
     <!-- Statistic -->
     <string name="statistic_subtitle">За: %s</string>

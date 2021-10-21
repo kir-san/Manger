@@ -36,6 +36,9 @@ import com.san.kir.manger.room.type_converters.DownloadStateTypeConverter
 import com.san.kir.manger.room.type_converters.FileConverter
 import com.san.kir.manger.room.type_converters.ListStringConverter
 import com.san.kir.manger.room.type_converters.MainMenuTypeConverter
+import com.san.kir.manger.room.type_converters.PlannedPeriodTypeConverter
+import com.san.kir.manger.room.type_converters.PlannedTypeTypeConverter
+import com.san.kir.manger.room.type_converters.PlannedWeekTypeConverter
 import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.enums.DIR
 import com.san.kir.manger.utils.enums.MainMenuType
@@ -62,6 +65,9 @@ import java.io.File
     FileConverter::class,
     ListStringConverter::class,
     MainMenuTypeConverter::class,
+    PlannedTypeTypeConverter::class,
+    PlannedWeekTypeConverter::class,
+    PlannedPeriodTypeConverter::class,
     ChapterFilterTypeConverter::class,
     DownloadStateTypeConverter::class,
 )

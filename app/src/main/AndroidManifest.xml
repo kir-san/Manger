@@ -42,13 +42,6 @@
         <activity
             android:name=".components.viewer.ViewerActivity"
             android:theme="@style/AppTheme.Viewer" />
-        <activity
-            android:name=".components.schedule.ScheduleActivity"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".components.schedule.AddEditPlannedTaskActivity"
-            android:theme="@style/AppTheme"
-            android:windowSoftInputMode="stateHidden" />
 
         <service android:name=".services.CatalogForOneSiteUpdaterService" />
         <service android:name=".services.DownloadService" />

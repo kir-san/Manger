@@ -25,6 +25,8 @@ import com.san.kir.manger.ui.application_navigation.download.DownloadScreen
 import com.san.kir.manger.ui.application_navigation.latest.LatestScreen
 import com.san.kir.manger.ui.application_navigation.library.LibraryNavTarget
 import com.san.kir.manger.ui.application_navigation.library.libraryNavGraph
+import com.san.kir.manger.ui.application_navigation.schedule.ScheduleNavTarget
+import com.san.kir.manger.ui.application_navigation.schedule.scheduleNavGraph
 import com.san.kir.manger.ui.application_navigation.settings.SettingsScreen
 import com.san.kir.manger.ui.application_navigation.startapp.StartAppScreen
 import com.san.kir.manger.ui.application_navigation.statistic.StatisticNavTarget
@@ -181,10 +183,10 @@ fun NavGraphBuilder.mainNavGraph(nav: NavHostController) {
     }
 
     navigation(
-        startDestination = CatalogsNavTarget.Main.route,
+        startDestination = ScheduleNavTarget.Main.route,
         route = MainNavTarget.Schedule.route
     ) {
-        catalogsNavGraph(nav)
+        scheduleNavGraph(nav)
     }
 }
 

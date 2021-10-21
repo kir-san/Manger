@@ -14,8 +14,9 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import com.san.kir.ankofork.dialogs.longToast
 import java.util.*
+import javax.inject.Inject
 
-class ScheduleManager {
+class ScheduleManager @Inject constructor() {
     private val dayPeriod = AlarmManager.INTERVAL_DAY
     private val weekPeriod = dayPeriod * 7
 
@@ -26,7 +27,7 @@ class ScheduleManager {
         calendar.set(Calendar.MINUTE, task.minute)
         calendar.set(Calendar.SECOND, 0)
         if (task.period == PlannedPeriod.WEEK) {
-            calendar.set(Calendar.DAY_OF_WEEK, task.dayOfWeek)
+            calendar.set(Calendar.DAY_OF_WEEK, task.dayOfWeek.order)
             if (calendar.timeInMillis < System.currentTimeMillis()) {
                 calendar.timeInMillis += weekPeriod
             }
@@ -85,8 +86,6 @@ class ScheduleManager {
                                 R.string.schedule_manager_cancel_app
                             )
                         )
-                    else ->
-                        log("Тип не соответсвует действительности")
                 }
             }
         }

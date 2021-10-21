@@ -9,16 +9,24 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PlannedDao : BaseDao<PlannedTask> {
-    @Query("SELECT * FROM ${PlannedTaskColumn.tableName} ORDER BY ${PlannedTaskColumn.id}")
+    @Query("SELECT * FROM ${PlannedTaskColumn.tableName} " +
+                   "ORDER BY ${PlannedTaskColumn.id}")
     fun pagedItems(): DataSource.Factory<Int, PlannedTask>
 
-    @Query("SELECT * FROM ${PlannedTaskColumn.tableName} ORDER BY ${PlannedTaskColumn.id}")
+    @Query("SELECT * FROM ${PlannedTaskColumn.tableName} " +
+                   "ORDER BY ${PlannedTaskColumn.id}")
     fun loadItems(): Flow<List<PlannedTask>>
 
-    @Query("SELECT * FROM ${PlannedTaskColumn.tableName} ORDER BY ${PlannedTaskColumn.id}")
+    @Query("SELECT * FROM ${PlannedTaskColumn.tableName} " +
+                   "ORDER BY ${PlannedTaskColumn.id}")
     fun getItems(): List<PlannedTask>
 
-    @Query("SELECT * FROM ${PlannedTaskColumn.tableName} WHERE `${PlannedTaskColumn.addedTime}` IS :taskId ORDER BY ${PlannedTaskColumn.id}")
+    @Query("SELECT * FROM ${PlannedTaskColumn.tableName} " +
+                   "WHERE `${PlannedTaskColumn.id}` IS :taskId")
     fun getItem(taskId: Long): PlannedTask
+
+    @Query("SELECT * FROM ${PlannedTaskColumn.tableName} " +
+                   "WHERE `${PlannedTaskColumn.id}` IS :taskId")
+    fun loadItem(taskId: Long): Flow<PlannedTask>
 }
 

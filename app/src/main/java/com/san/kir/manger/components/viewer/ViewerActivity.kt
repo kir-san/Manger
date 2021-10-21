@@ -18,6 +18,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -31,15 +32,13 @@ import com.san.kir.ankofork.setContentView
 import com.san.kir.manger.R
 import com.san.kir.manger.Viewer
 import com.san.kir.manger.data.datastore.ViewerRepository
-import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.utils.extensions.BaseActivity
 import com.san.kir.manger.utils.extensions.add
 import com.san.kir.manger.utils.extensions.log
 import com.san.kir.manger.utils.extensions.showAlways
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -49,7 +48,7 @@ import javax.inject.Inject
 import kotlin.properties.Delegates
 
 @AndroidEntryPoint
-class ViewerActivity : BaseActivity() {
+class ViewerActivity : AppCompatActivity() {
     companion object { // константы для сохранения настроек
         var LEFT_PART_SCREEN = 0 // Левая часть экрана
         var RIGHT_PART_SCREEN = 0 // Правая часть экрана
@@ -57,9 +56,7 @@ class ViewerActivity : BaseActivity() {
 
     val mViewModel: ViewerViewModel by viewModels()
 
-    @DefaultDispatcher
-    @Inject
-    lateinit var default: CoroutineDispatcher
+    private val main = Dispatchers.Main
 
     @Inject
     lateinit var viewerStore: ViewerRepository
@@ -115,7 +112,7 @@ class ViewerActivity : BaseActivity() {
         * - !continue, chapter - продолжить чтение с текущей главы
         * - все остальные варианты закрывают просмоторщик
         * */
-        lifecycleScope.launch(default) {
+        lifecycleScope.launch(main) {
             intent.apply {
                 val isAlternative = getBooleanExtra("is", false)
 
@@ -183,7 +180,7 @@ class ViewerActivity : BaseActivity() {
                             }
                         }
                     }
-                withContext(default) {
+                withContext(main) {
                     title = chapter.name // Смена заголовка
                 }
             }

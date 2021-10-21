@@ -13,15 +13,14 @@ import com.san.kir.ankofork.sdk28.notificationManager
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.di.DefaultDispatcher
-import com.san.kir.manger.repositories.MangaRepository
 import com.san.kir.manger.repositories.SiteCatalogRepository
-import com.san.kir.manger.repositories.SiteRepository
+import com.san.kir.manger.room.dao.MangaDao
+import com.san.kir.manger.room.dao.SiteDao
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.extensions.log
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.flow.flowOn
@@ -82,6 +81,12 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
     @Inject
     lateinit var default: CoroutineDispatcher
 
+    @Inject
+    lateinit var mangaDao: MangaDao
+
+    @Inject
+    lateinit var siteDao: SiteDao
+
     @SuppressLint("InlinedApi")
     override fun onCreate() {
         super.onCreate()
@@ -112,11 +117,9 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
     override fun onHandleIntent(intent: Intent?) = runBlocking(default) {
         job = launch {
             try {
-                val siteRepository = SiteRepository(this@CatalogForOneSiteUpdaterService)
-                val mangaRepository = MangaRepository(this@CatalogForOneSiteUpdaterService)
                 val site = manager.catalog
                     .first { it.catalogName == intent!!.getStringExtra("catalogName") }
-                val siteDb = siteRepository.getItem(site.name)
+                val siteDb = siteDao.getItem(site.name)
 
                 with(NotificationCompat.Builder(this@CatalogForOneSiteUpdaterService, channelId)) {
                     setSmallIcon(R.drawable.ic_notification_update)
@@ -164,7 +167,7 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
                         log("$it")
                     }
                     .map { el ->
-                        el.isAdded = mangaRepository.contain(el)
+                        el.isAdded = mangaDao.getItems().any { it.shortLink == el.shotLink }
                         el
                     }
                     .toList(tempList)
@@ -180,7 +183,7 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
                 }
 
                 siteDb?.oldVolume = counter
-                siteRepository.update(siteDb)
+                siteDao.update(siteDb)
 
                 sendPositiveBroadcast(site.catalogName)
 

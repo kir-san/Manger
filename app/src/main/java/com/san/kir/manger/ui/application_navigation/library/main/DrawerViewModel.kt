@@ -32,7 +32,7 @@ class DrawerViewModel @Inject constructor(
     @DefaultDispatcher private val default: CoroutineDispatcher,
 ) : ViewModel() {
     fun loadMainMenuItems() = mainMenuDao.loadItems().flowOn(default)
-    fun loadLibraryCounts() = mangaDao.flowItems().map { it.size }.flowOn(default)
+    fun loadLibraryCounts() = mangaDao.loadItems().map { it.size }.flowOn(default)
     fun loadStorageSizes() =
         storageDao.flowItems().map { list -> list.sumOf { item -> item.sizeFull } }
             .flowOn(default)

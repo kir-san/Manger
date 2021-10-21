@@ -11,7 +11,7 @@ fun NavHostController.navigate(target: NavTarget, dest: Any) {
     navigate(target.route(dest.toString()))
 }
 
-fun NavHostController.getElement(target: NavItem): String? {
+fun NavHostController.getStringElement(target: NavItem): String? {
     return currentBackStackEntry
         ?.arguments
         ?.getString(target.value)

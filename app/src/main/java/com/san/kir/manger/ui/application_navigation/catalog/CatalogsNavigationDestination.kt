@@ -17,7 +17,7 @@ import com.san.kir.manger.ui.utils.NavItem
 import com.san.kir.manger.ui.utils.NavTarget
 import com.san.kir.manger.ui.utils.SiteCatalogItem
 import com.san.kir.manger.ui.utils.SiteItem
-import com.san.kir.manger.ui.utils.getElement
+import com.san.kir.manger.ui.utils.getStringElement
 
 sealed class CatalogsNavTarget : NavTarget {
 
@@ -57,7 +57,7 @@ fun NavGraphBuilder.catalogsNavGraph(nav: NavHostController) {
     composable(
         route = CatalogsNavTarget.Catalog.route,
         content = {
-            val item = nav.getElement(SiteItem) ?: ""
+            val item = nav.getStringElement(SiteItem) ?: ""
             val viewModel = catalogViewModel(item)
 
             CatalogScreen(nav, viewModel)
@@ -74,7 +74,7 @@ fun NavGraphBuilder.catalogsNavGraph(nav: NavHostController) {
     composable(
         route = CatalogsNavTarget.Info.route,
         content = {
-            val item = nav.getElement(SiteCatalogItem) ?: ""
+            val item = nav.getStringElement(SiteCatalogItem) ?: ""
             val viewModel = siteCatalogItemViewModel(url = item)
 
             val element by viewModel.item.collectAsState()
@@ -86,7 +86,7 @@ fun NavGraphBuilder.catalogsNavGraph(nav: NavHostController) {
     composable(
         route = CatalogsNavTarget.AddLocal.route,
         content = {
-            val item = nav.getElement(SiteCatalogItem) ?: ""
+            val item = nav.getStringElement(SiteCatalogItem) ?: ""
             val viewModel = siteCatalogItemViewModel(url = item)
 
             val element by viewModel.item.collectAsState()

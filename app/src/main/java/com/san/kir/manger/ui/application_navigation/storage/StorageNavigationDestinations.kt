@@ -10,7 +10,7 @@ import com.san.kir.manger.ui.application_navigation.storage.main.StorageScreen
 import com.san.kir.manger.ui.utils.MangaItem
 import com.san.kir.manger.ui.utils.NavItem
 import com.san.kir.manger.ui.utils.NavTarget
-import com.san.kir.manger.ui.utils.getElement
+import com.san.kir.manger.ui.utils.getStringElement
 
 sealed class StorageNavTarget : NavTarget {
     object Main : StorageNavTarget() {
@@ -35,7 +35,7 @@ fun NavGraphBuilder.storageNavGraph(nav: NavHostController) {
     composable(
         route = StorageNavTarget.Storage.route,
         content = {
-            val item = nav.getElement(MangaItem) ?: ""
+            val item = nav.getStringElement(MangaItem) ?: ""
             val viewModel = mangaStorageViewModel(item)
 
             MangaStorageScreen(nav, viewModel)

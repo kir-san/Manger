@@ -19,15 +19,15 @@ import androidx.core.app.NotificationCompat
 import com.san.kir.ankofork.intentFor
 import com.san.kir.ankofork.sdk28.notificationManager
 import com.san.kir.manger.R
-import com.san.kir.manger.utils.SearchDuplicate
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.components.parsing.getShortLink
 import com.san.kir.manger.di.DefaultDispatcher
-import com.san.kir.manger.repositories.ChapterRepository
-import com.san.kir.manger.repositories.MangaRepository
+import com.san.kir.manger.room.dao.ChapterDao
+import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.utils.ID
+import com.san.kir.manger.utils.SearchDuplicate
 import com.san.kir.manger.utils.extensions.log
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineDispatcher
@@ -59,8 +59,6 @@ class MangaUpdaterService : Service() {
 
     private var notificationId = ID.generate()
     private var channelId = ""
-    private val mChapterRepository = ChapterRepository(this)
-    private val mMangaRepository = MangaRepository(this)
 
     @Volatile
     private lateinit var mServiceLopper: Looper
@@ -68,7 +66,7 @@ class MangaUpdaterService : Service() {
     @Volatile
     private lateinit var mServiceHandler: ServiceHandler
 
-//    private val actionGoToLatest by lazy {
+    //    private val actionGoToLatest by lazy {
 //        val intent = intentFor<LatestChapterActivity>()
 //        PendingIntent.getActivity(this, 0, intent, 0)
 //    }
@@ -84,6 +82,12 @@ class MangaUpdaterService : Service() {
             )
             .build()
     }
+
+    @Inject
+    lateinit var chapterDao: ChapterDao
+
+    @Inject
+    lateinit var mangaDao: MangaDao
 
     @DefaultDispatcher
     @Inject
@@ -205,7 +209,7 @@ class MangaUpdaterService : Service() {
 
             log("start")
 
-            val mangaDB = mMangaRepository.getItem(manga.unic)
+            val mangaDB = mangaDao.getItem(manga.unic)
 
             checkLinkInManga(mangaDB)
 
@@ -216,7 +220,7 @@ class MangaUpdaterService : Service() {
             updatePagesInChapters(mangaDB)
 
             val oldChapters = withContext(default) {
-                mChapterRepository.getItems(mangaDB.unic)
+                chapterDao.getItemsWhereManga(mangaDB.unic)
             }
 
             var newChapters = listOf<Chapter>()
@@ -235,7 +239,7 @@ class MangaUpdaterService : Service() {
                             val tempChapter =
                                 oldChapters.first { oldChapter -> chapter.link == oldChapter.link }
                             tempChapter.path = chapter.path
-                            mChapterRepository.update(tempChapter)
+                            chapterDao.update(tempChapter)
                         }
                     }
                 }
@@ -247,7 +251,7 @@ class MangaUpdaterService : Service() {
                 newChapters.reversed().forEach {
                     it.pages = manager.pages(it)
                     it.isInUpdate = true
-                    mChapterRepository.insert(it)
+                    chapterDao.insert(it)
                 }
                 val oldSize = oldChapters.size
 
@@ -255,7 +259,7 @@ class MangaUpdaterService : Service() {
                     SearchDuplicate(this@MangaUpdaterService).silentRemoveDuplicate(mangaDB)
                 }
 
-                val newSize = mChapterRepository.getItems(mangaDB.unic).size
+                val newSize = chapterDao.getItemsWhereManga(mangaDB.unic).size
 
                 countNew = newSize - oldSize
             } else {
@@ -282,8 +286,8 @@ class MangaUpdaterService : Service() {
     }
 
     private suspend fun updatePagesInChapters(mangaDB: Manga) = withContext(default) {
-        mChapterRepository
-            .getItems(mangaDB.unic)
+        chapterDao
+            .getItemsWhereManga(mangaDB.unic)
             .filter {
                 mangaDB.isAlternativeSite
                         || it.pages.isNullOrEmpty()
@@ -295,7 +299,7 @@ class MangaUpdaterService : Service() {
                 }.join()
             }
             .apply {
-                mChapterRepository.update(*this.toTypedArray())
+                chapterDao.update(*this.toTypedArray())
             }
     }
 
@@ -306,13 +310,13 @@ class MangaUpdaterService : Service() {
             mangaDB.host = site.host
             mangaDB.shortLink = site.getShortLink(mangaDB.site)
 
-            mMangaRepository.update(mangaDB)
+            mangaDao.update(mangaDB)
         } else {
             val site = manager.getSite(mangaDB.host)
 
             mangaDB.host = site.host
 
-            mMangaRepository.update(mangaDB)
+            mangaDao.update(mangaDB)
         }
     }
 

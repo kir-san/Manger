@@ -10,7 +10,7 @@ import com.san.kir.manger.ui.application_navigation.statistic.main.StatisticsScr
 import com.san.kir.manger.ui.utils.NavItem
 import com.san.kir.manger.ui.utils.NavTarget
 import com.san.kir.manger.ui.utils.StatisticItem
-import com.san.kir.manger.ui.utils.getElement
+import com.san.kir.manger.ui.utils.getStringElement
 
 sealed class StatisticNavTarget : NavTarget {
     object Main : StatisticNavTarget() {
@@ -35,7 +35,7 @@ fun NavGraphBuilder.statisticNavGraph(nav: NavHostController) {
     composable(
         route = StatisticNavTarget.Statistic.route,
         content = {
-            val item = nav.getElement(StatisticItem) ?: ""
+            val item = nav.getStringElement(StatisticItem) ?: ""
             val viewModel = onlyStatisticViewModel(mangaName = item)
 
             val statistic by viewModel.statistic.collectAsState()

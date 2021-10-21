@@ -31,7 +31,7 @@ class RemoveCategoryWorker(appContext: Context, workerParameters: WorkerParamete
                 withContext(Dispatchers.Default) {
                     mangaDao.update(
                         *mangaDao
-                            .loadMangaWhereCategoryNotAll(category.name)
+                            .getMangaWhereCategoryNotAll(category.name)
                             .onEach {
                                 it.categories = CATEGORY_ALL
                             }

@@ -4,6 +4,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.composable
 import com.san.kir.manger.ui.application_navigation.categories.category.CategoryEditScreen
 import com.san.kir.manger.ui.application_navigation.categories.category.CategoryEditViewModel
@@ -11,7 +12,7 @@ import com.san.kir.manger.ui.application_navigation.categories.main.CategoriesSc
 import com.san.kir.manger.ui.utils.CategoryItem
 import com.san.kir.manger.ui.utils.NavItem
 import com.san.kir.manger.ui.utils.NavTarget
-import com.san.kir.manger.ui.utils.getElement
+import com.san.kir.manger.ui.utils.getStringElement
 
 sealed class CategoriesNavTarget : NavTarget {
     object Main : CategoriesNavTarget() {
@@ -21,6 +22,7 @@ sealed class CategoriesNavTarget : NavTarget {
     object Category : CategoriesNavTarget() {
         override val base: String = "category"
         override val item: NavItem = CategoryItem
+        override val isOptional: Boolean = true
     }
 }
 
@@ -34,9 +36,12 @@ fun NavGraphBuilder.categoriesNavGraph(nav: NavHostController) {
     )
 
     composable(
-        route = CategoriesNavTarget.Category.route,
+        route = CategoriesNavTarget.Category.route(),
+        arguments = listOf(navArgument(CategoriesNavTarget.Category.item.value) {
+            defaultValue = ""
+        }),
         content = {
-            val item = nav.getElement(CategoryItem) ?: ""
+            val item = nav.getStringElement(CategoryItem) ?: ""
             val viewModel: CategoryEditViewModel = hiltViewModel()
 
             viewModel.setCategory(item)

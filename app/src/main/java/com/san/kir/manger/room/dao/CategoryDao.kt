@@ -9,8 +9,7 @@ import com.san.kir.manger.room.entities.CategoryWithMangas
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-abstract class CategoryDao :
-    BaseDao<Category> {
+abstract class CategoryDao : BaseDao<Category> {
     @Query("SELECT * FROM `categories` ORDER BY `order`")
     abstract suspend fun getItems(): List<Category>
 

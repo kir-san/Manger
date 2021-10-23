@@ -10,7 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -57,14 +57,16 @@ private fun ItemContent(item: PlannedTask, viewModel: ScheduleViewModel, onClick
                 maxLines = 1
             )
 
-
             Text(
                 viewModel.itemInfo(item),
                 maxLines = 1,
                 style = MaterialTheme.typography.subtitle2
             )
         }
-        Switch(checked = item.isEnabled, onCheckedChange = {
+
+        var checed by remember(item) { mutableStateOf(item.isEnabled) }
+        Switch(checked = checed, onCheckedChange = {
+            checed = it
             item.isEnabled = it
             viewModel.update(item)
         })

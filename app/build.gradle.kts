@@ -209,7 +209,7 @@ dependencies {
 
     Dependencies.Other.apply {
         implementation(JSOUP)
-        implementation(ANDROID_JOB)
+//        implementation(ANDROID_JOB)
         implementation(PROGRESSBUTTON)
     }
 

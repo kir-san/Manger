@@ -38,14 +38,12 @@ import com.san.kir.manger.utils.enums.PlannedWeek
 
 @Composable
 fun PlannedTaskScreen(nav: NavHostController, viewModel: PlannedTaskViewModel) {
-
     TopBarScreenContent(
         navHostController = nav,
         title = viewModel.title,
         actions = {
             MenuIcon(Icons.Default.Save) {
-                viewModel.save()
-                nav.navigateUp()
+                viewModel.save { nav.navigateUp() }
             }
         }
     ) {

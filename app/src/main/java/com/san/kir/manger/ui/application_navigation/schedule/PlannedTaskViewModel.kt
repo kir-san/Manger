@@ -1,18 +1,13 @@
 package com.san.kir.manger.ui.application_navigation.schedule
 
 import android.app.Application
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.san.kir.manger.R
-import com.san.kir.manger.components.schedule.ScheduleManager
 import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.di.MainDispatcher
 import com.san.kir.manger.room.dao.CategoryDao
@@ -22,6 +17,7 @@ import com.san.kir.manger.room.dao.SiteDao
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.PlannedTask
 import com.san.kir.manger.ui.MainActivity
+import com.san.kir.manger.workmanager.ScheduleWorker
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -40,7 +36,6 @@ class PlannedTaskViewModel @AssistedInject constructor(
     mangaDao: MangaDao,
     categoryDao: CategoryDao,
     siteDao: SiteDao,
-    private val manager: ScheduleManager,
     @DefaultDispatcher private val default: CoroutineDispatcher,
     @MainDispatcher private val main: CoroutineDispatcher,
 ) : ViewModel() {
@@ -80,22 +75,24 @@ class PlannedTaskViewModel @AssistedInject constructor(
             categoryDao.loadItems()
                 .first()
                 .map { it.name }
-                .let { withContext(main) { categoryList = it} }
+                .let { withContext(main) { categoryList = it } }
 
             siteDao.loadItems()
                 .first()
                 .map { it.name }
-                .let { withContext(main) { catalogList = it} }
+                .let { withContext(main) { catalogList = it } }
         }
     }
 
-    fun save() = viewModelScope.launch(default) {
-        if (taskId != -1L) {
-            plannedDao.update(task.copy(isEnabled = false))
-            manager.cancel(context, task)
-        } else {
-            plannedDao.insert(task.copy(addedTime = System.currentTimeMillis()))
-        }
+    fun save(onSave: () -> Unit) {
+        viewModelScope.launch(default) {
+            if (taskId != -1L) {
+                plannedDao.update(task.copy(isEnabled = false))
+                ScheduleWorker.cancelTask(context, task)
+            } else {
+                plannedDao.insert(task.copy(addedTime = System.currentTimeMillis()))
+            }
+        }.invokeOnCompletion { viewModelScope.launch(main) { onSave() } }
     }
 
     @AssistedFactory

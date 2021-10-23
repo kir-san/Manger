@@ -24,13 +24,5 @@ class MangaRepository(context: Context) {
     suspend fun getFromPath(file: File): Manga? {
         return getItems().firstOrNull { getFullPath(it.path) == file }
     }
-
-    suspend fun getItemsWhere(category: String): List<Manga> {
-        return if (category == CATEGORY_ALL)
-            getItems()
-        else
-            mMangaDao.getMangaWhereCategoryNotAll(category)
-    }
-
 }
 

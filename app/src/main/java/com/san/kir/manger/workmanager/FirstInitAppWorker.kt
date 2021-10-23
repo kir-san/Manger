@@ -2,24 +2,14 @@ package com.san.kir.manger.workmanager
 
 import android.content.Context
 import androidx.hilt.work.HiltWorker
-import androidx.work.CoroutineWorker
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.Operation
-import androidx.work.WorkManager
-import androidx.work.WorkerParameters
-import com.san.kir.manger.R
+import androidx.work.*
 import com.san.kir.manger.Viewer
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
-import com.san.kir.manger.components.schedule.ScheduleManager
 import com.san.kir.manger.data.datastore.ChaptersRepository
 import com.san.kir.manger.data.datastore.DownloadRepository
 import com.san.kir.manger.data.datastore.MainRepository
 import com.san.kir.manger.data.datastore.ViewerRepository
-import com.san.kir.manger.room.dao.MainMenuDao
-import com.san.kir.manger.room.dao.MangaDao
-import com.san.kir.manger.room.dao.PlannedDao
-import com.san.kir.manger.room.dao.SiteDao
-import com.san.kir.manger.room.dao.StatisticDao
+import com.san.kir.manger.room.dao.*
 import com.san.kir.manger.room.entities.MainMenuItem
 import com.san.kir.manger.room.entities.MangaStatistic
 import com.san.kir.manger.room.entities.Site
@@ -96,8 +86,7 @@ class FirstInitAppWorker @AssistedInject constructor(
     }
 
     private fun restoreSchedule() {
-        val man = ScheduleManager()
-        plannedDao.getItems().filter { it.isEnabled }.forEach { man.add(it) }
+        plannedDao.getItems().filter { it.isEnabled }.forEach { ScheduleWorker.addTask(ctx, it) }
     }
 
     private suspend fun checkSiteCatalogs() {

@@ -1,0 +1,17 @@
+<component name="libraryTable">
+  <library name="Gradle: com.google.accompanist:accompanist-insets-ui:0.19.0@aar">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/34f42b70edbcc1cdaeed50d0423d9044/transformed/accompanist-insets-ui-0.19.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/4c220287b0e45d1160d22dd51a6d5c17/transformed/accompanist-insets-ui-0.19.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/d3d9603de7c57cdda8b5d6d986e5fc47/transformed/accompanist-insets-ui-0.19.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/d3d9603de7c57cdda8b5d6d986e5fc47/transformed/accompanist-insets-ui-0.19.0/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/d3d9603de7c57cdda8b5d6d986e5fc47/transformed/accompanist-insets-ui-0.19.0/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.accompanist/accompanist-insets-ui/0.19.0/1227a6746b324e54aa12f659745b0b7e9ca92a9c/accompanist-insets-ui-0.19.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.accompanist/accompanist-insets-ui/0.19.0/63a37d76c0034fe2ea623646ace0555c0fbf401/accompanist-insets-ui-0.19.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

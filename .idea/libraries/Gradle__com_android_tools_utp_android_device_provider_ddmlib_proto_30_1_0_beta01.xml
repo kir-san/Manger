@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: com.android.tools.utp:android-device-provider-ddmlib-proto:30.1.0-beta01">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.android.tools.utp/android-device-provider-ddmlib-proto/30.1.0-beta01/fe16f0ab5c4d61d6486c7679756370c26dd0acb5/android-device-provider-ddmlib-proto-30.1.0-beta01.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.android.tools.utp/android-device-provider-ddmlib-proto/30.1.0-beta01/8e993841f9d0dac4704f85d57a8bf8a8782cabd1/android-device-provider-ddmlib-proto-30.1.0-beta01-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

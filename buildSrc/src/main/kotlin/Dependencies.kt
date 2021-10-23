@@ -100,8 +100,10 @@ object Dependencies {
                 "com.google.dagger:hilt-compiler:${Versions.Google.HILT}"
         }
 
-        const val PROTOBUF =
+        const val PROTOBUF_JAVALITE =
             "com.google.protobuf:protobuf-javalite:${Versions.Google.PROTOBUF_JAVALITE}"
+        const val PROTOBUF_PROTOC =
+            "com.google.protobuf:protoc:${Versions.Google.PROTOBUF_PROTOC}"
         const val MATERIAL =
             "com.google.android.material:material:${Versions.Google.MATERIAL}"
         const val PLAY_SERVICES_GCM =
@@ -156,5 +158,38 @@ object Dependencies {
             "androidx.paging:paging-compose:${Versions.Compose.PAGING}"
     }
 
+    object Hyperion {
+        const val CORE =
+            "com.willowtreeapps.hyperion:hyperion-core:${Versions.HYPERION}"
+        const val CRASH =
+            "com.willowtreeapps.hyperion:hyperion-crash:${Versions.HYPERION}"
+    }
+
+    object Test {
+        const val JUNIT =
+            "junit:junit:${Versions.Test.JUNIT}"
+        const val TEST_CORE =
+            "androidx.test:core:${Versions.Test.TEST_CORE}"
+        const val TEST_RULES =
+            "androidx.test:rules:${Versions.Test.TEST_RULES}"
+        const val TEST_JUNIT =
+            "androidx.test.ext:junit:${Versions.Test.TEST_JUNIT}"
+        const val TEST_RUNNER =
+            "androidx.test:runner:${Versions.Test.TEST_RUNNER}"
+        const val TRUTH =
+            "com.google.truth:truth:${Versions.Test.TRUTH}"
+        const val BENCHMARK_JUNIT =
+            "androidx.benchmark:benchmark-junit4:${Versions.Test.BENCHMARK_JUNIT}"
+        const val COMPOSE_JUNIT =
+            "androidx.compose.ui:ui-test-junit4:${Versions.Compose.COMPOSE}"
+        const val COMPOSE_MANIFEST =
+            "androidx.compose.ui:ui-test-manifest:${Versions.Compose.COMPOSE}"
+        const val KAKAOCUP =
+            "io.github.kakaocup:compose:${Versions.Test.KAKAOCUP}"
+        const val ESPRESSO =
+            "androidx.test.espresso:espresso-core:${Versions.Test.ESPRESSO}"
+        const val NAVIGATION =
+            "androidx.navigation:navigation-testing:${Versions.AndroidX.NAVIGATION}"
+    }
 }
 

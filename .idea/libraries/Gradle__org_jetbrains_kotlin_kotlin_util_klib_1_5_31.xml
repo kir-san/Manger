@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.jetbrains.kotlin:kotlin-util-klib:1.5.31">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-util-klib/1.5.31/cef4ec80220f956330bd742b849804d6c6b1e60d/kotlin-util-klib-1.5.31.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-util-klib/1.5.31/bd44fdab6c9e9dc95152da78d93a5389b57aad41/kotlin-util-klib-1.5.31-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,17 @@
+<component name="libraryTable">
+  <library name="Gradle: com.google.accompanist:accompanist-systemuicontroller:0.19.0@aar">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/86c3c4239e482fe17d505379ae978821/transformed/accompanist-systemuicontroller-0.19.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/d148d7284d2ccea20957e4c7ced9acbd/transformed/accompanist-systemuicontroller-0.19.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/85c511b294418b340cf3df98de7cb576/transformed/accompanist-systemuicontroller-0.19.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/85c511b294418b340cf3df98de7cb576/transformed/accompanist-systemuicontroller-0.19.0/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/85c511b294418b340cf3df98de7cb576/transformed/accompanist-systemuicontroller-0.19.0/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.accompanist/accompanist-systemuicontroller/0.19.0/a56b16998ab801053861f3945105a7f5bfda6d9/accompanist-systemuicontroller-0.19.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.accompanist/accompanist-systemuicontroller/0.19.0/cb010f61f90234673b2c3d28a7f7b25fe04dc451/accompanist-systemuicontroller-0.19.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

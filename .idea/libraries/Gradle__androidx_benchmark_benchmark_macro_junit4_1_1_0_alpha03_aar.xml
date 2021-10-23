@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: androidx.benchmark:benchmark-macro-junit4:1.1.0-alpha03@aar">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/44a988774a5dc222630834a8eda7d210/transformed/benchmark-macro-junit4-1.1.0-alpha03/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/44a988774a5dc222630834a8eda7d210/transformed/benchmark-macro-junit4-1.1.0-alpha03/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/44a988774a5dc222630834a8eda7d210/transformed/benchmark-macro-junit4-1.1.0-alpha03/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/androidx.benchmark/benchmark-macro-junit4/1.1.0-alpha03/135c63a8ec6d6691d0d8f2cfe043b9459b52d705/benchmark-macro-junit4-1.1.0-alpha03-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

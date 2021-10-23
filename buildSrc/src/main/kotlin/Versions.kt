@@ -29,6 +29,7 @@ object Versions {
         const val HILT = "1.0.0"
         const val DATASTORE = "1.0.0"
         const val ROOM = "2.4.0-beta01"
+        const val NAVIGATION = "2.4.0-alpha10"
     }
 
     object Compose {
@@ -40,6 +41,8 @@ object Versions {
     object Google {
         const val MATERIAL = "1.3.0"
         const val PROTOBUF_JAVALITE = "3.18.0"
+        const val PROTOBUF_PROTOC = "3.18.0"
+        const val PROTOBUF_PLUGIN = "0.8.17"
         const val PLAY_SERVICES_GCM = "17.0.0" // не менять версию
         const val ACCOMPANIST = "0.19.0"
         const val HILT = "2.37"

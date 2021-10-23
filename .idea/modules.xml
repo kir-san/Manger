@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Manger.iml" filepath="$PROJECT_DIR$/.idea/modules/Manger.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ankofork/Manger.ankofork.iml" filepath="$PROJECT_DIR$/.idea/modules/ankofork/Manger.ankofork.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Manger.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Manger.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/benchmark/Manger.app.benchmark.iml" filepath="$PROJECT_DIR$/.idea/modules/app/benchmark/Manger.app.benchmark.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Manger.buildSrc.iml" filepath="$PROJECT_DIR$/.idea/modules/Manger.buildSrc.iml" />
+    </modules>
+  </component>
+</project>

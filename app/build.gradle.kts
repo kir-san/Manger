@@ -9,7 +9,7 @@ plugins {
     kotlin(Plugins.KAPT)
     id(Plugins.KSP) version Versions.Kotlin.KSP
     id(Plugins.PARCELIZE)
-    id(Plugins.PROTOBUF) version "0.8.17"
+    id(Plugins.PROTOBUF) version Versions.Google.PROTOBUF_PLUGIN
 }
 
 android {
@@ -118,7 +118,7 @@ dependencies {
 
     Dependencies.Google.apply {
         implementation(MATERIAL)
-        implementation(PROTOBUF)
+        implementation(PROTOBUF_JAVALITE)
         implementation(PLAY_SERVICES_GCM)
     }
 
@@ -226,7 +226,7 @@ dependencies {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.18.0"
+        artifact = Dependencies.Google.PROTOBUF_PROTOC
     }
     generateProtoTasks {
         all().forEach { task ->

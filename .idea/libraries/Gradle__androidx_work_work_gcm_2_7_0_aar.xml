@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: androidx.work:work-gcm:2.7.0@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/c4774f50419f08bc96c847891a8a1711/transformed/work-gcm-2.7.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/c4774f50419f08bc96c847891a8a1711/transformed/work-gcm-2.7.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/c4774f50419f08bc96c847891a8a1711/transformed/work-gcm-2.7.0/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/androidx.work/work-gcm/2.7.0/ff4bf1305841c2d860dcfae56bef28f34208510b/work-gcm-2.7.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

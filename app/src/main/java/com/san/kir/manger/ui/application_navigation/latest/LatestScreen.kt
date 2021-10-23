@@ -30,11 +30,11 @@ import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,6 +52,7 @@ import com.san.kir.ankofork.dialogs.longToast
 import com.san.kir.ankofork.dialogs.toast
 import com.san.kir.manger.R
 import com.san.kir.manger.di.DefaultDispatcher
+import com.san.kir.manger.di.MainDispatcher
 import com.san.kir.manger.room.dao.ChapterDao
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.action
@@ -69,16 +70,13 @@ import com.san.kir.manger.workmanager.LatestClearWorker
 import com.san.kir.manger.workmanager.ReadLatestClearWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @Composable
@@ -86,31 +84,27 @@ fun LatestScreen(
     nav: NavHostController,
     viewModel: LatestViewModel = hiltViewModel()
 ) {
-    val allItems by viewModel.allItems.collectAsState(emptyList())
-    val selectedItems by viewModel.selectedItems.collectAsState()
-    val selectionMode by viewModel.selectionMode.collectAsState()
-
     var isAction by remember { mutableStateOf(false) }
 
     TopBarScreenList(
         additionalPadding = 0.dp,
         navHostController = nav,
-        title = if (selectionMode) {
+        title = if (viewModel.selectionMode) {
             LocalContext.current.quantitySimple(
-                R.plurals.list_chapters_action_selected, selectedItems.count { it }
+                R.plurals.list_chapters_action_selected, viewModel.selectedItems.count { it }
             )
         } else {
-            stringResource(R.string.main_menu_latest_count, allItems.size)
+            stringResource(R.string.main_menu_latest_count, viewModel.allItems.size)
         },
         actions = { LatestActions(viewModel) }
     ) {
         item {
             if (isAction) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         }
-        itemsIndexed(allItems) { index, chapter ->
+        itemsIndexed(viewModel.allItems) { index, chapter ->
             LatestItemContent(
                 chapter = chapter,
-                isSelected = selectedItems[index],
+                isSelected = viewModel.selectedItems[index],
                 index = index,
                 viewModel = viewModel
             )
@@ -135,11 +129,9 @@ private fun LatestActions(
     viewModel: LatestViewModel,
     context: Context = LocalContext.current
 ) {
-    val selectionMode by viewModel.selectionMode.collectAsState()
-    val hasNewChapters by viewModel.hasNewChapters.collectAsState()
     var expanded by remember { mutableStateOf(false) }
 
-    if (selectionMode) {
+    if (viewModel.selectionMode) {
         MenuIcon(icon = Icons.Default.Delete) {
             viewModel.deleteSelectedItems()
         }
@@ -152,7 +144,7 @@ private fun LatestActions(
 
     DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
 
-        if (hasNewChapters) {
+        if (viewModel.hasNewChapters) {
             MenuText(R.string.latest_chapter_download_new) {
                 expanded = false
                 viewModel.downloadNewChapters()
@@ -185,8 +177,6 @@ private fun LatestItemContent(
     viewModel: LatestViewModel,
     context: Context = LocalContext.current,
 ) {
-    val selectionMode by viewModel.selectionMode.collectAsState()
-
     val downloadIndicator by remember(chapter) {
         mutableStateOf(
             chapter.status == DownloadState.QUEUED
@@ -219,7 +209,7 @@ private fun LatestItemContent(
             .fillMaxWidth()
             .combinedClickable(
                 onClick = {
-                    if (selectionMode.not()) {
+                    if (viewModel.selectionMode.not()) {
                         if (downloadIndicator) {
                             context.toast(R.string.list_chapters_open_is_download)
                         } else {
@@ -333,75 +323,75 @@ class LatestViewModel @Inject constructor(
     private val context: Application,
     private val chapterDao: ChapterDao,
     @DefaultDispatcher private val default: CoroutineDispatcher,
+    @MainDispatcher private val main: CoroutineDispatcher,
 ) : ViewModel() {
-    private val _allITems = MutableStateFlow(listOf<Chapter>())
-    val allItems = _allITems.asStateFlow()
 
-    private val _newChapters = MutableStateFlow(listOf<Chapter>())
-    private val _hasNewChapters = MutableStateFlow(false)
-    val hasNewChapters = _hasNewChapters.asStateFlow()
+    var allItems by mutableStateOf(listOf<Chapter>())
+        private set
+
+    private var newChapters by mutableStateOf(listOf<Chapter>())
+
+    var hasNewChapters by mutableStateOf(false)
+        private set
+
+    var selectionMode by mutableStateOf(false)
+        private set
+
+    var selectedItems by mutableStateOf(listOf<Boolean>())
+        private set
+
 
     init {
         viewModelScope.launch(default) {
             chapterDao.loadAllItems()
-                .onEach { list -> _allITems.update { list } }
+                .onEach { list ->
+                    withContext(main) { allItems = list }
+                    // обновление размера списка выделеных элементов
+                    if (list.count() != selectedItems.count())
+                        selectedItems = List(list.count()) { false }
+                }
                 .map { list ->
                     list.filter { it.isInUpdate }
                         .filter { !it.isRead }
                         .filter { it.action == ChapterStatus.DOWNLOADABLE }
                 }
                 .collect { list ->
-                    _newChapters.update { list }
-                    _hasNewChapters.update { list.isNotEmpty() }
-                }
-        }
-
-        // обновление размера списка выделеных элементов
-        viewModelScope.launch(default) {
-            allItems.map { it.count() }.collect { count ->
-                _selectedItems.update { old ->
-                    if (old.count() != count) {
-                        List(count) { false }
-                    } else {
-                        old
+                    withContext(main) {
+                        newChapters = list
+                        hasNewChapters = list.isNotEmpty()
                     }
                 }
-            }
         }
 
         // активация и дезактивация режима выделения
-        viewModelScope.launch(default) {
-            combine(
-                _selectedItems.map { array -> array.count { it } },
-                _selectionMode
-            ) { selectedCount, mode ->
-                if (selectedCount > 0 && mode.not()) {
-                    _selectionMode.update { true }
-                } else if (selectedCount <= 0 && mode) {
-                    _selectionMode.update { false }
+        snapshotFlow { selectedItems to selectionMode }
+            .onEach { (items, mode) ->
+                val list = items.filter { it }
+                if (list.count() > 0 && mode.not()) {
+                    withContext(main) {
+                        selectionMode = true
+                    }
+                } else if (list.count() <= 0 && mode) {
+                    withContext(main) {
+                        selectionMode = false
+                    }
                 }
-            }.collect()
-        }
+            }
+            .launchIn(viewModelScope)
     }
 
     fun downloadNewChapters() = viewModelScope.launch(default) {
-        _newChapters.value.onEach { chapter ->
+        newChapters.onEach { chapter ->
             DownloadService.start(context, chapter)
         }
     }
 
-    private val _selectionMode = MutableStateFlow(false)
-    val selectionMode = _selectionMode.asStateFlow()
-    private val _selectedItems = MutableStateFlow(listOf<Boolean>())
-    val selectedItems = _selectedItems.asStateFlow()
     fun onSelectItem(index: Int) = viewModelScope.launch(default) {
-        _selectedItems.update { old ->
-            old.toMutableList().apply { set(index, get(index).not()) }
-        }
+        selectedItems = selectedItems.toMutableList().apply { set(index, get(index).not()) }
     }
 
     fun deleteSelectedItems() = viewModelScope.launch(default) {
-        _selectedItems.value.zip(allItems.value).forEachIndexed { i, (b, chapter) ->
+        selectedItems.zip(allItems).forEachIndexed { _, (b, chapter) ->
             if (b) {
                 chapter.isInUpdate = false
                 chapterDao.update(chapter)

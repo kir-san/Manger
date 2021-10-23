@@ -48,6 +48,8 @@ private val values = listOf(
     MainNavTarget.Schedule,
 )
 
+fun deepLinkUri(route: String) = "android-app://androidx.navigation//$route"
+
 sealed class MainNavTarget(
     val type: MainMenuType,
     val icon: ImageVector,
@@ -92,7 +94,7 @@ sealed class MainNavTarget(
         icon = Icons.Default.GetApp
     ) {
         override val route = "downloader"
-        val deepLink = "DownloaderDeepLink"
+        val deepLink = deepLinkUri(route)
     }
 
     object Latest : MainNavTarget(
@@ -100,6 +102,7 @@ sealed class MainNavTarget(
         icon = Icons.Default.History
     ) {
         override val route = "latest"
+        val deepLink = deepLinkUri(route)
     }
 
     object Settings : MainNavTarget(
@@ -167,7 +170,10 @@ fun NavGraphBuilder.mainNavGraph(nav: NavHostController) {
         DownloadScreen(nav)
     }
 
-    composable(route = MainNavTarget.Latest.route) {
+    composable(
+        route = MainNavTarget.Latest.route,
+        deepLinks = listOf(navDeepLink { uriPattern = MainNavTarget.Latest.deepLink })
+    ) {
         LatestScreen(nav)
     }
 

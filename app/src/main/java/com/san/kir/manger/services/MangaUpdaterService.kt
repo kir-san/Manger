@@ -16,6 +16,8 @@ import android.os.Message
 import androidx.annotation.RequiresApi
 import androidx.annotation.WorkerThread
 import androidx.core.app.NotificationCompat
+import androidx.core.app.TaskStackBuilder
+import androidx.core.net.toUri
 import com.san.kir.ankofork.intentFor
 import com.san.kir.ankofork.sdk28.notificationManager
 import com.san.kir.manger.R
@@ -26,6 +28,8 @@ import com.san.kir.manger.room.dao.ChapterDao
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.ui.MainActivity
+import com.san.kir.manger.ui.application_navigation.MainNavTarget
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.SearchDuplicate
 import com.san.kir.manger.utils.extensions.log
@@ -66,10 +70,18 @@ class MangaUpdaterService : Service() {
     @Volatile
     private lateinit var mServiceHandler: ServiceHandler
 
-    //    private val actionGoToLatest by lazy {
-//        val intent = intentFor<LatestChapterActivity>()
-//        PendingIntent.getActivity(this, 0, intent, 0)
-//    }
+    private val actionGoToLatest by lazy {
+        val deepLinkIntent = Intent(
+            Intent.ACTION_VIEW,
+            MainNavTarget.Latest.deepLink.toUri(),
+            this,
+            MainActivity::class.java
+        )
+        TaskStackBuilder.create(this).run {
+            addNextIntentWithParentStack(deepLinkIntent)
+            getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+        }
+    }
     private val actionCancelAll by lazy {
         val intent = intentFor<MangaUpdaterService>().setAction(ACTION_CANCEL_ALL)
         val cancelAll = PendingIntent.getService(this, 0, intent, 0)
@@ -178,7 +190,7 @@ class MangaUpdaterService : Service() {
         val builder = NotificationCompat.Builder(this, channelId)
             .setContentTitle(getString(R.string.manga_update_notify_update_ready))
             .setSmallIcon(R.drawable.ic_notification_update)
-//            .setContentIntent(actionGoToLatest)
+            .setContentIntent(actionGoToLatest)
 
         val notify = NotificationCompat.InboxStyle(builder)
             .addLine(

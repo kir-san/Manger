@@ -1,7 +1,6 @@
 package com.san.kir.manger.ui.utils
 
 import androidx.navigation.NavHostController
-import com.san.kir.manger.utils.extensions.log
 
 fun NavHostController.navigate(target: NavTarget) {
     navigate(target.route)
@@ -21,11 +20,6 @@ fun NavHostController.getLongElement(target: NavItem): Long? {
     return currentBackStackEntry
         ?.arguments
         ?.getLong(target.value)
-}
-
-fun NavHostController.printCurrentDestination() {
-    log("${currentDestination?.route}")
-    log("${currentDestination?.parent?.route}")
 }
 
 interface NavTarget {

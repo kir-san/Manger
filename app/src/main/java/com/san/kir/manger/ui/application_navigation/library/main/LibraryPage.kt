@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -27,6 +28,7 @@ import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.CategoryWithMangas
 import com.san.kir.manger.ui.application_navigation.MainNavTarget
+import com.san.kir.manger.ui.utils.TestTags
 import com.san.kir.manger.ui.utils.navigate
 
 @Composable
@@ -39,7 +41,9 @@ fun LibraryPage(
         Modifier.fillMaxSize()
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .testTag(TestTags.Library.page),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -55,12 +59,14 @@ fun LibraryPage(
 @Composable
 private fun EmptyView(nav: NavHostController) {
     Column(
-        Modifier.padding(
-            rememberInsetsPaddingValues(
-                insets = LocalWindowInsets.current.systemBars,
-                applyBottom = false, applyTop = false
+        Modifier
+            .padding(
+                rememberInsetsPaddingValues(
+                    insets = LocalWindowInsets.current.systemBars,
+                    applyBottom = false, applyTop = false
+                )
             )
-        ),
+            .testTag(TestTags.Library.empty_view),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

@@ -28,11 +28,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.ui.application_navigation.library.LibraryNavTarget
+import com.san.kir.manger.ui.utils.TestTags
 import com.san.kir.manger.ui.utils.navigate
 import com.san.kir.manger.ui.utils.rememberImage
 import com.san.kir.manger.ui.utils.squareMaxSize
@@ -55,6 +57,7 @@ private fun ItemView(
         shape = RoundedCornerShape(8.dp),
         border = BorderStroke(3.dp, backgroundColor),
         modifier = Modifier
+            .testTag(TestTags.Library.item)
             .padding(3.dp)
             .fillMaxWidth()
             .combinedClickable(

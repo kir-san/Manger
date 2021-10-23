@@ -79,6 +79,7 @@ fun ColumnScope.LibraryContent(
             ) {
                 categoryNames.forEachIndexed { index, item ->
                     Tab(
+                        modifier = Modifier.testTag(TestTags.Library.tab),
                         selected = pagerState.currentPage == index,
                         text = { Text(text = item) },
                         onClick = { scope.launch { pagerState.animateScrollToPage(index) } }

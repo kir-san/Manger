@@ -95,6 +95,21 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = Versions.Compose.COMPOSE
     }
+
+    packagingOptions {
+        resources.excludes.add("META-INF/**/*")
+        resources.excludes.add("META-INF/DEPENDENCIES")
+        resources.excludes.add("META-INF/LICENSE")
+        resources.excludes.add("META-INF/LICENSE.txt")
+        resources.excludes.add("META-INF/license.txt")
+        resources.excludes.add("META-INF/NOTICE")
+        resources.excludes.add("META-INF/NOTICE.txt")
+        resources.excludes.add("META-INF/notice.txt")
+        resources.excludes.add("META-INF/ASL2.0")
+        resources.excludes.add("META-INF/AL2.0")
+        resources.excludes.add("META-INF/LGPL2.1")
+        resources.excludes.add("META-INF/*.kotlin_module")
+    }
 }
 
 dependencies {
@@ -198,30 +213,32 @@ dependencies {
         implementation(PROGRESSBUTTON)
     }
 
+    Dependencies.Hyperion.apply {
+        debugImplementation(CORE)
+        debugImplementation(CRASH)
+    }
+
+    Dependencies.Test.apply {
+        testImplementation(JUNIT)
+        androidTestImplementation(TEST_CORE)
+        androidTestImplementation(TEST_RULES)
+        androidTestImplementation(TEST_JUNIT)
+        androidTestImplementation(TEST_RUNNER)
+        androidTestImplementation(TRUTH)
+        androidTestImplementation(BENCHMARK_JUNIT)
+        androidTestImplementation(COMPOSE_JUNIT)
+        androidTestImplementation(KAKAOCUP)
+        androidTestImplementation(ESPRESSO)
+        androidTestImplementation(NAVIGATION)
+        debugImplementation(COMPOSE_MANIFEST)
+    }
 
     //Big Image Viewer
     //implementation("com.davemorrissey.labs:subsampling-scale-image-view:3.10.0")
-
-
-    debugImplementation("com.willowtreeapps.hyperion:hyperion-core:0.9.31")
-    debugImplementation("com.willowtreeapps.hyperion:hyperion-crash:0.9.31")
 //    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.7")
 
     // Use the most recent version of Compose available.
     // debugImplementation 'org.jetbrains.kotlin:kotlin-reflect:1.5.20'
-    testImplementation("junit:junit:4.12")
-
-    androidTestImplementation("androidx.test:core:1.4.0")
-    androidTestImplementation("androidx.test:rules:1.4.0")
-    androidTestImplementation("androidx.test.ext:junit:1.1.3")
-    androidTestImplementation("androidx.test:runner:1.4.0")
-    androidTestImplementation("com.google.truth:truth:1.0.1")
-    androidTestImplementation("androidx.benchmark:benchmark-junit4:1.0.0")
-
-    // Test rules and transitive dependencies:
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:${Versions.Compose.COMPOSE}")
-// Needed for createComposeRule, but not createAndroidComposeRule:
-    debugImplementation("androidx.compose.ui:ui-test-manifest:${Versions.Compose.COMPOSE}")
 }
 
 protobuf {

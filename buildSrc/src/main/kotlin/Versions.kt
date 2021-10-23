@@ -53,6 +53,20 @@ object Versions {
         const val RESULT = "4.0.0"
     }
 
+    object Test {
+        const val JUNIT = "4.13.2"
+        const val TEST_CORE = "1.4.0"
+        const val TEST_RULES = TEST_CORE
+        const val TEST_JUNIT = "1.1.3"
+        const val TEST_RUNNER = TEST_CORE
+        const val TRUTH = "1.0.1"
+        const val BENCHMARK_JUNIT = "1.0.0"
+        const val KAKAOCUP = "0.0.1"
+        const val ESPRESSO = "3.4.0"
+    }
+
+    const val HYPERION = "0.9.31"
+
     // Make sure to update `buildSrc/build.gradle.kts` when updating this
     const val GRADLE = "7.1.0-beta01"
 

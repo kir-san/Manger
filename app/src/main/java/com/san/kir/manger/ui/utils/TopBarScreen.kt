@@ -24,6 +24,7 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -53,45 +54,50 @@ fun TopBarScreenWithInsets(
     val coroutineScope = rememberCoroutineScope()
 
     Scaffold(modifier = modifier,
-             scaffoldState = scaffoldState ?: rememberScaffoldState(),
-             drawerContent = drawerContent,
-             drawerGesturesEnabled = true,
-             topBar = {
-                 TopAppBar(
-                     title = {
-                         Column {
-                             Text(text = title, maxLines = 1)
-                             if (subtitle.isNotEmpty()) Text(
-                                 text = subtitle,
-                                 style = MaterialTheme.typography.subtitle2,
-                                 maxLines = 1
-                             )
-                         }
-                     },
-                     navigationIcon = {
-                         if (scaffoldState == null) {
-                             IconButton(onClick = navigationButtonListener) {
-                                 Icon(Icons.Default.ArrowBack, "")
-                             }
-                         } else {
-                             IconButton(onClick = {
-                                 coroutineScope.launch {
-                                     scaffoldState.drawerState.open()
-                                 }
-                             }) { Icon(Icons.Default.Menu, "") }
-                         }
-                     },
-                     modifier = Modifier
-                         .statusBarsPadding()
-                         .fillMaxWidth()
-                         .padding(0.dp),
-                     actions = actions,
-                     contentPadding = rememberInsetsPaddingValues(
-                         insets = LocalWindowInsets.current.systemBars,
-                         applyBottom = false, applyTop = false
-                     )
-                 )
-             }) { contentPadding ->
+        scaffoldState = scaffoldState ?: rememberScaffoldState(),
+        drawerContent = drawerContent,
+        drawerGesturesEnabled = true,
+        topBar = {
+            TopAppBar(
+                title = {
+                    Column {
+                        Text(text = title, maxLines = 1)
+                        if (subtitle.isNotEmpty()) Text(
+                            text = subtitle,
+                            style = MaterialTheme.typography.subtitle2,
+                            maxLines = 1
+                        )
+                    }
+                },
+                navigationIcon = {
+                    if (scaffoldState == null) {
+                        IconButton(
+                            modifier = Modifier.testTag(TestTags.Drawer.nav_back),
+                            onClick = navigationButtonListener
+                        ) {
+                            Icon(Icons.Default.ArrowBack, "")
+                        }
+                    } else {
+                        IconButton(
+                            modifier = Modifier.testTag(TestTags.Drawer.drawer_open),
+                            onClick = {
+                                coroutineScope.launch {
+                                    scaffoldState.drawerState.open()
+                                }
+                            }) { Icon(Icons.Default.Menu, "") }
+                    }
+                },
+                modifier = Modifier
+                    .statusBarsPadding()
+                    .fillMaxWidth()
+                    .padding(0.dp),
+                actions = actions,
+                contentPadding = rememberInsetsPaddingValues(
+                    insets = LocalWindowInsets.current.systemBars,
+                    applyBottom = false, applyTop = false
+                )
+            )
+        }) { contentPadding ->
         content?.let { con ->
             Column(
                 modifier = Modifier

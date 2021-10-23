@@ -17,6 +17,7 @@ import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.primarySurface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -55,7 +56,12 @@ fun ColumnScope.LibraryContent(
 
     if (isEmpty.not() && categories.isNotEmpty()) {
         val pagerState = rememberPagerState()
-        viewModel.changeCurrentCategory(categories[pagerState.currentPage])
+
+        LaunchedEffect(pagerState.currentPage) {
+            if (pagerState.currentPage == pagerState.pageCount)
+                pagerState.animateScrollToPage(pagerState.pageCount - 1)
+            viewModel.changeCurrentCategory(categories[pagerState.currentPage])
+        }
 
         // Название вкладок
         Box(

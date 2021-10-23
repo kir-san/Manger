@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -50,6 +51,7 @@ import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.MainMenuItem
 import com.san.kir.manger.ui.application_navigation.MAP_SCREENS_TYPE
 import com.san.kir.manger.ui.application_navigation.MainNavTarget
+import com.san.kir.manger.ui.utils.TestTags
 import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
 import com.san.kir.manger.utils.enums.MainMenuType
 import com.san.kir.manger.utils.extensions.formatDouble
@@ -163,6 +165,7 @@ private fun MainMenuItemRows(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = action)
+            .testTag(TestTags.Drawer.item)
     ) {
         Icon(icon, "", modifier = Modifier.padding(16.dp))
 

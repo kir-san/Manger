@@ -1,48 +1,51 @@
 package com.san.kir.manger.workmanager
 
 import android.content.Context
-import androidx.work.CoroutineWorker
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import androidx.work.WorkerParameters
-import androidx.work.workDataOf
-import com.san.kir.manger.repositories.CategoryRepository
-import com.san.kir.manger.repositories.MangaRepository
+import androidx.hilt.work.HiltWorker
+import androidx.work.*
+import com.san.kir.manger.di.DefaultDispatcher
+import com.san.kir.manger.room.dao.CategoryDao
+import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.entities.Category
-import com.san.kir.manger.utils.extensions.log
-import com.san.kir.manger.utils.extensions.logVar
-import kotlinx.coroutines.Dispatchers
+import com.san.kir.manger.utils.CATEGORY_ALL
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 
-class UpdateCategoryInMangaWorker(appContext: Context, workerParameters: WorkerParameters) :
-    CoroutineWorker(appContext, workerParameters) {
-
-    private val mCategoryRepository = CategoryRepository(appContext)
-    private val mMangaRepository = MangaRepository(appContext)
+@HiltWorker
+class UpdateCategoryInMangaWorker @AssistedInject constructor(
+    @Assisted appContext: Context,
+    @Assisted workerParameters: WorkerParameters,
+    @DefaultDispatcher private val default: CoroutineDispatcher,
+    private val categoryDao: CategoryDao,
+    private val mangaDao: MangaDao,
+) : CoroutineWorker(appContext, workerParameters) {
 
     override suspend fun doWork() = coroutineScope {
         val categoryName = inputData.getString(cat)
         val oldCategory = inputData.getString(oldCat)
 
 
-
         if (categoryName != null && oldCategory != null) {
+
             val category = withContext(default) {
-                mCategoryRepository.loadItem(categoryName).first()
+                categoryDao.loadItem(categoryName).first()
             }
-            log("categoryName = ${category.name}")
-            oldCategory.logVar("oldCategory")
+
             kotlin.runCatching {
                 withContext(default) {
                     if (categoryName != oldCategory) {
-                        mMangaRepository.update(
-                            *mMangaRepository
-                                .getItemsWhere(oldCategory)
-                                .onEach {
-                                    it.categories = categoryName
-                                }
+                        mangaDao.update(
+                            *(
+                                    if (oldCategory == CATEGORY_ALL)
+                                        mangaDao.getItems()
+                                    else
+                                        mangaDao.getMangaWhereCategoryNotAll(oldCategory)
+                                    )
+                                .onEach { it.categories = category.name }
                                 .toTypedArray()
                         )
                     }
@@ -53,7 +56,7 @@ class UpdateCategoryInMangaWorker(appContext: Context, workerParameters: WorkerP
                 },
                 onFailure = {
                     category.name = oldCategory
-                    mCategoryRepository.update(category)
+                    categoryDao.update(category)
                     it.printStackTrace()
                     Result.failure()
                 }
@@ -75,7 +78,6 @@ class UpdateCategoryInMangaWorker(appContext: Context, workerParameters: WorkerP
                 .setInputData(data)
                 .build()
             WorkManager.getInstance(ctx).enqueue(task)
-            log("task is started")
         }
     }
 }

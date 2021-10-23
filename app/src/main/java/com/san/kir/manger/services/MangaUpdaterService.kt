@@ -89,9 +89,7 @@ class MangaUpdaterService : Service() {
     @Inject
     lateinit var mangaDao: MangaDao
 
-    @DefaultDispatcher
-    @Inject
-    lateinit var default: CoroutineDispatcher
+    private val default = Dispatchers.Default
 
     @Inject
     lateinit var manager: SiteCatalogsManager

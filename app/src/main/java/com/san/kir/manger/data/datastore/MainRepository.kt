@@ -34,6 +34,12 @@ class MainRepository @Inject constructor(private val mainStore: DataStore<Main>)
             preference.toBuilder().setTheme(state).build()
         }
     }
+
+    suspend fun setEditMenu(state: Boolean) {
+        mainStore.updateData { preference ->
+            preference.toBuilder().setEditMenu(state).build()
+        }
+    }
 }
 
 val Context.mainStore: DataStore<Main> by dataStore(

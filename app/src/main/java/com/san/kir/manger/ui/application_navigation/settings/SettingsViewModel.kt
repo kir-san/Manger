@@ -12,6 +12,7 @@ import com.san.kir.manger.data.datastore.DownloadRepository
 import com.san.kir.manger.data.datastore.MainRepository
 import com.san.kir.manger.data.datastore.ViewerRepository
 import com.san.kir.manger.di.DefaultDispatcher
+import com.san.kir.manger.di.MainDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -34,9 +35,11 @@ class SettingsViewModel @Inject constructor(
     private val viewer: ViewerRepository,
     private val chapters: ChaptersRepository,
     @DefaultDispatcher private val default: CoroutineDispatcher,
+    @MainDispatcher private val mainD: CoroutineDispatcher,
 ) : ViewModel() {
     var theme by mutableStateOf(true, main::setTheme)
     var showCategory by mutableStateOf(true, main::setShowCategory)
+    var editMenu by mutableStateOf(false, main::setEditMenu)
 
     var concurrent by mutableStateOf(true, download::setConcurrent)
     var retry by mutableStateOf(false, download::setRetry)
@@ -56,9 +59,10 @@ class SettingsViewModel @Inject constructor(
             val viewer = viewer.data.filterNotNull().first()
             val chapters = chapters.data.filterNotNull().first()
 
-            withContext(default) {
+            withContext(mainD) {
                 theme = main.theme
                 showCategory = main.isShowCatagery
+                editMenu = main.editMenu
 
                 concurrent = download.concurrent
                 retry = download.retry

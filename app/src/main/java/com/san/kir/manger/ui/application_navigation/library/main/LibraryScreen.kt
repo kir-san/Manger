@@ -158,7 +158,7 @@ private fun MainMenuItemRows(
     viewModel: DrawerViewModel = hiltViewModel(),
     action: () -> Unit
 ) {
-    val editMode by remember { mutableStateOf(false) }
+    val editMode by viewModel.editMenu.collectAsState(false)
 
     Row(
         verticalAlignment = Alignment.CenterVertically,

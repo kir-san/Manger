@@ -483,6 +483,9 @@
     <string name="settings_app_dark_theme_summary">Активировать оформление приложения в темных цветах</string>
     <string name="settings_app_dark_theme_title">Темная тема</string>
 
+    <string name="settings_app_edit_menu_summary">Активирует возможность менять порядок элементов в меню</string>
+    <string name="settings_app_edit_menu_title">Редактор меню</string>
+
     <string name="settings_library_title">Настройки библиотеки</string>
 
     <string name="settings_library_show_category_summary">Отображение названия категории у каждой манги в категории \'Все\'</string>

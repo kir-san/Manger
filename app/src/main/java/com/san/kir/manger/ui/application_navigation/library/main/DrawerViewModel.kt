@@ -2,18 +2,12 @@ package com.san.kir.manger.ui.application_navigation.library.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.san.kir.manger.data.datastore.MainRepository
 import com.san.kir.manger.di.DefaultDispatcher
-import com.san.kir.manger.room.dao.CategoryDao
-import com.san.kir.manger.room.dao.ChapterDao
-import com.san.kir.manger.room.dao.MainMenuDao
-import com.san.kir.manger.room.dao.MangaDao
-import com.san.kir.manger.room.dao.PlannedDao
-import com.san.kir.manger.room.dao.SiteDao
-import com.san.kir.manger.room.dao.StorageDao
+import com.san.kir.manger.room.dao.*
 import com.san.kir.manger.utils.enums.DownloadState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -29,8 +23,10 @@ class DrawerViewModel @Inject constructor(
     private val siteDao: SiteDao,
     private val chapterDao: ChapterDao,
     private val plannedDao: PlannedDao,
+    private val mainRepository: MainRepository,
     @DefaultDispatcher private val default: CoroutineDispatcher,
 ) : ViewModel() {
+    val editMenu = mainRepository.data.map { it.editMenu }.flowOn(default)
     fun loadMainMenuItems() = mainMenuDao.loadItems().flowOn(default)
     fun loadLibraryCounts() = mangaDao.loadItems().map { it.size }.flowOn(default)
     fun loadStorageSizes() =

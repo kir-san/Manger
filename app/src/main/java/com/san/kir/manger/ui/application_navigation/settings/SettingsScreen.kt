@@ -71,6 +71,12 @@ fun SettingsScreen(
             onCheckedChange = { viewModel.theme = it }
         )
 
+        TogglePreferenceItem(
+            title = R.string.settings_app_edit_menu_title,
+            subtitle = R.string.settings_app_edit_menu_summary,
+            initialValue = viewModel.editMenu,
+            onCheckedChange = { viewModel.editMenu = it })
+
         Divider()
 
         PreferenceTitle(R.string.settings_list_chapter_title)

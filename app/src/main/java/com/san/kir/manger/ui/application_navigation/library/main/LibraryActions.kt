@@ -11,16 +11,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.san.kir.ankofork.startService
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.MangaColumn
+import com.san.kir.manger.services.AppUpdateService
 import com.san.kir.manger.services.MangaUpdaterService
 import com.san.kir.manger.ui.application_navigation.library.LibraryNavTarget
 import com.san.kir.manger.ui.utils.MenuIcon
 import com.san.kir.manger.ui.utils.MenuText
 import com.san.kir.manger.ui.utils.navigate
+import com.san.kir.manger.utils.extensions.startForegroundService
 
 @Composable
 fun LibraryActions(
@@ -57,8 +58,8 @@ fun LibraryActions(
         }
 
         MenuText(id = R.string.library_menu_update) {
-            // TODO add app`s update search
             expanded = false
+            context.startForegroundService<AppUpdateService>()
         }
     }
 

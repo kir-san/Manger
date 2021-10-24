@@ -35,7 +35,7 @@ class AppUpdateService : Service(), CoroutineScope {
         private const val name = "AppUpdaterServiceName"
         private const val descriptions = "AppUpdaterServiceDescription"
 
-        private const val url = "http://4pda.ru/forum/index.php?showtopic=772886&st=0#entry53336845"
+        private const val url = "http://4pda.to/forum/index.php?showtopic=772886&st=0#entry53336845"
     }
 
     lateinit var job: Job

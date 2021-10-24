@@ -35,7 +35,9 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
 import com.san.kir.manger.R
+import com.san.kir.manger.ui.application_navigation.MainNavTarget
 import com.san.kir.manger.ui.utils.TestTags
+import com.san.kir.manger.ui.utils.navigate
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
@@ -68,42 +70,39 @@ fun ColumnScope.LibraryContent(
         if (draged) viewModel.changeSelectedManga(false)
 
         // Название вкладок
-        Box(
+        ScrollableTabRow(
+            selectedTabIndex = pagerState.currentPage,
+            indicator = { tabPositions ->
+                TabRowDefaults.Indicator(
+                    Modifier.pagerTabIndicatorOffset(pagerState, tabPositions)
+                )
+            },
+            divider = {},
             modifier = Modifier
-                .fillMaxWidth()
                 .height(40.dp)
                 .background(MaterialTheme.colors.primarySurface)
+                .padding(
+                    rememberInsetsPaddingValues(
+                        insets = LocalWindowInsets.current.systemBars,
+                        applyBottom = false, applyTop = false
+                    )
+                )
         ) {
-            ScrollableTabRow(
-                selectedTabIndex = pagerState.currentPage,
-                indicator = { tabPositions ->
-                    TabRowDefaults.Indicator(
-                        Modifier.pagerTabIndicatorOffset(pagerState, tabPositions)
-                    )
-                },
-                modifier = Modifier
-                    .padding(
-                        rememberInsetsPaddingValues(
-                            insets = LocalWindowInsets.current.systemBars,
-                            applyBottom = false, applyTop = false
-                        )
-                    )
-            ) {
-                categoryNames.forEachIndexed { index, item ->
-                    Tab(
-                        modifier = Modifier.testTag(TestTags.Library.tab),
-                        selected = pagerState.currentPage == index,
-                        text = { Text(text = item) },
-                        onClick = {
-                            scope.launch {
-                                viewModel.changeSelectedManga(false)
-                                pagerState.animateScrollToPage(index)
-                            }
+            categoryNames.forEachIndexed { index, item ->
+                Tab(
+                    modifier = Modifier.testTag(TestTags.Library.tab),
+                    selected = pagerState.currentPage == index,
+                    text = { Text(text = item) },
+                    onClick = {
+                        scope.launch {
+                            viewModel.changeSelectedManga(false)
+                            pagerState.animateScrollToPage(index)
                         }
-                    )
-                }
+                    }
+                )
             }
         }
+
         // Перелистываемые вкладки
         HorizontalPager(
             count = categoryNames.size,
@@ -117,7 +116,7 @@ fun ColumnScope.LibraryContent(
         Box(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.align(Alignment.Center)) {
                 Text(text = stringResource(id = R.string.library_no_categories))
-                Button(onClick = { /*navigator.navigateTo(SimpleNavigate())*/ }) {
+                Button(onClick = { nav.navigate(MainNavTarget.Categories) }) {
                     Text(text = stringResource(id = R.string.library_to_categories))
                 }
             }

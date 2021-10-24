@@ -145,15 +145,14 @@ fun ColumnScope.ChaptersContent(
     viewModel: ChaptersViewModel,
     scope: CoroutineScope = rememberCoroutineScope(),
 ) {
-    val chapters by viewModel.chapters.collectAsState(emptyList())
     val isTitle by viewModel.isTitle.collectAsState(true)
-    val manga by viewModel.manga.collectAsState()
 
     val pagerState = rememberPagerState()
-    val pages = chapterPages(manga.isAlternativeSite)
+    val pages = chapterPages(viewModel.manga.isAlternativeSite)
 
     // ПрогрессБар для отображения фоновых операций
-    if (action || chapters.isEmpty()) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+    if (action || viewModel.chapters.isEmpty())
+        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
 
     if (isTitle)
         TabRow(

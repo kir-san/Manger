@@ -364,14 +364,14 @@ class LatestViewModel @Inject constructor(
         }
 
         // активация и дезактивация режима выделения
-        snapshotFlow { selectedItems to selectionMode }
-            .onEach { (items, mode) ->
-                val list = items.filter { it }
-                if (list.count() > 0 && mode.not()) {
+        snapshotFlow { selectionMode to selectedItems }
+            .map { (mode, list) -> mode to list.count { it } }
+            .onEach {  (mode, count) ->
+                if (count > 0 && mode.not()) {
                     withContext(main) {
                         selectionMode = true
                     }
-                } else if (list.count() <= 0 && mode) {
+                } else if (count <= 0 && mode) {
                     withContext(main) {
                         selectionMode = false
                     }

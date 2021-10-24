@@ -16,6 +16,7 @@ import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.data.datastore.ChaptersRepository
 import com.san.kir.manger.di.DefaultDispatcher
+import com.san.kir.manger.di.MainDispatcher
 import com.san.kir.manger.room.dao.ChapterDao
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.entities.Chapter
@@ -27,17 +28,12 @@ import com.san.kir.manger.utils.ChapterComparator
 import com.san.kir.manger.utils.enums.ChapterFilter
 import com.san.kir.manger.utils.enums.ChapterStatus
 import com.san.kir.manger.utils.extensions.delChapters
-import com.san.kir.manger.utils.extensions.log
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
@@ -56,31 +52,121 @@ class ChaptersViewModel @AssistedInject constructor(
     private val context: Application,
     private val manager: SiteCatalogsManager,
     @DefaultDispatcher private val default: CoroutineDispatcher,
+    @MainDispatcher private val main: CoroutineDispatcher,
 ) : ViewModel() {
-    private val _oneTimeFlag = MutableStateFlow(true)
-    private val _manga = MutableStateFlow(Manga())
-    val manga = _manga.asStateFlow()
-
-    val isTitle = chapterStore.data.map { it.isTitle }
-
-    var selectionMode by mutableStateOf(false)
-
-    // фильтры для списка глав
-    private val _filter = MutableStateFlow(ChapterFilter.ALL_READ_ASC)
-    val filter = _filter.asStateFlow()
-    fun changeFilter(action: (ChapterFilter) -> ChapterFilter) {
-        _filter.value = action(_filter.value)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val chapters = _manga.flatMapLatest { manga -> chapterDao.loadItems(manga.unic) }
-
-    var prepareChapters by mutableStateOf<List<Chapter>>(listOf())
+    private var oneTimeFlag by mutableStateOf(true)
+    var manga by mutableStateOf(Manga())
         private set
 
     // for selection mode
     var selectedItems by mutableStateOf<List<Boolean>>(listOf())
         private set
+
+    var selectionMode by mutableStateOf(false)
+        private set
+
+    // chapters
+    var chapters by mutableStateOf<List<Chapter>>(listOf())
+        private set
+
+    var prepareChapters by mutableStateOf<List<Chapter>>(listOf())
+        private set
+
+    // фильтры для списка глав
+    var filter by mutableStateOf(ChapterFilter.ALL_READ_ASC)
+
+    init {
+        // инициация манги
+        combine(
+            mangaDao.loadItem(mangaUnic).filterNotNull(),
+            snapshotFlow { oneTimeFlag }
+        ) { m, flag ->
+            if (flag) {
+                m.populate += 1
+                withContext(main) {
+                    oneTimeFlag = false
+                    manga = m
+                }
+                mangaDao.update(m)
+            }
+            m
+        }
+            .flatMapLatest { manga -> chapterDao.loadItems(manga.unic) }
+            .onEach { withContext(main) { chapters = it } }
+            // подготовка списка глав с использованием фильтров и сортировки
+            .combine(snapshotFlow {
+                filter
+            }) { list, f -> list to f }
+            .map { (l, filter) ->
+                var list = l
+                if (manga.isAlternativeSort) {
+                    list = list.sortedWith(ChapterComparator())
+                }
+                when (filter) {
+                    ChapterFilter.ALL_READ_ASC -> list
+                    ChapterFilter.NOT_READ_ASC -> list.filter { !it.isRead }
+                    ChapterFilter.IS_READ_ASC -> list.filter { it.isRead }
+                    ChapterFilter.ALL_READ_DESC -> list.reversed()
+                    ChapterFilter.NOT_READ_DESC -> list.filter { !it.isRead }.reversed()
+                    ChapterFilter.IS_READ_DESC -> list.filter { it.isRead }.reversed()
+                }
+            }
+            .distinctUntilChanged()
+            .catch { t -> throw t }
+            .onEach { withContext(main) { prepareChapters = it } }
+            // обновление размера списка выделеных элементов
+            .map { it.count() }
+            .onEach { count ->
+                if (selectedItems.count() != count) {
+                    withContext(main) {
+                        selectedItems = List(count) { false }
+                    }
+                }
+            }
+            .launchIn(viewModelScope)
+
+        // инициация фильтра
+        combine(chapterStore.data, snapshotFlow { manga }) { store, manga ->
+            if (store.isIndividual) {
+                manga.chapterFilter
+            } else {
+                ChapterFilter.valueOf(store.filterStatus)
+            }
+        }
+            .catch { t -> throw t }
+            .onEach { withContext(main) { filter = it } }
+            .launchIn(viewModelScope)
+
+        // Прослушивание фильтра для сохранения
+        combine(chapterStore.data, snapshotFlow { filter }) { store, filter ->
+            if (store.isIndividual) {
+                manga = manga.apply {
+                    chapterFilter = filter
+                }
+                mangaDao.update(manga)
+            } else {
+                chapterStore.setFilter(filter.name)
+            }
+        }.launchIn(viewModelScope)
+
+        // активация и дезактивация режима выделения
+        snapshotFlow { selectionMode to selectedItems }
+            .map { (mode, list) -> mode to list.count { it } }
+            .onEach { (mode, count) ->
+                if (count > 0 && mode.not()) {
+                    withContext(main) {
+                        selectionMode = true
+                    }
+                } else if (count <= 0 && mode) {
+                    withContext(main) {
+                        selectionMode = false
+                    }
+
+                }
+            }.launchIn(viewModelScope)
+    }
+
+    val isTitle = chapterStore.data.map { it.isTitle }
 
     fun onSelectItem(index: Int) = viewModelScope.launch {
         selectedItems = selectedItems.toMutableList().apply { set(index, get(index).not()) }
@@ -164,98 +250,6 @@ class ChaptersViewModel @AssistedInject constructor(
             }
         }
         removeSelection()
-    }
-
-    init {
-        // инициация манги
-        viewModelScope.launch(default) {
-            log("init manga $mangaUnic")
-            combine(
-                _oneTimeFlag,
-                mangaDao.loadItem(mangaUnic).filterNotNull(),
-            ) { flag, manga ->
-                if (flag) {
-                    manga.populate += 1
-                    mangaDao.update(manga)
-                    _oneTimeFlag.value = false
-                }
-                manga
-            }.collect {
-                _manga.value = it
-            }
-        }
-        // инициация фильтра
-        viewModelScope.launch(default) {
-            combine(chapterStore.data, _manga) { store, manga ->
-                if (store.isIndividual) {
-                    manga.chapterFilter
-                } else {
-                    ChapterFilter.valueOf(store.filterStatus)
-                }
-            }
-                .catch { t -> throw t }
-                .collect {
-                    _filter.value = it
-                }
-        }
-        // Прослушивание фильтра для сохранения
-        viewModelScope.launch(default) {
-            combine(chapterStore.data, filter) { store, filter ->
-                if (store.isIndividual) {
-                    _manga.value = _manga.value.apply {
-                        chapterFilter = filter
-                        mangaDao.update(this)
-                    }
-                } else {
-                    chapterStore.setFilter(filter.name)
-                }
-            }.collect()
-        }
-        // активация и дезактивация режима выделения
-        snapshotFlow { selectionMode to selectedItems }
-            .map { (mode, list) -> mode to list.count { it } }
-            .onEach { (mode, count) ->
-                if (count > 0 && mode.not()) {
-                    selectionMode = true
-                } else if (count <= 0 && mode) {
-                    selectionMode = false
-                }
-            }.launchIn(viewModelScope)
-
-        // подготовка списка глав с использованием фильтров и сортировки
-        viewModelScope.launch(default) {
-            combine(chapters, _manga, _filter) { chapters, manga, filter ->
-                var list = chapters
-                if (manga.isAlternativeSort) {
-                    list = list.sortedWith(ChapterComparator())
-                }
-
-                when (filter) {
-                    ChapterFilter.ALL_READ_ASC -> list
-                    ChapterFilter.NOT_READ_ASC -> list.filter { !it.isRead }
-                    ChapterFilter.IS_READ_ASC -> list.filter { it.isRead }
-                    ChapterFilter.ALL_READ_DESC -> list.reversed()
-                    ChapterFilter.NOT_READ_DESC -> list.filter { !it.isRead }.reversed()
-                    ChapterFilter.IS_READ_DESC -> list.filter { it.isRead }.reversed()
-                }
-            }
-                .distinctUntilChanged()
-                .catch { t -> throw t }
-                .onEach {
-                    prepareChapters = it
-                }
-                // обновление размера списка выделеных элементов
-                .map { it.count() }
-                .onEach { count ->
-                    if (selectedItems.count() != count) {
-                        withContext(default) {
-                            log("set selected items")
-                            selectedItems = List(count) { false }
-                        }
-                    }
-                }
-                .collect()
-        }
     }
 
     suspend fun getFirstNotReadChapters(manga: Manga): Chapter? = withContext(default) {

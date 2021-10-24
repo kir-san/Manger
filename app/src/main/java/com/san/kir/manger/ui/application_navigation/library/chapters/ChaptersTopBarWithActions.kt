@@ -38,11 +38,9 @@ fun ChaptersTopBar(
     viewModel: ChaptersViewModel,
     changeAction: (Boolean) -> Unit,
 ) {
-    val manga by viewModel.manga.collectAsState()
-
     TopAppBar(
         title = {
-            Text(manga.name, maxLines = 1)
+            Text(viewModel.manga.name, maxLines = 1)
         },
         navigationIcon = {
             IconButton(onClick = { nav.navigateUp() }) {
@@ -54,8 +52,8 @@ fun ChaptersTopBar(
             .fillMaxWidth()
             .padding(0.dp),
         actions = {
-            if (manga.unic.isNotBlank())
-                Actions(chaptersActionViewModel(manga.unic), changeAction)
+            if (viewModel.manga.unic.isNotBlank())
+                Actions(chaptersActionViewModel(viewModel.manga.unic), changeAction)
         },
         contentPadding = rememberInsetsPaddingValues(
             insets = LocalWindowInsets.current.systemBars,

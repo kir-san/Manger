@@ -35,7 +35,6 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -99,11 +98,8 @@ fun AboutPageContent(
     viewModel: ChaptersViewModel,
     context: Context = LocalContext.current,
 ) {
-    val manga by viewModel.manga.collectAsState()
-    val chapters by viewModel.chapters.collectAsState(emptyList())
-
-    val fullChaptersCount = chapters.count()
-    val readChaptersCount = chapters.count { it.isRead }
+    val fullChaptersCount = viewModel.chapters.count()
+    val readChaptersCount = viewModel.chapters.count { it.isRead }
 
     var logoManga by remember { mutableStateOf(ImageBitmap(60, 60)) }
 
@@ -165,8 +161,8 @@ fun AboutPageContent(
                 Button(
                     onClick = {
                         context.startActivity<ViewerActivity>(
-                            "manga" to manga,
-                            "is" to manga.isAlternativeSort
+                            "manga" to viewModel.manga,
+                            "is" to viewModel.manga.isAlternativeSort
                         )
                     }, modifier = Modifier.weight(1f)
                 ) {
@@ -178,8 +174,8 @@ fun AboutPageContent(
             Button(
                 onClick = {
                     context.startActivity<ViewerActivity>(
-                        "manga" to manga,
-                        "is" to manga.isAlternativeSort,
+                        "manga" to viewModel.manga,
+                        "is" to viewModel.manga.isAlternativeSort,
                         "continue" to true
                     )
                 },
@@ -200,11 +196,11 @@ fun AboutPageContent(
     }
 
     if (progressDeleteDialog) {
-        ProgressDeletingChaptersDialog(manga) { progressDeleteDialog = false }
+        ProgressDeletingChaptersDialog(viewModel.manga) { progressDeleteDialog = false }
     }
 
-    LaunchedEffect(manga) {
-        loadImage(manga.logo) {
+    LaunchedEffect(viewModel.manga) {
+        loadImage(viewModel.manga.logo) {
             onSuccess { image ->
                 logoManga = image
             }
@@ -212,7 +208,7 @@ fun AboutPageContent(
         }
 
         withContext(Dispatchers.Default) {
-            viewModel.getFirstNotReadChapters(manga)?.let { ch ->
+            viewModel.getFirstNotReadChapters(viewModel.manga)?.let { ch ->
                 isContinue = true
                 messageContinue = context.getString(R.string.list_chapters_about_continue, ch.name)
             } ?: kotlin.run {
@@ -230,9 +226,6 @@ fun AboutPageContent(
 fun ListPageContent(
     viewModel: ChaptersViewModel,
 ) {
-    val manga by viewModel.manga.collectAsState()
-    val filter by viewModel.filter.collectAsState()
-
     Column(modifier = Modifier.fillMaxSize()) {
         if (viewModel.prepareChapters.isNotEmpty() && viewModel.selectedItems.isNotEmpty()) {
             LazyColumn(modifier = Modifier.weight(1f)) {
@@ -241,7 +234,7 @@ fun ListPageContent(
                     key = { _, ch -> ch.id },
                 ) { index, chapter ->
                     ChaptersItemContent(
-                        manga,
+                        viewModel.manga,
                         chapter,
                         viewModel.selectedItems[index],
                         index,
@@ -261,11 +254,11 @@ fun ListPageContent(
 
                 // Смена порядка сортировки
 
-                IconButton(onClick = { viewModel.changeFilter { f -> f.inverse() } }) {
+                IconButton(onClick = { viewModel.filter = viewModel.filter.inverse() }) {
                     Icon(
                         Icons.Default.Sort, contentDescription = "reverse sort",
                         modifier = Modifier.rotate(
-                            animateFloatAsState(if (filter.isAsc) 0f else 180f).value
+                            animateFloatAsState(if (viewModel.filter.isAsc) 0f else 180f).value
                         )
                     )
                 }
@@ -275,35 +268,35 @@ fun ListPageContent(
 
                 // Кнопка включения отображения всех глав
                 IconButton(
-                    onClick = { viewModel.changeFilter { f -> f.toAll() } },
+                    onClick = { viewModel.filter = viewModel.filter.toAll() },
                     modifier = Modifier.padding(horizontal = 5.dp)
                 ) {
                     Icon(
                         Icons.Default.SelectAll, contentDescription = null,
-                        tint = animatedColor(filter.isAll)
+                        tint = animatedColor(viewModel.filter.isAll)
                     )
                 }
 
                 // Кнопка включения отображения только прочитанных глав
                 IconButton(
-                    onClick = { viewModel.changeFilter { f -> f.toRead() } },
+                    onClick = { viewModel.filter = viewModel.filter.toRead() },
                     modifier = Modifier.padding(horizontal = 5.dp)
                 ) {
                     Icon(
                         Icons.Default.Visibility, contentDescription = null,
-                        tint = animatedColor(filter.isRead)
+                        tint = animatedColor(viewModel.filter.isRead)
                     )
                 }
 
 
                 // Кнопка включения отображения только не прочитанных глав
                 IconButton(
-                    onClick = { viewModel.changeFilter { f -> f.toNot() } },
+                    onClick = { viewModel.filter = viewModel.filter.toNot() },
                     modifier = Modifier.padding(horizontal = 5.dp)
                 ) {
                     Icon(
                         Icons.Default.VisibilityOff, contentDescription = null,
-                        tint = animatedColor(filter.isNot)
+                        tint = animatedColor(viewModel.filter.isNot)
                     )
                 }
 

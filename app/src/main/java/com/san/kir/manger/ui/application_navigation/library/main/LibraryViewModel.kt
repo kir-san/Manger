@@ -1,6 +1,9 @@
 package com.san.kir.manger.ui.application_navigation.library.main
 
 import android.app.Application
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
@@ -17,7 +20,6 @@ import com.san.kir.manger.utils.SortLibraryUtil
 import com.san.kir.manger.workmanager.MangaDeleteWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
@@ -46,8 +48,8 @@ class LibraryViewModel @Inject constructor(
     private val _currentCategoryWithManga = MutableStateFlow(CategoryWithMangas())
     val currentCategoryWithManga = _currentCategoryWithManga.asStateFlow()
 
-    private val _selectedManga = MutableStateFlow(SelectedManga())
-    val selectedManga = _selectedManga.asStateFlow()
+    var selectedManga by mutableStateOf(SelectedManga())
+        private set
 
     val showCategory = dataStore.data.map { it.isShowCatagery }.flowOn(default)
 
@@ -117,10 +119,9 @@ class LibraryViewModel @Inject constructor(
         }
     }
 
-    fun changeSelectedManga(visible: Boolean, manga: Manga? = null, ) {
-        _selectedManga.update {
-            manga?.let { SelectedManga(manga, visible) } ?: it.copy(visible = visible)
-        }
+    fun changeSelectedManga(visible: Boolean, manga: Manga? = null) {
+        selectedManga =
+            manga?.let { SelectedManga(manga, visible) } ?: selectedManga.copy(visible = visible)
     }
 }
 

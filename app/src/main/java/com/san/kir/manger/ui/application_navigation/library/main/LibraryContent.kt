@@ -1,6 +1,7 @@
 package com.san.kir.manger.ui.application_navigation.library.main
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -62,6 +63,9 @@ fun ColumnScope.LibraryContent(
                 pagerState.animateScrollToPage(pagerState.pageCount - 1)
             viewModel.changeCurrentCategory(categories[pagerState.currentPage])
         }
+        val draged by pagerState.interactionSource
+            .collectIsDraggedAsState()
+        if (draged) viewModel.changeSelectedManga(false)
 
         // Название вкладок
         Box(
@@ -90,7 +94,12 @@ fun ColumnScope.LibraryContent(
                         modifier = Modifier.testTag(TestTags.Library.tab),
                         selected = pagerState.currentPage == index,
                         text = { Text(text = item) },
-                        onClick = { scope.launch { pagerState.animateScrollToPage(index) } }
+                        onClick = {
+                            scope.launch {
+                                viewModel.changeSelectedManga(false)
+                                pagerState.animateScrollToPage(index)
+                            }
+                        }
                     )
                 }
             }
@@ -103,6 +112,7 @@ fun ColumnScope.LibraryContent(
                 .fillMaxWidth()
                 .weight(1.0f, true),
         ) { index -> LibraryPage(nav, categories[index], viewModel) }
+
     } else {
         Box(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.align(Alignment.Center)) {

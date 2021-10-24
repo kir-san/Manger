@@ -16,9 +16,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.MaterialTheme
@@ -54,108 +52,104 @@ import com.san.kir.manger.workmanager.MangaDeleteWorker
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun LibraryDropUpMenu(nav: NavHostController, viewModel: LibraryViewModel) {
-    val state by viewModel.selectedManga.collectAsState()
     var deleteDialog by remember { mutableStateOf(false) }
 
-    CustomAnimatedPopup(visibility = state.visible, { viewModel.changeSelectedManga(false) }) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .systemBarsPadding(top = false)
-                .verticalScroll(rememberScrollState())
-        ) {
-            var expandedCategory by remember { mutableStateOf(false) }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .systemBarsPadding(top = false)
+    ) {
+        var expandedCategory by remember { mutableStateOf(false) }
 
-            DropdownMenuItem(onClick = {
-                viewModel.changeSelectedManga(false)
-            }, modifier = Modifier.background(color = MaterialTheme.colors.primary)) {
+        DropdownMenuItem(onClick = {
+            viewModel.changeSelectedManga(false)
+        }, modifier = Modifier.background(color = MaterialTheme.colors.primary)) {
+            Text(
+                stringResource(R.string.library_popupmenu_title, viewModel.selectedManga.manga.name),
+                maxLines = 1, fontWeight = FontWeight.Bold
+            )
+        }
+
+        MenuText(id = R.string.library_popupmenu_about, onClick = {
+            viewModel.changeSelectedManga(false)
+            nav.navigate(LibraryNavTarget.About, viewModel.selectedManga.manga.unic)
+        })
+
+        DropdownMenuItem(onClick = {
+            expandedCategory = !expandedCategory
+        }) {
+            Text(
+                stringResource(id = R.string.library_popupmenu_set_category),
+                modifier = Modifier.weight(1f)
+            )
+            Text(
+                text = viewModel.selectedManga.manga.categories,
+                style = MaterialTheme.typography.subtitle2
+            )
+        }
+
+        val categories by viewModel.categories.collectAsState(emptyList())
+
+        ExpandedCategories(expandedCategory, categories - viewModel.selectedManga.manga.categories) { item ->
+            viewModel.selectedManga.manga.categories = item
+            viewModel.update(viewModel.selectedManga.manga)
+            expandedCategory = false
+            viewModel.changeSelectedManga(false)
+        }
+
+        MenuText(id = R.string.library_popupmenu_storage, onClick = {
+            viewModel.changeSelectedManga(false)
+            nav.navigate(LibraryNavTarget.Storage, viewModel.selectedManga.manga.unic)
+        })
+
+
+        MenuText(id = R.string.library_popupmenu_delete, onClick = {
+            deleteDialog = !deleteDialog
+        })
+
+        CustomAnimatedItem(deleteDialog) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .sizeIn(minHeight = 48.dp)
+                    .padding(MenuDefaults.DropdownMenuItemContentPadding),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
-                    stringResource(R.string.library_popupmenu_title, state.manga.name),
-                    maxLines = 1, fontWeight = FontWeight.Bold
+                    stringResource(R.string.library_popupmenu_delete_message),
+                    fontWeight = FontWeight.Bold
                 )
             }
 
-            MenuText(id = R.string.library_popupmenu_about, onClick = {
-                viewModel.changeSelectedManga(false)
-                nav.navigate(LibraryNavTarget.About, state.manga.unic)
-            })
+            Row(
+                horizontalArrangement = Arrangement.SpaceAround,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp)
+            ) {
+                val pad = PaddingValues(4.dp, 4.dp)
+                val context = LocalContext.current
 
-            DropdownMenuItem(onClick = {
-                expandedCategory = !expandedCategory
-            }) {
-                Text(
-                    stringResource(id = R.string.library_popupmenu_set_category),
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = state.manga.categories,
-                    style = MaterialTheme.typography.subtitle2
-                )
-            }
-
-            val categories by viewModel.categories.collectAsState(emptyList())
-
-            ExpandedCategories(expandedCategory, categories - state.manga.categories) { item ->
-                state.manga.categories = item
-                viewModel.update(state.manga)
-                expandedCategory = false
-                viewModel.changeSelectedManga(false)
-            }
-
-            MenuText(id = R.string.library_popupmenu_storage, onClick = {
-                viewModel.changeSelectedManga(false)
-                nav.navigate(LibraryNavTarget.Storage, state.manga.unic)
-            })
-
-
-            MenuText(id = R.string.library_popupmenu_delete, onClick = {
-                deleteDialog = !deleteDialog
-            })
-
-            CustomAnimatedItem(deleteDialog) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .sizeIn(minHeight = 48.dp)
-                        .padding(MenuDefaults.DropdownMenuItemContentPadding),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        stringResource(R.string.library_popupmenu_delete_message),
-                        fontWeight = FontWeight.Bold
-                    )
+                OutlinedButton(onClick = {
+                    viewModel.changeSelectedManga(false)
+                    MangaDeleteWorker.addTask(context, viewModel.selectedManga.manga, true)
+                }, modifier = Modifier.padding(pad)) {
+                    Text(text = stringResource(id = R.string.library_popupmenu_delete_ok_with_files))
                 }
 
-                Row(
-                    horizontalArrangement = Arrangement.SpaceAround,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp)
+                OutlinedButton(onClick = {
+                    viewModel.changeSelectedManga(false)
+                    MangaDeleteWorker.addTask(context, viewModel.selectedManga.manga)
+                }, modifier = Modifier.padding(pad)) {
+                    Text(text = stringResource(id = R.string.library_popupmenu_delete_ok))
+                }
+
+                OutlinedButton(
+                    onClick = { deleteDialog = false },
+                    modifier = Modifier.padding(pad)
                 ) {
-                    val pad = PaddingValues(4.dp, 4.dp)
-                    val context = LocalContext.current
-
-                    OutlinedButton(onClick = {
-                        viewModel.changeSelectedManga(false)
-                        MangaDeleteWorker.addTask(context, state.manga, true)
-                    }, modifier = Modifier.padding(pad)) {
-                        Text(text = stringResource(id = R.string.library_popupmenu_delete_ok_with_files))
-                    }
-
-                    OutlinedButton(onClick = {
-                        viewModel.changeSelectedManga(false)
-                        MangaDeleteWorker.addTask(context, state.manga)
-                    }, modifier = Modifier.padding(pad)) {
-                        Text(text = stringResource(id = R.string.library_popupmenu_delete_ok))
-                    }
-
-                    OutlinedButton(
-                        onClick = { deleteDialog = false },
-                        modifier = Modifier.padding(pad)
-                    ) {
-                        Text(text = stringResource(id = R.string.library_popupmenu_delete_no))
-                    }
+                    Text(text = stringResource(id = R.string.library_popupmenu_delete_no))
                 }
             }
         }

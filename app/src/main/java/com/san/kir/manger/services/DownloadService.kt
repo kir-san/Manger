@@ -91,8 +91,6 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
     private var notificationId = ID.generate()
 
     private val actionGoToDownloads by lazy {
-//        val intent = intentFor<DownloadManagerActivity>()
-//        PendingIntent.getActivity(this, 0, intent, 0)
         val deepLinkIntent = Intent(
             Intent.ACTION_VIEW,
             MainNavTarget.Downloader.deepLink.toUri(),

@@ -8,6 +8,8 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.app.TaskStackBuilder
+import androidx.core.net.toUri
 import com.san.kir.ankofork.intentFor
 import com.san.kir.ankofork.sdk28.notificationManager
 import com.san.kir.manger.R
@@ -17,6 +19,8 @@ import com.san.kir.manger.repositories.SiteCatalogRepository
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.dao.SiteDao
 import com.san.kir.manger.room.entities.SiteCatalogElement
+import com.san.kir.manger.ui.MainActivity
+import com.san.kir.manger.ui.application_navigation.MainNavTarget
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.extensions.log
 import dagger.hilt.android.AndroidEntryPoint
@@ -51,12 +55,18 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
 
     private var notificationId = ID.generate()
 
-    /* TODO изменить переход
     private val actionGoToCatalogs by lazy {
-        val intent = intentFor<SiteCatalogActivity>()
-        PendingIntent.getActivity(this, 0, intent, 0)
+        val deepLinkIntent = Intent(
+            Intent.ACTION_VIEW,
+            MainNavTarget.Catalogs.deepLink.toUri(),
+            this,
+            MainActivity::class.java
+        )
+        TaskStackBuilder.create(this).run {
+            addNextIntentWithParentStack(deepLinkIntent)
+            getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+        }
     }
-    */
 
     private val actionCancelAll by lazy {
         val intent = intentFor<CatalogForOneSiteUpdaterService>().setAction(ACTION_CANCEL_ALL)
@@ -216,7 +226,7 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
                 setContentTitle(getString(R.string.catalog_fos_service_notify_manual_stop_title))
                 sendNeutralBroadcast()
             }
-// TODO           setContentIntent(actionGoToCatalogs)
+            setContentIntent(actionGoToCatalogs)
 
             stopForeground(false)
             notificationManager.cancel(notificationId)

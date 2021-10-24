@@ -33,6 +33,9 @@ interface NavTarget {
     val route: String
         get() = route()
 
+    val deepLink: String
+        get() = "android-app://androidx.navigation//$route"
+
     fun route(value: String = item.value): String {
         val isTemplate = value == item.value
 

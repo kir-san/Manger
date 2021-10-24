@@ -5,6 +5,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.navDeepLink
 import com.google.accompanist.navigation.animation.composable
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaAddScreen
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaInfoScreen
@@ -49,6 +50,7 @@ sealed class CatalogsNavTarget : NavTarget {
 fun NavGraphBuilder.catalogsNavGraph(nav: NavHostController) {
     composable(
         route = CatalogsNavTarget.Main.route,
+        deepLinks = listOf(navDeepLink { uriPattern = CatalogsNavTarget.Main.deepLink }),
         content = {
             CatalogsScreen(nav)
         }

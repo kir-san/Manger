@@ -19,7 +19,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.core.view.WindowCompat
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.san.kir.manger.services.CatalogForOneSiteUpdaterService
-import com.san.kir.manger.services.MangaUpdaterService
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaStorageViewModel
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.SiteCatalogItemViewModel
 import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewModel
@@ -59,26 +58,11 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private val chaptersReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            intent?.let {
-                if (intent.action == MangaUpdaterService.actionGet) {
-                    mainViewModel.chaptersReceiver(intent)
-                }
-            }
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         IntentFilter(CatalogForOneSiteUpdaterService.ACTION_CATALOG_UPDATER_SERVICE).apply {
             registerReceiver(catalogReceiver, this)
-        }
-
-        IntentFilter().apply {
-            addAction(MangaUpdaterService.actionGet)
-            registerReceiver(chaptersReceiver, this)
         }
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -107,7 +91,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         unregisterReceiver(catalogReceiver)
-        unregisterReceiver(chaptersReceiver)
         super.onDestroy()
     }
 }

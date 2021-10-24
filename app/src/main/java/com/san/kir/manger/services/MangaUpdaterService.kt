@@ -23,7 +23,6 @@ import com.san.kir.ankofork.sdk28.notificationManager
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.components.parsing.getShortLink
-import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.room.dao.ChapterDao
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.entities.Chapter
@@ -34,7 +33,6 @@ import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.SearchDuplicate
 import com.san.kir.manger.utils.extensions.log
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -255,9 +253,7 @@ class MangaUpdaterService : Service() {
                 }
             }
 
-            log("new chapters")
             if (newChapters.isNotEmpty()) {
-                log("not empty")
                 newChapters.reversed().forEach {
                     it.pages = manager.pages(it)
                     it.isInUpdate = true
@@ -287,11 +283,15 @@ class MangaUpdaterService : Service() {
             fullCountNew += countNew
             taskCounter = taskCounter - manga
 
-            val intent = Intent(actionGet)
-            intent.putExtra(ITEM_NAME, manga.unic)
-            intent.putExtra(IS_FOUND_NEW, countNew > 0)
-            intent.putExtra(COUNT_NEW, countNew)
-            sendBroadcast(intent)
+            Intent().apply {
+                action = actionGet
+                putExtra(ITEM_NAME, manga.unic)
+                putExtra(IS_FOUND_NEW, countNew > 0)
+                putExtra(COUNT_NEW, countNew)
+
+                sendBroadcast(this)
+            }
+
         }
     }
 

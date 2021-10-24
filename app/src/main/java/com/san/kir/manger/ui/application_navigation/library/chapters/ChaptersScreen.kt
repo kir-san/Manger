@@ -1,6 +1,9 @@
 package com.san.kir.manger.ui.application_navigation.library.chapters
 
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,11 +17,12 @@ import androidx.compose.material.TabRow
 import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -37,18 +41,13 @@ import com.san.kir.ankofork.dialogs.longToast
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.services.MangaUpdaterService
-import com.san.kir.manger.ui.LocalBaseViewModel
-import com.san.kir.manger.ui.MainViewModel
 import com.san.kir.manger.utils.extensions.longToast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 @Composable
 fun ChaptersScreen(nav: NavHostController, viewModel: ChaptersViewModel) {
-
-    val manga by viewModel.manga.collectAsState()
 
     var action by rememberSaveable { mutableStateOf(false) }
 
@@ -80,33 +79,60 @@ fun ChaptersScreen(nav: NavHostController, viewModel: ChaptersViewModel) {
         }
     }
 
-    if (MangaUpdaterService.contains(manga))
+    if (MangaUpdaterService.contains(viewModel.manga))
         action = true
 
-    ReceiverHandler(manga) { state -> action = state }
+    ReceiverHandler(viewModel.manga) { state -> action = state }
 }
 
 @Composable
 private fun ReceiverHandler(
     manga: Manga,
     ctx: Context = LocalContext.current,
-    vm: MainViewModel = LocalBaseViewModel.current,
     changeAction: (Boolean) -> Unit,
 ) {
-    LaunchedEffect("receiver") {
-        vm.chaptersReceiver.onEach { message ->
-            if (manga.unic == message.mangaName) {
-                if (message.countNew == -1) {
-                    ctx.longToast(R.string.list_chapters_message_error)
-                } else {
-                    if (message.isFoundNew.not()) {
-                        ctx.longToast(R.string.list_chapters_message_no_found)
-                    } else {
-                        ctx.longToast(R.string.list_chapters_message_count_new, message.countNew)
+    // Grab the current context in this part of the UI tree
+    val context = LocalContext.current
+
+    // Safely use the latest onSystemEvent lambda passed to the function
+    val currentOnSystemEvent by rememberUpdatedState(changeAction)
+    val currentManga by rememberUpdatedState(manga)
+
+    // If either context or systemAction changes, unregister and register again
+    DisposableEffect(context, changeAction) {
+
+        val intentFilter = IntentFilter(MangaUpdaterService.actionGet)
+
+        val broadcast = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                intent?.let {
+                    val mangaName = intent.getStringExtra(MangaUpdaterService.ITEM_NAME)
+                    if (intent.action == MangaUpdaterService.actionGet) {
+                        if (mangaName != null && mangaName == currentManga.unic) {
+                            val isFoundNew =
+                                intent.getBooleanExtra(MangaUpdaterService.IS_FOUND_NEW, false)
+                            val countNew = intent.getIntExtra(MangaUpdaterService.COUNT_NEW, 0)
+                            if (countNew == -1) {
+                                ctx.longToast(R.string.list_chapters_message_error)
+                            } else {
+                                if (isFoundNew.not()) {
+                                    ctx.longToast(R.string.list_chapters_message_no_found)
+                                } else {
+                                    ctx.longToast(R.string.list_chapters_message_count_new, countNew)
+                                }
+                            }
+                        }
+                        currentOnSystemEvent(false)
                     }
                 }
-                changeAction(false)
             }
+        }
+
+        context.registerReceiver(broadcast, intentFilter)
+
+        // When the effect leaves the Composition, remove the callback
+        onDispose {
+            context.unregisterReceiver(broadcast)
         }
     }
 }

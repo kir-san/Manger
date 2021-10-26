@@ -44,7 +44,7 @@ class Acomics(
             var i = 357
             volume = 3560
 
-            fun isGetNext(): Boolean {
+            suspend fun isGetNext(): Boolean {
                 val document = parsing.getDocument(siteCatalog + "&skip=${10 * i}")
 
                 docLocal = document.select(contentTemplate)
@@ -79,7 +79,7 @@ class Acomics(
 
         getFullElement(element)
     }.fold(onSuccess = { it },
-           onFailure = { null })
+        onFailure = { null })
 
     override suspend fun getFullElement(element: SiteCatalogElement): SiteCatalogElement {
         val doc = parsing.getDocument("${element.link}/about")
@@ -140,7 +140,7 @@ class Acomics(
         var docLocal = parsing.getDocument(siteCatalog).select(contentTemplate)
         var i = 0
 
-        fun isGetNext(): Boolean {
+        suspend fun isGetNext(): Boolean {
             val document = parsing.getDocument(siteCatalog + "&skip=${10 * i}")
             docLocal = document.select(contentTemplate)
 
@@ -176,7 +176,7 @@ class Acomics(
         var i = 0
         var list = listOf<String>()
 
-        fun isGetNext(): Boolean {
+        suspend fun isGetNext(): Boolean {
             val document = parsing.getDocument("${host + shortLink}/content" + "?skip=${10 * i}")
             docLocal = document.select("#contentMargin .serial-content table td a")
 
@@ -189,13 +189,15 @@ class Acomics(
         do {
             docLocal.map { element ->
                 scope.launch {
-                    val url = element.attr("href")
-                    val document = parsing.getDocument(url)
-                    val link = host + document.select("#mainImage").attr("src")
+                    kotlin.runCatching {
+                        val url = element.attr("href")
+                        val document = parsing.getDocument(url)
+                        val link = host + document.select("#mainImage").attr("src")
 
-                    lock.withLock {
-                        list = list + link
-                    }
+                        lock.withLock {
+                            list = list + link
+                        }
+                    }.onFailure { it.printStackTrace() }
                 }
             }.joinAll()
             i++

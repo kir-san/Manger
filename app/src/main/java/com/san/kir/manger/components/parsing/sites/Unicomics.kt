@@ -20,6 +20,10 @@ class Unicomics(
     private val parsing: Parsing,
     siteDao: SiteDao
 ) : SiteCatalogClassic() {
+
+    override val host: String
+        get() = "https://$catalogName"
+
     override val name: String = "UniComics"
     override val catalogName: String = "unicomics.ru"
     override val siteCatalog: String = "$host/map"
@@ -119,7 +123,7 @@ class Unicomics(
             }
     }
 
-    private fun getChapters(url: String): List<Element> {
+    private suspend fun getChapters(url: String): List<Element> {
         var links = listOf<Element>()
 
         var doc = parsing.getDocument(url)

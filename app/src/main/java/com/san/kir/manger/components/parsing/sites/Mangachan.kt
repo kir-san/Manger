@@ -5,6 +5,10 @@ import com.san.kir.manger.room.dao.SiteDao
 
 class Mangachan(parsing: Parsing, siteDao: SiteDao) :
     MangachanTemplate(parsing, siteDao) {
+
+    override val host: String
+        get() = "https://$catalogName"
+
     override val name: String = "Манга - тян"
     override val catalogName: String = "manga-chan.me"
 

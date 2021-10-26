@@ -19,9 +19,8 @@ import java.util.regex.Pattern
 
 abstract class MangachanTemplate(
     private val parsing: Parsing,
-    private val siteDao: SiteDao
-) :
-    SiteCatalogClassic() {
+    private val siteDao: SiteDao,
+) : SiteCatalogClassic() {
 
     override val siteCatalog: String
         get() = "$host/manga/new"
@@ -108,11 +107,14 @@ abstract class MangachanTemplate(
             element.dateId = matcher3.group().toInt()
 
         element
-    }.fold(onSuccess = { it },
-           onFailure = {
-               it.printStackTrace()
-               null
-           })
+    }.fold(
+        onSuccess = {
+            return@fold it
+        },
+        onFailure = {
+            it.printStackTrace()
+            return@fold null
+        })
 
     override suspend fun getFullElement(element: SiteCatalogElement): SiteCatalogElement {
         element.host = host
@@ -182,7 +184,7 @@ abstract class MangachanTemplate(
     override fun getCatalog() = flow {
         var docLocal: Document = parsing.getDocument(siteCatalog)
 
-        fun isGetNext(): Boolean {
+        suspend fun isGetNext(): Boolean {
             val next = docLocal.select("#pagination > a:contains(Вперед)").attr("href")
             if (next.isNotEmpty())
                 docLocal = parsing.getDocument(siteCatalog + next)

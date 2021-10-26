@@ -12,7 +12,6 @@ import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.utils.extensions.createDirs
 import com.san.kir.manger.utils.extensions.getFullPath
-import com.san.kir.manger.utils.extensions.log
 import kotlinx.coroutines.flow.flow
 import org.json.JSONArray
 import org.jsoup.nodes.Document
@@ -23,6 +22,7 @@ abstract class ReadmangaTemplate(
     private val parsing: Parsing,
     private val siteDao: SiteDao
 ) : SiteCatalogClassic() {
+
     override val siteCatalog
         get() = "$host/list?sortType=created"
 
@@ -67,17 +67,29 @@ abstract class ReadmangaTemplate(
 
             element.name = doc.select("#mangaBox .leftContent span.name").text()
 
-            element.shotLink = url.split(catalogName).last()
+            allCatalogName.forEach { name ->
+                url.split(name).apply {
+                    if (size > 1) element.shotLink = last()
+                }
+            }
+            element.shotLink =
+                allCatalogName
+                    .map { name -> url.split(name) }
+                    .last { it.size > 1 }
+                    .last()
+
             element.link = url
 
             val status = doc.select("#mangaBox .leftContent .expandable .subject-meta p")
 
+            // Статус выпуска
             element.statusEdition = Status.COMPLETE
             if (status.first().text().contains(Status.SINGLE, true))
                 element.statusEdition = Status.SINGLE
             else if (status.first().text().contains(Status.NOT_COMPLETE, true))
                 element.statusEdition = Status.NOT_COMPLETE
 
+            // Статус перевода
             element.statusTranslate = Translate.COMPLETE
             if (status[1].text().contains("продолжается", true)) {
                 element.statusTranslate = Translate.NOT_COMPLETE
@@ -85,7 +97,7 @@ abstract class ReadmangaTemplate(
 
             getFullElement(element)
         }.fold(onSuccess = { it },
-               onFailure = { null })
+            onFailure = { null })
     }
 
     override suspend fun getFullElement(element: SiteCatalogElement): SiteCatalogElement {
@@ -93,25 +105,27 @@ abstract class ReadmangaTemplate(
         val doc = parsing.getDocument(element.link).select("div.leftContent")
 
         element.type = "Манга"
-        doc.select(".flex-row .subject-meta .elem_tag").forEach {
+        doc.select(".flex-row .subject-meta .elem_category").forEach {
             if (categories.contains(it.select("a").text()))
                 element.type = it.select("a").text()
         }
 
+        // Список авторов
         element.authors = emptyList()
         val authorsTemp = doc.select(".flex-row .elementList .elem_author")
         element.authors = authorsTemp.map { it.select(".person-link").text() }
 
+        // Количество глав
         val volume = doc.select(".chapters-link tr").size - 1
         element.volume = if (volume < 0) 0 else volume
 
+        // Жанры
         element.genres.clear()
         doc.select("span.elem_genre")
             .forEach { element.genres.add(it.select("a.element-link").text()) }
 
+        // Краткое описание
         element.about = doc.select("meta[itemprop=description]").attr("content")
-
-        log(doc.select(".expandable .subject-cover img").toString())
 
         // Ссылка на лого
         element.logo = doc.select(".expandable .subject-cover img").attr("src")
@@ -124,42 +138,54 @@ abstract class ReadmangaTemplate(
     private fun simpleParseElement(elem: Element): SiteCatalogElement {
         val element = SiteCatalogElement()
 
+        // Сохраняю в каждом елементе host и catalogName
         element.host = host
         element.catalogName = catalogName
         element.siteId = id
 
+        // название манги
         element.name = elem.select(".img a").select("img").attr("title")
 
+        // ссылка в интернете
         element.shotLink = elem.select(".img a").attr("href")
         element.link = host + element.shotLink
 
+        // Статус выпуска
         element.statusEdition = "Выпуск продолжается"
         if (elem.select("span.mangaCompleted").text().isNotEmpty())
             element.statusEdition = "Выпуск завершен"
         else if (elem.select("span.mangaSingle").text().isNotEmpty() and (element.volume > 0))
             element.statusEdition = "Сингл"
 
+        // Статус перевода
         element.statusTranslate = "Перевод продолжается"
         if (elem.select("span.mangaTranslationCompleted").text().isNotEmpty()) {
             element.statusTranslate = "Перевод завершен"
             element.statusEdition = "Выпуск завершен"
         }
 
+        // Ссылка на лого
         element.logo = elem.select(".img a").select("img").attr("data-original")
 
+        // Порядок в базе данных
         element.dateId = elem.select("span.bookmark-menu").attr("data-id").toInt()
 
-        try {
-            element.populate = elem.select(".desc .tile-info p.small").first().ownText().toInt()
-        } catch (ex: Throwable) {
+        kotlin.runCatching {
+            element.populate =
+                (elem.select(".desc .star-rate .rating")
+                    .attr("title")
+                    .split(" ")
+                    .first()
+                    .toFloat() * 10_000)
+                    .toInt()
+        }.onFailure {
             element.populate = 0
         }
 
+        // Тип манги(Манга, Манхва или еще что
         element.type = "Манга"
 
-        element.authors = elem.select(".desc .tile-info .person-link")
-            .map { it.select(".person-link").text() }
-
+        // Жанры
         elem.select(".desc .tile-info a.element-link").forEach { element.genres.add(it.text()) }
 
         return element
@@ -168,7 +194,7 @@ abstract class ReadmangaTemplate(
     override fun getCatalog() = flow {
         var docLocal: Document = parsing.getDocument(siteCatalog)
 
-        fun isGetNext(): Boolean {
+        suspend fun isGetNext(): Boolean {
             val next = docLocal.select(".pagination > a.nextLink").attr("href")
             if (next.isNotEmpty())
                 docLocal = parsing.getDocument(host + next)
@@ -181,8 +207,6 @@ abstract class ReadmangaTemplate(
             }
         } while (isGetNext())
     }
-    ///
-
 
     override suspend fun chapters(manga: Manga) =
         parsing.getDocument(host + manga.shortLink)
@@ -210,10 +234,7 @@ abstract class ReadmangaTemplate(
 
         val shortLink = getShortLink(item.link)
 
-        log("link = ${item.link}")
-        log("fulllink = $host$shortLink?mature=1")
-
-        val doc = parsing.getDocument("$host$shortLink?mature=1")
+        val doc = parsing.getDocument("$host$shortLink?mtr=1")
         // с помощью регулярных выражений ищу нужные данные
         val pat = Pattern.compile("rm_h.init.+").matcher(doc.body().html())
         // если данные найдены то продолжаю

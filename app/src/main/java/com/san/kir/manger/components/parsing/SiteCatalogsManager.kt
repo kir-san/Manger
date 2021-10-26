@@ -16,17 +16,52 @@ import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.room.entities.toDownloadItem
+import com.san.kir.manger.utils.ID
+import com.san.kir.manger.utils.extensions.log
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import javax.inject.Inject
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
 
 class Parsing @Inject constructor() {
-    fun getDocument(url: String): Document {
-        val (_, _, result) = Fuel.get(url).responseString()
-        result.fold({}, { throw it })
-        return Jsoup.parse(result.component1())
+    @OptIn(ExperimentalTime::class)
+    suspend fun getDocument(url: String): Document {
+        var tryCount = 10
+        while (tryCount != 0) {
+            tryCount--
+
+            val (_, responce, result) = Fuel.get(url)
+                .appendHeader("User-agent" to "manger app ${ID.generate()}")
+                .responseString()
+
+            log("statusCode ${responce.statusCode} - url ${responce.url}")
+            val retryKey = "Retry-After"
+
+            when (responce.statusCode) {
+                429 ->
+                    if (responce.headers.containsKey(retryKey)) {
+                        val timeOut = responce[retryKey].first().toLong()
+                        log("delay $timeOut seconds")
+                        delay(Duration.seconds(timeOut))
+                    } else {
+                        delay(Duration.seconds(10))
+                    }
+
+                else -> {
+                    result.fold(
+                        {
+                            return Jsoup.parse(it)
+                        }, {
+                            it.printStackTrace()
+                        })
+                }
+            }
+        }
+        return Document("")
     }
 }
 

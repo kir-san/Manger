@@ -57,16 +57,17 @@ fun ColumnScope.LibraryContent(
 
     if (isAction) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
 
-    if (isEmpty.not() && categories.isNotEmpty()) {
-        val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState()
 
-        LaunchedEffect(pagerState.currentPage) {
-            if (pagerState.currentPage == pagerState.pageCount)
-                pagerState.animateScrollToPage(pagerState.pageCount - 1)
-            viewModel.changeCurrentCategory(categories[pagerState.currentPage])
-        }
-        val draged by pagerState.interactionSource
-            .collectIsDraggedAsState()
+    LaunchedEffect(categories, pagerState.currentPage) {
+        if (pagerState.currentPage >= categories.size)
+            pagerState.animateScrollToPage(0)
+        viewModel.changeCurrentCategory(categories[pagerState.currentPage])
+    }
+
+    if (isEmpty.not() && categories.isNotEmpty() && pagerState.currentPage < categories.size) {
+
+        val draged by pagerState.interactionSource.collectIsDraggedAsState()
         if (draged) viewModel.changeSelectedManga(false)
 
         // Название вкладок
@@ -113,7 +114,7 @@ fun ColumnScope.LibraryContent(
         ) { index -> LibraryPage(nav, categories[index], viewModel) }
 
     } else {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(modifier = Modifier.align(Alignment.Center)) {
                 Text(text = stringResource(id = R.string.library_no_categories))
                 Button(onClick = { nav.navigate(MainNavTarget.Categories) }) {

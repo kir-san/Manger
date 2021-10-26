@@ -10,7 +10,7 @@ class DownloadStateTypeConverter {
     }
 
     @TypeConverter
-    fun StringToState(name: String): DownloadState {
+    fun stringToState(name: String): DownloadState {
         return DownloadState.valueOf(name)
     }
 }

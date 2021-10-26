@@ -45,7 +45,7 @@ class DownloadViewModel @Inject constructor(
     private val wifiNetwork: WifiNetwork,
     download: DownloadRepository,
     @MainDispatcher private val main: CoroutineDispatcher,
-    @DefaultDispatcher private val default: CoroutineDispatcher
+    @DefaultDispatcher private val default: CoroutineDispatcher,
 ) : ViewModel() {
 
     var items by mutableStateOf(listOf<Chapter>())
@@ -64,7 +64,7 @@ class DownloadViewModel @Inject constructor(
     init {
         chapterDao.loadDownloadItemsWhereStatusNot()
             .distinctUntilChanged()
-            .onEach { withContext(main) { items = it } }
+            .onEach { withContext(main) { items = it.sortedBy { c -> c.status.ordinal } } }
             .onEach { list ->
                 list.filter { chapter ->
                     chapter.status == DownloadState.QUEUED ||

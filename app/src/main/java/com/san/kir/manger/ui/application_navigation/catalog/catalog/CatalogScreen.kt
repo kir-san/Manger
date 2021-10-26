@@ -1,5 +1,9 @@
 package com.san.kir.manger.ui.application_navigation.catalog.catalog
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
@@ -49,12 +53,12 @@ import androidx.compose.material.icons.filled.Update
 import androidx.compose.material.rememberDrawerState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -65,6 +69,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
@@ -73,7 +78,7 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.google.accompanist.insets.statusBarsPadding
 import com.san.kir.manger.R
-import com.san.kir.manger.ui.LocalBaseViewModel
+import com.san.kir.manger.services.CatalogForOneSiteUpdaterService
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
 import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewModel.Companion.DATE
 import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewModel.Companion.NAME
@@ -81,30 +86,23 @@ import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewM
 import com.san.kir.manger.ui.utils.ListItem
 import com.san.kir.manger.ui.utils.MenuIcon
 import com.san.kir.manger.ui.utils.navigate
+import com.san.kir.manger.utils.extensions.log
 import kotlinx.coroutines.launch
 import java.net.URLDecoder
 
 val btnSizeAddUpdate = 30.dp
 
 @Composable
-fun CatalogScreen(
-    nav: NavHostController,
-    viewModel: CatalogViewModel
-) {
-    val vm = LocalBaseViewModel.current
-
-    val viewState by viewModel.state.collectAsState()
-    val action by viewModel.action.collectAsState()
-
+fun CatalogScreen(nav: NavHostController, viewModel: CatalogViewModel) {
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val coroutineScope = rememberCoroutineScope()
     var errorDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier.navigationBarsWithImePadding(),
-        topBar = { TopBar(scaffoldState, viewState, viewModel) },
+        topBar = { TopBar(scaffoldState, viewModel) },
         scaffoldState = scaffoldState,
-        drawerContent = { DrawerContent(viewState, viewModel) },
+        drawerContent = { DrawerContent(viewModel) },
         bottomBar = { BottomBar(viewModel) }) {
 
         Column(
@@ -112,16 +110,16 @@ fun CatalogScreen(
                 .fillMaxSize()
                 .padding(it)
         ) {
-            if (action) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            if (viewModel.action) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             LazyColumn {
-                items(items = viewState.items, key = { item -> item.id }) { item ->
+                items(items = viewModel.items, key = { item -> item.id }) { item ->
                     ListItem(item, item.name, item.statusEdition,
-                             navAddAction = {
-                                 nav.navigate(CatalogsNavTarget.AddLocal, item.link)
-                             },
-                             navInfoAction = {
-                                 nav.navigate(CatalogsNavTarget.Info, item.link)
-                             })
+                        navAddAction = {
+                            nav.navigate(CatalogsNavTarget.AddLocal, item.link)
+                        },
+                        navInfoAction = {
+                            nav.navigate(CatalogsNavTarget.Info, item.link)
+                        })
                 }
             }
         }
@@ -219,24 +217,18 @@ private fun ErrorReloadDialog(
 // Нижняя панель с кнопками сортировки списка
 @Composable
 private fun BottomBar(viewModel: CatalogViewModel) {
-    val reloadDialog = remember { mutableStateOf(false) }
-
-    var reverse by rememberSaveable { mutableStateOf(false) }
-    viewModel.setIsReversed(reverse)
-
-    val sortType = rememberSaveable { mutableStateOf(DATE) }
-    viewModel.setSortType(sortType.value)
+    var reloadDialog by remember { mutableStateOf(false) }
 
     BottomAppBar {
         IconToggleButton(
-            checked = reverse,
-            onCheckedChange = { reverse = it }) {
+            checked = viewModel.isReversed,
+            onCheckedChange = { viewModel.isReversed = it }) {
             Image(
                 Icons.Default.Sort, "",
                 Modifier
                     .padding(start = 16.dp)
                     .size(btnSizeAddUpdate)
-                    .rotate(if (reverse) 0f else 180f),
+                    .rotate(if (viewModel.isReversed) 0f else 180f),
                 colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface)
             )
         }
@@ -244,11 +236,23 @@ private fun BottomBar(viewModel: CatalogViewModel) {
             modifier = Modifier.weight(1f, true),
             horizontalArrangement = Arrangement.Center
         ) {
-            MiddleBottomBtn(sortType, NAME, Icons.Default.SortByAlpha)
-            MiddleBottomBtn(sortType, DATE, Icons.Default.DateRange)
-            MiddleBottomBtn(sortType, POP, Icons.Default.ThumbsUpDown)
+            MiddleBottomBtn(
+                viewModel.sortType == NAME,
+                { viewModel.sortType = NAME },
+                Icons.Default.SortByAlpha
+            )
+            MiddleBottomBtn(
+                viewModel.sortType == DATE,
+                { viewModel.sortType = DATE },
+                Icons.Default.DateRange
+            )
+            MiddleBottomBtn(
+                viewModel.sortType == POP,
+                { viewModel.sortType = POP },
+                Icons.Default.ThumbsUpDown
+            )
         }
-        IconButton(onClick = { reloadDialog.value = true }) {
+        IconButton(onClick = { reloadDialog = true }) {
             Image(
                 Icons.Default.Update, "",
                 Modifier
@@ -259,7 +263,32 @@ private fun BottomBar(viewModel: CatalogViewModel) {
         }
     }
 
-    ReloadDialog(reloadDialog, viewModel)
+    if (reloadDialog)
+        ReloadDialog(viewModel) { reloadDialog = false }
+}
+
+// Диалог подтверждения на обновление каталога
+@Composable
+private fun ReloadDialog(
+    viewModel: CatalogViewModel,
+    onChange: () -> Unit,
+) {
+    AlertDialog(onDismissRequest = { onChange() },
+        title = { Text(text = stringResource(id = R.string.catalog_fot_one_site_warning)) },
+        text = { Text(text = stringResource(id = R.string.catalog_fot_one_site_redownload_text)) },
+        confirmButton = {
+            TextButton(onClick = {
+                onChange()
+                viewModel.setAction(value = true, service = true)
+            }) {
+                Text(text = stringResource(id = R.string.catalog_fot_one_site_redownload_ok))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { onChange() }) {
+                Text(text = stringResource(id = R.string.catalog_fot_one_site_redownload_cancel))
+            }
+        })
 }
 
 // Верхняя панель
@@ -267,14 +296,10 @@ private fun BottomBar(viewModel: CatalogViewModel) {
 @Composable
 private fun TopBar(
     scaffoldState: ScaffoldState,
-    viewState: CatalogViewState,
-    viewModel: CatalogViewModel
+    viewModel: CatalogViewModel,
 ) {
     val coroutineScope = rememberCoroutineScope()
     var search by rememberSaveable { mutableStateOf(false) }
-    var searchText by rememberSaveable { mutableStateOf("") }
-
-    viewModel.setSearchText(searchText)
 
     Column(
         modifier = Modifier
@@ -284,7 +309,7 @@ private fun TopBar(
     ) {
         TopAppBar(
             title = {
-                Text(text = "${viewState.catalogName}: ${viewState.items.size}")
+                Text(text = "${viewModel.siteName}: ${viewModel.items.size}")
             },
             navigationIcon = {
                 MenuIcon(icon = Icons.Default.Menu) {
@@ -305,14 +330,14 @@ private fun TopBar(
 
         AnimatedVisibility(visible = search) {
             TextField(
-                value = searchText,
+                value = viewModel.searchText,
                 onValueChange = {
-                    searchText = it
+                    viewModel.searchText = it
                 },
                 leadingIcon = { Icon(Icons.Default.Search, "search") },
                 trailingIcon = {
                     MenuIcon(icon = Icons.Default.Close) {
-                        searchText = ""
+                        viewModel.searchText = ""
                     }
                 },
                 modifier = Modifier
@@ -325,14 +350,10 @@ private fun TopBar(
 
 // Боковое меню
 @Composable
-private fun DrawerContent(viewState: CatalogViewState, viewModel: CatalogViewModel) {
-    if (viewState.filters.isNotEmpty()) {
+private fun DrawerContent(viewModel: CatalogViewModel) {
+    if (viewModel.catalogFilter.isNotEmpty()) {
         var currentIndex by rememberSaveable { mutableStateOf(0) }
-        var filters by rememberSaveable {
-            mutableStateOf(viewState.filters.map { it.selected })
-        }
 
-        // TODO исправить некоректную работу фильтров
         // Списки фильтров
         Column(
             modifier = Modifier
@@ -342,27 +363,25 @@ private fun DrawerContent(viewState: CatalogViewState, viewModel: CatalogViewMod
                 targetState = currentIndex,
                 modifier = Modifier.weight(1f, true)
             ) { pageIndex ->
+                val catalogFilter = viewModel.catalogFilter[pageIndex]
                 LazyColumn {
-                    itemsIndexed(
-                        viewState.filters[pageIndex].catalog,
-                        key = { _, item -> item }
-                    ) { index, item ->
+                    itemsIndexed(catalogFilter.catalog, key = { _, item -> item }) { index, item ->
+                        if (catalogFilter.selected[index]) {
+                            viewModel.selectedNames += SelectedName(catalogFilter.name, item)
+                        } else {
+                            viewModel.selectedNames -= SelectedName(catalogFilter.name, item)
+                        }
+
                         // Строка списка
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    filters[pageIndex][index].value =
-                                        !filters[pageIndex][index].value
-                                    // Обработка измения статуса
-                                    viewModel.changeFilter(
-                                        // Хранение статуса нажатия
-                                        pageIndex, filters[pageIndex][index].value, item
-                                    )
+                                    catalogFilter.selected[index] = !catalogFilter.selected[index]
                                 }) {
                             Checkbox(
-                                checked = filters[pageIndex][index].value,
-                                onCheckedChange = { filters[pageIndex][index].value = it },
+                                checked = catalogFilter.selected[index],
+                                onCheckedChange = { catalogFilter.selected[index] = it },
                                 modifier = Modifier.padding(5.dp),
                             )
                             Text(
@@ -389,7 +408,7 @@ private fun DrawerContent(viewState: CatalogViewState, viewModel: CatalogViewMod
                     .fillMaxWidth()
                     .height(IntrinsicSize.Min)
             ) {
-                viewState.filters.forEachIndexed { index, catalogFilter ->
+                viewModel.catalogFilter.forEachIndexed { index, catalogFilter ->
                     if (catalogFilter.catalog.size > 1)
                         Box(
                             modifier = Modifier
@@ -418,7 +437,6 @@ private fun DrawerContent(viewState: CatalogViewState, viewModel: CatalogViewMod
             // Кнопка очистки фильтров
             Button(
                 onClick = {
-                    filters = filters.onEach { it.onEach { it.value = false } }
                     viewModel.clearSelected()
                 },
                 modifier = Modifier
@@ -431,19 +449,16 @@ private fun DrawerContent(viewState: CatalogViewState, viewModel: CatalogViewMod
     }
 }
 
-// Default radius of an unbounded ripple in an IconButton
-//private val RippleRadius = 24.dp
-
 // Кнопка нижней панели
 @Composable
-private fun MiddleBottomBtn(sortType: MutableState<Int>, state: Int, icon: ImageVector) {
+private fun MiddleBottomBtn(state: Boolean, onChange: () -> Unit, icon: ImageVector) {
     IconToggleButton(
-        checked = sortType.value == state,
-        onCheckedChange = { if (it) sortType.value = state }) {
+        checked = state,
+        onCheckedChange = { if (it) onChange() }) {
         Image(
             icon, "", Modifier.size(btnSizeAddUpdate),
             colorFilter = ColorFilter.tint(
-                if (sortType.value == state) Color.Cyan else MaterialTheme.colors.onSurface
+                if (state) Color.Cyan else MaterialTheme.colors.onSurface
             )
         )
     }

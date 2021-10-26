@@ -38,13 +38,10 @@ fun ListItem(
     navAddAction: () -> Unit,
     navInfoAction: () -> Unit,
 ) {
-    var isAdded by remember { mutableStateOf(false) }
-    var isUpdated by remember { mutableStateOf(false) }
+    var isAdded by remember { mutableStateOf(ItemState.ADDED) }
 
     LaunchedEffect(item) {
-        val tempAdded = viewModel.isContainManga(item)
-        isAdded = !tempAdded
-        isUpdated = tempAdded
+        if (viewModel.isContainManga(item)) isAdded = ItemState.UPDATE
     }
 
     Row(
@@ -71,27 +68,34 @@ fun ListItem(
             )
         }
 
-        if (isAdded)
-            Image(
-                imageVector = Icons.Default.Add, "",
-                colorFilter = ColorFilter.tint(Color.Green),
-                modifier = Modifier
-                    .size(btnSizeAddUpdate)
-                    .align(Alignment.CenterVertically)
-                    .clickable { navAddAction() }
-            )
-
-        if (isUpdated)
-            Image(
-                imageVector = Icons.Default.Update, "",
-                colorFilter = ColorFilter.tint(MaterialTheme.colors.onBackground),
-                modifier = Modifier
-                    .size(btnSizeAddUpdate)
-                    .align(Alignment.CenterVertically)
-                    .clickable(onClick = {
-                        isUpdated = false
-                        viewModel.onlineUpdate(item)
-                    })
-            )
+        when (isAdded) {
+            ItemState.ADDED ->
+                Image(
+                    imageVector = Icons.Default.Add, "",
+                    colorFilter = ColorFilter.tint(Color.Green),
+                    modifier = Modifier
+                        .size(btnSizeAddUpdate)
+                        .align(Alignment.CenterVertically)
+                        .clickable { navAddAction() }
+                )
+            ItemState.UPDATE ->
+                Image(
+                    imageVector = Icons.Default.Update, "",
+                    colorFilter = ColorFilter.tint(MaterialTheme.colors.onBackground),
+                    modifier = Modifier
+                        .size(btnSizeAddUpdate)
+                        .align(Alignment.CenterVertically)
+                        .clickable(onClick = {
+                            isAdded = ItemState.NONE
+                            viewModel.onlineUpdate(item)
+                        })
+                )
+            ItemState.NONE -> {
+            }
+        }
     }
+}
+
+private enum class ItemState {
+    ADDED, UPDATE, NONE
 }

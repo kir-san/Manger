@@ -109,6 +109,10 @@
     <string name="catalog_fot_one_site_warning">Внимание</string>
     <string name="catalog_fot_one_site_redownload_text">Нужно ваше согласие на обновление каталога</string>
     <string name="catalog_fot_one_site_redownload_ok">Согласен</string>
+    <string name="catalog_fot_one_site_genres">Жанры</string>
+    <string name="catalog_fot_one_site_type">Тип манги</string>
+    <string name="catalog_fot_one_site_statuses">Статус манги</string>
+    <string name="catalog_fot_one_site_authors">Авторы</string>
     <string name="catalog_fot_one_site_redownload_cancel">Не согласен</string>
 
     <!-- Add Manga Screen -->
@@ -150,6 +154,8 @@
     приложения, пусть он исправит парсер.</string>
 
     <!-- CatalogForOneSiteService -->
+    <string name="catalog_fos_service_title">Сервис обновления каталогов</string>
+    <string name="catalog_fos_service_message">Нажмите на уведомление для перехода в каталоги</string>
     <string name="catalog_fos_service_action_cancel_all">Отменить все</string>
     <string name="catalog_fos_service_notify_title">Обновление каталогов: %d шт.</string>
     <string name="catalog_fos_service_notify_text">Подготовка каталога %s к загрузке</string>

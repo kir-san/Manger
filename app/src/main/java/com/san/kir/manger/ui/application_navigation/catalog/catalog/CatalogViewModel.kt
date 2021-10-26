@@ -2,21 +2,25 @@ package com.san.kir.manger.ui.application_navigation.catalog.catalog
 
 import android.app.Application
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.san.kir.manger.components.parsing.SiteCatalogsManager
+import com.san.kir.manger.R
 import com.san.kir.manger.di.DefaultDispatcher
+import com.san.kir.manger.di.MainDispatcher
 import com.san.kir.manger.room.CatalogDb
 import com.san.kir.manger.room.dao.SiteDao
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.services.CatalogForOneSiteUpdaterService
 import com.san.kir.manger.ui.MainActivity
-import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewModel.Companion.DATE
 import com.san.kir.manger.utils.extensions.startForegroundService
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -24,194 +28,172 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.*
+import kotlinx.coroutines.withContext
 
 class CatalogViewModel @AssistedInject constructor(
-    @Assisted private val siteName: String,
-    private val application: Application,
+    @Assisted val siteName: String,
+    private val context: Application,
     private val siteDao: SiteDao,
     private val dbFactory: CatalogDb.Factory,
     @DefaultDispatcher private val default: CoroutineDispatcher,
+    @MainDispatcher private val main: CoroutineDispatcher,
 ) : ViewModel() {
-    private var db: CatalogDb? = null
+    private val genres = context.getString(R.string.catalog_fot_one_site_genres)
+    private val type = context.getString(R.string.catalog_fot_one_site_type)
+    private val statuses = context.getString(R.string.catalog_fot_one_site_statuses)
+    private val authors = context.getString(R.string.catalog_fot_one_site_authors)
 
-    private val siteCatalog by lazy { manager.catalog.first { it.name == siteName }.catalogName }
+    var searchText by mutableStateOf("") // Сохранение информации о поисковом запросе
+    var sortType by mutableStateOf(DATE) // Тип сортировки
+    var isReversed by mutableStateOf(false) // порядок сортировки
 
-    private val searchText = MutableStateFlow("") // Сохранение информации о поисковом запросе
-    private val sort = MutableStateFlow(CatalogSort()) // Порядок сортировки и тип сортировки
-    private val filters = MutableStateFlow(emptyList<List<String>>()) // фильтры
-    private val backupCatalog = MutableStateFlow(emptyList<SiteCatalogElement>())
-    private val catalogFilter = MutableStateFlow(emptyList<CatalogFilter>())
+    private val _items = MutableStateFlow(emptyList<SiteCatalogElement>())
+    var items by mutableStateOf(listOf<SiteCatalogElement>())
+        private set
 
-    private val _action = MutableStateFlow(true)
-    val action: StateFlow<Boolean>
-        get() = _action
+    var catalogFilter by mutableStateOf(emptyList<CatalogFilter>())
+        private set
 
-    private val _state = MutableStateFlow(CatalogViewState())
-    val state: StateFlow<CatalogViewState>
-        get() = _state
+    var action by mutableStateOf(true)
+        private set
+
+    var selectedNames by mutableStateOf<List<SelectedName>>(emptyList())
 
     init {
-        viewModelScope.launch(default) {
-            setAction(true)
+        setAction(true)
 
-            if (db == null) {
-                db = CatalogDb.getDatabase(application, siteCatalog, manager)
-            } else if (this@CatalogViewModel.siteCatalog != siteCatalog) {
-                db?.close()
-                db = CatalogDb.getDatabase(application, siteCatalog, manager)
-
-            }
-
-            db?.let {
-                val list = it.dao.loadItems().first()
-                backupCatalog.value = list
-                catalogFilter.value = listOf(
-                    CatalogFilter(
-                        name = "Жанры",
-                        catalog = list.flatMap { it.genres }.toHashSet().sorted()
-                    ),
-                    CatalogFilter(
-                        name = "Тип манги",
-                        catalog = list.map { it.type }.toHashSet().sorted()
-                    ),
-                    CatalogFilter(
-                        name = "Статус манги",
-                        catalog = list.map { it.statusEdition }.toHashSet().sorted()
-                    ),
-                    CatalogFilter(
-                        name = "Авторы",
-                        catalog = list.flatMap { it.authors }.toHashSet().sorted()
-                    )
+        _items.onEach { list ->
+            catalogFilter = listOf(
+                CatalogFilter(
+                    name = genres,
+                    catalog = list.flatMap { it.genres }.toHashSet().sorted()
+                ),
+                CatalogFilter(
+                    name = type,
+                    catalog = list.map { it.type }.toHashSet().sorted()
+                ),
+                CatalogFilter(
+                    name = statuses,
+                    catalog = list.map { it.statusEdition }.toHashSet().sorted()
+                ),
+                CatalogFilter(
+                    name = authors,
+                    catalog = list.flatMap { it.authors }.toHashSet().sorted()
                 )
-            }
-
-            siteDao.getItem(siteCatalog)?.let { site ->
-                site.oldVolume = backupCatalog.value.size
-                siteDao.update(site)
-            }
+            )
         }
-
-        viewModelScope.launch(default) {
-            combine(
-                backupCatalog, catalogFilter, searchText, sort, filters
-            ) { backupCatalog, catalogFilter, searchText, sort, filters ->
-                setAction(true)
-                CatalogViewState(
-                    items = changeOrder(
-                        backupCatalog, sort.type, sort.isReversed, searchText, filters
-                    ),
-                    filters = catalogFilter,
-                    searchText = searchText,
-                    sortType = sort.type,
-                    isReversed = sort.isReversed,
-                    catalogName = siteName,
-                )
-            }.catch { t -> throw t }.collect {
-                setAction(false)
-                _state.value = it
+            .onEach { list ->
+                withContext(default) {
+                    siteDao.getItem(siteName)?.let { site ->
+                        site.oldVolume = list.size
+                        siteDao.update(site)
+                    }
+                }
             }
-        }
+            // Обработка поискового запроса
+            .combine(snapshotFlow { searchText }) { list, search -> list to search }
+            .map { (list, search) ->
+                if (search.isNotEmpty()) {
+                    list.filter { item ->
+                        item.name.lowercase().contains(searchText.lowercase())
+                    }
+                } else list
+            }
+            // Обработка фильтров
+            .combine(snapshotFlow { selectedNames }) { list, f -> list to f }
+            .map { (list, f) ->
+                var temp = list
+                f.transformToGroup().apply {
+                    // genres
+                    get(0).ifNotEmpty { temp = list.filter { it.genres.containsAll(this) } }
+
+                    // types
+                    get(1).ifNotEmpty { temp = list.filter { contains(it.type) } }
+
+                    // statuses
+                    get(2).ifNotEmpty { temp = list.filter { contains(it.statusEdition) } }
+
+                    // authors
+                    get(3).ifNotEmpty { temp = list.filter { it.authors.containsAll(this) } }
+                }
+
+                temp
+            }
+            // Обработка сортировки
+            .combine(snapshotFlow { sortType }) { list, s -> list to s }
+            .map { (list, sort) ->
+                when (sort) {
+                    DATE -> list.sortedBy { it.dateId } // Сортировать по дате
+                    NAME -> list.sortedBy { it.name } // Сортировать по имени
+                    POP -> list.sortedBy { it.populate } // Сортировать по популярности
+                    else -> list //
+                }
+            }
+            // Обработка направления сортировки и обновление адаптера
+            .combine(snapshotFlow { isReversed }) { list, r -> list to r }
+            .map { (list, reverse) ->
+                if (reverse) list.reversed()
+                else list
+            }
+            .onEach { list -> withContext(main) { items = list } }
+            .onEach { setAction(false) }
+            .launchIn(viewModelScope)
+
+        update()
     }
 
-    private fun changeOrder(
-        catalog: List<SiteCatalogElement>,
-        sortType: Int, isReversed: Boolean, searchText: String,
-        filters: List<List<String>>
-    ): List<SiteCatalogElement> {
-        var list = catalog
-
-        // Обработка поискового запроса
-        if (searchText.isNotEmpty()) {
-            list = list.filter {
-                it.name.lowercase(Locale.ROOT).contains(searchText.lowercase(Locale.ROOT))
-            }
+    fun update() = viewModelScope.launch(default) {
+        dbFactory.create(siteName).apply {
+            _items.update { dao.getItems() }
+            close()
         }
-
-        // Обработка фильтров
-        if (!filters.all { it.isEmpty() }) {
-            val genres = filters[0]
-            val types = filters[1]
-            val statuses = filters[2]
-            val authors = filters[3]
-
-            if (genres.isNotEmpty())
-                list = list.filter { it.genres.containsAll(genres) }
-
-            if (types.isNotEmpty())
-                list = list.filter { types.contains(it.type) }
-
-            if (statuses.isNotEmpty())
-                list = list.filter { statuses.contains(it.statusEdition) }
-
-            if (authors.isNotEmpty())
-                list = list.filter { it.authors.containsAll(authors) }
-        }
-
-        // Обработка сортировки
-        list = when (sortType) {
-            DATE -> list.sortedBy { it.dateId } // Сортировать по дате
-            NAME -> list.sortedBy { it.name } // Сортировать по имени
-            POP -> list.sortedBy { it.populate } // Сортировать по популярности
-            else -> list // .sortedBy { it.dateId } // Сортировать по дате
-        }
-
-        // Обработка направления сортировки и обновление адаптера
-        return if (isReversed) list.reversed() else list
     }
 
     fun clearSelected() {
-        filters.value = emptyList()
-    }
-
-    fun setAction(value: Boolean, service: Boolean = false) =
-        viewModelScope.launch(default) {
-            if (value) {
-                if (service && !CatalogForOneSiteUpdaterService.isContain(siteCatalog))
-                    application
-                        .startForegroundService<CatalogForOneSiteUpdaterService>("catalogName" to siteCatalog)
-                _action.value = true
-            } else if (!CatalogForOneSiteUpdaterService.isContain(siteCatalog)) {
-                _action.value = false
-            } else {
-                _action.value = false
+        catalogFilter.onEach { filter ->
+            repeat(filter.selected.size) { index ->
+                filter.selected[index] = false
             }
-        }
 
-    fun setSortType(value: Int) {
-        sort.value = CatalogSort(isReversed = sort.value.isReversed, type = value)
+            selectedNames = emptyList()
+        }
     }
 
-    fun setIsReversed(value: Boolean) {
-        sort.value = CatalogSort(isReversed = value, type = sort.value.type)
+    fun setAction(value: Boolean, service: Boolean = false) = viewModelScope.launch(main) {
+        action = withContext(default) {
+            if (value) {
+                if (service && !CatalogForOneSiteUpdaterService.isContain(siteName))
+                    context
+                        .startForegroundService<CatalogForOneSiteUpdaterService>(
+                            CatalogForOneSiteUpdaterService.INTENT_DATA to siteName
+                        )
+                true
+            } else if (!CatalogForOneSiteUpdaterService.isContain(siteName)) {
+                false
+            } else false
+        }
     }
 
-    fun setSearchText(value: String) {
-        searchText.value = value
-    }
+    private fun List<SelectedName>.transformToGroup(): List<List<String>> {
+        val list = mutableListOf(emptyList<String>(), emptyList(), emptyList(), emptyList())
 
-    // Смена фильтра списка
-    fun changeFilter(pageIndex: Int, isAdd: Boolean, item: String) {
+        groupBy(keySelector = { it.nameType }, valueTransform = { it.value })
+            .forEach { entry ->
+                when (entry.key) {
+                    genres -> list.add(0, entry.value)
+                    type -> list.add(1, entry.value)
+                    statuses -> list.add(2, entry.value)
+                    authors -> list.add(3, entry.value)
+                }
+            }
 
-        val newNamed = filters.value.toMutableList()
-
-        if (newNamed.isEmpty()) {
-            repeat(4) { newNamed.add(emptyList()) }
-        }
-
-        if (isAdd) {
-            newNamed[pageIndex] = newNamed[pageIndex] + item
-        } else {
-            newNamed[pageIndex] = newNamed[pageIndex] - item
-        }
-//        filters.value = newNamed
-        viewModelScope.launch { filters.emit(newNamed) }
+        return list.toList()
     }
 
     @AssistedFactory
@@ -227,7 +209,7 @@ class CatalogViewModel @AssistedInject constructor(
 
         fun provideFactory(
             assistedFactory: Factory,
-            siteName: String
+            siteName: String,
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 return assistedFactory.create(siteName) as T
@@ -246,23 +228,19 @@ fun catalogViewModel(siteName: String): CatalogViewModel {
     return viewModel(factory = CatalogViewModel.provideFactory(factory, siteName))
 }
 
-data class CatalogSort(
-    val isReversed: Boolean = false,
-    val type: Int = DATE,
-)
-
-data class CatalogViewState(
-    val items: List<SiteCatalogElement> = emptyList(),
-    val filters: List<CatalogFilter> = emptyList(),
-    val isReversed: Boolean = false,
-    val sortType: Int = DATE,
-    val searchText: String = "",
-    val catalogName: String = ""
-)
-
 data class CatalogFilter(
     val name: String,
     val catalog: List<String> = emptyList(),
-    val selectedName: MutableList<String> = mutableListOf(),
-    val selected: List<MutableState<Boolean>> = catalog.map { mutableStateOf(false) }
+    val selected: SnapshotStateList<Boolean> =
+        mutableStateListOf(*catalog.map { false }.toTypedArray()),
 )
+
+data class SelectedName(
+    val nameType: String,
+    val value: String,
+)
+
+private fun List<String>.ifNotEmpty(action: List<String>.() -> Unit) {
+    if (isNotEmpty())
+        action()
+}

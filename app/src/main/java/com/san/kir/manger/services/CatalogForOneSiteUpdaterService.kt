@@ -189,7 +189,13 @@ class CatalogForOneSiteUpdaterService : Service() {
             var percent = 0
             val tempList = mutableListOf<SiteCatalogElement>()
 
-                site.init()
+            site.init()
+            var retry = 3
+            while (retry != 0) {
+                retry--
+                counter = 0
+                tempList.clear()
+
                 site.getCatalog()
                     .onEach {
                         counter++
@@ -222,8 +228,10 @@ class CatalogForOneSiteUpdaterService : Service() {
                         el
                     }
                     .toList(tempList)
+                if (tempList.size >= site.volume - 10) break
+            }
 
-                log("update finish. elements getting ${tempList.size}")
+            log("update finish. elements getting ${tempList.size}")
 
             dbFactory.create(site.name).apply {
                 dao.deleteAll()

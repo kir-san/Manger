@@ -98,13 +98,7 @@ fun CatalogScreen(
 
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val coroutineScope = rememberCoroutineScope()
-    val errorDialog = remember { mutableStateOf(false) }
-
-    when (vm.catalogReceiver.collectAsState().value) {
-        "destroy" -> viewModel.setAction(false)
-        "error" -> errorDialog.value = true
-        else -> viewModel.setAction(true)
-    }
+    var errorDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier.navigationBarsWithImePadding(),
@@ -143,58 +137,83 @@ fun CatalogScreen(
         }
     }
 
-    ErrorReloadDialog(errorDialog, viewModel)
+    if (errorDialog)
+        ErrorReloadDialog(viewModel) { errorDialog = false }
+
+    if (CatalogForOneSiteUpdaterService.isContain(viewModel.siteName)) viewModel.setAction(true)
+
+    ReceiverHandler(
+        viewModel.siteName,
+        action = {
+            viewModel.setAction(it)
+            if (it.not()) viewModel.update()
+        },
+        error = { errorDialog = true })
+}
+
+@Composable
+private fun ReceiverHandler(
+    siteName: String,
+    action: (Boolean) -> Unit,
+    error: () -> Unit,
+) {
+    val context = LocalContext.current
+
+    val currentAction by rememberUpdatedState(action)
+    val currentError by rememberUpdatedState(error)
+
+    DisposableEffect(context) {
+        val intentFilter =
+            IntentFilter(CatalogForOneSiteUpdaterService.ACTION_CATALOG_UPDATER_SERVICE)
+
+        val broadcast = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                if (intent != null
+                    && intent.action == CatalogForOneSiteUpdaterService.ACTION_CATALOG_UPDATER_SERVICE
+                ) {
+                    log("onReceiver $intent")
+                    intent.getStringExtra(CatalogForOneSiteUpdaterService.EXTRA_KEY_OUT)
+                        ?.let { out ->
+                            log("$out")
+                            when (out) {
+                                "destroy" -> currentAction(false)
+                                "error" -> currentError()
+                                siteName -> currentAction(false)
+                                else -> currentAction(true)
+                            }
+                        }
+
+                }
+            }
+        }
+
+        context.registerReceiver(broadcast, intentFilter)
+
+        onDispose {
+            context.unregisterReceiver(broadcast)
+        }
+    }
 }
 
 // Оповещение о произошедшей ошибке во время обновления каталога
 @Composable
 private fun ErrorReloadDialog(
-    errorDialog: MutableState<Boolean>,
-    viewModel: CatalogViewModel
+    viewModel: CatalogViewModel,
+    onChange: () -> Unit,
 ) {
-    var error by errorDialog
-    if (error) {
-        AlertDialog(
-            onDismissRequest = { error = false },
-            title = { Text(text = stringResource(id = R.string.manga_error_dialog_title)) },
-            text = { Text(text = stringResource(id = R.string.manga_error_dialog_message)) },
-            confirmButton = {
-                TextButton(onClick = {
-                    viewModel.setAction(false)
-                    error = false
-                }) {
-                    Text(text = stringResource(id = android.R.string.ok))
-                }
+    AlertDialog(
+        onDismissRequest = { onChange() },
+        title = { Text(text = stringResource(id = R.string.manga_error_dialog_title)) },
+        text = { Text(text = stringResource(id = R.string.manga_error_dialog_message)) },
+        confirmButton = {
+            TextButton(onClick = {
+                viewModel.setAction(false)
+                onChange()
+            }) {
+                Text(text = stringResource(id = android.R.string.ok))
             }
-        )
-    }
-}
-
-// Диалог подтверждения на обновление каталога
-@Composable
-private fun ReloadDialog(
-    reloadDialog: MutableState<Boolean>,
-    viewModel: CatalogViewModel
-) {
-    var reload by reloadDialog
-    if (reload) {
-        AlertDialog(onDismissRequest = { reload = false },
-                    title = { Text(text = stringResource(id = R.string.catalog_fot_one_site_warning)) },
-                    text = { Text(text = stringResource(id = R.string.catalog_fot_one_site_redownload_text)) },
-                    confirmButton = {
-                        TextButton(onClick = {
-                            reload = false
-                            viewModel.setAction(value = true, service = true)
-                        }) {
-                            Text(text = stringResource(id = R.string.catalog_fot_one_site_redownload_ok))
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { reload = false }) {
-                            Text(text = stringResource(id = R.string.catalog_fot_one_site_redownload_cancel))
-                        }
-                    })
-    }
+        }
+    )
 }
 
 // Нижняя панель с кнопками сортировки списка

@@ -296,21 +296,23 @@ class MangaUpdaterService : Service() {
     }
 
     private suspend fun updatePagesInChapters(mangaDB: Manga) = withContext(default) {
-        chapterDao
-            .getItemsWhereManga(mangaDB.unic)
-            .filter {
-                mangaDB.isAlternativeSite
-                        || it.pages.isNullOrEmpty()
-                        || it.pages.any { chap -> chap.isBlank() }
-            }
-            .onEach {
-                launch(default) {
-                    it.pages = manager.pages(it)
-                }.join()
-            }
-            .apply {
-                chapterDao.update(*this.toTypedArray())
-            }
+        kotlin.runCatching {
+            chapterDao
+                .getItemsWhereManga(mangaDB.unic)
+                .filter {
+                    mangaDB.isAlternativeSite
+                            || it.pages.isNullOrEmpty()
+                            || it.pages.any { chap -> chap.isBlank() }
+                }
+                .onEach {
+                    launch(default) {
+                        it.pages = manager.pages(it)
+                    }.join()
+                }
+                .apply {
+                    chapterDao.update(*this.toTypedArray())
+                }
+        }.onFailure { it.printStackTrace() }
     }
 
     private suspend fun checkLinkInManga(mangaDB: Manga) {

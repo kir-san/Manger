@@ -36,7 +36,7 @@ class CatalogViewModel @AssistedInject constructor(
     @Assisted private val siteName: String,
     private val application: Application,
     private val siteDao: SiteDao,
-    private val manager: SiteCatalogsManager,
+    private val dbFactory: CatalogDb.Factory,
     @DefaultDispatcher private val default: CoroutineDispatcher,
 ) : ViewModel() {
     private var db: CatalogDb? = null

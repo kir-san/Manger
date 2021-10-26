@@ -1,5 +1,6 @@
 package com.san.kir.manger.room
 
+import android.app.Application
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
@@ -14,6 +15,7 @@ import com.san.kir.manger.room.type_converters.ListStringConverter
 import com.san.kir.manger.utils.enums.DIR
 import com.san.kir.manger.utils.extensions.getFullPath
 import java.io.File
+import javax.inject.Inject
 
 @Database(
     entities = [(SiteCatalogElement::class)],
@@ -26,7 +28,11 @@ abstract class CatalogDb : RoomDatabase() {
         const val VERSION = 1
         val NAME: (String) -> String = { "${DIR.CATALOGS}/$it.db" }
 
-        fun getDatabase(context: Context, catalogName: String, manager: SiteCatalogsManager): CatalogDb {
+        fun getDatabase(
+            context: Context,
+            catalogName: String,
+            manager: SiteCatalogsManager,
+        ): CatalogDb {
             val first = manager.catalog.first { it.catalogName == catalogName }
             var catName = first.catalogName
             first.allCatalogName
@@ -53,5 +59,28 @@ abstract class CatalogDb : RoomDatabase() {
         val migrations: Array<Migration> = arrayOf()
     }
 
+    class Factory @Inject constructor(
+        private val context: Application,
+        private val manager: SiteCatalogsManager,
+    ) {
+        fun create(siteName: String): CatalogDb {
+            val first = manager.catalog.first { it.name == siteName }
 
+            var catName = first.catalogName
+
+            first.allCatalogName
+                .firstOrNull { getFullPath(NAME(it)).exists() }
+                ?.also { catName = it }
+
+            return Room
+                .databaseBuilder(
+                    context.applicationContext,
+                    CatalogDb::class.java,
+                    File(App.externalDir, NAME(catName)).absolutePath
+                )
+                .addMigrations(*Migrate.migrations)
+                .allowMainThreadQueries()
+                .build()
+        }
+    }
 }

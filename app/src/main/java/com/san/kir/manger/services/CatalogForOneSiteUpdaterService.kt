@@ -14,8 +14,7 @@ import com.san.kir.ankofork.intentFor
 import com.san.kir.ankofork.sdk28.notificationManager
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
-import com.san.kir.manger.di.DefaultDispatcher
-import com.san.kir.manger.repositories.SiteCatalogRepository
+import com.san.kir.manger.room.CatalogDb
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.dao.SiteDao
 import com.san.kir.manger.room.entities.SiteCatalogElement
@@ -96,6 +95,11 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
 
     @Inject
     lateinit var siteDao: SiteDao
+
+    @Inject
+    lateinit var dbFactory: CatalogDb.Factory
+
+    override fun onBind(intent: Intent?): IBinder? = null
 
     @SuppressLint("InlinedApi")
     override fun onCreate() {
@@ -184,13 +188,11 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
 
                 log("update finish. elements getting ${tempList.size}")
 
-                SiteCatalogRepository(
-                    this@CatalogForOneSiteUpdaterService, site.catalogName, manager
-                ).apply {
-                    clearDb()
-                    insert(*tempList.toTypedArray())
-                    close()
-                }
+            dbFactory.create(site.name).apply {
+                dao.deleteAll()
+                dao.insert(*tempList.toTypedArray())
+                close()
+            }
 
                 siteDb?.oldVolume = counter
                 siteDao.update(siteDb)

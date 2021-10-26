@@ -12,7 +12,6 @@ class SiteCatalogRepository(context: Context, catalogName: String, manager: Site
     suspend fun items() = mDao.getItems()
     suspend fun update(vararg element: SiteCatalogElement) = mDao.update(*element)
     suspend fun insert(vararg element: SiteCatalogElement) = mDao.insert(*element)
-    suspend fun clearDb() = mDao.deleteAll()
 
     fun close() {
         db.close()

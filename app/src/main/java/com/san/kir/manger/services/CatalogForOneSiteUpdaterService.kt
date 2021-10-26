@@ -1,12 +1,19 @@
 package com.san.kir.manger.services
 
 import android.annotation.SuppressLint
-import android.app.IntentService
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.Service
 import android.content.Intent
 import android.os.Build
+import android.os.Handler
+import android.os.HandlerThread
+import android.os.IBinder
+import android.os.Looper
+import android.os.Message
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.core.net.toUri
@@ -19,24 +26,20 @@ import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.dao.SiteDao
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.ui.MainActivity
-import com.san.kir.manger.ui.application_navigation.MainNavTarget
+import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.extensions.log
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import java.util.concurrent.Executors
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CatalogForOneSiteUpdaterService : IntentService(TAG) {
+class CatalogForOneSiteUpdaterService : Service() {
     companion object {
         const val ACTION_CATALOG_UPDATER_SERVICE =
             "kir.san.manger.CatalogForOneSiteUpdaterService.UPDATE"
@@ -44,20 +47,29 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
 
         const val EXTRA_KEY_OUT = "EXTRA_OUT"
 
+        const val INTENT_DATA = "siteName"
+
         private const val channelId = "CatalogUpdaterId"
         private const val TAG = "CatalogForOneSiteUpdaterService"
         private const val name = "CatalogForOneSiteUpdaterServiceName"
         private const val descriptions = "CatalogForOneSiteUpdaterServiceDescription"
+
         private var taskCounter = listOf<String>()
-        fun isContain(catalogName: String) = taskCounter.contains(catalogName)
+        fun isContain(siteName: String) = taskCounter.contains(siteName)
     }
+
+    @Volatile
+    private lateinit var mServiceLopper: Looper
+
+    @Volatile
+    private lateinit var mServiceHandler: ServiceHandler
 
     private var notificationId = ID.generate()
 
     private val actionGoToCatalogs by lazy {
         val deepLinkIntent = Intent(
             Intent.ACTION_VIEW,
-            MainNavTarget.Catalogs.deepLink.toUri(),
+            CatalogsNavTarget.Main.deepLink.toUri(),
             this,
             MainActivity::class.java
         )
@@ -86,9 +98,7 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
     @Inject
     lateinit var manager: SiteCatalogsManager
 
-    @DefaultDispatcher
-    @Inject
-    lateinit var default: CoroutineDispatcher
+    private val default = Dispatchers.Default
 
     @Inject
     lateinit var mangaDao: MangaDao
@@ -103,16 +113,38 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
 
     @SuppressLint("InlinedApi")
     override fun onCreate() {
+
+        val thread = HandlerThread(TAG)
+        thread.start()
+
+        mServiceLopper = thread.looper
+        mServiceHandler = ServiceHandler(mServiceLopper, this)
+
         super.onCreate()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-            && notificationManager.getNotificationChannel(channelId) == null) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel()
+        }
 
-            val importance = NotificationManager.IMPORTANCE_LOW
+        setForeground()
+    }
 
-            NotificationChannel(channelId, name, importance).apply {
-                description = descriptions
-                notificationManager.createNotificationChannel(this)
-            }
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createNotificationChannel() {
+        val chan = NotificationChannel(channelId, TAG, NotificationManager.IMPORTANCE_LOW)
+        chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
+
+        notificationManager.createNotificationChannel(chan)
+    }
+
+    private fun setForeground() {
+        with(NotificationCompat.Builder(this, channelId)) {
+            setSmallIcon(R.drawable.ic_notification_update)
+            setContentTitle(getString(R.string.catalog_fos_service_title))
+            setContentText(getString(R.string.catalog_fos_service_message))
+            setContentIntent(actionGoToCatalogs)
+            priority = NotificationCompat.PRIORITY_MIN
+            setAutoCancel(true)
+            startForeground(ID.generate(), build())
         }
     }
 
@@ -122,38 +154,43 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
             stopSelf()
             isManualStop = true
         } else {
-//            taskCounter = taskCounter + intent.getStringExtra("catalogName")
+            intent.getStringExtra(INTENT_DATA)?.let { task ->
+                taskCounter = taskCounter + task
+                val msg = mServiceHandler.obtainMessage()
+                msg.arg1 = startId
+                msg.obj = task
+                mServiceHandler.sendMessage(msg)
+            }
+
         }
+        setForeground()
         return super.onStartCommand(intent, flags, startId)
     }
 
 
-    override fun onHandleIntent(intent: Intent?) = runBlocking(default) {
-        job = launch {
-            try {
-                val site = manager.catalog
-                    .first { it.catalogName == intent!!.getStringExtra("catalogName") }
-                val siteDb = siteDao.getItem(site.name)
+    fun onHandleIntent(siteName: String) = runBlocking(default) {
+        try {
+            val site = manager.catalog.first { it.name == siteName }
+            val siteDb = siteDao.getItem(site.name)
 
-                with(NotificationCompat.Builder(this@CatalogForOneSiteUpdaterService, channelId)) {
-                    setSmallIcon(R.drawable.ic_notification_update)
-                    setContentTitle(
-                        getString(R.string.catalog_fos_service_notify_title, taskCounter.size)
-                    )
-                    setContentText(
-                        getString(R.string.catalog_fos_service_notify_text, site.name)
-                    )
-                    startForeground(notificationId, build())
-                }
+            with(NotificationCompat.Builder(this@CatalogForOneSiteUpdaterService, channelId)) {
+                setSmallIcon(R.drawable.ic_notification_update)
+                setContentTitle(
+                    getString(R.string.catalog_fos_service_notify_title, taskCounter.size)
+                )
+                setContentText(
+                    getString(R.string.catalog_fos_service_notify_text, site.name)
+                )
+                startForeground(notificationId, build())
+            }
 
 
-                var counter = 0
-                var percent = 0
-                val tempList = mutableListOf<SiteCatalogElement>()
+            var counter = 0
+            var percent = 0
+            val tempList = mutableListOf<SiteCatalogElement>()
 
                 site.init()
                 site.getCatalog()
-                    .flowOn(Executors.newSingleThreadExecutor().asCoroutineDispatcher())
                     .onEach {
                         counter++
                         val new = ((counter.toFloat() / site.volume.toFloat()) * 100).toInt()
@@ -178,7 +215,7 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
                             }
                         }
 
-                        log("$it")
+                        log("$counter / ${site.volume}")
                     }
                     .map { el ->
                         el.isAdded = mangaDao.getItems().any { it.shortLink == el.shotLink }
@@ -194,24 +231,30 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
                 close()
             }
 
-                siteDb?.oldVolume = counter
-                siteDao.update(siteDb)
+            log("save items in db")
 
-                sendPositiveBroadcast(site.catalogName)
+            siteDb?.oldVolume = counter
+            siteDao.update(siteDb)
 
-                taskCounter = taskCounter - site.catalogName
-            } catch (e: Exception) {
-                e.printStackTrace()
-                isError = true
-            } finally { //
-            }
+            log("save counter in db")
+
+            sendPositiveBroadcast(site.name)
+
+            taskCounter = taskCounter - site.name
+        } catch (e: Exception) {
+            log("error")
+            e.printStackTrace()
+            isError = true
+        } finally { //
+            log("finally")
         }
-        job.join()
     }
 
 
     override fun onDestroy() {
         super.onDestroy()
+
+        log("onDestroy")
 
         job.cancel()
         stopForeground(false)
@@ -241,23 +284,39 @@ class CatalogForOneSiteUpdaterService : IntentService(TAG) {
     }
 
     private fun sendPositiveBroadcast(catalogName: String) {
-        val responseIntent = Intent()
-        responseIntent.putExtra(EXTRA_KEY_OUT, catalogName)
-        responseIntent.action = ACTION_CATALOG_UPDATER_SERVICE
-        sendBroadcast(responseIntent)
+        Intent().apply {
+            action = ACTION_CATALOG_UPDATER_SERVICE
+            putExtra(EXTRA_KEY_OUT, catalogName)
+
+            sendBroadcast(this)
+        }
     }
 
     private fun sendNeutralBroadcast() {
-        val responseIntent = Intent()
-        responseIntent.putExtra(EXTRA_KEY_OUT, "destroy")
-        responseIntent.action = ACTION_CATALOG_UPDATER_SERVICE
-        sendBroadcast(responseIntent)
+        Intent().apply {
+            action = ACTION_CATALOG_UPDATER_SERVICE
+            putExtra(EXTRA_KEY_OUT, "destroy")
+
+            sendBroadcast(this)
+        }
     }
 
     private fun sendNegativeBroadcast() {
-        val responseIntent = Intent()
-        responseIntent.putExtra(EXTRA_KEY_OUT, "error")
-        responseIntent.action = ACTION_CATALOG_UPDATER_SERVICE
-        sendBroadcast(responseIntent)
+        Intent().apply {
+            action = ACTION_CATALOG_UPDATER_SERVICE
+            putExtra(EXTRA_KEY_OUT, "error")
+
+            sendBroadcast(this)
+        }
+    }
+
+    private open class ServiceHandler(
+        looper: Looper,
+        val service: CatalogForOneSiteUpdaterService,
+    ) : Handler(looper) {
+        override fun handleMessage(msg: Message) {
+            service.onHandleIntent(msg.obj as String)
+            service.stopSelf(msg.arg1)
+        }
     }
 }

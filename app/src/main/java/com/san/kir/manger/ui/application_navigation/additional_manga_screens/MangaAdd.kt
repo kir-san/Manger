@@ -41,39 +41,39 @@ import com.san.kir.ankofork.startService
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.di.DefaultDispatcher
+import com.san.kir.manger.di.MainDispatcher
 import com.san.kir.manger.room.entities.MangaColumn
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.services.MangaUpdaterService
 import com.san.kir.manger.ui.MainActivity
 import com.san.kir.manger.ui.utils.DialogText
 import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
+import com.san.kir.manger.utils.extensions.log
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
-fun MangaAddScreen(nav: NavHostController, item: SiteCatalogElement) {
+fun MangaAddScreen(nav: NavHostController, vm: SiteCatalogItemViewModel) {
     TopBarScreenWithInsets(
         navigationButtonListener = { nav.navigateUp() },
         title = stringResource(id = R.string.add_manga_screen_title)
     ) {
-        MangaAddContent(item, nav)
+        MangaAddContent(vm, nav)
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun ColumnScope.MangaAddContent(
-    item: SiteCatalogElement,
+    vm: SiteCatalogItemViewModel,
     nav: NavHostController,
-    viewModel: MangaAddViewModel = hiltViewModel()
+    viewModel: MangaAddViewModel = hiltViewModel(),
 ) {
 
     var categories by remember { mutableStateOf(emptyList<String>()) }
@@ -131,7 +131,7 @@ private fun ColumnScope.MangaAddContent(
         }
     }
 
-    if (continueProcess) ContinueProcess(item, inputText, closeBtn)
+    if (continueProcess) ContinueProcess(vm, inputText, closeBtn)
 
     Spacer(modifier = Modifier.weight(1f, true))
 
@@ -185,7 +185,7 @@ private fun validate(
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun ContinueProcess(
-    item: SiteCatalogElement,
+    vm: SiteCatalogItemViewModel,
     category: String,
     closeBtn: MutableState<Boolean>,
     viewModel: MangaAddViewModel = hiltViewModel()
@@ -232,7 +232,8 @@ private fun ContinueProcess(
         )
 
     // TODO проверить причину не загрузки лого
-    LaunchedEffect(true) {
+    LaunchedEffect(vm.item) {
+        error = false
         kotlin.runCatching {
             if (!viewModel.hasCategory(category)) {
                 added = true
@@ -242,26 +243,34 @@ private fun ContinueProcess(
             process = ProcessStatus.categoryChanged
 
             process = ProcessStatus.prevAndUpdateManga
-            val (path, manga) = viewModel.updateSiteElement(item, category)
+            if (vm.item.catalogName.isNotEmpty()) {
 
-            process = ProcessStatus.prevAndCreatedFolder
-            viewModel.createDirs(path)
-            delay(1000)
+                val (path, manga) = viewModel.updateSiteElement(vm.item, category)
 
-            process = ProcessStatus.prevAndSearchChapters
-            context.startService<MangaUpdaterService>(MangaColumn.tableName to manga)
-            delay(1000)
+                process = ProcessStatus.prevAndCreatedFolder
+                viewModel.createDirs(path)
+                delay(1000)
 
-            process = ProcessStatus.allComplete
+                process = ProcessStatus.prevAndSearchChapters
+                context.startService<MangaUpdaterService>(MangaColumn.tableName to manga)
+                delay(1000)
+
+                process = ProcessStatus.allComplete
+
+                action = false
+                closeBtn.value = true
+            }
         }.fold(
-            onSuccess = { },
+            onSuccess = {
+                error = false
+            },
             onFailure = {
                 error = true
                 it.printStackTrace()
+                action = false
+                closeBtn.value = true
             }
         )
-        action = false
-        closeBtn.value = true
     }
 }
 
@@ -274,17 +283,24 @@ private object ProcessStatus {
 }
 
 class SiteCatalogItemViewModel @AssistedInject constructor(
-    @Assisted private val url: String,
+    @Assisted val url: String,
     private val manager: SiteCatalogsManager,
     @DefaultDispatcher private val default: CoroutineDispatcher,
+    @MainDispatcher private val main: CoroutineDispatcher,
 ) : ViewModel() {
-    private val _item = MutableStateFlow(SiteCatalogElement())
-    val item = _item.asStateFlow()
+    var item by mutableStateOf(SiteCatalogElement())
 
     init {
         // инициация манги
         viewModelScope.launch(default) {
-            manager.getElementOnline(url)?.also { _item.update { it } }
+            log(url)
+            val it = manager.getElementOnline(url)
+            log(it.toString())
+            if (it != null) {
+                withContext(main) {
+                    item = it
+                }
+            }
         }
     }
 

@@ -1,8 +1,6 @@
 package com.san.kir.manger.ui.application_navigation.catalog
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.navDeepLink
@@ -38,11 +36,13 @@ sealed class CatalogsNavTarget : NavTarget {
     object Info : CatalogsNavTarget() {
         override val base: String = "info"
         override val item: NavItem = SiteCatalogItem
+        override val isOptional: Boolean = true
     }
 
     object AddLocal : CatalogsNavTarget() {
         override val base: String = "add_local"
         override val item: NavItem = SiteCatalogItem
+        override val isOptional: Boolean = true
     }
 }
 
@@ -77,11 +77,8 @@ fun NavGraphBuilder.catalogsNavGraph(nav: NavHostController) {
         route = CatalogsNavTarget.Info.route,
         content = {
             val item = nav.getStringElement(SiteCatalogItem) ?: ""
-            val viewModel = siteCatalogItemViewModel(url = item)
 
-            val element by viewModel.item.collectAsState()
-
-            MangaInfoScreen(nav, element)
+            MangaInfoScreen(nav, siteCatalogItemViewModel(item))
         }
     )
 
@@ -89,11 +86,8 @@ fun NavGraphBuilder.catalogsNavGraph(nav: NavHostController) {
         route = CatalogsNavTarget.AddLocal.route,
         content = {
             val item = nav.getStringElement(SiteCatalogItem) ?: ""
-            val viewModel = siteCatalogItemViewModel(url = item)
 
-            val element by viewModel.item.collectAsState()
-
-            MangaAddScreen(nav, element)
+            MangaAddScreen(nav, siteCatalogItemViewModel(item))
         }
     )
 }

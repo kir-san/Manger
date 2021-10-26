@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.san.kir.ankofork.dialogs.longToast
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.di.DefaultDispatcher
+import com.san.kir.manger.di.MainDispatcher
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.room.entities.authorsList
@@ -22,16 +23,19 @@ class SuppotMangaViewModel @Inject constructor(
     private val mangaDao: MangaDao,
     private val manager: SiteCatalogsManager,
     @DefaultDispatcher private val default: CoroutineDispatcher,
+    @MainDispatcher private val main: CoroutineDispatcher,
 ) : ViewModel() {
 
     suspend fun isContainManga(item: SiteCatalogElement): Boolean =
         withContext(default) {
-            mangaDao.getItems().any { it.shortLink == item.shotLink }
+            mangaDao.getItems().any {
+                it.shortLink.contains(item.shotLink)
+            }
         }
 
     fun onlineUpdate(item: SiteCatalogElement) {
         viewModelScope.launch(default) {
-            val oldManga = mangaDao.getItems().first { it.shortLink == item.shotLink }
+            val oldManga = mangaDao.getItems().first { it.shortLink.contains(item.shotLink) }
             val updItem = manager.getFullElement(item)
             oldManga.authorsList = updItem.authors
             oldManga.logo = updItem.logo
@@ -41,7 +45,7 @@ class SuppotMangaViewModel @Inject constructor(
             oldManga.shortLink = updItem.shotLink
             oldManga.status = updItem.statusEdition
             mangaDao.update(oldManga)
-            withContext(default) {
+            withContext(main) {
                 application.longToast("Информация о манге ${item.name} обновлена")
             }
         }

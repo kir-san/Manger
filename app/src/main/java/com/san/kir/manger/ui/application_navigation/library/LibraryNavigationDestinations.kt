@@ -25,7 +25,7 @@ import com.san.kir.manger.ui.utils.getStringElement
 
 sealed class LibraryNavTarget : NavTarget {
     object Main : LibraryNavTarget() {
-        override val route: String = "main"
+        override val base: String = "main"
     }
 
     object Chapters : LibraryNavTarget() {
@@ -34,11 +34,13 @@ sealed class LibraryNavTarget : NavTarget {
     }
 
     object AddOnline : LibraryNavTarget() {
-        override val route: String = "add_online"
+        override val base: String = "add_online"
     }
 
     object AddLocal : LibraryNavTarget() {
-        override val route: String = "add_local"
+        override val base: String = "add_local"
+        override val item: NavItem = SiteCatalogItem
+        override val isOptional: Boolean = true
     }
 
     object About : LibraryNavTarget() {
@@ -87,11 +89,8 @@ fun NavGraphBuilder.libraryNavGraph(nav: NavHostController) {
         route = LibraryNavTarget.AddLocal.route,
         content = {
             val item = nav.getStringElement(SiteCatalogItem) ?: ""
-            val viewModel = siteCatalogItemViewModel(url = item)
 
-            val element by viewModel.item.collectAsState()
-
-            MangaAddScreen(nav, element)
+            MangaAddScreen(nav, siteCatalogItemViewModel(item))
         }
     )
 

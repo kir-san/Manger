@@ -91,7 +91,7 @@ class ChaptersViewModel @AssistedInject constructor(
             }
             m
         }
-            .flatMapLatest { manga -> chapterDao.loadItems(manga.unic) }
+            .flatMapLatest { manga -> chapterDao.loadItemsWhereManga(manga.unic) }
             .onEach { withContext(main) { chapters = it } }
             // подготовка списка глав с использованием фильтров и сортировки
             .combine(snapshotFlow {

@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.MangaColumn
+import com.san.kir.manger.room.entities.SimpleManga
 import com.san.kir.manger.utils.extensions.getFullPath
 import kotlinx.coroutines.flow.Flow
 import java.io.File
@@ -13,6 +14,12 @@ import java.io.File
 interface MangaDao : BaseDao<Manga> {
     @Query("SELECT * FROM `${MangaColumn.tableName}`")
     suspend fun getItems(): List<Manga>
+
+    @Query("SELECT ${MangaColumn.id}, ${MangaColumn.unic}, ${MangaColumn.name}, " +
+            "${MangaColumn.logo}, ${MangaColumn.color}, ${MangaColumn.populate}, " +
+            "${MangaColumn.categories} " +
+            "FROM `${MangaColumn.tableName}`")
+    suspend fun getSimpleItems(): List<SimpleManga>
 
     @Query("SELECT * FROM `${MangaColumn.tableName}` WHERE `${MangaColumn.unic}` IS :unic")
     suspend fun getItem(unic: String): Manga

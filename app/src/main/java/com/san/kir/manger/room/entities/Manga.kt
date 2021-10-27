@@ -1,11 +1,11 @@
 package com.san.kir.manger.room.entities
 
+import android.os.Parcel
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import android.os.Parcel
-import android.os.Parcelable
 import com.san.kir.manger.utils.enums.ChapterFilter
 
 @Entity(tableName = MangaColumn.tableName)
@@ -13,24 +13,33 @@ class Manga() : Parcelable {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = MangaColumn.id)
     var id: Long = 0
+
     @ColumnInfo(name = MangaColumn.unic)
     var unic = ""
     var host = ""
+
     @ColumnInfo(name = MangaColumn.name)
     var name = ""
     var authors = ""
+
+    @ColumnInfo(name = MangaColumn.logo)
     var logo = ""
     var about = ""
+
     @ColumnInfo(name = MangaColumn.categories)
     var categories = ""
     var genres = ""
     var path = ""
     var status = ""
+
     @Deprecated("больше не использовать")
     var site = ""
+    @ColumnInfo(name = MangaColumn.color)
     var color = 0
+
     @ColumnInfo(name = MangaColumn.populate)
     var populate = 0
+
     @ColumnInfo(name = MangaColumn.order)
     var order = 0
     var isAlternativeSort = true
@@ -174,4 +183,6 @@ object MangaColumn {
     const val categories = "categories"
     const val populate = "populate"
     const val order = "order"
+    const val logo = "logo"
+    const val color = "color"
 }

@@ -22,7 +22,14 @@ interface ChapterDao : BaseDao<Chapter> {
         "SELECT * FROM ${ChaptersColumn.tableName} " +
                 "WHERE ${ChaptersColumn.manga} IS :manga"
     )
-    fun loadItems(manga: String): Flow<List<Chapter>>
+    fun loadItemsWhereManga(manga: String): Flow<List<Chapter>>
+
+    @Query(
+        "SELECT COUNT(*) FROM ${ChaptersColumn.tableName} " +
+                "WHERE ${ChaptersColumn.manga} IS :manga " +
+                "AND ${ChaptersColumn.isRead} IS 0"
+    )
+    fun loadCountItemsWhereManga(manga: String): Flow<Int>
 
     @Query(
         "SELECT * FROM ${ChaptersColumn.tableName} " +

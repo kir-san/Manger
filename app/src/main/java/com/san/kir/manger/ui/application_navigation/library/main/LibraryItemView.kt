@@ -32,7 +32,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.room.entities.SimpleManga
 import com.san.kir.manger.ui.application_navigation.library.LibraryNavTarget
 import com.san.kir.manger.ui.utils.TestTags
 import com.san.kir.manger.ui.utils.navigate
@@ -44,7 +44,7 @@ import com.san.kir.manger.utils.CATEGORY_ALL
 @Composable
 private fun ItemView(
     nav: NavHostController,
-    manga: Manga,
+    manga: SimpleManga,
     viewModel: LibraryViewModel,
     content: @Composable () -> Unit,
 ) {
@@ -71,12 +71,12 @@ private fun ItemView(
 @Composable
 fun LibraryLargeItemView(
     nav: NavHostController,
-    manga: Manga,
+    manga: SimpleManga,
     cat: String,
     viewModel: LibraryViewModel
 ) {
     val showCategory by viewModel.showCategory.collectAsState(false)
-    var countNotRead by remember { mutableStateOf(0) }
+    val countNotRead by viewModel.countNotRead(manga.unic).collectAsState(0)
     val primaryColor = MaterialTheme.colors.primary
     var backgroundColor by remember { mutableStateOf(primaryColor) }
 
@@ -134,19 +134,18 @@ fun LibraryLargeItemView(
                 primaryColor
             }
         }
-        countNotRead = viewModel.countNotRead(manga.unic)
     }
 }
 
 @Composable
 fun LibrarySmallItemView(
     nav: NavHostController,
-    manga: Manga,
+    manga: SimpleManga,
     cat: String,
     viewModel: LibraryViewModel
 ) {
     val showCategory by viewModel.showCategory.collectAsState(false)
-    var countNotRead by remember { mutableStateOf(0) }
+    val countNotRead by viewModel.countNotRead(manga.unic).collectAsState(0)
     val primaryColor = MaterialTheme.colors.primary
     var backgroundColor by remember { mutableStateOf(primaryColor) }
 
@@ -209,6 +208,5 @@ fun LibrarySmallItemView(
                 primaryColor
             }
         }
-        countNotRead = viewModel.countNotRead(manga.unic)
     }
 }

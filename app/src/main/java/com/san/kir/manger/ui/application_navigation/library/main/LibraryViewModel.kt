@@ -14,7 +14,7 @@ import com.san.kir.manger.room.dao.CategoryDao
 import com.san.kir.manger.room.dao.ChapterDao
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.entities.CategoryWithMangas
-import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.room.entities.SimpleManga
 import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.SortLibraryUtil
 import com.san.kir.manger.workmanager.MangaDeleteWorker
@@ -69,11 +69,10 @@ class LibraryViewModel @Inject constructor(
         .loadItemsAdds()
         .onEmpty { _isEmpty.update { true } }
         .map { cats ->
-            cats.filter { it.category.isVisible }
-                .onEach { c ->
-                    if (c.category.name == CATEGORY_ALL)
-                        c.mangas = mangaDao.getItems()
-                }
+            cats.onEach { c ->
+                if (c.category.name == CATEGORY_ALL)
+                    c.mangas = mangaDao.getSimpleItems()
+            }
                 .onEach { c ->
                     val list =
                         when (c.category.typeSort) {
@@ -104,12 +103,14 @@ class LibraryViewModel @Inject constructor(
         }
     }
 
-    suspend fun countNotRead(mangaUnic: String) =
-        chapterDao.getItemsWhereManga(mangaUnic).filter { !it.isRead }.size
+    fun countNotRead(mangaUnic: String) = chapterDao.loadCountItemsWhereManga(mangaUnic)
 
-    fun update(manga: Manga) {
+    fun update(manga: SimpleManga) {
         viewModelScope.launch(default) {
-            mangaDao.update(manga)
+            mangaDao.getItem(manga.unic).apply {
+                categories = manga.categories
+                mangaDao.update(this)
+            }
         }
     }
 
@@ -119,13 +120,13 @@ class LibraryViewModel @Inject constructor(
         }
     }
 
-    fun changeSelectedManga(visible: Boolean, manga: Manga? = null) {
+    fun changeSelectedManga(visible: Boolean, manga: SimpleManga? = null) {
         selectedManga =
             manga?.let { SelectedManga(manga, visible) } ?: selectedManga.copy(visible = visible)
     }
 }
 
 data class SelectedManga(
-    val manga: Manga = Manga(),
-    val visible: Boolean = false
+    val manga: SimpleManga = SimpleManga(),
+    val visible: Boolean = false,
 )

@@ -20,7 +20,9 @@ abstract class CategoryDao : BaseDao<Category> {
     abstract fun loadItem(name: String): Flow<Category>
 
     @Transaction
-    @Query("SELECT * FROM `categories` ORDER BY `order`")
+    @Query("SELECT * FROM `categories` " +
+            "WHERE isVisible IS 1 " +
+            "ORDER BY `order`")
     abstract fun loadItemsAdds(): Flow<List<CategoryWithMangas>>
 
     @Transaction

@@ -51,8 +51,6 @@ fun ColumnScope.LibraryContent(
 
     val categories by viewModel.preparedCategories.collectAsState(emptyList())
 
-    val categoryNames by viewModel.categoryNames.collectAsState(emptyList())
-
     val scope = rememberCoroutineScope()
 
     if (isAction) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
@@ -62,7 +60,8 @@ fun ColumnScope.LibraryContent(
     LaunchedEffect(categories, pagerState.currentPage) {
         if (pagerState.currentPage >= categories.size)
             pagerState.animateScrollToPage(0)
-        viewModel.changeCurrentCategory(categories[pagerState.currentPage])
+        if (categories.isNotEmpty())
+            viewModel.changeCurrentCategory(categories[pagerState.currentPage])
     }
 
     if (isEmpty.not() && categories.isNotEmpty() && pagerState.currentPage < categories.size) {
@@ -89,7 +88,7 @@ fun ColumnScope.LibraryContent(
                     )
                 )
         ) {
-            categoryNames.forEachIndexed { index, item ->
+            viewModel.categoryNames.forEachIndexed { index, item ->
                 Tab(
                     modifier = Modifier.testTag(TestTags.Library.tab),
                     selected = pagerState.currentPage == index,
@@ -106,7 +105,7 @@ fun ColumnScope.LibraryContent(
 
         // Перелистываемые вкладки
         HorizontalPager(
-            count = categoryNames.size,
+            count = viewModel.categoryNames.size,
             state = pagerState,
             modifier = Modifier
                 .fillMaxWidth()

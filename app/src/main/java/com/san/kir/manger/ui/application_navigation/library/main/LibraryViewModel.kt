@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
 import com.san.kir.manger.data.datastore.MainRepository
 import com.san.kir.manger.di.DefaultDispatcher
+import com.san.kir.manger.di.MainDispatcher
 import com.san.kir.manger.room.dao.CategoryDao
 import com.san.kir.manger.room.dao.ChapterDao
 import com.san.kir.manger.room.dao.MangaDao
@@ -25,9 +26,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -37,7 +40,8 @@ class LibraryViewModel @Inject constructor(
     private val chapterDao: ChapterDao,
     private val mangaDao: MangaDao,
     dataStore: MainRepository,
-    @DefaultDispatcher private val default: CoroutineDispatcher
+    @DefaultDispatcher private val default: CoroutineDispatcher,
+    @MainDispatcher private val main: CoroutineDispatcher,
 ) : ViewModel() {
     private val _isAction = MutableStateFlow(false)
     val isAction = _isAction.asStateFlow()
@@ -57,17 +61,14 @@ class LibraryViewModel @Inject constructor(
         .map { l -> l.map { it.name } }
         .flowOn(default)
 
-    val categoryNames = categoryDao.loadItems()
-        .map { data ->
-            data.filter { it.isVisible }
-                .map { it.name }
-        }
-        .flowOn(default)
+    var categoryNames by mutableStateOf(emptyList<String>())
+        private set
 
 
     val preparedCategories = categoryDao
         .loadItemsAdds()
         .onEmpty { _isEmpty.update { true } }
+        .onEach { cats -> withContext(main) { categoryNames = cats.map { it.category.name } } }
         .map { cats ->
             cats.onEach { c ->
                 if (c.category.name == CATEGORY_ALL)

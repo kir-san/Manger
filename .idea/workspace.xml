@@ -14,24 +14,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c96f504c-5813-40db-9c74-8d9f1ae3a023" name="Default Changelist" comment="update settings">
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/Manger.buildSrc.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/Manger.buildSrc.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/Manger.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/Manger.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/ankofork/Manger.ankofork.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/ankofork/Manger.ankofork.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/app/Manger.app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/Manger.app.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/app/benchmark/Manger.app.benchmark.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/benchmark/Manger.app.benchmark.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/room/dao/CategoryDao.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/room/dao/CategoryDao.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/room/dao/ChapterDao.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/room/dao/ChapterDao.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/room/dao/MangaDao.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/room/dao/MangaDao.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/room/entities/CategoryWithMangas.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/room/entities/CategoryWithMangas.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/room/entities/Manga.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/room/entities/Manga.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/services/DownloadService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/services/DownloadService.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/ui/application_navigation/library/chapters/ChaptersScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/ui/application_navigation/library/chapters/ChaptersScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/ui/application_navigation/library/chapters/ChaptersViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/ui/application_navigation/library/chapters/ChaptersViewModel.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/ui/application_navigation/library/main/LibraryContent.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/ui/application_navigation/library/main/LibraryContent.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/ui/application_navigation/library/main/LibraryDropUpMenu.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/ui/application_navigation/library/main/LibraryDropUpMenu.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/ui/application_navigation/library/main/LibraryItemView.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/ui/application_navigation/library/main/LibraryItemView.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/ui/application_navigation/library/main/LibraryViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/ui/application_navigation/library/main/LibraryViewModel.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/workmanager/FirstInitAppWorker.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/workmanager/FirstInitAppWorker.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/workmanager/MangaDeleteWorker.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/san/kir/manger/workmanager/MangaDeleteWorker.kt" afterDir="false" />
@@ -591,7 +577,21 @@
       <option name="project" value="LOCAL" />
       <updated>1635339160452</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="update settings">
+      <created>1635339315386</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1635339315386</updated>
+    </task>
+    <task id="LOCAL-00026" summary="optimize room queries">
+      <created>1635340078519</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1635340078519</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -629,7 +629,8 @@
     <MESSAGE value="repair of sorting items" />
     <MESSAGE value="bug fix when the index of the current page was larger than the size of the array" />
     <MESSAGE value="update settings" />
-    <option name="LAST_COMMIT_MESSAGE" value="update settings" />
+    <MESSAGE value="optimize room queries" />
+    <option name="LAST_COMMIT_MESSAGE" value="optimize room queries" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

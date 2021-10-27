@@ -4,8 +4,9 @@
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/269c15e9c18de7a9e567d8f9fb7df587/transformed/activity-1.0.0/res" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/8a019994e72f9388a8052b0e2a77d7db/transformed/activity-1.0.0/res" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/048a98b4ad1174e7d62fb3f62845f9bf/transformed/activity-1.0.0/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/048a98b4ad1174e7d62fb3f62845f9bf/transformed/activity-1.0.0/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/048a98b4ad1174e7d62fb3f62845f9bf/transformed/activity-1.0.0/AndroidManifest.xml" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/e9ef2f93cafa0566a6dbb1def6f09c73/transformed/activity-1.0.0/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/e9ef2f93cafa0566a6dbb1def6f09c73/transformed/activity-1.0.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/e9ef2f93cafa0566a6dbb1def6f09c73/transformed/activity-1.0.0/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

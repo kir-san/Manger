@@ -3,9 +3,10 @@
     <CLASSES>
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/b6bb5e82fa316539d09e2d3ee3474483/transformed/accompanist-flowlayout-0.19.0/res" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/4d1d38fb9a6b7da90d92049d67614923/transformed/accompanist-flowlayout-0.19.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/1fded0391ef9771556af215388ec0d97/transformed/accompanist-flowlayout-0.19.0/AndroidManifest.xml" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/1fded0391ef9771556af215388ec0d97/transformed/accompanist-flowlayout-0.19.0/jars/classes.jar!/" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/1fded0391ef9771556af215388ec0d97/transformed/accompanist-flowlayout-0.19.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/6c71f03dc169279e65cc4e3437d3f32b/transformed/accompanist-flowlayout-0.19.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/6c71f03dc169279e65cc4e3437d3f32b/transformed/accompanist-flowlayout-0.19.0/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/6c71f03dc169279e65cc4e3437d3f32b/transformed/accompanist-flowlayout-0.19.0/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.accompanist/accompanist-flowlayout/0.19.0/75c862a310d5bbe490daeadc489dee40f2b49c35/accompanist-flowlayout-0.19.0-javadoc.jar!/" />

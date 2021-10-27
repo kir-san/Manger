@@ -41,6 +41,8 @@ android {
                 )
             }
         }
+
+        resourceConfigurations.addAll(listOf("en", "ru"))
     }
 
     signingConfigs {
@@ -57,7 +59,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             signingConfig = signingConfigs.getByName("release")
-            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             buildConfigField("String", "EXAMPLE", "\"release\"")
         }
         getByName("debug") {

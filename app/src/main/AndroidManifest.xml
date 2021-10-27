@@ -48,11 +48,6 @@
         <service android:name=".services.MangaUpdaterService" />
         <service android:name=".services.AppUpdateService" />
 
-        <service
-            android:name="com.evernote.android.job.gcm.PlatformGcmService"
-            android:enabled="true"
-            tools:replace="android:enabled" />
-
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"

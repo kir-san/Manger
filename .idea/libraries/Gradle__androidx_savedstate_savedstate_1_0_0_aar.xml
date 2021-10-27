@@ -3,9 +3,10 @@
     <CLASSES>
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/27dc6bd6999a0e9b371cce1f5787edc1/transformed/savedstate-1.0.0/res" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/6ccf8f233088796c6b141593a9be9495/transformed/savedstate-1.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/cf77712d3ddb18f0ccff7fa57e681eff/transformed/savedstate-1.0.0/AndroidManifest.xml" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/cf77712d3ddb18f0ccff7fa57e681eff/transformed/savedstate-1.0.0/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/cf77712d3ddb18f0ccff7fa57e681eff/transformed/savedstate-1.0.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/348edb8fa4a95d6e114b648bdfcb7b7b/transformed/savedstate-1.0.0/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/348edb8fa4a95d6e114b648bdfcb7b7b/transformed/savedstate-1.0.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/348edb8fa4a95d6e114b648bdfcb7b7b/transformed/savedstate-1.0.0/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

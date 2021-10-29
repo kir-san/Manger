@@ -13,6 +13,7 @@ Manger (MANGa readER)
 
 ### Preview
 <p align="center">
+<img src="md_data/part1.mp4" width="32%"/>
 <img src="data/vokoscreen-2021-05-27_10-53-31.gif" width="32%"/>
 <img src="data/vokoscreen-2021-05-27_10-50-27.gif" width="32%"/>
 <img src="data/vokoscreen-2021-06-01_16-25-26.gif" width="32%"/>

@@ -2,6 +2,8 @@ Manger (MANGa readER)
 ===================
 ### Manga reading app
 
+[Application page](https://4pda.to/forum/index.php?showtopic=772886&st=80)
+
 ![picture](md_data/icon.png)
 
 
@@ -12,12 +14,104 @@ Manger (MANGa readER)
   [Flow](https://kotlinlang.org/docs/flow.html)
 
 ### Preview
-<p align="center">
-<img src="md_data/part1.mp4" width="32%"/>
-<img src="data/vokoscreen-2021-05-27_10-53-31.gif" width="32%"/>
-<img src="data/vokoscreen-2021-05-27_10-50-27.gif" width="32%"/>
-<img src="data/vokoscreen-2021-06-01_16-25-26.gif" width="32%"/>
-</p>
+<details>
+  <summary>Many screenshots</summary>
+    <p align="center">
+      <img src="md_data/1.jpg" width="20%"/>
+      <img src="md_data/2.jpg" width="20%"/>
+      <img src="md_data/4.jpg" width="20%"/>
+      <img src="md_data/5.jpg" width="20%"/>
+      <img src="md_data/6.jpg" width="20%"/>
+      <img src="md_data/7.jpg" width="20%"/>
+      <img src="md_data/8.jpg" width="20%"/>
+      <img src="md_data/9.jpg" width="20%"/>
+      <img src="md_data/10.jpg" width="20%"/>
+      <img src="md_data/11.jpg" width="20%"/>
+      <img src="md_data/12.jpg" width="20%"/>
+      <img src="md_data/13.jpg" width="20%"/>
+      <img src="md_data/14.jpg" width="20%"/>
+      <img src="md_data/15.jpg" width="20%"/>
+      <img src="md_data/16.jpg" width="20%"/>
+      <img src="md_data/17.jpg" width="20%"/>
+      <img src="md_data/18.jpg" width="20%"/>
+    </p>
+</details>
+<details>
+  <summary>Many heavy gif</summary>
+    <p>  
+    <details>
+        <summary><b>"Library And Categories"</b> Screens</summary>
+        <p>
+        <img src="md_data/part_1.gif" width="32%"/>
+        <img src="md_data/part_2.gif" width="32%"/>
+        <summary><b>"Drawer menu"</b></summary>
+        <img src="md_data/part_15.gif" width="32%"/>
+    </details>
+    <p>
+    <details>
+        <summary><b>"Chapters of Manga"</b> Screen</summary>
+        <img src="md_data/part_16.gif" width="32%"/>
+        <img src="md_data/part_17.gif" width="32%"/>
+    </details>
+    <p>
+    <details>
+        <summary><b>"Statistic"</b> Screen</summary>
+        <img src="md_data/part_3.gif" width="32%"/>
+    </details>
+    <p>
+    <details>
+        <summary><b>"Storage"</b> Screen</summary>
+        <img src="md_data/part_4.gif" width="32%"/>
+    </details>
+    <p>
+    <details>
+        <summary><b>"Site Catalog"</b> Screen</summary>
+        <img src="md_data/part_5.gif" width="32%"/>
+    </details>
+    <p>
+    <details>
+        <summary><b>"Single Site"</b> Screen</summary>
+        <img src="md_data/part_6.gif" width="32%"/>
+    </details>
+    <p>
+    <details>
+        <summary><b>"Global Search"</b> Screen</summary>
+        <img src="md_data/part_7.gif" width="32%"/>
+    </details>
+    <p>
+    <details>
+        <summary><b>"Downloads"</b> Screen</summary>
+        <img src="md_data/part_8.gif" width="32%"/>
+        <summary><b>"Downloads"</b> Notification</summary>
+        <img src="md_data/part_11.gif" width="32%"/>
+    </details>
+    <p>
+    <details>
+        <summary><b>"Last Added Chapters"</b> Screen</summary>
+        <img src="md_data/part_9.gif" width="32%"/>
+    </details>
+    <p>
+    <details>
+        <summary><b>"Scheduler"</b> Screen</summary>
+        <img src="md_data/part_10.gif" width="32%"/>
+    </details>
+    <p>
+    <details>
+        <summary><b>"Settings"</b> Screen</summary>
+        <img src="md_data/part_12.gif" width="32%"/>
+        <summary><b>"Change order drawer menu"</b></summary>
+        <img src="md_data/part_13.gif" width="32%"/>
+    </details>
+    <p>
+    <details>
+        <summary><b>"App launch - Splash"</b> Screen</summary>
+        <img src="md_data/part_14.gif" width="32%"/>
+    </details>
+    <p>
+    <details>
+        <summary><b>"Downloads"</b> Screen</summary>
+    </details>
+</details>
 
 ### Libraries
 

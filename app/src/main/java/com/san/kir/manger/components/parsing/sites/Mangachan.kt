@@ -10,8 +10,7 @@ class Mangachan(connectManager: ConnectManager) : MangachanTemplate(connectManag
     override val name: String = "Манга - тян"
     override val catalogName: String = "manga-chan.me"
 
-    override var volume = siteDao.getItem(name)?.volume ?: 0
-    override var oldVolume = volume
+    override var volume = 0
 
     override val allCatalogName: List<String>
         get() = super.allCatalogName + "mangachan.ru" + "mangachan.me"

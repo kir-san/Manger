@@ -22,7 +22,8 @@ abstract class SiteCatalog {
     abstract val siteCatalog: String
 
     abstract var volume: Int
-    abstract var oldVolume: Int
+    @Deprecated("Больше не требуется")
+    open var oldVolume: Int = 0
 
     abstract suspend fun init(): SiteCatalog
 

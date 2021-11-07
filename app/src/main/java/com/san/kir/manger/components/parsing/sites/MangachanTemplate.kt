@@ -24,8 +24,7 @@ abstract class MangachanTemplate(private val connectManager: ConnectManager) :
 
     override suspend fun init(): MangachanTemplate {
         if (!isInit) {
-            oldVolume = siteDao.getItem(name)?.volume ?: 0
-            val doc = parsing.getDocument(siteCatalog)
+            val doc = connectManager.getDocument(siteCatalog)
             volume = doc.select("#pagination > b").text().split(" ").first().toInt()
             isInit = true
         }

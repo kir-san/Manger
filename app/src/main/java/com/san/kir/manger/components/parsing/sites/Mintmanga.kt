@@ -9,8 +9,7 @@ class Mintmanga(connectManager: ConnectManager) : ReadmangaTemplate(connectManag
 
     override val name: String = "Mint Manga"
     override val catalogName: String = "mintmanga.live"
-    override var volume = siteDao.getItem(name)?.volume ?: 0
-    override var oldVolume = volume
+    override var volume = 0
 
     override val allCatalogName: List<String>
         get() = super.allCatalogName + "mintmanga.com"

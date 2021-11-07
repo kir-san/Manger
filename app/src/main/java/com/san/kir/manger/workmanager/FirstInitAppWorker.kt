@@ -122,7 +122,7 @@ class FirstInitAppWorker @AssistedInject constructor(
                         host = site.host,
                         catalogName = site.catalogName,
                         volume = site.volume,
-                        oldVolume = site.oldVolume,
+                        oldVolume = site.volume,
                         siteID = site.id
                     )
                 )

@@ -10,8 +10,7 @@ class Yaoichan(connectManager: ConnectManager) :
 
     override val name: String = "Яой-тян"
     override val catalogName: String = "yaoi-chan.me"
-    override var volume = siteDao.getItem(name)?.volume ?: 0
-    override var oldVolume = volume
+    override var volume = 0
 
     override val allCatalogName: List<String>
         get() = super.allCatalogName + "yaoichan.me"

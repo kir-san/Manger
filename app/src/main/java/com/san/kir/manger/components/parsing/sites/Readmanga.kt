@@ -8,8 +8,7 @@ class Readmanga(connectManager: ConnectManager) : ReadmangaTemplate(connectManag
 
     override val name = "Read Manga"
     override val catalogName = "readmanga.io"
-    override var volume = siteDao.getItem(name)?.volume ?: 0
-    override var oldVolume = volume
+    override var volume = 0
     override val allCatalogName: List<String>
         get() = super.allCatalogName + "readmanga.me" + "readmanga.live"
 }

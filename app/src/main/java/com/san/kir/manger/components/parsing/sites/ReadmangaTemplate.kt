@@ -35,8 +35,7 @@ abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
 
     override suspend fun init(): ReadmangaTemplate {
         if (!isInit) {
-            oldVolume = siteDao.getItem(name)?.volume ?: 0
-            val doc = parsing.getDocument(siteCatalog)
+            val doc = connectManager.getDocument(siteCatalog)
             volume = doc.select("#mangaBox .leftContent .pagination a.step")
                 .last {
                     val text = it.attr("href")

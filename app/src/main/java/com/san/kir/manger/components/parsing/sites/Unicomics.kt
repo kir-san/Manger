@@ -23,8 +23,7 @@ class Unicomics(private val connectManager: ConnectManager) : SiteCatalogClassic
     override val name: String = "UniComics"
     override val catalogName: String = "unicomics.ru"
     override val siteCatalog: String = "$host/map"
-    override var volume = siteDao.getItem(name)?.volume ?: 0
-    override var oldVolume = volume
+    override var volume = 0
 
     override suspend fun init(): Unicomics {
         if (!isInit) {

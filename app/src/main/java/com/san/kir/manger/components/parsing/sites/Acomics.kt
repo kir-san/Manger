@@ -27,18 +27,15 @@ class Acomics(private val connectManager: ConnectManager) : SiteCatalogAlternati
         get() = "https://$catalogName"
     override val siteCatalog: String =
         "$host/comics?categories=&ratings[]=1&ratings[]=2&ratings[]=3&ratings[]=4&ratings[]=5&ratings[]=6&type=0&updatable=0&issue_count=1&sort=last_update"
-    override var volume = siteDao.getItem(name)?.volume ?: 0
-    override var oldVolume = volume
+    override var volume = 0
 
     private val contentTemplate = "#contentMargin .list-loadable"
 
     override suspend fun init(): Acomics {
         if (!isInit) {
-            oldVolume = siteDao.getItem(name)?.volume ?: 0
-
             var docLocal = Elements()
-            var i = 357
-            volume = 3560
+            var i = 542
+            volume = 5429
 
             suspend fun isGetNext(): Boolean {
                 val document = connectManager.getDocument(siteCatalog + "&skip=${10 * i}")

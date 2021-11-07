@@ -5,7 +5,6 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -14,6 +13,8 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.core.net.toUri
+import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.lifecycleScope
 import com.san.kir.ankofork.intentFor
 import com.san.kir.manger.R
 import com.san.kir.manger.components.download_manager.ChapterLoader
@@ -22,23 +23,19 @@ import com.san.kir.manger.data.datastore.DownloadRepository
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.ui.MainActivity
 import com.san.kir.manger.ui.application_navigation.MainNavTarget
+import com.san.kir.manger.ui.application_navigation.download.WifiNetwork
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.extensions.bytesToMb
 import com.san.kir.manger.utils.extensions.formatDouble
 import com.san.kir.manger.utils.extensions.log
 import com.san.kir.manger.utils.extensions.startForegroundServiceIntent
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import java.util.concurrent.Executors
+import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 
 @SuppressLint("UnspecifiedImmutableFlag")
 @AndroidEntryPoint
-class DownloadService : Service(), DownloadListener, CoroutineScope {
+class DownloadService : LifecycleService(), DownloadListener {
     companion object {
         private const val ACTION_PAUSE_ALL = "kir.san.manger.DownloadService.PAUSE_ALL"
         private const val ACTION_PAUSE = "kir.san.manger.DownloadService.PAUSE"
@@ -85,6 +82,9 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
     @Inject
     lateinit var downloadStore: DownloadRepository
 
+    @Inject
+    lateinit var wifiNetwork: WifiNetwork
+
     private val notificationManager by lazy { NotificationManagerCompat.from(this) }
 
     private var channelId = ""
@@ -127,29 +127,32 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
     private var queueCount = 0
     private var errorCount = 0
 
-    private val job = Job()
-    private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
-
-    override val coroutineContext = job + dispatcher
-
     override fun onCreate() {
         super.onCreate()
-
-        downloadManager.addListener(this, this)
-
-        launch {
-            downloadStore.data.collect { data ->
-                downloadManager.setConcurrentPages(if (data.concurrent) 4 else 1)
-                downloadManager.setRetryOnError(data.retry)
-                downloadManager.isWifiOnly(data.wifi)
-            }
-        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel()
         }
-
         setForeground()
+
+        downloadManager.addListener(this, this)
+
+        lifecycleScope.launchWhenCreated {
+            combine(
+                downloadStore.data,
+                wifiNetwork.state
+            ) { data, wifi ->
+                downloadManager.setConcurrentPages(if (data.concurrent) 4 else 1)
+                downloadManager.setRetryOnError(data.retry)
+                downloadManager.isWifiOnly(data.wifi)
+
+                if (data.wifi && wifi.not()) {
+                    setNoWifiForeground()
+                } else {
+                    setForeground()
+                }
+            }
+        }
     }
 
     private fun setForeground() {
@@ -157,6 +160,18 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
             setSmallIcon(R.drawable.ic_notification_download)
             setContentTitle(getString(R.string.download_service_title))
             setContentText(getString(R.string.download_service_message))
+            setContentIntent(actionGoToDownloads)
+            priority = NotificationCompat.PRIORITY_MIN
+            setAutoCancel(true)
+            startForeground(ID.generate(), build())
+        }
+    }
+
+    private fun setNoWifiForeground() {
+        with(NotificationCompat.Builder(this, channelId)) {
+            setSmallIcon(R.drawable.ic_notification_download)
+            setContentTitle(getString(R.string.download_service_title))
+            setContentText(getString(R.string.download_service_wifi_message))
             setContentIntent(actionGoToDownloads)
             priority = NotificationCompat.PRIORITY_MIN
             setAutoCancel(true)
@@ -175,12 +190,11 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
         this.channelId = channelId
     }
 
-    override fun onBind(intent: Intent?): Nothing? = null
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        when (intent.action) {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        when (intent?.action) {
             ACTION_PAUSE_ALL -> downloadManager.pauseAll()
-            ACTION_PAUSE -> launch {
+            ACTION_PAUSE ->  {
                 val item = intent.getParcelableExtra<Chapter>("item")
                 item?.let {
                     downloadManager.pause(it)
@@ -188,13 +202,13 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
             }
 
             ACTION_START_ALL -> downloadManager.startAll()
-            ACTION_START -> launch {
+            ACTION_START -> {
                 val item = intent.getParcelableExtra<Chapter>("item")
                 item?.let {
                     downloadManager.start(it)
                 }
             }
-
+            else -> super.onStartCommand(intent, flags, startId)
         }
         return START_NOT_STICKY
     }
@@ -204,8 +218,6 @@ class DownloadService : Service(), DownloadListener, CoroutineScope {
         clearCounters()
         downloadManager.pauseAll()
         downloadManager.clearListeners()
-//        downloadManager.stop()
-        job.cancel()
     }
 
     override fun onQueued(item: Chapter) {

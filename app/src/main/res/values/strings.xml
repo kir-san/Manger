@@ -322,6 +322,7 @@
     <!--DownloadService-->
     <string name="download_service_title">Сервис загрузки манги</string>
     <string name="download_service_message">Нажмите на уведомление для перехода в загрузки</string>
+    <string name="download_service_wifi_message">Включена загрузка только по Wi-Fi, а он выключен</string>
     <string name="download_service_queue">Очередь: %d</string>
     <string name="download_service_complete_title">Загрузка завершена</string>
     <string name="download_service_complete_title_error">Загрузка прервана c ошибкой</string>

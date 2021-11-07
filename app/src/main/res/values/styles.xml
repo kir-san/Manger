@@ -2,7 +2,6 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
         <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">shortEdges
         </item>
         <item name="windowSplashScreenBackground">@color/transparent_dark</item>
@@ -11,7 +10,7 @@
         <item name="windowSplashScreenIconBackgroundColor">@color/transparent_dark2</item>
     </style>
 
-    <style name="AppTheme.Viewer" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <style name="AppTheme.Viewer" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:navigationBarColor" tools:targetApi="lollipop">@color/transparent_dark</item>

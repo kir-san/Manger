@@ -127,8 +127,8 @@ dependencies {
         implementation(CORE)
         implementation(SPLASH)
         implementation(APPCOMPAT)
-        implementation(COLLECTION)
-        implementation(PREFERENCE)
+//        implementation(COLLECTION)
+//        implementation(PREFERENCE)
         implementation(VECTORDRAWABLE)
         implementation(CONSTRAINTLAYOUT)
     }
@@ -136,7 +136,7 @@ dependencies {
     Dependencies.Google.apply {
         implementation(MATERIAL)
         implementation(PROTOBUF_JAVALITE)
-        implementation(PLAY_SERVICES_GCM)
+//        implementation(PLAY_SERVICES_GCM)
     }
 
     Dependencies.Google.Hilt.apply {
@@ -189,7 +189,6 @@ dependencies {
         implementation(LIFECYCLE_RUNTIME)
         implementation(LIFECYCLE_LIVEDATA)
         implementation(LIFECYCLE_COMMON)
-        implementation(LIFECYCLE_PROCESS)
         implementation(LIFECYCLE_SERVICE)
     }
 
@@ -222,12 +221,12 @@ dependencies {
         androidTestImplementation(TEST_RULES)
         androidTestImplementation(TEST_JUNIT)
         androidTestImplementation(TEST_RUNNER)
-        androidTestImplementation(TRUTH)
-        androidTestImplementation(BENCHMARK_JUNIT)
+//        androidTestImplementation(TRUTH)
+//        androidTestImplementation(BENCHMARK_JUNIT)
         androidTestImplementation(COMPOSE_JUNIT)
         androidTestImplementation(KAKAOCUP)
         androidTestImplementation(ESPRESSO)
-        androidTestImplementation(NAVIGATION)
+//        androidTestImplementation(NAVIGATION)
         debugImplementation(COMPOSE_MANIFEST)
     }
 

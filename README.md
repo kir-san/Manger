@@ -7,11 +7,8 @@ Manger (MANGa readER)
 ![picture](md_data/icon.png)
 
 
-### Architecture
-
-* MVVM - [Guide to app architecture](https://developer.android.com/jetpack/guide)
-* [Kotlin](https://kotlinlang.org/) 100%, [Coroutines](https://github.com/Kotlin/kotlinx.coroutines),
-  [Flow](https://kotlinlang.org/docs/flow.html)
+* [Kotlin](https://kotlinlang.org/), [Coroutines](https://github.com/Kotlin/kotlinx.coroutines),
+  [Flow](https://kotlinlang.org/docs/flow.html), [Compose](https://developer.android.com/jetpack/compose/)
 
 ### Preview
 <details>

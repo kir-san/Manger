@@ -35,6 +35,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
@@ -169,93 +170,95 @@ class CatalogForOneSiteUpdaterService : Service() {
 
 
     fun onHandleIntent(siteName: String) = runBlocking(default) {
-        try {
-            val site = manager.catalog.first { it.name == siteName }
-            val siteDb = siteDao.getItem(site.name)
+        launch {
+            try {
+                val site = manager.catalog.first { it.name == siteName }
+                val siteDb = siteDao.getItem(site.name)
 
-            with(NotificationCompat.Builder(this@CatalogForOneSiteUpdaterService, channelId)) {
-                setSmallIcon(R.drawable.ic_notification_update)
-                setContentTitle(
-                    getString(R.string.catalog_fos_service_notify_title, taskCounter.size)
-                )
-                setContentText(
-                    getString(R.string.catalog_fos_service_notify_text, site.name)
-                )
-                startForeground(notificationId, build())
-            }
+                with(NotificationCompat.Builder(this@CatalogForOneSiteUpdaterService, channelId)) {
+                    setSmallIcon(R.drawable.ic_notification_update)
+                    setContentTitle(
+                        getString(R.string.catalog_fos_service_notify_title, taskCounter.size)
+                    )
+                    setContentText(
+                        getString(R.string.catalog_fos_service_notify_text, site.name)
+                    )
+                    startForeground(notificationId, build())
+                }
 
 
-            var counter = 0
-            var percent = 0
-            val tempList = mutableListOf<SiteCatalogElement>()
+                var counter = 0
+                var percent = 0
+                val tempList = mutableListOf<SiteCatalogElement>()
 
-            site.init()
-            var retry = 3
-            while (retry != 0) {
-                retry--
-                counter = 0
-                tempList.clear()
+                site.init()
+                var retry = 3
+                while (retry != 0) {
+                    retry--
+                    counter = 0
+                    tempList.clear()
 
-                site.getCatalog()
-                    .onEach {
-                        counter++
-                        val new = ((counter.toFloat() / site.volume.toFloat()) * 100).toInt()
-                        if (new != percent) {
-                            percent = new
-                            with(
-                                NotificationCompat.Builder(
-                                    this@CatalogForOneSiteUpdaterService, channelId
-                                )
-                            ) {
-                                setSmallIcon(R.drawable.ic_notification_update)
-                                setContentTitle(
-                                    getString(
-                                        R.string.catalog_fos_service_notify_title_2,
-                                        taskCounter.size
+                    site.getCatalog()
+                        .onEach {
+                            counter++
+                            val new = ((counter.toFloat() / site.volume.toFloat()) * 100).toInt()
+                            if (new != percent) {
+                                percent = new
+                                with(
+                                    NotificationCompat.Builder(
+                                        this@CatalogForOneSiteUpdaterService, channelId
                                     )
-                                )
-                                setContentText("${siteDb?.name}  ${percent}%")
-                                setProgress(site.volume, counter, false)
-                                addAction(actionCancelAll)
-                                startForeground(notificationId, build())
+                                ) {
+                                    setSmallIcon(R.drawable.ic_notification_update)
+                                    setContentTitle(
+                                        getString(
+                                            R.string.catalog_fos_service_notify_title_2,
+                                            taskCounter.size
+                                        )
+                                    )
+                                    setContentText("${siteDb?.name}  ${percent}%")
+                                    setProgress(site.volume, counter, false)
+                                    addAction(actionCancelAll)
+                                    startForeground(notificationId, build())
+                                }
                             }
+
+                            log("$counter / ${site.volume}")
                         }
+                        .map { el ->
+                            el.isAdded = mangaDao.getItems().any { it.shortLink == el.shotLink }
+                            el
+                        }
+                        .toList(tempList)
+                    if (tempList.size >= site.volume - 10) break
+                }
 
-                        log("$counter / ${site.volume}")
-                    }
-                    .map { el ->
-                        el.isAdded = mangaDao.getItems().any { it.shortLink == el.shotLink }
-                        el
-                    }
-                    .toList(tempList)
-                if (tempList.size >= site.volume - 10) break
+                log("update finish. elements getting ${tempList.size}")
+
+                dbFactory.create(site.name).apply {
+                    dao.deleteAll()
+                    dao.insert(*tempList.toTypedArray())
+                    close()
+                }
+
+                log("save items in db")
+
+                siteDb?.oldVolume = counter
+                siteDao.update(siteDb)
+
+                log("save counter in db")
+
+                sendPositiveBroadcast(site.name)
+
+                taskCounter = taskCounter - site.name
+            } catch (e: Exception) {
+                log("error")
+                e.printStackTrace()
+                isError = true
+            } finally { //
+                log("finally")
             }
-
-            log("update finish. elements getting ${tempList.size}")
-
-            dbFactory.create(site.name).apply {
-                dao.deleteAll()
-                dao.insert(*tempList.toTypedArray())
-                close()
-            }
-
-            log("save items in db")
-
-            siteDb?.oldVolume = counter
-            siteDao.update(siteDb)
-
-            log("save counter in db")
-
-            sendPositiveBroadcast(site.name)
-
-            taskCounter = taskCounter - site.name
-        } catch (e: Exception) {
-            log("error")
-            e.printStackTrace()
-            isError = true
-        } finally { //
-            log("finally")
-        }
+        }.join()
     }
 
 

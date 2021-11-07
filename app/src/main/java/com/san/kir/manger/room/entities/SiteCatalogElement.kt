@@ -22,7 +22,7 @@ data class SiteCatalogElement(
     var statusEdition: String,
     var statusTranslate: String,
     var volume: Int,
-    var genres: MutableList<String>,
+    var genres: List<String>,
     var about: String,
     var isAdded: Boolean,
     var populate: Int,

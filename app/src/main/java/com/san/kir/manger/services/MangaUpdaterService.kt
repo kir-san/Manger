@@ -215,26 +215,25 @@ class MangaUpdaterService : Service() {
         try {
             showStartNotification(manga)
 
-            log("start")
-
+            // Получение данных из базы данных
             val mangaDB = mangaDao.getItem(manga.unic)
 
-            checkLinkInManga(mangaDB)
+//            checkLinkInManga(mangaDB)
 
             mangaName = mangaDB.name
 
-            log("oldchapters")
-
-            updatePagesInChapters(mangaDB)
-
+            // Получаем список глав из БД
             val oldChapters = withContext(default) {
                 chapterDao.getItemsWhereManga(mangaDB.unic)
             }
 
+            /* Обновляем страницы в главах */
+            oldChapters.updatePagesInChapters(mangaDB)
+
+
             var newChapters = listOf<Chapter>()
 
-            log("chapters")
-
+            // Получаем список глав из сети
             manager.chapters(mangaDB).let { new ->
                 if (oldChapters.isEmpty()) { // Если глав не было до обновления
                     newChapters = new
@@ -244,6 +243,7 @@ class MangaUpdaterService : Service() {
                         if (oldChapters.none { oldChapter -> chapter.link == oldChapter.link }) {
                             newChapters = newChapters + chapter
                         } else {
+                            // Иначе обновляем путь
                             val tempChapter =
                                 oldChapters.first { oldChapter -> chapter.link == oldChapter.link }
                             tempChapter.path = chapter.path
@@ -253,20 +253,26 @@ class MangaUpdaterService : Service() {
                 }
             }
 
+            // Если новые главы есть
             if (newChapters.isNotEmpty()) {
-                newChapters.reversed().forEach {
-                    it.pages = manager.pages(it)
-                    it.isInUpdate = true
-                    chapterDao.insert(it)
+                // Разворачиваем список
+                newChapters.reversed().forEach { chapter ->
+                    // Обновляем страницы и сохраняем
+                    if (chapter.pages.isEmpty())
+                        chapter.pages = manager.pages(chapter)
+                    chapter.isInUpdate = true
+                    chapterDao.insert(chapter)
                 }
                 val oldSize = oldChapters.size
 
+                // Производим поиск дублирующихся глав и очищаем от лишних
                 withContext(Dispatchers.IO) {
                     SearchDuplicate(this@MangaUpdaterService).silentRemoveDuplicate(mangaDB)
                 }
 
                 val newSize = chapterDao.getItemsWhereManga(mangaDB.unic).size
 
+                // Узнаем сколько было добавленно
                 countNew = newSize - oldSize
             } else {
                 withContext(Dispatchers.IO) {
@@ -291,26 +297,26 @@ class MangaUpdaterService : Service() {
 
                 sendBroadcast(this)
             }
-
         }
     }
 
-    private suspend fun updatePagesInChapters(mangaDB: Manga) = withContext(default) {
+    private suspend fun List<Chapter>.updatePagesInChapters(mangaDB: Manga) = withContext(default) {
         kotlin.runCatching {
-            chapterDao
-                .getItemsWhereManga(mangaDB.unic)
-                .filter {
-                    mangaDB.isAlternativeSite
-                            || it.pages.isNullOrEmpty()
-                            || it.pages.any { chap -> chap.isBlank() }
-                }
+            // Отфильтровываем те в которых, либо нет страниц, либо не все страницы
+            // либо это альтернативный сайт
+            filter {
+                mangaDB.isAlternativeSite
+                        || it.pages.isNullOrEmpty()
+                        || it.pages.any { chap -> chap.isBlank() }
+            }
+                // Получаем список страниц и сохраняем
                 .onEach {
                     launch(default) {
                         it.pages = manager.pages(it)
                     }.join()
                 }
                 .apply {
-                    chapterDao.update(*this.toTypedArray())
+                    chapterDao.update(*toTypedArray())
                 }
         }.onFailure { it.printStackTrace() }
     }

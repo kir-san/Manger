@@ -159,7 +159,7 @@ abstract class MangachanTemplate(private val connectManager: ConnectManager) :
         if (matcher2.find())
             element.volume = matcher2.group().toInt()
 
-        elem.select(".genre > a").forEach { element.genres.add(it.text()) }
+        element.genres = elem.select(".genre > a").map { it.text() }
 
         element.about = elem.select("div.tags").text()
 

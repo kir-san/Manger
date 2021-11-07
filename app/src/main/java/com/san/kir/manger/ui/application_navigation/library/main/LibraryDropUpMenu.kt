@@ -53,13 +53,13 @@ import com.san.kir.manger.workmanager.MangaDeleteWorker
 @Composable
 fun LibraryDropUpMenu(nav: NavHostController, viewModel: LibraryViewModel) {
     var deleteDialog by remember { mutableStateOf(false) }
+    var expandedCategory by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .systemBarsPadding(top = false)
     ) {
-        var expandedCategory by remember { mutableStateOf(false) }
 
         DropdownMenuItem(onClick = {
             viewModel.changeSelectedManga(false)
@@ -78,6 +78,7 @@ fun LibraryDropUpMenu(nav: NavHostController, viewModel: LibraryViewModel) {
 
         DropdownMenuItem(onClick = {
             expandedCategory = !expandedCategory
+            deleteDialog = false
         }) {
             Text(
                 stringResource(id = R.string.library_popupmenu_set_category),
@@ -107,6 +108,7 @@ fun LibraryDropUpMenu(nav: NavHostController, viewModel: LibraryViewModel) {
 
         MenuText(id = R.string.library_popupmenu_delete, onClick = {
             deleteDialog = !deleteDialog
+            expandedCategory = false
         })
 
         CustomAnimatedItem(deleteDialog) {
@@ -134,6 +136,7 @@ fun LibraryDropUpMenu(nav: NavHostController, viewModel: LibraryViewModel) {
                 val context = LocalContext.current
 
                 OutlinedButton(onClick = {
+                    deleteDialog = false
                     viewModel.changeSelectedManga(false)
                     MangaDeleteWorker.addTask(context, viewModel.selectedManga.manga.unic, true)
                 }, modifier = Modifier.padding(pad)) {
@@ -141,6 +144,7 @@ fun LibraryDropUpMenu(nav: NavHostController, viewModel: LibraryViewModel) {
                 }
 
                 OutlinedButton(onClick = {
+                    deleteDialog = false
                     viewModel.changeSelectedManga(false)
                     MangaDeleteWorker.addTask(context, viewModel.selectedManga.manga.unic)
                 }, modifier = Modifier.padding(pad)) {

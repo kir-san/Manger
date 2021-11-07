@@ -288,21 +288,3 @@ private fun TextField(
 }
 
 
-@HiltViewModel
-class MangaEditViewModel @Inject constructor(
-    ctx: Application,
-    categoryDao: CategoryDao,
-    private val mangaDao: MangaDao,
-    @DefaultDispatcher private val default: CoroutineDispatcher
-) : ViewModel() {
-    val categoryNames = categoryDao.loadItems().map { l -> l.map { it.name } }
-    val statuses by lazy {
-        listOf(
-            ctx.getString(R.string.manga_status_unknown),
-            ctx.getString(R.string.manga_status_continue),
-            ctx.getString(R.string.manga_status_complete)
-        )
-    }
-
-    fun update(manga: Manga) = viewModelScope.launch(default) { mangaDao.update(manga) }
-}

@@ -1,11 +1,10 @@
 package com.san.kir.manger.components.parsing.sites
 
-import com.san.kir.manger.components.parsing.Parsing
+import com.san.kir.manger.components.parsing.ConnectManager
 import com.san.kir.manger.components.parsing.SiteCatalogClassic
 import com.san.kir.manger.components.parsing.Status
 import com.san.kir.manger.components.parsing.Translate
 import com.san.kir.manger.components.parsing.getShortLink
-import com.san.kir.manger.room.dao.SiteDao
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.room.entities.Manga
@@ -18,10 +17,8 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.util.regex.Pattern
 
-abstract class ReadmangaTemplate(
-    private val parsing: Parsing,
-    private val siteDao: SiteDao
-) : SiteCatalogClassic() {
+abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
+    SiteCatalogClassic() {
 
     override val siteCatalog
         get() = "$host/list?sortType=created"
@@ -59,7 +56,7 @@ abstract class ReadmangaTemplate(
         return kotlin.runCatching {
             val element = SiteCatalogElement()
 
-            val doc = parsing.getDocument(url)
+            val doc = connectManager.getDocument(url)
 
             element.host = host
             element.catalogName = catalogName
@@ -102,7 +99,7 @@ abstract class ReadmangaTemplate(
 
     override suspend fun getFullElement(element: SiteCatalogElement): SiteCatalogElement {
 
-        val doc = parsing.getDocument(element.link).select("div.leftContent")
+        val doc = connectManager.getDocument(element.link).select("div.leftContent")
 
         element.type = "Манга"
         doc.select(".flex-row .subject-meta .elem_category").forEach {
@@ -120,9 +117,8 @@ abstract class ReadmangaTemplate(
         element.volume = if (volume < 0) 0 else volume
 
         // Жанры
-        element.genres.clear()
-        doc.select("span.elem_genre")
-            .forEach { element.genres.add(it.select("a.element-link").text()) }
+        element.genres =
+            doc.select("span.elem_genre").map { it.select("a.element-link").text() }
 
         // Краткое описание
         element.about = doc.select("meta[itemprop=description]").attr("content")
@@ -186,18 +182,18 @@ abstract class ReadmangaTemplate(
         element.type = "Манга"
 
         // Жанры
-        elem.select(".desc .tile-info a.element-link").forEach { element.genres.add(it.text()) }
+        element.genres = elem.select(".desc .tile-info a.element-link").map { it.text() }
 
         return element
     }
 
     override fun getCatalog() = flow {
-        var docLocal: Document = parsing.getDocument(siteCatalog)
+        var docLocal: Document = connectManager.getDocument(siteCatalog)
 
         suspend fun isGetNext(): Boolean {
             val next = docLocal.select(".pagination > a.nextLink").attr("href")
             if (next.isNotEmpty())
-                docLocal = parsing.getDocument(host + next)
+                docLocal = connectManager.getDocument(host + next)
             return next.isNotEmpty()
         }
 
@@ -209,7 +205,7 @@ abstract class ReadmangaTemplate(
     }
 
     override suspend fun chapters(manga: Manga) =
-        parsing.getDocument(host + manga.shortLink)
+        connectManager.getDocument(host + manga.shortLink)
             .select("div.leftContent .chapters-link")
             .select("tr")
             .filter { it.select("a").text().isNotEmpty() }
@@ -234,7 +230,7 @@ abstract class ReadmangaTemplate(
 
         val shortLink = getShortLink(item.link)
 
-        val doc = parsing.getDocument("$host$shortLink?mtr=1")
+        val doc = connectManager.getDocument("$host$shortLink?mtr=1")
         // с помощью регулярных выражений ищу нужные данные
         val pat = Pattern.compile("rm_h.init.+").matcher(doc.body().html())
         // если данные найдены то продолжаю

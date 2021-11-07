@@ -1,9 +1,8 @@
 package com.san.kir.manger.components.parsing.sites
 
-import com.san.kir.manger.components.parsing.Parsing
-import com.san.kir.manger.room.dao.SiteDao
+import com.san.kir.manger.components.parsing.ConnectManager
 
-class Mintmanga(parsing: Parsing, siteDao: SiteDao) : ReadmangaTemplate(parsing, siteDao) {
+class Mintmanga(connectManager: ConnectManager) : ReadmangaTemplate(connectManager) {
 
     override val host: String
         get() = "https://$catalogName"

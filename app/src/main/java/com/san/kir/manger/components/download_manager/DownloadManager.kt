@@ -1,5 +1,6 @@
 package com.san.kir.manger.components.download_manager
 
+import com.san.kir.manger.components.parsing.ConnectManager
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.utils.JobContext
@@ -11,6 +12,7 @@ import javax.inject.Singleton
 
 @Singleton
 class DownloadManager @Inject constructor(
+    private val connectManager: ConnectManager,
     private val manager: SiteCatalogsManager,
 ) {
     private val lock = Mutex()
@@ -122,7 +124,7 @@ class DownloadManager @Inject constructor(
     }
 
     private fun getNewChapterDownloader(task: Chapter): ChapterDownloader {
-        return ChapterDownloader(manager, task, concurrentPages, delegate)
+        return ChapterDownloader(connectManager, manager, task, concurrentPages, delegate)
     }
 
     interface Delegate : ChapterDownloader.Delegate {

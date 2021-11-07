@@ -48,11 +48,6 @@ object Versions {
         const val HILT = "2.37"
     }
 
-    object Kittinunf {
-        const val FUEL = "2.3.1"
-        const val RESULT = "4.0.0"
-    }
-
     object Test {
         const val JUNIT = "4.13.2"
         const val TEST_CORE = "1.4.0"
@@ -72,7 +67,11 @@ object Versions {
 
     val JAVA = JavaVersion.VERSION_1_8
 
-    const val JSOUP = "1.13.1"
-    const val ANDROID_JOB = "1.4.2" // на удаление
-    const val PROGRESSBUTTON = "2.0.1" // на удаление
+    object ForInternet {
+        const val JSOUP = "1.13.1"
+        const val GSON = "2.8.2"
+        const val OKIO = "3.0.0"
+        const val RETROFIT = "2.9.0"
+        const val OKHTTP = "4.9.0"
+    }
 }

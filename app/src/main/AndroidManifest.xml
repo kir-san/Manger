@@ -58,10 +58,6 @@
                 android:name="androidx.work.WorkManagerInitializer"
                 android:value="@string/androidx_startup"
                 tools:node="remove" />
-            <!-- enable custom -->
-            <meta-data
-                android:name="com.san.kir.manger.workmanager.CustomWorkManagerInitializer"
-                android:value="@string/androidx_startup" />
         </provider>
 
     </application>

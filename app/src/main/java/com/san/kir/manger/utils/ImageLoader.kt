@@ -1,5 +1,7 @@
 package com.san.kir.manger.utils
 
+import android.app.Application
+import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -7,13 +9,11 @@ import android.util.LruCache
 import android.widget.ImageView
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import com.github.kittinunf.fuel.Fuel
-import com.github.kittinunf.result.Result
+import com.san.kir.manger.components.parsing.ConnectManager
 import com.san.kir.manger.utils.enums.DIR
 import com.san.kir.manger.utils.extensions.createDirs
 import com.san.kir.manger.utils.extensions.getFullPath
 import com.san.kir.manger.utils.extensions.imageExtensions
-import com.san.kir.manger.utils.extensions.log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -23,11 +23,11 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.concurrent.Executors
 
-class ImageLoader(private val url: String) {
+class ImageLoader(private val url: String, context: Context) {
     private val pool = Executors
         .newFixedThreadPool(1)
         .asCoroutineDispatcher()
-
+    private val connectManager = ConnectManager(context.applicationContext as Application)
     private val scope = CoroutineScope(pool)
 
     private var color = -1
@@ -143,23 +143,22 @@ class ImageLoader(private val url: String) {
         }
     }
 
-    private fun getNetworkBitmap(url: String, name: String): Bitmap? {
+    private suspend fun getNetworkBitmap(url: String, name: String): Bitmap? {
         if (url.isBlank()) return null
-        val (_, _, result) = Fuel.download(url)
-            .fileDestination { _, _ ->
-                val createFile = Cache.mDiskCache.createFile(name)
-                createFile
-            }
-            .response()
+        val createFile = Cache.mDiskCache.createFile(name)
 
-        return when (result) {
-            is Result.Success -> getDiskBitmap(name)
-            is Result.Failure -> {
-                log("url = $url")
-                result.getException().printStackTrace()
-                null
+        kotlin.runCatching {
+            connectManager.downloadImage(createFile, url)
+
+        }.fold(
+            onSuccess = {
+                return getDiskBitmap(name)
+            },
+            onFailure = {
+                it.printStackTrace()
+                return null
             }
-        }
+        )
     }
 
     /*private suspend fun tryUpdateLogoLink(url: String) {
@@ -203,9 +202,9 @@ private class DiskCache {
 
 @Suppress("ClassName")
 object loadImage {
-    operator fun invoke(url: String) =
-        ImageLoader(url)
+    operator fun invoke(url: String, context: Context) =
+        ImageLoader(url, context)
 
-    operator fun invoke(url: String, init: ImageLoader.() -> Unit = {}) =
-        ImageLoader(url).init()
+    operator fun invoke(url: String, context: Context, init: ImageLoader.() -> Unit = {}) =
+        ImageLoader(url, context).init()
 }

@@ -110,22 +110,17 @@ object Dependencies {
             "com.google.android.gms:play-services-gcm:${Versions.Google.PLAY_SERVICES_GCM}"
     }
 
-    object Kittinunf {
-        const val FUEL =
-            "com.github.kittinunf.fuel:fuel-coroutines:${Versions.Kittinunf.FUEL}"
-        const val RESULT =
-            "com.github.kittinunf.result:result:${Versions.Kittinunf.RESULT}"
-        const val RESULT_COROUTINES =
-            "com.github.kittinunf.result:result-coroutines:${Versions.Kittinunf.RESULT}"
-    }
-
-    object Other {
+    object ForInternet {
         const val JSOUP =
-            "org.jsoup:jsoup:${Versions.JSOUP}"
-        const val ANDROID_JOB =
-            "com.evernote:android-job:${Versions.ANDROID_JOB}"
-        const val PROGRESSBUTTON =
-            "com.github.razir.progressbutton:progressbutton:${Versions.PROGRESSBUTTON}"
+            "org.jsoup:jsoup:${Versions.ForInternet.JSOUP}"
+        const val GSON =
+            "com.google.code.gson:gson:${Versions.ForInternet.GSON}"
+        const val OKIO =
+            "com.squareup.okio:okio:${Versions.ForInternet.OKIO}"
+        const val RETROFIT =
+            "com.squareup.retrofit2:retrofit:${Versions.ForInternet.RETROFIT}"
+    const val OKHTTP =
+            "com.squareup.okhttp3:okhttp:${Versions.ForInternet.OKHTTP}"
     }
 
     object Compose {

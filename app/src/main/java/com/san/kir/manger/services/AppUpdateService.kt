@@ -13,7 +13,7 @@ import com.san.kir.ankofork.intentFor
 import com.san.kir.ankofork.sdk28.notificationManager
 import com.san.kir.manger.BuildConfig
 import com.san.kir.manger.R
-import com.san.kir.manger.components.parsing.Parsing
+import com.san.kir.manger.components.parsing.ConnectManager
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.extensions.log
 import dagger.hilt.android.AndroidEntryPoint
@@ -67,7 +67,7 @@ class AppUpdateService : Service(), CoroutineScope {
             .build()
     }
 
-    @Inject lateinit var parsing: Parsing
+    @Inject lateinit var connectManager: ConnectManager
 
     override fun onBind(intent: Intent?) = null
 
@@ -111,7 +111,7 @@ class AppUpdateService : Service(), CoroutineScope {
                         startForeground(notificationId, build())
                     }
 
-                    val doc = parsing.getDocument(url).body()
+                    val doc = connectManager.getDocument(url).body()
                     val texts = doc.text()
                     val matcher = Pattern.compile("[0-9]\\.[0-9]\\.[0-9]")
                         .matcher(texts.toString())

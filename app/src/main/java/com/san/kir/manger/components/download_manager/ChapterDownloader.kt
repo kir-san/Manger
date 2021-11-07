@@ -1,12 +1,12 @@
 package com.san.kir.manger.components.download_manager
 
-import com.github.kittinunf.fuel.Fuel
+import com.san.kir.manger.components.parsing.ConnectManager
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.utils.JobContext
-import com.san.kir.manger.utils.extensions.createDirs
+import com.san.kir.manger.utils.extensions.convertImagesToPng
 import com.san.kir.manger.utils.extensions.getFullPath
-import com.san.kir.manger.utils.extensions.log
+import com.san.kir.manger.utils.extensions.isOkPng
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.io.File
@@ -14,6 +14,7 @@ import java.util.concurrent.Executors.newFixedThreadPool
 import java.util.regex.Pattern
 
 class ChapterDownloader(
+    private val connectManager: ConnectManager,
     private val manager: SiteCatalogsManager,
     private val task: Chapter,
     concurrent: Int,
@@ -128,44 +129,57 @@ class ChapterDownloader(
     private suspend fun pageDownload(link: String, downloadPath: File) {
         if (interrupted) return
 
-        val page = File(downloadPath, nameFromUrl(link))
+        val name = connectManager.nameFromUrl(link)
 
-        if (interrupted) return
+        var file = File(downloadPath, name)
 
-        val pageSize = sizeOfPageFromUrl(link)
+        file = File(file.parentFile, "${file.nameWithoutExtension}.png")
 
-        val isCorrectPageSize = pageSize != null && pageSize != -1L // check valid size
+        if (!interrupted && file.exists() && file.isOkPng()) {
 
-        if (!interrupted
-            && isCorrectPageSize
-            && page.exists()
-            && page.length() == pageSize) {
             lock.withLock {
                 downloadPages++
-                downloadSize += pageSize
+                downloadSize += file.length()
             }
+
             delegate?.onProgress(getDownloadItem())
+
+        } else if (!interrupted && file.exists()) {
+
+            val png = convertImagesToPng(file)
+
+            if (png.isOkPng().not()) {
+                png.delete()
+                return
+            }
+
+            lock.withLock {
+                downloadPages++
+                downloadSize += png.length()
+            }
+
+            delegate?.onProgress(getDownloadItem())
+
         } else if (!interrupted) {
             var contentLength = 0L
             var tryCount = 3
 
             // 3 попытки загрузить изображение
-            while(tryCount != 0) {
+            while (tryCount != 0) {
                 tryCount--
-                Fuel.download(link)
-                    .fileDestination { response, _ ->
-                        contentLength = response.contentLength
-                        page.parentFile?.createDirs()
-                        page.createNewFile()
-                        page
-                    }
-//                .progress { readBytes, totalBytes ->
-//                    log("link = $link\nreadBytes = $readBytes, totalBytes = $totalBytes")
-//                }
-                    .response()
+
+                if (interrupted) return
+
+                contentLength = connectManager.downloadImage(file, link)
 
                 // Если размер исходного и загруженного одинаков, то страница загружена
-                if (page.exists() && page.length() == contentLength) break
+                if (file.exists() && file.length() == contentLength) {
+                    val png = convertImagesToPng(file)
+
+                    if (png.isOkPng()) break
+
+                    png.delete()
+                }
             }
 
             if (interrupted) return
@@ -174,21 +188,9 @@ class ChapterDownloader(
                 downloadSize += contentLength
                 downloadPages++
             }
+
             delegate?.onProgress(getDownloadItem())
         }
-    }
-
-    private fun sizeOfPageFromUrl(link: String): Long? {
-        val res = Fuel.get(link).response()
-        res.third.fold<Long?>(
-            success = {
-                return res.second.contentLength
-            },
-            failure = {
-                return null
-            }
-        )
-        return null
     }
 
     interface Delegate {

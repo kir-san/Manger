@@ -140,8 +140,9 @@ Manger (MANGa readER)
     * [Hilt WorkManager](https://developer.android.com/training/dependency-injection/hilt-jetpack#workmanager)
 * Internet & Parsing
     * [Jsoup](https://jsoup.org)
-    * [Fuel](https://github.com/kittinunf/fuel)
-    * [Result](https://github.com/kittinunf/Result)
+    * [OKHttp](https://square.github.io/okhttp/)
+    * [Okio](https://square.github.io/okio/)
+    * [Gson](https://github.com/google/gson)
 * Room
     * [Paging](https://developer.android.com/training/data-storage/room)
     * [Runtime](https://developer.android.com/training/data-storage/room)

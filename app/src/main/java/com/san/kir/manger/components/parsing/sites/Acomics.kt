@@ -1,11 +1,10 @@
 package com.san.kir.manger.components.parsing.sites
 
-import com.san.kir.manger.components.parsing.Parsing
+import com.san.kir.manger.components.parsing.ConnectManager
 import com.san.kir.manger.components.parsing.SiteCatalogAlternative
 import com.san.kir.manger.components.parsing.Status
 import com.san.kir.manger.components.parsing.Translate
 import com.san.kir.manger.components.parsing.getShortLink
-import com.san.kir.manger.room.dao.SiteDao
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.room.entities.Manga
@@ -21,10 +20,7 @@ import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 import java.util.concurrent.Executors
 
-class Acomics(
-    private val parsing: Parsing,
-    private val siteDao: SiteDao
-) : SiteCatalogAlternative() {
+class Acomics(private val connectManager: ConnectManager) : SiteCatalogAlternative() {
     override val name: String = "Авторский комикс"
     override val catalogName: String = "acomics.ru"
     override val host: String
@@ -45,7 +41,7 @@ class Acomics(
             volume = 3560
 
             suspend fun isGetNext(): Boolean {
-                val document = parsing.getDocument(siteCatalog + "&skip=${10 * i}")
+                val document = connectManager.getDocument(siteCatalog + "&skip=${10 * i}")
 
                 docLocal = document.select(contentTemplate)
 
@@ -71,7 +67,7 @@ class Acomics(
         element.shotLink = url.split(catalogName).last()
         element.link = url
 
-        val doc = parsing.getDocument("$url/about")
+        val doc = connectManager.getDocument("$url/about")
         element.name = doc.select("#container .serial a img").attr("alt")
         element.about = doc.select("#contentMargin .about-summary > p > span").text()
 
@@ -82,7 +78,7 @@ class Acomics(
         onFailure = { null })
 
     override suspend fun getFullElement(element: SiteCatalogElement): SiteCatalogElement {
-        val doc = parsing.getDocument("${element.link}/about")
+        val doc = connectManager.getDocument("${element.link}/about")
 
         element.statusEdition = Status.UNKNOWN
         element.statusTranslate = Translate.UNKNOWN
@@ -137,11 +133,11 @@ class Acomics(
     }
 
     override fun getCatalog() = flow {
-        var docLocal = parsing.getDocument(siteCatalog).select(contentTemplate)
+        var docLocal = connectManager.getDocument(siteCatalog).select(contentTemplate)
         var i = 0
 
         suspend fun isGetNext(): Boolean {
-            val document = parsing.getDocument(siteCatalog + "&skip=${10 * i}")
+            val document = connectManager.getDocument(siteCatalog + "&skip=${10 * i}")
             docLocal = document.select(contentTemplate)
 
             return docLocal.none { it.text().isBlank() }
@@ -171,13 +167,13 @@ class Acomics(
     override suspend fun pages(item: DownloadItem): List<String> {
         val shortLink = getShortLink(item.link)
 
-        var docLocal = parsing.getDocument("${host + shortLink}/content")
+        var docLocal = connectManager.getDocument("${host + shortLink}/content")
             .select("#contentMargin .serial-content table td a")
         var i = 0
         var list = listOf<String>()
 
         suspend fun isGetNext(): Boolean {
-            val document = parsing.getDocument("${host + shortLink}/content" + "?skip=${10 * i}")
+            val document = connectManager.getDocument("${host + shortLink}/content" + "?skip=${10 * i}")
             docLocal = document.select("#contentMargin .serial-content table td a")
 
             return docLocal.size != 0
@@ -191,7 +187,7 @@ class Acomics(
                 scope.launch {
                     kotlin.runCatching {
                         val url = element.attr("href")
-                        val document = parsing.getDocument(url)
+                        val document = connectManager.getDocument(url)
                         val link = host + document.select("#mainImage").attr("src")
 
                         lock.withLock {

@@ -30,7 +30,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.github.kittinunf.result.coroutines.failure
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Site
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
@@ -124,7 +123,7 @@ fun ItemView(item: Site, viewModel: CatalogsViewModel, onClick: () -> Unit) {
             isInit = true
 
             viewModel.updateSiteInfo(site)
-                .failure {
+                .onFailure {
                     isError = true
                 }
 

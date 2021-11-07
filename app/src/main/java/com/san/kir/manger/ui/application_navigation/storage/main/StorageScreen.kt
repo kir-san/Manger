@@ -1,5 +1,6 @@
 package com.san.kir.manger.ui.application_navigation.storage.main
 
+import android.content.Context
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -83,7 +84,8 @@ fun StorageScreen(
 private fun ItemView(
     nav: NavHostController,
     item: Storage,
-    viewModel: StorageViewModel
+    viewModel: StorageViewModel,
+    context: Context = LocalContext.current,
 ) {
     val viewState by viewModel.state.collectAsState()
 
@@ -181,7 +183,7 @@ private fun ItemView(
         isExists = manga != null
 
         manga?.let { m ->
-            loadImage(m.logo) {
+            loadImage(m.logo, context) {
                 onSuccess { image ->
                     logo = image
                 }

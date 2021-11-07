@@ -1,9 +1,8 @@
 package com.san.kir.manger.components.parsing.sites
 
-import com.san.kir.manger.components.parsing.Parsing
-import com.san.kir.manger.room.dao.SiteDao
+import com.san.kir.manger.components.parsing.ConnectManager
 
-class Allhentai(parsing: Parsing, siteDao: SiteDao) : ReadmangaTemplate(parsing, siteDao) {
+class Allhentai(connectManager: ConnectManager) : ReadmangaTemplate(connectManager) {
     override val name = "All Hentai"
     override val catalogName = "23.allhen.online"
     override var volume = siteDao.getItem(name)?.volume ?: 0

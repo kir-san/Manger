@@ -10,6 +10,7 @@ import kotlinx.parcelize.Parcelize
 @Entity(tableName = "items")
 data class SiteCatalogElement(
     @PrimaryKey(autoGenerate = true) var id: Long,
+    @Deprecated("Unused")
     var siteId: Int,
     var host: String,
     var catalogName: String,

@@ -3,10 +3,9 @@ package com.san.kir.manger.ui.application_navigation.catalog.main
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.kittinunf.result.coroutines.SuspendableResult
 import com.san.kir.ankofork.startService
-import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.components.parsing.SiteCatalog
+import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.repositories.SiteCatalogRepository
 import com.san.kir.manger.room.dao.CategoryDao
@@ -22,7 +21,6 @@ import com.san.kir.manger.utils.enums.MangaFilter
 import com.san.kir.manger.utils.enums.SortLibrary
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -54,7 +52,7 @@ class CatalogsViewModel @Inject constructor(
     }
 
     suspend fun updateSiteInfo(site: SiteCatalog) = withContext(default) {
-        SuspendableResult.of<Unit, Exception> {
+        kotlin.runCatching {
             site.init()
             // Находим в базе данных наш сайт
             with(siteDao) {

@@ -1,11 +1,10 @@
 package com.san.kir.manger.components.parsing.sites
 
-import com.san.kir.manger.components.parsing.Parsing
+import com.san.kir.manger.components.parsing.ConnectManager
 import com.san.kir.manger.components.parsing.SiteCatalogClassic
 import com.san.kir.manger.components.parsing.Status
 import com.san.kir.manger.components.parsing.Translate
 import com.san.kir.manger.components.parsing.getShortLink
-import com.san.kir.manger.room.dao.SiteDao
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.room.entities.Manga
@@ -16,10 +15,7 @@ import kotlinx.coroutines.flow.flow
 import org.jsoup.nodes.Element
 import java.util.regex.Pattern
 
-class Unicomics(
-    private val parsing: Parsing,
-    siteDao: SiteDao
-) : SiteCatalogClassic() {
+class Unicomics(private val connectManager: ConnectManager) : SiteCatalogClassic() {
 
     override val host: String
         get() = "https://$catalogName"
@@ -32,7 +28,7 @@ class Unicomics(
 
     override suspend fun init(): Unicomics {
         if (!isInit) {
-            val doc = parsing.getDocument(siteCatalog)
+            val doc = connectManager.getDocument(siteCatalog)
             volume = doc.select(".content .block table tr a").size
             isInit = true
         }
@@ -56,7 +52,7 @@ class Unicomics(
            onFailure = { null })
 
     override suspend fun getFullElement(element: SiteCatalogElement): SiteCatalogElement {
-        val doc = parsing.getDocument(element.link)
+        val doc = connectManager.getDocument(element.link)
 
         val info = doc.select(".content .left_container .info")
         element.name = info.select("h1").text()
@@ -102,7 +98,7 @@ class Unicomics(
     }
 
     override fun getCatalog() = flow {
-        val doc = parsing.getDocument(siteCatalog).select(".content .block table tr a")
+        val doc = connectManager.getDocument(siteCatalog).select(".content .block table tr a")
 
         doc.forEach { link ->
             emit(simpleParseElement(link))
@@ -126,7 +122,7 @@ class Unicomics(
     private suspend fun getChapters(url: String): List<Element> {
         var links = listOf<Element>()
 
-        var doc = parsing.getDocument(url)
+        var doc = connectManager.getDocument(url)
 
         var counter = 1
         var oldSize = 0
@@ -139,7 +135,7 @@ class Unicomics(
 
             oldSize = links.size
 
-            doc = parsing.getDocument("$url/page/$counter")
+            doc = connectManager.getDocument("$url/page/$counter")
         }
 
         return links
@@ -150,7 +146,7 @@ class Unicomics(
         getFullPath(item.path).createDirs()
 
         val shortLink = getShortLink(item.link)
-        var doc = parsing.getDocument(host + shortLink)
+        var doc = connectManager.getDocument(host + shortLink)
 
         val matcher = Pattern.compile("\"paginator1\", (\\d+)")
             .matcher(doc.body().html())
@@ -169,7 +165,7 @@ class Unicomics(
 
             if (counter > size) break
 
-            doc = parsing.getDocument("${host + shortLink}/$counter")
+            doc = connectManager.getDocument("${host + shortLink}/$counter")
         }
 
         return list

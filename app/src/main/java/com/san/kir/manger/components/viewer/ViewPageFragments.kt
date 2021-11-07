@@ -11,10 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.github.kittinunf.fuel.Fuel
 import com.san.kir.ankofork.Binder
-import com.san.kir.ankofork.subsampling_scale_image_view.ImageSource
-import com.san.kir.ankofork.subsampling_scale_image_view.SubsamplingScaleImageView
 import com.san.kir.ankofork.alignParentBottom
 import com.san.kir.ankofork.centerHorizontally
 import com.san.kir.ankofork.dip
@@ -28,24 +25,27 @@ import com.san.kir.ankofork.sdk28.progressBar
 import com.san.kir.ankofork.sdk28.relativeLayout
 import com.san.kir.ankofork.sdk28.textView
 import com.san.kir.ankofork.sp
+import com.san.kir.ankofork.subsampling_scale_image_view.ImageSource
+import com.san.kir.ankofork.subsampling_scale_image_view.SubsamplingScaleImageView
 import com.san.kir.ankofork.verticalLayout
 import com.san.kir.ankofork.withArguments
 import com.san.kir.manger.R
-import com.san.kir.manger.components.download_manager.ChapterDownloader
+import com.san.kir.manger.components.parsing.ConnectManager
 import com.san.kir.manger.utils.extensions.bigImageView
 import com.san.kir.manger.utils.extensions.convertImagesToPng
-import com.san.kir.manger.utils.extensions.createDirs
 import com.san.kir.manger.utils.extensions.goneOrVisible
 import com.san.kir.manger.utils.extensions.isOkPng
-import com.san.kir.manger.utils.extensions.log
 import com.san.kir.manger.utils.extensions.onDoubleTapListener
 import com.san.kir.manger.utils.extensions.showAlways
 import com.san.kir.manger.utils.extensions.visibleOrGone
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class ViewerPageFragment : Fragment() {
     companion object {
         private const val page_name = "page_name"
@@ -58,6 +58,9 @@ class ViewerPageFragment : Fragment() {
     private val isLoad = Binder(true)
     private lateinit var page: Page
     private lateinit var view: SubsamplingScaleImageView
+
+    @Inject
+    lateinit var connectManager: ConnectManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -132,9 +135,8 @@ class ViewerPageFragment : Fragment() {
     // TODO перед загрузкой страниц обновлять ссылку
     private suspend fun getImage(force: Boolean): ImageSource {
         return withContext(Dispatchers.Default) {
-            val name = ChapterDownloader.nameFromUrl(page.link)
 
-            log(page.link)
+            val name = connectManager.nameFromUrl(page.link)
 
             var file = File(page.fullPath, name)
 
@@ -143,6 +145,7 @@ class ViewerPageFragment : Fragment() {
             if (file.exists() && file.isOkPng() && !force) {
                 return@withContext ImageSource.uri(Uri.fromFile(file))
             }
+
             file.delete()
 
             file = File(page.fullPath, name)
@@ -155,20 +158,11 @@ class ViewerPageFragment : Fragment() {
                 png.delete()
             }
 
-            file.delete()
-
-            Fuel.download(ChapterDownloader.prepareUrl(page.link))
-                .fileDestination { _, _ ->
-                    file.parentFile?.createDirs()
-                    file.createNewFile()
-                    file
-                }
-                .response()
-                .third
-                .fold({ },
-                      {
-                          it.exception.printStackTrace()
-                      })
+            kotlin.runCatching {
+                connectManager.downloadImage(file, connectManager.prepareUrl(page.link))
+            }.onFailure {
+                it.printStackTrace()
+            }
 
             return@withContext ImageSource.uri(
                 Uri.fromFile(

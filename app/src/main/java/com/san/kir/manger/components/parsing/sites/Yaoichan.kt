@@ -1,10 +1,9 @@
 package com.san.kir.manger.components.parsing.sites
 
-import com.san.kir.manger.components.parsing.Parsing
-import com.san.kir.manger.room.dao.SiteDao
+import com.san.kir.manger.components.parsing.ConnectManager
 
-class Yaoichan(parsing: Parsing, siteDao: SiteDao) :
-    MangachanTemplate(parsing, siteDao) {
+class Yaoichan(connectManager: ConnectManager) :
+    MangachanTemplate(connectManager) {
 
     override val host: String
         get() = "https://$catalogName"

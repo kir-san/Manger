@@ -200,7 +200,7 @@ fun AboutPageContent(
     }
 
     LaunchedEffect(viewModel.manga) {
-        loadImage(viewModel.manga.logo) {
+        loadImage(viewModel.manga.logo, context) {
             onSuccess { image ->
                 logoManga = image
             }

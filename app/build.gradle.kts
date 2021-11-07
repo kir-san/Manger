@@ -199,20 +199,16 @@ dependencies {
         implementation(WORK_MULTIPROCESS)
     }
 
-    Dependencies.Kittinunf.apply {
-        implementation(FUEL)
-        implementation(RESULT)
-        implementation(RESULT_COROUTINES)
-    }
-
     Dependencies.AndroidX.Datastore.apply {
         implementation(DATASTORE)
     }
 
-    Dependencies.Other.apply {
+    Dependencies.ForInternet.apply {
         implementation(JSOUP)
-//        implementation(ANDROID_JOB)
-        implementation(PROGRESSBUTTON)
+        implementation(GSON)
+        implementation(OKIO)
+//        implementation(RETROFIT)
+        implementation(OKHTTP)
     }
 
     Dependencies.Hyperion.apply {

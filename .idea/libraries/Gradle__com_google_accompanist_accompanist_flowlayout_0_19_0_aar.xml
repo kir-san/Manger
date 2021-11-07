@@ -5,8 +5,15 @@
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/4d1d38fb9a6b7da90d92049d67614923/transformed/accompanist-flowlayout-0.19.0/res" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/1fded0391ef9771556af215388ec0d97/transformed/accompanist-flowlayout-0.19.0/res" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/6c71f03dc169279e65cc4e3437d3f32b/transformed/accompanist-flowlayout-0.19.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/6c71f03dc169279e65cc4e3437d3f32b/transformed/accompanist-flowlayout-0.19.0/AndroidManifest.xml" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/6c71f03dc169279e65cc4e3437d3f32b/transformed/accompanist-flowlayout-0.19.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/e9b70f0a1cadf94729aa0ce702887d3b/transformed/accompanist-flowlayout-0.19.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/2bed4150d9b95b9f1fa37bcb2a09926c/transformed/accompanist-flowlayout-0.19.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/b344a8ccb4c44acdeb66562baaccea30/transformed/accompanist-flowlayout-0.19.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/d471a8247be23c9d39290baad8b37741/transformed/accompanist-flowlayout-0.19.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/c7976445e51a6cfc066b1f248d0d960f/transformed/accompanist-flowlayout-0.19.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/5b89a29cd058c628281ad255baab7660/transformed/accompanist-flowlayout-0.19.0/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/3f4d69b496bbe51f258d0e22c0afa7ec/transformed/accompanist-flowlayout-0.19.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/3f4d69b496bbe51f258d0e22c0afa7ec/transformed/accompanist-flowlayout-0.19.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/3f4d69b496bbe51f258d0e22c0afa7ec/transformed/accompanist-flowlayout-0.19.0/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.accompanist/accompanist-flowlayout/0.19.0/75c862a310d5bbe490daeadc489dee40f2b49c35/accompanist-flowlayout-0.19.0-javadoc.jar!/" />

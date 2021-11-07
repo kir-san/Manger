@@ -4,9 +4,16 @@
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/02308f952eb9059777b00343d961ddba/transformed/dagger-lint-aar-2.37/res" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/8f4275bd0df7863ce0aa226fcc33fe56/transformed/dagger-lint-aar-2.37/res" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/c533b043b40a0a2118a530dd44cbe367/transformed/dagger-lint-aar-2.37/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/f7d6ce812afa60939f0f5a4226237bde/transformed/dagger-lint-aar-2.37/jars/classes.jar!/" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/f7d6ce812afa60939f0f5a4226237bde/transformed/dagger-lint-aar-2.37/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/f7d6ce812afa60939f0f5a4226237bde/transformed/dagger-lint-aar-2.37/AndroidManifest.xml" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/740f4aa425cf575c0c7dad7245a91231/transformed/dagger-lint-aar-2.37/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/425ef44b0246ef8733f7fa34993b8d86/transformed/dagger-lint-aar-2.37/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/9f381f254d76afcde0d802ddbce86464/transformed/dagger-lint-aar-2.37/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/88d8964de346abbaf9415c5f388b9f29/transformed/dagger-lint-aar-2.37/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/9ffc5b1933d6a3fa7eb25d35448c30cb/transformed/dagger-lint-aar-2.37/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/459fa1a28c09fab47bf8dd15dea5a436/transformed/dagger-lint-aar-2.37/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/8eb5592282486ad513ce1761e4304222/transformed/dagger-lint-aar-2.37/AndroidManifest.xml" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/8eb5592282486ad513ce1761e4304222/transformed/dagger-lint-aar-2.37/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/8eb5592282486ad513ce1761e4304222/transformed/dagger-lint-aar-2.37/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

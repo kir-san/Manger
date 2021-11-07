@@ -1,9 +1,9 @@
 <component name="libraryTable">
   <library name="Gradle: androidx.work:work-multiprocess:2.7.0@aar">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/8e5ea4af59464fc9f942e11ccb191c12/transformed/work-multiprocess-2.7.0/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/8e5ea4af59464fc9f942e11ccb191c12/transformed/work-multiprocess-2.7.0/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/8e5ea4af59464fc9f942e11ccb191c12/transformed/work-multiprocess-2.7.0/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/87d4e99d9a1fb16a49d6f81a4032d4f8/transformed/work-multiprocess-2.7.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/87d4e99d9a1fb16a49d6f81a4032d4f8/transformed/work-multiprocess-2.7.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/87d4e99d9a1fb16a49d6f81a4032d4f8/transformed/work-multiprocess-2.7.0/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

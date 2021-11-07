@@ -164,11 +164,11 @@ object Dependencies {
         const val JUNIT =
             "junit:junit:${Versions.Test.JUNIT}"
         const val TEST_CORE =
-            "androidx.test:core:${Versions.Test.TEST_CORE}"
+            "androidx.test:core-ktx:${Versions.Test.TEST_CORE}"
         const val TEST_RULES =
             "androidx.test:rules:${Versions.Test.TEST_RULES}"
         const val TEST_JUNIT =
-            "androidx.test.ext:junit:${Versions.Test.TEST_JUNIT}"
+            "androidx.test.ext:junit-ktx:${Versions.Test.TEST_JUNIT}"
         const val TEST_RUNNER =
             "androidx.test:runner:${Versions.Test.TEST_RUNNER}"
         const val TRUTH =

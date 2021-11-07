@@ -20,6 +20,7 @@ sealed class StorageNavTarget : NavTarget {
     object Storage : StorageNavTarget() {
         override val base: String = "manga_storage"
         override val item: NavItem = MangaItem
+        override val isOptional: Boolean = true
     }
 }
 

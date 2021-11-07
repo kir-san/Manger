@@ -12,7 +12,6 @@ import com.san.kir.manger.ui.application_navigation.additional_manga_screens.Man
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaEditScreen
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaStorageScreen
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.mangaStorageViewModel
-import com.san.kir.manger.ui.application_navigation.additional_manga_screens.siteCatalogItemViewModel
 import com.san.kir.manger.ui.application_navigation.library.chapters.ChaptersScreen
 import com.san.kir.manger.ui.application_navigation.library.chapters.chaptersViewModel
 import com.san.kir.manger.ui.application_navigation.library.main.LibraryScreen
@@ -31,6 +30,7 @@ sealed class LibraryNavTarget : NavTarget {
     object Chapters : LibraryNavTarget() {
         override val base: String = "chapters"
         override val item: NavItem = MangaItem
+        override val isOptional: Boolean = true
     }
 
     object AddOnline : LibraryNavTarget() {
@@ -46,16 +46,19 @@ sealed class LibraryNavTarget : NavTarget {
     object About : LibraryNavTarget() {
         override val base: String = "about"
         override val item: NavItem = MangaItem
+        override val isOptional: Boolean = true
     }
 
     object Edit : LibraryNavTarget() {
         override val base: String = "edit"
         override val item: NavItem = MangaItem
+        override val isOptional: Boolean = true
     }
 
     object Storage : LibraryNavTarget() {
         override val base: String = "manga_storage"
         override val item: NavItem = MangaItem
+        override val isOptional: Boolean = true
     }
 }
 
@@ -101,7 +104,6 @@ fun NavGraphBuilder.libraryNavGraph(nav: NavHostController) {
             val viewModel = onlyMangaViewModel(mangaUnic = item)
 
             val manga by viewModel.manga.collectAsState()
-
 
             MangaAboutScreen(nav, manga)
         }

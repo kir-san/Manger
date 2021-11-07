@@ -27,6 +27,7 @@ sealed class CatalogsNavTarget : NavTarget {
     object Catalog : CatalogsNavTarget() {
         override val base: String = "catalog"
         override val item: NavItem = SiteItem
+        override val isOptional: Boolean = true
     }
 
     object GlobalSearch : CatalogsNavTarget() {

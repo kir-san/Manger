@@ -20,6 +20,7 @@ sealed class ScheduleNavTarget : NavTarget {
     object Schedule : ScheduleNavTarget() {
         override val base: String = "schedule_"
         override val item: NavItem = ScheduleItem
+        override val isOptional: Boolean = true
     }
 }
 

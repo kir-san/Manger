@@ -20,6 +20,7 @@ sealed class StatisticNavTarget : NavTarget {
     object Statistic : StatisticNavTarget() {
         override val base: String = "statistic_"
         override val item: NavItem = StatisticItem
+        override val isOptional: Boolean = true
     }
 }
 

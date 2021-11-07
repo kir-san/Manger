@@ -93,7 +93,7 @@ fun NavGraphBuilder.libraryNavGraph(nav: NavHostController) {
         content = {
             val item = nav.getStringElement(SiteCatalogItem) ?: ""
 
-            MangaAddScreen(nav, siteCatalogItemViewModel(item))
+            MangaAddScreen(item, nav::navigateUp)
         }
     )
 

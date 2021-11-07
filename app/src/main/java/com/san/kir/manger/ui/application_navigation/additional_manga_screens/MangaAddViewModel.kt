@@ -1,8 +1,13 @@
 package com.san.kir.manger.ui.application_navigation.additional_manga_screens
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.san.kir.manger.components.parsing.SiteCatalogsManager
+import androidx.lifecycle.viewModelScope
 import com.san.kir.manger.components.parsing.SiteCatalogAlternative
+import com.san.kir.manger.components.parsing.SiteCatalogsManager
+import com.san.kir.manger.di.MainDispatcher
 import com.san.kir.manger.room.dao.CategoryDao
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.dao.StatisticDao
@@ -14,7 +19,11 @@ import com.san.kir.manger.utils.enums.DIR
 import com.san.kir.manger.utils.extensions.createDirs
 import com.san.kir.manger.utils.extensions.getFullPath
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 import java.util.regex.Pattern
 import javax.inject.Inject
@@ -25,47 +34,104 @@ class MangaAddViewModel @Inject constructor(
     private val mangaDao: MangaDao,
     private val statisticDao: StatisticDao,
     private val manager: SiteCatalogsManager,
+    @MainDispatcher private val main: CoroutineDispatcher,
 ) : ViewModel() {
-    suspend fun getCategories() =
-        withContext(Dispatchers.IO) {
-            categoryDao.getItems().map { it.name }
-        }
 
-    suspend fun hasCategory(category: String): Boolean {
-        return getCategories().any { it.contains(category) }
+    var state by mutableStateOf(
+        ViewState(
+            inputText = "",
+            activateContinue = false,
+            newChapter = false,
+            categories = listOf(),
+            validateCategories = listOf(),
+            catalogElement = SiteCatalogElement(),
+        )
+    )
+        private set
+
+    init {
+        categoryDao
+            .loadItems()
+            .distinctUntilChanged()
+            .onEach { list ->
+                withContext(main) {
+                    state = state.copy(
+                        categories = list.map { cat -> cat.name },
+                        validateCategories = list.map { cat -> cat.name }
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
+    fun changeText(newText: String) {
+        state = state.copy(inputText = newText)
+        val temp = validate(newText, state.categories)
+        state = state.copy(validateCategories = temp)
+    }
+
+    fun hasCategory(category: String): Boolean {
+        return state.categories.any { it.contains(category) }
     }
 
     suspend fun addCategory(category: String) {
         categoryDao.insert(
             Category(
                 name = category,
-                order = getCategories().size + 1
+                order = state.categories.size + 1
             )
         )
     }
 
     suspend fun updateSiteElement(
-        item: SiteCatalogElement,
-        category: String
+        url: String,
+        category: String,
     ) = withContext(Dispatchers.IO) {
-        val updatedElement = manager.getFullElement(item)
-        val pat = Pattern.compile("[a-z/0-9]+-").matcher(updatedElement.shotLink)
-        var shortPath = item.shotLink
-        if (pat.find())
-            shortPath = item.shotLink.removePrefix(pat.group()).removeSuffix(".html")
-        val path = "${DIR.MANGA}/${item.catalogName}/$shortPath"
+        manager.getElementOnline(url)?.let { element ->
+            val pat = Pattern.compile("[a-z/0-9]+-").matcher(element.shotLink)
+            var shortPath = element.shotLink
+            if (pat.find())
+                shortPath = element.shotLink.removePrefix(pat.group()).removeSuffix(".html")
+            val path = "${DIR.MANGA}/${element.catalogName}/$shortPath"
 
-        val manga = updatedElement.toManga(category = category, path = path)
+            val manga = element.toManga(category = category, path = path)
 
-        manga.isAlternativeSite = manager.getSite(item.link) is SiteCatalogAlternative
-
-        mangaDao.insert(manga)
-        statisticDao.insert(MangaStatistic(manga = manga.unic))
-
-        path to manga
+            manga.isAlternativeSite = manager.getSite(element.link) is SiteCatalogAlternative
+            mangaDao.insert(manga)
+            statisticDao.insert(MangaStatistic(manga = manga.unic))
+            return@withContext path to manga
+        }
     }
 
     fun createDirs(path: String): Boolean {
         return (getFullPath(path)).createDirs()
     }
+
+    private fun validate(
+        text: String,
+        categories: List<String>,
+    ): List<String> {
+        state = state.copy(activateContinue = text.length >= 3)
+
+        return if (text.isNotBlank()) {
+            // список категорий подходящих под введенное
+            val temp = categories.filter { it.contains(text) }
+            state = state.copy(newChapter = !(temp.size == 1 && temp.first() == text))
+            temp
+        } else {
+            // Если нет текста, то отображается список
+            // доступных сайтов
+            state = state.copy(newChapter = true)
+            categories
+        }
+    }
+
+    data class ViewState(
+        val inputText: String,
+        val activateContinue: Boolean,
+        val newChapter: Boolean,
+        val categories: List<String>,
+        val validateCategories: List<String>,
+        val catalogElement: SiteCatalogElement,
+    )
 }

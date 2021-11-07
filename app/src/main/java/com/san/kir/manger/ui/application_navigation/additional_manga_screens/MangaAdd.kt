@@ -1,5 +1,6 @@
 package com.san.kir.manger.ui.application_navigation.additional_manga_screens
 
+import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
@@ -16,9 +17,10 @@ import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
+import androidx.compose.material.darkColors
+import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,111 +29,50 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.san.kir.ankofork.startService
 import com.san.kir.manger.R
-import com.san.kir.manger.components.parsing.SiteCatalogsManager
-import com.san.kir.manger.di.DefaultDispatcher
-import com.san.kir.manger.di.MainDispatcher
 import com.san.kir.manger.room.entities.MangaColumn
-import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.services.MangaUpdaterService
-import com.san.kir.manger.ui.MainActivity
 import com.san.kir.manger.ui.utils.DialogText
 import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
-import com.san.kir.manger.utils.extensions.log
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
-import dagger.hilt.android.EntryPointAccessors
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @Composable
-fun MangaAddScreen(nav: NavHostController, vm: SiteCatalogItemViewModel) {
+fun MangaAddScreen(url: String, navigateUpAction: () -> Unit) {
     TopBarScreenWithInsets(
-        navigationButtonListener = { nav.navigateUp() },
+        navigationButtonListener = navigateUpAction,
         title = stringResource(id = R.string.add_manga_screen_title)
     ) {
-        MangaAddContent(vm, nav)
+        MangaAddContent(url, navigateUpAction)
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun ColumnScope.MangaAddContent(
-    vm: SiteCatalogItemViewModel,
-    nav: NavHostController,
+    url: String,
+    closeBtnAction: () -> Unit,
     viewModel: MangaAddViewModel = hiltViewModel(),
 ) {
-
-    var categories by remember { mutableStateOf(emptyList<String>()) }
-    var validate by remember { mutableStateOf(categories) }
-
-    LaunchedEffect(true) {
-        categories = viewModel.getCategories()
-        validate = categories
-    }
-
-    val isEnable = remember { mutableStateOf(false) }
-    val isNew = remember { mutableStateOf(false) }
-    var inputText by remember { mutableStateOf("") }
+    val state = viewModel.state
+    val (close, closeSetter) = remember { mutableStateOf(false) }
 
     var continueProcess by remember { mutableStateOf(false) }
     var continueBtn by remember { mutableStateOf(true) }
-    val closeBtn = remember { mutableStateOf(false) }
 
-    TextField(
-        value = inputText,
-        onValueChange = {
-            inputText = it
-            validate = validate(it, categories, isEnable, isNew)
-        },
-        singleLine = true,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 10.dp, bottom = 3.dp),
-        placeholder = { Text(stringResource(id = R.string.add_manga_screen_item)) },
-    )
+    TextWithValidate(state.inputText, viewModel::changeText)
 
-    AnimatedVisibility(visible = isNew.value) {
-        Text(
-            stringResource(id = R.string.add_manga_screen_add_new),
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colors.error,
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
+    MessageAboutCreatingNewCategory(state.newChapter)
 
-    FlowRow(
-        modifier = Modifier.fillMaxWidth(),
-        mainAxisAlignment = FlowMainAxisAlignment.End,
-        crossAxisAlignment = FlowCrossAxisAlignment.End,
-    ) {
-        validate.forEach { item ->
-            Card(modifier = Modifier
-                .padding(5.dp)
-                .clickable {
-                    inputText = item
-                    validate = validate(item, categories, isEnable, isNew)
-                }) {
-                Text(item, modifier = Modifier.padding(6.dp))
-            }
-        }
-    }
+    ListOfAvailableCategories(state.validateCategories, viewModel::changeText)
 
-    if (continueProcess) ContinueProcess(vm, inputText, closeBtn)
+    if (continueProcess) ContinueProcess(url, state.inputText, closeSetter)
 
     Spacer(modifier = Modifier.weight(1f, true))
 
@@ -142,56 +83,83 @@ private fun ColumnScope.MangaAddContent(
         horizontalArrangement = Arrangement.End
     ) {
         AnimatedVisibility(visible = continueBtn) {
-            Button(onClick = {
-                continueProcess = true
-                continueBtn = false
-            }, enabled = isEnable.value) {
+            Button(
+                onClick = {
+                    continueProcess = true
+                    continueBtn = false
+                },
+                enabled = state.activateContinue
+            ) {
                 Text(text = stringResource(id = R.string.add_manga_screen_continue))
             }
         }
 
-        AnimatedVisibility(visible = closeBtn.value) {
-            Button(onClick = { nav.navigateUp() }) {
+        AnimatedVisibility(visible = close) {
+            Button(closeBtnAction) {
                 Text(text = stringResource(id = R.string.add_manga_close_btn))
             }
         }
     }
 }
 
+@Composable
+private fun TextWithValidate(
+    value: String,
+    onValueChange: (String) -> Unit,
+) {
+    TextField(
+        value = value,
+        onValueChange = onValueChange,
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 10.dp, bottom = 3.dp),
+        placeholder = { Text(stringResource(id = R.string.add_manga_screen_item)) },
+    )
+}
 
-private fun validate(
-    text: String,
-    categories: List<String>,
-    isEnable: MutableState<Boolean>,
-    isNew: MutableState<Boolean>
-): List<String> {
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+private fun MessageAboutCreatingNewCategory(visible: Boolean) {
+    AnimatedVisibility(visible) {
+        Text(
+            stringResource(id = R.string.add_manga_screen_add_new),
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colors.error,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
 
-    isEnable.value = text.length >= 3
-    return if (text.isNotBlank()) {
-        // список категорий подходящих под введенное
-        val temp = categories.filter { it.contains(text) }
-
-        isNew.value = !(temp.size == 1 && temp.first() == text)
-
-        temp
-    } else {
-        // Если нет текста, то отображается список
-        // доступных сайтов
-        isNew.value = true
-        categories
+@Composable
+fun ListOfAvailableCategories(
+    listOfCategories: List<String>,
+    onItemSelect: (String) -> Unit,
+) {
+    FlowRow(
+        modifier = Modifier.fillMaxWidth(),
+        mainAxisAlignment = FlowMainAxisAlignment.End,
+        crossAxisAlignment = FlowCrossAxisAlignment.End,
+    ) {
+        listOfCategories.forEach { item ->
+            Card(modifier = Modifier
+                .padding(5.dp)
+                .clickable { onItemSelect(item) }) {
+                Text(item, modifier = Modifier.padding(6.dp))
+            }
+        }
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun ContinueProcess(
-    vm: SiteCatalogItemViewModel,
+    url: String,
     category: String,
-    closeBtn: MutableState<Boolean>,
-    viewModel: MangaAddViewModel = hiltViewModel()
+    onEndProcess: (Boolean) -> Unit,
+    viewModel: MangaAddViewModel = hiltViewModel(),
+    context: Context = LocalContext.current,
 ) {
-    val context = LocalContext.current
-
     var action by remember { mutableStateOf(true) }
     var process by remember { mutableStateOf(0) }
     var error by remember { mutableStateOf(false) }
@@ -231,10 +199,11 @@ private fun ContinueProcess(
                 .padding(vertical = 5.dp)
         )
 
-    // TODO проверить причину не загрузки лого
-    LaunchedEffect(vm.item) {
-        error = false
+    LaunchedEffect(true) {
         kotlin.runCatching {
+            error = false
+            onEndProcess(false)
+
             if (!viewModel.hasCategory(category)) {
                 added = true
                 viewModel.addCategory(category)
@@ -243,9 +212,9 @@ private fun ContinueProcess(
             process = ProcessStatus.categoryChanged
 
             process = ProcessStatus.prevAndUpdateManga
-            if (vm.item.catalogName.isNotEmpty()) {
+            if (url.isNotEmpty()) {
 
-                val (path, manga) = viewModel.updateSiteElement(vm.item, category)
+                val (path, manga) = viewModel.updateSiteElement(url, category)!!
 
                 process = ProcessStatus.prevAndCreatedFolder
                 viewModel.createDirs(path)
@@ -258,7 +227,7 @@ private fun ContinueProcess(
                 process = ProcessStatus.allComplete
 
                 action = false
-                closeBtn.value = true
+                onEndProcess(true)
             }
         }.fold(
             onSuccess = {
@@ -268,7 +237,7 @@ private fun ContinueProcess(
                 error = true
                 it.printStackTrace()
                 action = false
-                closeBtn.value = true
+                onEndProcess(true)
             }
         )
     }
@@ -282,52 +251,27 @@ private object ProcessStatus {
     const val allComplete = 5
 }
 
-class SiteCatalogItemViewModel @AssistedInject constructor(
-    @Assisted val url: String,
-    private val manager: SiteCatalogsManager,
-    @DefaultDispatcher private val default: CoroutineDispatcher,
-    @MainDispatcher private val main: CoroutineDispatcher,
-) : ViewModel() {
-    var item by mutableStateOf(SiteCatalogElement())
-
-    init {
-        // инициация манги
-        viewModelScope.launch(default) {
-            log(url)
-            val it = manager.getElementOnline(url)
-            log(it.toString())
-            if (it != null) {
-                withContext(main) {
-                    item = it
-                }
-            }
-        }
-    }
-
-    @AssistedFactory
-    interface Factory {
-        fun create(url: String): SiteCatalogItemViewModel
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    companion object {
-        fun provideFactory(
-            assistedFactory: Factory,
-            url: String
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return assistedFactory.create(url) as T
-            }
-        }
+@Preview(
+    name = "PreviewListOfAvailableCategories Light",
+    group = "ListOfAvailableCategories",
+    showBackground = true,
+)
+@Composable
+fun PreviewListOfAvailableCategoriesLight() {
+    MaterialTheme(colors = lightColors()) {
+        ListOfAvailableCategories(listOfCategories = listOf("Test 1", "Test 2", "Test 3"),
+            onItemSelect = {})
     }
 }
 
+@Preview(
+    name = "PreviewListOfAvailableCategories Dark",
+    group = "ListOfAvailableCategories",
+)
 @Composable
-fun siteCatalogItemViewModel(url: String): SiteCatalogItemViewModel {
-    val factory = EntryPointAccessors.fromActivity(
-        LocalContext.current as MainActivity,
-        MainActivity.ViewModelFactoryProvider::class.java,
-    ).siteCatalogItemViewModelFactory()
-
-    return viewModel(factory = SiteCatalogItemViewModel.provideFactory(factory, url))
+fun PreviewListOfAvailableCategoriesDark() {
+    MaterialTheme(colors = darkColors()) {
+        ListOfAvailableCategories(listOfCategories = listOf("Test 1", "Test 2", "Test 3"),
+            onItemSelect = {})
+    }
 }

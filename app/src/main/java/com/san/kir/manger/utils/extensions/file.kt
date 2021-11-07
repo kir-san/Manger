@@ -32,12 +32,17 @@ fun File.createDirs(): Boolean {
 val File.lengthMb: Double
     get() = bytesToMb(folderSize(this))
 
+// Проверка, что файл является корректным изображением формата PNG
 fun File.isOkPng(): Boolean {
-    val bytes = this.readBytes()
-    if (bytes.size < 4) return false
+    kotlin.runCatching {
+        val bytes = this.readBytes()
+        if (bytes.size < 4) return false
 
-    if (bytes[0] != 0x89.toByte() || bytes[1] != 0x50.toByte()) return false
-    if (bytes[bytes.size - 2] != 0x60.toByte() || bytes[bytes.size - 1] != 0x82.toByte()) return false
+        if (bytes[0] != 0x89.toByte() || bytes[1] != 0x50.toByte()) return false
+        if (bytes[bytes.size - 2] != 0x60.toByte() || bytes[bytes.size - 1] != 0x82.toByte()) return false
+    }.onFailure {
+        return false
+    }
 
     return true
 }

@@ -20,7 +20,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.statusBarsPadding
@@ -34,7 +33,7 @@ import com.san.kir.manger.ui.utils.MenuText
 
 @Composable
 fun ChaptersTopBar(
-    nav: NavHostController,
+    navigateUp: () -> Unit,
     viewModel: ChaptersViewModel,
     changeAction: (Boolean) -> Unit,
 ) {
@@ -43,7 +42,7 @@ fun ChaptersTopBar(
             Text(viewModel.manga.name, maxLines = 1)
         },
         navigationIcon = {
-            IconButton(onClick = { nav.navigateUp() }) {
+            IconButton(navigateUp) {
                 Icon(Icons.Default.ArrowBack, "")
             }
         },

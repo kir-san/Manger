@@ -77,7 +77,7 @@ fun NavGraphBuilder.libraryNavGraph(nav: NavHostController) {
             val item = nav.getStringElement(MangaItem) ?: ""
             val viewModel = chaptersViewModel(item)
 
-            ChaptersScreen(nav, viewModel)
+            ChaptersScreen(viewModel, nav::navigateUp)
         }
     )
 

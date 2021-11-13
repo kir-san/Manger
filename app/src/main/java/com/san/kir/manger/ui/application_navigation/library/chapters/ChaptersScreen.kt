@@ -24,11 +24,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavHostController
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.imePadding
 import com.google.accompanist.insets.rememberInsetsPaddingValues
@@ -47,18 +45,17 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 
 @Composable
-fun ChaptersScreen(nav: NavHostController, viewModel: ChaptersViewModel) {
+fun ChaptersScreen(viewModel: ChaptersViewModel, navigateUp: () -> Unit) {
 
-    var action by rememberSaveable { mutableStateOf(false) }
+    var (action, actionSetter) = rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier,
         topBar = {
             if (viewModel.selectionMode)
-                SelectionModeChaptersTopBar(viewModel) { state -> action = state }
+                SelectionModeChaptersTopBar(viewModel, actionSetter)
             else
-                ChaptersTopBar(nav, viewModel) { state -> action = state }
-
+                ChaptersTopBar(navigateUp, viewModel, actionSetter)
         },
     ) { contentPadding ->
         Column(
@@ -75,7 +72,7 @@ fun ChaptersScreen(nav: NavHostController, viewModel: ChaptersViewModel) {
                 .imePadding()
                 .verticalScroll(rememberScrollState())
         ) {
-            ChaptersContent(nav, action, viewModel)
+            ChaptersContent(action, viewModel)
         }
     }
 
@@ -91,14 +88,11 @@ private fun ReceiverHandler(
     ctx: Context = LocalContext.current,
     changeAction: (Boolean) -> Unit,
 ) {
-    // Grab the current context in this part of the UI tree
     val context = LocalContext.current
 
-    // Safely use the latest onSystemEvent lambda passed to the function
     val currentOnSystemEvent by rememberUpdatedState(changeAction)
     val currentManga by rememberUpdatedState(manga)
 
-    // If either context or systemAction changes, unregister and register again
     DisposableEffect(context, changeAction) {
 
         val intentFilter = IntentFilter(MangaUpdaterService.actionGet)
@@ -118,7 +112,8 @@ private fun ReceiverHandler(
                                 if (isFoundNew.not()) {
                                     ctx.longToast(R.string.list_chapters_message_no_found)
                                 } else {
-                                    ctx.longToast(R.string.list_chapters_message_count_new, countNew)
+                                    ctx.longToast(R.string.list_chapters_message_count_new,
+                                        countNew)
                                 }
                             }
                         }
@@ -140,7 +135,6 @@ private fun ReceiverHandler(
 @OptIn(ExperimentalPagerApi::class, ExperimentalCoroutinesApi::class)
 @Composable
 fun ColumnScope.ChaptersContent(
-    nav: NavHostController,
     action: Boolean,
     viewModel: ChaptersViewModel,
     scope: CoroutineScope = rememberCoroutineScope(),
@@ -184,7 +178,7 @@ fun ColumnScope.ChaptersContent(
         state = pagerState,
         modifier = Modifier.weight(1f)
     ) { index ->
-        pages[index].content(nav, viewModel)
+        pages[index].content(viewModel)
     }
 
 }

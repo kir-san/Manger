@@ -38,8 +38,8 @@ import com.san.kir.manger.utils.extensions.quantitySimple
 @Composable
 fun SelectionModeChaptersTopBar(
     viewModel: ChaptersViewModel,
-    context: Context = LocalContext.current,
     changeAction: (Boolean) -> Unit,
+    context: Context = LocalContext.current,
 ) {
 
     TopAppBar(

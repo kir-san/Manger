@@ -1,38 +1,21 @@
 package com.san.kir.manger.ui.application_navigation.library.chapters
 
 import android.content.Context
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.AlertDialog
-import androidx.compose.material.BottomAppBar
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.SelectAll
-import androidx.compose.material.icons.filled.Sort
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -42,8 +25,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -55,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.asFlow
-import androidx.navigation.NavHostController
 import androidx.work.WorkManager
 import com.google.accompanist.insets.navigationBarsPadding
 import com.san.kir.ankofork.startActivity
@@ -72,7 +52,7 @@ import kotlinx.coroutines.withContext
 
 sealed class ChapterPages(
     val nameId: Int,
-    val content: @Composable (NavHostController, ChaptersViewModel) -> Unit
+    val content: @Composable (ChaptersViewModel) -> Unit,
 )
 
 fun chapterPages(isAlternative: Boolean): List<ChapterPages> {
@@ -84,12 +64,22 @@ fun chapterPages(isAlternative: Boolean): List<ChapterPages> {
 
 object AboutPage : ChapterPages(
     nameId = R.string.list_chapters_page_about,
-    content = { _, viewModel -> AboutPageContent(viewModel) }
+    content = { viewModel -> AboutPageContent(viewModel) }
 )
 
 object ListPage : ChapterPages(
     nameId = R.string.list_chapters_page_list,
-    content = { _, viewModel -> ListPageContent(viewModel) }
+    content = { viewModel ->
+        ListPageContent(
+            viewModel.manga,
+            viewModel.filter,
+            { viewModel.filter = it },
+            viewModel.prepareChapters,
+            viewModel.selectedItems,
+            viewModel.selectionMode,
+            viewModel::onSelectItem
+        )
+    }
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -221,92 +211,6 @@ fun AboutPageContent(
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class, ExperimentalCoroutinesApi::class)
-@Composable
-fun ListPageContent(
-    viewModel: ChaptersViewModel,
-) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        if (viewModel.prepareChapters.isNotEmpty() && viewModel.selectedItems.isNotEmpty()) {
-            LazyColumn(modifier = Modifier.weight(1f)) {
-                itemsIndexed(
-                    items = viewModel.prepareChapters,
-                    key = { _, ch -> ch.id },
-                ) { index, chapter ->
-                    ChaptersItemContent(
-                        viewModel.manga,
-                        chapter,
-                        viewModel.selectedItems[index],
-                        index,
-                        viewModel
-                    )
-                }
-            }
-        }
-
-        AnimatedVisibility(viewModel.selectionMode.not()) {
-            BottomAppBar(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .navigationBarsPadding()
-            ) {
-                Spacer(modifier = Modifier.weight(1f))
-
-                // Смена порядка сортировки
-
-                IconButton(onClick = { viewModel.filter = viewModel.filter.inverse() }) {
-                    Icon(
-                        Icons.Default.Sort, contentDescription = "reverse sort",
-                        modifier = Modifier.rotate(
-                            animateFloatAsState(if (viewModel.filter.isAsc) 0f else 180f).value
-                        )
-                    )
-                }
-
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                // Кнопка включения отображения всех глав
-                IconButton(
-                    onClick = { viewModel.filter = viewModel.filter.toAll() },
-                    modifier = Modifier.padding(horizontal = 5.dp)
-                ) {
-                    Icon(
-                        Icons.Default.SelectAll, contentDescription = null,
-                        tint = animatedColor(viewModel.filter.isAll)
-                    )
-                }
-
-                // Кнопка включения отображения только прочитанных глав
-                IconButton(
-                    onClick = { viewModel.filter = viewModel.filter.toRead() },
-                    modifier = Modifier.padding(horizontal = 5.dp)
-                ) {
-                    Icon(
-                        Icons.Default.Visibility, contentDescription = null,
-                        tint = animatedColor(viewModel.filter.isRead)
-                    )
-                }
-
-
-                // Кнопка включения отображения только не прочитанных глав
-                IconButton(
-                    onClick = { viewModel.filter = viewModel.filter.toNot() },
-                    modifier = Modifier.padding(horizontal = 5.dp)
-                ) {
-                    Icon(
-                        Icons.Default.VisibilityOff, contentDescription = null,
-                        tint = animatedColor(viewModel.filter.isNot)
-                    )
-                }
-
-                Spacer(modifier = Modifier.weight(1f))
-            }
-        }
-
-    }
-}
-
 @Composable
 private fun DeleteChaptersDialog(
     additionalAction: () -> Unit,
@@ -389,12 +293,4 @@ private fun ProgressDeletingChaptersDialog(
                 }
             }
     }
-}
-
-@Composable
-fun animatedColor(state: Boolean): Color {
-    val defaultIconColor = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
-    val selectedIconColor = Color(0xff36a0da)
-    return animateColorAsState(targetValue = if (state) selectedIconColor else defaultIconColor)
-        .value
 }

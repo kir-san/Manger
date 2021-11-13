@@ -24,15 +24,14 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.san.kir.ankofork.dialogs.longToast
 import com.san.kir.ankofork.dialogs.toast
@@ -44,7 +43,6 @@ import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.countPages
 import com.san.kir.manger.services.DownloadService
 import com.san.kir.manger.utils.enums.DownloadState
-import com.san.kir.manger.utils.extensions.log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -54,8 +52,8 @@ fun ChaptersItemContent(
     manga: Manga,
     chapter: Chapter,
     isSelected: Boolean,
-    index: Int,
-    viewModel: ChaptersViewModel,
+    selectionMode: Boolean,
+    onSelectItem: () -> Unit,
     context: Context = LocalContext.current,
 ) {
     val countPagesInMemory by produceState(initialValue = 0, chapter, manga) {
@@ -64,26 +62,16 @@ fun ChaptersItemContent(
         }
     }
 
-    val deleteIndicator by remember(countPagesInMemory) { mutableStateOf(countPagesInMemory > 0) }
+    val deleteIndicator = countPagesInMemory > 0
 
-    val downloadIndicator by remember(chapter) {
-        mutableStateOf(
-            chapter.status == DownloadState.QUEUED
-                    || chapter.status == DownloadState.LOADING
-        )
-    }
-    val queueIndicator by remember(chapter) {
-        mutableStateOf(chapter.status == DownloadState.QUEUED)
-    }
-    val loadingIndicator by remember(chapter) {
-        mutableStateOf(chapter.status == DownloadState.LOADING)
-    }
-    val downloadPercent by remember(chapter) {
-        mutableStateOf(
-            if (chapter.totalPages == 0) 0
-            else chapter.downloadPages * 100 / chapter.totalPages
-        )
-    }
+    val downloadIndicator =
+        chapter.status == DownloadState.QUEUED || chapter.status == DownloadState.LOADING
+
+    val queueIndicator = chapter.status == DownloadState.QUEUED
+    val loadingIndicator = chapter.status == DownloadState.LOADING
+    val downloadPercent =
+        if (chapter.totalPages == 0) 0
+        else chapter.downloadPages * 100 / chapter.totalPages
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -98,7 +86,7 @@ fun ChaptersItemContent(
             .fillMaxWidth()
             .combinedClickable(
                 onClick = {
-                    if (viewModel.selectionMode.not()) {
+                    if (selectionMode.not()) {
                         if (downloadIndicator) {
                             context.toast(R.string.list_chapters_open_is_download)
                         } else {
@@ -111,11 +99,10 @@ fun ChaptersItemContent(
                                 )
                             }
                         }
-                    } else viewModel.onSelectItem(index)
+                    } else onSelectItem()
                 },
                 onLongClick = {
-                    log = "longClick"
-                    viewModel.onSelectItem(index)
+                    onSelectItem()
                 }
             ),
     ) {
@@ -217,4 +204,14 @@ fun ChaptersItemContent(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun PreviewChaptersItemContent() {
+    ChaptersItemContent(manga = Manga(),
+        chapter = Chapter(),
+        isSelected = false,
+        selectionMode = false,
+        onSelectItem = { /*TODO*/ })
 }

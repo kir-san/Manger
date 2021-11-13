@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -49,19 +50,21 @@ fun ListPageContent(
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
 
-        if (chapters.isNotEmpty() && selectedItems.isNotEmpty()) {
-            LazyColumn(modifier = Modifier.weight(1f)) {
-                itemsIndexed(
-                    items = chapters,
-                    key = { _, ch -> ch.id },
-                ) { index, chapter ->
-                    ChaptersItemContent(
-                        manga,
-                        chapter,
-                        selectedItems[index],
-                        selectionMode,
-                        { selectItem(index) }
-                    )
+        Box(modifier = Modifier.weight(1f)) {
+            if (chapters.isNotEmpty() && selectedItems.isNotEmpty()) {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    itemsIndexed(
+                        items = chapters,
+                        key = { _, ch -> ch.id },
+                    ) { index, chapter ->
+                        ChaptersItemContent(
+                            manga,
+                            chapter,
+                            selectedItems[index],
+                            selectionMode,
+                            { selectItem(index) }
+                        )
+                    }
                 }
             }
         }

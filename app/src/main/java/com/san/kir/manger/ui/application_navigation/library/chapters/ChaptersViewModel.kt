@@ -91,12 +91,13 @@ class ChaptersViewModel @AssistedInject constructor(
             }
             m
         }
-            .flatMapLatest { manga -> chapterDao.loadItemsWhereManga(manga.unic) }
+            .flatMapLatest { manga ->
+                withContext(main) { this@ChaptersViewModel.manga = manga }
+                chapterDao.loadItemsWhereManga(manga.unic)
+            }
             .onEach { withContext(main) { chapters = it } }
             // подготовка списка глав с использованием фильтров и сортировки
-            .combine(snapshotFlow {
-                filter
-            }) { list, f -> list to f }
+            .combine(snapshotFlow { filter }) { list, f -> list to f }
             .map { (l, filter) ->
                 var list = l
                 if (manga.isAlternativeSort) {
@@ -134,6 +135,7 @@ class ChaptersViewModel @AssistedInject constructor(
             }
         }
             .catch { t -> throw t }
+            .distinctUntilChanged()
             .onEach { withContext(main) { filter = it } }
             .launchIn(viewModelScope)
 

@@ -79,8 +79,9 @@ class ChaptersViewModel @AssistedInject constructor(
         // инициация манги
         combine(
             mangaDao.loadItem(mangaUnic).filterNotNull(),
-            snapshotFlow { oneTimeFlag }
-        ) { m, flag ->
+            snapshotFlow { oneTimeFlag },
+            chapterStore.data,
+        ) { m, flag, store ->
             if (flag) {
                 m.populate += 1
                 withContext(main) {
@@ -88,6 +89,14 @@ class ChaptersViewModel @AssistedInject constructor(
                     manga = m
                 }
                 mangaDao.update(m)
+
+                // инициация фильтра
+                val tempFilter = if (store.isIndividual) {
+                    manga.chapterFilter
+                } else {
+                    ChapterFilter.valueOf(store.filterStatus)
+                }
+                withContext(main) { filter = tempFilter }
             }
             m
         }
@@ -126,28 +135,15 @@ class ChaptersViewModel @AssistedInject constructor(
             }
             .launchIn(viewModelScope)
 
-        // инициация фильтра
-        combine(chapterStore.data, snapshotFlow { manga }) { store, manga ->
-            if (store.isIndividual) {
-                manga.chapterFilter
-            } else {
-                ChapterFilter.valueOf(store.filterStatus)
-            }
-        }
-            .catch { t -> throw t }
-            .distinctUntilChanged()
-            .onEach { withContext(main) { filter = it } }
-            .launchIn(viewModelScope)
-
         // Прослушивание фильтра для сохранения
-        combine(chapterStore.data, snapshotFlow { filter }) { store, filter ->
+        combine(chapterStore.data, snapshotFlow { filter }) { store, f ->
             if (store.isIndividual) {
                 manga = manga.apply {
-                    chapterFilter = filter
+                    chapterFilter = f
                 }
                 mangaDao.update(manga)
             } else {
-                chapterStore.setFilter(filter.name)
+                chapterStore.setFilter(f.name)
             }
         }.launchIn(viewModelScope)
 

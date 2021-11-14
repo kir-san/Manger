@@ -119,7 +119,7 @@ object Dependencies {
             "com.squareup.okio:okio:${Versions.ForInternet.OKIO}"
         const val RETROFIT =
             "com.squareup.retrofit2:retrofit:${Versions.ForInternet.RETROFIT}"
-    const val OKHTTP =
+        const val OKHTTP =
             "com.squareup.okhttp3:okhttp:${Versions.ForInternet.OKHTTP}"
     }
 
@@ -147,6 +147,8 @@ object Dependencies {
         const val MATERIAL_ICONS_EXTENDED =
             "androidx.compose.material:material-icons-extended:${Versions.Compose.COMPOSE}"
 
+        const val CONSTRAINT_LAYOUT =
+            "androidx.constraintlayout:constraintlayout-compose:${Versions.Compose.CONSTRAINT_LAYOUT}"
         const val HILT_NAVIGATION =
             "androidx.hilt:hilt-navigation-compose:${Versions.Compose.HILT_NAVIGATION_COMPOSE}"
         const val PAGING_COMPOSE =

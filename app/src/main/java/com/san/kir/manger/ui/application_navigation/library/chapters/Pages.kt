@@ -4,11 +4,8 @@ import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
@@ -23,18 +20,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.ConstraintSet
+import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.asFlow
 import androidx.work.WorkManager
 import com.google.accompanist.insets.navigationBarsPadding
@@ -82,6 +83,16 @@ object ListPage : ChapterPages(
     }
 )
 
+private object Refs {
+    const val logo = "logo"
+    const val continueBtn = "continueBtn"
+    const val startBtn = "startBtn"
+    const val deleteBtn = "deleteBtn"
+    const val info = "info"
+}
+
+private val defaultMargin = 16.dp
+
 @OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun AboutPageContent(
@@ -103,81 +114,80 @@ fun AboutPageContent(
     var deleteDialog by remember { mutableStateOf(false) }
     var progressDeleteDialog by remember { mutableStateOf(false) }
 
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+    ConstraintLayout(
+        modifier = Modifier.fillMaxSize(),
+        constraintSet = decoupledConstraintSet(),
+    ) {
         Image(
             logoManga,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.layoutId(Refs.logo),
             contentDescription = null,
             contentScale = ContentScale.Crop,
         )
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .navigationBarsPadding()
-        ) {
-            // информация о прочитанных главах
-            Text(
-                stringResource(
-                    R.string.list_chapters_about_read,
-                    readChaptersCount,
-                    LocalContext.current.resources.getQuantityString(
-                        R.plurals.chapters,
-                        readChaptersCount
-                    ),
-                    fullChaptersCount
+        // информация о прочитанных главах
+        Text(
+            stringResource(
+                R.string.list_chapters_about_read,
+                readChaptersCount,
+                LocalContext.current.resources.getQuantityString(
+                    R.plurals.chapters,
+                    readChaptersCount
                 ),
-                modifier = Modifier
-                    .background(MaterialTheme.colors.primary)
-                    .padding(18.dp)
-                    .fillMaxWidth(),
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-            )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                // удаления прочитанных глав
-                Button(
-                    onClick = { deleteDialog = true }, modifier = Modifier
-                        .padding(end = 16.dp)
-                        .weight(1f)
-                ) {
-                    Text(text = stringResource(id = R.string.list_chapters_about_delete))
-                }
-                // Чтение манги с начала
-                Button(
-                    onClick = {
-                        context.startActivity<ViewerActivity>(
-                            "manga" to viewModel.manga,
-                            "is" to viewModel.manga.isAlternativeSort
-                        )
-                    }, modifier = Modifier.weight(1f)
-                ) {
-                    Text(text = stringResource(id = R.string.list_chapters_about_start))
-                }
+                fullChaptersCount
+            ),
+            modifier = Modifier
+                .background(MaterialTheme.colors.primary)
+                .padding(18.dp)
+                .layoutId(Refs.info),
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp,
+        )
 
-            }
-            // Продолжение чтения
-            Button(
-                onClick = {
-                    context.startActivity<ViewerActivity>(
-                        "manga" to viewModel.manga,
-                        "is" to viewModel.manga.isAlternativeSort,
-                        "continue" to true
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                enabled = isContinue,
-            ) {
-                if (isSearch) CircularProgressIndicator()
+        // удаления прочитанных глав
+        Button(
+            onClick = { deleteDialog = true },
+            modifier = Modifier.layoutId(Refs.deleteBtn).padding(horizontal = defaultMargin)
+        ) {
+            Text(text = stringResource(id = R.string.list_chapters_about_delete),
+                modifier = Modifier.padding(5.dp),
+                textAlign = TextAlign.Center)
+        }
 
-                Text(messageContinue)
-            }
+        // Чтение манги с начала
+        Button(
+            onClick = {
+                context.startActivity<ViewerActivity>(
+                    "manga" to viewModel.manga,
+                    "is" to viewModel.manga.isAlternativeSort
+                )
+            },
+            modifier = Modifier.layoutId(Refs.startBtn).padding(end = defaultMargin)
+        ) {
+            Text(text = stringResource(id = R.string.list_chapters_about_start),
+                modifier = Modifier.padding(5.dp),
+                textAlign = TextAlign.Center)
+        }
+
+        // Продолжение чтения
+        Button(
+            onClick = {
+                context.startActivity<ViewerActivity>(
+                    "manga" to viewModel.manga,
+                    "is" to viewModel.manga.isAlternativeSort,
+                    "continue" to true
+                )
+            },
+            modifier = Modifier
+                .navigationBarsPadding(start = false, end = false)
+                .layoutId(Refs.continueBtn),
+            enabled = isContinue,
+        ) {
+            if (isSearch) CircularProgressIndicator()
+
+            Text(messageContinue.toUpperCase(Locale.current),
+                modifier = Modifier.padding(8.dp),
+                textAlign = TextAlign.Center)
         }
     }
 
@@ -208,6 +218,49 @@ fun AboutPageContent(
             isSearch = false
 
         }
+    }
+}
+
+private fun decoupledConstraintSet(): ConstraintSet {
+    return ConstraintSet {
+        val logo = createRefFor(Refs.logo)
+        val continueBtn = createRefFor(Refs.continueBtn)
+        val startBtn = createRefFor(Refs.startBtn)
+        val deleteBtn = createRefFor(Refs.deleteBtn)
+        val info = createRefFor(Refs.info)
+
+        constrain(logo) {
+            centerTo(parent)
+            width = Dimension.fillToConstraints
+            height = Dimension.fillToConstraints
+        }
+
+        constrain(continueBtn) {
+            linkTo(parent.start, parent.end, defaultMargin, defaultMargin)
+            bottom.linkTo(parent.bottom, defaultMargin)
+            width = Dimension.fillToConstraints
+        }
+
+        constrain(deleteBtn) {
+            start.linkTo(parent.start)
+            bottom.linkTo(continueBtn.top, defaultMargin)
+            width = Dimension.fillToConstraints
+        }
+
+        constrain(startBtn) {
+            linkTo(deleteBtn.top, deleteBtn.bottom)
+            linkTo(deleteBtn.end, parent.end)
+            height = Dimension.fillToConstraints
+            width = Dimension.fillToConstraints
+        }
+
+        constrain(info) {
+            linkTo(parent.start, parent.end)
+            bottom.linkTo(startBtn.top, defaultMargin)
+            width = Dimension.fillToConstraints
+        }
+
+        createHorizontalChain(deleteBtn, startBtn)
     }
 }
 

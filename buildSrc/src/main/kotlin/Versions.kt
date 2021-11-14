@@ -34,6 +34,7 @@ object Versions {
 
     object Compose {
         const val COMPOSE = "1.0.4"
+        const val CONSTRAINT_LAYOUT = "1.0.0-beta02"
         const val HILT_NAVIGATION_COMPOSE = "1.0.0-alpha03"
         const val PAGING = "1.0.0-alpha14"
     }

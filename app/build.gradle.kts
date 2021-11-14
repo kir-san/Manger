@@ -162,6 +162,7 @@ dependencies {
         implementation(MATERIAL_ICONS_CORE)
         implementation(MATERIAL_ICONS_EXTENDED)
 
+        implementation(CONSTRAINT_LAYOUT)
         implementation(HILT_NAVIGATION)
         implementation(PAGING_COMPOSE)
     }

@@ -111,7 +111,7 @@ private fun BottomOrderBar(
     BottomAppBar(
         modifier = Modifier
             .fillMaxWidth()
-            .navigationBarsPadding()
+            .navigationBarsPadding(start = false, end = false)
     ) {
         Spacer(modifier = Modifier.weight(1f))
 

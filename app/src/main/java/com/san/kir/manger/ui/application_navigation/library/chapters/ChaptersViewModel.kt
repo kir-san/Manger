@@ -33,6 +33,8 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -44,6 +46,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ChaptersViewModel @AssistedInject constructor(
     @Assisted private val mangaUnic: String,
     private val chapterDao: ChapterDao,
@@ -250,18 +253,22 @@ class ChaptersViewModel @AssistedInject constructor(
         removeSelection()
     }
 
-    suspend fun getFirstNotReadChapters(manga: Manga): Chapter? = withContext(default) {
-        var list = chapterDao.getItemsWhereManga(manga.unic)
-        list = if (manga.isAlternativeSort)
-            try {
-                list.sortedWith(ChapterComparator())
-            } catch (e: Exception) {
-                list
+    fun getFirstNotReadChapters(): Flow<Chapter?> =
+        snapshotFlow { chapters }
+            .map { list ->
+                if (manga.isAlternativeSort) {
+                    try {
+                        list.sortedWith(ChapterComparator())
+                    } catch (e: Exception) {
+                        list
+                    }
+                } else {
+                    list
+                }
             }
-        else list
-
-        list.firstOrNull { !it.isRead }
-    }
+            .map {
+                it.firstOrNull { chapter -> !chapter.isRead }
+            }
 
     @AssistedFactory
     interface Factory {

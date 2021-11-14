@@ -15,13 +15,12 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalContext
@@ -43,13 +42,11 @@ import com.san.kir.ankofork.startActivity
 import com.san.kir.manger.R
 import com.san.kir.manger.components.viewer.ViewerActivity
 import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.utils.loadImage
+import com.san.kir.manger.ui.utils.rememberImage
 import com.san.kir.manger.workmanager.ChapterDeleteWorker
 import com.san.kir.manger.workmanager.ReadChapterDelete
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.withContext
 
 sealed class ChapterPages(
     val nameId: Int,
@@ -101,14 +98,15 @@ fun AboutPageContent(
 ) {
     val fullChaptersCount = viewModel.chapters.count()
     val readChaptersCount = viewModel.chapters.count { it.isRead }
-
-    var logoManga by remember { mutableStateOf(ImageBitmap(60, 60)) }
+    val firstNotReadChapter by viewModel.getFirstNotReadChapters().collectAsState(null)
 
     // для кнопки продолжить чтение
-    var isSearch by rememberSaveable { mutableStateOf(true) }
-    var isContinue by rememberSaveable { mutableStateOf(false) }
-    var messageContinue by rememberSaveable {
-        mutableStateOf(context.getString(R.string.list_chapters_about_search_continue))
+    val messageContinue = remember(firstNotReadChapter) {
+        firstNotReadChapter?.let { ch ->
+            context.getString(R.string.list_chapters_about_continue, ch.name)
+        } ?: run {
+            context.getString(R.string.list_chapters_about_not_continue)
+        }
     }
 
     var deleteDialog by remember { mutableStateOf(false) }
@@ -119,7 +117,7 @@ fun AboutPageContent(
         constraintSet = decoupledConstraintSet(),
     ) {
         Image(
-            logoManga,
+            rememberImage(url = viewModel.manga.logo),
             modifier = Modifier.layoutId(Refs.logo),
             contentDescription = null,
             contentScale = ContentScale.Crop,
@@ -147,7 +145,9 @@ fun AboutPageContent(
         // удаления прочитанных глав
         Button(
             onClick = { deleteDialog = true },
-            modifier = Modifier.layoutId(Refs.deleteBtn).padding(horizontal = defaultMargin)
+            modifier = Modifier
+                .layoutId(Refs.deleteBtn)
+                .padding(horizontal = defaultMargin)
         ) {
             Text(text = stringResource(id = R.string.list_chapters_about_delete),
                 modifier = Modifier.padding(5.dp),
@@ -162,7 +162,9 @@ fun AboutPageContent(
                     "is" to viewModel.manga.isAlternativeSort
                 )
             },
-            modifier = Modifier.layoutId(Refs.startBtn).padding(end = defaultMargin)
+            modifier = Modifier
+                .layoutId(Refs.startBtn)
+                .padding(end = defaultMargin)
         ) {
             Text(text = stringResource(id = R.string.list_chapters_about_start),
                 modifier = Modifier.padding(5.dp),
@@ -181,9 +183,9 @@ fun AboutPageContent(
             modifier = Modifier
                 .navigationBarsPadding(start = false, end = false)
                 .layoutId(Refs.continueBtn),
-            enabled = isContinue,
+            enabled = firstNotReadChapter != null,
         ) {
-            if (isSearch) CircularProgressIndicator()
+            if (firstNotReadChapter == null) CircularProgressIndicator()
 
             Text(messageContinue.toUpperCase(Locale.current),
                 modifier = Modifier.padding(8.dp),
@@ -197,27 +199,6 @@ fun AboutPageContent(
 
     if (progressDeleteDialog) {
         ProgressDeletingChaptersDialog(viewModel.manga) { progressDeleteDialog = false }
-    }
-
-    LaunchedEffect(viewModel.manga) {
-        loadImage(viewModel.manga.logo, context) {
-            onSuccess { image ->
-                logoManga = image
-            }
-            start()
-        }
-
-        withContext(Dispatchers.Default) {
-            viewModel.getFirstNotReadChapters(viewModel.manga)?.let { ch ->
-                isContinue = true
-                messageContinue = context.getString(R.string.list_chapters_about_continue, ch.name)
-            } ?: kotlin.run {
-                isContinue = false
-                messageContinue = context.getString(R.string.list_chapters_about_not_continue)
-            }
-            isSearch = false
-
-        }
     }
 }
 

@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.MaterialTheme
@@ -40,7 +39,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Popup
 import androidx.navigation.NavHostController
 import com.google.accompanist.insets.systemBarsPadding
 import com.san.kir.manger.R
@@ -105,6 +103,10 @@ fun LibraryDropUpMenu(nav: NavHostController, viewModel: LibraryViewModel) {
             nav.navigate(LibraryNavTarget.Storage, viewModel.selectedManga.manga.unic)
         })
 
+        MenuText(id = R.string.library_popupmenu_statistic, onClick = {
+            viewModel.changeSelectedManga(false)
+            nav.navigate(LibraryNavTarget.Statistic, viewModel.selectedManga.manga.unic)
+        })
 
         MenuText(id = R.string.library_popupmenu_delete, onClick = {
             deleteDialog = !deleteDialog
@@ -166,7 +168,7 @@ fun LibraryDropUpMenu(nav: NavHostController, viewModel: LibraryViewModel) {
 private fun ExpandedCategories(
     visibility: Boolean,
     categories: List<String>,
-    onItemChanged: (String) -> Unit
+    onItemChanged: (String) -> Unit,
 ) {
     CustomAnimatedItem(visibility) {
         categories.forEach { item -> MenuText(item) { onItemChanged(item) } }
@@ -176,7 +178,7 @@ private fun ExpandedCategories(
 @Composable
 private fun CustomAnimatedItem(
     visibility: Boolean,
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     CustomAnimated(visibility) { state ->
         val transformOriginState = remember { mutableStateOf(TransformOrigin(1f, 1f)) }
@@ -196,40 +198,6 @@ private fun CustomAnimatedItem(
             elevation = AppBarDefaults.TopAppBarElevation + 10.dp,
         ) {
             Column {
-                content()
-            }
-        }
-    }
-}
-
-@Composable
-private fun CustomAnimatedPopup(
-    visibility: Boolean,
-    onDismissRequest: (() -> Unit)? = null,
-    content: @Composable () -> Unit
-) {
-    CustomAnimated(targetState = visibility) { state ->
-        val transformOriginState = remember { mutableStateOf(TransformOrigin(1f, 1f)) }
-        // Menu open/close animation.
-        val transition = updateTransition(state, "DropUpMenu")
-
-        val scale by transition.scaleAnimate()
-        val alpha by transition.alphaAnimate()
-
-        Popup(
-            alignment = Alignment.BottomCenter,
-            onDismissRequest = onDismissRequest,
-        ) {
-            Surface(
-                modifier = Modifier.graphicsLayer {
-                    this.alpha = alpha
-                    scaleY = scale
-                    transformOrigin = transformOriginState.value
-                },
-                color = MaterialTheme.colors.primarySurface,
-                elevation = AppBarDefaults.TopAppBarElevation,
-                shape = RoundedCornerShape(7.dp)
-            ) {
                 content()
             }
         }
@@ -297,7 +265,7 @@ private fun Transition<Boolean>.scaleAnimate(): State<Float> {
 @Composable
 fun CustomAnimated(
     targetState: Boolean,
-    content: @Composable (MutableTransitionState<Boolean>) -> Unit
+    content: @Composable (MutableTransitionState<Boolean>) -> Unit,
 ) {
     val expandedStates = remember { MutableTransitionState(false) }
     expandedStates.targetState = targetState

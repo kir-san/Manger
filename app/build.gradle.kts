@@ -70,15 +70,6 @@ android {
             applicationIdSuffix = ".debug"
             buildConfigField("String", "EXAMPLE", "\"debug\"")
         }
-        create("benchmark") {
-            isMinifyEnabled = true
-            isShrinkResources = true
-            extra["enableCrashlytics"] = false
-            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
-
-            signingConfig = signingConfigs.getByName("release")
-            isDebuggable = false
-        }
     }
 
     compileOptions {
@@ -86,31 +77,12 @@ android {
         targetCompatibility = Versions.JAVA
     }
 
-    kotlinOptions {
-        jvmTarget = Versions.JAVA.toString()
-        freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
-    }
+    prepareKotlinOptions()
 
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = Versions.Compose.COMPOSE
-    }
+    prepareComposeConfig()
 
     packagingOptions {
-        resources.excludes.add("META-INF/**/*")
-        resources.excludes.add("META-INF/DEPENDENCIES")
-        resources.excludes.add("META-INF/LICENSE")
-        resources.excludes.add("META-INF/LICENSE.txt")
-        resources.excludes.add("META-INF/license.txt")
-        resources.excludes.add("META-INF/NOTICE")
-        resources.excludes.add("META-INF/NOTICE.txt")
-        resources.excludes.add("META-INF/notice.txt")
-        resources.excludes.add("META-INF/ASL2.0")
-        resources.excludes.add("META-INF/AL2.0")
-        resources.excludes.add("META-INF/LGPL2.1")
-        resources.excludes.add("META-INF/*.kotlin_module")
+        resources.excludes.addAll(resourceExcludes)
     }
 }
 
@@ -127,8 +99,6 @@ dependencies {
         implementation(CORE)
         implementation(SPLASH)
         implementation(APPCOMPAT)
-//        implementation(COLLECTION)
-//        implementation(PREFERENCE)
         implementation(VECTORDRAWABLE)
         implementation(CONSTRAINTLAYOUT)
     }
@@ -136,7 +106,6 @@ dependencies {
     Dependencies.Google.apply {
         implementation(MATERIAL)
         implementation(PROTOBUF_JAVALITE)
-//        implementation(PLAY_SERVICES_GCM)
     }
 
     Dependencies.Google.Hilt.apply {

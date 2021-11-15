@@ -15,6 +15,8 @@ import com.san.kir.manger.ui.application_navigation.additional_manga_screens.man
 import com.san.kir.manger.ui.application_navigation.library.chapters.ChaptersScreen
 import com.san.kir.manger.ui.application_navigation.library.chapters.chaptersViewModel
 import com.san.kir.manger.ui.application_navigation.library.main.LibraryScreen
+import com.san.kir.manger.ui.application_navigation.statistic.StatisticScreen
+import com.san.kir.manger.ui.application_navigation.statistic.onlyStatisticViewModel
 import com.san.kir.manger.ui.onlyMangaViewModel
 import com.san.kir.manger.ui.utils.MangaItem
 import com.san.kir.manger.ui.utils.NavItem
@@ -57,6 +59,12 @@ sealed class LibraryNavTarget : NavTarget {
 
     object Storage : LibraryNavTarget() {
         override val base: String = "manga_storage"
+        override val item: NavItem = MangaItem
+        override val isOptional: Boolean = true
+    }
+
+    object Statistic : LibraryNavTarget() {
+        override val base: String = "manga_statistic"
         override val item: NavItem = MangaItem
         override val isOptional: Boolean = true
     }
@@ -128,6 +136,18 @@ fun NavGraphBuilder.libraryNavGraph(nav: NavHostController) {
             val viewModel = mangaStorageViewModel(item)
 
             MangaStorageScreen(nav, viewModel)
+        }
+    )
+
+    composable(
+        route = LibraryNavTarget.Statistic.route,
+        content = {
+            val item = nav.getStringElement(MangaItem) ?: ""
+            val viewModel = onlyStatisticViewModel(item)
+
+            val statistic by viewModel.statistic.collectAsState()
+
+            StatisticScreen(nav, statistic)
         }
     )
 }

@@ -1,7 +1,8 @@
 package com.san.kir.manger.components.parsing
 
 import android.app.Application
-import android.webkit.CookieManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import com.san.kir.manger.utils.extensions.createDirs
 import com.san.kir.manger.utils.extensions.log
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +23,7 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
 import okhttp3.internal.closeQuietly
+import okio.Buffer
 import okio.buffer
 import okio.sink
 import org.jsoup.Jsoup
@@ -37,21 +39,32 @@ import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
 @Singleton
-class ConnectManager @Inject constructor(
-    context: Application,
-) {
-    private val cacheDirectory = File(context.cacheDir, "http_cache")
+class ConnectManager @Inject constructor(context: Application) {
+    private val defaultCacheDirectory = File(context.cacheDir, "http_cache")
+    private val imageCacheDirectory = File(context.cacheDir, "image_cache")
 
-    private val cache = Cache(
-        cacheDirectory,
-        50L * 1024L * 1024L // 50 MiB
+    private val defaultCache = Cache(
+        defaultCacheDirectory,
+        15L * 1024L * 1024L
+    )
+
+    private val imageCache = Cache(
+        imageCacheDirectory,
+        50L * 1024L * 1024L
     )
 
     private val cookieJar = AndroidCookieJar()
 
     private val defaultClient by lazy {
         OkHttpClient.Builder()
-            .cache(cache)
+            .cache(defaultCache)
+            .cookieJar(cookieJar)
+            .build()
+    }
+
+    private val imageDownloadClient by lazy {
+        OkHttpClient.Builder()
+            .cache(imageCache)
             .cookieJar(cookieJar)
             .build()
     }
@@ -112,7 +125,22 @@ class ConnectManager @Inject constructor(
         return name
     }
 
-    suspend fun downloadImage(file: File, url: String): Long {
+    suspend fun downloadBitmap(url: String): Bitmap? {
+        val response = awaitNewCall(url, client = imageDownloadClient)
+
+        val buffer = Buffer()
+
+        return withContext(Dispatchers.IO) {
+            response.body?.source()?.let { source ->
+                buffer.writeAll(source)
+                BitmapFactory.decodeStream(buffer.inputStream())
+            } ?: kotlin.run {
+                null
+            }
+        }
+    }
+
+    suspend fun downloadFile(file: File, url: String): Long {
         var contentLength = 0L
 
         file.delete()

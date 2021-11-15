@@ -17,11 +17,13 @@ import com.san.kir.manger.room.entities.Storage
 import com.san.kir.manger.utils.extensions.getFullPath
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -70,8 +72,10 @@ class StorageViewModel @Inject constructor(
         }
     }
 
-    fun mangaFromPath(path: String): Manga? {
-        return mangaList.firstOrNull { getFullPath(it.path) == getFullPath(path) }
+    fun mangaFromPath(path: String): Flow<Manga?> {
+        return mangaDao.loadItems()
+            .distinctUntilChanged()
+            .map { list -> list.firstOrNull { getFullPath(it.path) == getFullPath(path) } }
     }
 
     fun delete(item: Storage) {

@@ -159,7 +159,7 @@ class ViewerPageFragment : Fragment() {
             }
 
             kotlin.runCatching {
-                connectManager.downloadImage(file, connectManager.prepareUrl(page.link))
+                connectManager.downloadFile(file, connectManager.prepareUrl(page.link))
             }.onFailure {
                 it.printStackTrace()
             }

@@ -170,7 +170,7 @@ class ChapterDownloader(
 
                 if (interrupted) return
 
-                contentLength = connectManager.downloadImage(file, link)
+                contentLength = connectManager.downloadFile(file, link)
 
                 // Если размер исходного и загруженного одинаков, то страница загружена
                 if (file.exists() && file.length() == contentLength) {

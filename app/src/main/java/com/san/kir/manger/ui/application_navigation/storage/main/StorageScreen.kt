@@ -1,6 +1,5 @@
 package com.san.kir.manger.ui.application_navigation.storage.main
 
-import android.content.Context
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -18,7 +17,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,7 +25,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -44,16 +41,14 @@ import com.san.kir.manger.ui.utils.MenuText
 import com.san.kir.manger.ui.utils.StorageProgressBar
 import com.san.kir.manger.ui.utils.TopBarScreenList
 import com.san.kir.manger.ui.utils.navigate
+import com.san.kir.manger.ui.utils.rememberImage
 import com.san.kir.manger.utils.extensions.formatDouble
-import com.san.kir.manger.utils.loadImage
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
 
 @Composable
 fun StorageScreen(
     nav: NavHostController,
-    viewModel: StorageViewModel = hiltViewModel()
+    viewModel: StorageViewModel = hiltViewModel(),
 ) {
     val viewState by viewModel.state.collectAsState()
     val allStorage = viewModel.allStorage.collectAsLazyPagingItems()
@@ -85,23 +80,20 @@ private fun ItemView(
     nav: NavHostController,
     item: Storage,
     viewModel: StorageViewModel,
-    context: Context = LocalContext.current,
 ) {
     val viewState by viewModel.state.collectAsState()
+    val manga by viewModel.mangaFromPath(item.path).collectAsState(null)
 
     var showMenu by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
-    var logo by remember { mutableStateOf(ImageBitmap(60, 60)) }
-    var isExists by remember { mutableStateOf(false) }
+    val isExists = manga != null
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                viewModel
-                    .mangaFromPath(item.path)
-                    ?.let { nav.navigate(StorageNavTarget.Storage, it.unic) }
+                manga?.let { nav.navigate(StorageNavTarget.Storage, it.unic) }
                     ?: run { showMenu = true }
             }
     ) {
@@ -111,7 +103,7 @@ private fun ItemView(
             modifier = Modifier.size(60.dp)
         ) {
             Image(
-                logo,
+                rememberImage(url = manga?.logo),
                 contentDescription = "",
                 modifier = Modifier
                     .padding(3.dp)
@@ -174,20 +166,6 @@ private fun ItemView(
         ) {
             MenuText(id = R.string.storage_item_menu_full_delete) {
                 showDeleteDialog = true
-            }
-        }
-    }
-
-    LaunchedEffect(key1 = item) {
-        val manga = withContext(Dispatchers.Default) { viewModel.mangaFromPath(item.path) }
-        isExists = manga != null
-
-        manga?.let { m ->
-            loadImage(m.logo, context) {
-                onSuccess { image ->
-                    logo = image
-                }
-                start()
             }
         }
     }

@@ -20,9 +20,7 @@ android {
         targetCompatibility = Versions.JAVA
     }
 
-    kotlinOptions {
-        jvmTarget = Versions.JAVA.toString()
-    }
+    kotlinOptions()
 }
 
 dependencies {

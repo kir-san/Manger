@@ -1,3 +1,3 @@
 include(":app")
 include(":ankofork")
-include(":app:benchmark")
+include(":ui:utils")

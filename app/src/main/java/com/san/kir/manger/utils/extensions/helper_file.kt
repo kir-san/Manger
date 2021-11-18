@@ -52,6 +52,7 @@ fun delFiles(filesPath: List<String>): ResultDeleting {
     return ResultDeleting(current = acc, max = filesPath.size)
 }
 
+private const val DEFAULT_COMPRESS_QUALITY = 90
 fun convertImagesToPng(image: File): File {
     val b = BitmapFactory.decodeFile(image.path)
 
@@ -68,7 +69,7 @@ fun convertImagesToPng(image: File): File {
 
     if (b != null) {
         val stream = FileOutputStream(png.absoluteFile)
-        b.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        b.compress(Bitmap.CompressFormat.PNG, DEFAULT_COMPRESS_QUALITY, stream)
         stream.close()
     }
 

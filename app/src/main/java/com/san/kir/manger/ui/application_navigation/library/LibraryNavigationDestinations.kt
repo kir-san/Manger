@@ -121,11 +121,8 @@ fun NavGraphBuilder.libraryNavGraph(nav: NavHostController) {
         route = LibraryNavTarget.Edit.route,
         content = {
             val item = nav.getStringElement(MangaItem) ?: ""
-            val viewModel = onlyMangaViewModel(mangaUnic = item)
 
-            val manga by viewModel.manga.collectAsState()
-
-            MangaEditScreen(nav, manga)
+            MangaEditScreen(nav, item)
         }
     )
 

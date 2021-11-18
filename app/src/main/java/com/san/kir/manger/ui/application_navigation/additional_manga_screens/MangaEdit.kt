@@ -1,6 +1,5 @@
 package com.san.kir.manger.ui.application_navigation.additional_manga_screens
 
-import android.app.Application
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.expandVertically
@@ -41,40 +40,31 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.san.kir.manger.R
-import com.san.kir.manger.di.DefaultDispatcher
-import com.san.kir.manger.room.dao.CategoryDao
-import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.ui.utils.CheckBoxText
 import com.san.kir.manger.ui.utils.DropDownTextField
 import com.san.kir.manger.ui.utils.ImageWithStatus
 import com.san.kir.manger.ui.utils.LabelText
 import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import javax.inject.Inject
+import com.san.kir.manger.utils.extensions.log
 
 
 @Composable
 fun MangaEditScreen(
     nav: NavHostController,
-    item: Manga,
+    mangaUnic: String,
     viewModel: MangaEditViewModel = hiltViewModel()
 ) {
-    var manga = remember { item }
+    viewModel.mangaUnic = mangaUnic
 
     TopBarScreenWithInsets(
         navigationButtonListener = { nav.navigateUp() },
         title = stringResource(id = R.string.edit_manga_title),
         actions = {
             IconButton(onClick = { /* save manga */
-                viewModel.update(manga)
+                viewModel.update()
                 nav.navigateUp()
             }) {
                 Icon(
@@ -86,8 +76,9 @@ fun MangaEditScreen(
         }
 
     ) {
-        MangaEditContent(manga) { manga = it }
+        MangaEditContent(viewModel.manga) { viewModel.manga = it }
     }
+    log = ("viewModel.manga is ${viewModel.manga.name}")
 }
 
 @Composable
@@ -95,7 +86,7 @@ private fun MangaEditContent(
     manga: Manga,
     change: (Manga) -> Unit,
 ) {
-
+    log = ("manga is ${manga.name}")
     LabelText(idRes = R.string.about_manga_dialog_name)
     TextField(manga.name) { change(manga.apply { name = it }) }
 

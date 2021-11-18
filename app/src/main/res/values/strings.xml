@@ -220,6 +220,7 @@
     <string name="library_popupmenu_about">Свойства</string>
     <string name="library_popupmenu_delete">Удалить</string>
     <string name="library_popupmenu_storage">Используемая память</string>
+    <string name="library_popupmenu_statistic">Статистика чтения</string>
     <string name="library_popupmenu_delete_message">Вы действительно хотите удалить эту мангу</string>
     <string name="library_popupmenu_delete_title">Внимание!!!</string>
     <string name="library_popupmenu_delete_ok">Конечно</string>

@@ -14,10 +14,7 @@ import okhttp3.Cache
 import okhttp3.CacheControl
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.Cookie
-import okhttp3.CookieJar
 import okhttp3.Headers
-import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -212,6 +209,7 @@ class ConnectManager @Inject constructor(context: Application) {
             .add("Cache-Control", "no-cache")
             .add("Connection", "keep-alive")
             .add("Upgrade-Insecure-Requests", "1").build()
+
         val defaultCacheControl = CacheControl.Builder().maxAge(10, TimeUnit.MINUTES).build()
     }
 }
@@ -240,27 +238,3 @@ fun String.postRequest(
         .build()
 }
 
-class AndroidCookieJar : CookieJar {
-
-    private val manager = CookieManager.getInstance()
-
-    override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
-        val urlString = url.toString()
-        cookies.forEach { manager.setCookie(urlString, it.toString()) }
-    }
-
-    override fun loadForRequest(url: HttpUrl): List<Cookie> {
-        return get(url)
-    }
-
-    fun get(url: HttpUrl): List<Cookie> {
-        val cookies = manager.getCookie(url.toString())
-
-        return if (cookies != null && cookies.isNotEmpty()) {
-            cookies.split(";").mapNotNull { Cookie.parse(url, it) }
-        } else {
-            emptyList()
-        }
-    }
-
-}

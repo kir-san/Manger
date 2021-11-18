@@ -234,7 +234,7 @@ class ChaptersViewModel @AssistedInject constructor(
     }
 
     fun setReadStatus(state: Boolean) = viewModelScope.launch {
-        selectedItems.zip(prepareChapters).forEachIndexed { i, (b, chapter) ->
+        selectedItems.zip(prepareChapters).forEachIndexed { _, (b, chapter) ->
             if (b) {
                 chapter.isRead = state
                 chapterDao.update(chapter)
@@ -244,7 +244,7 @@ class ChaptersViewModel @AssistedInject constructor(
     }
 
     fun updatePagesForSelectedItems() = viewModelScope.launch {
-        selectedItems.zip(prepareChapters).forEachIndexed { i, (b, chapter) ->
+        selectedItems.zip(prepareChapters).forEachIndexed { _, (b, chapter) ->
             if (b) {
                 chapter.pages = manager.pages(chapter)
                 chapterDao.update(chapter)
@@ -279,7 +279,7 @@ class ChaptersViewModel @AssistedInject constructor(
     companion object {
         fun provideFactory(
             assistedFactory: Factory,
-            mangaUnic: String
+            mangaUnic: String,
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 return assistedFactory.create(mangaUnic) as T

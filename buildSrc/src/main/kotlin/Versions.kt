@@ -2,8 +2,8 @@ import org.gradle.api.JavaVersion
 
 object Versions {
     object App {
-        const val VERSION_CODE = 2710
-        const val VERSION_NAME = "2.7.10"
+        const val VERSION_CODE = 2711
+        const val VERSION_NAME = "2.7.11"
         const val MIN_SDK = 21
         const val TARGET_SDK = 30
         const val COMPILE_SDK = 31
@@ -20,9 +20,7 @@ object Versions {
         const val CORE = "1.6.0"
         const val SPLASH = "1.0.0-alpha02"
         const val APPCOMPAT = "1.4.0-alpha03"
-        const val COLLECTION = "1.1.0"
         const val LIFECYCLE = "2.3.1"
-        const val PREFERENCE = "1.1.1"
         const val VECTORDRAWABLE = "1.2.0-alpha02"
         const val CONSTRAINTLAYOUT = "2.0.0-beta4"
         const val WORKMANAGER = "2.7.0"
@@ -44,7 +42,6 @@ object Versions {
         const val PROTOBUF_JAVALITE = "3.18.0"
         const val PROTOBUF_PROTOC = "3.18.0"
         const val PROTOBUF_PLUGIN = "0.8.17"
-        const val PLAY_SERVICES_GCM = "17.0.0" // не менять версию
         const val ACCOMPANIST = "0.19.0"
         const val HILT = "2.37"
     }

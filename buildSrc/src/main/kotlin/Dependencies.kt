@@ -30,8 +30,6 @@ object Dependencies {
                 "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.AndroidX.LIFECYCLE}"
             const val LIFECYCLE_COMMON =
                 "androidx.lifecycle:lifecycle-common-java8:${Versions.AndroidX.LIFECYCLE}"
-            const val LIFECYCLE_PROCESS =
-                "androidx.lifecycle:lifecycle-process:${Versions.AndroidX.LIFECYCLE}"
             const val LIFECYCLE_SERVICE =
                 "androidx.lifecycle:lifecycle-service:${Versions.AndroidX.LIFECYCLE}"
         }
@@ -63,10 +61,6 @@ object Dependencies {
             "androidx.core:core-splashscreen:${Versions.AndroidX.SPLASH}"
         const val APPCOMPAT =
             "androidx.appcompat:appcompat:${Versions.AndroidX.APPCOMPAT}"
-        const val COLLECTION =
-            "androidx.collection:collection-ktx:${Versions.AndroidX.COLLECTION}"
-        const val PREFERENCE =
-            "androidx.preference:preference-ktx:${Versions.AndroidX.PREFERENCE}"
         const val VECTORDRAWABLE =
             "androidx.vectordrawable:vectordrawable:${Versions.AndroidX.VECTORDRAWABLE}"
         const val CONSTRAINTLAYOUT =
@@ -106,8 +100,6 @@ object Dependencies {
             "com.google.protobuf:protoc:${Versions.Google.PROTOBUF_PROTOC}"
         const val MATERIAL =
             "com.google.android.material:material:${Versions.Google.MATERIAL}"
-        const val PLAY_SERVICES_GCM =
-            "com.google.android.gms:play-services-gcm:${Versions.Google.PLAY_SERVICES_GCM}"
     }
 
     object ForInternet {

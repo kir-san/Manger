@@ -27,7 +27,6 @@ import okhttp3.Response
 import okhttp3.internal.closeQuietly
 import okio.Buffer
 import okio.buffer
-import okio.sink
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import java.io.File
@@ -172,11 +171,6 @@ class ConnectManager @Inject constructor(context: Application) {
             enqueue(
                 object : Callback {
                     override fun onResponse(call: Call, response: Response) {
-                        if (!response.isSuccessful) {
-                            continuation.resumeWithException(Exception("HTTP error ${response.code}"))
-                            return
-                        }
-
                         continuation.resume(response) {
                             response.body?.closeQuietly()
                         }

@@ -133,7 +133,7 @@ class ConnectManager @Inject constructor(context: Application) {
 
         return withContext(Dispatchers.IO) {
             response.body?.source()?.let { source ->
-                buffer.writeAll(source)
+                buffer.writeAllAsync(source)
                 BitmapFactory.decodeStream(buffer.inputStream())
             } ?: kotlin.run {
                 null
@@ -215,8 +215,17 @@ fun String.getRequest(
     headers: Headers = ConnectManager.defaultHeaders,
     cacheControl: CacheControl = ConnectManager.defaultCacheControl,
 ): Request {
+    val temp = if (this.contains("http").not()) {
+        this.removePrefix("/").removePrefix("/")
+        "https://$this"
+    } else {
+        this
+    }
+    if (BuildConfig.DEBUG) {
+        log("getRequest for $temp")
+    }
     return Request.Builder()
-        .url(this)
+        .url(temp)
         .headers(headers)
         .cacheControl(cacheControl)
         .build()

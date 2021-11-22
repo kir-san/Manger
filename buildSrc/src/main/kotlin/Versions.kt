@@ -61,7 +61,7 @@ object Versions {
     const val HYPERION = "0.9.31"
 
     // Make sure to update `buildSrc/build.gradle.kts` when updating this
-    const val GRADLE = "7.1.0-beta02"
+    const val GRADLE = "7.1.0-beta03"
 
     val JAVA = JavaVersion.VERSION_1_8
 

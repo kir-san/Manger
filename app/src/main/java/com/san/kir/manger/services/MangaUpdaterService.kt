@@ -230,7 +230,6 @@ class MangaUpdaterService : Service() {
             /* Обновляем страницы в главах */
             oldChapters.updatePagesInChapters(mangaDB)
 
-
             var newChapters = listOf<Chapter>()
 
             // Получаем список глав из сети
@@ -355,7 +354,7 @@ class MangaUpdaterService : Service() {
 
     private open class ServiceHandler(
         looper: Looper,
-        val service: MangaUpdaterService
+        val service: MangaUpdaterService,
     ) : Handler(looper) {
         override fun handleMessage(msg: Message) {
             service.onHandleIntent(msg.obj as Manga)

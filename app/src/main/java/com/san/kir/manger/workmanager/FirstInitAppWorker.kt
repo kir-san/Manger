@@ -145,6 +145,7 @@ class FirstInitAppWorker @AssistedInject constructor(
         viewerStore.setOrientation(Viewer.Orientation.AUTO_LAND)
         viewerStore.setCutOut(true)
         viewerStore.setControl(taps = false, swipes = true, keys = false)
+        viewerStore.setWithoutSaveFiles(false)
     }
 
     companion object {

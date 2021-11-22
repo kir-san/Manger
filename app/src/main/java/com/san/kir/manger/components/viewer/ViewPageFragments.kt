@@ -31,6 +31,7 @@ import com.san.kir.ankofork.verticalLayout
 import com.san.kir.ankofork.withArguments
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ConnectManager
+import com.san.kir.manger.data.datastore.ViewerRepository
 import com.san.kir.manger.utils.extensions.bigImageView
 import com.san.kir.manger.utils.extensions.convertImagesToPng
 import com.san.kir.manger.utils.extensions.goneOrVisible
@@ -40,6 +41,7 @@ import com.san.kir.manger.utils.extensions.showAlways
 import com.san.kir.manger.utils.extensions.visibleOrGone
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -61,6 +63,9 @@ class ViewerPageFragment : Fragment() {
 
     @Inject
     lateinit var connectManager: ConnectManager
+
+    @Inject
+    lateinit var viewerRepository: ViewerRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -136,6 +141,8 @@ class ViewerPageFragment : Fragment() {
     private suspend fun getImage(force: Boolean): ImageSource {
         return withContext(Dispatchers.Default) {
 
+            val isOnline = viewerRepository.data.first().withoutSaveFiles
+
             val name = connectManager.nameFromUrl(page.link)
 
             var file = File(page.fullPath, name)
@@ -156,6 +163,15 @@ class ViewerPageFragment : Fragment() {
                     return@withContext ImageSource.uri(Uri.fromFile(png))
                 }
                 png.delete()
+            }
+
+            if (isOnline) {
+                kotlin.runCatching {
+                    val bm = connectManager.downloadBitmap(connectManager.prepareUrl(page.link))
+                    return@withContext ImageSource.bitmap(bm!!)
+                }.onFailure {
+                    it.printStackTrace()
+                }
             }
 
             kotlin.runCatching {

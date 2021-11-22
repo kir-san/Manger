@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
-import com.san.kir.manger.Chapters
 import com.san.kir.manger.Viewer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -46,6 +45,12 @@ class ViewerRepository @Inject constructor(private val store: DataStore<Viewer>)
                     .setKeys(keys)
                     .build()
             ).build()
+        }
+    }
+
+    suspend fun setWithoutSaveFiles(state: Boolean) {
+        store.updateData { preference ->
+            preference.toBuilder().setWithoutSaveFiles(state).build()
         }
     }
 }

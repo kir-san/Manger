@@ -16,7 +16,6 @@ import com.san.kir.manger.di.MainDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
@@ -48,6 +47,7 @@ class SettingsViewModel @Inject constructor(
     var orientation by mutableStateOf(Viewer.Orientation.AUTO_LAND, viewer::setOrientation)
     var cutout by mutableStateOf(true, viewer::setCutOut)
     var control = mutableStateListOf(false, true, false)
+    var withoutSaveFiles by mutableStateOf(false, viewer::setWithoutSaveFiles)
 
     var title by mutableStateOf(true, chapters::setTitleVisibility)
     var filter by mutableStateOf(true, chapters::setIndividualFilter)
@@ -73,6 +73,7 @@ class SettingsViewModel @Inject constructor(
                 control[0] = viewer.control.taps
                 control[1] = viewer.control.swipes
                 control[2] = viewer.control.keys
+                withoutSaveFiles = viewer.withoutSaveFiles
 
                 title = chapters.isTitle
                 filter = chapters.isIndividual

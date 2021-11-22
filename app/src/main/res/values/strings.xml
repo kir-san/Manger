@@ -523,6 +523,8 @@
     <string name="settings_viewer_cutout_summary">Будет ли использоваться зона выреза или она будет закрашена черной полосой</string>
     <string name="settings_viewer_cutout_title">Использовать зону выреза</string>
 
+    <string name="settings_viewer_without_summary">Если этот пункт активирован, то при чтении не будут сохранятся главы в памяти. Все главы загруженные самостоятельно останутся без изменений</string>
+    <string name="settings_viewer_without_title">Без сохранения</string>
 
     <string name="settings_downloader_title">Настройки загрузчика</string>
 

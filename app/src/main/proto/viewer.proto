@@ -24,4 +24,6 @@ message Viewer {
   }
 
   Control control = 3;
+
+  bool without_save_files = 4;
 }

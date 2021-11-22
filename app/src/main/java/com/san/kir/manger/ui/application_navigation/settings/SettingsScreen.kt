@@ -138,6 +138,14 @@ fun SettingsScreen(
             onCheckedChange = { viewModel.cutout = it }
         )
 
+        TogglePreferenceItem(
+            title = R.string.settings_viewer_without_title,
+            subtitle = R.string.settings_viewer_without_summary,
+//            icon = Icons.Default.ContentCut,
+            initialValue = viewModel.withoutSaveFiles,
+            onCheckedChange = { viewModel.withoutSaveFiles = it }
+        )
+
         Divider()
 
         PreferenceTitle(R.string.settings_downloader_title)

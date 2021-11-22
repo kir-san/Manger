@@ -11,11 +11,14 @@ import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.utils.extensions.createDirs
 import com.san.kir.manger.utils.extensions.getFullPath
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import org.json.JSONArray
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.util.regex.Pattern
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
 
 abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
     SiteCatalogClassic() {
@@ -222,6 +225,7 @@ abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
                 )
             }
 
+    @OptIn(ExperimentalTime::class)
     override suspend fun pages(item: DownloadItem): List<String> {
         val list = mutableListOf<String>()
         // Создаю папку/папки по указанному пути
@@ -229,6 +233,7 @@ abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
 
         val shortLink = getShortLink(item.link)
 
+        delay(Duration.seconds(1))
         val doc = connectManager.getDocument("$host$shortLink?mtr=1")
         // с помощью регулярных выражений ищу нужные данные
         val pat = Pattern.compile("rm_h.init.+").matcher(doc.body().html())

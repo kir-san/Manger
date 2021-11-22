@@ -1,7 +1,15 @@
 package com.san.kir.manger.utils.extensions
 
 import com.san.kir.manger.utils.enums.DIR
+import okio.BufferedSink
+import okio.BufferedSource
+import okio.Sink
+import okio.sink
 import java.io.File
+import kotlin.concurrent.thread
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 val File.ifExists: File?
     get() = if (this.exists()) this else null
@@ -45,4 +53,52 @@ fun File.isOkPng(): Boolean {
     }
 
     return true
+}
+
+suspend fun File.createNewFileAsync(): Boolean {
+    return suspendCoroutine { continuation ->
+        thread {
+            kotlin.runCatching {
+                continuation.resume(createNewFile())
+            }.onFailure {
+                continuation.resumeWithException(it)
+            }
+        }
+    }
+}
+
+suspend fun File.sinkAsync(): Sink {
+    return suspendCoroutine { continuation ->
+        thread {
+            kotlin.runCatching {
+                continuation.resume(sink())
+            }.onFailure {
+                continuation.resumeWithException(it)
+            }
+        }
+    }
+}
+
+suspend fun BufferedSink.writeAllAsync(bufferedSource: BufferedSource): Long {
+    return suspendCoroutine { continuation ->
+        thread {
+            kotlin.runCatching {
+                continuation.resume(writeAll(bufferedSource))
+            }.onFailure {
+                continuation.resumeWithException(it)
+            }
+        }
+    }
+}
+
+suspend fun BufferedSink.closeAsync() {
+    return suspendCoroutine { continuation ->
+        thread {
+            kotlin.runCatching {
+                continuation.resume(close())
+            }.onFailure {
+                continuation.resumeWithException(it)
+            }
+        }
+    }
 }

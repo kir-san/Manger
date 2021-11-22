@@ -3,8 +3,13 @@ package com.san.kir.manger.components.parsing
 import android.app.Application
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import com.san.kir.manger.BuildConfig
+import com.san.kir.manger.utils.extensions.closeAsync
 import com.san.kir.manger.utils.extensions.createDirs
+import com.san.kir.manger.utils.extensions.createNewFileAsync
 import com.san.kir.manger.utils.extensions.log
+import com.san.kir.manger.utils.extensions.sinkAsync
+import com.san.kir.manger.utils.extensions.writeAllAsync
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -143,18 +148,16 @@ class ConnectManager @Inject constructor(context: Application) {
         file.delete()
         file.parentFile?.createDirs()
 
-        withContext(Dispatchers.IO) {
-            file.createNewFile()
-        }
+        file.createNewFileAsync()
 
         val response = awaitNewCall(url)
 
         response.body?.contentLength()?.let { contentLength = it }
 
         withContext(Dispatchers.IO) {
-            val sink = file.sink().buffer()
-            response.body?.source()?.let { sink.writeAll(it) }
-            sink.close()
+            val sink = file.sinkAsync().buffer()
+            response.body?.source()?.let { sink.writeAllAsync(it) }
+            sink.closeAsync()
         }
 
         return contentLength

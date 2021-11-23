@@ -4,6 +4,9 @@
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/1a35a018d2dfd997c2ecc2281629b5cd/transformed/room-paging-2.4.0-beta01/AndroidManifest.xml" />
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/1a35a018d2dfd997c2ecc2281629b5cd/transformed/room-paging-2.4.0-beta01/jars/classes.jar!/" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/1a35a018d2dfd997c2ecc2281629b5cd/transformed/room-paging-2.4.0-beta01/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/871ad6561ef8f471e97a04a36c8d9ec0/transformed/room-paging-2.4.0-beta01/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/871ad6561ef8f471e97a04a36c8d9ec0/transformed/room-paging-2.4.0-beta01/AndroidManifest.xml" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/871ad6561ef8f471e97a04a36c8d9ec0/transformed/room-paging-2.4.0-beta01/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

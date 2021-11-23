@@ -1,13 +1,7 @@
 package com.san.kir.manger.ui.application_navigation.download
 
 import android.content.Context
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.AnimationVector1D
-import androidx.compose.animation.core.calculateTargetValue
-import androidx.compose.animation.splineBasedDecay
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.horizontalDrag
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,7 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -42,19 +35,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.input.pointer.consumePositionChange
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.positionChange
-import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Popup
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.insets.navigationBarsPadding
@@ -69,10 +55,6 @@ import com.san.kir.manger.utils.TimeFormat
 import com.san.kir.manger.utils.enums.DownloadState
 import com.san.kir.manger.utils.extensions.bytesToMb
 import com.san.kir.manger.utils.extensions.formatDouble
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlin.math.absoluteValue
-import kotlin.math.roundToInt
 
 @Composable
 fun DownloadScreen(
@@ -284,63 +266,3 @@ fun ClearDownloadsMenu(
     }
 }
 
-fun Modifier.swipeToDelete(
-    offsetX: Animatable<Float, AnimationVector1D>,
-    maximumWidth: Float,
-    onDeleted: () -> Unit,
-): Modifier = composed {
-    pointerInput(Unit) {
-        val decay = splineBasedDecay<Float>(this)
-
-        coroutineScope {
-            while (true) {
-                val pointerId = awaitPointerEventScope { awaitFirstDown().id }
-
-                offsetX.stop()
-
-                val velocityTracker = VelocityTracker()
-
-                awaitPointerEventScope {
-                    horizontalDrag(pointerId) { change ->
-                        if (change.positionChange().x > 0 || offsetX.value > 0F) {
-                            val horrizontalDragOffset = offsetX.value + change.positionChange().x
-
-                            launch {
-                                offsetX.snapTo(horrizontalDragOffset)
-                            }
-
-                            velocityTracker.addPosition(change.uptimeMillis, change.position)
-
-                            change.consumePositionChange()
-                        }
-                    }
-                }
-
-                var velocity = velocityTracker.calculateVelocity().x
-
-                val targetOffsetX = decay.calculateTargetValue(offsetX.value, velocity)
-
-                offsetX.updateBounds(lowerBound = 0f, upperBound = size.width.toFloat())
-
-                launch {
-                    if (targetOffsetX.absoluteValue <= maximumWidth) {
-                        offsetX.animateTo(targetValue = 0f, initialVelocity = velocity)
-                    } else {
-                        if (velocity >= 0f) {
-                            if (velocity <= 500f) {
-                                velocity = 2000f
-                            }
-
-                            offsetX.animateDecay(velocity, decay)
-
-                            onDeleted()
-                        }
-                    }
-                }
-            }
-        }
-    }
-        .offset {
-            IntOffset(offsetX.value.roundToInt(), 0)
-        }
-}

@@ -14,6 +14,7 @@ class Manga() : Parcelable {
     @ColumnInfo(name = MangaColumn.id)
     var id: Long = 0
 
+    @Deprecated("дублирующий параметр, только сбивает с толку", replaceWith = ReplaceWith("manga.name"))
     @ColumnInfo(name = MangaColumn.unic)
     var unic = ""
     var host = ""

@@ -4,6 +4,9 @@
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/b3d937d718ce54e51e9d6935be03c3f8/transformed/ui-tooling-1.0.4/AndroidManifest.xml" />
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/b3d937d718ce54e51e9d6935be03c3f8/transformed/ui-tooling-1.0.4/jars/classes.jar!/" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/b3d937d718ce54e51e9d6935be03c3f8/transformed/ui-tooling-1.0.4/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/f7efa2069a87e24a5cc04a970b8d67ca/transformed/ui-tooling-1.0.4/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/f7efa2069a87e24a5cc04a970b8d67ca/transformed/ui-tooling-1.0.4/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/f7efa2069a87e24a5cc04a970b8d67ca/transformed/ui-tooling-1.0.4/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

@@ -4,6 +4,9 @@
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/4244478180a90f006fc32144e620d99a/transformed/work-multiprocess-2.7.0/AndroidManifest.xml" />
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/4244478180a90f006fc32144e620d99a/transformed/work-multiprocess-2.7.0/jars/classes.jar!/" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/4244478180a90f006fc32144e620d99a/transformed/work-multiprocess-2.7.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/682da975605bd08f4aea4c74beed6606/transformed/work-multiprocess-2.7.0/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/682da975605bd08f4aea4c74beed6606/transformed/work-multiprocess-2.7.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/682da975605bd08f4aea4c74beed6606/transformed/work-multiprocess-2.7.0/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

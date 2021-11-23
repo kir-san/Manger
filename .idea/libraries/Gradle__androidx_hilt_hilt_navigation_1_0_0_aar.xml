@@ -4,6 +4,9 @@
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/8f4bd0500c174caa3bb9c094c797d989/transformed/hilt-navigation-1.0.0/AndroidManifest.xml" />
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/8f4bd0500c174caa3bb9c094c797d989/transformed/hilt-navigation-1.0.0/jars/classes.jar!/" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-3/8f4bd0500c174caa3bb9c094c797d989/transformed/hilt-navigation-1.0.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/b04364adfd0253194ba63319d7d4ac58/transformed/hilt-navigation-1.0.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/b04364adfd0253194ba63319d7d4ac58/transformed/hilt-navigation-1.0.0/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/b04364adfd0253194ba63319d7d4ac58/transformed/hilt-navigation-1.0.0/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

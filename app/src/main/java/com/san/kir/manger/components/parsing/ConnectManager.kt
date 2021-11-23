@@ -4,17 +4,16 @@ import android.app.Application
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.san.kir.manger.BuildConfig
-import com.san.kir.manger.utils.extensions.closeAsync
+import com.san.kir.manger.utils.coroutines.closeAsync
+import com.san.kir.manger.utils.coroutines.createNewFileAsync
+import com.san.kir.manger.utils.coroutines.parseAsync
+import com.san.kir.manger.utils.coroutines.sinkAsync
+import com.san.kir.manger.utils.coroutines.writeAllAsync
 import com.san.kir.manger.utils.extensions.createDirs
-import com.san.kir.manger.utils.extensions.createNewFileAsync
 import com.san.kir.manger.utils.extensions.log
-import com.san.kir.manger.utils.extensions.sinkAsync
-import com.san.kir.manger.utils.extensions.writeAllAsync
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withContext
 import okhttp3.Cache
 import okhttp3.CacheControl
 import okhttp3.Call
@@ -27,7 +26,6 @@ import okhttp3.Response
 import okhttp3.internal.closeQuietly
 import okio.Buffer
 import okio.buffer
-import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import java.io.File
 import java.io.IOException
@@ -109,9 +107,7 @@ class ConnectManager @Inject constructor(context: Application) {
                 }
             }
             else -> {
-                return withContext(Dispatchers.IO) {
-                    Jsoup.parse(responce.body?.byteStream(), "UTF-8", "")
-                }
+                return parseAsync(responce.body?.byteStream(), "UTF-8", "")
             }
         }
         return Document("")
@@ -131,14 +127,13 @@ class ConnectManager @Inject constructor(context: Application) {
 
         val buffer = Buffer()
 
-        return withContext(Dispatchers.IO) {
-            response.body?.source()?.let { source ->
-                buffer.writeAllAsync(source)
-                BitmapFactory.decodeStream(buffer.inputStream())
-            } ?: kotlin.run {
-                null
-            }
+        return response.body?.source()?.let { source ->
+            buffer.writeAllAsync(source)
+            BitmapFactory.decodeStream(buffer.inputStream())
+        } ?: kotlin.run {
+            null
         }
+
     }
 
     suspend fun downloadFile(file: File, url: String): Long {
@@ -153,11 +148,9 @@ class ConnectManager @Inject constructor(context: Application) {
 
         response.body?.contentLength()?.let { contentLength = it }
 
-        withContext(Dispatchers.IO) {
-            val sink = file.sinkAsync().buffer()
-            response.body?.source()?.let { sink.writeAllAsync(it) }
-            sink.closeAsync()
-        }
+        val sink = file.sinkAsync().buffer()
+        response.body?.source()?.let { sink.writeAllAsync(it) }
+        sink.closeAsync()
 
         return contentLength
     }

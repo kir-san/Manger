@@ -11,7 +11,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.io.File
 import java.util.concurrent.Executors.newFixedThreadPool
-import java.util.regex.Pattern
 
 class ChapterDownloader(
     private val connectManager: ConnectManager,
@@ -201,14 +200,6 @@ class ChapterDownloader(
     }
 
     companion object {
-        fun nameFromUrl(url: String): String {
-            val pat = Pattern.compile("[\\w.-]+\\.[a-z]{3,4}")
-                .matcher(prepareUrl(url))
-            var name = ""
-            while (pat.find())
-                name = pat.group()
-            return name
-        }
 
         fun prepareUrl(url: String) = url.removeSurrounding("\"", "\"")
     }

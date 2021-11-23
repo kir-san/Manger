@@ -226,20 +226,25 @@ class ChaptersViewModel @AssistedInject constructor(
     }
 
     fun fullDeleteSelectedItems() = viewModelScope.launch {
-        selectedItems
-            .zip(prepareChapters)
-            .filter { (b, _) -> b }
-            .map { (_, ch) -> ch }
-            .forEach { chapterDao.delete(it) }
+        chapterDao.delete(
+            selectedItems
+                .zip(prepareChapters)
+                .filter { (b, _) -> b }
+                .map { (_, ch) -> ch }
+        )
     }
 
     fun setReadStatus(state: Boolean) = viewModelScope.launch {
-        selectedItems.zip(prepareChapters).forEachIndexed { _, (b, chapter) ->
-            if (b) {
-                chapter.isRead = state
-                chapterDao.update(chapter)
-            }
-        }
+        chapterDao.update(
+            selectedItems
+                .zip(prepareChapters)
+                .filter { it.first }
+                .map { (_, chapter) ->
+                    chapter.isRead = state
+                    chapter
+                }
+        )
+
         removeSelection()
     }
 

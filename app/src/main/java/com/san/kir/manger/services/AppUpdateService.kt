@@ -5,17 +5,19 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
-import com.san.kir.ankofork.browse
-import com.san.kir.ankofork.intentFor
 import com.san.kir.ankofork.sdk28.notificationManager
 import com.san.kir.manger.BuildConfig
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ConnectManager
 import com.san.kir.manger.utils.ID
+import com.san.kir.manger.utils.extensions.browse
+import com.san.kir.manger.utils.extensions.intentFor
 import com.san.kir.manger.utils.extensions.log
+import com.san.kir.manger.utils.extensions.startService
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,13 +38,17 @@ class AppUpdateService : Service(), CoroutineScope {
         private const val descriptions = "AppUpdaterServiceDescription"
 
         private const val url = "http://4pda.to/forum/index.php?showtopic=772886&st=0#entry53336845"
+
+        fun start(ctx: Context) {
+            startService<AppUpdateService>(ctx)
+        }
     }
 
     lateinit var job: Job
 
     private var notificationId = ID.generate()
     private val actionCancelAll by lazy {
-        val intent = intentFor<AppUpdateService>().setAction(ACTION_CANCEL_ALL)
+        val intent = intentFor<AppUpdateService>(this).setAction(ACTION_CANCEL_ALL)
         val cancelAll = PendingIntent.getService(this, 0, intent, 0)
         NotificationCompat
             .Action
@@ -55,7 +61,7 @@ class AppUpdateService : Service(), CoroutineScope {
     }
 
     private val actionGoToSite by lazy {
-        val intent = intentFor<AppUpdateService>().setAction(ACTION_GO_TO_SITE)
+        val intent = intentFor<AppUpdateService>(this).setAction(ACTION_GO_TO_SITE)
         val cancelAll = PendingIntent.getService(this, 0, intent, 0)
         NotificationCompat
             .Action

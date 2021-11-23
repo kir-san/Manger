@@ -15,7 +15,6 @@ import androidx.core.app.TaskStackBuilder
 import androidx.core.net.toUri
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
-import com.san.kir.ankofork.intentFor
 import com.san.kir.manger.R
 import com.san.kir.manger.components.download_manager.ChapterLoader
 import com.san.kir.manger.components.download_manager.DownloadListener
@@ -27,8 +26,9 @@ import com.san.kir.manger.ui.application_navigation.download.WifiNetwork
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.extensions.bytesToMb
 import com.san.kir.manger.utils.extensions.formatDouble
+import com.san.kir.manger.utils.extensions.intentFor
 import com.san.kir.manger.utils.extensions.log
-import com.san.kir.manger.utils.extensions.startForegroundServiceIntent
+import com.san.kir.manger.utils.extensions.startService
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
@@ -45,35 +45,15 @@ class DownloadService : LifecycleService(), DownloadListener {
 
         private const val TAG = "DownloadService"
 
-        fun startAll(ctx: Context) = with(ctx) {
-            startForegroundServiceIntent(
-                intentFor<DownloadService>().setAction(ACTION_START_ALL)
-            )
-        }
+        fun startAll(ctx: Context) = startService<DownloadService>(ctx, ACTION_START_ALL)
 
-        fun start(ctx: Context, item: Chapter) = with(ctx) {
-            startForegroundServiceIntent(
-                intentFor<DownloadService>("item" to item).setAction(ACTION_START)
-            )
-        }
+        fun start(ctx: Context, item: Chapter) =
+            startService<DownloadService>(ctx, ACTION_START, "item" to item)
 
-        fun pauseAll(ctx: Context) {
-            with(ctx) {
-                startService(
-                    intentFor<DownloadService>().setAction(ACTION_PAUSE_ALL)
-                )
-            }
-        }
+        fun pauseAll(ctx: Context) = startService<DownloadService>(ctx, ACTION_PAUSE_ALL)
 
-        fun pause(ctx: Context, item: Chapter) {
-            with(ctx) {
-                startService(
-                    intentFor<DownloadService>("item" to item).setAction(
-                        ACTION_PAUSE
-                    )
-                )
-            }
-        }
+        fun pause(ctx: Context, item: Chapter) =
+            startService<DownloadService>(ctx, ACTION_PAUSE, "item" to item)
     }
 
     @Inject
@@ -103,7 +83,7 @@ class DownloadService : LifecycleService(), DownloadListener {
         }
     }
     private val actionPauseAll by lazy {
-        val intent = intentFor<DownloadService>().setAction(ACTION_PAUSE_ALL)
+        val intent = intentFor<DownloadService>(this).setAction(ACTION_PAUSE_ALL)
         val pauseAll = PendingIntent.getService(this, 0, intent, 0)
         NotificationCompat
             .Action
@@ -194,7 +174,7 @@ class DownloadService : LifecycleService(), DownloadListener {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             ACTION_PAUSE_ALL -> downloadManager.pauseAll()
-            ACTION_PAUSE ->  {
+            ACTION_PAUSE -> {
                 val item = intent.getParcelableExtra<Chapter>("item")
                 item?.let {
                     downloadManager.pause(it)

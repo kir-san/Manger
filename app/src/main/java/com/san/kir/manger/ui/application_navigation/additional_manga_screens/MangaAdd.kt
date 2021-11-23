@@ -35,9 +35,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
-import com.san.kir.ankofork.startService
 import com.san.kir.manger.R
-import com.san.kir.manger.room.entities.MangaColumn
 import com.san.kir.manger.services.MangaUpdaterService
 import com.san.kir.manger.ui.utils.DialogText
 import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
@@ -221,7 +219,7 @@ private fun ContinueProcess(
                 delay(1000)
 
                 process = ProcessStatus.prevAndSearchChapters
-                context.startService<MangaUpdaterService>(MangaColumn.tableName to manga)
+                MangaUpdaterService.add(context, manga)
                 delay(1000)
 
                 process = ProcessStatus.allComplete

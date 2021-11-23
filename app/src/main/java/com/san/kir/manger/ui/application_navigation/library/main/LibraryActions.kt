@@ -12,21 +12,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
-import com.san.kir.ankofork.startService
 import com.san.kir.manger.R
-import com.san.kir.manger.room.entities.MangaColumn
 import com.san.kir.manger.services.AppUpdateService
 import com.san.kir.manger.services.MangaUpdaterService
 import com.san.kir.manger.ui.application_navigation.library.LibraryNavTarget
 import com.san.kir.manger.ui.utils.MenuIcon
 import com.san.kir.manger.ui.utils.MenuText
 import com.san.kir.manger.ui.utils.navigate
-import com.san.kir.manger.utils.extensions.startForegroundService
 
 @Composable
 fun LibraryActions(
     nav: NavHostController,
-    viewModel: LibraryViewModel
+    viewModel: LibraryViewModel,
 ) {
     val categories by viewModel.preparedCategories.collectAsState(emptyList())
     val currentCategoryWithMangas by viewModel.currentCategoryWithManga.collectAsState()
@@ -46,21 +43,20 @@ fun LibraryActions(
         MenuText(id = R.string.library_menu_reload) {
             expanded = false
             currentCategoryWithMangas.mangas.forEach {
-                context.startService<MangaUpdaterService>(MangaColumn.tableName to it)
+                MangaUpdaterService.add(context, it)
             }
         }
 
         MenuText(id = R.string.library_menu_reload_all) {
             expanded = false
             categories.flatMap { it.mangas }.forEach {
-                context.startService<MangaUpdaterService>(MangaColumn.tableName to it)
+                MangaUpdaterService.add(context, it)
             }
         }
 
         MenuText(id = R.string.library_menu_update) {
             expanded = false
-            context.startForegroundService<AppUpdateService>()
+            AppUpdateService.start(context)
         }
     }
-
 }

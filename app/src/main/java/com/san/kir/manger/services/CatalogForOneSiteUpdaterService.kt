@@ -6,6 +6,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Handler
@@ -17,7 +18,6 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.core.net.toUri
-import com.san.kir.ankofork.intentFor
 import com.san.kir.ankofork.sdk28.notificationManager
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
@@ -28,7 +28,9 @@ import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.ui.MainActivity
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
 import com.san.kir.manger.utils.ID
+import com.san.kir.manger.utils.extensions.intentFor
 import com.san.kir.manger.utils.extensions.log
+import com.san.kir.manger.utils.extensions.startService
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -56,7 +58,15 @@ class CatalogForOneSiteUpdaterService : Service() {
         private const val descriptions = "CatalogForOneSiteUpdaterServiceDescription"
 
         private var taskCounter = listOf<String>()
-        fun isContain(siteName: String) = taskCounter.contains(siteName)
+        fun isContain(name: String) = taskCounter.contains(name)
+        fun add(ctx: Context, name: String) {
+           startService<CatalogForOneSiteUpdaterService>(ctx, INTENT_DATA to name)
+        }
+        fun addIfNotContain(ctx: Context, name: String) {
+            if (isContain(name).not()) {
+                add(ctx, name)
+            }
+        }
     }
 
     @Volatile
@@ -81,7 +91,7 @@ class CatalogForOneSiteUpdaterService : Service() {
     }
 
     private val actionCancelAll by lazy {
-        val intent = intentFor<CatalogForOneSiteUpdaterService>().setAction(ACTION_CANCEL_ALL)
+        val intent = intentFor<CatalogForOneSiteUpdaterService>(this).setAction(ACTION_CANCEL_ALL)
         val cancelAll = PendingIntent.getService(this, 0, intent, 0)
         NotificationCompat
             .Action

@@ -4,13 +4,17 @@ import android.app.AlarmManager
 import android.content.Context
 import androidx.core.content.ContextCompat
 import androidx.hilt.work.HiltWorker
-import androidx.work.*
+import androidx.work.CoroutineWorker
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.WorkerParameters
+import androidx.work.workDataOf
 import com.san.kir.ankofork.dialogs.longToast
 import com.san.kir.manger.R
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.dao.PlannedDao
 import com.san.kir.manger.room.dao.SiteDao
-import com.san.kir.manger.room.entities.MangaColumn
 import com.san.kir.manger.room.entities.PlannedTask
 import com.san.kir.manger.room.entities.PlannedTaskColumn
 import com.san.kir.manger.room.entities.mangaList
@@ -21,7 +25,6 @@ import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.enums.PlannedPeriod
 import com.san.kir.manger.utils.enums.PlannedType
 import com.san.kir.manger.utils.extensions.log
-import com.san.kir.manger.utils.extensions.startForegroundService
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.coroutineScope
@@ -49,18 +52,12 @@ class ScheduleWorker @AssistedInject constructor(
                 when (task.type) {
                     PlannedType.MANGA -> {
                         val manga = mangaDao.getItem(task.manga)
-                        applicationContext
-                            .startForegroundService<MangaUpdaterService>(
-                                MangaColumn.tableName to manga
-                            )
+                        MangaUpdaterService.add(applicationContext, manga)
                     }
                     PlannedType.GROUP -> {
                         task.mangaList.forEach { unic ->
                             val manga = mangaDao.getItem(unic)
-                            applicationContext
-                                .startForegroundService<MangaUpdaterService>(
-                                    MangaColumn.tableName to manga
-                                )
+                            MangaUpdaterService.add(applicationContext, manga)
                         }
 
                     }
@@ -69,25 +66,21 @@ class ScheduleWorker @AssistedInject constructor(
                             if (CATEGORY_ALL == task.category) mangaDao.getItems()
                             else mangaDao.getMangaWhereCategoryNotAll(task.category)
                         mangas.forEach {
-                            applicationContext
-                                .startForegroundService<MangaUpdaterService>(
-                                    MangaColumn.tableName to it
-                                )
+                            MangaUpdaterService.add(applicationContext, it)
                         }
                     }
                     PlannedType.CATALOG -> {
                         val catalog = siteDao.getItem(task.catalog)
-                        if (catalog != null && !CatalogForOneSiteUpdaterService.isContain(catalog.catalogName)) {
-                            applicationContext
-                                .startForegroundService<CatalogForOneSiteUpdaterService>(
-                                    "catalogName" to catalog.catalogName
-                                )
+                        if (catalog != null &&
+                            !CatalogForOneSiteUpdaterService.isContain(catalog.catalogName)
+                        ) {
+                            CatalogForOneSiteUpdaterService.add(applicationContext,
+                                catalog.catalogName)
                         } else {
                         }
                     }
                     PlannedType.APP -> {
-                        applicationContext
-                            .startForegroundService<AppUpdateService>()
+                        AppUpdateService.start(applicationContext)
                     }
                 }
             }.fold(

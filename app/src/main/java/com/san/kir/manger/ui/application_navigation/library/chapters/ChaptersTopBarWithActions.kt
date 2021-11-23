@@ -24,7 +24,6 @@ import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.TopAppBar
-import com.san.kir.ankofork.startService
 import com.san.kir.manger.R
 import com.san.kir.manger.services.MangaUpdaterService
 import com.san.kir.manger.ui.utils.CheckedMenuText
@@ -76,7 +75,7 @@ private fun Actions(
     if (visibleUpdate)
         MenuIcon(icon = Icons.Default.Update) {
             changeAction(true)
-            context.startService<MangaUpdaterService>("manga" to manga)
+            MangaUpdaterService.add(context, manga)
         }
 
     MenuIcon(icon = Icons.Default.MoreVert) {

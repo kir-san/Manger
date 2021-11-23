@@ -161,18 +161,18 @@ class CatalogViewModel @AssistedInject constructor(
         }
     }
 
-    fun setAction(value: Boolean, service: Boolean = false) = viewModelScope.launch(main) {
-        action = withContext(default) {
-            if (value) {
-                if (service && !CatalogForOneSiteUpdaterService.isContain(siteName))
-                    context
-                        .startForegroundService<CatalogForOneSiteUpdaterService>(
-                            CatalogForOneSiteUpdaterService.INTENT_DATA to siteName
-                        )
-                true
-            } else if (!CatalogForOneSiteUpdaterService.isContain(siteName)) {
-                false
-            } else false
+    // переключение видимости индикатора выполнения фоновой работы
+    fun setAction(value: Boolean, service: Boolean = false) = mainLaunchInVM {
+        action = withDefaultContext {
+            when {
+                value -> {
+                    if (service) CatalogForOneSiteUpdaterService.addIfNotContain(context, siteName)
+                    true
+                }
+                CatalogForOneSiteUpdaterService.isContain(siteName).not() -> false
+                else -> false
+            }
+
         }
     }
 

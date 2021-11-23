@@ -67,7 +67,8 @@ class AppUpdateService : Service(), CoroutineScope {
             .build()
     }
 
-    @Inject lateinit var connectManager: ConnectManager
+    @Inject
+    lateinit var connectManager: ConnectManager
 
     override fun onBind(intent: Intent?) = null
 
@@ -78,7 +79,8 @@ class AppUpdateService : Service(), CoroutineScope {
         job = Job()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-            && notificationManager.getNotificationChannel(channelId) == null) {
+            && notificationManager.getNotificationChannel(channelId) == null
+        ) {
 
             val importance = NotificationManager.IMPORTANCE_LOW
 
@@ -111,10 +113,10 @@ class AppUpdateService : Service(), CoroutineScope {
                         startForeground(notificationId, build())
                     }
 
-                    val doc = connectManager.getDocument(url).body()
-                    val texts = doc.text()
-                    val matcher = Pattern.compile("[0-9]\\.[0-9]\\.[0-9]")
-                        .matcher(texts.toString())
+                    val doc = connectManager.getDocument(url)
+                    val texts = doc.body().wholeText().split("MANGa readER").last()
+                    val matcher = Pattern.compile("[0-9]+\\.[0-9]+\\.[0-9]+")
+                        .matcher(texts)
 
                     if (matcher.find()) {
                         val version = matcher.group()

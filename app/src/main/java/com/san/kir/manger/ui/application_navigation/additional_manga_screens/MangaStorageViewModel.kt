@@ -5,9 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.room.dao.ChapterDao
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.dao.StorageDao
@@ -16,6 +14,8 @@ import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.Storage
 import com.san.kir.manger.room.entities.getSizeAndIsNew
 import com.san.kir.manger.ui.MainActivity
+import com.san.kir.manger.utils.coroutines.defaultDispatcher
+import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
 import com.san.kir.manger.utils.extensions.getFullPath
 import com.san.kir.manger.utils.extensions.shortPath
 import com.san.kir.manger.workmanager.AllChapterDelete
@@ -25,8 +25,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.EntryPointAccessors
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,7 +37,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 @OptIn(FlowPreview::class)
 class MangaStorageViewModel @AssistedInject constructor(
@@ -48,7 +45,6 @@ class MangaStorageViewModel @AssistedInject constructor(
     private val mangaDao: MangaDao,
     private val chapterDao: ChapterDao,
     private val ctx: Application,
-    @DefaultDispatcher private val default: CoroutineDispatcher,
 ) : ViewModel() {
 
     private val _manga = MutableStateFlow(Manga())
@@ -58,7 +54,7 @@ class MangaStorageViewModel @AssistedInject constructor(
     val storage = _storage.asStateFlow()
 
     init {
-        viewModelScope.launch(default) {
+        defaultLaunchInVM {
             mangaDao
                 .loadItem(mangaUnic)
                 .filterNotNull()
@@ -71,7 +67,7 @@ class MangaStorageViewModel @AssistedInject constructor(
                 .onEach { storage ->
                     _storage.update { storage }
                     storage.let { s ->
-                        viewModelScope.launch(default) {
+                        defaultLaunchInVM {
                             val updatedS = s.getSizeAndIsNew(mangaDao, chapterDao)
 
                             if (s.sizeFull != updatedS.sizeFull || s.sizeRead != updatedS.sizeRead) {
@@ -83,7 +79,7 @@ class MangaStorageViewModel @AssistedInject constructor(
                 .collect()
         }
 
-        viewModelScope.launch(default) {
+        defaultLaunchInVM {
             storageDao.searchNewItems(mangaDao, chapterDao)
         }
     }
@@ -92,7 +88,7 @@ class MangaStorageViewModel @AssistedInject constructor(
         storageDao
             .flowItems()
             .map { list -> list.sumOf { item -> item.sizeFull } }
-            .flowOn(default)
+            .flowOn(defaultDispatcher)
 
     fun deleteChapters(type: DeleteStatus) {
         when (type) {

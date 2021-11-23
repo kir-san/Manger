@@ -11,17 +11,15 @@ import com.san.kir.manger.data.datastore.ChaptersRepository
 import com.san.kir.manger.data.datastore.DownloadRepository
 import com.san.kir.manger.data.datastore.MainRepository
 import com.san.kir.manger.data.datastore.ViewerRepository
-import com.san.kir.manger.di.DefaultDispatcher
-import com.san.kir.manger.di.MainDispatcher
+import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
+import com.san.kir.manger.utils.coroutines.withMainContext
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadWriteProperty
@@ -33,8 +31,6 @@ class SettingsViewModel @Inject constructor(
     private val download: DownloadRepository,
     private val viewer: ViewerRepository,
     private val chapters: ChaptersRepository,
-    @DefaultDispatcher private val default: CoroutineDispatcher,
-    @MainDispatcher private val mainD: CoroutineDispatcher,
 ) : ViewModel() {
     var theme by mutableStateOf(true, main::setTheme)
     var showCategory by mutableStateOf(true, main::setShowCategory)
@@ -53,13 +49,13 @@ class SettingsViewModel @Inject constructor(
     var filter by mutableStateOf(true, chapters::setIndividualFilter)
 
     init {
-        viewModelScope.launch(default) {
+        defaultLaunchInVM {
             val main = main.data.filterNotNull().first()
             val download = download.data.filterNotNull().first()
             val viewer = viewer.data.filterNotNull().first()
             val chapters = chapters.data.filterNotNull().first()
 
-            withContext(mainD) {
+            withMainContext {
                 theme = main.theme
                 showCategory = main.isShowCatagery
                 editMenu = main.editMenu

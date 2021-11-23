@@ -9,21 +9,18 @@ import com.san.kir.manger.components.parsing.sites.Readmanga
 import com.san.kir.manger.components.parsing.sites.Selfmanga
 import com.san.kir.manger.components.parsing.sites.Unicomics
 import com.san.kir.manger.components.parsing.sites.Yaoichan
-import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.DownloadItem
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.room.entities.toDownloadItem
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.withContext
+import com.san.kir.manger.utils.coroutines.withDefaultContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class SiteCatalogsManager @Inject constructor(
     connectManager: ConnectManager,
-    @DefaultDispatcher private val default: CoroutineDispatcher,
 ) {
 
     val catalog by lazy {
@@ -55,7 +52,7 @@ class SiteCatalogsManager @Inject constructor(
 
     // Загрузка полной информации для элемента в каталоге
     suspend fun getFullElement(simpleElement: SiteCatalogElement) =
-        withContext(default) {
+        withDefaultContext {
             catalog.first { it.allCatalogName.any { s -> s == simpleElement.catalogName } }
                 .getFullElement(simpleElement)
         }
@@ -70,13 +67,13 @@ class SiteCatalogsManager @Inject constructor(
     suspend fun pages(chapter: Chapter) = pages(chapter.toDownloadItem())
 
     suspend fun getElementOnline(url: String): SiteCatalogElement? =
-        withContext(default) {
+        withDefaultContext {
             var lUrl = url
 
             if (!lUrl.contains("http")) {
                 lUrl = "http://$lUrl"
             }
 
-            return@withContext getSite(lUrl).getElementOnline(lUrl)
+            return@withDefaultContext getSite(lUrl).getElementOnline(lUrl)
         }
 }

@@ -51,8 +51,6 @@ import androidx.work.WorkManager
 import com.san.kir.ankofork.dialogs.longToast
 import com.san.kir.ankofork.dialogs.toast
 import com.san.kir.manger.R
-import com.san.kir.manger.di.DefaultDispatcher
-import com.san.kir.manger.di.MainDispatcher
 import com.san.kir.manger.room.dao.ChapterDao
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.action
@@ -60,6 +58,8 @@ import com.san.kir.manger.services.DownloadService
 import com.san.kir.manger.ui.utils.MenuIcon
 import com.san.kir.manger.ui.utils.MenuText
 import com.san.kir.manger.ui.utils.TopBarScreenList
+import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
+import com.san.kir.manger.utils.coroutines.withMainContext
 import com.san.kir.manger.utils.enums.ChapterStatus
 import com.san.kir.manger.utils.enums.DownloadState
 import com.san.kir.manger.utils.extensions.log
@@ -69,14 +69,11 @@ import com.san.kir.manger.workmanager.DownloadedLatestClearWorker
 import com.san.kir.manger.workmanager.LatestClearWorker
 import com.san.kir.manger.workmanager.ReadLatestClearWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @Composable
@@ -322,8 +319,6 @@ private fun LatestItemContent(
 class LatestViewModel @Inject constructor(
     private val context: Application,
     private val chapterDao: ChapterDao,
-    @DefaultDispatcher private val default: CoroutineDispatcher,
-    @MainDispatcher private val main: CoroutineDispatcher,
 ) : ViewModel() {
 
     var allItems by mutableStateOf(listOf<Chapter>())
@@ -342,10 +337,10 @@ class LatestViewModel @Inject constructor(
 
 
     init {
-        viewModelScope.launch(default) {
+        defaultLaunchInVM {
             chapterDao.loadAllItems()
                 .onEach { list ->
-                    withContext(main) { allItems = list }
+                    withMainContext { allItems = list }
                     // обновление размера списка выделеных элементов
                     if (list.count() != selectedItems.count())
                         selectedItems = List(list.count()) { false }
@@ -356,7 +351,7 @@ class LatestViewModel @Inject constructor(
                         .filter { it.action == ChapterStatus.DOWNLOADABLE }
                 }
                 .collect { list ->
-                    withContext(main) {
+                    withMainContext {
                         newChapters = list
                         hasNewChapters = list.isNotEmpty()
                     }
@@ -368,11 +363,11 @@ class LatestViewModel @Inject constructor(
             .map { (mode, list) -> mode to list.count { it } }
             .onEach {  (mode, count) ->
                 if (count > 0 && mode.not()) {
-                    withContext(main) {
+                    withMainContext {
                         selectionMode = true
                     }
                 } else if (count <= 0 && mode) {
-                    withContext(main) {
+                    withMainContext {
                         selectionMode = false
                     }
                 }
@@ -380,17 +375,17 @@ class LatestViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    fun downloadNewChapters() = viewModelScope.launch(default) {
+    fun downloadNewChapters() = defaultLaunchInVM {
         newChapters.onEach { chapter ->
             DownloadService.start(context, chapter)
         }
     }
 
-    fun onSelectItem(index: Int) = viewModelScope.launch(default) {
+    fun onSelectItem(index: Int) = defaultLaunchInVM {
         selectedItems = selectedItems.toMutableList().apply { set(index, get(index).not()) }
     }
 
-    fun deleteSelectedItems() = viewModelScope.launch(default) {
+    fun deleteSelectedItems() = defaultLaunchInVM {
         selectedItems.zip(allItems).forEachIndexed { _, (b, chapter) ->
             if (b) {
                 chapter.isInUpdate = false

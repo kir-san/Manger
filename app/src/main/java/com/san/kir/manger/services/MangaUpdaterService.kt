@@ -299,7 +299,7 @@ class MangaUpdaterService : Service() {
         }
     }
 
-    private suspend fun List<Chapter>.updatePagesInChapters(mangaDB: Manga) = withContext(default) {
+    private suspend fun List<Chapter>.updatePagesInChapters(mangaDB: Manga) = withDefaultContext {
         kotlin.runCatching {
             // Отфильтровываем те в которых, либо нет страниц, либо не все страницы
             // либо это альтернативный сайт

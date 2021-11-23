@@ -2,24 +2,25 @@ package com.san.kir.manger.workmanager
 
 import android.content.Context
 import androidx.hilt.work.HiltWorker
-import androidx.work.*
-import com.san.kir.manger.di.DefaultDispatcher
+import androidx.work.CoroutineWorker
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.WorkerParameters
+import androidx.work.workDataOf
 import com.san.kir.manger.room.dao.CategoryDao
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.entities.Category
 import com.san.kir.manger.utils.CATEGORY_ALL
+import com.san.kir.manger.utils.coroutines.withDefaultContext
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.withContext
 
 @HiltWorker
 class UpdateCategoryInMangaWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParameters: WorkerParameters,
-    @DefaultDispatcher private val default: CoroutineDispatcher,
     private val categoryDao: CategoryDao,
     private val mangaDao: MangaDao,
 ) : CoroutineWorker(appContext, workerParameters) {
@@ -31,12 +32,12 @@ class UpdateCategoryInMangaWorker @AssistedInject constructor(
 
         if (categoryName != null && oldCategory != null) {
 
-            val category = withContext(default) {
+            val category = withDefaultContext {
                 categoryDao.loadItem(categoryName).first()
             }
 
             kotlin.runCatching {
-                withContext(default) {
+                withDefaultContext {
                     if (categoryName != oldCategory) {
                         mangaDao.update(
                             *(

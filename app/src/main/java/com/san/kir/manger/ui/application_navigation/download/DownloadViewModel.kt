@@ -12,15 +12,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.san.kir.ankofork.sdk28.connectivityManager
 import com.san.kir.manger.data.datastore.DownloadRepository
-import com.san.kir.manger.di.DefaultDispatcher
-import com.san.kir.manger.di.MainDispatcher
 import com.san.kir.manger.room.dao.ChapterDao
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.services.DownloadService
+import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
+import com.san.kir.manger.utils.coroutines.withMainContext
 import com.san.kir.manger.utils.enums.DownloadState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,8 +29,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
@@ -44,8 +41,6 @@ class DownloadViewModel @Inject constructor(
     private val cellularNetwork: CellularNetwork,
     private val wifiNetwork: WifiNetwork,
     download: DownloadRepository,
-    @MainDispatcher private val main: CoroutineDispatcher,
-    @DefaultDispatcher private val default: CoroutineDispatcher,
 ) : ViewModel() {
 
     var items by mutableStateOf(listOf<Chapter>())
@@ -64,22 +59,22 @@ class DownloadViewModel @Inject constructor(
     init {
         chapterDao.loadDownloadItemsWhereStatusNot()
             .distinctUntilChanged()
-            .onEach { withContext(main) { items = it.sortedBy { c -> c.status.ordinal } } }
+            .onEach { withMainContext { items = it.sortedBy { c -> c.status.ordinal } } }
             .onEach { list ->
                 list.filter { chapter ->
                     chapter.status == DownloadState.QUEUED ||
                             chapter.status == DownloadState.LOADING
-                }.size.let { withContext(main) { loadingCount = it } }
+                }.size.let { withMainContext { loadingCount = it } }
             }
             .onEach { list ->
                 list.filter { chapter ->
                     chapter.status == DownloadState.PAUSED
-                }.size.let { withContext(main) { stoppedCount = it } }
+                }.size.let { withMainContext { stoppedCount = it } }
             }
             .onEach { list ->
                 list.filter { chapter ->
                     chapter.status == DownloadState.COMPLETED
-                }.size.let { withContext(main) { completedCount = it } }
+                }.size.let { withMainContext { completedCount = it } }
             }
             .launchIn(viewModelScope)
 
@@ -97,7 +92,7 @@ class DownloadViewModel @Inject constructor(
                     NetworkState.NOT_CELLURAR
             }
         }
-            .onEach { state -> withContext(main) { network = state } }
+            .onEach { state -> withMainContext { network = state } }
             .launchIn(viewModelScope)
     }
 
@@ -106,28 +101,28 @@ class DownloadViewModel @Inject constructor(
         wifiNetwork.stop()
     }
 
-    fun clearCompletedDownloads() = viewModelScope.launch(default) {
+    fun clearCompletedDownloads() = defaultLaunchInVM {
         chapterDao.update(*items
             .filter { it.status == DownloadState.COMPLETED }
             .onEach { it.status = DownloadState.UNKNOWN }
             .toTypedArray())
     }
 
-    fun clearPausedDownloads() = viewModelScope.launch(default) {
+    fun clearPausedDownloads() = defaultLaunchInVM {
         chapterDao.update(*items
             .filter { it.status == DownloadState.PAUSED && !it.isError }
             .onEach { it.status = DownloadState.UNKNOWN }
             .toTypedArray())
     }
 
-    fun clearErrorDownloads() = viewModelScope.launch(default) {
+    fun clearErrorDownloads() = defaultLaunchInVM {
         chapterDao.update(*items
             .filter { it.status == DownloadState.PAUSED && it.isError }
             .onEach { it.status = DownloadState.UNKNOWN }
             .toTypedArray())
     }
 
-    fun clearAllDownloads() = viewModelScope.launch(default) {
+    fun clearAllDownloads() = defaultLaunchInVM {
         chapterDao.update(*items
             .filter {
                 it.status == DownloadState.COMPLETED || it.status == DownloadState.PAUSED
@@ -139,7 +134,7 @@ class DownloadViewModel @Inject constructor(
     fun manga(item: Chapter) = mangaDao.loadItem(item.manga).filterNotNull()
 
     @OptIn(ExperimentalTime::class)
-    fun remove(item: Chapter) = viewModelScope.launch(default) {
+    fun remove(item: Chapter) = defaultLaunchInVM {
         DownloadService.pause(ctx, item)
         delay(Duration.Companion.seconds(1))
         item.status = DownloadState.UNKNOWN

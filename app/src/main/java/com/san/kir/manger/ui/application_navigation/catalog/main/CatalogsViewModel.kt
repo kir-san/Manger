@@ -2,11 +2,8 @@ package com.san.kir.manger.ui.application_navigation.catalog.main
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.san.kir.ankofork.startService
 import com.san.kir.manger.components.parsing.SiteCatalog
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
-import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.repositories.SiteCatalogRepository
 import com.san.kir.manger.room.dao.CategoryDao
 import com.san.kir.manger.room.dao.MangaDao
@@ -17,12 +14,11 @@ import com.san.kir.manger.room.entities.Site
 import com.san.kir.manger.services.CatalogForOneSiteUpdaterService
 import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.SortLibraryUtil
+import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
+import com.san.kir.manger.utils.coroutines.withDefaultContext
 import com.san.kir.manger.utils.enums.MangaFilter
 import com.san.kir.manger.utils.enums.SortLibrary
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,11 +28,10 @@ class CatalogsViewModel @Inject constructor(
     private val categoryDao: CategoryDao,
     private val mangaDao: MangaDao,
     private val manager: SiteCatalogsManager,
-    @DefaultDispatcher private val default: CoroutineDispatcher
 ) : ViewModel() {
     val siteList = siteDao.loadItems()
 
-    fun update() = viewModelScope.launch(default) {
+    fun update() = defaultLaunchInVM {
         manager.catalog.forEach {
             it.isInit = false
             save(it)
@@ -51,7 +46,7 @@ class CatalogsViewModel @Inject constructor(
         }
     }
 
-    suspend fun updateSiteInfo(site: SiteCatalog) = withContext(default) {
+    suspend fun updateSiteInfo(site: SiteCatalog) = withDefaultContext {
         kotlin.runCatching {
             site.init()
             // Находим в базе данных наш сайт
@@ -121,8 +116,7 @@ class CatalogsViewModel @Inject constructor(
 
     fun updateCatalogs() {
         manager.catalog.forEach {
-            if (!CatalogForOneSiteUpdaterService.isContain(it.catalogName))
-                context.startService<CatalogForOneSiteUpdaterService>("catalogName" to it.catalogName)
+            CatalogForOneSiteUpdaterService.addIfNotContain(context, it.catalogName)
         }
     }
 }

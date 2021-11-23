@@ -22,7 +22,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.san.kir.ankofork.browse
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.SuppotMangaViewModel
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
@@ -31,9 +30,9 @@ import com.san.kir.manger.ui.utils.ImageWithStatus
 import com.san.kir.manger.ui.utils.LabelText
 import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
 import com.san.kir.manger.ui.utils.navigate
+import com.san.kir.manger.utils.coroutines.withDefaultContext
+import com.san.kir.manger.utils.extensions.browse
 import com.san.kir.manger.utils.extensions.listStrToString
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -45,7 +44,7 @@ fun MangaInfoScreen(
     var isAdded by remember { mutableStateOf(false) }
 
     LaunchedEffect(vm.item) {
-        isAdded = withContext(Dispatchers.Default) {
+        isAdded = withDefaultContext {
             viewModel.isContainManga(vm.item).not()
         }
     }

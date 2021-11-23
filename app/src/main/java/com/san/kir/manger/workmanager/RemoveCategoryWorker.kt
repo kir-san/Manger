@@ -9,10 +9,9 @@ import androidx.work.workDataOf
 import com.san.kir.manger.room.entities.Category
 import com.san.kir.manger.room.getDatabase
 import com.san.kir.manger.utils.CATEGORY_ALL
-import kotlinx.coroutines.Dispatchers
+import com.san.kir.manger.utils.coroutines.withDefaultContext
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.withContext
 
 class RemoveCategoryWorker(appContext: Context, workerParameters: WorkerParameters) :
     CoroutineWorker(appContext, workerParameters) {
@@ -24,11 +23,11 @@ class RemoveCategoryWorker(appContext: Context, workerParameters: WorkerParamete
         val categoryName = inputData.getString(cat)
 
         if (categoryName != null) {
-            val category = withContext(Dispatchers.Default) {
+            val category = withDefaultContext {
                 categoryDao.loadItem(categoryName).first()
             }
             kotlin.runCatching {
-                withContext(Dispatchers.Default) {
+                withDefaultContext {
                     mangaDao.update(
                         *mangaDao
                             .getMangaWhereCategoryNotAll(category.name)

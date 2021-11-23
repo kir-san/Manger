@@ -19,34 +19,7 @@
 package com.san.kir.ankofork
 
 import android.app.Activity
-import android.app.Service
-import android.content.ActivityNotFoundException
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 
 inline fun <reified T : Activity> Context.startActivity(vararg params: Pair<String, Any?>) =
     AnkoInternals.internalStartActivity(this, T::class.java, params)
-
-inline fun <reified T : Service> Context.startService(vararg params: Pair<String, Any?>) =
-    AnkoInternals.internalStartService(this, T::class.java, params)
-
-inline fun <reified T : Any> Context.intentFor(vararg params: Pair<String, Any?>): Intent =
-    AnkoInternals.createIntent(this, T::class.java, params)
-
-
-fun Context.browse(url: String, newTask: Boolean = false): Boolean {
-    return try {
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = Uri.parse(url)
-        if (newTask) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
-        startActivity(intent)
-        true
-    } catch (e: ActivityNotFoundException) {
-        e.printStackTrace()
-        false
-    }
-}
-

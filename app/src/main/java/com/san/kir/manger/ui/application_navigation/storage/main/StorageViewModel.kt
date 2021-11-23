@@ -7,16 +7,15 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.san.kir.ankofork.dialogs.longToast
-import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.room.dao.ChapterDao
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.dao.StorageDao
 import com.san.kir.manger.room.dao.searchNewItems
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.Storage
+import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
 import com.san.kir.manger.utils.extensions.getFullPath
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,7 +23,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,7 +31,6 @@ class StorageViewModel @Inject constructor(
     private val storageDao: StorageDao,
     private val mangaDao: MangaDao,
     private val chapterDao: ChapterDao,
-    @DefaultDispatcher private val default: CoroutineDispatcher,
 ) : ViewModel() {
     private var mangaList = listOf<Manga>()
 
@@ -52,7 +49,7 @@ class StorageViewModel @Inject constructor(
     }.flow.cachedIn(viewModelScope)
 
     init {
-        viewModelScope.launch(default) {
+        defaultLaunchInVM {
             mangaList = mangaDao.getItems()
             storageDao.flowItems()
                 .catch { t -> throw t }
@@ -67,7 +64,7 @@ class StorageViewModel @Inject constructor(
                 }
         }
 
-        viewModelScope.launch(default) {
+        defaultLaunchInVM {
             storageDao.searchNewItems(mangaDao, chapterDao)
         }
     }
@@ -79,7 +76,7 @@ class StorageViewModel @Inject constructor(
     }
 
     fun delete(item: Storage) {
-        viewModelScope.launch(default) {
+        defaultLaunchInVM {
             kotlin.runCatching {
                 storageDao.delete(item)
                 getFullPath(item.path).deleteRecursively()

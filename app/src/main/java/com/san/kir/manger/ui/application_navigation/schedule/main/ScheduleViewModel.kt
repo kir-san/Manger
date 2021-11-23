@@ -7,28 +7,23 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.san.kir.manger.R
-import com.san.kir.manger.di.DefaultDispatcher
-import com.san.kir.manger.di.MainDispatcher
 import com.san.kir.manger.room.dao.PlannedDao
 import com.san.kir.manger.room.entities.PlannedTask
+import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
+import com.san.kir.manger.utils.coroutines.withMainContext
 import com.san.kir.manger.utils.enums.PlannedPeriod
 import com.san.kir.manger.utils.enums.PlannedType
 import com.san.kir.manger.utils.enums.PlannedWeek
 import com.san.kir.manger.workmanager.ScheduleWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class ScheduleViewModel @Inject constructor(
     private val context: Application,
     private val plannedDao: PlannedDao,
-    @DefaultDispatcher private val default: CoroutineDispatcher,
-    @MainDispatcher main: CoroutineDispatcher,
 ) : ViewModel() {
     var items by mutableStateOf(listOf<PlannedTask>())
         private set
@@ -36,11 +31,11 @@ class ScheduleViewModel @Inject constructor(
     init {
         plannedDao.loadItems()
 //            .distinctUntilChanged()
-            .onEach { withContext(main) { items = it } }
+            .onEach { withMainContext { items = it } }
             .launchIn(viewModelScope)
     }
 
-    fun update(item: PlannedTask) = viewModelScope.launch(default) {
+    fun update(item: PlannedTask) = defaultLaunchInVM {
         plannedDao.update(item)
 
         if (item.isEnabled)

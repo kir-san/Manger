@@ -27,20 +27,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
-import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.ui.application_navigation.library.LibraryNavTarget
 import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
 import com.san.kir.manger.ui.utils.navigate
+import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -192,13 +190,12 @@ private fun validateUrl(
 @HiltViewModel
 class MangaAddOnlineViewModel @Inject constructor(
     private val manager: SiteCatalogsManager,
-    @DefaultDispatcher private val default: CoroutineDispatcher,
 ) : ViewModel() {
     var siteNames: List<String> = listOf()
         private set
 
     init {
-        viewModelScope.launch(default) {
+        defaultLaunchInVM {
             siteNames = manager.catalog.map { it.catalogName }
         }
     }

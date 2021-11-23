@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
-import com.san.kir.ankofork.browse
 import com.san.kir.manger.R
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.ui.application_navigation.library.LibraryNavTarget
@@ -26,11 +25,11 @@ import com.san.kir.manger.ui.utils.ImageWithStatus
 import com.san.kir.manger.ui.utils.LabelText
 import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
 import com.san.kir.manger.ui.utils.navigate
+import com.san.kir.manger.utils.coroutines.withDefaultContext
+import com.san.kir.manger.utils.extensions.browse
 import com.san.kir.manger.utils.extensions.formatDouble
 import com.san.kir.manger.utils.extensions.getFullPath
 import com.san.kir.manger.utils.extensions.lengthMb
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 
 @Composable
@@ -100,7 +99,7 @@ private fun MangaAboutContent(
     ImageWithStatus(manga.logo)
 
     LaunchedEffect(manga) {
-        size = withContext(Dispatchers.Default) {
+        size = withDefaultContext {
             ctx.getString(
                 R.string.library_page_item_size,
                 formatDouble(getFullPath(manga.path).lengthMb)

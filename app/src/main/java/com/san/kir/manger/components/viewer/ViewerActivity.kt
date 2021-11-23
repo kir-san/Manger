@@ -34,16 +34,16 @@ import com.san.kir.manger.Viewer
 import com.san.kir.manger.data.datastore.ViewerRepository
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.utils.coroutines.mainLaunch
+import com.san.kir.manger.utils.coroutines.withMainContext
 import com.san.kir.manger.utils.extensions.add
 import com.san.kir.manger.utils.extensions.log
 import com.san.kir.manger.utils.extensions.showAlways
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
@@ -55,8 +55,6 @@ class ViewerActivity : AppCompatActivity() {
     }
 
     val mViewModel: ViewerViewModel by viewModels()
-
-    private val main = Dispatchers.Main
 
     @Inject
     lateinit var viewerStore: ViewerRepository
@@ -112,7 +110,7 @@ class ViewerActivity : AppCompatActivity() {
         * - !continue, chapter - продолжить чтение с текущей главы
         * - все остальные варианты закрывают просмоторщик
         * */
-        lifecycleScope.launch(main) {
+        lifecycleScope.mainLaunch {
             intent.apply {
                 val isAlternative = getBooleanExtra("is", false)
 
@@ -180,7 +178,7 @@ class ViewerActivity : AppCompatActivity() {
                             }
                         }
                     }
-                withContext(main) {
+                withMainContext {
                     title = chapter.name // Смена заголовка
                 }
             }

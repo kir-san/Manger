@@ -2,18 +2,15 @@ package com.san.kir.manger.components.viewer
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.room.dao.ChapterDao
 import com.san.kir.manger.room.dao.StatisticDao
 import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.MangaStatistic
 import com.san.kir.manger.utils.ChapterComparator
+import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
+import com.san.kir.manger.utils.coroutines.withDefaultContext
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.math.max
 
@@ -22,7 +19,6 @@ class ViewerViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val chapterDao: ChapterDao,
     private val statisticDao: StatisticDao,
-    @DefaultDispatcher private val default: CoroutineDispatcher
 ) : ViewModel() {
     private val chapterKey = "chapterKetSaveState"
 
@@ -31,7 +27,7 @@ class ViewerViewModel @Inject constructor(
     fun clearChapter() = savedStateHandle.remove<Chapter>(chapterKey)
 
     fun updateStatisticInfo(mangaName: String, time: Long) {
-        viewModelScope.launch(default) {
+        defaultLaunchInVM {
             val stats = statisticDao.getItem(mangaName)
             stats.lastTime = time
             stats.allTime = stats.allTime + time
@@ -43,13 +39,13 @@ class ViewerViewModel @Inject constructor(
     }
 
     suspend fun getChapterItems(mangaName: String) =
-        withContext(default) { chapterDao.getItemsWhereManga(mangaName) }
+        withDefaultContext { chapterDao.getItemsWhereManga(mangaName) }
 
     suspend fun getStatisticItem(mangaName: String) = statisticDao.getItem(mangaName)
     suspend fun statisticUpdate(stats: MangaStatistic) = statisticDao.update(stats)
     suspend fun update(chapter: Chapter) = chapterDao.update(chapter)
 
-    suspend fun getFirstNotReadChapter(manga: Manga): Chapter? = withContext(default) {
+    suspend fun getFirstNotReadChapter(manga: Manga): Chapter? = withDefaultContext {
         var list = chapterDao.getItemsWhereManga(manga.unic)
 
         list = if (manga.isAlternativeSort) {
@@ -65,7 +61,7 @@ class ViewerViewModel @Inject constructor(
         list.firstOrNull { !it.isRead }
     }
 
-    suspend fun getFirstChapter(manga: Manga): Chapter = withContext(default) {
+    suspend fun getFirstChapter(manga: Manga): Chapter = withDefaultContext {
         var list = chapterDao.getItemsWhereManga(manga.unic)
 
         if (manga.isAlternativeSort) {

@@ -32,6 +32,8 @@ import com.san.kir.ankofork.withArguments
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.ConnectManager
 import com.san.kir.manger.data.datastore.ViewerRepository
+import com.san.kir.manger.utils.coroutines.mainLaunch
+import com.san.kir.manger.utils.coroutines.withDefaultContext
 import com.san.kir.manger.utils.extensions.bigImageView
 import com.san.kir.manger.utils.extensions.convertImagesToPng
 import com.san.kir.manger.utils.extensions.goneOrVisible
@@ -40,10 +42,7 @@ import com.san.kir.manger.utils.extensions.onDoubleTapListener
 import com.san.kir.manger.utils.extensions.showAlways
 import com.san.kir.manger.utils.extensions.visibleOrGone
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
 
@@ -128,7 +127,7 @@ class ViewerPageFragment : Fragment() {
     }
 
     private fun loadImage(view: SubsamplingScaleImageView, force: Boolean) {
-        lifecycleScope.launch(Dispatchers.Main) {
+        lifecycleScope.mainLaunch {
             isLoad.positive()
 
             view.setImage(getImage(force))
@@ -139,7 +138,7 @@ class ViewerPageFragment : Fragment() {
 
     // TODO перед загрузкой страниц обновлять ссылку
     private suspend fun getImage(force: Boolean): ImageSource {
-        return withContext(Dispatchers.Default) {
+        return withDefaultContext {
 
             val isOnline = viewerRepository.data.first().withoutSaveFiles
 
@@ -150,7 +149,7 @@ class ViewerPageFragment : Fragment() {
             file = File(file.parentFile, "${file.nameWithoutExtension}.png")
 
             if (file.exists() && file.isOkPng() && !force) {
-                return@withContext ImageSource.uri(Uri.fromFile(file))
+                return@withDefaultContext ImageSource.uri(Uri.fromFile(file))
             }
 
             file.delete()
@@ -160,7 +159,7 @@ class ViewerPageFragment : Fragment() {
             if (file.exists() && !force) {
                 val png = convertImagesToPng(file)
                 if (png.isOkPng()) {
-                    return@withContext ImageSource.uri(Uri.fromFile(png))
+                    return@withDefaultContext ImageSource.uri(Uri.fromFile(png))
                 }
                 png.delete()
             }
@@ -168,7 +167,7 @@ class ViewerPageFragment : Fragment() {
             if (isOnline) {
                 kotlin.runCatching {
                     val bm = connectManager.downloadBitmap(connectManager.prepareUrl(page.link))
-                    return@withContext ImageSource.bitmap(bm!!)
+                    return@withDefaultContext ImageSource.bitmap(bm!!)
                 }.onFailure {
                     it.printStackTrace()
                 }
@@ -180,7 +179,7 @@ class ViewerPageFragment : Fragment() {
                 it.printStackTrace()
             }
 
-            return@withContext ImageSource.uri(
+            return@withDefaultContext ImageSource.uri(
                 Uri.fromFile(
                     if (file.extension in arrayOf("gif", "webp", "jpg", "jpeg")) {
                         convertImagesToPng(file)

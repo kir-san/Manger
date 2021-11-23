@@ -17,8 +17,6 @@
 package com.san.kir.ankofork
 
 import android.app.Activity
-import android.app.Service
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -91,13 +89,6 @@ object AnkoInternals {
     ) {
         ctx.startActivity(createIntent(ctx, activity, params))
     }
-
-    @JvmStatic
-    fun internalStartService(
-            ctx: Context,
-            service: Class<out Service>,
-            params: Array<out Pair<String, Any?>>
-    ): ComponentName? = ctx.startService(createIntent(ctx, service, params))
 
     @JvmStatic
     private fun fillIntentArguments(intent: Intent, params: Array<out Pair<String, Any?>>) {

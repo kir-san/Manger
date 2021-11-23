@@ -4,35 +4,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.room.dao.CategoryDao
 import com.san.kir.manger.room.entities.Category
 import com.san.kir.manger.ui.MainActivity
+import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.EntryPointAccessors
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.launch
 
 class OnlyCategoryViewModel @AssistedInject constructor(
     @Assisted private val categoryName: String,
     private val categoryDao: CategoryDao,
-    @DefaultDispatcher private val default: CoroutineDispatcher,
 ) : ViewModel() {
     private val _category = MutableStateFlow(Category())
     val category = _category.asStateFlow()
 
     init {
         // инициация манги
-        viewModelScope.launch(default) {
+        defaultLaunchInVM {
             categoryDao.loadItem(categoryName).filterNotNull().collect { category ->
                 _category.value = category
             }

@@ -6,11 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
-import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
 import com.san.kir.manger.data.datastore.MainRepository
-import com.san.kir.manger.di.DefaultDispatcher
-import com.san.kir.manger.di.MainDispatcher
 import com.san.kir.manger.room.dao.CategoryDao
 import com.san.kir.manger.room.dao.ChapterDao
 import com.san.kir.manger.room.dao.MangaDao
@@ -18,9 +15,11 @@ import com.san.kir.manger.room.entities.CategoryWithMangas
 import com.san.kir.manger.room.entities.SimpleManga
 import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.SortLibraryUtil
+import com.san.kir.manger.utils.coroutines.defaultDispatcher
+import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
+import com.san.kir.manger.utils.coroutines.withMainContext
 import com.san.kir.manger.workmanager.MangaDeleteWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
@@ -29,8 +28,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -40,8 +37,6 @@ class LibraryViewModel @Inject constructor(
     private val chapterDao: ChapterDao,
     private val mangaDao: MangaDao,
     dataStore: MainRepository,
-    @DefaultDispatcher private val default: CoroutineDispatcher,
-    @MainDispatcher private val main: CoroutineDispatcher,
 ) : ViewModel() {
     private val _isAction = MutableStateFlow(false)
     val isAction = _isAction.asStateFlow()
@@ -55,11 +50,11 @@ class LibraryViewModel @Inject constructor(
     var selectedManga by mutableStateOf(SelectedManga())
         private set
 
-    val showCategory = dataStore.data.map { it.isShowCatagery }.flowOn(default)
+    val showCategory = dataStore.data.map { it.isShowCatagery }.flowOn(defaultDispatcher)
 
     val categories = categoryDao.loadItems()
         .map { l -> l.map { it.name } }
-        .flowOn(default)
+        .flowOn(defaultDispatcher)
 
     var categoryNames by mutableStateOf(emptyList<String>())
         private set
@@ -68,7 +63,7 @@ class LibraryViewModel @Inject constructor(
     val preparedCategories = categoryDao
         .loadItemsAdds()
         .onEmpty { _isEmpty.update { true } }
-        .onEach { cats -> withContext(main) { categoryNames = cats.map { it.category.name } } }
+        .onEach { cats -> withMainContext { categoryNames = cats.map { it.category.name } } }
         .map { cats ->
             cats.onEach { c ->
                 if (c.category.name == CATEGORY_ALL)
@@ -88,10 +83,10 @@ class LibraryViewModel @Inject constructor(
                         list
                 }
         }
-        .flowOn(default)
+        .flowOn(defaultDispatcher)
 
     init {
-        viewModelScope.launch(default) {
+        defaultLaunchInVM {
             WorkManager
                 .getInstance(context)
                 .getWorkInfosByTagLiveData(MangaDeleteWorker.tag)
@@ -107,7 +102,7 @@ class LibraryViewModel @Inject constructor(
     fun countNotRead(mangaUnic: String) = chapterDao.loadCountItemsWhereManga(mangaUnic)
 
     fun update(manga: SimpleManga) {
-        viewModelScope.launch(default) {
+        defaultLaunchInVM {
             mangaDao.getItem(manga.unic).apply {
                 categories = manga.categories
                 mangaDao.update(this)
@@ -116,7 +111,7 @@ class LibraryViewModel @Inject constructor(
     }
 
     fun changeCurrentCategory(newCategoryWithMangas: CategoryWithMangas) {
-        viewModelScope.launch(default) {
+        defaultLaunchInVM {
             _currentCategoryWithManga.update { newCategoryWithMangas }
         }
     }

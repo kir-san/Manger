@@ -42,9 +42,8 @@ import com.san.kir.manger.room.entities.Chapter
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.countPages
 import com.san.kir.manger.services.DownloadService
+import com.san.kir.manger.utils.coroutines.withDefaultContext
 import com.san.kir.manger.utils.enums.DownloadState
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -57,7 +56,7 @@ fun ChaptersItemContent(
     context: Context = LocalContext.current,
 ) {
     val countPagesInMemory by produceState(initialValue = 0, chapter, manga) {
-        withContext(Dispatchers.Default) {
+        withDefaultContext {
             value = chapter.countPages
         }
     }

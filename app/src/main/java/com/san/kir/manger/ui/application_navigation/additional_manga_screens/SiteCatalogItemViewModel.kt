@@ -7,38 +7,32 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
-import com.san.kir.manger.di.DefaultDispatcher
-import com.san.kir.manger.di.MainDispatcher
 import com.san.kir.manger.room.entities.SiteCatalogElement
 import com.san.kir.manger.ui.MainActivity
+import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
+import com.san.kir.manger.utils.coroutines.withMainContext
 import com.san.kir.manger.utils.extensions.log
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.EntryPointAccessors
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class SiteCatalogItemViewModel @AssistedInject constructor(
     @Assisted val url: String,
     private val manager: SiteCatalogsManager,
-    @DefaultDispatcher private val default: CoroutineDispatcher,
-    @MainDispatcher private val main: CoroutineDispatcher,
 ) : ViewModel() {
     var item by mutableStateOf(SiteCatalogElement())
 
     init {
         // инициация манги
-        viewModelScope.launch(default) {
+        defaultLaunchInVM {
             log(url)
             val it = manager.getElementOnline(url)
             log(it.toString())
             if (it != null) {
-                withContext(main) {
+                withMainContext {
                     item = it
                 }
             }

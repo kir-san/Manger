@@ -3,10 +3,9 @@ package com.san.kir.manger.components.viewer
 import androidx.lifecycle.lifecycleScope
 import com.san.kir.ankofork.Binder
 import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.utils.coroutines.defaultLaunch
+import com.san.kir.manger.utils.coroutines.withMainContext
 import com.san.kir.manger.utils.extensions.SpecialViewPager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class ViewerPresenter(private val act: ViewerActivity) {
 
@@ -32,11 +31,11 @@ class ViewerPresenter(private val act: ViewerActivity) {
         viewPager.adapter = adapter
     }
 
-    fun configManager(chapter: Chapter, isAlternative: Boolean) = act.lifecycleScope.launch(Dispatchers.Default) {
+    fun configManager(chapter: Chapter, isAlternative: Boolean) = act.lifecycleScope.defaultLaunch {
 
         manager.init(chapter, isAlternative)
 
-        withContext(Dispatchers.Main) {
+        withMainContext {
             adapter.setList(manager.pagesList)
 //            viewPager.currentItem = progressPages.item
         }
@@ -44,7 +43,7 @@ class ViewerPresenter(private val act: ViewerActivity) {
         maxChapters = manager.chaptersSize
         max.item = manager.pagesSize
 
-        withContext(Dispatchers.Main) {
+        withMainContext {
             act.mView.viewPager.currentItem =
                 if (manager.pagePosition <= 0) 1 // Если полученная позиция не больше нуля, то присвоить значение 1
                 else manager.pagePosition // Иначе то что есть
@@ -71,13 +70,13 @@ class ViewerPresenter(private val act: ViewerActivity) {
     }
 
     // Предыдущая глава
-    fun prevChapter() = act.lifecycleScope.launch(Dispatchers.Default) {
+    fun prevChapter() = act.lifecycleScope.defaultLaunch {
         manager.prevChapter() // Переключение главы
         initChapter()
     }
 
     // Следующая глава
-    fun nextChapter() = act.lifecycleScope.launch(Dispatchers.Default) {
+    fun nextChapter() = act.lifecycleScope.defaultLaunch {
         manager.nextChapter() // Переключение главы
         initChapter()
     }
@@ -88,7 +87,7 @@ class ViewerPresenter(private val act: ViewerActivity) {
 
         checkButton()
 
-        withContext(Dispatchers.Main) {
+        withMainContext {
             adapter.setList(manager.pagesList)
             act.chapter = manager.chapter() // Сохранение данных
             act.title = act.chapter.name // Смена заголовка

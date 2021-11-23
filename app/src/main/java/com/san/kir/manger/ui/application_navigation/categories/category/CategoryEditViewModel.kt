@@ -2,29 +2,25 @@ package com.san.kir.manger.ui.application_navigation.categories.category
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.room.dao.CategoryDao
 import com.san.kir.manger.room.entities.Category
 import com.san.kir.manger.utils.CATEGORY_ALL
+import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
 import com.san.kir.manger.workmanager.RemoveCategoryWorker
 import com.san.kir.manger.workmanager.UpdateCategoryInMangaWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class CategoryEditViewModel @Inject constructor(
     private val context: Application,
     private val categoryDao: CategoryDao,
-    @DefaultDispatcher private val default: CoroutineDispatcher
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CategoryEditState())
@@ -36,7 +32,7 @@ class CategoryEditViewModel @Inject constructor(
     private val _hasChanges = MutableStateFlow(false)
 
     init {
-        viewModelScope.launch(default) {
+        defaultLaunchInVM {
             combine(
                 categoryDao.loadItems(),
                 _currentCategory,
@@ -57,7 +53,7 @@ class CategoryEditViewModel @Inject constructor(
         }
     }
 
-    fun setCategory(categoryName: String) = viewModelScope.launch(default) {
+    fun setCategory(categoryName: String) = defaultLaunchInVM {
         if (categoryName.isNotEmpty()) {
             _currentCategory.value = categoryDao.getItems().first { it.name == categoryName }
         } else {
@@ -83,7 +79,7 @@ class CategoryEditViewModel @Inject constructor(
         _hasChanges.value = true
     }
 
-    fun save() = viewModelScope.launch(default) {
+    fun save() = defaultLaunchInVM {
         _state.value.apply {
             if (hasCreatedNew) {
                 categoryDao.insert(category)

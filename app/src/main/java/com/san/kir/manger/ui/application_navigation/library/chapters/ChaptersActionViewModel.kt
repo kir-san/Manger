@@ -5,45 +5,40 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.san.kir.ankofork.dialogs.toast
 import com.san.kir.manger.R
-import com.san.kir.manger.di.DefaultDispatcher
 import com.san.kir.manger.room.dao.ChapterDao
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.entities.Manga
 import com.san.kir.manger.room.entities.action
 import com.san.kir.manger.services.DownloadService
 import com.san.kir.manger.ui.MainActivity
+import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
+import com.san.kir.manger.utils.coroutines.withDefaultContext
 import com.san.kir.manger.utils.enums.ChapterStatus
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.EntryPointAccessors
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.updateAndGet
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class ChaptersActionViewModel @AssistedInject constructor(
     @Assisted private val mangaUnic: String,
     private val mangaDao: MangaDao,
     private val chapterDao: ChapterDao,
     private val context: Application,
-    @DefaultDispatcher private val default: CoroutineDispatcher,
 ) : ViewModel() {
 
     private val _manga = MutableStateFlow(Manga())
     val manga = _manga.asStateFlow()
 
     init {
-        viewModelScope.launch(default) {
+        defaultLaunchInVM {
             mangaDao.loadItem(mangaUnic)
                 .filterNotNull()
                 .collect { manga ->
@@ -52,7 +47,7 @@ class ChaptersActionViewModel @AssistedInject constructor(
         }
     }
 
-    fun downloadNextNotReadChapter() = viewModelScope.launch(default) {
+    fun downloadNextNotReadChapter() = defaultLaunchInVM {
         val chapter = chapterDao
             .getItemsNotReadAsc(mangaUnic)
             .first { it.action == ChapterStatus.DOWNLOADABLE }
@@ -60,7 +55,7 @@ class ChaptersActionViewModel @AssistedInject constructor(
         DownloadService.start(context, chapter)
     }
 
-    fun downloadAllNotReadChapters() = viewModelScope.launch(default) {
+    fun downloadAllNotReadChapters() = defaultLaunchInVM {
         val count = chapterDao
             .getItemsNotReadAsc(mangaUnic)
             .filter { it.action == ChapterStatus.DOWNLOADABLE }
@@ -69,7 +64,7 @@ class ChaptersActionViewModel @AssistedInject constructor(
             }
             .size
 
-        withContext(default) {
+        withDefaultContext {
             if (count == 0)
                 context.toast(R.string.list_chapters_selection_load_error)
             else
@@ -77,7 +72,7 @@ class ChaptersActionViewModel @AssistedInject constructor(
         }
     }
 
-    fun downloadAllChapters() = viewModelScope.launch(default) {
+    fun downloadAllChapters() = defaultLaunchInVM {
         val count = chapterDao
             .getItemsNotReadAsc(mangaUnic)
             .filter { it.action == ChapterStatus.DOWNLOADABLE }
@@ -85,7 +80,7 @@ class ChaptersActionViewModel @AssistedInject constructor(
                 DownloadService.start(context, chapter)
             }
             .size
-        withContext(default) {
+        withDefaultContext {
             if (count == 0)
                 context.toast(R.string.list_chapters_selection_load_error)
             else
@@ -93,7 +88,7 @@ class ChaptersActionViewModel @AssistedInject constructor(
         }
     }
 
-    fun updateManga(action: (Manga) -> Manga) = viewModelScope.launch(default) {
+    fun updateManga(action: (Manga) -> Manga) = defaultLaunchInVM {
         mangaDao.update(_manga.updateAndGet(action))
     }
 

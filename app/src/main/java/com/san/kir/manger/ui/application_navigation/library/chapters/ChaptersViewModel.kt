@@ -15,8 +15,6 @@ import com.san.kir.ankofork.dialogs.toast
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.data.datastore.ChaptersRepository
-import com.san.kir.manger.di.DefaultDispatcher
-import com.san.kir.manger.di.MainDispatcher
 import com.san.kir.manger.room.dao.ChapterDao
 import com.san.kir.manger.room.dao.MangaDao
 import com.san.kir.manger.room.entities.Chapter
@@ -25,6 +23,8 @@ import com.san.kir.manger.room.entities.action
 import com.san.kir.manger.services.DownloadService
 import com.san.kir.manger.ui.MainActivity
 import com.san.kir.manger.utils.ChapterComparator
+import com.san.kir.manger.utils.coroutines.withDefaultContext
+import com.san.kir.manger.utils.coroutines.withMainContext
 import com.san.kir.manger.utils.enums.ChapterFilter
 import com.san.kir.manger.utils.enums.ChapterStatus
 import com.san.kir.manger.utils.extensions.delChapters
@@ -32,7 +32,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.EntryPointAccessors
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -44,7 +43,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ChaptersViewModel @AssistedInject constructor(
@@ -54,8 +52,6 @@ class ChaptersViewModel @AssistedInject constructor(
     private val chapterStore: ChaptersRepository,
     private val context: Application,
     private val manager: SiteCatalogsManager,
-    @DefaultDispatcher private val default: CoroutineDispatcher,
-    @MainDispatcher private val main: CoroutineDispatcher,
 ) : ViewModel() {
     private var oneTimeFlag by mutableStateOf(true)
     var manga by mutableStateOf(Manga())
@@ -87,7 +83,7 @@ class ChaptersViewModel @AssistedInject constructor(
         ) { m, flag, store ->
             if (flag) {
                 m.populate += 1
-                withContext(main) {
+                withMainContext {
                     oneTimeFlag = false
                     manga = m
                 }
@@ -99,15 +95,15 @@ class ChaptersViewModel @AssistedInject constructor(
                 } else {
                     ChapterFilter.valueOf(store.filterStatus)
                 }
-                withContext(main) { filter = tempFilter }
+                withMainContext { filter = tempFilter }
             }
             m
         }
             .flatMapLatest { manga ->
-                withContext(main) { this@ChaptersViewModel.manga = manga }
+                withMainContext { this@ChaptersViewModel.manga = manga }
                 chapterDao.loadItemsWhereManga(manga.unic)
             }
-            .onEach { withContext(main) { chapters = it } }
+            .onEach { withMainContext { chapters = it } }
             // подготовка списка глав с использованием фильтров и сортировки
             .combine(snapshotFlow { filter }) { list, f -> list to f }
             .map { (l, filter) ->
@@ -126,12 +122,12 @@ class ChaptersViewModel @AssistedInject constructor(
             }
             .distinctUntilChanged()
             .catch { t -> throw t }
-            .onEach { withContext(main) { prepareChapters = it } }
+            .onEach { withMainContext { prepareChapters = it } }
             // обновление размера списка выделеных элементов
             .map { it.count() }
             .onEach { count ->
                 if (selectedItems.count() != count) {
-                    withContext(main) {
+                    withMainContext {
                         selectedItems = List(count) { false }
                     }
                 }
@@ -155,11 +151,11 @@ class ChaptersViewModel @AssistedInject constructor(
             .map { (mode, list) -> mode to list.count { it } }
             .onEach { (mode, count) ->
                 if (count > 0 && mode.not()) {
-                    withContext(main) {
+                    withMainContext {
                         selectionMode = true
                     }
                 } else if (count <= 0 && mode) {
-                    withContext(main) {
+                    withMainContext {
                         selectionMode = false
                     }
 
@@ -207,7 +203,7 @@ class ChaptersViewModel @AssistedInject constructor(
                 selectedItems = selectedItems.toMutableList().apply { set(i, false) }
             }
         }
-        withContext(default) {
+        withDefaultContext {
             if (count == 0) {
                 context.toast(R.string.list_chapters_selection_del_error)
             } else {

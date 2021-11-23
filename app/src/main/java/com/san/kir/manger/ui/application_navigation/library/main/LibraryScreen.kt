@@ -27,8 +27,6 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,9 +51,9 @@ import com.san.kir.manger.ui.application_navigation.MAP_SCREENS_TYPE
 import com.san.kir.manger.ui.application_navigation.MainNavTarget
 import com.san.kir.manger.ui.utils.TestTags
 import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
+import com.san.kir.manger.utils.coroutines.mainLaunch
 import com.san.kir.manger.utils.enums.MainMenuType
 import com.san.kir.manger.utils.extensions.formatDouble
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 var backPressedTime = 0L
@@ -81,7 +79,7 @@ fun LibraryScreen(nav: NavHostController, viewModel: LibraryViewModel = hiltView
     }
 
     BackHandler {
-        coroutineScope.launch(Dispatchers.Main) {
+        coroutineScope.mainLaunch {
             if (scaffoldState.drawerState.isOpen) {
                 scaffoldState.drawerState.close()
             } else {

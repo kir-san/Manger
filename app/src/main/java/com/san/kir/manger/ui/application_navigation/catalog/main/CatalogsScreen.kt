@@ -38,8 +38,7 @@ import com.san.kir.manger.ui.utils.MenuText
 import com.san.kir.manger.ui.utils.TopBarScreenList
 import com.san.kir.manger.ui.utils.navigate
 import com.san.kir.manger.ui.utils.rememberImage
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.san.kir.manger.utils.coroutines.withDefaultContext
 
 @Composable
 fun CatalogsScreen(
@@ -117,7 +116,7 @@ fun ItemView(item: Site, viewModel: CatalogsViewModel, onClick: () -> Unit) {
     }
 
     LaunchedEffect(true) {
-        val site = withContext(Dispatchers.Default) { viewModel.site(item) }
+        val site = withDefaultContext { viewModel.site(item) }
         if (site.isInit.not()) {
             isError = false
             isInit = true

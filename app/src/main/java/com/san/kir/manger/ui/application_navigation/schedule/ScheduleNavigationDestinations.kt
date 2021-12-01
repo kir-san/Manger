@@ -7,10 +7,10 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.composable
 import com.san.kir.manger.ui.application_navigation.schedule.main.SchedulesScreen
-import com.san.kir.manger.ui.utils.NavItem
-import com.san.kir.manger.ui.utils.NavTarget
-import com.san.kir.manger.ui.utils.ScheduleItem
-import com.san.kir.manger.ui.utils.getLongElement
+import com.san.kir.manger.utils.compose.NavItem
+import com.san.kir.manger.utils.compose.NavTarget
+import com.san.kir.manger.utils.compose.ScheduleItem
+import com.san.kir.manger.utils.compose.getLongElement
 
 sealed class ScheduleNavTarget : NavTarget {
     object Main : ScheduleNavTarget() {

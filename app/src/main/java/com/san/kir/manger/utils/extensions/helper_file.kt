@@ -3,7 +3,7 @@ package com.san.kir.manger.utils.extensions
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.san.kir.manger.App
-import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.data.room.entities.Chapter
 import com.san.kir.manger.utils.ResultDeleting
 import java.io.File
 import java.io.FileOutputStream

@@ -2,12 +2,12 @@ package com.san.kir.manger.ui.application_navigation.categories.category
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
-import com.san.kir.manger.room.dao.CategoryDao
-import com.san.kir.manger.room.entities.Category
+import com.san.kir.manger.data.room.dao.CategoryDao
+import com.san.kir.manger.data.room.entities.Category
 import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
-import com.san.kir.manger.workmanager.RemoveCategoryWorker
-import com.san.kir.manger.workmanager.UpdateCategoryInMangaWorker
+import com.san.kir.manger.foreground_work.workmanager.RemoveCategoryWorker
+import com.san.kir.manger.foreground_work.workmanager.UpdateCategoryInMangaWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

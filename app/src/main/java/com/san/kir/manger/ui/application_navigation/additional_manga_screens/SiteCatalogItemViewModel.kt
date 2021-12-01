@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
-import com.san.kir.manger.room.entities.SiteCatalogElement
+import com.san.kir.manger.data.room.entities.SiteCatalogElement
 import com.san.kir.manger.ui.MainActivity
 import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
 import com.san.kir.manger.utils.coroutines.withMainContext

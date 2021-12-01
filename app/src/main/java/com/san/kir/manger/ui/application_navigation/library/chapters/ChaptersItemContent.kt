@@ -35,13 +35,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.san.kir.ankofork.dialogs.longToast
 import com.san.kir.ankofork.dialogs.toast
-import com.san.kir.ankofork.startActivity
 import com.san.kir.manger.R
 import com.san.kir.manger.components.viewer.ViewerActivity
-import com.san.kir.manger.room.entities.Chapter
-import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.room.entities.countPages
-import com.san.kir.manger.services.DownloadService
+import com.san.kir.manger.data.room.entities.Chapter
+import com.san.kir.manger.data.room.entities.Manga
+import com.san.kir.manger.data.room.entities.countPages
+import com.san.kir.manger.foreground_work.services.DownloadService
 import com.san.kir.manger.utils.coroutines.withDefaultContext
 import com.san.kir.manger.utils.enums.DownloadState
 
@@ -92,10 +91,9 @@ fun ChaptersItemContent(
                             if (chapter.pages.isNullOrEmpty() || chapter.pages.any { it.isBlank() }) {
                                 context.longToast(R.string.list_chapters_open_not_exists)
                             } else {
-                                context.startActivity<ViewerActivity>(
-                                    "chapter" to chapter,
-                                    "is" to manga.isAlternativeSort
-                                )
+                                ViewerActivity.start(context,
+                                    chapter = chapter,
+                                    isAlternative = manga.isAlternativeSort)
                             }
                         }
                     } else onSelectItem()

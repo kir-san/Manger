@@ -7,10 +7,10 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.composable
 import com.san.kir.manger.ui.application_navigation.statistic.main.StatisticsScreen
-import com.san.kir.manger.ui.utils.NavItem
-import com.san.kir.manger.ui.utils.NavTarget
-import com.san.kir.manger.ui.utils.StatisticItem
-import com.san.kir.manger.ui.utils.getStringElement
+import com.san.kir.manger.utils.compose.NavItem
+import com.san.kir.manger.utils.compose.NavTarget
+import com.san.kir.manger.utils.compose.StatisticItem
+import com.san.kir.manger.utils.compose.getStringElement
 
 sealed class StatisticNavTarget : NavTarget {
     object Main : StatisticNavTarget() {

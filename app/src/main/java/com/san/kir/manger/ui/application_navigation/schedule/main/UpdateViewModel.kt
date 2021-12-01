@@ -5,8 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.san.kir.manger.room.dao.MangaDao
-import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.data.room.dao.MangaDao
+import com.san.kir.manger.data.room.entities.Manga
 import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
 import com.san.kir.manger.utils.coroutines.withMainContext
 import dagger.hilt.android.lifecycle.HiltViewModel

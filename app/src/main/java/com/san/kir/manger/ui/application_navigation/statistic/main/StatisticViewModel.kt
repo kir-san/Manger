@@ -5,9 +5,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
-import com.san.kir.manger.room.dao.MangaDao
-import com.san.kir.manger.room.dao.StatisticDao
-import com.san.kir.manger.room.entities.MangaStatistic
+import com.san.kir.manger.data.room.dao.MangaDao
+import com.san.kir.manger.data.room.dao.StatisticDao
+import com.san.kir.manger.data.room.entities.MangaStatistic
 import com.san.kir.manger.utils.extensions.sumByLong
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.filterNotNull

@@ -2,8 +2,8 @@ package com.san.kir.manger.repositories
 
 import android.content.Context
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
-import com.san.kir.manger.room.CatalogDb
-import com.san.kir.manger.room.entities.SiteCatalogElement
+import com.san.kir.manger.data.room.CatalogDb
+import com.san.kir.manger.data.room.entities.SiteCatalogElement
 
 class SiteCatalogRepository(context: Context, catalogName: String, manager: SiteCatalogsManager) {
     private val db = CatalogDb.getDatabase(context, catalogName, manager)

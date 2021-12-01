@@ -18,11 +18,12 @@ import com.san.kir.manger.ui.application_navigation.library.main.LibraryScreen
 import com.san.kir.manger.ui.application_navigation.statistic.StatisticScreen
 import com.san.kir.manger.ui.application_navigation.statistic.onlyStatisticViewModel
 import com.san.kir.manger.ui.onlyMangaViewModel
-import com.san.kir.manger.ui.utils.MangaItem
-import com.san.kir.manger.ui.utils.NavItem
-import com.san.kir.manger.ui.utils.NavTarget
-import com.san.kir.manger.ui.utils.SiteCatalogItem
-import com.san.kir.manger.ui.utils.getStringElement
+import com.san.kir.manger.utils.compose.MangaItem
+import com.san.kir.manger.utils.compose.NavItem
+import com.san.kir.manger.utils.compose.NavTarget
+import com.san.kir.manger.utils.compose.SiteCatalogItem
+import com.san.kir.manger.utils.compose.getStringElement
+import com.san.kir.manger.utils.compose.navigate
 
 sealed class LibraryNavTarget : NavTarget {
     object Main : LibraryNavTarget() {
@@ -113,7 +114,13 @@ fun NavGraphBuilder.libraryNavGraph(nav: NavHostController) {
 
             val manga by viewModel.manga.collectAsState()
 
-            MangaAboutScreen(nav, manga)
+            MangaAboutScreen(
+                nav::navigateUp,
+                {
+                    nav.navigate(LibraryNavTarget.Edit, it)
+                },
+                manga
+            )
         }
     )
 

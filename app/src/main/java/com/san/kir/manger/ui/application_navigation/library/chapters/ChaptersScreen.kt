@@ -37,8 +37,8 @@ import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
 import com.san.kir.ankofork.dialogs.longToast
 import com.san.kir.manger.R
-import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.services.MangaUpdaterService
+import com.san.kir.manger.data.room.entities.Manga
+import com.san.kir.manger.foreground_work.services.MangaUpdaterService
 import com.san.kir.manger.utils.extensions.longToast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -102,7 +102,7 @@ private fun ReceiverHandler(
                 intent?.let {
                     val mangaName = intent.getStringExtra(MangaUpdaterService.ITEM_NAME)
                     if (intent.action == MangaUpdaterService.actionGet) {
-                        if (mangaName != null && mangaName == currentManga.unic) {
+                        if (mangaName != null && mangaName == currentManga.name) {
                             val isFoundNew =
                                 intent.getBooleanExtra(MangaUpdaterService.IS_FOUND_NEW, false)
                             val countNew = intent.getIntExtra(MangaUpdaterService.COUNT_NEW, 0)

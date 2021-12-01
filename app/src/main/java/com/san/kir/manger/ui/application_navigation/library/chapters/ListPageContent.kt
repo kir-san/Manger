@@ -32,8 +32,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.navigationBarsPadding
-import com.san.kir.manger.room.entities.Chapter
-import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.data.room.entities.Chapter
+import com.san.kir.manger.data.room.entities.Manga
 import com.san.kir.manger.utils.enums.ChapterFilter
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 

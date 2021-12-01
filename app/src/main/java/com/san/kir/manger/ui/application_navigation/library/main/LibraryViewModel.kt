@@ -8,17 +8,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
 import androidx.work.WorkManager
 import com.san.kir.manger.data.datastore.MainRepository
-import com.san.kir.manger.room.dao.CategoryDao
-import com.san.kir.manger.room.dao.ChapterDao
-import com.san.kir.manger.room.dao.MangaDao
-import com.san.kir.manger.room.entities.CategoryWithMangas
-import com.san.kir.manger.room.entities.SimpleManga
+import com.san.kir.manger.data.room.dao.CategoryDao
+import com.san.kir.manger.data.room.dao.ChapterDao
+import com.san.kir.manger.data.room.dao.MangaDao
+import com.san.kir.manger.data.room.entities.CategoryWithMangas
+import com.san.kir.manger.data.room.entities.SimpleManga
+import com.san.kir.manger.foreground_work.workmanager.MangaDeleteWorker
 import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.SortLibraryUtil
 import com.san.kir.manger.utils.coroutines.defaultDispatcher
 import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
 import com.san.kir.manger.utils.coroutines.withMainContext
-import com.san.kir.manger.workmanager.MangaDeleteWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -67,7 +67,7 @@ class LibraryViewModel @Inject constructor(
         .map { cats ->
             cats.onEach { c ->
                 if (c.category.name == CATEGORY_ALL)
-                    c.mangas = mangaDao.getSimpleItems()
+                    c.mangas = mangaDao.simpleItems()
             }
                 .onEach { c ->
                     val list =
@@ -103,7 +103,7 @@ class LibraryViewModel @Inject constructor(
 
     fun update(manga: SimpleManga) {
         defaultLaunchInVM {
-            mangaDao.getItem(manga.unic).apply {
+            mangaDao.item(manga.name).apply {
                 categories = manga.categories
                 mangaDao.update(this)
             }

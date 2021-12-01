@@ -4,10 +4,10 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import com.san.kir.ankofork.dialogs.longToast
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
-import com.san.kir.manger.room.dao.MangaDao
-import com.san.kir.manger.room.entities.SiteCatalogElement
-import com.san.kir.manger.room.entities.authorsList
-import com.san.kir.manger.room.entities.genresList
+import com.san.kir.manger.data.room.dao.MangaDao
+import com.san.kir.manger.data.room.entities.SiteCatalogElement
+import com.san.kir.manger.data.room.entities.authorsList
+import com.san.kir.manger.data.room.entities.genresList
 import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
 import com.san.kir.manger.utils.coroutines.withDefaultContext
 import com.san.kir.manger.utils.coroutines.withMainContext

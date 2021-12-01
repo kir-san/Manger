@@ -15,14 +15,16 @@ import com.san.kir.ankofork.dialogs.toast
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
 import com.san.kir.manger.data.datastore.ChaptersRepository
-import com.san.kir.manger.room.dao.ChapterDao
-import com.san.kir.manger.room.dao.MangaDao
-import com.san.kir.manger.room.entities.Chapter
-import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.room.entities.action
-import com.san.kir.manger.services.DownloadService
+import com.san.kir.manger.data.room.dao.ChapterDao
+import com.san.kir.manger.data.room.dao.MangaDao
+import com.san.kir.manger.data.room.entities.Chapter
+import com.san.kir.manger.data.room.entities.Manga
+import com.san.kir.manger.data.room.entities.action
+import com.san.kir.manger.foreground_work.services.DownloadService
 import com.san.kir.manger.ui.MainActivity
+import com.san.kir.manger.ui.application_navigation.manga_viewer.MangaViewerActivity
 import com.san.kir.manger.utils.ChapterComparator
+import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
 import com.san.kir.manger.utils.coroutines.withDefaultContext
 import com.san.kir.manger.utils.coroutines.withMainContext
 import com.san.kir.manger.utils.enums.ChapterFilter
@@ -101,7 +103,7 @@ class ChaptersViewModel @AssistedInject constructor(
         }
             .flatMapLatest { manga ->
                 withMainContext { this@ChaptersViewModel.manga = manga }
-                chapterDao.loadItemsWhereManga(manga.unic)
+                chapterDao.loadItemsWhereManga(manga.name)
             }
             .onEach { withMainContext { chapters = it } }
             // подготовка списка глав с использованием фильтров и сортировки
@@ -270,6 +272,28 @@ class ChaptersViewModel @AssistedInject constructor(
             .map {
                 it.firstOrNull { chapter -> !chapter.isRead }
             }
+
+    suspend fun firstChapter() = withDefaultContext {
+        val list =
+            if (manga.isAlternativeSort) {
+                try {
+                    chapters.sortedWith(ChapterComparator())
+                } catch (e: Exception) {
+                    chapters
+                }
+            } else {
+                chapters
+            }
+
+        val chapter = list.first()
+        chapter.progress = 0
+        chapterDao.update(chapter)
+
+        return@withDefaultContext chapter
+        /*ViewerActivity.start(context,
+                   manga = viewModel.manga,
+                   isAlternative = viewModel.manga.isAlternativeSort)*/
+    }
 
     @AssistedFactory
     interface Factory {

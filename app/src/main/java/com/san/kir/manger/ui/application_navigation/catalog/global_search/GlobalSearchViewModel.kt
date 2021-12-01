@@ -4,8 +4,8 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import com.san.kir.manger.components.parsing.SiteCatalog
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
-import com.san.kir.manger.room.CatalogDb
-import com.san.kir.manger.room.entities.SiteCatalogElement
+import com.san.kir.manger.data.room.CatalogDb
+import com.san.kir.manger.data.room.entities.SiteCatalogElement
 import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
 import com.san.kir.manger.utils.coroutines.withDefaultContext
 import dagger.hilt.android.lifecycle.HiltViewModel

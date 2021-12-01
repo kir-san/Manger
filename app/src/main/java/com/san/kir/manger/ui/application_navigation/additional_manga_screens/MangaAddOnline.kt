@@ -33,10 +33,10 @@ import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.san.kir.manger.R
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
-import com.san.kir.manger.room.entities.SiteCatalogElement
+import com.san.kir.manger.data.room.entities.SiteCatalogElement
 import com.san.kir.manger.ui.application_navigation.library.LibraryNavTarget
-import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
-import com.san.kir.manger.ui.utils.navigate
+import com.san.kir.manger.utils.compose.TopBarScreenWithInsets
+import com.san.kir.manger.utils.compose.navigate
 import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope

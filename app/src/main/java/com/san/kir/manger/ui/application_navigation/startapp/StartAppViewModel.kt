@@ -10,8 +10,8 @@ import com.san.kir.manger.utils.enums.DIR
 import com.san.kir.manger.utils.extensions.createDirs
 import com.san.kir.manger.utils.extensions.getFullPath
 import com.san.kir.manger.utils.extensions.log
-import com.san.kir.manger.workmanager.FirstInitAppWorker
-import com.san.kir.manger.workmanager.MigrateLatestChapterToChapterWorker
+import com.san.kir.manger.foreground_work.workmanager.FirstInitAppWorker
+import com.san.kir.manger.foreground_work.workmanager.MigrateLatestChapterToChapterWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow

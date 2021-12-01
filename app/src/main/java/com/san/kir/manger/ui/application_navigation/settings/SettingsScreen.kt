@@ -48,9 +48,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.san.kir.manger.R
 import com.san.kir.manger.Viewer
-import com.san.kir.manger.ui.utils.CheckBoxText
-import com.san.kir.manger.ui.utils.RadioGroup
-import com.san.kir.manger.ui.utils.TopBarScreenContent
+import com.san.kir.manger.utils.compose.CheckBoxText
+import com.san.kir.manger.utils.compose.RadioGroup
+import com.san.kir.manger.utils.compose.TopBarScreenContent
 
 @Composable
 fun SettingsScreen(

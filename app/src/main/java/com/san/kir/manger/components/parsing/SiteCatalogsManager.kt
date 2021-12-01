@@ -9,11 +9,11 @@ import com.san.kir.manger.components.parsing.sites.Readmanga
 import com.san.kir.manger.components.parsing.sites.Selfmanga
 import com.san.kir.manger.components.parsing.sites.Unicomics
 import com.san.kir.manger.components.parsing.sites.Yaoichan
-import com.san.kir.manger.room.entities.Chapter
-import com.san.kir.manger.room.entities.DownloadItem
-import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.room.entities.SiteCatalogElement
-import com.san.kir.manger.room.entities.toDownloadItem
+import com.san.kir.manger.data.room.entities.Chapter
+import com.san.kir.manger.data.room.entities.DownloadItem
+import com.san.kir.manger.data.room.entities.Manga
+import com.san.kir.manger.data.room.entities.SiteCatalogElement
+import com.san.kir.manger.data.room.entities.toDownloadItem
 import com.san.kir.manger.utils.coroutines.withDefaultContext
 import javax.inject.Inject
 import javax.inject.Singleton

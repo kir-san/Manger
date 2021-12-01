@@ -43,9 +43,9 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.insets.systemBarsPadding
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.application_navigation.library.LibraryNavTarget
-import com.san.kir.manger.ui.utils.MenuText
-import com.san.kir.manger.ui.utils.navigate
-import com.san.kir.manger.workmanager.MangaDeleteWorker
+import com.san.kir.manger.utils.compose.MenuText
+import com.san.kir.manger.utils.compose.navigate
+import com.san.kir.manger.foreground_work.workmanager.MangaDeleteWorker
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -71,7 +71,7 @@ fun LibraryDropUpMenu(nav: NavHostController, viewModel: LibraryViewModel) {
 
         MenuText(id = R.string.library_popupmenu_about, onClick = {
             viewModel.changeSelectedManga(false)
-            nav.navigate(LibraryNavTarget.About, viewModel.selectedManga.manga.unic)
+            nav.navigate(LibraryNavTarget.About, viewModel.selectedManga.manga.name)
         })
 
         DropdownMenuItem(onClick = {
@@ -100,12 +100,12 @@ fun LibraryDropUpMenu(nav: NavHostController, viewModel: LibraryViewModel) {
 
         MenuText(id = R.string.library_popupmenu_storage, onClick = {
             viewModel.changeSelectedManga(false)
-            nav.navigate(LibraryNavTarget.Storage, viewModel.selectedManga.manga.unic)
+            nav.navigate(LibraryNavTarget.Storage, viewModel.selectedManga.manga.name)
         })
 
         MenuText(id = R.string.library_popupmenu_statistic, onClick = {
             viewModel.changeSelectedManga(false)
-            nav.navigate(LibraryNavTarget.Statistic, viewModel.selectedManga.manga.unic)
+            nav.navigate(LibraryNavTarget.Statistic, viewModel.selectedManga.manga.name)
         })
 
         MenuText(id = R.string.library_popupmenu_delete, onClick = {
@@ -140,7 +140,7 @@ fun LibraryDropUpMenu(nav: NavHostController, viewModel: LibraryViewModel) {
                 OutlinedButton(onClick = {
                     deleteDialog = false
                     viewModel.changeSelectedManga(false)
-                    MangaDeleteWorker.addTask(context, viewModel.selectedManga.manga.unic, true)
+                    MangaDeleteWorker.addTask(context, viewModel.selectedManga.manga.name, true)
                 }, modifier = Modifier.padding(pad)) {
                     Text(text = stringResource(id = R.string.library_popupmenu_delete_ok_with_files))
                 }
@@ -148,7 +148,7 @@ fun LibraryDropUpMenu(nav: NavHostController, viewModel: LibraryViewModel) {
                 OutlinedButton(onClick = {
                     deleteDialog = false
                     viewModel.changeSelectedManga(false)
-                    MangaDeleteWorker.addTask(context, viewModel.selectedManga.manga.unic)
+                    MangaDeleteWorker.addTask(context, viewModel.selectedManga.manga.name)
                 }, modifier = Modifier.padding(pad)) {
                     Text(text = stringResource(id = R.string.library_popupmenu_delete_ok))
                 }

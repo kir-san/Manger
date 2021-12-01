@@ -2,8 +2,8 @@ package com.san.kir.manger.utils
 
 import android.content.Context
 import com.san.kir.manger.repositories.ChapterRepository
-import com.san.kir.manger.room.entities.Chapter
-import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.data.room.entities.Chapter
+import com.san.kir.manger.data.room.entities.Manga
 
 class SearchDuplicate(context: Context) {
     private val mChapterRepository = ChapterRepository(context)
@@ -13,7 +13,7 @@ class SearchDuplicate(context: Context) {
     }
 
     private suspend fun searchDuplicate(manga: Manga): MutableList<List<Chapter>> {
-        val basicList = mChapterRepository.getItems(manga.unic)
+        val basicList = mChapterRepository.getItems(manga.name)
         val list = basicList.toMutableList()
 
         val allDuplicateList: MutableList<List<Chapter>> = mutableListOf()

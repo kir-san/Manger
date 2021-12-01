@@ -31,13 +31,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.san.kir.manger.R
-import com.san.kir.manger.room.entities.Site
+import com.san.kir.manger.data.room.entities.Site
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
-import com.san.kir.manger.ui.utils.MenuIcon
-import com.san.kir.manger.ui.utils.MenuText
-import com.san.kir.manger.ui.utils.TopBarScreenList
-import com.san.kir.manger.ui.utils.navigate
-import com.san.kir.manger.ui.utils.rememberImage
+import com.san.kir.manger.utils.compose.MenuIcon
+import com.san.kir.manger.utils.compose.MenuText
+import com.san.kir.manger.utils.compose.TopBarScreenList
+import com.san.kir.manger.utils.compose.navigate
+import com.san.kir.manger.utils.compose.rememberImage
 import com.san.kir.manger.utils.coroutines.withDefaultContext
 
 @Composable

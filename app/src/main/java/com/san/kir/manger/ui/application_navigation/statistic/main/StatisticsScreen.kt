@@ -28,12 +28,12 @@ import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.san.kir.manger.R
-import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.room.entities.MangaStatistic
+import com.san.kir.manger.data.room.entities.Manga
+import com.san.kir.manger.data.room.entities.MangaStatistic
 import com.san.kir.manger.ui.application_navigation.statistic.StatisticNavTarget
-import com.san.kir.manger.ui.utils.TopBarScreenList
-import com.san.kir.manger.ui.utils.navigate
-import com.san.kir.manger.ui.utils.rememberImage
+import com.san.kir.manger.utils.compose.TopBarScreenList
+import com.san.kir.manger.utils.compose.navigate
+import com.san.kir.manger.utils.compose.rememberImage
 import com.san.kir.manger.utils.TimeFormat
 
 @Composable

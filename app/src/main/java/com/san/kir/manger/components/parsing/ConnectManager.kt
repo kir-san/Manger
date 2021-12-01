@@ -4,11 +4,9 @@ import android.app.Application
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.san.kir.manger.BuildConfig
-import com.san.kir.manger.utils.coroutines.closeAsync
 import com.san.kir.manger.utils.coroutines.createNewFileAsync
 import com.san.kir.manger.utils.coroutines.parseAsync
 import com.san.kir.manger.utils.coroutines.sinkAsync
-import com.san.kir.manger.utils.coroutines.writeAllAsync
 import com.san.kir.manger.utils.extensions.createDirs
 import com.san.kir.manger.utils.extensions.log
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,6 +23,7 @@ import okhttp3.RequestBody
 import okhttp3.Response
 import okhttp3.internal.closeQuietly
 import okio.Buffer
+import okio.BufferedSink
 import okio.buffer
 import org.jsoup.nodes.Document
 import java.io.File
@@ -122,37 +121,27 @@ class ConnectManager @Inject constructor(context: Application) {
         return name
     }
 
-    suspend fun downloadBitmap(url: String): Bitmap? {
-        val response = awaitNewCall(url, client = imageDownloadClient)
-
+    suspend fun downloadBitmap(url: String, onProgress: ((Float) -> Unit) = {}): Bitmap? {
         val buffer = Buffer()
 
-        return response.body?.source()?.let { source ->
-            buffer.writeAllAsync(source)
+        defaultClient.newCall(url.getRequest()).awaitDownload(buffer, onProgress)
+
+        return try {
             BitmapFactory.decodeStream(buffer.inputStream())
-        } ?: kotlin.run {
+        } catch (ex: Throwable) {
             null
         }
-
     }
 
-    suspend fun downloadFile(file: File, url: String): Long {
-        var contentLength = 0L
-
+    suspend fun downloadFile(file: File, url: String, onProgress: ((Float) -> Unit) = {}): Long {
         file.delete()
         file.parentFile?.createDirs()
 
         file.createNewFileAsync()
 
-        val response = awaitNewCall(url)
+        defaultClient.newCall(url.getRequest()).awaitDownload(file.sinkAsync().buffer(), onProgress)
 
-        response.body?.contentLength()?.let { contentLength = it }
-
-        val sink = file.sinkAsync().buffer()
-        response.body?.source()?.let { sink.writeAllAsync(it) }
-        sink.closeAsync()
-
-        return contentLength
+        return file.length()
     }
 
     fun prepareUrl(url: String) = url.removeSurrounding("\"", "\"")
@@ -166,6 +155,66 @@ class ConnectManager @Inject constructor(context: Application) {
                     override fun onResponse(call: Call, response: Response) {
                         continuation.resume(response) {
                             response.body?.closeQuietly()
+                        }
+                    }
+
+                    override fun onFailure(call: Call, e: IOException) {
+                        // Don't bother with resuming the continuation if it is already cancelled.
+                        if (continuation.isCancelled) return
+                        continuation.resumeWithException(e)
+                    }
+                }
+            )
+
+            continuation.invokeOnCancellation {
+                try {
+                    cancel()
+                } catch (ex: Throwable) {
+                    // Ignore cancel exception
+                }
+            }
+        }
+    }
+
+    // Based on https://github.com/gildor/kotlin-coroutines-okhttp
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private suspend fun Call.awaitDownload(
+        sink: BufferedSink,
+        onProgress: (Float) -> Unit,
+    ) {
+        return suspendCancellableCoroutine { continuation ->
+            enqueue(
+                object : Callback {
+                    private val SEGMENT_SIZE = 2048L // okio.Segment.SIZE
+
+                    override fun onResponse(call: Call, response: Response) {
+                        response.body?.let { body ->
+                            kotlin.runCatching {
+                                val contentLength = body.contentLength()
+                                var total: Long = 0
+                                var read: Long = 0
+
+                                while (
+                                    body.source().read(sink.buffer, SEGMENT_SIZE)
+                                        .apply { read = this } != -1L
+                                ) {
+                                    total += read
+                                    sink.emitCompleteSegments()
+                                    onProgress(total.toFloat() / contentLength.toFloat())
+                                }
+
+                                sink.writeAll(body.source())
+                                sink.close()
+                                body.source().close()
+
+                                continuation.resume(Unit) {}
+                            }.onFailure {
+                                sink.close()
+                                body.source().close()
+
+                                it.printStackTrace()
+                                continuation.resumeWithException(it)
+                            }
                         }
                     }
 

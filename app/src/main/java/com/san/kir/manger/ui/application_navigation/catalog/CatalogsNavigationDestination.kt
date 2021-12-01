@@ -12,11 +12,11 @@ import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogScree
 import com.san.kir.manger.ui.application_navigation.catalog.catalog.catalogViewModel
 import com.san.kir.manger.ui.application_navigation.catalog.global_search.GlobalSearchScreen
 import com.san.kir.manger.ui.application_navigation.catalog.main.CatalogsScreen
-import com.san.kir.manger.ui.utils.NavItem
-import com.san.kir.manger.ui.utils.NavTarget
-import com.san.kir.manger.ui.utils.SiteCatalogItem
-import com.san.kir.manger.ui.utils.SiteItem
-import com.san.kir.manger.ui.utils.getStringElement
+import com.san.kir.manger.utils.compose.NavItem
+import com.san.kir.manger.utils.compose.NavTarget
+import com.san.kir.manger.utils.compose.SiteCatalogItem
+import com.san.kir.manger.utils.compose.SiteItem
+import com.san.kir.manger.utils.compose.getStringElement
 
 sealed class CatalogsNavTarget : NavTarget {
 

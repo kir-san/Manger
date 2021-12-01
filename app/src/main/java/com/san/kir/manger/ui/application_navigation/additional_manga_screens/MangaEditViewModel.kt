@@ -8,9 +8,9 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.san.kir.manger.R
-import com.san.kir.manger.room.dao.CategoryDao
-import com.san.kir.manger.room.dao.MangaDao
-import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.data.room.dao.CategoryDao
+import com.san.kir.manger.data.room.dao.MangaDao
+import com.san.kir.manger.data.room.entities.Manga
 import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
 import com.san.kir.manger.utils.coroutines.withMainContext
 import com.san.kir.manger.utils.extensions.log

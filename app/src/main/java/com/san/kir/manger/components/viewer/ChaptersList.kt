@@ -3,8 +3,8 @@ package com.san.kir.manger.components.viewer
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.san.kir.manger.room.entities.Chapter
-import com.san.kir.manger.room.entities.MangaStatistic
+import com.san.kir.manger.data.room.entities.Chapter
+import com.san.kir.manger.data.room.entities.MangaStatistic
 import com.san.kir.manger.utils.ChapterComparator
 import com.san.kir.manger.utils.coroutines.withMainContext
 import com.san.kir.manger.utils.extensions.getFullPath

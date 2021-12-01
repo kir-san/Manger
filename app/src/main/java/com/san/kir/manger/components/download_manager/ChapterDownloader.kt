@@ -2,7 +2,7 @@ package com.san.kir.manger.components.download_manager
 
 import com.san.kir.manger.components.parsing.ConnectManager
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
-import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.data.room.entities.Chapter
 import com.san.kir.manger.utils.JobContext
 import com.san.kir.manger.utils.extensions.convertImagesToPng
 import com.san.kir.manger.utils.extensions.getFullPath
@@ -168,6 +168,8 @@ class ChapterDownloader(
                 tryCount--
 
                 if (interrupted) return
+
+                if (link.isEmpty()) return
 
                 contentLength = connectManager.downloadFile(file, link)
 

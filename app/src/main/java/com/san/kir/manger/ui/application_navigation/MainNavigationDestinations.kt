@@ -33,7 +33,7 @@ import com.san.kir.manger.ui.application_navigation.statistic.StatisticNavTarget
 import com.san.kir.manger.ui.application_navigation.statistic.statisticNavGraph
 import com.san.kir.manger.ui.application_navigation.storage.StorageNavTarget
 import com.san.kir.manger.ui.application_navigation.storage.storageNavGraph
-import com.san.kir.manger.ui.utils.NavTarget
+import com.san.kir.manger.utils.compose.NavTarget
 import com.san.kir.manger.utils.enums.MainMenuType
 
 private val values = listOf(

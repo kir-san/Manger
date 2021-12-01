@@ -14,10 +14,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.san.kir.manger.R
-import com.san.kir.manger.room.CatalogDb
-import com.san.kir.manger.room.dao.SiteDao
-import com.san.kir.manger.room.entities.SiteCatalogElement
-import com.san.kir.manger.services.CatalogForOneSiteUpdaterService
+import com.san.kir.manger.data.room.CatalogDb
+import com.san.kir.manger.data.room.dao.SiteDao
+import com.san.kir.manger.data.room.entities.SiteCatalogElement
+import com.san.kir.manger.foreground_work.services.CatalogForOneSiteUpdaterService
 import com.san.kir.manger.ui.MainActivity
 import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
 import com.san.kir.manger.utils.coroutines.mainLaunchInVM

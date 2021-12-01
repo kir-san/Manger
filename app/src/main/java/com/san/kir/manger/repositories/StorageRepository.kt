@@ -1,8 +1,8 @@
 package com.san.kir.manger.repositories
 
 import android.content.Context
-import com.san.kir.manger.room.entities.Storage
-import com.san.kir.manger.room.getDatabase
+import com.san.kir.manger.data.room.entities.Storage
+import com.san.kir.manger.data.room.getDatabase
 import com.san.kir.manger.utils.extensions.getFullPath
 import com.san.kir.manger.utils.extensions.lengthMb
 
@@ -23,7 +23,7 @@ class StorageRepository(context: Context) {
             storage.sizeFull = file.lengthMb
             storage.isNew = manga == null
             storage.sizeRead = manga?.let { it ->
-                mChapterDao.getItemsWhereManga(it.unic)
+                mChapterDao.getItemsWhereManga(it.name)
                     .asSequence()
                     .filter { it.isRead }
                     .sumOf { getFullPath(it.path).lengthMb }

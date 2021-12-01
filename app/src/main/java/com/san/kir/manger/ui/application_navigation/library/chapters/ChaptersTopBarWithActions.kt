@@ -25,10 +25,10 @@ import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.TopAppBar
 import com.san.kir.manger.R
-import com.san.kir.manger.services.MangaUpdaterService
-import com.san.kir.manger.ui.utils.CheckedMenuText
-import com.san.kir.manger.ui.utils.MenuIcon
-import com.san.kir.manger.ui.utils.MenuText
+import com.san.kir.manger.foreground_work.services.MangaUpdaterService
+import com.san.kir.manger.utils.compose.CheckedMenuText
+import com.san.kir.manger.utils.compose.MenuIcon
+import com.san.kir.manger.utils.compose.MenuText
 
 @Composable
 fun ChaptersTopBar(
@@ -50,8 +50,8 @@ fun ChaptersTopBar(
             .fillMaxWidth()
             .padding(0.dp),
         actions = {
-            if (viewModel.manga.unic.isNotBlank())
-                Actions(chaptersActionViewModel(viewModel.manga.unic), changeAction)
+            if (viewModel.manga.name.isNotBlank())
+                Actions(chaptersActionViewModel(viewModel.manga.name), changeAction)
         },
         contentPadding = rememberInsetsPaddingValues(
             insets = LocalWindowInsets.current.systemBars,

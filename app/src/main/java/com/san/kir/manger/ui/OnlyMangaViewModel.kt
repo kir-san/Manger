@@ -5,8 +5,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.san.kir.manger.room.dao.MangaDao
-import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.data.room.dao.MangaDao
+import com.san.kir.manger.data.room.entities.Manga
 import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory

@@ -42,12 +42,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.san.kir.manger.R
-import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.ui.utils.CheckBoxText
-import com.san.kir.manger.ui.utils.DropDownTextField
-import com.san.kir.manger.ui.utils.ImageWithStatus
-import com.san.kir.manger.ui.utils.LabelText
-import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
+import com.san.kir.manger.data.room.entities.Manga
+import com.san.kir.manger.utils.compose.CheckBoxText
+import com.san.kir.manger.utils.compose.DropDownTextField
+import com.san.kir.manger.utils.compose.ImageWithStatus
+import com.san.kir.manger.utils.compose.LabelText
+import com.san.kir.manger.utils.compose.TopBarScreenWithInsets
 import com.san.kir.manger.utils.extensions.log
 
 
@@ -88,7 +88,7 @@ private fun MangaEditContent(
 ) {
     log = ("manga is ${manga.name}")
     LabelText(idRes = R.string.about_manga_dialog_name)
-    TextField(manga.name) { change(manga.apply { name = it }) }
+    TextField(manga.name, enabled = false) { change(manga.apply { name = it }) }
 
     LabelText(idRes = R.string.about_manga_dialog_authors)
     TextField(manga.authors) { change(manga.apply { authors = it }) }

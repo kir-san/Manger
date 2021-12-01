@@ -18,9 +18,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
-import com.san.kir.manger.room.entities.PlannedTask
+import com.san.kir.manger.data.room.entities.PlannedTask
 import com.san.kir.manger.ui.application_navigation.schedule.ScheduleNavTarget
-import com.san.kir.manger.ui.utils.navigate
+import com.san.kir.manger.utils.compose.navigate
 
 @Composable
 fun PlannedContent(

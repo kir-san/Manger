@@ -5,10 +5,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import com.san.kir.manger.R
-import com.san.kir.manger.room.entities.MangaStatistic
-import com.san.kir.manger.ui.utils.DialogText
-import com.san.kir.manger.ui.utils.LabelText
-import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
+import com.san.kir.manger.data.room.entities.MangaStatistic
+import com.san.kir.manger.utils.compose.DialogText
+import com.san.kir.manger.utils.compose.LabelText
+import com.san.kir.manger.utils.compose.TopBarScreenWithInsets
 import com.san.kir.manger.utils.TimeFormat
 import com.san.kir.manger.utils.extensions.bytesToMb
 import com.san.kir.manger.utils.extensions.formatDouble

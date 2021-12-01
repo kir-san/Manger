@@ -7,13 +7,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.san.kir.manger.components.parsing.SiteCatalogAlternative
 import com.san.kir.manger.components.parsing.SiteCatalogsManager
-import com.san.kir.manger.room.dao.CategoryDao
-import com.san.kir.manger.room.dao.MangaDao
-import com.san.kir.manger.room.dao.StatisticDao
-import com.san.kir.manger.room.entities.Category
-import com.san.kir.manger.room.entities.MangaStatistic
-import com.san.kir.manger.room.entities.SiteCatalogElement
-import com.san.kir.manger.room.entities.toManga
+import com.san.kir.manger.data.room.dao.CategoryDao
+import com.san.kir.manger.data.room.dao.MangaDao
+import com.san.kir.manger.data.room.dao.StatisticDao
+import com.san.kir.manger.data.room.entities.Category
+import com.san.kir.manger.data.room.entities.MangaStatistic
+import com.san.kir.manger.data.room.entities.SiteCatalogElement
+import com.san.kir.manger.data.room.entities.toManga
 import com.san.kir.manger.utils.coroutines.withMainContext
 import com.san.kir.manger.utils.enums.DIR
 import com.san.kir.manger.utils.extensions.createDirs
@@ -96,7 +96,7 @@ class MangaAddViewModel @Inject constructor(
 
             manga.isAlternativeSite = manager.getSite(element.link) is SiteCatalogAlternative
             mangaDao.insert(manga)
-            statisticDao.insert(MangaStatistic(manga = manga.unic))
+            statisticDao.insert(MangaStatistic(manga = manga.name))
             return@withContext path to manga
         }
     }

@@ -5,10 +5,10 @@ import com.san.kir.manger.components.parsing.ConnectManager
 import com.san.kir.manger.components.parsing.SiteCatalogClassic
 import com.san.kir.manger.components.parsing.Translate
 import com.san.kir.manger.components.parsing.postRequest
-import com.san.kir.manger.room.entities.Chapter
-import com.san.kir.manger.room.entities.DownloadItem
-import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.room.entities.SiteCatalogElement
+import com.san.kir.manger.data.room.entities.Chapter
+import com.san.kir.manger.data.room.entities.DownloadItem
+import com.san.kir.manger.data.room.entities.Manga
+import com.san.kir.manger.data.room.entities.SiteCatalogElement
 import com.san.kir.manger.utils.extensions.log
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
@@ -182,7 +182,7 @@ class ComX(private val connectManager: ConnectManager) : SiteCatalogClassic() {
         val jsonData = jsonData(host + lastChapterLink)
         return jsonData.chapters.map { chapter ->
             Chapter(
-                manga = manga.unic,
+                manga = manga.name,
                 name = chapter.title,
                 link = "$host/readcomix/${jsonData.news_id}/${chapter.id}.html",
                 path = "${manga.path}/${chapter.title}",

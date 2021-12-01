@@ -32,13 +32,13 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.san.kir.manger.room.entities.SimpleManga
+import com.san.kir.manger.data.room.entities.SimpleManga
 import com.san.kir.manger.ui.application_navigation.library.LibraryNavTarget
-import com.san.kir.manger.ui.utils.TestTags
-import com.san.kir.manger.ui.utils.navigate
-import com.san.kir.manger.ui.utils.rememberImage
-import com.san.kir.manger.ui.utils.squareMaxSize
 import com.san.kir.manger.utils.CATEGORY_ALL
+import com.san.kir.manger.utils.compose.TestTags
+import com.san.kir.manger.utils.compose.navigate
+import com.san.kir.manger.utils.compose.rememberImage
+import com.san.kir.manger.utils.compose.squareMaxSize
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -62,7 +62,7 @@ private fun ItemView(
             .fillMaxWidth()
             .combinedClickable(
                 onLongClick = { viewModel.changeSelectedManga(true, manga) },
-                onClick = { nav.navigate(LibraryNavTarget.Chapters, manga.unic) })
+                onClick = { nav.navigate(LibraryNavTarget.Chapters, manga.name) })
     ) {
         content()
     }
@@ -76,7 +76,7 @@ fun LibraryLargeItemView(
     viewModel: LibraryViewModel
 ) {
     val showCategory by viewModel.showCategory.collectAsState(false)
-    val countNotRead by viewModel.countNotRead(manga.unic).collectAsState(0)
+    val countNotRead by viewModel.countNotRead(manga.name).collectAsState(0)
     val primaryColor = MaterialTheme.colors.primary
     var backgroundColor by remember { mutableStateOf(primaryColor) }
 
@@ -145,7 +145,7 @@ fun LibrarySmallItemView(
     viewModel: LibraryViewModel
 ) {
     val showCategory by viewModel.showCategory.collectAsState(false)
-    val countNotRead by viewModel.countNotRead(manga.unic).collectAsState(0)
+    val countNotRead by viewModel.countNotRead(manga.name).collectAsState(0)
     val primaryColor = MaterialTheme.colors.primary
     var backgroundColor by remember { mutableStateOf(primaryColor) }
 

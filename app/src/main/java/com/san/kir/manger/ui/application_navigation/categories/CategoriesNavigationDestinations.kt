@@ -9,10 +9,10 @@ import com.google.accompanist.navigation.animation.composable
 import com.san.kir.manger.ui.application_navigation.categories.category.CategoryEditScreen
 import com.san.kir.manger.ui.application_navigation.categories.category.CategoryEditViewModel
 import com.san.kir.manger.ui.application_navigation.categories.main.CategoriesScreen
-import com.san.kir.manger.ui.utils.CategoryItem
-import com.san.kir.manger.ui.utils.NavItem
-import com.san.kir.manger.ui.utils.NavTarget
-import com.san.kir.manger.ui.utils.getStringElement
+import com.san.kir.manger.utils.compose.CategoryItem
+import com.san.kir.manger.utils.compose.NavItem
+import com.san.kir.manger.utils.compose.NavTarget
+import com.san.kir.manger.utils.compose.getStringElement
 
 sealed class CategoriesNavTarget : NavTarget {
     object Main : CategoriesNavTarget() {

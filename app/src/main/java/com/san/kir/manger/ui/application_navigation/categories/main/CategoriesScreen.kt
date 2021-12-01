@@ -28,11 +28,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.san.kir.manger.R
-import com.san.kir.manger.room.entities.Category
+import com.san.kir.manger.data.room.entities.Category
 import com.san.kir.manger.ui.application_navigation.categories.CategoriesNavTarget
-import com.san.kir.manger.ui.utils.MenuIcon
-import com.san.kir.manger.ui.utils.TopBarScreenList
-import com.san.kir.manger.ui.utils.navigate
+import com.san.kir.manger.utils.compose.MenuIcon
+import com.san.kir.manger.utils.compose.TopBarScreenList
+import com.san.kir.manger.utils.compose.navigate
 
 @Composable
 fun CategoriesScreen(

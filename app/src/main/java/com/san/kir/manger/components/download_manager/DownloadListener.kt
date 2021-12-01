@@ -1,6 +1,6 @@
 package com.san.kir.manger.components.download_manager
 
-import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.data.room.entities.Chapter
 
 interface DownloadListener {
     fun onProgress(item: Chapter)

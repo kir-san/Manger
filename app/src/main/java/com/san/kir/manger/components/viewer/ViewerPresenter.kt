@@ -2,7 +2,7 @@ package com.san.kir.manger.components.viewer
 
 import androidx.lifecycle.lifecycleScope
 import com.san.kir.ankofork.Binder
-import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.data.room.entities.Chapter
 import com.san.kir.manger.utils.coroutines.defaultLaunch
 import com.san.kir.manger.utils.coroutines.withMainContext
 import com.san.kir.manger.utils.extensions.SpecialViewPager

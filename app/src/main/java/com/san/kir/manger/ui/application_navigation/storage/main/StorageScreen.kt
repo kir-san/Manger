@@ -35,13 +35,13 @@ import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.san.kir.manger.R
-import com.san.kir.manger.room.entities.Storage
+import com.san.kir.manger.data.room.entities.Storage
 import com.san.kir.manger.ui.application_navigation.storage.StorageNavTarget
-import com.san.kir.manger.ui.utils.MenuText
-import com.san.kir.manger.ui.utils.StorageProgressBar
-import com.san.kir.manger.ui.utils.TopBarScreenList
-import com.san.kir.manger.ui.utils.navigate
-import com.san.kir.manger.ui.utils.rememberImage
+import com.san.kir.manger.utils.compose.MenuText
+import com.san.kir.manger.utils.compose.StorageProgressBar
+import com.san.kir.manger.utils.compose.TopBarScreenList
+import com.san.kir.manger.utils.compose.navigate
+import com.san.kir.manger.utils.compose.rememberImage
 import com.san.kir.manger.utils.extensions.formatDouble
 import kotlin.math.roundToInt
 
@@ -93,7 +93,7 @@ private fun ItemView(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                manga?.let { nav.navigate(StorageNavTarget.Storage, it.unic) }
+                manga?.let { nav.navigate(StorageNavTarget.Storage, it.name) }
                     ?: run { showMenu = true }
             }
     ) {

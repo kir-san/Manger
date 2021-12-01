@@ -1,9 +1,9 @@
 package com.san.kir.manger.components.parsing
 
-import com.san.kir.manger.room.entities.Chapter
-import com.san.kir.manger.room.entities.DownloadItem
-import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.room.entities.SiteCatalogElement
+import com.san.kir.manger.data.room.entities.Chapter
+import com.san.kir.manger.data.room.entities.DownloadItem
+import com.san.kir.manger.data.room.entities.Manga
+import com.san.kir.manger.data.room.entities.SiteCatalogElement
 import com.san.kir.manger.utils.extensions.log
 import kotlinx.coroutines.flow.Flow
 

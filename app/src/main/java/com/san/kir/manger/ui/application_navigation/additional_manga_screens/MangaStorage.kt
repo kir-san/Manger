@@ -36,10 +36,10 @@ import androidx.lifecycle.asFlow
 import androidx.navigation.NavHostController
 import androidx.work.WorkManager
 import com.san.kir.manger.R
-import com.san.kir.manger.ui.utils.StorageProgressBar
-import com.san.kir.manger.ui.utils.TopBarScreenContent
+import com.san.kir.manger.utils.compose.StorageProgressBar
+import com.san.kir.manger.utils.compose.TopBarScreenContent
 import com.san.kir.manger.utils.extensions.format
-import com.san.kir.manger.workmanager.ChapterDeleteWorker
+import com.san.kir.manger.foreground_work.workmanager.ChapterDeleteWorker
 import kotlinx.coroutines.flow.collect
 
 @Composable

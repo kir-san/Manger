@@ -1,5 +1,6 @@
 package com.san.kir.manger.utils.extensions
 
+import android.app.Activity
 import android.app.Service
 import android.content.ActivityNotFoundException
 import android.content.ComponentName
@@ -39,6 +40,20 @@ fun Context.longToast(@StringRes resId: Int, vararg formatArgs: Any?) {
     longToast(getString(resId, *formatArgs))
 }
 
+inline fun <reified T : Activity> startActivity(
+    ctx: Context,
+    vararg params: Pair<String, Any?>,
+) {
+    ctx.startActivity(intentFor<T>(ctx, *params))
+}
+
+inline fun <reified T : Activity> startActivity(
+    ctx: Context,
+    intent: Intent
+) {
+    ctx.startActivity(intent)
+}
+
 inline fun <reified T : Service> startService(
     ctx: Context,
     action: String,
@@ -76,38 +91,43 @@ inline fun <reified T : Any> intentFor(ctx: Context, vararg params: Pair<String,
     return intent
 }
 
+
 fun fillIntentArguments(intent: Intent, params: Array<out Pair<String, Any?>>) {
     params.forEach {
-        when (val value = it.second) {
-            null -> intent.putExtra(it.first, null as Serializable?)
-            is Int -> intent.putExtra(it.first, value)
-            is Long -> intent.putExtra(it.first, value)
-            is CharSequence -> intent.putExtra(it.first, value)
-            is String -> intent.putExtra(it.first, value)
-            is Float -> intent.putExtra(it.first, value)
-            is Double -> intent.putExtra(it.first, value)
-            is Char -> intent.putExtra(it.first, value)
-            is Short -> intent.putExtra(it.first, value)
-            is Boolean -> intent.putExtra(it.first, value)
-            is Serializable -> intent.putExtra(it.first, value)
-            is Bundle -> intent.putExtra(it.first, value)
-            is Parcelable -> intent.putExtra(it.first, value)
-            is Array<*> -> when {
-                value.isArrayOf<CharSequence>() -> intent.putExtra(it.first, value)
-                value.isArrayOf<String>() -> intent.putExtra(it.first, value)
-                value.isArrayOf<Parcelable>() -> intent.putExtra(it.first, value)
-                else -> throw AnkoException("Intent extra ${it.first} has wrong type ${value.javaClass.name}")
-            }
-            is IntArray -> intent.putExtra(it.first, value)
-            is LongArray -> intent.putExtra(it.first, value)
-            is FloatArray -> intent.putExtra(it.first, value)
-            is DoubleArray -> intent.putExtra(it.first, value)
-            is CharArray -> intent.putExtra(it.first, value)
-            is ShortArray -> intent.putExtra(it.first, value)
-            is BooleanArray -> intent.putExtra(it.first, value)
-            else -> throw AnkoException("Intent extra ${it.first} has wrong type ${value.javaClass.name}")
-        }
+        intent.addArgument(it)
         return@forEach
+    }
+}
+
+fun Intent.addArgument(param: Pair<String, Any?>) {
+    when (val value = param.second) {
+        null -> putExtra(param.first, null as Serializable?)
+        is Int -> putExtra(param.first, value)
+        is Long -> putExtra(param.first, value)
+        is CharSequence -> putExtra(param.first, value)
+        is String -> putExtra(param.first, value)
+        is Float -> putExtra(param.first, value)
+        is Double -> putExtra(param.first, value)
+        is Char -> putExtra(param.first, value)
+        is Short -> putExtra(param.first, value)
+        is Boolean -> putExtra(param.first, value)
+        is Serializable -> putExtra(param.first, value)
+        is Bundle -> putExtra(param.first, value)
+        is Parcelable -> putExtra(param.first, value)
+        is Array<*> -> when {
+            value.isArrayOf<CharSequence>() -> putExtra(param.first, value)
+            value.isArrayOf<String>() -> putExtra(param.first, value)
+            value.isArrayOf<Parcelable>() -> putExtra(param.first, value)
+            else -> throw Exception("Intent extra ${param.first} has wrong type ${value.javaClass.name}")
+        }
+        is IntArray -> putExtra(param.first, value)
+        is LongArray -> putExtra(param.first, value)
+        is FloatArray -> putExtra(param.first, value)
+        is DoubleArray -> putExtra(param.first, value)
+        is CharArray -> putExtra(param.first, value)
+        is ShortArray -> putExtra(param.first, value)
+        is BooleanArray -> putExtra(param.first, value)
+        else -> throw Exception("Intent extra ${param.first} has wrong type ${value.javaClass.name}")
     }
 }
 

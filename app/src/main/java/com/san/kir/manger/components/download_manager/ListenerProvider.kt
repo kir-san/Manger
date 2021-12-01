@@ -1,6 +1,6 @@
 package com.san.kir.manger.components.download_manager
 
-import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.data.room.entities.Chapter
 import java.util.*
 
 class ListenerProvider {

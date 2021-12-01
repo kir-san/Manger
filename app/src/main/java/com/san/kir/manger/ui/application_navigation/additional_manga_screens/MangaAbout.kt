@@ -18,13 +18,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import com.san.kir.manger.R
-import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.data.room.entities.Manga
 import com.san.kir.manger.ui.application_navigation.library.LibraryNavTarget
-import com.san.kir.manger.ui.utils.DialogText
-import com.san.kir.manger.ui.utils.ImageWithStatus
-import com.san.kir.manger.ui.utils.LabelText
-import com.san.kir.manger.ui.utils.TopBarScreenWithInsets
-import com.san.kir.manger.ui.utils.navigate
+import com.san.kir.manger.utils.compose.DialogText
+import com.san.kir.manger.utils.compose.ImageWithStatus
+import com.san.kir.manger.utils.compose.LabelText
+import com.san.kir.manger.utils.compose.TopBarScreenWithInsets
+import com.san.kir.manger.utils.compose.navigate
 import com.san.kir.manger.utils.coroutines.withDefaultContext
 import com.san.kir.manger.utils.extensions.browse
 import com.san.kir.manger.utils.extensions.formatDouble
@@ -33,15 +33,17 @@ import com.san.kir.manger.utils.extensions.lengthMb
 
 
 @Composable
-fun MangaAboutScreen(nav: NavHostController, item: Manga) {
+fun MangaAboutScreen(
+    navUp: () -> Unit,
+    navTo: (mangaName: String) -> Unit,
+    item: Manga,
+) {
     TopBarScreenWithInsets(
         modifier = Modifier,
-        navigationButtonListener = { nav.navigateUp() },
+        navigationButtonListener = navUp,
         title = stringResource(id = R.string.manga_info_dialog_title),
         actions = {
-            IconButton(onClick = {
-                nav.navigate(LibraryNavTarget.Edit, item.unic)
-            }) {
+            IconButton(onClick = { navTo(item.name) }) {
                 Icon(
                     Icons.Default.Edit,
                     contentDescription = "edit manga",
@@ -58,7 +60,7 @@ fun MangaAboutScreen(nav: NavHostController, item: Manga) {
 @Composable
 private fun MangaAboutContent(
     manga: Manga,
-    ctx: Context = LocalContext.current
+    ctx: Context = LocalContext.current,
 ) {
 
     val calculateString = stringResource(id = R.string.about_manga_dialog_calculate)

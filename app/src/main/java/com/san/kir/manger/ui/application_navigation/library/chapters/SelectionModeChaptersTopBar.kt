@@ -31,8 +31,8 @@ import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.TopAppBar
 import com.san.kir.manger.R
-import com.san.kir.manger.ui.utils.MenuIcon
-import com.san.kir.manger.ui.utils.MenuText
+import com.san.kir.manger.utils.compose.MenuIcon
+import com.san.kir.manger.utils.compose.MenuText
 import com.san.kir.manger.utils.extensions.quantitySimple
 
 @Composable

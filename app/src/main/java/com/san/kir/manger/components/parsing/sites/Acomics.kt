@@ -5,10 +5,10 @@ import com.san.kir.manger.components.parsing.SiteCatalogAlternative
 import com.san.kir.manger.components.parsing.Status
 import com.san.kir.manger.components.parsing.Translate
 import com.san.kir.manger.components.parsing.getShortLink
-import com.san.kir.manger.room.entities.Chapter
-import com.san.kir.manger.room.entities.DownloadItem
-import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.room.entities.SiteCatalogElement
+import com.san.kir.manger.data.room.entities.Chapter
+import com.san.kir.manger.data.room.entities.DownloadItem
+import com.san.kir.manger.data.room.entities.Manga
+import com.san.kir.manger.data.room.entities.SiteCatalogElement
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.flow.flow
@@ -59,7 +59,6 @@ class Acomics(private val connectManager: ConnectManager) : SiteCatalogAlternati
 
         element.host = host
         element.catalogName = catalogName
-        element.siteId = id
 
         element.shotLink = url.split(catalogName).last()
         element.link = url
@@ -113,7 +112,6 @@ class Acomics(private val connectManager: ConnectManager) : SiteCatalogAlternati
 
         element.host = host
         element.catalogName = catalogName
-        element.siteId = id
 
         element.name = elem.select(".catdata2 .title a").first().text()
 
@@ -150,10 +148,10 @@ class Acomics(private val connectManager: ConnectManager) : SiteCatalogAlternati
     override suspend fun chapters(manga: Manga): List<Chapter> {
         return listOf(
             Chapter(
-                manga = manga.unic,
-                name = manga.unic,
+                manga = manga.name,
+                name = manga.name,
                 link = host + manga.shortLink,
-                path = manga.path + "/" + manga.unic
+                path = manga.path + "/" + manga.name
             )
         )
     }

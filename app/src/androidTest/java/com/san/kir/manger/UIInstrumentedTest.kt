@@ -2,10 +2,9 @@ package com.san.kir.manger
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import com.san.kir.manger.room.RoomDB
-import com.san.kir.manger.room.getDatabase
+import com.san.kir.manger.data.room.getDatabase
 import com.san.kir.manger.ui.MainActivity
-import com.san.kir.manger.ui.utils.TestTags
+import com.san.kir.manger.utils.compose.TestTags
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule

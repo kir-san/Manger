@@ -7,10 +7,10 @@ import com.google.accompanist.navigation.animation.composable
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaStorageScreen
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.mangaStorageViewModel
 import com.san.kir.manger.ui.application_navigation.storage.main.StorageScreen
-import com.san.kir.manger.ui.utils.MangaItem
-import com.san.kir.manger.ui.utils.NavItem
-import com.san.kir.manger.ui.utils.NavTarget
-import com.san.kir.manger.ui.utils.getStringElement
+import com.san.kir.manger.utils.compose.MangaItem
+import com.san.kir.manger.utils.compose.NavItem
+import com.san.kir.manger.utils.compose.NavTarget
+import com.san.kir.manger.utils.compose.getStringElement
 
 sealed class StorageNavTarget : NavTarget {
     object Main : StorageNavTarget() {

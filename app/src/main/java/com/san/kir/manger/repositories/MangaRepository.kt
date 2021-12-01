@@ -1,9 +1,8 @@
 package com.san.kir.manger.repositories
 
 import android.content.Context
-import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.room.getDatabase
-import com.san.kir.manger.utils.CATEGORY_ALL
+import com.san.kir.manger.data.room.entities.Manga
+import com.san.kir.manger.data.room.getDatabase
 import com.san.kir.manger.utils.extensions.getFullPath
 import java.io.File
 
@@ -15,7 +14,7 @@ class MangaRepository(context: Context) {
         return mMangaDao.getItems()
     }
 
-    suspend fun getItem(mangaUnic: String) = mMangaDao.getItem(mangaUnic)
+    suspend fun getItem(mangaUnic: String) = mMangaDao.item(mangaUnic)
 
     suspend fun insert(vararg manga: Manga) = mMangaDao.insert(*manga)
     suspend fun update(vararg manga: Manga) = mMangaDao.update(*manga)

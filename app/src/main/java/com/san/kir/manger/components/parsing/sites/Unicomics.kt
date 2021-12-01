@@ -5,10 +5,10 @@ import com.san.kir.manger.components.parsing.SiteCatalogClassic
 import com.san.kir.manger.components.parsing.Status
 import com.san.kir.manger.components.parsing.Translate
 import com.san.kir.manger.components.parsing.getShortLink
-import com.san.kir.manger.room.entities.Chapter
-import com.san.kir.manger.room.entities.DownloadItem
-import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.room.entities.SiteCatalogElement
+import com.san.kir.manger.data.room.entities.Chapter
+import com.san.kir.manger.data.room.entities.DownloadItem
+import com.san.kir.manger.data.room.entities.Manga
+import com.san.kir.manger.data.room.entities.SiteCatalogElement
 import com.san.kir.manger.utils.extensions.createDirs
 import com.san.kir.manger.utils.extensions.getFullPath
 import kotlinx.coroutines.flow.flow
@@ -110,7 +110,7 @@ class Unicomics(private val connectManager: ConnectManager) : SiteCatalogClassic
                 val link = it.select("table > tbody .online > a").attr("href")
                 val name = it.select("a.list_title").text()
                 Chapter(
-                    manga = manga.unic,
+                    manga = manga.name,
                     name = name,
                     link = if (link.contains(host)) link else host + link,
                     path = "${manga.path}/${name}"

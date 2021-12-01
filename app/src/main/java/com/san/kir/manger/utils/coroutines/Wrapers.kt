@@ -1,6 +1,5 @@
 package com.san.kir.manger.utils.coroutines
 
-import okio.BufferedSink
 import okio.BufferedSource
 import okio.Sink
 import okio.sink
@@ -37,11 +36,11 @@ suspend fun File.sinkAsync(): Sink {
     }
 }
 
-suspend fun BufferedSink.writeAllAsync(bufferedSource: BufferedSource): Long {
+suspend fun parseAsync(input: InputStream?, charsetName: String, baseUri: String): Document {
     return suspendCoroutine { continuation ->
         thread {
-            kotlin.runCatching {
-                continuation.resume(writeAll(bufferedSource))
+            runCatching {
+                continuation.resume(Jsoup.parse(input, charsetName, baseUri))
             }.onFailure {
                 continuation.resumeWithException(it)
             }
@@ -49,7 +48,7 @@ suspend fun BufferedSink.writeAllAsync(bufferedSource: BufferedSource): Long {
     }
 }
 
-suspend fun BufferedSink.closeAsync() {
+suspend fun BufferedSource.closeAsync() {
     return suspendCoroutine { continuation ->
         thread {
             kotlin.runCatching {
@@ -58,17 +57,5 @@ suspend fun BufferedSink.closeAsync() {
                 continuation.resumeWithException(it)
             }
         }
-    }
-}
-
-suspend fun parseAsync(input: InputStream?, charsetName: String, baseUri: String): Document {
-    return suspendCoroutine { continuation ->
-            thread {
-                kotlin.runCatching {
-                    continuation.resume(Jsoup.parse(input, charsetName, baseUri))
-                }.onFailure {
-                    continuation.resumeWithException(it)
-                }
-            }
     }
 }

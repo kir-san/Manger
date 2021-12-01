@@ -18,7 +18,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.san.kir.manger.R
-import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.data.room.entities.Manga
 
 @Composable
 fun UpdateContent(

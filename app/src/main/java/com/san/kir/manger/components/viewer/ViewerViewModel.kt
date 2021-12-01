@@ -2,11 +2,11 @@ package com.san.kir.manger.components.viewer
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.san.kir.manger.room.dao.ChapterDao
-import com.san.kir.manger.room.dao.StatisticDao
-import com.san.kir.manger.room.entities.Chapter
-import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.room.entities.MangaStatistic
+import com.san.kir.manger.data.room.dao.ChapterDao
+import com.san.kir.manger.data.room.dao.StatisticDao
+import com.san.kir.manger.data.room.entities.Chapter
+import com.san.kir.manger.data.room.entities.Manga
+import com.san.kir.manger.data.room.entities.MangaStatistic
 import com.san.kir.manger.utils.ChapterComparator
 import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
 import com.san.kir.manger.utils.coroutines.withDefaultContext
@@ -46,7 +46,7 @@ class ViewerViewModel @Inject constructor(
     suspend fun update(chapter: Chapter) = chapterDao.update(chapter)
 
     suspend fun getFirstNotReadChapter(manga: Manga): Chapter? = withDefaultContext {
-        var list = chapterDao.getItemsWhereManga(manga.unic)
+        var list = chapterDao.getItemsWhereManga(manga.name)
 
         list = if (manga.isAlternativeSort) {
             try {
@@ -62,7 +62,7 @@ class ViewerViewModel @Inject constructor(
     }
 
     suspend fun getFirstChapter(manga: Manga): Chapter = withDefaultContext {
-        var list = chapterDao.getItemsWhereManga(manga.unic)
+        var list = chapterDao.getItemsWhereManga(manga.name)
 
         if (manga.isAlternativeSort) {
             list = list.sortedWith(ChapterComparator())

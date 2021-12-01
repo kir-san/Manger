@@ -5,10 +5,10 @@ import com.san.kir.manger.components.parsing.SiteCatalogClassic
 import com.san.kir.manger.components.parsing.Status
 import com.san.kir.manger.components.parsing.Translate
 import com.san.kir.manger.components.parsing.getShortLink
-import com.san.kir.manger.room.entities.Chapter
-import com.san.kir.manger.room.entities.DownloadItem
-import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.room.entities.SiteCatalogElement
+import com.san.kir.manger.data.room.entities.Chapter
+import com.san.kir.manger.data.room.entities.DownloadItem
+import com.san.kir.manger.data.room.entities.Manga
+import com.san.kir.manger.data.room.entities.SiteCatalogElement
 import com.san.kir.manger.utils.extensions.createDirs
 import com.san.kir.manger.utils.extensions.getFullPath
 import kotlinx.coroutines.delay
@@ -62,7 +62,6 @@ abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
 
             element.host = host
             element.catalogName = catalogName
-            element.siteId = id
 
             element.name = doc.select("#mangaBox .leftContent span.name").text()
 
@@ -139,7 +138,6 @@ abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
         // Сохраняю в каждом елементе host и catalogName
         element.host = host
         element.catalogName = catalogName
-        element.siteId = id
 
         // название манги
         element.name = elem.select(".img a").select("img").attr("title")
@@ -217,7 +215,7 @@ abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
                 if (pat.find())
                     name = pat.group()
                 Chapter(
-                    manga = manga.unic,
+                    manga = manga.name,
                     name = name,
                     date = it.select("td").last().text(),
                     link = host + it.select("a").attr("href"),

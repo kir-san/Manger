@@ -1,8 +1,8 @@
 package com.san.kir.manger.repositories
 
 import android.content.Context
-import com.san.kir.manger.room.entities.LatestChapter
-import com.san.kir.manger.room.getDatabase
+import com.san.kir.manger.data.room.entities.LatestChapter
+import com.san.kir.manger.data.room.getDatabase
 
 class LatestChapterRepository(context: Context) {
     private val mLatestDao = getDatabase(context).latestChapterDao

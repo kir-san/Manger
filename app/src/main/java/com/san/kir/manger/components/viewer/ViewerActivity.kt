@@ -1,6 +1,7 @@
 package com.san.kir.manger.components.viewer
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
@@ -32,11 +33,13 @@ import com.san.kir.ankofork.setContentView
 import com.san.kir.manger.R
 import com.san.kir.manger.Viewer
 import com.san.kir.manger.data.datastore.ViewerRepository
-import com.san.kir.manger.room.entities.Chapter
-import com.san.kir.manger.room.entities.Manga
+import com.san.kir.manger.data.room.entities.Chapter
+import com.san.kir.manger.data.room.entities.Manga
 import com.san.kir.manger.utils.coroutines.mainLaunch
 import com.san.kir.manger.utils.coroutines.withMainContext
 import com.san.kir.manger.utils.extensions.add
+import com.san.kir.manger.utils.extensions.addArgument
+import com.san.kir.manger.utils.extensions.intentFor
 import com.san.kir.manger.utils.extensions.log
 import com.san.kir.manger.utils.extensions.showAlways
 import dagger.hilt.android.AndroidEntryPoint
@@ -52,6 +55,34 @@ class ViewerActivity : AppCompatActivity() {
     companion object { // константы для сохранения настроек
         var LEFT_PART_SCREEN = 0 // Левая часть экрана
         var RIGHT_PART_SCREEN = 0 // Правая часть экрана
+
+        fun start(
+            context: Context,
+            isAlternative: Boolean = false,
+            isContinue: Boolean = false,
+            manga: Manga? = null,
+            chapter: Chapter? = null,
+        ) {
+            val intent = intentFor<ViewerActivity>(context)
+
+            if (isAlternative) {
+                intent.addArgument("is" to isAlternative)
+            }
+
+            if (isContinue) {
+                intent.addArgument("continue" to isContinue)
+            }
+
+            chapter?.let {
+                intent.addArgument("chapter" to chapter)
+            }
+
+            manga?.let {
+                intent.addArgument("manga" to manga)
+            }
+
+            context.startActivity(intent)
+        }
     }
 
     val mViewModel: ViewerViewModel by viewModels()
@@ -197,7 +228,8 @@ class ViewerActivity : AppCompatActivity() {
 
     fun toogleBars() {
         if (window.decorView.windowSystemUiVisibility and
-            View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
+            View.SYSTEM_UI_FLAG_FULLSCREEN == 0
+        ) {
             hideSystemUI()
         } else {
             showSystemUI()

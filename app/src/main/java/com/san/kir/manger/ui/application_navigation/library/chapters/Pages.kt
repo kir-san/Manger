@@ -19,6 +19,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -38,15 +39,17 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.asFlow
 import androidx.work.WorkManager
 import com.google.accompanist.insets.navigationBarsPadding
-import com.san.kir.ankofork.startActivity
 import com.san.kir.manger.R
 import com.san.kir.manger.components.viewer.ViewerActivity
-import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.ui.utils.rememberImage
-import com.san.kir.manger.workmanager.ChapterDeleteWorker
-import com.san.kir.manger.workmanager.ReadChapterDelete
+import com.san.kir.manger.data.room.entities.Manga
+import com.san.kir.manger.foreground_work.workmanager.ChapterDeleteWorker
+import com.san.kir.manger.foreground_work.workmanager.ReadChapterDelete
+import com.san.kir.manger.ui.application_navigation.manga_viewer.MangaViewerActivity
+import com.san.kir.manger.utils.compose.rememberImage
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 sealed class ChapterPages(
     val nameId: Int,
@@ -95,6 +98,7 @@ private val defaultMargin = 16.dp
 fun AboutPageContent(
     viewModel: ChaptersViewModel,
     context: Context = LocalContext.current,
+    scope: CoroutineScope = rememberCoroutineScope(),
 ) {
     val fullChaptersCount = viewModel.chapters.count()
     val readChaptersCount = viewModel.chapters.count { it.isRead }
@@ -174,11 +178,10 @@ fun AboutPageContent(
         // Продолжение чтения
         Button(
             onClick = {
-                context.startActivity<ViewerActivity>(
-                    "manga" to viewModel.manga,
-                    "is" to viewModel.manga.isAlternativeSort,
-                    "continue" to true
-                )
+                ViewerActivity.start(context,
+                    manga = viewModel.manga,
+                    isAlternative = viewModel.manga.isAlternativeSort,
+                    isContinue = true)
             },
             modifier = Modifier
                 .navigationBarsPadding(start = false, end = false)

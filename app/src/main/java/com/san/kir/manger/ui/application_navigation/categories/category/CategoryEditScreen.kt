@@ -27,14 +27,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.san.kir.manger.R
-import com.san.kir.manger.room.entities.Category
-import com.san.kir.manger.ui.utils.CheckBoxText
-import com.san.kir.manger.ui.utils.MenuIcon
-import com.san.kir.manger.ui.utils.RadioGroup
-import com.san.kir.manger.ui.utils.TopBarScreenContent
+import com.san.kir.manger.utils.compose.CheckBoxText
+import com.san.kir.manger.utils.compose.MenuIcon
+import com.san.kir.manger.utils.compose.RadioGroup
+import com.san.kir.manger.utils.compose.TopBarScreenContent
 import com.san.kir.manger.utils.SortLibraryUtil
 import kotlin.math.roundToInt
 

@@ -33,7 +33,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.application_navigation.MainNavTarget
-import com.san.kir.manger.ui.utils.navigate
+import com.san.kir.manger.utils.compose.navigate
 
 @Composable
 fun StartAppScreen(nav: NavHostController) {

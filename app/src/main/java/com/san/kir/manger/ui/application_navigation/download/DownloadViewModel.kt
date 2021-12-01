@@ -12,10 +12,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.san.kir.ankofork.sdk28.connectivityManager
 import com.san.kir.manger.data.datastore.DownloadRepository
-import com.san.kir.manger.room.dao.ChapterDao
-import com.san.kir.manger.room.dao.MangaDao
-import com.san.kir.manger.room.entities.Chapter
-import com.san.kir.manger.services.DownloadService
+import com.san.kir.manger.data.room.dao.ChapterDao
+import com.san.kir.manger.data.room.dao.MangaDao
+import com.san.kir.manger.data.room.entities.Chapter
+import com.san.kir.manger.foreground_work.services.DownloadService
 import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
 import com.san.kir.manger.utils.coroutines.withMainContext
 import com.san.kir.manger.utils.enums.DownloadState

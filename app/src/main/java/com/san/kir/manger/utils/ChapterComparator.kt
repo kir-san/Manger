@@ -1,6 +1,6 @@
 package com.san.kir.manger.utils
 
-import com.san.kir.manger.room.entities.Chapter
+import com.san.kir.manger.data.room.entities.Chapter
 import java.util.regex.Pattern
 
 class ChapterComparator : Comparator<Chapter> {

@@ -11,17 +11,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.san.kir.manger.R
-import com.san.kir.manger.room.dao.CategoryDao
-import com.san.kir.manger.room.dao.MangaDao
-import com.san.kir.manger.room.dao.PlannedDao
-import com.san.kir.manger.room.dao.SiteDao
-import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.room.entities.PlannedTask
+import com.san.kir.manger.data.room.dao.CategoryDao
+import com.san.kir.manger.data.room.dao.MangaDao
+import com.san.kir.manger.data.room.dao.PlannedDao
+import com.san.kir.manger.data.room.dao.SiteDao
+import com.san.kir.manger.data.room.entities.Manga
+import com.san.kir.manger.data.room.entities.PlannedTask
 import com.san.kir.manger.ui.MainActivity
 import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
 import com.san.kir.manger.utils.coroutines.mainLaunchInVM
 import com.san.kir.manger.utils.coroutines.withMainContext
-import com.san.kir.manger.workmanager.ScheduleWorker
+import com.san.kir.manger.foreground_work.workmanager.ScheduleWorker
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -50,7 +50,7 @@ class PlannedTaskViewModel @AssistedInject constructor(
     var listManga by mutableStateOf(listOf<Manga>())
         private set
     val listMangaName by derivedStateOf { listManga.map { it.name } }
-    val listMangaUnic by derivedStateOf { listManga.map { it.unic } }
+    val listMangaUnic by derivedStateOf { listManga.map { it.name } }
 
     var categoryList by mutableStateOf(listOf<String>())
         private set

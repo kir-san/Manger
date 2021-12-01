@@ -8,11 +8,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.san.kir.ankofork.dialogs.toast
 import com.san.kir.manger.R
-import com.san.kir.manger.room.dao.ChapterDao
-import com.san.kir.manger.room.dao.MangaDao
-import com.san.kir.manger.room.entities.Manga
-import com.san.kir.manger.room.entities.action
-import com.san.kir.manger.services.DownloadService
+import com.san.kir.manger.data.room.dao.ChapterDao
+import com.san.kir.manger.data.room.dao.MangaDao
+import com.san.kir.manger.data.room.entities.Manga
+import com.san.kir.manger.data.room.entities.action
+import com.san.kir.manger.foreground_work.services.DownloadService
 import com.san.kir.manger.ui.MainActivity
 import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
 import com.san.kir.manger.utils.coroutines.withDefaultContext

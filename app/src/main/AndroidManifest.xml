@@ -43,10 +43,10 @@
             android:name=".components.viewer.ViewerActivity"
             android:theme="@style/AppTheme.Viewer" />
 
-        <service android:name=".services.CatalogForOneSiteUpdaterService" />
-        <service android:name=".services.DownloadService" />
-        <service android:name=".services.MangaUpdaterService" />
-        <service android:name=".services.AppUpdateService" />
+        <service android:name="com.san.kir.manger.foreground_work.services.CatalogForOneSiteUpdaterService" />
+        <service android:name="com.san.kir.manger.foreground_work.services.DownloadService" />
+        <service android:name="com.san.kir.manger.foreground_work.services.MangaUpdaterService" />
+        <service android:name="com.san.kir.manger.foreground_work.services.AppUpdateService" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"

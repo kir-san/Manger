@@ -161,10 +161,13 @@ fun AboutPageContent(
         // Чтение манги с начала
         Button(
             onClick = {
-                context.startActivity<ViewerActivity>(
-                    "manga" to viewModel.manga,
-                    "is" to viewModel.manga.isAlternativeSort
-                )
+                scope.launch {
+                    ViewerActivity.start(context,
+                        manga = viewModel.manga,
+                        isAlternative = viewModel.manga.isAlternativeSort,
+                    )
+                }
+
             },
             modifier = Modifier
                 .layoutId(Refs.startBtn)

@@ -12,9 +12,9 @@ import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.san.kir.ankofork.dialogs.longToast
 import com.san.kir.manger.R
-import com.san.kir.manger.data.room.dao.MangaDao
-import com.san.kir.manger.data.room.dao.PlannedDao
-import com.san.kir.manger.data.room.dao.SiteDao
+import com.san.kir.data.db.dao.MangaDao
+import com.san.kir.data.db.dao.PlannedDao
+import com.san.kir.data.db.dao.SiteDao
 import com.san.kir.manger.data.room.entities.PlannedTask
 import com.san.kir.manger.data.room.entities.PlannedTaskColumn
 import com.san.kir.manger.data.room.entities.mangaList
@@ -35,9 +35,9 @@ import java.util.concurrent.TimeUnit
 class ScheduleWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    private val plannedDao: PlannedDao,
-    private val mangaDao: MangaDao,
-    private val siteDao: SiteDao,
+    private val plannedDao: com.san.kir.data.db.dao.PlannedDao,
+    private val mangaDao: com.san.kir.data.db.dao.MangaDao,
+    private val siteDao: com.san.kir.data.db.dao.SiteDao,
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result = coroutineScope {

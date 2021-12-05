@@ -183,21 +183,12 @@
     <string name="first_run_exit_text">Двойное нажатие закроет приложение</string>
 
     <!-- MainMenu -->
-    <string name="main_menu_library">Библиотека</string>
     <string name="main_menu_library_count">Библиотека: %d</string>
-    <string name="main_menu_storage">Хранилище</string>
     <string name="main_menu_storage_size_mb">%s Мб</string>
-    <string name="main_menu_category">Категории</string>
-    <string name="main_menu_catalogs">Каталоги</string>
-    <string name="main_menu_downloader">Загрузчик</string>
     <string name="main_menu_downloader_count">Загрузчик: %d</string>
-    <string name="main_menu_latest">Обновления</string>
     <string name="main_menu_latest_count">Обновления: %d</string>
-    <string name="main_menu_settings">Настройки</string>
     <string name="main_menu_search">Поиск</string>
     <string name="main_menu_item_catalogs">%1$d - %2$d</string>
-    <string name="main_menu_schedule">Расписание</string>
-    <string name="main_menu_statistic">Статистика</string>
 
     <!-- Storage -->
     <string name="storage_title_size">Хранилище: %s Мб</string>
@@ -364,17 +355,6 @@
     <string name="manga_status_unknown">Не выбрано</string>
     <string name="manga_status_continue">Выпуск продолжается</string>
     <string name="manga_status_complete">Выпуск завершен</string>
-    <string name="status_complete">Выпуск завершен</string>
-    <string name="status_not_complete">Выпуск продолжается</string>
-    <string name="status_single">Сингл</string>
-    <string name="status_unknown">Неизвестно</string>
-    <string name="translate_complete">Перевод завершен</string>
-    <string name="translate_not_complete">Перевод продолжается</string>
-    <string name="translate_freeze">Перевод заморожен</string>
-    <string name="translate_unknown">Неизвестно</string>
-
-    <!-- Category All -->
-    <string name="category_all">Все</string>
 
     <!--AvailableUpdate-->
     <string name="available_update_name">Разрешенные к обновлению</string>
@@ -382,20 +362,7 @@
 
     <!--PlannedTask-->
     <string name="planned_task_name">Запланированные задачи</string>
-    <string name="planned_period_day">День</string>
-    <string name="planned_period_week">Неделя</string>
-    <string name="planned_type_manga">Манга</string>
-    <string name="planned_type_group">Группа</string>
-    <string name="planned_type_category">Категория</string>
-    <string name="planned_type_catalog">Каталог</string>
-    <string name="planned_type_app">Приложение</string>
-    <string name="planned_week_monday">пн</string>
-    <string name="planned_week_tuesday">вт</string>
-    <string name="planned_week_wednesday">ср</string>
-    <string name="planned_week_thursday">чт</string>
-    <string name="planned_week_friday">пт</string>
-    <string name="planned_week_saturday">сб</string>
-    <string name="planned_week_sunday">вс</string>
+
 
     <!--MangaUpdateService-->
     <string name="manga_update_action_cancel_all">Отменить все</string>

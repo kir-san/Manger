@@ -13,22 +13,17 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.san.kir.ankofork.dialogs.toast
 import com.san.kir.manger.R
-import com.san.kir.manger.components.parsing.SiteCatalogsManager
+import com.san.kir.data.parsing.SiteCatalogsManager
 import com.san.kir.manger.data.datastore.ChaptersRepository
-import com.san.kir.manger.data.room.dao.ChapterDao
-import com.san.kir.manger.data.room.dao.MangaDao
 import com.san.kir.manger.data.room.entities.Chapter
 import com.san.kir.manger.data.room.entities.Manga
-import com.san.kir.manger.data.room.entities.action
 import com.san.kir.manger.foreground_work.services.DownloadService
 import com.san.kir.manger.ui.MainActivity
-import com.san.kir.manger.ui.application_navigation.manga_viewer.MangaViewerActivity
 import com.san.kir.manger.utils.ChapterComparator
-import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
-import com.san.kir.manger.utils.coroutines.withDefaultContext
-import com.san.kir.manger.utils.coroutines.withMainContext
-import com.san.kir.manger.utils.enums.ChapterFilter
-import com.san.kir.manger.utils.enums.ChapterStatus
+import com.san.kir.core.utils.coroutines.withDefaultContext
+import com.san.kir.core.utils.coroutines.withMainContext
+import com.san.kir.core.support.ChapterFilter
+import com.san.kir.core.support.ChapterStatus
 import com.san.kir.manger.utils.extensions.delChapters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -36,11 +31,7 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -49,11 +40,11 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalCoroutinesApi::class)
 class ChaptersViewModel @AssistedInject constructor(
     @Assisted private val mangaUnic: String,
-    private val chapterDao: ChapterDao,
-    private val mangaDao: MangaDao,
+    private val chapterDao: com.san.kir.data.db.dao.ChapterDao,
+    private val mangaDao: com.san.kir.data.db.dao.MangaDao,
     private val chapterStore: ChaptersRepository,
     private val context: Application,
-    private val manager: SiteCatalogsManager,
+    private val manager: com.san.kir.data.parsing.SiteCatalogsManager,
 ) : ViewModel() {
     private var oneTimeFlag by mutableStateOf(true)
     var manga by mutableStateOf(Manga())
@@ -74,7 +65,7 @@ class ChaptersViewModel @AssistedInject constructor(
         private set
 
     // фильтры для списка глав
-    var filter by mutableStateOf(ChapterFilter.ALL_READ_ASC)
+    var filter by mutableStateOf(com.san.kir.core.support.ChapterFilter.ALL_READ_ASC)
 
     init {
         // инициация манги
@@ -85,7 +76,7 @@ class ChaptersViewModel @AssistedInject constructor(
         ) { m, flag, store ->
             if (flag) {
                 m.populate += 1
-                withMainContext {
+                com.san.kir.core.utils.coroutines.withMainContext {
                     oneTimeFlag = false
                     manga = m
                 }
@@ -95,17 +86,19 @@ class ChaptersViewModel @AssistedInject constructor(
                 val tempFilter = if (store.isIndividual) {
                     manga.chapterFilter
                 } else {
-                    ChapterFilter.valueOf(store.filterStatus)
+                    com.san.kir.core.support.ChapterFilter.valueOf(store.filterStatus)
                 }
-                withMainContext { filter = tempFilter }
+                com.san.kir.core.utils.coroutines.withMainContext { filter = tempFilter }
             }
             m
         }
             .flatMapLatest { manga ->
-                withMainContext { this@ChaptersViewModel.manga = manga }
+                com.san.kir.core.utils.coroutines.withMainContext {
+                    this@ChaptersViewModel.manga = manga
+                }
                 chapterDao.loadItemsWhereManga(manga.name)
             }
-            .onEach { withMainContext { chapters = it } }
+            .onEach { com.san.kir.core.utils.coroutines.withMainContext { chapters = it } }
             // подготовка списка глав с использованием фильтров и сортировки
             .combine(snapshotFlow { filter }) { list, f -> list to f }
             .map { (l, filter) ->
@@ -114,22 +107,22 @@ class ChaptersViewModel @AssistedInject constructor(
                     list = list.sortedWith(ChapterComparator())
                 }
                 when (filter) {
-                    ChapterFilter.ALL_READ_ASC -> list
-                    ChapterFilter.NOT_READ_ASC -> list.filter { !it.isRead }
-                    ChapterFilter.IS_READ_ASC -> list.filter { it.isRead }
-                    ChapterFilter.ALL_READ_DESC -> list.reversed()
-                    ChapterFilter.NOT_READ_DESC -> list.filter { !it.isRead }.reversed()
-                    ChapterFilter.IS_READ_DESC -> list.filter { it.isRead }.reversed()
+                    com.san.kir.core.support.ChapterFilter.ALL_READ_ASC -> list
+                    com.san.kir.core.support.ChapterFilter.NOT_READ_ASC -> list.filter { !it.isRead }
+                    com.san.kir.core.support.ChapterFilter.IS_READ_ASC -> list.filter { it.isRead }
+                    com.san.kir.core.support.ChapterFilter.ALL_READ_DESC -> list.reversed()
+                    com.san.kir.core.support.ChapterFilter.NOT_READ_DESC -> list.filter { !it.isRead }.reversed()
+                    com.san.kir.core.support.ChapterFilter.IS_READ_DESC -> list.filter { it.isRead }.reversed()
                 }
             }
             .distinctUntilChanged()
             .catch { t -> throw t }
-            .onEach { withMainContext { prepareChapters = it } }
+            .onEach { com.san.kir.core.utils.coroutines.withMainContext { prepareChapters = it } }
             // обновление размера списка выделеных элементов
             .map { it.count() }
             .onEach { count ->
                 if (selectedItems.count() != count) {
-                    withMainContext {
+                    com.san.kir.core.utils.coroutines.withMainContext {
                         selectedItems = List(count) { false }
                     }
                 }
@@ -153,11 +146,11 @@ class ChaptersViewModel @AssistedInject constructor(
             .map { (mode, list) -> mode to list.count { it } }
             .onEach { (mode, count) ->
                 if (count > 0 && mode.not()) {
-                    withMainContext {
+                    com.san.kir.core.utils.coroutines.withMainContext {
                         selectionMode = true
                     }
                 } else if (count <= 0 && mode) {
-                    withMainContext {
+                    com.san.kir.core.utils.coroutines.withMainContext {
                         selectionMode = false
                     }
 
@@ -199,13 +192,13 @@ class ChaptersViewModel @AssistedInject constructor(
     fun deleteSelectedItems() = viewModelScope.launch {
         var count = 0
         selectedItems.zip(prepareChapters).forEachIndexed { i, (b, chapter) ->
-            if (b && chapter.action == ChapterStatus.DELETE) {
+            if (b && chapter.action == com.san.kir.core.support.ChapterStatus.DELETE) {
                 delChapters(chapter)
                 count++
                 selectedItems = selectedItems.toMutableList().apply { set(i, false) }
             }
         }
-        withDefaultContext {
+        com.san.kir.core.utils.coroutines.withDefaultContext {
             if (count == 0) {
                 context.toast(R.string.list_chapters_selection_del_error)
             } else {
@@ -217,7 +210,7 @@ class ChaptersViewModel @AssistedInject constructor(
 
     fun downloadSelectedItems() = viewModelScope.launch {
         selectedItems.zip(prepareChapters).forEach { (b, chapter) ->
-            if (b && chapter.action == ChapterStatus.DOWNLOADABLE)
+            if (b && chapter.action == com.san.kir.core.support.ChapterStatus.DOWNLOADABLE)
                 DownloadService.start(context, chapter)
         }
         removeSelection()
@@ -273,7 +266,7 @@ class ChaptersViewModel @AssistedInject constructor(
                 it.firstOrNull { chapter -> !chapter.isRead }
             }
 
-    suspend fun firstChapter() = withDefaultContext {
+    suspend fun firstChapter() = com.san.kir.core.utils.coroutines.withDefaultContext {
         val list =
             if (manga.isAlternativeSort) {
                 try {
@@ -290,9 +283,6 @@ class ChaptersViewModel @AssistedInject constructor(
         chapterDao.update(chapter)
 
         return@withDefaultContext chapter
-        /*ViewerActivity.start(context,
-                   manga = viewModel.manga,
-                   isAlternative = viewModel.manga.isAlternativeSort)*/
     }
 
     @AssistedFactory

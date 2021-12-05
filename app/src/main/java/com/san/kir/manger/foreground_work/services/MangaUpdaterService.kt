@@ -21,10 +21,8 @@ import androidx.core.app.TaskStackBuilder
 import androidx.core.net.toUri
 import com.san.kir.ankofork.sdk28.notificationManager
 import com.san.kir.manger.R
-import com.san.kir.manger.components.parsing.SiteCatalogsManager
-import com.san.kir.manger.components.parsing.getShortLink
-import com.san.kir.manger.data.room.dao.ChapterDao
-import com.san.kir.manger.data.room.dao.MangaDao
+import com.san.kir.data.parsing.SiteCatalogsManager
+import com.san.kir.data.parsing.getShortLink
 import com.san.kir.manger.data.room.entities.Chapter
 import com.san.kir.manger.data.room.entities.Manga
 import com.san.kir.manger.data.room.entities.MangaColumn
@@ -33,7 +31,7 @@ import com.san.kir.manger.ui.MainActivity
 import com.san.kir.manger.ui.application_navigation.MainNavTarget
 import com.san.kir.manger.utils.ID
 import com.san.kir.manger.utils.SearchDuplicate
-import com.san.kir.manger.utils.coroutines.withDefaultContext
+import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.manger.utils.extensions.intentFor
 import com.san.kir.manger.utils.extensions.log
 import com.san.kir.manger.utils.extensions.startService
@@ -107,15 +105,15 @@ class MangaUpdaterService : Service() {
     }
 
     @Inject
-    lateinit var chapterDao: ChapterDao
+    lateinit var chapterDao: com.san.kir.data.db.dao.ChapterDao
 
     @Inject
-    lateinit var mangaDao: MangaDao
+    lateinit var mangaDao: com.san.kir.data.db.dao.MangaDao
 
     private val default = Dispatchers.Default
 
     @Inject
-    lateinit var manager: SiteCatalogsManager
+    lateinit var manager: com.san.kir.data.parsing.SiteCatalogsManager
     private var progress = 0 // Прогресс проверенных манг
     private var error = 0 // Счетчик закончившихся с ошибкой
     private var fullCountNew = 0 // Количество новых глав
@@ -232,7 +230,7 @@ class MangaUpdaterService : Service() {
 //            checkLinkInManga(mangaDB)
 
             // Получаем список глав из БД
-            val oldChapters = withDefaultContext {
+            val oldChapters = com.san.kir.core.utils.coroutines.withDefaultContext {
                 chapterDao.getItemsWhereManga(mangaDB.name)
             }
 
@@ -308,26 +306,27 @@ class MangaUpdaterService : Service() {
         }
     }
 
-    private suspend fun List<Chapter>.updatePagesInChapters(mangaDB: Manga) = withDefaultContext {
-        kotlin.runCatching {
-            // Отфильтровываем те в которых, либо нет страниц, либо не все страницы
-            // либо это альтернативный сайт
-            filter {
-                mangaDB.isAlternativeSite
-                        || it.pages.isNullOrEmpty()
-                        || it.pages.any { chap -> chap.isBlank() }
-            }
-                // Получаем список страниц и сохраняем
-                .onEach {
-                    launch(default) {
-                        it.pages = manager.pages(it)
-                    }.join()
+    private suspend fun List<Chapter>.updatePagesInChapters(mangaDB: Manga) =
+        com.san.kir.core.utils.coroutines.withDefaultContext {
+            kotlin.runCatching {
+                // Отфильтровываем те в которых, либо нет страниц, либо не все страницы
+                // либо это альтернативный сайт
+                filter {
+                    mangaDB.isAlternativeSite
+                            || it.pages.isNullOrEmpty()
+                            || it.pages.any { chap -> chap.isBlank() }
                 }
-                .apply {
-                    chapterDao.update(*toTypedArray())
-                }
-        }.onFailure { it.printStackTrace() }
-    }
+                    // Получаем список страниц и сохраняем
+                    .onEach {
+                        launch(default) {
+                            it.pages = manager.pages(it)
+                        }.join()
+                    }
+                    .apply {
+                        chapterDao.update(*toTypedArray())
+                    }
+            }.onFailure { it.printStackTrace() }
+        }
 
     private suspend fun checkLinkInManga(mangaDB: Manga) {
         if (mangaDB.shortLink.isEmpty()) {

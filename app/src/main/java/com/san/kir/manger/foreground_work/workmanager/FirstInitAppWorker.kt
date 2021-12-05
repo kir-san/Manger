@@ -9,20 +9,15 @@ import androidx.work.Operation
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.san.kir.manger.Viewer
-import com.san.kir.manger.components.parsing.SiteCatalogsManager
+import com.san.kir.data.parsing.SiteCatalogsManager
 import com.san.kir.manger.data.datastore.ChaptersRepository
 import com.san.kir.manger.data.datastore.DownloadRepository
 import com.san.kir.manger.data.datastore.MainRepository
 import com.san.kir.manger.data.datastore.ViewerRepository
-import com.san.kir.manger.data.room.dao.MainMenuDao
-import com.san.kir.manger.data.room.dao.MangaDao
-import com.san.kir.manger.data.room.dao.PlannedDao
-import com.san.kir.manger.data.room.dao.SiteDao
-import com.san.kir.manger.data.room.dao.StatisticDao
 import com.san.kir.manger.data.room.entities.MainMenuItem
 import com.san.kir.manger.data.room.entities.MangaStatistic
 import com.san.kir.manger.data.room.entities.Site
-import com.san.kir.manger.utils.enums.ChapterFilter
+import com.san.kir.core.support.ChapterFilter
 import com.san.kir.manger.utils.enums.MainMenuType
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -31,12 +26,12 @@ import dagger.assisted.AssistedInject
 class FirstInitAppWorker @AssistedInject constructor(
     @Assisted private val ctx: Context,
     @Assisted params: WorkerParameters,
-    private val mainMenuDao: MainMenuDao,
-    private val statisticDao: StatisticDao,
-    private val mangaDao: MangaDao,
-    private val plannedDao: PlannedDao,
-    private val siteDao: SiteDao,
-    private val siteCatalogsManager: SiteCatalogsManager,
+    private val mainMenuDao: com.san.kir.data.db.dao.MainMenuDao,
+    private val statisticDao: com.san.kir.data.db.dao.StatisticDao,
+    private val mangaDao: com.san.kir.data.db.dao.MangaDao,
+    private val plannedDao: com.san.kir.data.db.dao.PlannedDao,
+    private val siteDao: com.san.kir.data.db.dao.SiteDao,
+    private val siteCatalogsManager: com.san.kir.data.parsing.SiteCatalogsManager,
     private val chapterStore: ChaptersRepository,
     private val mainStore: MainRepository,
     private val downloadStore: DownloadRepository,
@@ -131,7 +126,7 @@ class FirstInitAppWorker @AssistedInject constructor(
     }
 
     private suspend fun setDefaultValueForStore() {
-        chapterStore.setFilter(ChapterFilter.ALL_READ_ASC.name)
+        chapterStore.setFilter(com.san.kir.core.support.ChapterFilter.ALL_READ_ASC.name)
         chapterStore.setIndividualFilter(true)
         chapterStore.setTitleVisibility(true)
 

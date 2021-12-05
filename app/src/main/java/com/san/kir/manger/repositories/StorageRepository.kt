@@ -2,12 +2,12 @@ package com.san.kir.manger.repositories
 
 import android.content.Context
 import com.san.kir.manger.data.room.entities.Storage
-import com.san.kir.manger.data.room.getDatabase
+import com.san.kir.data.db.getDatabase
 import com.san.kir.manger.utils.extensions.getFullPath
 import com.san.kir.manger.utils.extensions.lengthMb
 
 class StorageRepository(context: Context) {
-    private val db = getDatabase(context)
+    private val db = com.san.kir.data.db.getDatabase(context)
     private val mStorageDao = db.storageDao
     private val mMangaRepository = MangaRepository(context)
     private val mChapterDao = db.chapterDao

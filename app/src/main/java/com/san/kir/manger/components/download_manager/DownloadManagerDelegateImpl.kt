@@ -1,7 +1,7 @@
 package com.san.kir.manger.components.download_manager
 
-import com.san.kir.manger.data.room.dao.ChapterDao
-import com.san.kir.manger.data.room.dao.StatisticDao
+import com.san.kir.data.db.dao.ChapterDao
+import com.san.kir.data.db.dao.StatisticDao
 import com.san.kir.manger.data.room.entities.Chapter
 import com.san.kir.manger.utils.JobContext
 import com.san.kir.manger.utils.enums.DownloadState
@@ -13,8 +13,8 @@ class DownloadManagerDelegateImpl @Inject constructor(
     private val job: JobContext,
     private val listener: DownloadListener,
     private val iteratorProcessor: IteratorProcessor,
-    private val chapterDao: ChapterDao,
-    private val statisticDao: StatisticDao,
+    private val chapterDao: com.san.kir.data.db.dao.ChapterDao,
+    private val statisticDao: com.san.kir.data.db.dao.StatisticDao,
 ) : DownloadManager.Delegate {
 
     override fun onDownloadRemovedFromManager(item: Chapter) {

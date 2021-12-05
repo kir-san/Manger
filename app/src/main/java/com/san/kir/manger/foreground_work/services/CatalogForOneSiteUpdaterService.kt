@@ -20,10 +20,7 @@ import androidx.core.app.TaskStackBuilder
 import androidx.core.net.toUri
 import com.san.kir.ankofork.sdk28.notificationManager
 import com.san.kir.manger.R
-import com.san.kir.manger.components.parsing.SiteCatalogsManager
-import com.san.kir.manger.data.room.CatalogDb
-import com.san.kir.manger.data.room.dao.MangaDao
-import com.san.kir.manger.data.room.dao.SiteDao
+import com.san.kir.data.parsing.SiteCatalogsManager
 import com.san.kir.manger.data.room.entities.SiteCatalogElement
 import com.san.kir.manger.ui.MainActivity
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
@@ -34,9 +31,6 @@ import com.san.kir.manger.utils.extensions.startService
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
@@ -107,18 +101,18 @@ class CatalogForOneSiteUpdaterService : Service() {
     private var isManualStop = false
 
     @Inject
-    lateinit var manager: SiteCatalogsManager
+    lateinit var manager: com.san.kir.data.parsing.SiteCatalogsManager
 
     private val default = Dispatchers.Default
 
     @Inject
-    lateinit var mangaDao: MangaDao
+    lateinit var mangaDao: com.san.kir.data.db.dao.MangaDao
 
     @Inject
-    lateinit var siteDao: SiteDao
+    lateinit var siteDao: com.san.kir.data.db.dao.SiteDao
 
     @Inject
-    lateinit var dbFactory: CatalogDb.Factory
+    lateinit var dbFactory: com.san.kir.data.db.CatalogDb.Factory
 
     override fun onBind(intent: Intent?): IBinder? = null
 

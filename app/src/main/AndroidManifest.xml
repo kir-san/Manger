@@ -40,7 +40,7 @@
 
         </activity>
         <activity
-            android:name=".components.viewer.ViewerActivity"
+            android:name=".ui.application_navigation.library.viewer.ViewerActivity"
             android:theme="@style/AppTheme.Viewer" />
 
         <service android:name="com.san.kir.manger.foreground_work.services.CatalogForOneSiteUpdaterService" />

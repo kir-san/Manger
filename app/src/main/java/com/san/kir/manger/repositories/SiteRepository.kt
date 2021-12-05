@@ -2,10 +2,10 @@ package com.san.kir.manger.repositories
 
 import android.content.Context
 import com.san.kir.manger.data.room.entities.Site
-import com.san.kir.manger.data.room.getDatabase
+import com.san.kir.data.db.getDatabase
 
 class SiteRepository(context: Context) {
-    private val db = getDatabase(context)
+    private val db = com.san.kir.data.db.getDatabase(context)
     private val mSiteDao = db.siteDao
 
     suspend fun getItems() = mSiteDao.getItems()

@@ -5,21 +5,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.san.kir.manger.data.room.dao.MangaDao
+import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.manger.data.room.entities.Manga
-import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
+import com.san.kir.core.utils.coroutines.defaultLaunchInVM
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filterNotNull
 
 class OnlyMangaViewModel @AssistedInject constructor(
     @Assisted private val mangaUnic: String,
-    private val mangaDao: MangaDao,
+    private val mangaDao: com.san.kir.data.db.dao.MangaDao,
 ) : ViewModel() {
     private val _manga = MutableStateFlow(Manga())
     val manga = _manga.asStateFlow()

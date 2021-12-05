@@ -38,7 +38,7 @@ import com.san.kir.manger.utils.compose.MenuText
 import com.san.kir.manger.utils.compose.TopBarScreenList
 import com.san.kir.manger.utils.compose.navigate
 import com.san.kir.manger.utils.compose.rememberImage
-import com.san.kir.manger.utils.coroutines.withDefaultContext
+import com.san.kir.core.utils.coroutines.withDefaultContext
 
 @Composable
 fun CatalogsScreen(
@@ -116,7 +116,7 @@ fun ItemView(item: Site, viewModel: CatalogsViewModel, onClick: () -> Unit) {
     }
 
     LaunchedEffect(true) {
-        val site = withDefaultContext { viewModel.site(item) }
+        val site = com.san.kir.core.utils.coroutines.withDefaultContext { viewModel.site(item) }
         if (site.isInit.not()) {
             isError = false
             isInit = true

@@ -2,10 +2,10 @@ package com.san.kir.manger.repositories
 
 import android.content.Context
 import com.san.kir.manger.data.room.entities.Chapter
-import com.san.kir.manger.data.room.getDatabase
+import com.san.kir.data.db.getDatabase
 
 class ChapterRepository(context: Context) {
-    private val db = getDatabase(context)
+    private val db = com.san.kir.data.db.getDatabase(context)
     private val mChapterDao = db.chapterDao
 
     suspend fun getItems() = mChapterDao.getItems()

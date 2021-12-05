@@ -51,16 +51,15 @@ import androidx.work.WorkManager
 import com.san.kir.ankofork.dialogs.longToast
 import com.san.kir.ankofork.dialogs.toast
 import com.san.kir.manger.R
-import com.san.kir.manger.data.room.dao.ChapterDao
+import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.manger.data.room.entities.Chapter
-import com.san.kir.manger.data.room.entities.action
 import com.san.kir.manger.foreground_work.services.DownloadService
 import com.san.kir.manger.utils.compose.MenuIcon
 import com.san.kir.manger.utils.compose.MenuText
 import com.san.kir.manger.utils.compose.TopBarScreenList
-import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
-import com.san.kir.manger.utils.coroutines.withMainContext
-import com.san.kir.manger.utils.enums.ChapterStatus
+import com.san.kir.core.utils.coroutines.defaultLaunchInVM
+import com.san.kir.core.utils.coroutines.withMainContext
+import com.san.kir.core.support.ChapterStatus
 import com.san.kir.manger.utils.enums.DownloadState
 import com.san.kir.manger.utils.extensions.log
 import com.san.kir.manger.utils.extensions.quantitySimple
@@ -318,7 +317,7 @@ private fun LatestItemContent(
 @HiltViewModel
 class LatestViewModel @Inject constructor(
     private val context: Application,
-    private val chapterDao: ChapterDao,
+    private val chapterDao: com.san.kir.data.db.dao.ChapterDao,
 ) : ViewModel() {
 
     var allItems by mutableStateOf(listOf<Chapter>())
@@ -340,7 +339,7 @@ class LatestViewModel @Inject constructor(
         defaultLaunchInVM {
             chapterDao.loadAllItems()
                 .onEach { list ->
-                    withMainContext { allItems = list }
+                    com.san.kir.core.utils.coroutines.withMainContext { allItems = list }
                     // обновление размера списка выделеных элементов
                     if (list.count() != selectedItems.count())
                         selectedItems = List(list.count()) { false }
@@ -348,10 +347,10 @@ class LatestViewModel @Inject constructor(
                 .map { list ->
                     list.filter { it.isInUpdate }
                         .filter { !it.isRead }
-                        .filter { it.action == ChapterStatus.DOWNLOADABLE }
+                        .filter { it.action == com.san.kir.core.support.ChapterStatus.DOWNLOADABLE }
                 }
                 .collect { list ->
-                    withMainContext {
+                    com.san.kir.core.utils.coroutines.withMainContext {
                         newChapters = list
                         hasNewChapters = list.isNotEmpty()
                     }
@@ -363,11 +362,11 @@ class LatestViewModel @Inject constructor(
             .map { (mode, list) -> mode to list.count { it } }
             .onEach {  (mode, count) ->
                 if (count > 0 && mode.not()) {
-                    withMainContext {
+                    com.san.kir.core.utils.coroutines.withMainContext {
                         selectionMode = true
                     }
                 } else if (count <= 0 && mode) {
-                    withMainContext {
+                    com.san.kir.core.utils.coroutines.withMainContext {
                         selectionMode = false
                     }
                 }

@@ -12,20 +12,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.san.kir.ankofork.sdk28.connectivityManager
 import com.san.kir.manger.data.datastore.DownloadRepository
-import com.san.kir.manger.data.room.dao.ChapterDao
-import com.san.kir.manger.data.room.dao.MangaDao
+import com.san.kir.data.db.dao.ChapterDao
+import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.manger.data.room.entities.Chapter
 import com.san.kir.manger.foreground_work.services.DownloadService
-import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
-import com.san.kir.manger.utils.coroutines.withMainContext
+import com.san.kir.core.utils.coroutines.defaultLaunchInVM
+import com.san.kir.core.utils.coroutines.withMainContext
 import com.san.kir.manger.utils.enums.DownloadState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -36,8 +34,8 @@ import kotlin.time.ExperimentalTime
 @HiltViewModel
 class DownloadViewModel @Inject constructor(
     private val ctx: Application,
-    private val chapterDao: ChapterDao,
-    private val mangaDao: MangaDao,
+    private val chapterDao: com.san.kir.data.db.dao.ChapterDao,
+    private val mangaDao: com.san.kir.data.db.dao.MangaDao,
     private val cellularNetwork: CellularNetwork,
     private val wifiNetwork: WifiNetwork,
     download: DownloadRepository,
@@ -59,22 +57,38 @@ class DownloadViewModel @Inject constructor(
     init {
         chapterDao.loadDownloadItemsWhereStatusNot()
             .distinctUntilChanged()
-            .onEach { withMainContext { items = it.sortedBy { c -> c.status.ordinal } } }
+            .onEach {
+                com.san.kir.core.utils.coroutines.withMainContext {
+                    items = it.sortedBy { c -> c.status.ordinal }
+                }
+            }
             .onEach { list ->
                 list.filter { chapter ->
                     chapter.status == DownloadState.QUEUED ||
                             chapter.status == DownloadState.LOADING
-                }.size.let { withMainContext { loadingCount = it } }
+                }.size.let {
+                    com.san.kir.core.utils.coroutines.withMainContext {
+                        loadingCount = it
+                    }
+                }
             }
             .onEach { list ->
                 list.filter { chapter ->
                     chapter.status == DownloadState.PAUSED
-                }.size.let { withMainContext { stoppedCount = it } }
+                }.size.let {
+                    com.san.kir.core.utils.coroutines.withMainContext {
+                        stoppedCount = it
+                    }
+                }
             }
             .onEach { list ->
                 list.filter { chapter ->
                     chapter.status == DownloadState.COMPLETED
-                }.size.let { withMainContext { completedCount = it } }
+                }.size.let {
+                    com.san.kir.core.utils.coroutines.withMainContext {
+                        completedCount = it
+                    }
+                }
             }
             .launchIn(viewModelScope)
 
@@ -92,7 +106,11 @@ class DownloadViewModel @Inject constructor(
                     NetworkState.NOT_CELLURAR
             }
         }
-            .onEach { state -> withMainContext { network = state } }
+            .onEach { state ->
+                com.san.kir.core.utils.coroutines.withMainContext {
+                    network = state
+                }
+            }
             .launchIn(viewModelScope)
     }
 

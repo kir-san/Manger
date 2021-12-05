@@ -18,11 +18,16 @@ object Versions {
 
     object AndroidX {
         const val CORE = "1.6.0"
+        const val ACTIVITY = "1.4.0"
+        const val FRAGMENT = "1.4.0"
         const val SPLASH = "1.0.0-alpha02"
         const val APPCOMPAT = "1.4.0-alpha03"
         const val LIFECYCLE = "2.3.1"
         const val VECTORDRAWABLE = "1.2.0-alpha02"
         const val CONSTRAINTLAYOUT = "2.0.0-beta4"
+        const val VIEWPAGER2 = "1.0.0"
+        const val EXIF = "1.3.2"
+        const val PAGING = "3.0.0"
         const val WORKMANAGER = "2.7.0"
         const val HILT = "1.0.0"
         const val DATASTORE = "1.0.0"
@@ -61,7 +66,7 @@ object Versions {
     const val HYPERION = "0.9.31"
 
     // Make sure to update `buildSrc/build.gradle.kts` when updating this
-    const val GRADLE = "7.1.0-beta03"
+    const val GRADLE = "7.1.0-beta04"
 
     val JAVA = JavaVersion.VERSION_1_8
 

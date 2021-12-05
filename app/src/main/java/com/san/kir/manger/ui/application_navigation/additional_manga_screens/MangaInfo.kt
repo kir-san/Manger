@@ -30,7 +30,7 @@ import com.san.kir.manger.utils.compose.ImageWithStatus
 import com.san.kir.manger.utils.compose.LabelText
 import com.san.kir.manger.utils.compose.TopBarScreenWithInsets
 import com.san.kir.manger.utils.compose.navigate
-import com.san.kir.manger.utils.coroutines.withDefaultContext
+import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.manger.utils.extensions.browse
 import com.san.kir.manger.utils.extensions.listStrToString
 
@@ -44,7 +44,7 @@ fun MangaInfoScreen(
     var isAdded by remember { mutableStateOf(false) }
 
     LaunchedEffect(vm.item) {
-        isAdded = withDefaultContext {
+        isAdded = com.san.kir.core.utils.coroutines.withDefaultContext {
             viewModel.isContainManga(vm.item).not()
         }
     }

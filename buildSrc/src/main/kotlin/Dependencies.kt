@@ -57,6 +57,10 @@ object Dependencies {
 
         const val CORE =
             "androidx.core:core-ktx:${Versions.AndroidX.CORE}"
+        const val ACTIVITY =
+            "androidx.activity:activity-ktx:${Versions.AndroidX.ACTIVITY}"
+        const val FRAGMENT =
+            "androidx.fragment:fragment-ktx:${Versions.AndroidX.FRAGMENT}"
         const val SPLASH =
             "androidx.core:core-splashscreen:${Versions.AndroidX.SPLASH}"
         const val APPCOMPAT =
@@ -65,7 +69,17 @@ object Dependencies {
             "androidx.vectordrawable:vectordrawable:${Versions.AndroidX.VECTORDRAWABLE}"
         const val CONSTRAINTLAYOUT =
             "androidx.constraintlayout:constraintlayout:${Versions.AndroidX.CONSTRAINTLAYOUT}"
+        const val VIEWPAGER2 =
+            "androidx.viewpager2:viewpager2:${Versions.AndroidX.VIEWPAGER2}"
+        const val PAGING =
+            "androidx.paging:paging-common-ktx:${Versions.AndroidX.PAGING}"
+        const val EXIF =
+            "androidx.exifinterface:exifinterface:${Versions.AndroidX.EXIF}"
     }
+
+    const val INJECT =
+        "javax.inject:javax.inject:1"
+
 
     object Google {
         object Accompanist {

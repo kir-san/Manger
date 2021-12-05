@@ -6,16 +6,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.san.kir.manger.data.room.dao.ChapterDao
-import com.san.kir.manger.data.room.dao.MangaDao
-import com.san.kir.manger.data.room.dao.StorageDao
-import com.san.kir.manger.data.room.dao.searchNewItems
+import com.san.kir.data.db.dao.ChapterDao
+import com.san.kir.data.db.dao.MangaDao
+import com.san.kir.data.db.dao.StorageDao
+import com.san.kir.data.db.dao.searchNewItems
 import com.san.kir.manger.data.room.entities.Manga
 import com.san.kir.manger.data.room.entities.Storage
 import com.san.kir.manger.data.room.entities.getSizeAndIsNew
 import com.san.kir.manger.ui.MainActivity
-import com.san.kir.manger.utils.coroutines.defaultDispatcher
-import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
+import com.san.kir.core.utils.coroutines.defaultDispatcher
+import com.san.kir.core.utils.coroutines.defaultLaunchInVM
 import com.san.kir.manger.utils.extensions.getFullPath
 import com.san.kir.manger.utils.extensions.shortPath
 import com.san.kir.manger.foreground_work.workmanager.AllChapterDelete
@@ -28,22 +28,13 @@ import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flatMapMerge
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
 
 @OptIn(FlowPreview::class)
 class MangaStorageViewModel @AssistedInject constructor(
     @Assisted private val mangaUnic: String,
-    private val storageDao: StorageDao,
-    private val mangaDao: MangaDao,
-    private val chapterDao: ChapterDao,
+    private val storageDao: com.san.kir.data.db.dao.StorageDao,
+    private val mangaDao: com.san.kir.data.db.dao.MangaDao,
+    private val chapterDao: com.san.kir.data.db.dao.ChapterDao,
     private val ctx: Application,
 ) : ViewModel() {
 
@@ -88,7 +79,7 @@ class MangaStorageViewModel @AssistedInject constructor(
         storageDao
             .flowItems()
             .map { list -> list.sumOf { item -> item.sizeFull } }
-            .flowOn(defaultDispatcher)
+            .flowOn(com.san.kir.core.utils.coroutines.defaultDispatcher)
 
     fun deleteChapters(type: DeleteStatus) {
         when (type) {

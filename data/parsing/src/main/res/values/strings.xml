@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="status_complete">Выпуск завершен</string>
+    <string name="status_not_complete">Выпуск продолжается</string>
+    <string name="status_single">Сингл</string>
+    <string name="status_unknown">Неизвестно</string>
+    <string name="translate_complete">Перевод завершен</string>
+    <string name="translate_not_complete">Перевод продолжается</string>
+    <string name="translate_freeze">Перевод заморожен</string>
+    <string name="translate_unknown">Неизвестно</string>
+</resources>

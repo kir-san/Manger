@@ -8,29 +8,24 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.san.kir.ankofork.dialogs.toast
 import com.san.kir.manger.R
-import com.san.kir.manger.data.room.dao.ChapterDao
-import com.san.kir.manger.data.room.dao.MangaDao
+import com.san.kir.data.db.dao.ChapterDao
+import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.manger.data.room.entities.Manga
-import com.san.kir.manger.data.room.entities.action
 import com.san.kir.manger.foreground_work.services.DownloadService
 import com.san.kir.manger.ui.MainActivity
-import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
-import com.san.kir.manger.utils.coroutines.withDefaultContext
-import com.san.kir.manger.utils.enums.ChapterStatus
+import com.san.kir.core.utils.coroutines.defaultLaunchInVM
+import com.san.kir.core.utils.coroutines.withDefaultContext
+import com.san.kir.core.support.ChapterStatus
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.updateAndGet
 
 class ChaptersActionViewModel @AssistedInject constructor(
     @Assisted private val mangaUnic: String,
-    private val mangaDao: MangaDao,
-    private val chapterDao: ChapterDao,
+    private val mangaDao: com.san.kir.data.db.dao.MangaDao,
+    private val chapterDao: com.san.kir.data.db.dao.ChapterDao,
     private val context: Application,
 ) : ViewModel() {
 
@@ -50,7 +45,7 @@ class ChaptersActionViewModel @AssistedInject constructor(
     fun downloadNextNotReadChapter() = defaultLaunchInVM {
         val chapter = chapterDao
             .getItemsNotReadAsc(mangaUnic)
-            .first { it.action == ChapterStatus.DOWNLOADABLE }
+            .first { it.action == com.san.kir.core.support.ChapterStatus.DOWNLOADABLE }
 
         DownloadService.start(context, chapter)
     }
@@ -58,13 +53,13 @@ class ChaptersActionViewModel @AssistedInject constructor(
     fun downloadAllNotReadChapters() = defaultLaunchInVM {
         val count = chapterDao
             .getItemsNotReadAsc(mangaUnic)
-            .filter { it.action == ChapterStatus.DOWNLOADABLE }
+            .filter { it.action == com.san.kir.core.support.ChapterStatus.DOWNLOADABLE }
             .onEach { chapter ->
                 DownloadService.start(context, chapter)
             }
             .size
 
-        withDefaultContext {
+        com.san.kir.core.utils.coroutines.withDefaultContext {
             if (count == 0)
                 context.toast(R.string.list_chapters_selection_load_error)
             else
@@ -75,12 +70,12 @@ class ChaptersActionViewModel @AssistedInject constructor(
     fun downloadAllChapters() = defaultLaunchInVM {
         val count = chapterDao
             .getItemsNotReadAsc(mangaUnic)
-            .filter { it.action == ChapterStatus.DOWNLOADABLE }
+            .filter { it.action == com.san.kir.core.support.ChapterStatus.DOWNLOADABLE }
             .onEach { chapter ->
                 DownloadService.start(context, chapter)
             }
             .size
-        withDefaultContext {
+        com.san.kir.core.utils.coroutines.withDefaultContext {
             if (count == 0)
                 context.toast(R.string.list_chapters_selection_load_error)
             else

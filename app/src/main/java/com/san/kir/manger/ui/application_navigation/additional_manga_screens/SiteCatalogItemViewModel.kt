@@ -1,18 +1,16 @@
 package com.san.kir.manger.ui.application_navigation.additional_manga_screens
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.san.kir.manger.components.parsing.SiteCatalogsManager
+import com.san.kir.data.parsing.SiteCatalogsManager
 import com.san.kir.manger.data.room.entities.SiteCatalogElement
 import com.san.kir.manger.ui.MainActivity
-import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
-import com.san.kir.manger.utils.coroutines.withMainContext
+import com.san.kir.core.utils.coroutines.defaultLaunchInVM
+import com.san.kir.core.utils.coroutines.withMainContext
 import com.san.kir.manger.utils.extensions.log
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -21,7 +19,7 @@ import dagger.hilt.android.EntryPointAccessors
 
 class SiteCatalogItemViewModel @AssistedInject constructor(
     @Assisted val url: String,
-    private val manager: SiteCatalogsManager,
+    private val manager: com.san.kir.data.parsing.SiteCatalogsManager,
 ) : ViewModel() {
     var item by mutableStateOf(SiteCatalogElement())
 
@@ -32,7 +30,7 @@ class SiteCatalogItemViewModel @AssistedInject constructor(
             val it = manager.getElementOnline(url)
             log(it.toString())
             if (it != null) {
-                withMainContext {
+                com.san.kir.core.utils.coroutines.withMainContext {
                     item = it
                 }
             }

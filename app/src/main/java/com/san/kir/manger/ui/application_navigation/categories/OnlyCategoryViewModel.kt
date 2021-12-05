@@ -5,22 +5,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.san.kir.manger.data.room.dao.CategoryDao
+import com.san.kir.data.db.dao.CategoryDao
 import com.san.kir.manger.data.room.entities.Category
 import com.san.kir.manger.ui.MainActivity
-import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
+import com.san.kir.core.utils.coroutines.defaultLaunchInVM
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filterNotNull
 
 class OnlyCategoryViewModel @AssistedInject constructor(
     @Assisted private val categoryName: String,
-    private val categoryDao: CategoryDao,
+    private val categoryDao: com.san.kir.data.db.dao.CategoryDao,
 ) : ViewModel() {
     private val _category = MutableStateFlow(Category())
     val category = _category.asStateFlow()

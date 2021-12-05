@@ -1,10 +1,9 @@
 package com.san.kir.manger.components.download_manager
 
-import com.san.kir.manger.data.room.dao.ChapterDao
-import com.san.kir.manger.data.room.entities.Chapter
+import com.san.kir.core.support.DownloadState
+import com.san.kir.data.models.Chapter
 import com.san.kir.manger.utils.JobContext
 import com.san.kir.manger.utils.NetworkManager
-import com.san.kir.manger.utils.enums.DownloadState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
@@ -17,7 +16,7 @@ class IteratorProcessor @Inject constructor(
     private val job: JobContext,
     private val manager: DownloadManager,
     private val networkManager: NetworkManager,
-    private val chapterDao: ChapterDao
+    private val chapterDao: com.san.kir.data.db.dao.ChapterDao
 ) {
     private val priorityQueueIntervalInMilliseconds = 500L
 

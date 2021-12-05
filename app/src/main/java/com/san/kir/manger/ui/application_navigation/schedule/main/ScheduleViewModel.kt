@@ -1,29 +1,25 @@
 package com.san.kir.manger.ui.application_navigation.schedule.main
 
 import android.app.Application
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.san.kir.manger.R
-import com.san.kir.manger.data.room.dao.PlannedDao
+import com.san.kir.data.db.dao.PlannedDao
 import com.san.kir.manger.data.room.entities.PlannedTask
-import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
-import com.san.kir.manger.utils.coroutines.withMainContext
+import com.san.kir.core.utils.coroutines.defaultLaunchInVM
+import com.san.kir.core.utils.coroutines.withMainContext
 import com.san.kir.manger.utils.enums.PlannedPeriod
 import com.san.kir.manger.utils.enums.PlannedType
 import com.san.kir.manger.utils.enums.PlannedWeek
 import com.san.kir.manger.foreground_work.workmanager.ScheduleWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @HiltViewModel
 class ScheduleViewModel @Inject constructor(
     private val context: Application,
-    private val plannedDao: PlannedDao,
+    private val plannedDao: com.san.kir.data.db.dao.PlannedDao,
 ) : ViewModel() {
     var items by mutableStateOf(listOf<PlannedTask>())
         private set
@@ -31,7 +27,7 @@ class ScheduleViewModel @Inject constructor(
     init {
         plannedDao.loadItems()
 //            .distinctUntilChanged()
-            .onEach { withMainContext { items = it } }
+            .onEach { com.san.kir.core.utils.coroutines.withMainContext { items = it } }
             .launchIn(viewModelScope)
     }
 

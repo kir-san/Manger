@@ -34,15 +34,15 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.navigationBarsPadding
 import com.san.kir.manger.data.room.entities.Chapter
 import com.san.kir.manger.data.room.entities.Manga
-import com.san.kir.manger.utils.enums.ChapterFilter
+import com.san.kir.core.support.ChapterFilter
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalCoroutinesApi::class)
 @Composable
 fun ListPageContent(
     manga: Manga,
-    chapterFilter: ChapterFilter,
-    changeChapterFilter: (ChapterFilter) -> Unit,
+    chapterFilter: com.san.kir.core.support.ChapterFilter,
+    changeChapterFilter: (com.san.kir.core.support.ChapterFilter) -> Unit,
     chapters: List<Chapter>,
     selectedItems: List<Boolean>,
     selectionMode: Boolean,
@@ -79,7 +79,7 @@ fun ListPageContent(
 @Composable
 fun PreviewListPageContent() {
     val (filter, filterSetter) = remember {
-        mutableStateOf(ChapterFilter.ALL_READ_ASC)
+        mutableStateOf(com.san.kir.core.support.ChapterFilter.ALL_READ_ASC)
     }
 
     val chapters = listOf(
@@ -105,8 +105,8 @@ fun PreviewListPageContent() {
 
 @Composable
 private fun BottomOrderBar(
-    currentFilter: ChapterFilter,
-    changeFilter: (ChapterFilter) -> Unit,
+    currentFilter: com.san.kir.core.support.ChapterFilter,
+    changeFilter: (com.san.kir.core.support.ChapterFilter) -> Unit,
 ) {
     BottomAppBar(
         modifier = Modifier
@@ -171,7 +171,7 @@ private fun BottomOrderBar(
 @Composable
 fun PreviewBottomOrderBar() {
     val (filter, filterSetter) = remember {
-        mutableStateOf(ChapterFilter.ALL_READ_ASC)
+        mutableStateOf(com.san.kir.core.support.ChapterFilter.ALL_READ_ASC)
     }
     BottomOrderBar(filter, filterSetter)
 }

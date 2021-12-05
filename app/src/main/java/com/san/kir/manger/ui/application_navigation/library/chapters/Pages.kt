@@ -40,12 +40,13 @@ import androidx.lifecycle.asFlow
 import androidx.work.WorkManager
 import com.google.accompanist.insets.navigationBarsPadding
 import com.san.kir.manger.R
-import com.san.kir.manger.components.viewer.ViewerActivity
+import com.san.kir.manger.Viewer
+import com.san.kir.manger.ui.application_navigation.library.viewer.ViewerActivity
 import com.san.kir.manger.data.room.entities.Manga
 import com.san.kir.manger.foreground_work.workmanager.ChapterDeleteWorker
 import com.san.kir.manger.foreground_work.workmanager.ReadChapterDelete
-import com.san.kir.manger.ui.application_navigation.manga_viewer.MangaViewerActivity
 import com.san.kir.manger.utils.compose.rememberImage
+import com.san.kir.ui.viewer.MangaViewer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
@@ -162,6 +163,9 @@ fun AboutPageContent(
         Button(
             onClick = {
                 scope.launch {
+                    val chapter = viewModel.firstChapter()
+                    MangaViewer.start(context, chapter.id)
+
                     ViewerActivity.start(context,
                         manga = viewModel.manga,
                         isAlternative = viewModel.manga.isAlternativeSort,

@@ -2,7 +2,7 @@ package com.san.kir.manger.ui
 
 import androidx.lifecycle.ViewModel
 import com.san.kir.manger.data.datastore.MainRepository
-import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
+import com.san.kir.core.utils.coroutines.defaultLaunchInVM
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

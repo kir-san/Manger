@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="viewer_page_close">Закончить чтение</string>
+    <string name="viewer_page_next_text">Для перехода на следующую главу нажмите на экран</string>
+    <string name="viewer_page_prev_text">Для перехода на предыдущую главу нажмите на экран</string>
+    <string name="viewer_page_none_next_text">Увы но еще одной главы нет, мне очень жаль.</string>
+    <string name="viewer_page_none_prev_text">Эта самая первая глава, ничего первее быть не должно</string>
+
+</resources>

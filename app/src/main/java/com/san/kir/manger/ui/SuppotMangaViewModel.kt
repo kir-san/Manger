@@ -3,26 +3,25 @@ package com.san.kir.manger.ui
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import com.san.kir.ankofork.dialogs.longToast
-import com.san.kir.manger.components.parsing.SiteCatalogsManager
-import com.san.kir.manger.data.room.dao.MangaDao
+import com.san.kir.data.parsing.SiteCatalogsManager
 import com.san.kir.manger.data.room.entities.SiteCatalogElement
 import com.san.kir.manger.data.room.entities.authorsList
 import com.san.kir.manger.data.room.entities.genresList
-import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
-import com.san.kir.manger.utils.coroutines.withDefaultContext
-import com.san.kir.manger.utils.coroutines.withMainContext
+import com.san.kir.core.utils.coroutines.defaultLaunchInVM
+import com.san.kir.core.utils.coroutines.withDefaultContext
+import com.san.kir.core.utils.coroutines.withMainContext
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class SuppotMangaViewModel @Inject constructor(
     private val application: Application,
-    private val mangaDao: MangaDao,
-    private val manager: SiteCatalogsManager,
+    private val mangaDao: com.san.kir.data.db.dao.MangaDao,
+    private val manager: com.san.kir.data.parsing.SiteCatalogsManager,
 ) : ViewModel() {
 
     suspend fun isContainManga(item: SiteCatalogElement): Boolean =
-        withDefaultContext {
+        com.san.kir.core.utils.coroutines.withDefaultContext {
             mangaDao.getItems().any {
                 it.shortLink.contains(item.shotLink)
             }
@@ -40,7 +39,7 @@ class SuppotMangaViewModel @Inject constructor(
             oldManga.shortLink = updItem.shotLink
             oldManga.status = updItem.statusEdition
             mangaDao.update(oldManga)
-            withMainContext {
+            com.san.kir.core.utils.coroutines.withMainContext {
                 application.longToast("Информация о манге ${item.name} обновлена")
             }
         }

@@ -32,12 +32,12 @@ import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.san.kir.manger.R
-import com.san.kir.manger.components.parsing.SiteCatalogsManager
+import com.san.kir.data.parsing.SiteCatalogsManager
 import com.san.kir.manger.data.room.entities.SiteCatalogElement
 import com.san.kir.manger.ui.application_navigation.library.LibraryNavTarget
 import com.san.kir.manger.utils.compose.TopBarScreenWithInsets
 import com.san.kir.manger.utils.compose.navigate
-import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
+import com.san.kir.core.utils.coroutines.defaultLaunchInVM
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -189,7 +189,7 @@ private fun validateUrl(
 
 @HiltViewModel
 class MangaAddOnlineViewModel @Inject constructor(
-    private val manager: SiteCatalogsManager,
+    private val manager: com.san.kir.data.parsing.SiteCatalogsManager,
 ) : ViewModel() {
     var siteNames: List<String> = listOf()
         private set

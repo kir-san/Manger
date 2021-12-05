@@ -2,20 +2,16 @@ package com.san.kir.manger.ui.application_navigation.catalog.main
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
-import com.san.kir.manger.components.parsing.SiteCatalog
-import com.san.kir.manger.components.parsing.SiteCatalogsManager
-import com.san.kir.manger.repositories.SiteCatalogRepository
-import com.san.kir.manger.data.room.dao.CategoryDao
-import com.san.kir.manger.data.room.dao.MangaDao
-import com.san.kir.manger.data.room.dao.SiteDao
+import com.san.kir.data.parsing.SiteCatalog
+import com.san.kir.data.parsing.SiteCatalogsManager
 import com.san.kir.manger.data.room.entities.Category
 import com.san.kir.manger.data.room.entities.Manga
 import com.san.kir.manger.data.room.entities.Site
 import com.san.kir.manger.foreground_work.services.CatalogForOneSiteUpdaterService
 import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.SortLibraryUtil
-import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
-import com.san.kir.manger.utils.coroutines.withDefaultContext
+import com.san.kir.core.utils.coroutines.defaultLaunchInVM
+import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.manger.utils.enums.MangaFilter
 import com.san.kir.manger.utils.enums.SortLibrary
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,10 +20,10 @@ import javax.inject.Inject
 @HiltViewModel
 class CatalogsViewModel @Inject constructor(
     private val context: Application,
-    private val siteDao: SiteDao,
-    private val categoryDao: CategoryDao,
-    private val mangaDao: MangaDao,
-    private val manager: SiteCatalogsManager,
+    private val siteDao: com.san.kir.data.db.dao.SiteDao,
+    private val categoryDao: com.san.kir.data.db.dao.CategoryDao,
+    private val mangaDao: com.san.kir.data.db.dao.MangaDao,
+    private val manager: com.san.kir.data.parsing.SiteCatalogsManager,
 ) : ViewModel() {
     val siteList = siteDao.loadItems()
 
@@ -38,7 +34,7 @@ class CatalogsViewModel @Inject constructor(
         }
     }
 
-    fun site(site: Site): SiteCatalog {
+    fun site(site: Site): com.san.kir.data.parsing.SiteCatalog {
         return manager.catalog.first {
             it.allCatalogName.any { s ->
                 s == site.catalogName
@@ -46,24 +42,25 @@ class CatalogsViewModel @Inject constructor(
         }
     }
 
-    suspend fun updateSiteInfo(site: SiteCatalog) = withDefaultContext {
-        kotlin.runCatching {
-            site.init()
-            // Находим в базе данных наш сайт
-            with(siteDao) {
-                getItem(site.name)?.let {
-                    // Сохраняем новое значение количества элементов
-                    val siteCatalogRepository =
-                        SiteCatalogRepository(context, site.catalogName, manager)
-                    it.oldVolume = siteCatalogRepository.items().size
-                    it.volume = site.volume
-                    // Обновляем наш сайт в базе данных
-                    update(it)
-                    siteCatalogRepository.close()
+    suspend fun updateSiteInfo(site: com.san.kir.data.parsing.SiteCatalog) =
+        com.san.kir.core.utils.coroutines.withDefaultContext {
+            kotlin.runCatching {
+                site.init()
+                // Находим в базе данных наш сайт
+                with(siteDao) {
+                    getItem(site.name)?.let {
+                        // Сохраняем новое значение количества элементов
+                        val siteCatalogRepository =
+                            SiteCatalogRepository(context, site.catalogName, manager)
+                        it.oldVolume = siteCatalogRepository.items().size
+                        it.volume = site.volume
+                        // Обновляем наш сайт в базе данных
+                        update(it)
+                        siteCatalogRepository.close()
+                    }
                 }
             }
         }
-    }
 
     private fun List<Manga>.loadMangas(cat: Category): List<Manga> {
         val filter = toFilter(cat)
@@ -92,7 +89,7 @@ class CatalogsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun save(site: SiteCatalog) {
+    private suspend fun save(site: com.san.kir.data.parsing.SiteCatalog) {
         val s = siteDao.getItem(site.name)
         if (s != null) {
             s.volume = site.volume

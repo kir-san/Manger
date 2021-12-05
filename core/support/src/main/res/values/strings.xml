@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Category All -->
+    <string name="category_all">Все</string>
+
+    <!--Planned-->
+    <string name="planned_type_manga">Манга</string>
+    <string name="planned_period_day">День</string>
+    <string name="planned_period_week">Неделя</string>
+    <string name="planned_type_group">Группа</string>
+    <string name="planned_type_category">Категория</string>
+    <string name="planned_type_catalog">Каталог</string>
+    <string name="planned_type_app">Приложение</string>
+    <string name="planned_week_monday">пн</string>
+    <string name="planned_week_tuesday">вт</string>
+    <string name="planned_week_wednesday">ср</string>
+    <string name="planned_week_thursday">чт</string>
+    <string name="planned_week_friday">пт</string>
+    <string name="planned_week_saturday">сб</string>
+    <string name="planned_week_sunday">вс</string>
+
+    <!-- MainMenu -->
+    <string name="main_menu_library">Библиотека</string>
+    <string name="main_menu_storage">Хранилище</string>
+    <string name="main_menu_category">Категории</string>
+    <string name="main_menu_catalogs">Каталоги</string>
+    <string name="main_menu_downloader">Загрузчик</string>
+    <string name="main_menu_latest">Обновления</string>
+    <string name="main_menu_settings">Настройки</string>
+    <string name="main_menu_schedule">Расписание</string>
+    <string name="main_menu_statistic">Статистика</string>
+</resources>

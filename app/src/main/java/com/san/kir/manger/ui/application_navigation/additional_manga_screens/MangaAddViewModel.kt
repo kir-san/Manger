@@ -5,34 +5,28 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.san.kir.manger.components.parsing.SiteCatalogAlternative
-import com.san.kir.manger.components.parsing.SiteCatalogsManager
-import com.san.kir.manger.data.room.dao.CategoryDao
-import com.san.kir.manger.data.room.dao.MangaDao
-import com.san.kir.manger.data.room.dao.StatisticDao
+import com.san.kir.data.parsing.SiteCatalogAlternative
+import com.san.kir.data.parsing.SiteCatalogsManager
 import com.san.kir.manger.data.room.entities.Category
 import com.san.kir.manger.data.room.entities.MangaStatistic
 import com.san.kir.manger.data.room.entities.SiteCatalogElement
 import com.san.kir.manger.data.room.entities.toManga
-import com.san.kir.manger.utils.coroutines.withMainContext
-import com.san.kir.manger.utils.enums.DIR
+import com.san.kir.core.utils.coroutines.withMainContext
+import com.san.kir.core.support.DIR
 import com.san.kir.manger.utils.extensions.createDirs
 import com.san.kir.manger.utils.extensions.getFullPath
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 import java.util.regex.Pattern
 import javax.inject.Inject
 
 @HiltViewModel
 class MangaAddViewModel @Inject constructor(
-    private val categoryDao: CategoryDao,
-    private val mangaDao: MangaDao,
-    private val statisticDao: StatisticDao,
-    private val manager: SiteCatalogsManager,
+    private val categoryDao: com.san.kir.data.db.dao.CategoryDao,
+    private val mangaDao: com.san.kir.data.db.dao.MangaDao,
+    private val statisticDao: com.san.kir.data.db.dao.StatisticDao,
+    private val manager: com.san.kir.data.parsing.SiteCatalogsManager,
 ) : ViewModel() {
 
     var state by mutableStateOf(
@@ -52,7 +46,7 @@ class MangaAddViewModel @Inject constructor(
             .loadItems()
             .distinctUntilChanged()
             .onEach { list ->
-                withMainContext {
+                com.san.kir.core.utils.coroutines.withMainContext {
                     state = state.copy(
                         categories = list.map { cat -> cat.name },
                         validateCategories = list.map { cat -> cat.name }
@@ -90,11 +84,11 @@ class MangaAddViewModel @Inject constructor(
             var shortPath = element.shotLink
             if (pat.find())
                 shortPath = element.shotLink.removePrefix(pat.group()).removeSuffix(".html")
-            val path = "${DIR.MANGA}/${element.catalogName}/$shortPath"
+            val path = "${com.san.kir.core.support.DIR.MANGA}/${element.catalogName}/$shortPath"
 
             val manga = element.toManga(category = category, path = path)
 
-            manga.isAlternativeSite = manager.getSite(element.link) is SiteCatalogAlternative
+            manga.isAlternativeSite = manager.getSite(element.link) is com.san.kir.data.parsing.SiteCatalogAlternative
             mangaDao.insert(manga)
             statisticDao.insert(MangaStatistic(manga = manga.name))
             return@withContext path to manga

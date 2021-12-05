@@ -14,31 +14,26 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.san.kir.manger.R
-import com.san.kir.manger.data.room.CatalogDb
-import com.san.kir.manger.data.room.dao.SiteDao
+import com.san.kir.data.db.CatalogDb
+import com.san.kir.data.db.dao.SiteDao
 import com.san.kir.manger.data.room.entities.SiteCatalogElement
 import com.san.kir.manger.foreground_work.services.CatalogForOneSiteUpdaterService
 import com.san.kir.manger.ui.MainActivity
-import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
-import com.san.kir.manger.utils.coroutines.mainLaunchInVM
-import com.san.kir.manger.utils.coroutines.withDefaultContext
-import com.san.kir.manger.utils.coroutines.withMainContext
+import com.san.kir.core.utils.coroutines.defaultLaunchInVM
+import com.san.kir.core.utils.coroutines.mainLaunchInVM
+import com.san.kir.core.utils.coroutines.withDefaultContext
+import com.san.kir.core.utils.coroutines.withMainContext
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
 
 class CatalogViewModel @AssistedInject constructor(
     @Assisted val siteName: String,
     private val context: Application,
-    private val siteDao: SiteDao,
-    private val dbFactory: CatalogDb.Factory,
+    private val siteDao: com.san.kir.data.db.dao.SiteDao,
+    private val dbFactory: com.san.kir.data.db.CatalogDb.Factory,
 ) : ViewModel() {
     private val genres = context.getString(R.string.catalog_fot_one_site_genres)
     private val type = context.getString(R.string.catalog_fot_one_site_type)
@@ -85,7 +80,7 @@ class CatalogViewModel @AssistedInject constructor(
             )
         }
             .onEach { list ->
-                withDefaultContext {
+                com.san.kir.core.utils.coroutines.withDefaultContext {
                     siteDao.getItem(siteName)?.let { site ->
                         site.oldVolume = list.size
                         siteDao.update(site)
@@ -137,7 +132,7 @@ class CatalogViewModel @AssistedInject constructor(
                 if (reverse) list.reversed()
                 else list
             }
-            .onEach { list -> withMainContext { items = list } }
+            .onEach { list -> com.san.kir.core.utils.coroutines.withMainContext { items = list } }
             .onEach { setAction(false) }
             .launchIn(viewModelScope)
 
@@ -163,7 +158,7 @@ class CatalogViewModel @AssistedInject constructor(
 
     // переключение видимости индикатора выполнения фоновой работы
     fun setAction(value: Boolean, service: Boolean = false) = mainLaunchInVM {
-        action = withDefaultContext {
+        action = com.san.kir.core.utils.coroutines.withDefaultContext {
             when {
                 value -> {
                     if (service) CatalogForOneSiteUpdaterService.addIfNotContain(context, siteName)

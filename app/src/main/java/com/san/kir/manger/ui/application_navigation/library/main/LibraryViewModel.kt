@@ -8,34 +8,32 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
 import androidx.work.WorkManager
 import com.san.kir.manger.data.datastore.MainRepository
-import com.san.kir.manger.data.room.dao.CategoryDao
-import com.san.kir.manger.data.room.dao.ChapterDao
-import com.san.kir.manger.data.room.dao.MangaDao
+import com.san.kir.data.db.dao.CategoryDao
+import com.san.kir.data.db.dao.ChapterDao
+import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.manger.data.room.entities.CategoryWithMangas
 import com.san.kir.manger.data.room.entities.SimpleManga
 import com.san.kir.manger.foreground_work.workmanager.MangaDeleteWorker
 import com.san.kir.manger.utils.CATEGORY_ALL
 import com.san.kir.manger.utils.SortLibraryUtil
-import com.san.kir.manger.utils.coroutines.defaultDispatcher
-import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
-import com.san.kir.manger.utils.coroutines.withMainContext
+import com.san.kir.core.utils.coroutines.defaultDispatcher
+import com.san.kir.core.utils.coroutines.defaultLaunchInVM
+import com.san.kir.core.utils.coroutines.withMainContext
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
 class LibraryViewModel @Inject constructor(
     private val context: Application,
-    categoryDao: CategoryDao,
-    private val chapterDao: ChapterDao,
-    private val mangaDao: MangaDao,
+    categoryDao: com.san.kir.data.db.dao.CategoryDao,
+    private val chapterDao: com.san.kir.data.db.dao.ChapterDao,
+    private val mangaDao: com.san.kir.data.db.dao.MangaDao,
     dataStore: MainRepository,
 ) : ViewModel() {
     private val _isAction = MutableStateFlow(false)
@@ -50,11 +48,11 @@ class LibraryViewModel @Inject constructor(
     var selectedManga by mutableStateOf(SelectedManga())
         private set
 
-    val showCategory = dataStore.data.map { it.isShowCatagery }.flowOn(defaultDispatcher)
+    val showCategory = dataStore.data.map { it.isShowCatagery }.flowOn(com.san.kir.core.utils.coroutines.defaultDispatcher)
 
     val categories = categoryDao.loadItems()
         .map { l -> l.map { it.name } }
-        .flowOn(defaultDispatcher)
+        .flowOn(com.san.kir.core.utils.coroutines.defaultDispatcher)
 
     var categoryNames by mutableStateOf(emptyList<String>())
         private set
@@ -63,7 +61,11 @@ class LibraryViewModel @Inject constructor(
     val preparedCategories = categoryDao
         .loadItemsAdds()
         .onEmpty { _isEmpty.update { true } }
-        .onEach { cats -> withMainContext { categoryNames = cats.map { it.category.name } } }
+        .onEach { cats ->
+            com.san.kir.core.utils.coroutines.withMainContext {
+                categoryNames = cats.map { it.category.name }
+            }
+        }
         .map { cats ->
             cats.onEach { c ->
                 if (c.category.name == CATEGORY_ALL)
@@ -83,7 +85,7 @@ class LibraryViewModel @Inject constructor(
                         list
                 }
         }
-        .flowOn(defaultDispatcher)
+        .flowOn(com.san.kir.core.utils.coroutines.defaultDispatcher)
 
     init {
         defaultLaunchInVM {

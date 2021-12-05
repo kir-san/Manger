@@ -1,6 +1,6 @@
 package com.san.kir.manger.components.download_manager
 
-import com.san.kir.manger.data.room.dao.ChapterDao
+import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.manger.data.room.entities.Chapter
 import com.san.kir.manger.utils.JobContext
 import com.san.kir.manger.utils.NetworkManager
@@ -13,7 +13,7 @@ class ChapterLoader @Inject constructor(
     private val networkManager: NetworkManager,
     private val downloadManager: DownloadManager,
     private val iteratorProcessor: IteratorProcessor,
-    private val chapterDao: ChapterDao,
+    private val chapterDao: com.san.kir.data.db.dao.ChapterDao,
     private val listeners: ListenerProvider,
     delegateImpl: DownloadManagerDelegateImpl,
 ) {

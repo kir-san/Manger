@@ -88,6 +88,10 @@ android {
 
 dependencies {
     implementation(project(Modules.ankofork))
+    implementation(project(Modules.UI.viewer))
+    implementation(project(Modules.Data.db))
+    implementation(project(Modules.Data.models))
+    implementation(project(Modules.Core.support))
 
     Dependencies.Kotlin.apply {
         implementation(STDLIB)
@@ -147,13 +151,6 @@ dependencies {
         implementation(NAVIGATION_ANIMATION)
     }
 
-    Dependencies.AndroidX.Room.apply {
-        ksp(ROOM_COMPILER)
-        implementation(ROOM_RUNTIME)
-        implementation(ROOM_KTX)
-        implementation(ROOM_PAGING)
-    }
-
     Dependencies.AndroidX.Lifecycle.apply {
         implementation(LIFECYCLE_VIEWMODEL)
         implementation(LIFECYCLE_RUNTIME)
@@ -170,14 +167,6 @@ dependencies {
 
     Dependencies.AndroidX.Datastore.apply {
         implementation(DATASTORE)
-    }
-
-    Dependencies.ForInternet.apply {
-        implementation(JSOUP)
-        implementation(GSON)
-        implementation(OKIO)
-//        implementation(RETROFIT)
-        implementation(OKHTTP)
     }
 
     Dependencies.Hyperion.apply {

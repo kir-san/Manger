@@ -7,27 +7,26 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.san.kir.manger.data.room.entities.Category
-import com.san.kir.manger.data.room.getDatabase
+import com.san.kir.data.db.getDatabase
 import com.san.kir.manger.utils.CATEGORY_ALL
-import com.san.kir.manger.utils.coroutines.withDefaultContext
+import com.san.kir.core.utils.coroutines.withDefaultContext
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.first
 
 class RemoveCategoryWorker(appContext: Context, workerParameters: WorkerParameters) :
     CoroutineWorker(appContext, workerParameters) {
 
-    private val categoryDao = getDatabase(appContext).categoryDao
-    private val mangaDao = getDatabase(appContext).mangaDao
+    private val categoryDao = com.san.kir.data.db.getDatabase(appContext).categoryDao
+    private val mangaDao = com.san.kir.data.db.getDatabase(appContext).mangaDao
 
     override suspend fun doWork() = coroutineScope {
         val categoryName = inputData.getString(cat)
 
         if (categoryName != null) {
-            val category = withDefaultContext {
+            val category = com.san.kir.core.utils.coroutines.withDefaultContext {
                 categoryDao.loadItem(categoryName).first()
             }
             kotlin.runCatching {
-                withDefaultContext {
+                com.san.kir.core.utils.coroutines.withDefaultContext {
                     mangaDao.update(
                         *mangaDao
                             .itemsWhereCategoryNotAll(category.name)

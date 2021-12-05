@@ -36,12 +36,12 @@ import androidx.compose.ui.unit.dp
 import com.san.kir.ankofork.dialogs.longToast
 import com.san.kir.ankofork.dialogs.toast
 import com.san.kir.manger.R
-import com.san.kir.manger.components.viewer.ViewerActivity
+import com.san.kir.manger.ui.application_navigation.library.viewer.ViewerActivity
 import com.san.kir.manger.data.room.entities.Chapter
 import com.san.kir.manger.data.room.entities.Manga
 import com.san.kir.manger.data.room.entities.countPages
 import com.san.kir.manger.foreground_work.services.DownloadService
-import com.san.kir.manger.utils.coroutines.withDefaultContext
+import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.manger.utils.enums.DownloadState
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
@@ -55,7 +55,7 @@ fun ChaptersItemContent(
     context: Context = LocalContext.current,
 ) {
     val countPagesInMemory by produceState(initialValue = 0, chapter, manga) {
-        withDefaultContext {
+        com.san.kir.core.utils.coroutines.withDefaultContext {
             value = chapter.countPages
         }
     }

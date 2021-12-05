@@ -25,7 +25,7 @@ import com.san.kir.manger.utils.compose.ImageWithStatus
 import com.san.kir.manger.utils.compose.LabelText
 import com.san.kir.manger.utils.compose.TopBarScreenWithInsets
 import com.san.kir.manger.utils.compose.navigate
-import com.san.kir.manger.utils.coroutines.withDefaultContext
+import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.manger.utils.extensions.browse
 import com.san.kir.manger.utils.extensions.formatDouble
 import com.san.kir.manger.utils.extensions.getFullPath
@@ -101,7 +101,7 @@ private fun MangaAboutContent(
     ImageWithStatus(manga.logo)
 
     LaunchedEffect(manga) {
-        size = withDefaultContext {
+        size = com.san.kir.core.utils.coroutines.withDefaultContext {
             ctx.getString(
                 R.string.library_page_item_size,
                 formatDouble(getFullPath(manga.path).lengthMb)

@@ -51,7 +51,7 @@ import com.san.kir.manger.ui.application_navigation.MAP_SCREENS_TYPE
 import com.san.kir.manger.ui.application_navigation.MainNavTarget
 import com.san.kir.manger.utils.compose.TestTags
 import com.san.kir.manger.utils.compose.TopBarScreenWithInsets
-import com.san.kir.manger.utils.coroutines.mainLaunch
+import com.san.kir.core.utils.coroutines.mainLaunch
 import com.san.kir.manger.utils.enums.MainMenuType
 import com.san.kir.manger.utils.extensions.formatDouble
 import kotlinx.coroutines.launch

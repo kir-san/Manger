@@ -1,17 +1,17 @@
 package com.san.kir.manger.di
 
 import android.app.Application
-import com.san.kir.manger.data.room.RoomDB
-import com.san.kir.manger.data.room.dao.CategoryDao
-import com.san.kir.manger.data.room.dao.ChapterDao
-import com.san.kir.manger.data.room.dao.DownloadDao
-import com.san.kir.manger.data.room.dao.MainMenuDao
-import com.san.kir.manger.data.room.dao.MangaDao
-import com.san.kir.manger.data.room.dao.PlannedDao
-import com.san.kir.manger.data.room.dao.SiteDao
-import com.san.kir.manger.data.room.dao.StatisticDao
-import com.san.kir.manger.data.room.dao.StorageDao
-import com.san.kir.manger.data.room.getDatabase
+import com.san.kir.data.db.RoomDB
+import com.san.kir.data.db.dao.CategoryDao
+import com.san.kir.data.db.dao.ChapterDao
+import com.san.kir.data.db.dao.DownloadDao
+import com.san.kir.data.db.dao.MainMenuDao
+import com.san.kir.data.db.dao.MangaDao
+import com.san.kir.data.db.dao.PlannedDao
+import com.san.kir.data.db.dao.SiteDao
+import com.san.kir.data.db.dao.StatisticDao
+import com.san.kir.data.db.dao.StorageDao
+import com.san.kir.data.db.getDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,52 +24,52 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideAppDatabase(application: Application): RoomDB {
-        return getDatabase(application)
+    fun provideAppDatabase(application: Application): com.san.kir.data.db.RoomDB {
+        return com.san.kir.data.db.getDatabase(application)
     }
 
     @Provides
-    fun provideMainMenuDao(database: RoomDB): MainMenuDao {
+    fun provideMainMenuDao(database: com.san.kir.data.db.RoomDB): com.san.kir.data.db.dao.MainMenuDao {
         return database.mainMenuDao
     }
 
     @Provides
-    fun provideMangaDao(database: RoomDB): MangaDao {
+    fun provideMangaDao(database: com.san.kir.data.db.RoomDB): com.san.kir.data.db.dao.MangaDao {
         return database.mangaDao
     }
 
     @Provides
-    fun provideStorageDao(database: RoomDB): StorageDao {
+    fun provideStorageDao(database: com.san.kir.data.db.RoomDB): com.san.kir.data.db.dao.StorageDao {
         return database.storageDao
     }
 
     @Provides
-    fun provideCategoryDao(database: RoomDB): CategoryDao {
+    fun provideCategoryDao(database: com.san.kir.data.db.RoomDB): com.san.kir.data.db.dao.CategoryDao {
         return database.categoryDao
     }
 
     @Provides
-    fun provideSiteDao(database: RoomDB): SiteDao {
+    fun provideSiteDao(database: com.san.kir.data.db.RoomDB): com.san.kir.data.db.dao.SiteDao {
         return database.siteDao
     }
 
     @Provides
-    fun provideDownloadDao(database: RoomDB): DownloadDao {
+    fun provideDownloadDao(database: com.san.kir.data.db.RoomDB): com.san.kir.data.db.dao.DownloadDao {
         return database.downloadDao
     }
 
     @Provides
-    fun provideChapterDao(database: RoomDB): ChapterDao {
+    fun provideChapterDao(database: com.san.kir.data.db.RoomDB): com.san.kir.data.db.dao.ChapterDao {
         return database.chapterDao
     }
 
     @Provides
-    fun providePlannedDao(database: RoomDB): PlannedDao {
+    fun providePlannedDao(database: com.san.kir.data.db.RoomDB): com.san.kir.data.db.dao.PlannedDao {
         return database.plannedDao
     }
 
     @Provides
-    fun provideStatisticDao(database: RoomDB): StatisticDao {
+    fun provideStatisticDao(database: com.san.kir.data.db.RoomDB): com.san.kir.data.db.dao.StatisticDao {
         return database.statisticDao
     }
 }

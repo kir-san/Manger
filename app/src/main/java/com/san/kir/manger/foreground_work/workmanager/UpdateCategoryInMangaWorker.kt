@@ -7,22 +7,21 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import com.san.kir.manger.data.room.dao.CategoryDao
-import com.san.kir.manger.data.room.dao.MangaDao
+import com.san.kir.data.db.dao.CategoryDao
+import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.manger.data.room.entities.Category
 import com.san.kir.manger.utils.CATEGORY_ALL
-import com.san.kir.manger.utils.coroutines.withDefaultContext
+import com.san.kir.core.utils.coroutines.withDefaultContext
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.first
 
 @HiltWorker
 class UpdateCategoryInMangaWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParameters: WorkerParameters,
-    private val categoryDao: CategoryDao,
-    private val mangaDao: MangaDao,
+    private val categoryDao: com.san.kir.data.db.dao.CategoryDao,
+    private val mangaDao: com.san.kir.data.db.dao.MangaDao,
 ) : CoroutineWorker(appContext, workerParameters) {
 
     override suspend fun doWork() = coroutineScope {
@@ -32,12 +31,12 @@ class UpdateCategoryInMangaWorker @AssistedInject constructor(
 
         if (categoryName != null && oldCategory != null) {
 
-            val category = withDefaultContext {
+            val category = com.san.kir.core.utils.coroutines.withDefaultContext {
                 categoryDao.loadItem(categoryName).first()
             }
 
             kotlin.runCatching {
-                withDefaultContext {
+                com.san.kir.core.utils.coroutines.withDefaultContext {
                     if (categoryName != oldCategory) {
                         mangaDao.update(
                             *(

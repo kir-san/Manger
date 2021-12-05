@@ -1,7 +1,7 @@
 package com.san.kir.manger.components.download_manager
 
 import com.san.kir.manger.components.parsing.ConnectManager
-import com.san.kir.manger.components.parsing.SiteCatalogsManager
+import com.san.kir.data.parsing.SiteCatalogsManager
 import com.san.kir.manger.data.room.entities.Chapter
 import com.san.kir.manger.utils.JobContext
 import kotlinx.coroutines.sync.Mutex
@@ -13,7 +13,7 @@ import javax.inject.Singleton
 @Singleton
 class DownloadManager @Inject constructor(
     private val connectManager: ConnectManager,
-    private val manager: SiteCatalogsManager,
+    private val manager: com.san.kir.data.parsing.SiteCatalogsManager,
 ) {
     private val lock = Mutex()
     private val concurrentLimit: Int = 1

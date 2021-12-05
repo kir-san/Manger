@@ -2,8 +2,7 @@ package com.san.kir.manger.foreground_work.workmanager
 
 import android.content.Context
 import androidx.work.WorkerParameters
-import com.san.kir.manger.data.room.entities.action
-import com.san.kir.manger.utils.enums.ChapterStatus
+import com.san.kir.core.support.ChapterStatus
 import kotlinx.coroutines.coroutineScope
 
 class DownloadedLatestClearWorker(appContext: Context, workerParams: WorkerParameters) :
@@ -14,7 +13,7 @@ class DownloadedLatestClearWorker(appContext: Context, workerParams: WorkerParam
             mChapterRepository.update(
                 *items()
                     .filter { it.isInUpdate }
-                    .filter { it.action == ChapterStatus.DELETE }
+                    .filter { it.action == com.san.kir.core.support.ChapterStatus.DELETE }
                     .onEach { it.isInUpdate = false }
                     .toTypedArray()
             )

@@ -11,8 +11,8 @@ import com.san.kir.manger.data.datastore.ChaptersRepository
 import com.san.kir.manger.data.datastore.DownloadRepository
 import com.san.kir.manger.data.datastore.MainRepository
 import com.san.kir.manger.data.datastore.ViewerRepository
-import com.san.kir.manger.utils.coroutines.defaultLaunchInVM
-import com.san.kir.manger.utils.coroutines.withMainContext
+import com.san.kir.core.utils.coroutines.defaultLaunchInVM
+import com.san.kir.core.utils.coroutines.withMainContext
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.filterNotNull
@@ -55,7 +55,7 @@ class SettingsViewModel @Inject constructor(
             val viewer = viewer.data.filterNotNull().first()
             val chapters = chapters.data.filterNotNull().first()
 
-            withMainContext {
+            com.san.kir.core.utils.coroutines.withMainContext {
                 theme = main.theme
                 showCategory = main.isShowCatagery
                 editMenu = main.editMenu

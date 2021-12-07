@@ -20,5 +20,6 @@ object Modules {
         val db = module("db")
         val parsing = module("parsing")
         val models = module("models")
+        val store = module("store")
     }
 }

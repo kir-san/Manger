@@ -2,8 +2,6 @@ package com.san.kir.ankofork.dialogs
 
 import android.content.Context
 import android.widget.Toast
-import androidx.fragment.app.Fragment
-import com.san.kir.ankofork.AnkoContext
 
 
 /**

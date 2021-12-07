@@ -60,6 +60,10 @@ val File.isEmptyDirectory: Boolean
         } else
             true
 
+fun delChapters(chapter: String): ResultDeleting {
+    return delChapters(listOf(chapter))
+}
+
 fun delChapters(chapters: List<String>): ResultDeleting {
     return delFiles(chapters)
 }

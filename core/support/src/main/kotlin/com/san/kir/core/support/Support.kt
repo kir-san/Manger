@@ -1,4 +1,4 @@
-package com.san.kir.support
+package com.san.kir.core.support
 
 class Support {
 }

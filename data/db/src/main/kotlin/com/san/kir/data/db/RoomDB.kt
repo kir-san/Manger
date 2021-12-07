@@ -72,12 +72,8 @@ import java.io.File
     DownloadStateTypeConverter::class,
 )
 abstract class RoomDB : RoomDatabase() {
-    companion object {
-        const val NAME = "${DIR.PROFILE}/profile.db"
-        const val VERSION = 37
-    }
-
     abstract val siteDao: SiteDao
+
     abstract val mangaDao: MangaDao
     abstract val chapterDao: ChapterDao
     abstract val plannedDao: PlannedDao
@@ -87,24 +83,29 @@ abstract class RoomDB : RoomDatabase() {
     abstract val mainMenuDao: MainMenuDao
     abstract val latestChapterDao: LatestChapterDao
     abstract val statisticDao: StatisticDao
-}
 
-private lateinit var sDb: RoomDB
+    companion object {
+        const val NAME = "${DIR.PROFILE}/profile.db"
+        const val VERSION = 37
 
-fun getDatabase(context: Context): RoomDB {
-    if (!::sDb.isInitialized)
-        synchronized(RoomDB::class.java) {
+        private lateinit var sDb: RoomDB
+
+        fun getDatabase(context: Context): RoomDB {
             if (!::sDb.isInitialized)
-                sDb = Room.databaseBuilder(
-                    context.applicationContext,
-                    RoomDB::class.java,
-                    File(externalDir, RoomDB.NAME).absolutePath
-                )
-                    .addMigrations(*migrations)
-                    .addCallback(Callback(context))
-                    .build()
+                synchronized(RoomDB::class.java) {
+                    if (!::sDb.isInitialized)
+                        sDb = Room.databaseBuilder(
+                            context.applicationContext,
+                            RoomDB::class.java,
+                            File(externalDir, NAME).absolutePath
+                        )
+                            .addMigrations(*migrations)
+                            .addCallback(Callback(context))
+                            .build()
+                }
+            return sDb
         }
-    return sDb
+    }
 }
 
 class Callback(private val context: Context) : RoomDatabase.Callback() {

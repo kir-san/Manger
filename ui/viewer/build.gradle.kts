@@ -3,6 +3,7 @@ plugins {
     id(Plugins.KOTLIN_ANDROID)
     id(Plugins.HILT_ANDROID)
     kotlin(Plugins.KAPT)
+    id(Plugins.PARCELIZE)
 }
 
 android {
@@ -38,6 +39,13 @@ android {
 
 dependencies {
     implementation(project(Modules.Data.models))
+    implementation(project(Modules.Data.store))
+    implementation(project(Modules.Data.db))
+    implementation(project(Modules.Core.internet))
+    implementation(project(Modules.Core.utils))
+    implementation(project(Modules.Core.support))
+
+    implementation("com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0")
 
     Dependencies.AndroidX.apply {
         implementation(CORE)
@@ -66,5 +74,9 @@ dependencies {
 
     Dependencies.AndroidX.Hilt.apply {
         kapt(HILT_COMPILER)
+    }
+
+    Dependencies.AndroidX.Room.apply {
+        implementation(ROOM_RUNTIME)
     }
 }

@@ -53,7 +53,7 @@ class SiteCatalogsManager @Inject constructor(
 
     // Загрузка полной информации для элемента в каталоге
     suspend fun getFullElement(simpleElement: SiteCatalogElement) =
-        com.san.kir.core.utils.coroutines.withDefaultContext {
+        withDefaultContext {
             catalog.first { it.allCatalogName.any { s -> s == simpleElement.catalogName } }
                 .getFullElement(simpleElement)
         }

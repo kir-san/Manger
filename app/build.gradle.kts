@@ -1,7 +1,3 @@
-import com.google.protobuf.gradle.generateProtoTasks
-import com.google.protobuf.gradle.protobuf
-import com.google.protobuf.gradle.protoc
-
 plugins {
     id(Plugins.ANDROID_APPLICATION)
     id(Plugins.HILT_ANDROID)
@@ -9,7 +5,6 @@ plugins {
     kotlin(Plugins.KAPT)
     id(Plugins.KSP) version Versions.Kotlin.KSP
     id(Plugins.PARCELIZE)
-    id(Plugins.PROTOBUF) version Versions.Google.PROTOBUF_PLUGIN
 }
 
 android {
@@ -59,7 +54,8 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             signingConfig = signingConfigs.getByName("release")
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro")
             buildConfigField("String", "EXAMPLE", "\"release\"")
         }
         getByName("debug") {
@@ -90,8 +86,12 @@ dependencies {
     implementation(project(Modules.ankofork))
     implementation(project(Modules.UI.viewer))
     implementation(project(Modules.Data.db))
+    implementation(project(Modules.Data.store))
     implementation(project(Modules.Data.models))
+    implementation(project(Modules.Data.parsing))
+    implementation(project(Modules.Core.utils))
     implementation(project(Modules.Core.support))
+    implementation(project(Modules.Core.internet))
 
     Dependencies.Kotlin.apply {
         implementation(STDLIB)
@@ -109,7 +109,6 @@ dependencies {
 
     Dependencies.Google.apply {
         implementation(MATERIAL)
-        implementation(PROTOBUF_JAVALITE)
     }
 
     Dependencies.Google.Hilt.apply {
@@ -159,14 +158,18 @@ dependencies {
         implementation(LIFECYCLE_SERVICE)
     }
 
+    Dependencies.ForInternet.apply {
+        implementation(JSOUP)
+    }
+
     Dependencies.AndroidX.WorkManager.apply {
         implementation(WORK_RUNTIME)
         implementation(WORK_GCM)
         implementation(WORK_MULTIPROCESS)
     }
 
-    Dependencies.AndroidX.Datastore.apply {
-        implementation(DATASTORE)
+    Dependencies.AndroidX.Room.apply {
+        implementation(ROOM_RUNTIME)
     }
 
     Dependencies.Hyperion.apply {
@@ -195,17 +198,4 @@ dependencies {
 
     // Use the most recent version of Compose available.
     // debugImplementation 'org.jetbrains.kotlin:kotlin-reflect:1.5.20'
-}
-
-protobuf {
-    protoc {
-        artifact = Dependencies.Google.PROTOBUF_PROTOC
-    }
-    generateProtoTasks {
-        all().forEach { task ->
-            task.plugins.create("java") {
-                option("lite")
-            }
-        }
-    }
 }

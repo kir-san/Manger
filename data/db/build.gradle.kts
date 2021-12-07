@@ -1,8 +1,10 @@
 plugins {
     id(Plugins.ANDROID_LIBRARY)
     id(Plugins.KOTLIN_ANDROID)
+//    id(Plugins.HILT_ANDROID)
     id(Plugins.KSP) version Versions.Kotlin.KSP
     id(Plugins.PARCELIZE)
+//    kotlin(Plugins.KAPT)
 }
 
 android {
@@ -38,7 +40,14 @@ dependencies {
     implementation(project(Modules.Core.utils))
     implementation(project(Modules.Core.support))
 
-    implementation(Dependencies.INJECT)
+    Dependencies.Google.Hilt.apply {
+        implementation(HILT_ANDROID)
+//        kapt(HILT_COMPILER)
+    }
+
+    Dependencies.AndroidX.Hilt.apply {
+//        kapt(HILT_COMPILER)
+    }
 
     Dependencies.AndroidX.Room.apply {
         ksp(ROOM_COMPILER)

@@ -109,9 +109,9 @@ object Dependencies {
         }
 
         const val PROTOBUF_JAVALITE =
-            "com.google.protobuf:protobuf-javalite:${Versions.Google.PROTOBUF_JAVALITE}"
+            "com.google.protobuf:protobuf-javalite:${Versions.Google.PROTOBUF}"
         const val PROTOBUF_PROTOC =
-            "com.google.protobuf:protoc:${Versions.Google.PROTOBUF_PROTOC}"
+            "com.google.protobuf:protoc:${Versions.Google.PROTOBUF}"
         const val MATERIAL =
             "com.google.android.material:material:${Versions.Google.MATERIAL}"
     }

@@ -170,19 +170,16 @@
     <string name="app_update_service_action_cancel_all">Отменить все</string>
     <string name="app_update_service_title">Поиск обновлений приложения</string>
 
-    <!-- Viewer -->
-    <string name="viewer_chapters_text">Главы: %1$d/%2$d</string>
-    <string name="viewer_pages_text">Страницы: %1$d/%2$d</string>
-    <string name="viewer_page_next_text">Для перехода на следующую главу нажмите на экран</string>
-    <string name="viewer_page_prev_text">Для перехода на предыдущую главу нажмите на экран</string>
-    <string name="viewer_page_none_next_text">Увы но еще одной главы нет, мне очень жаль.</string>
-    <string name="viewer_page_none_prev_text">Эта самая первая глава, ничего первее быть не должно</string>
-    <string name="viewer_page_close">Закончить чтение</string>
-
     <!-- FirstRun -->
     <string name="first_run_exit_text">Двойное нажатие закроет приложение</string>
 
     <!-- MainMenu -->
+    <string name="main_menu_storage">Хранилище</string>
+    <string name="main_menu_statistic">Статистика</string>
+    <string name="main_menu_settings">Настройки</string>
+    <string name="main_menu_schedule">Расписание</string>
+    <string name="main_menu_category">Категории</string>
+    <string name="main_menu_catalogs">Каталоги</string>
     <string name="main_menu_library_count">Библиотека: %d</string>
     <string name="main_menu_storage_size_mb">%s Мб</string>
     <string name="main_menu_downloader_count">Загрузчик: %d</string>

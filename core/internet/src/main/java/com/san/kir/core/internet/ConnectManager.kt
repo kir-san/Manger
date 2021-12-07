@@ -78,6 +78,8 @@ class ConnectManager @Inject constructor(context: Application) {
         return client.newCall(request).await()
     }
 
+    suspend fun getText(url: String = ""): String = getDocument(url = url).body().wholeText()
+
     @OptIn(ExperimentalTime::class)
     suspend fun getDocument(
         url: String = "",
@@ -120,7 +122,7 @@ class ConnectManager @Inject constructor(context: Application) {
         return name
     }
 
-    suspend fun downloadBitmap(url: String, onProgress: ((Float) -> Unit) = {}): Bitmap? =
+    suspend fun downloadBitmap(url: String, onProgress: ((percent: Float) -> Unit) = {}): Bitmap? =
         withIoContext {
             val buffer = Buffer()
 
@@ -133,7 +135,11 @@ class ConnectManager @Inject constructor(context: Application) {
             }
         }
 
-    suspend fun downloadFile(file: File, url: String, onProgress: ((Float) -> Unit) = {}): Long =
+    suspend fun downloadFile(
+        file: File,
+        url: String,
+        onProgress: ((percent: Float) -> Unit) = {},
+    ): Long =
         withIoContext {
             file.delete()
             file.parentFile?.createDirs()
@@ -181,7 +187,7 @@ class ConnectManager @Inject constructor(context: Application) {
     @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun Call.awaitDownload(
         sink: BufferedSink,
-        onProgress: (Float) -> Unit,
+        onProgress: (percent: Float) -> Unit,
     ) {
         return suspendCancellableCoroutine { continuation ->
             enqueue(

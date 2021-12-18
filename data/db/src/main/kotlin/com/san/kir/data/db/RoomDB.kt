@@ -86,7 +86,7 @@ abstract class RoomDB : RoomDatabase() {
 
     companion object {
         const val NAME = "${DIR.PROFILE}/profile.db"
-        const val VERSION = 37
+        const val VERSION = 38
 
         private lateinit var sDb: RoomDB
 

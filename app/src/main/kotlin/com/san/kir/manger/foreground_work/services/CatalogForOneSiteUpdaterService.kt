@@ -16,9 +16,10 @@ import android.os.Looper
 import android.os.Message
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.core.net.toUri
-import com.san.kir.ankofork.sdk28.notificationManager
+import com.san.kir.core.utils.coroutines.defaultDispatcher
 import com.san.kir.core.utils.log
 import com.san.kir.data.db.CatalogDb.Factory
 import com.san.kir.data.db.dao.MangaDao
@@ -92,7 +93,7 @@ class CatalogForOneSiteUpdaterService : Service() {
 
     private val actionCancelAll by lazy {
         val intent = intentFor<CatalogForOneSiteUpdaterService>(this).setAction(ACTION_CANCEL_ALL)
-        val cancelAll = PendingIntent.getService(this, 0, intent, 0)
+        val cancelAll = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
         NotificationCompat
             .Action
             .Builder(
@@ -109,8 +110,6 @@ class CatalogForOneSiteUpdaterService : Service() {
     @Inject
     lateinit var manager: SiteCatalogsManager
 
-    private val default = Dispatchers.Default
-
     @Inject
     lateinit var mangaDao: MangaDao
 
@@ -119,6 +118,10 @@ class CatalogForOneSiteUpdaterService : Service() {
 
     @Inject
     lateinit var dbFactory: Factory
+
+    private val notificationManager by lazy {
+        NotificationManagerCompat.from(this)
+    }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -179,7 +182,7 @@ class CatalogForOneSiteUpdaterService : Service() {
     }
 
 
-    fun onHandleIntent(siteName: String) = runBlocking(default) {
+    fun onHandleIntent(siteName: String) = runBlocking(defaultDispatcher) {
         launch {
             try {
                 val site = manager.catalog.first { it.name == siteName }

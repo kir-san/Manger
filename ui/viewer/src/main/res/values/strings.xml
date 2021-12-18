@@ -3,8 +3,29 @@
     <string name="viewer_page_close">Закончить чтение</string>
     <string name="viewer_page_next_text">Для перехода на следующую главу нажмите на экран</string>
     <string name="viewer_page_prev_text">Для перехода на предыдущую главу нажмите на экран</string>
-    <string name="viewer_page_none_next_text">Увы но еще одной главы нет, мне очень жаль.</string>
-    <string name="viewer_page_none_prev_text">Эта самая первая глава, ничего первее быть не должно</string>
+    <string name="viewer_page_none_next_text">
+        Увы но еще одной главы нет, мне очень жаль.\n
+        Для выхода нажмите на экран
+    </string>
+    <string name="viewer_page_none_prev_text">
+        Эта самая первая глава, ничего первее быть не должно.\n
+        Для выхода нажмите на экран
+    </string>
+
+    <string name="error_argument">
+        Во время загрузки произошла следующая ошибка: \n
+        %s \n
+        Попробуйте обновить страницы.\т
+        Если ошибка повторится, убедитесь, \n
+        что эта манга доступна на сайте и сообщите автору.
+    </string>
+
+    <string name="error_host">
+        Во время загрузки произошла следующая ошибка: \n
+        %s \n
+        Возможной причиной появления этой ошибки\n
+        является отсутствие доступа к Internet.
+    </string>
 
     <string name="viewer_chapters_text">Главы: %1$d/%2$d</string>
     <string name="viewer_pages_text">Страницы: %1$d/%2$d</string>
@@ -12,5 +33,7 @@
     <string name="reload_image_button">reload image button</string>
     <string name="move_to_previous_chapter">Move to previous chapter</string>
     <string name="move_to_next_chapter">Move to next chapter</string>
+    <string name="return_to_back">Return to back</string>
 
+    <string name="stopwatch">%d мин.</string>
 </resources>

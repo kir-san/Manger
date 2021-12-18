@@ -49,7 +49,7 @@ class SiteCatalogItemViewModel @AssistedInject constructor(
             assistedFactory: Factory,
             url: String,
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return assistedFactory.create(url) as T
             }
         }

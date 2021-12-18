@@ -10,7 +10,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.san.kir.ankofork.sdk28.connectivityManager
 import com.san.kir.core.support.DownloadState
 import com.san.kir.core.utils.coroutines.defaultLaunch
 import com.san.kir.core.utils.coroutines.withMainContext
@@ -19,6 +18,7 @@ import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.models.Chapter
 import com.san.kir.data.store.DownloadStore
 import com.san.kir.manger.foreground_work.services.DownloadService
+import com.san.kir.manger.utils.extensions.connectivityManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -3,7 +3,6 @@ package com.san.kir.manger.ui
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.san.kir.ankofork.dialogs.longToast
 import com.san.kir.core.utils.coroutines.defaultLaunch
 import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.core.utils.coroutines.withMainContext
@@ -12,6 +11,7 @@ import com.san.kir.data.models.SiteCatalogElement
 import com.san.kir.data.models.authorsList
 import com.san.kir.data.models.genresList
 import com.san.kir.data.parsing.SiteCatalogsManager
+import com.san.kir.manger.utils.extensions.longToast
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

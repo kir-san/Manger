@@ -88,7 +88,7 @@ abstract class MangachanTemplate(private val connectManager: ConnectManager) :
 
         element.logo = doc.select("#content #left #manga_images > a > img").attr("src")
 
-        element.populate = doc.select("#content #left div > font > b").text().toInt()
+        element.populate = doc.select("#content div#left div font b").text().toInt()
 
         val content = doc.select("#content")
         val right = content.select("#right")

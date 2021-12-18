@@ -33,15 +33,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.san.kir.ankofork.dialogs.longToast
-import com.san.kir.ankofork.dialogs.toast
 import com.san.kir.core.support.DownloadState
-import com.san.kir.manger.R
-import com.san.kir.manger.foreground_work.services.DownloadService
 import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.data.models.Chapter
 import com.san.kir.data.models.Manga
 import com.san.kir.data.models.countPages
+import com.san.kir.manger.R
+import com.san.kir.manger.foreground_work.services.DownloadService
+import com.san.kir.manger.utils.extensions.longToast
+import com.san.kir.manger.utils.extensions.toast
 import com.san.kir.ui.viewer.MangaViewer
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)

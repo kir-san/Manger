@@ -38,16 +38,10 @@ import kotlin.time.ExperimentalTime
 @Singleton
 class ConnectManager @Inject constructor(context: Application) {
     private val defaultCacheDirectory = File(context.cacheDir, "http_cache")
-    private val imageCacheDirectory = File(context.cacheDir, "image_cache")
 
     private val defaultCache = Cache(
         defaultCacheDirectory,
         15L * 1024L * 1024L
-    )
-
-    private val imageCache = Cache(
-        imageCacheDirectory,
-        50L * 1024L * 1024L
     )
 
     private val cookieJar = AndroidCookieJar()
@@ -55,13 +49,6 @@ class ConnectManager @Inject constructor(context: Application) {
     private val defaultClient by lazy {
         OkHttpClient.Builder()
             .cache(defaultCache)
-            .cookieJar(cookieJar)
-            .build()
-    }
-
-    private val imageDownloadClient by lazy {
-        OkHttpClient.Builder()
-            .cache(imageCache)
             .cookieJar(cookieJar)
             .build()
     }
@@ -107,7 +94,7 @@ class ConnectManager @Inject constructor(context: Application) {
                 }
             }
             else -> {
-                Jsoup.parse(responce.body?.byteStream(), "UTF-8", "")
+                return@withIoContext Jsoup.parse(responce.body?.byteStream(), "UTF-8", "")
             }
         }
         Document("")
@@ -122,22 +109,40 @@ class ConnectManager @Inject constructor(context: Application) {
         return name
     }
 
-    suspend fun downloadBitmap(url: String, onProgress: ((percent: Float) -> Unit) = {}): Bitmap? =
+    suspend fun downloadBitmap(
+        url: String,
+        onFinish: (bm: Bitmap?, size: Long, time: Long) -> Unit = { _, _, _ -> },
+        onProgress: (percent: Float) -> Unit = {},
+    ): Bitmap? =
         withIoContext {
             val buffer = Buffer()
+            var size: Long = 0
+            var time: Long = 0
+            defaultClient.newCall(url.getRequest())
+                .awaitDownload(buffer, onProgress) { s, t ->
+                    size = s
+                    time = t
+                }
 
-            defaultClient.newCall(url.getRequest()).awaitDownload(buffer, onProgress)
+            val bm = tryGetBitmap(buffer)
 
-            try {
-                BitmapFactory.decodeStream(buffer.inputStream())
-            } catch (ex: Throwable) {
-                null
-            }
+            onFinish(bm, size, time)
+
+            bm
         }
+
+    private fun tryGetBitmap(buffer: Buffer): Bitmap? {
+        return try {
+            BitmapFactory.decodeStream(buffer.inputStream())
+        } catch (ex: Throwable) {
+            null
+        }
+    }
 
     suspend fun downloadFile(
         file: File,
         url: String,
+        onFinish: (size: Long, time: Long) -> Unit = { _, _ -> },
         onProgress: ((percent: Float) -> Unit) = {},
     ): Long =
         withIoContext {
@@ -146,7 +151,8 @@ class ConnectManager @Inject constructor(context: Application) {
 
             file.createNewFile()
 
-            defaultClient.newCall(url.getRequest()).awaitDownload(file.sink().buffer(), onProgress)
+            defaultClient.newCall(url.getRequest())
+                .awaitDownload(file.sink().buffer(), onProgress, onFinish)
 
             file.length()
         }
@@ -188,6 +194,7 @@ class ConnectManager @Inject constructor(context: Application) {
     private suspend fun Call.awaitDownload(
         sink: BufferedSink,
         onProgress: (percent: Float) -> Unit,
+        onFinish: (size: Long, time: Long) -> Unit = { _, _ -> },
     ) {
         return suspendCancellableCoroutine { continuation ->
             enqueue(
@@ -197,6 +204,7 @@ class ConnectManager @Inject constructor(context: Application) {
                     override fun onResponse(call: Call, response: Response) {
                         response.body?.let { body ->
                             kotlin.runCatching {
+                                val startTime = System.currentTimeMillis()
                                 val contentLength = body.contentLength()
                                 var total: Long = 0
                                 var read: Long
@@ -214,6 +222,7 @@ class ConnectManager @Inject constructor(context: Application) {
                                 sink.close()
                                 body.source().close()
 
+                                onFinish(contentLength, System.currentTimeMillis() - startTime)
                                 continuation.resume(Unit) {}
                             }.onFailure {
                                 sink.close()

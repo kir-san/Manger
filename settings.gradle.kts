@@ -1,5 +1,4 @@
 include(":app")
-include(":ankofork")
 include(":ui:viewer")
 include(":data:db")
 include(":data:parsing")

@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.san.kir.ankofork.dialogs.toast
 import com.san.kir.core.support.ChapterStatus
 import com.san.kir.core.utils.coroutines.defaultLaunch
 import com.san.kir.core.utils.coroutines.withDefaultContext
@@ -18,6 +17,7 @@ import com.san.kir.data.models.action
 import com.san.kir.manger.R
 import com.san.kir.manger.foreground_work.services.DownloadService
 import com.san.kir.manger.ui.MainActivity
+import com.san.kir.manger.utils.extensions.toast
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -105,7 +105,7 @@ class ChaptersActionViewModel @AssistedInject constructor(
             assistedFactory: Factory,
             mangaUnic: String
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return assistedFactory.create(mangaUnic) as T
             }
         }

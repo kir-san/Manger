@@ -6,14 +6,13 @@ import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.Operation
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import com.san.kir.ankofork.doFromSdk
-import com.san.kir.ankofork.sdk28.notificationManager
 import com.san.kir.core.utils.log
 import com.san.kir.manger.R
 import com.san.kir.manger.repositories.ChapterRepository
@@ -23,7 +22,9 @@ import com.san.kir.manger.utils.ID
 class MigrateLatestChapterToChapterWorker(context: Context, parameters: WorkerParameters) :
     CoroutineWorker(context, parameters) {
 
-    private val notificationManager = context.notificationManager
+    private val notificationManager by lazy {
+        NotificationManagerCompat.from(context)
+    }
     private var notificationId = ID.generate()
     private val channelId = "MangaMigrateChannelId"
     private val channelTitle = "MigrateLatestChapterToChapterService"
@@ -88,7 +89,7 @@ class MigrateLatestChapterToChapterWorker(context: Context, parameters: WorkerPa
 
     private fun createForegroundInfo(title: String, isOngoing: Boolean = true): ForegroundInfo {
 
-        doFromSdk(Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createChannel()
         }
 

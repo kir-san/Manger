@@ -43,7 +43,6 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.san.kir.ankofork.dialogs.toast
 import com.san.kir.core.support.MainMenuType
 import com.san.kir.manger.BuildConfig
 import com.san.kir.manger.R
@@ -54,6 +53,7 @@ import com.san.kir.manger.utils.compose.TopBarScreenWithInsets
 import com.san.kir.core.utils.coroutines.mainLaunch
 import com.san.kir.data.models.MainMenuItem
 import com.san.kir.manger.utils.extensions.formatDouble
+import com.san.kir.manger.utils.extensions.toast
 import kotlinx.coroutines.launch
 
 var backPressedTime = 0L

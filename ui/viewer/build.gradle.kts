@@ -35,26 +35,29 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
+    kapt {
+        useBuildCache = true
+    }
+
 }
 
 dependencies {
     implementation(project(Modules.Data.models))
     implementation(project(Modules.Data.store))
     implementation(project(Modules.Data.db))
+    implementation(project(Modules.Data.parsing))
     implementation(project(Modules.Core.internet))
     implementation(project(Modules.Core.utils))
     implementation(project(Modules.Core.support))
 
-    implementation("com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0")
+    implementation(Dependencies.SUBSAMPLING)
 
     Dependencies.AndroidX.apply {
         implementation(CORE)
-        implementation(EXIF)
         implementation(ACTIVITY)
         implementation(FRAGMENT)
         implementation(APPCOMPAT)
-        implementation(VIEWPAGER2)
-        implementation(CONSTRAINTLAYOUT)
     }
 
     Dependencies.AndroidX.Lifecycle.apply {

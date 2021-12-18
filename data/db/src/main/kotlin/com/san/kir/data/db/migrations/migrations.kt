@@ -616,5 +616,40 @@ val migrations: Array<Migration> = arrayOf(
                 "${ChaptersColumn.isInUpdate} " +
                 "FROM ${ChaptersColumn.tableName}_tmp",
         "DROP TABLE ${ChaptersColumn.tableName}_tmp"
+    ),
+    migrate(
+        37, 38,
+        "ALTER TABLE ${MangaStatisticColumn.tableName} RENAME TO ${MangaStatisticColumn.tableName}_tmp",
+        "CREATE TABLE `${MangaStatisticColumn.tableName}` (" +
+                "`${MangaStatisticColumn.id}` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "`${MangaStatisticColumn.manga}` TEXT NOT NULL, " +
+                "`${MangaStatisticColumn.allChapters}` INTEGER NOT NULL, " +
+                "`${MangaStatisticColumn.lastChapters}` INTEGER NOT NULL, " +
+                "`${MangaStatisticColumn.allPages}` INTEGER NOT NULL, " +
+                "`${MangaStatisticColumn.lastPages}` INTEGER NOT NULL, " +
+                "`${MangaStatisticColumn.allTime}` INTEGER NOT NULL, " +
+                "`${MangaStatisticColumn.lastTime}` INTEGER NOT NULL, " +
+                "`${MangaStatisticColumn.maxSpeed}` INTEGER NOT NULL, " +
+                "`${MangaStatisticColumn.downloadSize}` INTEGER NOT NULL, " +
+                "`${MangaStatisticColumn.downloadTime}` INTEGER NOT NULL, " +
+                "`${MangaStatisticColumn.openedTimes}` INTEGER NOT NULL, " +
+                "`${MangaStatisticColumn.lastDownloadSize}` INTEGER NOT NULL DEFAULT 0, " +
+                "`${MangaStatisticColumn.lastDownloadTime}` INTEGER NOT NULL DEFAULT 0)",
+        "INSERT INTO `${MangaStatisticColumn.tableName}`(" +
+                "${MangaStatisticColumn.id}, ${MangaStatisticColumn.manga}, " +
+                "${MangaStatisticColumn.allChapters}, ${MangaStatisticColumn.lastChapters}, " +
+                "${MangaStatisticColumn.allPages}, ${MangaStatisticColumn.lastPages}, " +
+                "${MangaStatisticColumn.allTime}, ${MangaStatisticColumn.lastTime}, " +
+                "${MangaStatisticColumn.maxSpeed}, ${MangaStatisticColumn.downloadSize}, " +
+                "${MangaStatisticColumn.downloadTime}, ${MangaStatisticColumn.openedTimes}) " +
+                "SELECT " +
+                "${MangaStatisticColumn.id}, ${MangaStatisticColumn.manga}, " +
+                "${MangaStatisticColumn.allChapters}, ${MangaStatisticColumn.lastChapters}, " +
+                "${MangaStatisticColumn.allPages}, ${MangaStatisticColumn.lastPages}, " +
+                "${MangaStatisticColumn.allTime}, ${MangaStatisticColumn.lastTime}, " +
+                "${MangaStatisticColumn.maxSpeed}, ${MangaStatisticColumn.downloadSize}, " +
+                "${MangaStatisticColumn.downloadTime}, ${MangaStatisticColumn.openedTimes} " +
+                "FROM ${MangaStatisticColumn.tableName}_tmp",
+        "DROP TABLE ${MangaStatisticColumn.tableName}_tmp"
     )
 )

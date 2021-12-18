@@ -83,7 +83,6 @@ android {
 }
 
 dependencies {
-    implementation(project(Modules.ankofork))
     implementation(project(Modules.UI.viewer))
     implementation(project(Modules.Data.db))
     implementation(project(Modules.Data.store))

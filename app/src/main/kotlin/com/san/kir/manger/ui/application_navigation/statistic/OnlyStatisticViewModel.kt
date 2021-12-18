@@ -46,7 +46,7 @@ class OnlyStatisticViewModel @AssistedInject constructor(
             assistedFactory: Factory,
             mangaName: String,
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return assistedFactory.create(mangaName) as T
             }
         }

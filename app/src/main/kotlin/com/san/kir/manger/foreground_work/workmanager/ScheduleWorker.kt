@@ -10,7 +10,6 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import com.san.kir.ankofork.dialogs.longToast
 import com.san.kir.core.support.CATEGORY_ALL
 import com.san.kir.core.support.PlannedPeriod
 import com.san.kir.core.support.PlannedType
@@ -25,6 +24,7 @@ import com.san.kir.manger.R
 import com.san.kir.manger.foreground_work.services.AppUpdateService
 import com.san.kir.manger.foreground_work.services.CatalogForOneSiteUpdaterService
 import com.san.kir.manger.foreground_work.services.MangaUpdaterService
+import com.san.kir.manger.utils.extensions.longToast
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.coroutineScope
@@ -76,7 +76,6 @@ class ScheduleWorker @AssistedInject constructor(
                         ) {
                             CatalogForOneSiteUpdaterService.add(applicationContext,
                                 catalog.catalogName)
-                        } else {
                         }
                     }
                     PlannedType.APP -> {
@@ -134,47 +133,20 @@ class ScheduleWorker @AssistedInject constructor(
             WorkManager.getInstance(ctx)
                 .cancelAllWorkByTag(tag + item.id)
                 .result
-                .addListener(
-                    {
-                        when (item.type) {
-                            PlannedType.MANGA ->
-                                ctx.longToast(
-                                    ctx.getString(
-                                        R.string.schedule_manager_cancel_manga,
-                                        item.manga
-                                    )
-                                )
-                            PlannedType.CATEGORY ->
-                                ctx.longToast(
-                                    ctx.getString(
-                                        R.string.schedule_manager_cancel_category,
-                                        item.category
-                                    )
-                                )
-                            PlannedType.GROUP ->
-                                ctx.longToast(
-                                    ctx.getString(
-                                        R.string.schedule_manager_cancel_group,
-                                        item.groupName
-                                    )
-                                )
-                            PlannedType.CATALOG ->
-                                ctx.longToast(
-                                    ctx.getString(
-                                        R.string.schedule_manager_cancel_catalog,
-                                        item.catalog
-                                    )
-                                )
-                            PlannedType.APP ->
-                                ctx.longToast(
-                                    ctx.getString(
-                                        R.string.schedule_manager_cancel_app
-                                    )
-                                )
-                        }
-                    },
-                    exe
-                )
+                .addListener({
+                    when (item.type) {
+                        PlannedType.MANGA ->
+                            ctx.longToast(R.string.schedule_manager_cancel_manga, item.manga)
+                        PlannedType.CATEGORY ->
+                            ctx.longToast(R.string.schedule_manager_cancel_category, item.category)
+                        PlannedType.GROUP ->
+                            ctx.longToast(R.string.schedule_manager_cancel_group, item.groupName)
+                        PlannedType.CATALOG ->
+                            ctx.longToast(R.string.schedule_manager_cancel_catalog, item.catalog)
+                        PlannedType.APP ->
+                            ctx.longToast(R.string.schedule_manager_cancel_app)
+                    }
+                }, exe)
 
         }
 

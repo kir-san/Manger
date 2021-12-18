@@ -1,119 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.viewpager2.widget.ViewPager2
+    <com.san.kir.ui.viewer.SpecialViewPager
         android:id="@+id/pager"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:ignore="SpeakableTextPresentCheck" />
 
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/progressBar" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <ImageButton
         android:id="@+id/prev"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="16dp"
+        android:background="@drawable/round_button"
         android:clickable="true"
         android:contentDescription="@string/move_to_previous_chapter"
         android:focusable="true"
-        android:minWidth="48dp"
-        android:minHeight="48dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@android:drawable/ic_media_previous"
-        tools:ignore="ImageContrastCheck" />
+        android:padding="16dp"
+        app:srcCompat="@android:drawable/ic_media_previous" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <ImageButton
         android:id="@+id/next"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
+        android:background="@drawable/round_button"
         android:clickable="true"
         android:contentDescription="@string/move_to_next_chapter"
         android:focusable="true"
-        android:minWidth="48dp"
-        android:minHeight="48dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@android:drawable/ic_media_next"
-        tools:ignore="ImageContrastCheck" />
+        android:padding="16dp"
+        app:srcCompat="@android:drawable/ic_media_next" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/appbar"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/transparent_dark"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_gravity="top"
+        android:background="@color/transparent_dark">
 
         <ImageView
             android:id="@+id/back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="true"
+            android:contentDescription="@string/return_to_back"
             android:focusable="true"
-            android:padding="10dp"
-            android:minWidth="32dp"
-            android:minHeight="32dp"
-            android:src="?android:attr/homeAsUpIndicator"
+            android:padding="16dp"
+            android:src="@drawable/ic_baseline_arrow_back_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/move_to_next_chapter"
-            app:layout_constraintStart_toEndOf="@id/back"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             android:padding="8dp"
-            />
+            android:textColor="@color/text_for_transparent_dark"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/stopwatch"
+            app:layout_constraintStart_toEndOf="@id/back"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/stopwatch"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:textColor="@color/text_for_transparent_dark"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@id/title"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <TextView
             android:id="@+id/chapters_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/move_to_next_chapter"
-            app:layout_constraintStart_toEndOf="@id/back"
-            app:layout_constraintTop_toBottomOf="@id/title"
-            app:layout_constraintEnd_toStartOf="@id/pages_text"
             android:padding="6dp"
-            />
+            android:textColor="@color/text_for_transparent_dark"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/pages_text"
+            app:layout_constraintStart_toEndOf="@id/back"
+            app:layout_constraintTop_toBottomOf="@id/title" />
 
         <TextView
             android:id="@+id/pages_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/move_to_next_chapter"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBaseline_toBaselineOf="@id/chapters_text"
             android:padding="6dp"
-            />
+            android:textColor="@color/text_for_transparent_dark"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@id/chapters_text"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:progressDrawable="@drawable/viewer_progressbar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_gravity="top"
+        android:progressDrawable="@drawable/viewer_progressbar" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

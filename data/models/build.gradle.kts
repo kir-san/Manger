@@ -34,22 +34,8 @@ android {
 dependencies {
     implementation(project(Modules.Core.support))
     implementation(project(Modules.Core.utils))
-//
-//    implementation(Dependencies.INJECT)
 
     Dependencies.AndroidX.Room.apply {
-//        ksp(ROOM_COMPILER)
-//        implementation(ROOM_RUNTIME)
         implementation(ROOM_KTX)
-//        implementation(ROOM_PAGING)
     }
-
-//    Dependencies.AndroidX.Lifecycle.apply {
-//        implementation(LIFECYCLE_LIVEDATA)
-//    }
-//
-//    Dependencies.AndroidX.apply {
-//        implementation(PAGING)
-//    }
-
 }

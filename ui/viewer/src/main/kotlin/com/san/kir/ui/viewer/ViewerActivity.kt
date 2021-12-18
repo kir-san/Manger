@@ -7,32 +7,25 @@ import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.KeyEvent
-import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
-import android.view.ViewPropertyAnimator
 import android.view.WindowManager
-import android.view.animation.DecelerateInterpolator
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.ViewPropertyAnimatorListenerAdapter
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.isVisible
-import androidx.core.view.updateLayoutParams
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.viewpager2.widget.ViewPager2
+import androidx.viewpager.widget.ViewPager
 import com.san.kir.core.utils.log
 import com.san.kir.data.models.Viewer
 import com.san.kir.ui.viewer.databinding.MainBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -65,26 +58,41 @@ internal class ViewerActivity : AppCompatActivity() {
     private val binding by lazy { MainBinding.inflate(layoutInflater) }
     private val viewModel: ViewerViewModel by viewModels()
     private val adapter by lazy { Adapter(this) }
-    private val pageListener = object : ViewPager2.OnPageChangeCallback() {
-        override fun onPageSelected(position: Int) {
-            viewModel.chaptersManager.updatePagePosition(position)
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        lifecycleScope.launch {
-            val chapter = viewModel.savedChapter.get()
-            if (chapter != null && chapter.id > 0) {
-                viewModel.init(chapterId = chapter.id)
-            } else {
-                val id = intent.getLongExtra(chapterKey, -1L)
-                if (id != -1L) {
-                    viewModel.init(chapterId = id)
+        /*
+        Используется ViewPager первой версии
+        из-за невозможности использовать вторую версию,
+        так как в ней были выявлены следующие проблемы:
+        - обновление адаптера происходило очень криво, элементы распологалась не в том порядке, что
+            передавал адаптеру
+        - onPageChangeListener отрабатывал после инициализации данных, чем нарушал логику
+            и изменял установленный прогресс
+        Попытки костылестроения не увенчались успехом. НЕ ПЫТАТЬСЯ ИСПОЛЬЗОВАТЬ VIEWPAGER2
+        */
+
+        binding.pager.adapter = adapter
+        binding.pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+            override fun onPageSelected(position: Int) {
+                lifecycleScope.launch {
+                    log("onPageSelected with $position")
+                    viewModel.chaptersManager.updatePagePosition(position)
                 }
             }
+        })
+        binding.pager.offscreenPageLimit = 2
+
+        binding.next.setOnClickListener { // Следующая глава
+            lifecycleScope.launch { viewModel.chaptersManager.nextChapter() }
+        }
+        binding.prev.setOnClickListener { // Предыдущая глава
+            lifecycleScope.launch { viewModel.chaptersManager.prevChapter() }
+        }
+        binding.back.setOnClickListener {
+            onBackPressed()
         }
     }
 
@@ -109,153 +117,142 @@ internal class ViewerActivity : AppCompatActivity() {
                         if (data.cutOut) WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
                         else WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
                 }
+
+                // переключение управления свайпами
+                binding.pager.setSwipable(data.control.swipes)
             }
         }
 
         viewModel.initReadTime()
         viewModel.setScreenWidth(getScreenWidth())
 
-        initUI()
+        autoHideSystemUI()
+
+        runStateChangeListener()
+
+        runUIVisibleChangeListener()
+
+        initData()
+
+        runStopWatch()
     }
 
     override fun onPause() {
         super.onPause()
         // Сохранение настроек
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
-        binding.pager.unregisterOnPageChangeCallback(pageListener)
+        binding.pager.clearOnPageChangeListeners()
         binding.prev.setOnClickListener(null)
         binding.next.setOnClickListener(null)
 
-// TODO        viewModel.setReadTime()
-    }
-
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
-        if (hasFocus) hideSystemUI()
-//        else showSystemUI()
-    }
-
-    override fun onBackPressed() {
-        viewModel.savedChapter.clear()
-        super.onBackPressed()
+        viewModel.setReadTime()
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         // Переключение слайдов с помощью клавиш громкости
         if (viewModel.control.value.keys) {
-            when (keyCode) {
-                KeyEvent.KEYCODE_VOLUME_DOWN -> viewModel.chaptersManager.nextPage()
-                KeyEvent.KEYCODE_VOLUME_UP -> viewModel.chaptersManager.prevPage()
+            lifecycleScope.launch {
+                when (keyCode) {
+                    KeyEvent.KEYCODE_VOLUME_DOWN -> viewModel.chaptersManager.nextPage()
+                    KeyEvent.KEYCODE_VOLUME_UP -> viewModel.chaptersManager.prevPage()
+                }
             }
         }
         return super.onKeyDown(keyCode, event)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> onBackPressed()
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
-
-    private fun initUI() {
-        hideSystemUI()
-
-        if (Build.VERSION.SDK_INT >= 28) {
-            val color = ContextCompat.getColor(this, R.color.transparent_dark)
-            window.statusBarColor = color
-            window.navigationBarColor = color
-        }
-
-        binding.pager.adapter = adapter
-        binding.pager.registerOnPageChangeCallback(pageListener)
-        binding.pager.offscreenPageLimit = 1
-
-        binding.next.setOnClickListener { // Следующая глава
-            lifecycleScope.launch { viewModel.chaptersManager.nextChapter() }
-        }
-        binding.prev.setOnClickListener { // Предыдущая глава
-            lifecycleScope.launch { viewModel.chaptersManager.prevChapter() }
-        }
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.appbar) { v, insets ->
-            v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-
-                topMargin = systemBars.top
-                // Получаем размер выреза, если есть
-                val cutoutRight = insets.displayCutout?.safeInsetRight ?: 0
-                val cutoutLeft = insets.displayCutout?.safeInsetLeft ?: 0
-                // Вычитаем из WindowInsets размер выреза, для fullscreen
-                rightMargin = systemBars.right - cutoutRight
-                leftMargin = systemBars.left - cutoutLeft
-            }
-            insets
-        }
-
-        lifecycleScope.launchWhenResumed {
-            val manager = viewModel.chaptersManager
-            val progressBar = binding.progressBar
-            val pager = binding.pager
-
-            combine(manager.pages, manager.pagePosition) { list, i ->
-                if (list.isNotEmpty()) {
-                    // обновление прогрессбара
-                    progressBar.max = list.size
-                    progressBar.progress = i
+    private fun runStateChangeListener() {
+        viewModel.chaptersManager.state
+            .flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
+            .onEach { state ->
+                if (state.pages.isNotEmpty()) {
+                    // Обновление адаптера
+                    adapter.setList(state.pages)
 
                     // установка страницы ViewPager
-                    if (pager.currentItem != i)
-                        pager.setCurrentItem(if (i < 0) 0 else i, true)
+                    if (binding.pager.currentItem != state.pagePosition) {
+                        log("pagePosition is ${state.pagePosition}")
+                        binding.pager.currentItem =
+                            if (state.pagePosition < 0) 0 else state.pagePosition
+                    }
+
+                    // обновление прогрессбара
+                    binding.progressBar.max = state.pages.size - 1
+                    binding.progressBar.progress = state.pagePosition
 
                     // Проверка видимости кнопок переключения глав
-                    binding.prev.isVisible = list.first() is Page.Prev
-                    binding.next.isVisible = list.last() is Page.Next
+                    binding.prev.isEnabled = state.pages.first() is Page.Prev
+                    binding.prev.isVisible = state.pages.first() is Page.Prev
+                    binding.next.isEnabled = state.pages.last() is Page.Next
+                    binding.next.isVisible = state.pages.last() is Page.Next
 
                     // Обновление статуса прочитанных страниц
                     binding.pagesText.text = getString(
-                        R.string.viewer_pages_text, i, list.size
+                        R.string.viewer_pages_text, state.pagePosition, state.pages.size
                     )
                 }
-            }.launchIn(this)
 
-            // статуса прочитанных глав
-            combine(manager.chapters, manager.chapterPosition) { list, i ->
-                if (list.isNotEmpty()) {
+                // статуса прочитанных глав
+                if (state.chapters.isNotEmpty()) {
                     binding.chaptersText.text = getString(
-                        R.string.viewer_chapters_text, i, list.size
+                        R.string.viewer_chapters_text, state.uiChapterPosition, state.chapters.size
                     )
                 }
-            }.launchIn(this)
 
-            // переключение управления свайпами
-            viewModel.control
-                .onEach { control ->
-                    binding.pager.isUserInputEnabled = control.swipes
-                }.launchIn(this)
+                // Обновление заголовка
+                binding.title.text = state.currentChapter.name
+            }
+            .launchIn(lifecycleScope)
+    }
 
-            // Обновление списка страниц
-            manager.pages.onEach { list -> adapter.updateItems(list) }.launchIn(this)
-
-            manager.currentChapter
-                .onEach { chapter ->
-                    // Обновление заголовка
-                    binding.title.text = chapter.name
-                    // сохранение статуса текущей главы
-                    viewModel.savedChapter.set(chapter)
-                }
-                .launchIn(this)
-
-            viewModel.visibleUI.onEach { state ->
+    private fun runUIVisibleChangeListener() {
+        var visibleJob: Job? = null
+        // Переключение видимости элементов
+        viewModel.visibleUI
+            .flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
+            .onEach { state ->
                 if (state) {
-                    showUI()
-                    delay(4000L)
-                    viewModel.toogleVisibilityUI(false)
+                    visibleJob?.cancel()
+                    visibleJob = lifecycleScope.launch {
+                        showUI()
+                        delay(4000L)
+                        viewModel.toogleVisibilityUI(false)
+                    }
                 } else {
+                    visibleJob?.cancel()
                     hideUI()
                 }
-            }.launchIn(this)
+            }.launchIn(lifecycleScope)
+    }
+
+    private fun initData() {
+        // получение данных и инициализация менеджера
+        val id = intent.getLongExtra(chapterKey, -1L)
+        if (id != -1L) {
+            viewModel.init(chapterId = id)
+        }
+    }
+
+    private fun runStopWatch() {
+        viewModel.getStopWatch()
+            .flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
+            .onEach { binding.stopwatch.text = getString(R.string.stopwatch, it) }
+            .launchIn(lifecycleScope)
+    }
+
+    @Suppress("DEPRECATION")
+    private fun autoHideSystemUI() {
+        /*
+        Если использовать ViewCompat.setOnApplyWindowInsetsListener(window.decorView),
+        то остаются видны иконки от системных баров
+
+        */
+        window.decorView.setOnSystemUiVisibilityChangeListener { visibility ->
+            // Note that system bars will only be "visible" if none of the
+            // LOW_PROFILE, HIDE_NAVIGATION, or FULLSCREEN flags are set.
+            if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
+                hideSystemUI()
+            }
         }
     }
 
@@ -268,35 +265,47 @@ internal class ViewerActivity : AppCompatActivity() {
         }
     }
 
-    private fun showSystemUI() {
-        WindowCompat.setDecorFitsSystemWindows(window, true)
-        WindowInsetsControllerCompat(window, window.decorView)
-            .show(WindowInsetsCompat.Type.systemBars())
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            hideSystemUI()
+        }
     }
 
     private fun showUI() {
-        ViewCompat.animate(binding.appbar)
-            .setDuration(200L)
-            .translationY(0f)
-            .setInterpolator(DecelerateInterpolator())
-            .setListener(object : ViewPropertyAnimatorListenerAdapter() {
-                override fun onAnimationStart(view: View?) {
-                    view?.isVisible = true
-                }
-            })
+        animate(
+            onUpdate = { anim ->
+                binding.appbar.translationY = -200f + anim
+                binding.prev.translationY = 200f - anim
+                binding.next.translationY = 200f - anim
+                binding.prev.translationX = -200f + anim
+                binding.next.translationX = 200f - anim
+            },
+            onStart = {
+                binding.progressBar.isVisible = false
+                binding.appbar.isVisible = true
+                if (binding.prev.isEnabled) binding.prev.isVisible = true
+                if (binding.next.isEnabled) binding.next.isVisible = true
+            }
+        )
     }
 
     private fun hideUI() {
-        ViewCompat.animate(binding.appbar)
-            .setDuration(200)
-            .translationYBy(-200f)
-            .setInterpolator(DecelerateInterpolator())
-            .setListener(object : ViewPropertyAnimatorListenerAdapter() {
-                override fun onAnimationEnd(view: View?) {
-                    view?.isVisible = false
-                }
-            })
-            .start()
+        animate(
+            onUpdate = { anim ->
+                binding.appbar.translationY = -1f * anim
+                binding.prev.translationY = anim
+                binding.next.translationY = anim
+                binding.next.translationX = anim
+                binding.prev.translationX = -1f * anim
+            },
+            onEnd = {
+                binding.appbar.isVisible = false
+                binding.prev.isVisible = false
+                binding.next.isVisible = false
+                binding.progressBar.isVisible = true
+            }
+        )
     }
 
     @Suppress("DEPRECATION")
@@ -311,3 +320,4 @@ internal class ViewerActivity : AppCompatActivity() {
         }
     }
 }
+

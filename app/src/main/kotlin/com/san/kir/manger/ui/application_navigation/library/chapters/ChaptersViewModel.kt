@@ -11,13 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.san.kir.ankofork.dialogs.toast
 import com.san.kir.core.support.ChapterFilter
-import com.san.kir.manger.R
-import com.san.kir.data.parsing.SiteCatalogsManager
-import com.san.kir.data.store.ChaptersStore
-import com.san.kir.manger.foreground_work.services.DownloadService
-import com.san.kir.manger.ui.MainActivity
 import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.core.utils.coroutines.withMainContext
 import com.san.kir.core.utils.delChapters
@@ -27,6 +21,12 @@ import com.san.kir.data.models.Chapter
 import com.san.kir.data.models.Manga
 import com.san.kir.data.models.action
 import com.san.kir.data.models.utils.ChapterComparator
+import com.san.kir.data.parsing.SiteCatalogsManager
+import com.san.kir.data.store.ChaptersStore
+import com.san.kir.manger.R
+import com.san.kir.manger.foreground_work.services.DownloadService
+import com.san.kir.manger.ui.MainActivity
+import com.san.kir.manger.utils.extensions.toast
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -74,6 +74,7 @@ class ChaptersViewModel @AssistedInject constructor(
     var filter by mutableStateOf(ChapterFilter.ALL_READ_ASC)
 
     init {
+
         // инициация манги
         combine(
             mangaDao.loadItem(mangaUnic).filterNotNull(),
@@ -81,7 +82,7 @@ class ChaptersViewModel @AssistedInject constructor(
             chapterStore.data,
         ) { m, flag, store ->
             if (flag) {
- // TODO                m.populate += 1
+                m.populate += 1
                 withMainContext {
                     oneTimeFlag = false
                     manga = m
@@ -204,7 +205,7 @@ class ChaptersViewModel @AssistedInject constructor(
                 selectedItems = selectedItems.toMutableList().apply { set(i, false) }
             }
         }
-        withDefaultContext {
+        withMainContext {
             if (count == 0) {
                 context.toast(R.string.list_chapters_selection_del_error)
             } else {
@@ -302,7 +303,7 @@ class ChaptersViewModel @AssistedInject constructor(
             assistedFactory: Factory,
             mangaUnic: String,
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return assistedFactory.create(mangaUnic) as T
             }
         }

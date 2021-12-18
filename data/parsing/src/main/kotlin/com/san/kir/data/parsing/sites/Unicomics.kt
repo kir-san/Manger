@@ -158,7 +158,7 @@ class Unicomics(private val connectManager: ConnectManager) : SiteCatalogClassic
         while (true) {
             counter++
 
-            list = list + doc.select(".content #b_image").attr("src")
+            list = list + doc.select("#b_image").attr("src")
 
             if (counter > size) break
 

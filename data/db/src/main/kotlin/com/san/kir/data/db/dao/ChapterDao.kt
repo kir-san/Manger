@@ -16,6 +16,10 @@ interface ChapterDao : BaseDao<Chapter> {
             "WHERE ${ChaptersColumn.id} IS :chapterID")
     suspend fun getMangaName(chapterID: Long): String
 
+    @Query("SELECT * FROM ${ChaptersColumn.tableName} " +
+            "WHERE ${ChaptersColumn.id} IS :chapterID")
+    suspend fun itemWhereId(chapterID: Long): Chapter
+
     @Query(
         "SELECT * FROM ${ChaptersColumn.tableName} " +
                 "WHERE ${ChaptersColumn.manga} IS :manga"

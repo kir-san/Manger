@@ -3,8 +3,6 @@ abstract class NestedModule(private val base: String) {
 }
 
 object Modules {
-    const val ankofork = ":ankofork"
-
     object UI: NestedModule("ui") {
         val viewer = module("viewer")
         val utils = module("utils")

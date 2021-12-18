@@ -10,10 +10,9 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
+import android.widget.Toast
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
-import com.san.kir.ankofork.dialogs.longToast
-import com.san.kir.ankofork.sdk28.connectivityManager
 import java.io.Serializable
 
 fun Context.isOnWifi(): Boolean {
@@ -30,12 +29,28 @@ fun Context.isNetworkAvailable(): Boolean {
     return activeNetworkInfo != null && activeNetworkInfo.isConnected
 }
 
+val Context.connectivityManager: ConnectivityManager
+    get() = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+
 fun Context.quantitySimple(@PluralsRes id: Int, quantity: Int): String {
     return resources.getQuantityString(id, quantity, quantity)
 }
 
 fun Context.longToast(@StringRes resId: Int, vararg formatArgs: Any?) {
     longToast(getString(resId, *formatArgs))
+}
+
+fun Context.longToast(text: String) {
+    Toast.makeText(this, text, Toast.LENGTH_LONG).show()
+}
+
+fun Context.toast(@StringRes resId: Int, vararg formatArgs: Any?) {
+    toast(getString(resId, *formatArgs))
+}
+
+fun Context.toast(text: String) {
+    Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
 }
 
 inline fun <reified T : Service> startService(

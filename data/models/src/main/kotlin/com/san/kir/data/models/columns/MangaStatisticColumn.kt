@@ -13,6 +13,8 @@ object MangaStatisticColumn {
     const val lastTime = "last_time"
     const val maxSpeed = "max_speed"
     const val downloadSize = "download_size"
+    const val lastDownloadSize = "last_download_size"
     const val downloadTime = "download_time"
+    const val lastDownloadTime = "last_download_time"
     const val openedTimes = "opened_times"
 }

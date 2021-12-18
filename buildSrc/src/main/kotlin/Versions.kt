@@ -22,7 +22,7 @@ object Versions {
         const val FRAGMENT = "1.4.0"
         const val SPLASH = "1.0.0-alpha02"
         const val APPCOMPAT = "1.4.0-alpha03"
-        const val LIFECYCLE = "2.3.1"
+        const val LIFECYCLE = "2.4.0"
         const val VECTORDRAWABLE = "1.2.0-alpha02"
         const val CONSTRAINTLAYOUT = "2.0.0-beta4"
         const val VIEWPAGER2 = "1.0.0"
@@ -63,9 +63,10 @@ object Versions {
     }
 
     const val HYPERION = "0.9.31"
+    const val SUBSAMPLING = "3.10.0"
 
     // Make sure to update `buildSrc/build.gradle.kts` when updating this
-    const val GRADLE = "7.1.0-beta04"
+    const val GRADLE = "7.0.4"
 
     val JAVA = JavaVersion.VERSION_1_8
 

@@ -42,11 +42,6 @@ dependencies {
 
     Dependencies.Google.Hilt.apply {
         implementation(HILT_ANDROID)
-//        kapt(HILT_COMPILER)
-    }
-
-    Dependencies.AndroidX.Hilt.apply {
-//        kapt(HILT_COMPILER)
     }
 
     Dependencies.AndroidX.Room.apply {
@@ -54,10 +49,6 @@ dependencies {
         implementation(ROOM_RUNTIME)
         implementation(ROOM_KTX)
         implementation(ROOM_PAGING)
-    }
-
-    Dependencies.AndroidX.Lifecycle.apply {
-        implementation(LIFECYCLE_LIVEDATA)
     }
 
     Dependencies.AndroidX.apply {

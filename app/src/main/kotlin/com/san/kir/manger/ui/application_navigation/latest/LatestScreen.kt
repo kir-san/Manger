@@ -44,8 +44,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.asFlow
 import androidx.navigation.NavHostController
 import androidx.work.WorkManager
-import com.san.kir.ankofork.dialogs.longToast
-import com.san.kir.ankofork.dialogs.toast
 import com.san.kir.core.support.DownloadState
 import com.san.kir.core.utils.log
 import com.san.kir.data.models.Chapter
@@ -58,7 +56,10 @@ import com.san.kir.manger.foreground_work.workmanager.ReadLatestClearWorker
 import com.san.kir.manger.utils.compose.MenuIcon
 import com.san.kir.manger.utils.compose.MenuText
 import com.san.kir.manger.utils.compose.TopBarScreenList
+import com.san.kir.manger.utils.extensions.longToast
 import com.san.kir.manger.utils.extensions.quantitySimple
+import com.san.kir.manger.utils.extensions.toast
+import com.san.kir.ui.viewer.MangaViewer
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
@@ -200,10 +201,7 @@ private fun LatestItemContent(
                             if (chapter.pages.isNullOrEmpty() || chapter.pages.any { it.isBlank() }) {
                                 context.longToast(R.string.list_chapters_open_not_exists)
                             } else {
-                                /*context.startActivity<ViewerActivity>(
-                                    "chapter" to chapter,
-                                    "is" to manga.isAlternativeSort
-                                )*/
+                                MangaViewer.start(context, chapter.id)
                             }
                         }
                     } else viewModel.onSelectItem(index)

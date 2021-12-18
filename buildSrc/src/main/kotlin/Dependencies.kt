@@ -80,6 +80,9 @@ object Dependencies {
     const val INJECT =
         "javax.inject:javax.inject:1"
 
+    const val SUBSAMPLING =
+        "com.davemorrissey.labs:subsampling-scale-image-view-androidx:${Versions.SUBSAMPLING}"
+
 
     object Google {
         object Accompanist {
@@ -108,10 +111,13 @@ object Dependencies {
                 "com.google.dagger:hilt-compiler:${Versions.Google.HILT}"
         }
 
-        const val PROTOBUF_JAVALITE =
-            "com.google.protobuf:protobuf-javalite:${Versions.Google.PROTOBUF}"
-        const val PROTOBUF_PROTOC =
-            "com.google.protobuf:protoc:${Versions.Google.PROTOBUF}"
+        object Protobuf {
+            const val KOTLIN =
+                "com.google.protobuf:protobuf-kotlin:${Versions.Google.PROTOBUF}"
+            const val PROTOC =
+                "com.google.protobuf:protoc:${Versions.Google.PROTOBUF}"
+        }
+
         const val MATERIAL =
             "com.google.android.material:material:${Versions.Google.MATERIAL}"
     }

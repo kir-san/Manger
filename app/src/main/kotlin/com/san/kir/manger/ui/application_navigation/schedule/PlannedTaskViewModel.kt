@@ -106,7 +106,7 @@ class PlannedTaskViewModel @AssistedInject constructor(
             assistedFactory: Factory,
             taskId: Long
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return assistedFactory.create(taskId) as T
             }
         }

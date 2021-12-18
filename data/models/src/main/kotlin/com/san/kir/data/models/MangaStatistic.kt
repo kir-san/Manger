@@ -1,122 +1,55 @@
 package com.san.kir.data.models
 
-import android.os.Parcel
 import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.san.kir.data.models.columns.MangaStatisticColumn
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 @Entity(tableName = MangaStatisticColumn.tableName)
 data class MangaStatistic(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = MangaStatisticColumn.id)
-    var id: Long,
+    var id: Long = -1L,
 
     @ColumnInfo(name = MangaStatisticColumn.manga)
-    var manga: String,
+    var manga: String = "",
 
     @ColumnInfo(name = MangaStatisticColumn.allChapters)
-    var allChapters: Int,
+    var allChapters: Int = 0,
 
     @ColumnInfo(name = MangaStatisticColumn.lastChapters)
-    var lastChapters: Int,
+    var lastChapters: Int = 0,
 
     @ColumnInfo(name = MangaStatisticColumn.allPages)
-    var allPages: Int,
+    var allPages: Int = 0,
 
     @ColumnInfo(name = MangaStatisticColumn.lastPages)
-    var lastPages: Int,
+    var lastPages: Int = 0,
 
     @ColumnInfo(name = MangaStatisticColumn.allTime)
-    var allTime: Long,
+    var allTime: Long = 0L,
 
     @ColumnInfo(name = MangaStatisticColumn.lastTime)
-    var lastTime: Long,
+    var lastTime: Long = 0L,
 
     @ColumnInfo(name = MangaStatisticColumn.maxSpeed)
-    var maxSpeed: Int,
+    var maxSpeed: Int = 0,
 
     @ColumnInfo(name = MangaStatisticColumn.downloadSize)
-    var downloadSize: Long,
+    var downloadSize: Long = 0L,
+
+    @ColumnInfo(name = MangaStatisticColumn.lastDownloadSize)
+    var lastDownloadSize: Long = 0L,
 
     @ColumnInfo(name = MangaStatisticColumn.downloadTime)
-    var downloadTime: Long,
+    var downloadTime: Long = 0L,
+
+    @ColumnInfo(name = MangaStatisticColumn.lastDownloadTime)
+    var lastDownloadTime: Long = 0L,
 
     @ColumnInfo(name = MangaStatisticColumn.openedTimes)
-    var openedTimes: Int
-) : Parcelable {
-    @Ignore
-    constructor(
-        manga: String = "",
-        allChapters: Int = 0,
-        lastChapters: Int = 0,
-        allPages: Int = 0,
-        lastPages: Int = 0,
-        allTime: Long = 0,
-        lastTime: Long = 0,
-        maxSpeed: Int = 0,
-        downloadSize: Long = 0,
-        downloadTime: Long = 0,
-        openedTimes: Int = 0
-    ) : this(
-        0,
-        manga,
-        allChapters,
-        lastChapters,
-        allPages,
-        lastPages,
-        allTime,
-        lastTime,
-        maxSpeed,
-        downloadSize,
-        downloadTime,
-        openedTimes
-    )
-
-    @Ignore
-    constructor(parcel: Parcel) : this(
-        parcel.readLong(),
-        parcel.readString() ?: "",
-        parcel.readInt(),
-        parcel.readInt(),
-        parcel.readInt(),
-        parcel.readInt(),
-        parcel.readLong(),
-        parcel.readLong(),
-        parcel.readInt(),
-        parcel.readLong(),
-        parcel.readLong(),
-        parcel.readInt()
-    )
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeLong(id)
-        parcel.writeString(manga)
-        parcel.writeInt(allChapters)
-        parcel.writeInt(lastChapters)
-        parcel.writeInt(allPages)
-        parcel.writeInt(lastPages)
-        parcel.writeLong(allTime)
-        parcel.writeLong(lastTime)
-        parcel.writeInt(maxSpeed)
-        parcel.writeLong(downloadSize)
-        parcel.writeLong(downloadTime)
-        parcel.writeInt(openedTimes)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<MangaStatistic> {
-        override fun createFromParcel(parcel: Parcel): MangaStatistic {
-            return MangaStatistic(parcel)
-        }
-
-        override fun newArray(size: Int): Array<MangaStatistic?> {
-            return arrayOfNulls(size)
-        }
-    }
-}
+    var openedTimes: Int = 0,
+) : Parcelable

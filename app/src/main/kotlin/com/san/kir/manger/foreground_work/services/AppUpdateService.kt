@@ -9,7 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
-import com.san.kir.ankofork.sdk28.notificationManager
+import androidx.core.app.NotificationManagerCompat
 import com.san.kir.core.internet.ConnectManager
 import com.san.kir.core.utils.log
 import com.san.kir.manger.BuildConfig
@@ -49,7 +49,7 @@ class AppUpdateService : Service(), CoroutineScope {
     private var notificationId = ID.generate()
     private val actionCancelAll by lazy {
         val intent = intentFor<AppUpdateService>(this).setAction(ACTION_CANCEL_ALL)
-        val cancelAll = PendingIntent.getService(this, 0, intent, 0)
+        val cancelAll = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
         NotificationCompat
             .Action
             .Builder(
@@ -62,7 +62,7 @@ class AppUpdateService : Service(), CoroutineScope {
 
     private val actionGoToSite by lazy {
         val intent = intentFor<AppUpdateService>(this).setAction(ACTION_GO_TO_SITE)
-        val cancelAll = PendingIntent.getService(this, 0, intent, 0)
+        val cancelAll = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
         NotificationCompat
             .Action
             .Builder(
@@ -77,6 +77,10 @@ class AppUpdateService : Service(), CoroutineScope {
     lateinit var connectManager: ConnectManager
 
     override fun onBind(intent: Intent?) = null
+
+    private val notificationManager by lazy {
+        NotificationManagerCompat.from(this)
+    }
 
     @SuppressLint("InlinedApi")
     override fun onCreate() {

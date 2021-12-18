@@ -17,14 +17,17 @@ import android.os.Message
 import androidx.annotation.RequiresApi
 import androidx.annotation.WorkerThread
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.core.net.toUri
-import com.san.kir.ankofork.sdk28.notificationManager
 import com.san.kir.core.utils.log
+import com.san.kir.data.db.dao.ChapterDao
+import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.models.Chapter
 import com.san.kir.data.models.Manga
 import com.san.kir.data.models.SimpleManga
 import com.san.kir.data.models.columns.MangaColumn
+import com.san.kir.data.parsing.SiteCatalogsManager
 import com.san.kir.data.parsing.getShortLink
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.MainActivity
@@ -103,19 +106,23 @@ class MangaUpdaterService : Service() {
     }
 
     @Inject
-    lateinit var chapterDao: com.san.kir.data.db.dao.ChapterDao
+    lateinit var chapterDao: ChapterDao
 
     @Inject
-    lateinit var mangaDao: com.san.kir.data.db.dao.MangaDao
+    lateinit var mangaDao: MangaDao
 
     private val default = Dispatchers.Default
 
     @Inject
-    lateinit var manager: com.san.kir.data.parsing.SiteCatalogsManager
+    lateinit var manager: SiteCatalogsManager
     private var progress = 0 // Прогресс проверенных манг
     private var error = 0 // Счетчик закончившихся с ошибкой
     private var fullCountNew = 0 // Количество новых глав
     private var mangaName = ""
+
+    private val notificationManager by lazy {
+        NotificationManagerCompat.from(this)
+    }
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -208,7 +215,9 @@ class MangaUpdaterService : Service() {
 
         stopForeground(false)
         notificationManager.cancel(notificationId)
-        notificationManager.notify(notificationId, notify)
+        if (notify != null) {
+            notificationManager.notify(notificationId, notify)
+        }
 
         notificationId = ID.generate()
         stopSelf()
@@ -331,7 +340,7 @@ class MangaUpdaterService : Service() {
             val site = manager.getSite(mangaDB.host)
 
             mangaDB.host = site.host
-            mangaDB.shortLink = site.getShortLink(mangaDB.site)
+            mangaDB.shortLink = mangaDB.shortLink
 
             mangaDao.update(mangaDB)
         } else {

@@ -2,7 +2,6 @@ import com.google.protobuf.gradle.generateProtoTasks
 import com.google.protobuf.gradle.id
 import com.google.protobuf.gradle.protobuf
 import com.google.protobuf.gradle.protoc
-import com.google.protobuf.gradle.plugins
 
 plugins {
     id(Plugins.ANDROID_LIBRARY)
@@ -45,15 +44,12 @@ dependencies {
         implementation(DATASTORE)
     }
 
-    Dependencies.Google.apply {
-//        implementation(PROTOBUF_JAVALITE)
+    Dependencies.Google.Protobuf.apply {
+        implementation(KOTLIN)
     }
-
-    implementation("com.google.protobuf:protobuf-kotlin:${Versions.Google.PROTOBUF}")
 
     Dependencies.Google.Hilt.apply {
         implementation(HILT_ANDROID)
-//        kapt(HILT_COMPILER)
     }
 
     implementation(Dependencies.INJECT)
@@ -61,7 +57,7 @@ dependencies {
 
 protobuf {
     protoc {
-        artifact = Dependencies.Google.PROTOBUF_PROTOC
+        artifact = Dependencies.Google.Protobuf.PROTOC
     }
     generateProtoTasks {
         all().forEach { task ->

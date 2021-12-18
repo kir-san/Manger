@@ -2,6 +2,7 @@ package com.san.kir.manger.utils.compose
 
 import android.app.Application
 import android.content.Context
+import android.graphics.BitmapFactory
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
@@ -16,9 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import com.san.kir.core.internet.ConnectManager
+import com.san.kir.core.utils.log
 import com.san.kir.manger.R
+import java.io.File
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -62,12 +68,29 @@ fun ImageWithStatus(url: String?, context: Context = LocalContext.current) {
 @Composable
 fun rememberImage(url: String?, context: Context = LocalContext.current): ImageBitmap {
     var logo by remember { mutableStateOf(ImageBitmap(60, 60)) }
+
     LaunchedEffect(url) {
         if (url != null && url.isNotEmpty()) {
             val manager = ConnectManager(context.applicationContext as Application)
+            val name = manager.nameFromUrl(url)
 
-            manager.downloadBitmap(url)?.let { bitmap ->
-                logo = bitmap.asImageBitmap()
+            val imageCacheDirectory = File(context.cacheDir, "image_cache")
+
+            val icon = File(imageCacheDirectory, name)
+
+            kotlin.runCatching {
+                logo = BitmapFactory.decodeFile(icon.path).asImageBitmap()
+                return@LaunchedEffect
+            }
+
+            kotlin.runCatching {
+                manager.downloadFile(icon, url, onFinish = { _, _ ->
+                    logo = BitmapFactory.decodeFile(icon.path).asImageBitmap()
+                })
+            }.onFailure {
+                ContextCompat.getDrawable(context, R.drawable.unknown)?.let {
+                    logo = it.toBitmap().asImageBitmap()
+                }
             }
         }
     }

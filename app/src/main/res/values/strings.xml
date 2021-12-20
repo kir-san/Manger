@@ -129,6 +129,8 @@
     <string name="add_manga_screen_all_complete">Все работы завершены успешно</string>
     <string name="add_manga_screen_error">Во время работы произошла ошибка, проверьте подключение к интеренету</string>
 
+    <string name="add_manga_online_clipboard">Вставка из буфера обмена</string>
+
     <!--Manga Info Dialog-->
     <string name="manga_info_dialog_name">Название</string>
     <string name="manga_info_dialog_authors">Авторы</string>

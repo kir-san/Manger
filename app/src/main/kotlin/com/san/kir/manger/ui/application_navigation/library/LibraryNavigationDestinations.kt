@@ -93,7 +93,12 @@ fun NavGraphBuilder.libraryNavGraph(nav: NavHostController) {
     composable(
         route = LibraryNavTarget.AddOnline.route,
         content = {
-            MangaAddOnlineScreen(nav)
+            MangaAddOnlineScreen(
+                navigateToBack = nav::navigateUp,
+                navigateToNext = { arg ->
+                    nav.navigate(LibraryNavTarget.AddLocal, arg)
+                }
+            )
         }
     )
 

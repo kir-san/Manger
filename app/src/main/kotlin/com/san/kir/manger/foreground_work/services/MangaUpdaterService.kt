@@ -20,6 +20,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.core.net.toUri
+import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.core.utils.log
 import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.MangaDao
@@ -166,6 +167,7 @@ class MangaUpdaterService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
             when (intent.action) {
+                // TODO не реагирует на действие
                 ACTION_CANCEL_ALL -> {
                     val tempIntent = Intent(actionGet)
                     tempIntent.putExtra(ITEM_NAME, mangaName)
@@ -237,7 +239,7 @@ class MangaUpdaterService : Service() {
 //            checkLinkInManga(mangaDB)
 
             // Получаем список глав из БД
-            val oldChapters = com.san.kir.core.utils.coroutines.withDefaultContext {
+            val oldChapters = withDefaultContext {
                 chapterDao.getItemsWhereManga(mangaDB.name)
             }
 
@@ -314,7 +316,7 @@ class MangaUpdaterService : Service() {
     }
 
     private suspend fun List<Chapter>.updatePagesInChapters(mangaDB: Manga) =
-        com.san.kir.core.utils.coroutines.withDefaultContext {
+        withDefaultContext {
             kotlin.runCatching {
                 // Отфильтровываем те в которых, либо нет страниц, либо не все страницы
                 // либо это альтернативный сайт

@@ -2,6 +2,8 @@ package com.san.kir.data.db.dao
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.san.kir.data.models.MangaStatistic
 import com.san.kir.data.models.columns.MangaStatisticColumn
@@ -26,4 +28,7 @@ interface StatisticDao : BaseDao<MangaStatistic> {
 
     @Query("SELECT * FROM ${MangaStatisticColumn.tableName} WHERE ${MangaStatisticColumn.manga} IS :name")
     suspend fun getItem(name: String): MangaStatistic
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    override suspend fun insert(vararg item: MangaStatistic)
 }

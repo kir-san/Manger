@@ -16,7 +16,7 @@ class MangaDeleteWorker(appContext: Context, workerParams: WorkerParameters) :
     CoroutineWorker(appContext, workerParams) {
     override suspend fun doWork(): Result = coroutineScope {
 
-        val manga = inputData.getString(MangaColumn.unic)
+        val manga = inputData.getString(MangaColumn.name)
         val withFiles = inputData.getBoolean("withFiles", false)
 
         runCatching {

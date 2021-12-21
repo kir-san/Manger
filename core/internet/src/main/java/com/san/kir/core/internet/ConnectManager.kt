@@ -151,11 +151,12 @@ class ConnectManager @Inject constructor(context: Application) {
 
             file.createNewFile()
 
-            defaultClient.newCall(url.getRequest())
+            defaultClient.newCall(url.getRequest(cacheControl = noCacheControl))
                 .awaitDownload(file.sink().buffer(), onProgress, onFinish)
 
             file.length()
         }
+
 
     fun prepareUrl(url: String) = url.removeSurrounding("\"", "\"")
 
@@ -266,6 +267,7 @@ class ConnectManager @Inject constructor(context: Application) {
             .add("Upgrade-Insecure-Requests", "1").build()
 
         val defaultCacheControl = CacheControl.Builder().maxAge(10, TimeUnit.MINUTES).build()
+        val noCacheControl = CacheControl.Builder().noCache().noStore().build()
     }
 }
 

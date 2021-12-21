@@ -30,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.data.models.Site
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
@@ -71,7 +72,7 @@ fun ItemView(item: Site, viewModel: CatalogsViewModel, onClick: () -> Unit) {
             .clickable(onClick = onClick)
     ) {
         Image(
-            rememberImage("http://www.google.com/s2/favicons?domain=${item.host}"), "",
+            rememberImage("http://www.google.com/s2/favicons?domain=${item.catalogName}"), "",
             modifier = Modifier
                 .padding(vertical = 10.dp)
                 .padding(end = 8.dp)
@@ -115,7 +116,7 @@ fun ItemView(item: Site, viewModel: CatalogsViewModel, onClick: () -> Unit) {
     }
 
     LaunchedEffect(true) {
-        val site = com.san.kir.core.utils.coroutines.withDefaultContext { viewModel.site(item) }
+        val site = withDefaultContext { viewModel.site(item) }
         if (site.isInit.not()) {
             isError = false
             isInit = true

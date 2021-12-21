@@ -68,15 +68,13 @@ fun ImageWithStatus(url: String?, context: Context = LocalContext.current) {
 @Composable
 fun rememberImage(url: String?, context: Context = LocalContext.current): ImageBitmap {
     var logo by remember { mutableStateOf(ImageBitmap(60, 60)) }
-
     LaunchedEffect(url) {
         if (url != null && url.isNotEmpty()) {
             val manager = ConnectManager(context.applicationContext as Application)
-            val name = manager.nameFromUrl(url)
 
             val imageCacheDirectory = File(context.cacheDir, "image_cache")
 
-            val icon = File(imageCacheDirectory, name)
+            val icon = File(imageCacheDirectory, url)
 
             kotlin.runCatching {
                 logo = BitmapFactory.decodeFile(icon.path).asImageBitmap()

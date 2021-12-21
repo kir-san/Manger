@@ -211,8 +211,7 @@ private fun LatestItemContent(
                     viewModel.onSelectItem(index)
                 }
             ),
-    )
-    {
+    ) {
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -233,10 +232,9 @@ private fun LatestItemContent(
                 Text(
                     chapter.manga,
                     style = MaterialTheme.typography.body2,
+                    modifier = Modifier.weight(1f),
+                    maxLines = 1,
                 )
-
-
-                Spacer(modifier = Modifier.weight(1f))
 
                 // downloadIndicator
                 AnimatedVisibility(downloadIndicator) {

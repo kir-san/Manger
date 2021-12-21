@@ -29,6 +29,4 @@ interface StatisticDao : BaseDao<MangaStatistic> {
     @Query("SELECT * FROM ${MangaStatisticColumn.tableName} WHERE ${MangaStatisticColumn.manga} IS :name")
     suspend fun getItem(name: String): MangaStatistic
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    override suspend fun insert(vararg item: MangaStatistic)
 }

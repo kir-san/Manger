@@ -66,7 +66,7 @@ internal class ViewerViewModel @Inject constructor(
     fun setReadTime() = viewModelScope.defaultLaunch {
         val time = (System.currentTimeMillis() - _startReadTime) / 1000
         if (time > 0) {
-            val stats = statisticDao.getItem(chaptersManager.currentState.currentChapter.manga)
+            val stats = chaptersManager.statisticItem
             stats.lastTime = time
             stats.allTime = stats.allTime + time
             stats.maxSpeed =

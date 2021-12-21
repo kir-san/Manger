@@ -18,12 +18,10 @@ internal class ChaptersManager @Inject constructor(
     private val chapterDao: ChapterDao,
     private val statisticDao: StatisticDao,
 ) {
-
-    private val pagePosition = MutableStateFlow(-1)
-
     // Вспомогательная переменная для расчета количества прочитанных страниц за сессию
     private var staticticPosition = 0
-    private var statisticItem = MangaStatistic()
+    var statisticItem = MangaStatistic()
+        private set
 
     fun updateStatisticData(downloadSize: Long, downloadTime: Long) {
         if (downloadSize > 100L) {

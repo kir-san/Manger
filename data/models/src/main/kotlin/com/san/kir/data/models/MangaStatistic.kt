@@ -12,7 +12,7 @@ import kotlinx.parcelize.Parcelize
 data class MangaStatistic(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = MangaStatisticColumn.id)
-    var id: Long = -1L,
+    var id: Long = 0L,
 
     @ColumnInfo(name = MangaStatisticColumn.manga)
     var manga: String = "",

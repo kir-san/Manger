@@ -3,6 +3,7 @@ package com.san.kir.data.models.columns
 object MangaColumn {
     const val tableName = "manga"
     const val id = "id"
+    @Deprecated("")
     const val unic = "unic"
     const val name = "name"
     const val categories = "categories"

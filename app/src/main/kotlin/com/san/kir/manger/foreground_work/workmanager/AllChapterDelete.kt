@@ -13,7 +13,7 @@ class AllChapterDelete(appContext: Context, workerParams: WorkerParameters) :
     ChapterDeleteWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result = coroutineScope {
-        val unic = inputData.getString(MangaColumn.unic)
+        val unic = inputData.getString(MangaColumn.name)
 
         kotlin.runCatching {
             val manga = mMangaRepository.getItem(unic!!)

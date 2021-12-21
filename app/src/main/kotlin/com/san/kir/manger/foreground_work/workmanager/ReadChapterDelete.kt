@@ -11,10 +11,10 @@ import kotlinx.coroutines.coroutineScope
 class ReadChapterDelete(appContext: Context, workerParams: WorkerParameters) :
     ChapterDeleteWorker(appContext, workerParams) {
 
-    override suspend fun doWork(): Result = coroutineScope {
-        val manga = inputData.getString(MangaColumn.unic)
+    override suspend fun doWork(): Result {
+        val manga = inputData.getString(MangaColumn.name)
 
-        kotlin.runCatching {
+        return kotlin.runCatching {
             deleteReadChapters(manga!!)
             updateStorageItem(manga)
         }.fold(

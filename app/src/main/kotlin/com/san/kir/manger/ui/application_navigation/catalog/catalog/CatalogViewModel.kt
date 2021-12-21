@@ -14,8 +14,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.san.kir.core.utils.coroutines.defaultLaunch
+import com.san.kir.core.utils.coroutines.mainLaunch
 import com.san.kir.core.utils.coroutines.withDefaultContext
-import com.san.kir.core.utils.coroutines.withMainContext
 import com.san.kir.data.db.CatalogDb
 import com.san.kir.data.db.dao.SiteDao
 import com.san.kir.data.models.SiteCatalogElement
@@ -27,10 +27,12 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
 class CatalogViewModel @AssistedInject constructor(
@@ -47,99 +49,96 @@ class CatalogViewModel @AssistedInject constructor(
     var searchText by mutableStateOf("") // Сохранение информации о поисковом запросе
     var sortType by mutableStateOf(DATE) // Тип сортировки
     var isReversed by mutableStateOf(false) // порядок сортировки
-
-    private val _items = MutableStateFlow(emptyList<SiteCatalogElement>())
-    var items by mutableStateOf(listOf<SiteCatalogElement>())
-        private set
-
-    var catalogFilter by mutableStateOf(emptyList<CatalogFilter>())
-        private set
-
     var action by mutableStateOf(true)
         private set
+
+    private val _items = MutableStateFlow(emptyList<SiteCatalogElement>())
+    val items = _items
+        .onEach { list ->
+            setAction(true)
+            _filters.update {
+                listOf(
+                    CatalogFilter(
+                        name = genres,
+                        catalog = list.flatMap { it.genres }.toHashSet().sorted()
+                    ),
+                    CatalogFilter(
+                        name = type,
+                        catalog = list.map { it.type }.toHashSet().sorted()
+                    ),
+                    CatalogFilter(
+                        name = statuses,
+                        catalog = list.map { it.statusEdition }.toHashSet().sorted()
+                    ),
+                    CatalogFilter(
+                        name = authors,
+                        catalog = list.flatMap { it.authors }.toHashSet().sorted()
+                    )
+                )
+            }
+        }
+        .onEach { list ->
+            withDefaultContext {
+                siteDao.getItem(siteName)?.let { site ->
+                    site.oldVolume = list.size
+                    siteDao.update(site)
+                }
+            }
+        }
+        // Обработка поискового запроса
+        .combine(snapshotFlow { searchText }) { list, search -> list to search }
+        .map { (list, search) ->
+            if (search.isNotEmpty()) {
+                list.filter { item ->
+                    item.name.lowercase().contains(searchText.lowercase())
+                }
+            } else list
+        }
+        // Обработка фильтров
+        .combine(snapshotFlow { selectedNames }) { list, f -> list to f }
+        .map { (list, f) ->
+            var temp = list
+            f.transformToGroup().apply {
+                // genres
+                get(0).ifNotEmpty { temp = list.filter { it.genres.containsAll(this) } }
+
+                // types
+                get(1).ifNotEmpty { temp = list.filter { contains(it.type) } }
+
+                // statuses
+                get(2).ifNotEmpty { temp = list.filter { contains(it.statusEdition) } }
+
+                // authors
+                get(3).ifNotEmpty { temp = list.filter { it.authors.containsAll(this) } }
+            }
+
+            temp
+        }
+        // Обработка сортировки
+        .combine(snapshotFlow { sortType }) { list, s -> list to s }
+        .map { (list, sort) ->
+            when (sort) {
+                DATE -> list.sortedBy { it.dateId } // Сортировать по дате
+                NAME -> list.sortedBy { it.name } // Сортировать по имени
+                POP -> list.sortedBy { it.populate } // Сортировать по популярности
+                else -> list //
+            }
+        }
+        // Обработка направления сортировки и обновление адаптера
+        .combine(snapshotFlow { isReversed }) { list, r -> list to r }
+        .map { (list, reverse) ->
+            if (reverse) list.reversed()
+            else list
+        }
+        .onEach { setAction(false) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+
+    private val _filters = MutableStateFlow(emptyList<CatalogFilter>())
+    val filters = _filters.asStateFlow()
 
     var selectedNames by mutableStateOf<List<SelectedName>>(emptyList())
 
     init {
-        setAction(true)
-
-        _items.onEach { list ->
-            catalogFilter = listOf(
-                CatalogFilter(
-                    name = genres,
-                    catalog = list.flatMap { it.genres }.toHashSet().sorted()
-                ),
-                CatalogFilter(
-                    name = type,
-                    catalog = list.map { it.type }.toHashSet().sorted()
-                ),
-                CatalogFilter(
-                    name = statuses,
-                    catalog = list.map { it.statusEdition }.toHashSet().sorted()
-                ),
-                CatalogFilter(
-                    name = authors,
-                    catalog = list.flatMap { it.authors }.toHashSet().sorted()
-                )
-            )
-        }
-            .onEach { list ->
-                withDefaultContext {
-                    siteDao.getItem(siteName)?.let { site ->
-                        site.oldVolume = list.size
-                        siteDao.update(site)
-                    }
-                }
-            }
-            // Обработка поискового запроса
-            .combine(snapshotFlow { searchText }) { list, search -> list to search }
-            .map { (list, search) ->
-                if (search.isNotEmpty()) {
-                    list.filter { item ->
-                        item.name.lowercase().contains(searchText.lowercase())
-                    }
-                } else list
-            }
-            // Обработка фильтров
-            .combine(snapshotFlow { selectedNames }) { list, f -> list to f }
-            .map { (list, f) ->
-                var temp = list
-                f.transformToGroup().apply {
-                    // genres
-                    get(0).ifNotEmpty { temp = list.filter { it.genres.containsAll(this) } }
-
-                    // types
-                    get(1).ifNotEmpty { temp = list.filter { contains(it.type) } }
-
-                    // statuses
-                    get(2).ifNotEmpty { temp = list.filter { contains(it.statusEdition) } }
-
-                    // authors
-                    get(3).ifNotEmpty { temp = list.filter { it.authors.containsAll(this) } }
-                }
-
-                temp
-            }
-            // Обработка сортировки
-            .combine(snapshotFlow { sortType }) { list, s -> list to s }
-            .map { (list, sort) ->
-                when (sort) {
-                    DATE -> list.sortedBy { it.dateId } // Сортировать по дате
-                    NAME -> list.sortedBy { it.name } // Сортировать по имени
-                    POP -> list.sortedBy { it.populate } // Сортировать по популярности
-                    else -> list //
-                }
-            }
-            // Обработка направления сортировки и обновление адаптера
-            .combine(snapshotFlow { isReversed }) { list, r -> list to r }
-            .map { (list, reverse) ->
-                if (reverse) list.reversed()
-                else list
-            }
-            .onEach { list -> withMainContext { items = list } }
-            .onEach { setAction(false) }
-            .launchIn(viewModelScope)
-
         update()
     }
 
@@ -151,7 +150,7 @@ class CatalogViewModel @AssistedInject constructor(
     }
 
     fun clearSelected() {
-        catalogFilter.onEach { filter ->
+        filters.value.onEach { filter ->
             repeat(filter.selected.size) { index ->
                 filter.selected[index] = false
             }
@@ -161,17 +160,14 @@ class CatalogViewModel @AssistedInject constructor(
     }
 
     // переключение видимости индикатора выполнения фоновой работы
-    fun setAction(value: Boolean, service: Boolean = false) = viewModelScope.defaultLaunch {
-        action = withDefaultContext {
-            when {
-                value -> {
-                    if (service) CatalogForOneSiteUpdaterService.addIfNotContain(context, siteName)
-                    true
-                }
-                CatalogForOneSiteUpdaterService.isContain(siteName).not() -> false
-                else -> false
+    fun setAction(value: Boolean, service: Boolean = false) = viewModelScope.mainLaunch {
+        action = when {
+            value -> {
+                if (service) CatalogForOneSiteUpdaterService.addIfNotContain(context, siteName)
+                true
             }
-
+            CatalogForOneSiteUpdaterService.isContain(siteName).not() -> false
+            else -> false
         }
     }
 

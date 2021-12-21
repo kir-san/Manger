@@ -54,6 +54,7 @@ import androidx.compose.material.rememberDrawerState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -97,6 +98,7 @@ fun CatalogScreen(nav: NavHostController, viewModel: CatalogViewModel) {
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val coroutineScope = rememberCoroutineScope()
     var errorDialog by remember { mutableStateOf(false) }
+    val items by viewModel.items.collectAsState()
 
     Scaffold(
         modifier = Modifier.navigationBarsWithImePadding(),
@@ -112,7 +114,7 @@ fun CatalogScreen(nav: NavHostController, viewModel: CatalogViewModel) {
         ) {
             if (viewModel.action) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             LazyColumn {
-                items(items = viewModel.items, key = { item -> item.id }) { item ->
+                items(items = items, key = { item -> item.id }) { item ->
                     ListItem(item, item.name, item.statusEdition,
                         navAddAction = {
                             nav.navigate(CatalogsNavTarget.AddLocal, item.link)
@@ -172,7 +174,6 @@ private fun ReceiverHandler(
                     log("onReceiver $intent")
                     intent.getStringExtra(CatalogForOneSiteUpdaterService.EXTRA_KEY_OUT)
                         ?.let { out ->
-                            log("$out")
                             when (out) {
                                 "destroy" -> currentAction(false)
                                 "error" -> currentError()
@@ -300,6 +301,7 @@ private fun TopBar(
 ) {
     val coroutineScope = rememberCoroutineScope()
     var search by rememberSaveable { mutableStateOf(false) }
+    val items by viewModel.items.collectAsState()
 
     Column(
         modifier = Modifier
@@ -309,7 +311,7 @@ private fun TopBar(
     ) {
         TopAppBar(
             title = {
-                Text(text = "${viewModel.siteName}: ${viewModel.items.size}")
+                Text(text = "${viewModel.siteName}: ${items.size}")
             },
             navigationIcon = {
                 MenuIcon(icon = Icons.Default.Menu) {
@@ -351,7 +353,9 @@ private fun TopBar(
 // Боковое меню
 @Composable
 private fun DrawerContent(viewModel: CatalogViewModel) {
-    if (viewModel.catalogFilter.isNotEmpty()) {
+    val filters by viewModel.filters.collectAsState()
+
+    if (filters.isNotEmpty()) {
         var currentIndex by rememberSaveable { mutableStateOf(0) }
 
         // Списки фильтров
@@ -363,13 +367,14 @@ private fun DrawerContent(viewModel: CatalogViewModel) {
                 targetState = currentIndex,
                 modifier = Modifier.weight(1f, true)
             ) { pageIndex ->
-                val catalogFilter = viewModel.catalogFilter[pageIndex]
+                val currentFilter = filters[pageIndex]
+
                 LazyColumn {
-                    itemsIndexed(catalogFilter.catalog, key = { _, item -> item }) { index, item ->
-                        if (catalogFilter.selected[index]) {
-                            viewModel.selectedNames += SelectedName(catalogFilter.name, item)
+                    itemsIndexed(currentFilter.catalog, key = { _, item -> item }) { index, item ->
+                        if (currentFilter.selected[index]) {
+                            viewModel.selectedNames += SelectedName(currentFilter.name, item)
                         } else {
-                            viewModel.selectedNames -= SelectedName(catalogFilter.name, item)
+                            viewModel.selectedNames -= SelectedName(currentFilter.name, item)
                         }
 
                         // Строка списка
@@ -377,11 +382,11 @@ private fun DrawerContent(viewModel: CatalogViewModel) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    catalogFilter.selected[index] = !catalogFilter.selected[index]
+                                    currentFilter.selected[index] = !currentFilter.selected[index]
                                 }) {
                             Checkbox(
-                                checked = catalogFilter.selected[index],
-                                onCheckedChange = { catalogFilter.selected[index] = it },
+                                checked = currentFilter.selected[index],
+                                onCheckedChange = { currentFilter.selected[index] = it },
                                 modifier = Modifier.padding(5.dp),
                             )
                             Text(
@@ -408,7 +413,7 @@ private fun DrawerContent(viewModel: CatalogViewModel) {
                     .fillMaxWidth()
                     .height(IntrinsicSize.Min)
             ) {
-                viewModel.catalogFilter.forEachIndexed { index, catalogFilter ->
+                filters.forEachIndexed { index, catalogFilter ->
                     if (catalogFilter.catalog.size > 1)
                         Box(
                             modifier = Modifier

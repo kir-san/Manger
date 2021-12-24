@@ -49,8 +49,9 @@ class CatalogViewModel @AssistedInject constructor(
     var searchText by mutableStateOf("") // Сохранение информации о поисковом запросе
     var sortType by mutableStateOf(DATE) // Тип сортировки
     var isReversed by mutableStateOf(false) // порядок сортировки
-    var action by mutableStateOf(true)
-        private set
+
+    private val _action = MutableStateFlow(true)
+    val action = _action.asStateFlow()
 
     private val _items = MutableStateFlow(emptyList<SiteCatalogElement>())
     val items = _items
@@ -161,7 +162,7 @@ class CatalogViewModel @AssistedInject constructor(
 
     // переключение видимости индикатора выполнения фоновой работы
     fun setAction(value: Boolean, service: Boolean = false) = viewModelScope.mainLaunch {
-        action = when {
+        _action.value = when {
             value -> {
                 if (service) CatalogForOneSiteUpdaterService.addIfNotContain(context, siteName)
                 true

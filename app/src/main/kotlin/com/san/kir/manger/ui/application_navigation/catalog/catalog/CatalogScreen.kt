@@ -99,6 +99,7 @@ fun CatalogScreen(nav: NavHostController, viewModel: CatalogViewModel) {
     val coroutineScope = rememberCoroutineScope()
     var errorDialog by remember { mutableStateOf(false) }
     val items by viewModel.items.collectAsState()
+    val action by viewModel.action.collectAsState()
 
     Scaffold(
         modifier = Modifier.navigationBarsWithImePadding(),
@@ -112,7 +113,7 @@ fun CatalogScreen(nav: NavHostController, viewModel: CatalogViewModel) {
                 .fillMaxSize()
                 .padding(it)
         ) {
-            if (viewModel.action) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            if (action) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             LazyColumn {
                 items(items = items, key = { item -> item.id }) { item ->
                     ListItem(item, item.name, item.statusEdition,

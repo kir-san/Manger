@@ -39,9 +39,9 @@ import com.san.kir.data.models.Chapter
 import com.san.kir.data.models.Manga
 import com.san.kir.data.models.countPages
 import com.san.kir.manger.R
-import com.san.kir.manger.foreground_work.services.DownloadService
-import com.san.kir.manger.utils.extensions.longToast
-import com.san.kir.manger.utils.extensions.toast
+import com.san.kir.core.download.DownloadService
+import com.san.kir.core.utils.longToast
+import com.san.kir.core.utils.toast
 import com.san.kir.ui.viewer.MangaViewer
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
@@ -181,7 +181,7 @@ fun ChaptersItemContent(
         AnimatedVisibility(downloadIndicator.not()) {
             IconButton(
                 onClick = {
-                    DownloadService.start(context, chapter)
+                    com.san.kir.core.download.DownloadService.start(context, chapter)
                 },
             ) {
                 Icon(Icons.Default.Download, contentDescription = "download button")
@@ -192,7 +192,7 @@ fun ChaptersItemContent(
         AnimatedVisibility(downloadIndicator) {
             IconButton(
                 onClick = {
-                    DownloadService.pause(context, chapter)
+                    com.san.kir.core.download.DownloadService.pause(context, chapter)
                 },
             ) {
                 Icon(Icons.Default.Close, contentDescription = "cancel download button")

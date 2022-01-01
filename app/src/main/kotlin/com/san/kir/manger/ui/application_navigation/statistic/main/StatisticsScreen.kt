@@ -31,10 +31,10 @@ import com.san.kir.data.models.Manga
 import com.san.kir.data.models.MangaStatistic
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.application_navigation.statistic.StatisticNavTarget
-import com.san.kir.manger.utils.compose.TopBarScreenList
 import com.san.kir.manger.utils.compose.navigate
 import com.san.kir.manger.utils.compose.rememberImage
 import com.san.kir.manger.utils.TimeFormat
+import com.san.kir.ui.utils.TopBarScreenList
 
 @Composable
 fun StatisticsScreen(

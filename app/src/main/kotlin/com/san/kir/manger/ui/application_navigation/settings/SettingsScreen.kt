@@ -50,7 +50,7 @@ import com.san.kir.data.models.Viewer
 import com.san.kir.manger.R
 import com.san.kir.manger.utils.compose.CheckBoxText
 import com.san.kir.manger.utils.compose.RadioGroup
-import com.san.kir.manger.utils.compose.TopBarScreenContent
+import com.san.kir.ui.utils.TopBarScreenContent
 
 @Composable
 fun SettingsScreen(

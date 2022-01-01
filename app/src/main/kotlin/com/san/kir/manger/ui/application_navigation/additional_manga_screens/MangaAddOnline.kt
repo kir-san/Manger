@@ -30,9 +30,8 @@ import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.san.kir.manger.R
-import com.san.kir.manger.utils.compose.TopBarScreenWithInsets
+import com.san.kir.ui.utils.TopBarScreenWithInsets
 
-// TODO добавить вставку из буфера обмена одной кнопкой с выводом содержимого
 @Composable
 fun MangaAddOnlineScreen(
     navigateToBack: () -> Unit,

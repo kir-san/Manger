@@ -23,9 +23,9 @@ import com.san.kir.manger.R
 import com.san.kir.manger.utils.compose.DialogText
 import com.san.kir.manger.utils.compose.ImageWithStatus
 import com.san.kir.manger.utils.compose.LabelText
-import com.san.kir.manger.utils.compose.TopBarScreenWithInsets
-import com.san.kir.manger.utils.extensions.browse
-import com.san.kir.manger.utils.extensions.formatDouble
+import com.san.kir.core.utils.browse
+import com.san.kir.core.utils.formatDouble
+import com.san.kir.ui.utils.TopBarScreenWithInsets
 
 
 @Composable

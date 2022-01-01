@@ -37,12 +37,12 @@ import androidx.paging.compose.items
 import com.san.kir.data.models.Storage
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.application_navigation.storage.StorageNavTarget
-import com.san.kir.manger.utils.compose.MenuText
+import com.san.kir.ui.utils.MenuText
 import com.san.kir.manger.utils.compose.StorageProgressBar
-import com.san.kir.manger.utils.compose.TopBarScreenList
 import com.san.kir.manger.utils.compose.navigate
 import com.san.kir.manger.utils.compose.rememberImage
-import com.san.kir.manger.utils.extensions.formatDouble
+import com.san.kir.core.utils.formatDouble
+import com.san.kir.ui.utils.TopBarScreenList
 import kotlin.math.roundToInt
 
 @Composable

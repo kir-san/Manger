@@ -8,7 +8,7 @@ class ChapterRepository(context: Context) {
     private val db = RoomDB.getDatabase(context)
     private val mChapterDao = db.chapterDao
 
-    suspend fun getItems() = mChapterDao.getItems()
+    suspend fun getItems() = mChapterDao.items()
     suspend fun getItems(mangaUnic: String) = mChapterDao.getItemsWhereManga(mangaUnic)
     suspend fun getItem(site: String) = mChapterDao.getItemWhereLink(site)
 

@@ -3,6 +3,7 @@ plugins {
     id(Plugins.KOTLIN_ANDROID)
 }
 
+
 android {
     compileSdk = Versions.App.COMPILE_SDK
 

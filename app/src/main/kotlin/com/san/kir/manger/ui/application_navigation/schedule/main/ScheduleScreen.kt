@@ -18,9 +18,9 @@ import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.application_navigation.schedule.ScheduleNavTarget
-import com.san.kir.manger.utils.compose.MenuIcon
-import com.san.kir.manger.utils.compose.TopBarScreenContent
+import com.san.kir.ui.utils.MenuIcon
 import com.san.kir.manger.utils.compose.navigate
+import com.san.kir.ui.utils.TopBarScreenContent
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)

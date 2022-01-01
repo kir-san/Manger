@@ -48,7 +48,7 @@ import com.san.kir.manger.utils.compose.CheckBoxText
 import com.san.kir.manger.utils.compose.DropDownTextField
 import com.san.kir.manger.utils.compose.ImageWithStatus
 import com.san.kir.manger.utils.compose.LabelText
-import com.san.kir.manger.utils.compose.TopBarScreenWithInsets
+import com.san.kir.ui.utils.TopBarScreenWithInsets
 
 
 @Composable

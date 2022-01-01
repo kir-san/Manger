@@ -18,22 +18,7 @@
         <item quantity="other">глав.</item>
     </plurals>
 
-    <plurals name="download_service_complete_without_error">
-        <item quantity="one">%d глава скачалась без ошибок</item>
-        <item quantity="few">%d главы скачались без ошибок</item>
-        <item quantity="many">%d глав скачалось без ошибок</item>
-        <item quantity="other">%d глав скачалось без ошибок</item>
-    </plurals>
-    <plurals name="download_service_complete_with_error_start">
-        <item quantity="one">%d глава скачалась</item>
-        <item quantity="few">%d главы скачались</item>
-        <item quantity="many">%d глав скачалось</item>
-        <item quantity="other">%d глав скачалось</item>
-    </plurals>
-    <plurals name="download_service_complete_with_error_end">
-        <item quantity="one">c %d ошибкой</item>
-        <item quantity="other">с %d ошибками</item>
-    </plurals>
+
 
     <plurals name="statistic_item_full_pages">
         <item quantity="one">страница</item>
@@ -311,19 +296,10 @@
     <string name="download_view_internet_off">Нет доступа в интернет</string>
 
     <!--DownloadService-->
-    <string name="download_service_title">Сервис загрузки манги</string>
-    <string name="download_service_message">Нажмите на уведомление для перехода в загрузки</string>
-    <string name="download_service_wifi_message">Включена загрузка только по Wi-Fi, а он выключен</string>
-    <string name="download_service_queue">Очередь: %d</string>
-    <string name="download_service_complete_title">Загрузка завершена</string>
-    <string name="download_service_complete_title_error">Загрузка прервана c ошибкой</string>
-    <string name="download_service_complete_title_paused">Загрузка прервана</string>
-    <string name="download_service_complete_text">Приятного чтения</string>
-    <string name="download_service_complete_text_error">Ни одна глава не скачалась</string>
-    <string name="download_service_complete_text_paused">Все загрузки были приостановленны</string>
-    <string name="download_service_pause_all">Приостановить все</string>
-    <string name="download_service_complete_time_sec">Скачано %1$s Мб за %2$d сек</string>
-    <string name="download_service_complete_time_min_sec">%1$s Мб за %2$d мин и %3$d сек</string>
+
+
+
+
 
     <!--Category-->
     <string name="category_item_question_delete">Вы действительно хотите удалить?</string>

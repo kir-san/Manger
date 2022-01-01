@@ -30,9 +30,9 @@ import androidx.navigation.NavHostController
 import com.san.kir.data.models.Category
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.application_navigation.categories.CategoriesNavTarget
-import com.san.kir.manger.utils.compose.MenuIcon
-import com.san.kir.manger.utils.compose.TopBarScreenList
+import com.san.kir.ui.utils.MenuIcon
 import com.san.kir.manger.utils.compose.navigate
+import com.san.kir.ui.utils.TopBarScreenList
 
 @Composable
 fun CategoriesScreen(

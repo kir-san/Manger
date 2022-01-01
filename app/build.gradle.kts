@@ -1,3 +1,4 @@
+
 plugins {
     id(Plugins.ANDROID_APPLICATION)
     id(Plugins.HILT_ANDROID)
@@ -84,6 +85,8 @@ android {
 
 dependencies {
     implementation(project(Modules.UI.viewer))
+    implementation(project(Modules.UI.latest))
+    implementation(project(Modules.UI.utils))
     implementation(project(Modules.Data.db))
     implementation(project(Modules.Data.store))
     implementation(project(Modules.Data.models))
@@ -91,6 +94,7 @@ dependencies {
     implementation(project(Modules.Core.utils))
     implementation(project(Modules.Core.support))
     implementation(project(Modules.Core.internet))
+    implementation(project(Modules.Core.download))
 
     Dependencies.Kotlin.apply {
         implementation(STDLIB)

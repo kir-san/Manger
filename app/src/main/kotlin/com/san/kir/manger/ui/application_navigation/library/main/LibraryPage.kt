@@ -33,7 +33,7 @@ import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.san.kir.data.models.CategoryWithMangas
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.application_navigation.MainNavTarget
-import com.san.kir.manger.utils.compose.TestTags
+import com.san.kir.core.utils.TestTags
 import com.san.kir.manger.utils.compose.navigate
 
 @Composable

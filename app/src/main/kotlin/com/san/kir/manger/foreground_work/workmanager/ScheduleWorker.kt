@@ -24,7 +24,7 @@ import com.san.kir.manger.R
 import com.san.kir.manger.foreground_work.services.AppUpdateService
 import com.san.kir.manger.foreground_work.services.CatalogForOneSiteUpdaterService
 import com.san.kir.manger.foreground_work.services.MangaUpdaterService
-import com.san.kir.manger.utils.extensions.longToast
+import com.san.kir.core.utils.longToast
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.coroutineScope

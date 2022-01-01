@@ -16,8 +16,8 @@ import com.san.kir.manger.R
 import com.san.kir.manger.foreground_work.services.AppUpdateService
 import com.san.kir.manger.foreground_work.services.MangaUpdaterService
 import com.san.kir.manger.ui.application_navigation.library.LibraryNavTarget
-import com.san.kir.manger.utils.compose.MenuIcon
-import com.san.kir.manger.utils.compose.MenuText
+import com.san.kir.ui.utils.MenuIcon
+import com.san.kir.ui.utils.MenuText
 import com.san.kir.manger.utils.compose.navigate
 
 @Composable

@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ChapterDao : BaseDao<Chapter> {
     @Query("SELECT * FROM ${ChaptersColumn.tableName}")
-    suspend fun getItems(): List<Chapter>
+    suspend fun items(): List<Chapter>
 
     @Query("SELECT ${ChaptersColumn.manga} FROM ${ChaptersColumn.tableName} " +
             "WHERE ${ChaptersColumn.id} IS :chapterID")

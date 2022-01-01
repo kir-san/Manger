@@ -14,10 +14,10 @@ import com.san.kir.core.internet.ConnectManager
 import com.san.kir.core.utils.log
 import com.san.kir.manger.BuildConfig
 import com.san.kir.manger.R
-import com.san.kir.manger.utils.ID
-import com.san.kir.manger.utils.extensions.browse
-import com.san.kir.manger.utils.extensions.intentFor
-import com.san.kir.manger.utils.extensions.startService
+import com.san.kir.core.utils.ID
+import com.san.kir.core.utils.browse
+import com.san.kir.core.utils.intentFor
+import com.san.kir.core.utils.startService
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

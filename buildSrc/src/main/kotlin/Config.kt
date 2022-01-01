@@ -61,8 +61,6 @@ fun BaseAppModuleExtension.prepareComposeConfig() {
 }
 // --- For Compose ---
 
-val androidLibraryPlugins = listOf(Plugins.ANDROID_LIBRARY, Plugins.KOTLIN_ANDROID)
-
 val resourceExcludes = listOf(
     "META-INF/**/*",
     "META-INF/DEPENDENCIES",

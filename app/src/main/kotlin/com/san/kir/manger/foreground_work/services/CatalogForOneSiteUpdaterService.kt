@@ -29,11 +29,10 @@ import com.san.kir.manger.R
 import com.san.kir.data.parsing.SiteCatalogsManager
 import com.san.kir.manger.ui.MainActivity
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
-import com.san.kir.manger.utils.ID
-import com.san.kir.manger.utils.extensions.intentFor
-import com.san.kir.manger.utils.extensions.startService
+import com.san.kir.core.utils.ID
+import com.san.kir.core.utils.intentFor
+import com.san.kir.core.utils.startService
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach

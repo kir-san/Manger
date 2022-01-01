@@ -9,9 +9,9 @@ import com.san.kir.data.models.MangaStatistic
 import com.san.kir.manger.R
 import com.san.kir.manger.utils.compose.DialogText
 import com.san.kir.manger.utils.compose.LabelText
-import com.san.kir.manger.utils.compose.TopBarScreenWithInsets
 import com.san.kir.manger.utils.TimeFormat
-import com.san.kir.manger.utils.extensions.formatDouble
+import com.san.kir.core.utils.formatDouble
+import com.san.kir.ui.utils.TopBarScreenWithInsets
 
 @Composable
 fun StatisticScreen(nav: NavHostController, item: MangaStatistic) {

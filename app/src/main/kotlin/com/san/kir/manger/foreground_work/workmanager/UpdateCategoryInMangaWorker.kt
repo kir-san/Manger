@@ -24,7 +24,7 @@ class UpdateCategoryInMangaWorker @AssistedInject constructor(
     private val mangaDao: MangaDao,
 ) : CoroutineWorker(appContext, workerParameters) {
 
-    override suspend fun doWork() = coroutineScope {
+    override suspend fun doWork(): Result {
         val categoryName = inputData.getString(cat)
         val oldCategory = inputData.getString(oldCat)
 
@@ -52,17 +52,17 @@ class UpdateCategoryInMangaWorker @AssistedInject constructor(
                 }
             }.fold(
                 onSuccess = {
-                    Result.success()
+                    return Result.success()
                 },
                 onFailure = {
                     category.name = oldCategory
                     categoryDao.update(category)
                     it.printStackTrace()
-                    Result.failure()
+                    return Result.failure()
                 }
             )
         } else {
-            Result.retry()
+            return Result.retry()
         }
     }
 
@@ -74,7 +74,7 @@ class UpdateCategoryInMangaWorker @AssistedInject constructor(
         fun addTask(ctx: Context, category: Category, oldCategory: String) {
             val data = workDataOf(cat to category.name, oldCat to oldCategory)
             val task = OneTimeWorkRequestBuilder<UpdateCategoryInMangaWorker>()
-                .addTag(LatestClearWorker.tag)
+                .addTag(tag)
                 .setInputData(data)
                 .build()
             WorkManager.getInstance(ctx).enqueue(task)

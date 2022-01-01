@@ -29,14 +29,13 @@ import com.san.kir.data.models.Manga
 import com.san.kir.data.models.SimpleManga
 import com.san.kir.data.models.columns.MangaColumn
 import com.san.kir.data.parsing.SiteCatalogsManager
-import com.san.kir.data.parsing.getShortLink
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.MainActivity
 import com.san.kir.manger.ui.application_navigation.MainNavTarget
-import com.san.kir.manger.utils.ID
+import com.san.kir.core.utils.ID
 import com.san.kir.manger.utils.SearchDuplicate
-import com.san.kir.manger.utils.extensions.intentFor
-import com.san.kir.manger.utils.extensions.startService
+import com.san.kir.core.utils.intentFor
+import com.san.kir.core.utils.startService
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

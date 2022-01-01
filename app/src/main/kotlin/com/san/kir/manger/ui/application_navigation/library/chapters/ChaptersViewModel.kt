@@ -24,9 +24,9 @@ import com.san.kir.data.models.utils.ChapterComparator
 import com.san.kir.data.parsing.SiteCatalogsManager
 import com.san.kir.data.store.ChaptersStore
 import com.san.kir.manger.R
-import com.san.kir.manger.foreground_work.services.DownloadService
+import com.san.kir.core.download.DownloadService
 import com.san.kir.manger.ui.MainActivity
-import com.san.kir.manger.utils.extensions.toast
+import com.san.kir.core.utils.toast
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -218,7 +218,7 @@ class ChaptersViewModel @AssistedInject constructor(
     fun downloadSelectedItems() = viewModelScope.launch {
         selectedItems.zip(prepareChapters).forEach { (b, chapter) ->
             if (b && chapter.action == com.san.kir.core.support.ChapterStatus.DOWNLOADABLE)
-                DownloadService.start(context, chapter)
+                com.san.kir.core.download.DownloadService.start(context, chapter)
         }
         removeSelection()
     }

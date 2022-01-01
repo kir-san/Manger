@@ -44,17 +44,17 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.insets.navigationBarsPadding
+import com.san.kir.core.internet.NetworkState
 import com.san.kir.core.support.DownloadState
 import com.san.kir.core.utils.bytesToMb
 import com.san.kir.data.models.Chapter
 import com.san.kir.data.models.Manga
 import com.san.kir.manger.R
-import com.san.kir.manger.foreground_work.services.DownloadService
 import com.san.kir.manger.utils.TimeFormat
-import com.san.kir.manger.utils.compose.MenuText
-import com.san.kir.manger.utils.compose.TopBarScreenContent
+import com.san.kir.ui.utils.MenuText
 import com.san.kir.manger.utils.compose.rememberImage
-import com.san.kir.manger.utils.extensions.formatDouble
+import com.san.kir.core.utils.formatDouble
+import com.san.kir.ui.utils.TopBarScreenContent
 
 @Composable
 fun DownloadScreen(
@@ -104,13 +104,13 @@ fun DownloadScreen(
                     Spacer(modifier = Modifier.weight(1f))
 
                     // Кнопка включения отображения всех глав
-                    IconButton(onClick = { DownloadService.startAll(context) }) {
+                    IconButton(onClick = { com.san.kir.core.download.DownloadService.startAll(context) }) {
                         Icon(Icons.Filled.PlayArrow, contentDescription = null)
                     }
 
                     // Кнопка паузы
                     IconButton(
-                        onClick = { DownloadService.pauseAll(context) },
+                        onClick = { com.san.kir.core.download.DownloadService.pauseAll(context) },
                         modifier = Modifier.padding(start = 16.dp)
                     ) { Icon(Icons.Filled.Stop, contentDescription = null) }
 
@@ -223,12 +223,12 @@ private fun ItemView(
 
         when (item.status) {
             DownloadState.PAUSED -> {
-                IconButton(onClick = { DownloadService.start(ctx, item) }) {
+                IconButton(onClick = { com.san.kir.core.download.DownloadService.start(ctx, item) }) {
                     Icon(Icons.Default.Download, contentDescription = "download button")
                 }
             }
             DownloadState.QUEUED, DownloadState.LOADING -> {
-                IconButton(onClick = { DownloadService.pause(ctx, item) }) {
+                IconButton(onClick = { com.san.kir.core.download.DownloadService.pause(ctx, item) }) {
                     Icon(Icons.Default.Close, contentDescription = "cancel download button")
                 }
             }

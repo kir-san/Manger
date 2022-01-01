@@ -43,7 +43,7 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.insets.systemBarsPadding
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.application_navigation.library.LibraryNavTarget
-import com.san.kir.manger.utils.compose.MenuText
+import com.san.kir.ui.utils.MenuText
 import com.san.kir.manger.utils.compose.navigate
 import com.san.kir.manger.foreground_work.workmanager.MangaDeleteWorker
 

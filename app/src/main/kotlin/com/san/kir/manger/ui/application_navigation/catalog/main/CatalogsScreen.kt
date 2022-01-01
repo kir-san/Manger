@@ -34,11 +34,11 @@ import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.data.models.Site
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
-import com.san.kir.manger.utils.compose.MenuIcon
-import com.san.kir.manger.utils.compose.MenuText
-import com.san.kir.manger.utils.compose.TopBarScreenList
+import com.san.kir.ui.utils.MenuIcon
+import com.san.kir.ui.utils.MenuText
 import com.san.kir.manger.utils.compose.navigate
 import com.san.kir.manger.utils.compose.rememberImage
+import com.san.kir.ui.utils.TopBarScreenList
 
 @Composable
 fun CatalogsScreen(

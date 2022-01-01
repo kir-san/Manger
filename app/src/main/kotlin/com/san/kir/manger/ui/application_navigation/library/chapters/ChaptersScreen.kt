@@ -38,7 +38,7 @@ import com.google.accompanist.pager.rememberPagerState
 import com.san.kir.data.models.Manga
 import com.san.kir.manger.R
 import com.san.kir.manger.foreground_work.services.MangaUpdaterService
-import com.san.kir.manger.utils.extensions.longToast
+import com.san.kir.core.utils.longToast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch

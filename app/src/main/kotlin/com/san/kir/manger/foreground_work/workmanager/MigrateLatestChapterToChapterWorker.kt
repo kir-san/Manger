@@ -17,7 +17,7 @@ import com.san.kir.core.utils.log
 import com.san.kir.manger.R
 import com.san.kir.manger.repositories.ChapterRepository
 import com.san.kir.manger.repositories.LatestChapterRepository
-import com.san.kir.manger.utils.ID
+import com.san.kir.core.utils.ID
 
 class MigrateLatestChapterToChapterWorker(context: Context, parameters: WorkerParameters) :
     CoroutineWorker(context, parameters) {

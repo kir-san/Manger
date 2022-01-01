@@ -28,11 +28,11 @@ import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
 import com.san.kir.manger.utils.compose.DialogText
 import com.san.kir.manger.utils.compose.ImageWithStatus
 import com.san.kir.manger.utils.compose.LabelText
-import com.san.kir.manger.utils.compose.TopBarScreenWithInsets
 import com.san.kir.manger.utils.compose.navigate
 import com.san.kir.core.utils.coroutines.withDefaultContext
-import com.san.kir.manger.utils.extensions.browse
+import com.san.kir.core.utils.browse
 import com.san.kir.manger.utils.extensions.listStrToString
+import com.san.kir.ui.utils.TopBarScreenWithInsets
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable

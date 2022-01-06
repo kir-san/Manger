@@ -1,6 +1,5 @@
 package com.san.kir.data.db.dao
 
-import androidx.lifecycle.LiveData
 import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
@@ -24,9 +23,6 @@ interface StorageDao : BaseDao<Storage> {
 
     @Query("SELECT * FROM StorageItem WHERE path IS :shortPath")
     fun item(shortPath: String): Storage?
-
-    @Query("SELECT * FROM StorageItem WHERE path IS :shortPath")
-    fun loadItem(shortPath: String): LiveData<Storage?>
 
     @Query("SELECT * FROM StorageItem ORDER BY sizeFull DESC")
     suspend fun items(): List<Storage>

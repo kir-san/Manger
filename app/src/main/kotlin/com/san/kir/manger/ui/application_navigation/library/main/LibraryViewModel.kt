@@ -104,7 +104,7 @@ class LibraryViewModel @Inject constructor(
         }
     }
 
-    fun countNotRead(mangaUnic: String) = chapterDao.loadCountItemsWhereManga(mangaUnic)
+    fun countNotRead(mangaUnic: String) = chapterDao.loadCountNotReadItemsWhereManga(mangaUnic)
 
     fun update(manga: SimpleManga) {
         viewModelScope.defaultLaunch {

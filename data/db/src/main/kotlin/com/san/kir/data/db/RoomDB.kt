@@ -47,7 +47,8 @@ import java.io.File
 
 @Database(
     entities =
-    [(Site::class),
+    [
+        (Site::class),
         (Manga::class),
         (Chapter::class),
         (Category::class),
@@ -94,11 +95,12 @@ abstract class RoomDB : RoomDatabase() {
             if (!::sDb.isInitialized)
                 synchronized(RoomDB::class.java) {
                     if (!::sDb.isInitialized)
-                        sDb = Room.databaseBuilder(
-                            context.applicationContext,
-                            RoomDB::class.java,
-                            File(externalDir, NAME).absolutePath
-                        )
+                        sDb = Room
+                            .databaseBuilder(
+                                context.applicationContext,
+                                RoomDB::class.java,
+                                getFullPath(NAME).path
+                            )
                             .addMigrations(*migrations)
                             .addCallback(Callback(context))
                             .build()

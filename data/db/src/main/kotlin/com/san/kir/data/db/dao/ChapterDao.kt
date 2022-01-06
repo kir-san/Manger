@@ -37,7 +37,7 @@ interface ChapterDao : BaseDao<Chapter> {
                 "WHERE ${ChaptersColumn.manga} IS :manga " +
                 "AND ${ChaptersColumn.isRead} IS 0"
     )
-    fun loadCountItemsWhereManga(manga: String): Flow<Int>
+    fun loadCountNotReadItemsWhereManga(manga: String): Flow<Int>
 
     @Query(
         "SELECT * FROM ${ChaptersColumn.tableName} " +

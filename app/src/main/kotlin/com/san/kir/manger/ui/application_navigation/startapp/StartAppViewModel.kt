@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import androidx.work.Operation
+import com.san.kir.core.support.DIR
 import com.san.kir.core.utils.createDirs
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.log
@@ -67,6 +68,6 @@ class StartAppViewModel @Inject constructor(
     }
 
     private fun createNeedFolders() {
-        com.san.kir.core.support.DIR.ALL.forEach { dir -> getFullPath(dir).createDirs() }
+        DIR.ALL.forEach { dir -> getFullPath(dir).createDirs() }
     }
 }

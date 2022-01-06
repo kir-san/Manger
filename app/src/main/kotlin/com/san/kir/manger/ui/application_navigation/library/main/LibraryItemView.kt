@@ -36,11 +36,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.san.kir.core.compose_utils.rememberImage
 import com.san.kir.core.support.CATEGORY_ALL
+import com.san.kir.core.utils.TestTags
 import com.san.kir.data.models.SimpleManga
 import com.san.kir.manger.ui.application_navigation.library.LibraryNavTarget
-import com.san.kir.core.utils.TestTags
 import com.san.kir.manger.utils.compose.navigate
-import com.san.kir.manger.utils.compose.rememberImage
 import com.san.kir.manger.utils.compose.squareMaxSize
 
 @OptIn(ExperimentalFoundationApi::class)

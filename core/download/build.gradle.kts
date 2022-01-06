@@ -40,6 +40,10 @@ dependencies {
     implementation(project(Modules.Data.parsing))
     implementation(project(Modules.Data.store))
 
+    Dependencies.AndroidX.apply {
+        implementation(CORE)
+    }
+
     Dependencies.AndroidX.Lifecycle.apply {
         implementation(LIFECYCLE_RUNTIME)
         implementation(LIFECYCLE_SERVICE)

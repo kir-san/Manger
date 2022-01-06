@@ -38,4 +38,8 @@ dependencies {
     Dependencies.AndroidX.Room.apply {
         implementation(ROOM_KTX)
     }
+
+    Dependencies.ForInternet.apply {
+        implementation(GSON)
+    }
 }

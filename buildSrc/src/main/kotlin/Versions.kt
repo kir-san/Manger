@@ -12,7 +12,7 @@ object Versions {
     object Kotlin {
         // Make sure to update `buildSrc/build.gradle.kts` when updating this
         const val STDLIB = "1.5.31"
-        const val COROUTINES = "1.5.1-native-mt"
+        const val COROUTINES = "1.5.2"
         const val KSP = "1.5.31-1.0.0"
     }
 

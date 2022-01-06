@@ -131,6 +131,8 @@ object Dependencies {
             "com.squareup.okio:okio:${Versions.ForInternet.OKIO}"
         const val RETROFIT =
             "com.squareup.retrofit2:retrofit:${Versions.ForInternet.RETROFIT}"
+        const val RETROFIT_GSON =
+            "com.squareup.retrofit2:converter-gson:${Versions.ForInternet.RETROFIT}"
         const val OKHTTP =
             "com.squareup.okhttp3:okhttp:${Versions.ForInternet.OKHTTP}"
     }

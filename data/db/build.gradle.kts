@@ -1,10 +1,8 @@
 plugins {
     id(Plugins.ANDROID_LIBRARY)
     id(Plugins.KOTLIN_ANDROID)
-//    id(Plugins.HILT_ANDROID)
     id(Plugins.KSP) version Versions.Kotlin.KSP
     id(Plugins.PARCELIZE)
-//    kotlin(Plugins.KAPT)
 }
 
 android {
@@ -16,6 +14,10 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
+
+        ksp {
+            arg("room.schemaLocation", "$projectDir/schemas")
+        }
     }
 
     buildTypes {
@@ -55,4 +57,7 @@ dependencies {
         implementation(PAGING)
     }
 
+    Dependencies.ForInternet.apply {
+        implementation(GSON)
+    }
 }

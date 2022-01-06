@@ -1,4 +1,4 @@
-package com.san.kir.ui.viewer
+package com.example.utils
 
 //import org.junit.Test
 

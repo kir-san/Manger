@@ -1,4 +1,4 @@
-package com.san.kir.manger.utils.compose
+package com.san.kir.core.compose_utils
 
 import android.app.Application
 import android.content.Context
@@ -17,13 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.san.kir.core.internet.ConnectManager
-import com.san.kir.core.utils.log
-import com.san.kir.manger.R
 import java.io.File
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -71,10 +68,11 @@ fun rememberImage(url: String?, context: Context = LocalContext.current): ImageB
     LaunchedEffect(url) {
         if (url != null && url.isNotEmpty()) {
             val manager = ConnectManager(context.applicationContext as Application)
+            val name = manager.nameFromUrl(url)
 
             val imageCacheDirectory = File(context.cacheDir, "image_cache")
 
-            val icon = File(imageCacheDirectory, url)
+            val icon = File(imageCacheDirectory, name)
 
             kotlin.runCatching {
                 logo = BitmapFactory.decodeFile(icon.path).asImageBitmap()

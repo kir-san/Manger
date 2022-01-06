@@ -7,6 +7,7 @@ androidComposeLibraryConfig()
 
 dependencies {
     implementation(project(Modules.Core.utils))
+    implementation(project(Modules.Core.internet))
 
     Dependencies.Compose.apply {
         implementation(UI)

@@ -1,7 +1,8 @@
-package com.san.kir.ui.utils
+package com.san.kir.core.compose_utils
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -46,10 +47,11 @@ fun TopBarScreenWithInsets(
     scaffoldState: ScaffoldState? = null,
     title: String = "",
     subtitle: String = "",
-    additionalPadding: Dp = 10.dp,
+    additionalPadding: Dp = Dimensions.halfDefault,
     actions: @Composable RowScope.() -> Unit = {},
     listContent: (LazyListScope.() -> Unit)? = null,
     drawerContent: @Composable (ColumnScope.() -> Unit)? = null,
+    paddingContent: @Composable ((PaddingValues) -> Unit)? = null,
     content: @Composable (ColumnScope.() -> Unit)? = null,
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -99,6 +101,9 @@ fun TopBarScreenWithInsets(
                 )
             )
         }) { contentPadding ->
+
+        paddingContent?.invoke(contentPadding)
+
         content?.let { con ->
             Column(
                 modifier = Modifier
@@ -152,15 +157,41 @@ fun TopBarScreenWithInsets(
     }
 }
 
-
 @Composable
-fun TopBarScreenContent(
-    navHostController: NavHostController,
+fun TopBarScreen(
+    navHostController: NavHostController? = null,
+    navigateUp: () -> Unit = { navHostController?.navigateUp() },
     modifier: Modifier = Modifier,
     scaffoldState: ScaffoldState? = null,
     title: String = "",
     subtitle: String = "",
-    additionalPadding: Dp = 10.dp,
+    additionalPadding: Dp = Dimensions.halfDefault,
+    actions: @Composable RowScope.() -> Unit = {},
+    drawerContent: @Composable (ColumnScope.() -> Unit)? = null,
+    content: @Composable (PaddingValues) -> Unit,
+) {
+    TopBarScreenWithInsets(
+        modifier = modifier,
+        scaffoldState = scaffoldState,
+        navigationButtonListener = navigateUp,
+        title = title,
+        subtitle = subtitle,
+        actions = actions,
+        paddingContent = content,
+        drawerContent = drawerContent,
+        additionalPadding = additionalPadding
+    )
+}
+
+@Composable
+fun TopBarScreenContent(
+    navHostController: NavHostController? = null,
+    navigateUp: () -> Unit = { navHostController?.navigateUp() },
+    modifier: Modifier = Modifier,
+    scaffoldState: ScaffoldState? = null,
+    title: String = "",
+    subtitle: String = "",
+    additionalPadding: Dp = Dimensions.halfDefault,
     actions: @Composable RowScope.() -> Unit = {},
     drawerContent: @Composable (ColumnScope.() -> Unit)? = null,
     content: @Composable (ColumnScope.() -> Unit)? = null,
@@ -168,7 +199,7 @@ fun TopBarScreenContent(
     TopBarScreenWithInsets(
         modifier = modifier,
         scaffoldState = scaffoldState,
-        navigationButtonListener = { navHostController.navigateUp() },
+        navigationButtonListener = navigateUp,
         title = title,
         subtitle = subtitle,
         actions = actions,
@@ -181,9 +212,9 @@ fun TopBarScreenContent(
 @Composable
 fun TopBarScreenList(
     navHostController: NavHostController? = null,
-    navigateUp: () -> Unit = {navHostController?.navigateUp()},
+    navigateUp: () -> Unit = { navHostController?.navigateUp() },
     modifier: Modifier = Modifier,
-    additionalPadding: Dp = 10.dp,
+    additionalPadding: Dp = Dimensions.halfDefault,
     title: String = "",
     subtitle: String = "",
     actions: @Composable RowScope.() -> Unit = {},

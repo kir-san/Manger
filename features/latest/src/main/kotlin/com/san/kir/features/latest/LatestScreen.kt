@@ -1,4 +1,4 @@
-package com.san.kir.ui.latest
+package com.san.kir.features.latest
 
 import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
@@ -40,20 +40,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.asFlow
 import androidx.work.WorkManager
 import com.san.kir.core.download.DownloadService
 import com.san.kir.core.support.DownloadState
-import com.san.kir.core.utils.log
 import com.san.kir.data.models.Chapter
 import com.san.kir.core.utils.longToast
 import com.san.kir.core.utils.quantitySimple
 import com.san.kir.core.utils.toast
-import com.san.kir.ui.latest.work.LatestClearWorkers
-import com.san.kir.ui.utils.MenuIcon
-import com.san.kir.ui.utils.MenuText
-import com.san.kir.ui.utils.TopBarScreenList
+import com.san.kir.features.latest.work.LatestClearWorkers
+import com.san.kir.core.compose_utils.MenuIcon
+import com.san.kir.core.compose_utils.MenuText
+import com.san.kir.core.compose_utils.TopBarScreenList
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map

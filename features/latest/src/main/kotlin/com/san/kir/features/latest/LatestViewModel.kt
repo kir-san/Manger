@@ -1,4 +1,4 @@
-package com.san.kir.ui.latest
+package com.san.kir.features.latest
 
 import android.app.Application
 import androidx.compose.runtime.getValue

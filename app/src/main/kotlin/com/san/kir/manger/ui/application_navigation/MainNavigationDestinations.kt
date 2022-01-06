@@ -25,7 +25,7 @@ import com.san.kir.manger.ui.application_navigation.catalog.catalogsNavGraph
 import com.san.kir.manger.ui.application_navigation.categories.CategoriesNavTarget
 import com.san.kir.manger.ui.application_navigation.categories.categoriesNavGraph
 import com.san.kir.manger.ui.application_navigation.download.DownloadScreen
-import com.san.kir.ui.latest.LatestScreen
+import com.san.kir.features.latest.LatestScreen
 import com.san.kir.manger.ui.application_navigation.library.LibraryNavTarget
 import com.san.kir.manger.ui.application_navigation.library.libraryNavGraph
 import com.san.kir.manger.ui.application_navigation.schedule.ScheduleNavTarget
@@ -37,7 +37,7 @@ import com.san.kir.manger.ui.application_navigation.statistic.statisticNavGraph
 import com.san.kir.manger.ui.application_navigation.storage.StorageNavTarget
 import com.san.kir.manger.ui.application_navigation.storage.storageNavGraph
 import com.san.kir.manger.utils.compose.NavTarget
-import com.san.kir.ui.viewer.MangaViewer
+import com.san.kir.features.viewer.MangaViewer
 
 private val values = listOf(
     MainNavTarget.Library,

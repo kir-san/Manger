@@ -1,4 +1,4 @@
-package com.san.kir.ui.latest.work
+package com.san.kir.features.latest.work
 
 import android.content.Context
 import androidx.work.OneTimeWorkRequestBuilder

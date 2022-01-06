@@ -51,10 +51,10 @@ import com.san.kir.data.models.Chapter
 import com.san.kir.data.models.Manga
 import com.san.kir.manger.R
 import com.san.kir.manger.utils.TimeFormat
-import com.san.kir.ui.utils.MenuText
-import com.san.kir.manger.utils.compose.rememberImage
+import com.san.kir.core.compose_utils.MenuText
 import com.san.kir.core.utils.formatDouble
-import com.san.kir.ui.utils.TopBarScreenContent
+import com.san.kir.core.compose_utils.TopBarScreenContent
+import com.san.kir.core.compose_utils.rememberImage
 
 @Composable
 fun DownloadScreen(

@@ -44,11 +44,11 @@ import androidx.navigation.NavHostController
 import com.san.kir.core.utils.log
 import com.san.kir.data.models.Manga
 import com.san.kir.manger.R
-import com.san.kir.manger.utils.compose.CheckBoxText
-import com.san.kir.manger.utils.compose.DropDownTextField
-import com.san.kir.manger.utils.compose.ImageWithStatus
-import com.san.kir.manger.utils.compose.LabelText
-import com.san.kir.ui.utils.TopBarScreenWithInsets
+import com.san.kir.core.compose_utils.CheckBoxText
+import com.san.kir.core.compose_utils.DropDownTextField
+import com.san.kir.core.compose_utils.ImageWithStatus
+import com.san.kir.core.compose_utils.LabelText
+import com.san.kir.core.compose_utils.TopBarScreenWithInsets
 
 
 @Composable
@@ -123,7 +123,7 @@ private fun MangaEditContent(
 
     LabelText(idRes = R.string.about_manga_dialog_logo)
     TextField(manga.logo, enabled = false) { change(manga.apply { logo = it }) }
-    ImageWithStatus(manga.logo)
+     ImageWithStatus(manga.logo)
 }
 
 @Composable

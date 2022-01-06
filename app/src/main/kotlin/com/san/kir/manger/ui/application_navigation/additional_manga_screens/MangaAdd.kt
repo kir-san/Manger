@@ -37,8 +37,8 @@ import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.san.kir.manger.R
 import com.san.kir.manger.foreground_work.services.MangaUpdaterService
-import com.san.kir.manger.utils.compose.DialogText
-import com.san.kir.ui.utils.TopBarScreenWithInsets
+import com.san.kir.core.compose_utils.DialogText
+import com.san.kir.core.compose_utils.TopBarScreenWithInsets
 import kotlinx.coroutines.delay
 
 @Composable

@@ -29,12 +29,12 @@ import com.san.kir.core.support.PlannedType
 import com.san.kir.core.support.PlannedWeek
 import com.san.kir.data.models.mangaList
 import com.san.kir.manger.R
-import com.san.kir.manger.utils.compose.LabelText
-import com.san.kir.ui.utils.MenuIcon
+import com.san.kir.core.compose_utils.LabelText
+import com.san.kir.core.compose_utils.MenuIcon
 import com.san.kir.manger.utils.compose.MultiChoiceList
 import com.san.kir.manger.utils.compose.RadioGroup
 import com.san.kir.manger.utils.compose.SingleChoiceList
-import com.san.kir.ui.utils.TopBarScreenContent
+import com.san.kir.core.compose_utils.TopBarScreenContent
 
 @Composable
 fun PlannedTaskScreen(nav: NavHostController, viewModel: PlannedTaskViewModel) {

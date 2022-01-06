@@ -20,12 +20,12 @@ import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.lengthMb
 import com.san.kir.data.models.Manga
 import com.san.kir.manger.R
-import com.san.kir.manger.utils.compose.DialogText
-import com.san.kir.manger.utils.compose.ImageWithStatus
-import com.san.kir.manger.utils.compose.LabelText
+import com.san.kir.core.compose_utils.DialogText
+import com.san.kir.core.compose_utils.ImageWithStatus
+import com.san.kir.core.compose_utils.LabelText
 import com.san.kir.core.utils.browse
 import com.san.kir.core.utils.formatDouble
-import com.san.kir.ui.utils.TopBarScreenWithInsets
+import com.san.kir.core.compose_utils.TopBarScreenWithInsets
 
 
 @Composable

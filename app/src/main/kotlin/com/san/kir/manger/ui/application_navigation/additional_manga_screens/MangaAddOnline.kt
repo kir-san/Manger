@@ -30,7 +30,7 @@ import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.san.kir.manger.R
-import com.san.kir.ui.utils.TopBarScreenWithInsets
+import com.san.kir.core.compose_utils.TopBarScreenWithInsets
 
 @Composable
 fun MangaAddOnlineScreen(

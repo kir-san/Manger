@@ -30,15 +30,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.san.kir.core.compose_utils.MenuIcon
+import com.san.kir.core.compose_utils.MenuText
+import com.san.kir.core.compose_utils.TopBarScreenList
+import com.san.kir.core.compose_utils.rememberImage
 import com.san.kir.core.utils.coroutines.withDefaultContext
+import com.san.kir.core.utils.findInGoogle
 import com.san.kir.data.models.Site
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
-import com.san.kir.ui.utils.MenuIcon
-import com.san.kir.ui.utils.MenuText
 import com.san.kir.manger.utils.compose.navigate
-import com.san.kir.manger.utils.compose.rememberImage
-import com.san.kir.ui.utils.TopBarScreenList
 
 @Composable
 fun CatalogsScreen(
@@ -72,7 +73,8 @@ fun ItemView(item: Site, viewModel: CatalogsViewModel, onClick: () -> Unit) {
             .clickable(onClick = onClick)
     ) {
         Image(
-            rememberImage("http://www.google.com/s2/favicons?domain=${item.catalogName}"), "",
+            rememberImage(findInGoogle(item.catalogName)),
+            contentDescription = "",
             modifier = Modifier
                 .padding(vertical = 10.dp)
                 .padding(end = 8.dp)

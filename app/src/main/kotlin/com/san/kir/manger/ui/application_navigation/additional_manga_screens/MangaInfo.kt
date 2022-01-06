@@ -25,14 +25,14 @@ import androidx.navigation.NavHostController
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.SuppotMangaViewModel
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
-import com.san.kir.manger.utils.compose.DialogText
-import com.san.kir.manger.utils.compose.ImageWithStatus
-import com.san.kir.manger.utils.compose.LabelText
+import com.san.kir.core.compose_utils.DialogText
+import com.san.kir.core.compose_utils.ImageWithStatus
+import com.san.kir.core.compose_utils.LabelText
 import com.san.kir.manger.utils.compose.navigate
 import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.core.utils.browse
 import com.san.kir.manger.utils.extensions.listStrToString
-import com.san.kir.ui.utils.TopBarScreenWithInsets
+import com.san.kir.core.compose_utils.TopBarScreenWithInsets
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable

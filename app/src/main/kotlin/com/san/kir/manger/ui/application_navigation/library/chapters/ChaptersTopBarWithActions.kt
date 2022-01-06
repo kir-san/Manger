@@ -26,9 +26,9 @@ import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.TopAppBar
 import com.san.kir.manger.R
 import com.san.kir.manger.foreground_work.services.MangaUpdaterService
-import com.san.kir.ui.utils.CheckedMenuText
-import com.san.kir.ui.utils.MenuIcon
-import com.san.kir.ui.utils.MenuText
+import com.san.kir.core.compose_utils.CheckedMenuText
+import com.san.kir.core.compose_utils.MenuIcon
+import com.san.kir.core.compose_utils.MenuText
 
 @Composable
 fun ChaptersTopBar(

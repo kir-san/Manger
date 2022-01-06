@@ -53,7 +53,7 @@ import com.san.kir.core.utils.coroutines.mainLaunch
 import com.san.kir.data.models.MainMenuItem
 import com.san.kir.core.utils.formatDouble
 import com.san.kir.core.utils.toast
-import com.san.kir.ui.utils.TopBarScreenWithInsets
+import com.san.kir.core.compose_utils.TopBarScreenWithInsets
 import kotlinx.coroutines.launch
 
 var backPressedTime = 0L

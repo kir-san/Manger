@@ -39,7 +39,7 @@ import com.san.kir.manger.R
 import com.san.kir.manger.utils.compose.StorageProgressBar
 import com.san.kir.manger.utils.extensions.format
 import com.san.kir.manger.foreground_work.workmanager.ChapterDeleteWorker
-import com.san.kir.ui.utils.TopBarScreenContent
+import com.san.kir.core.compose_utils.TopBarScreenContent
 import kotlinx.coroutines.flow.collect
 
 @Composable

@@ -33,7 +33,7 @@ import com.google.accompanist.insets.ui.TopAppBar
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
 import com.san.kir.manger.utils.compose.ListItem
-import com.san.kir.ui.utils.MenuIcon
+import com.san.kir.core.compose_utils.MenuIcon
 import com.san.kir.manger.utils.compose.navigate
 
 // TODO добавить меню для исключения ненужных каталогов

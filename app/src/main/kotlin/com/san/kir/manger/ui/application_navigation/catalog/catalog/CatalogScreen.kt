@@ -86,7 +86,7 @@ import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewM
 import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewModel.Companion.NAME
 import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewModel.Companion.POP
 import com.san.kir.manger.utils.compose.ListItem
-import com.san.kir.ui.utils.MenuIcon
+import com.san.kir.core.compose_utils.MenuIcon
 import com.san.kir.manger.utils.compose.navigate
 import kotlinx.coroutines.launch
 import java.net.URLDecoder

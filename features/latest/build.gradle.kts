@@ -13,7 +13,7 @@ dependencies {
     implementation(project(Modules.Core.support))
     implementation(project(Modules.Core.utils))
     implementation(project(Modules.Core.download))
-    implementation(project(Modules.UI.utils))
+    implementation(project(Modules.Core.composeUtils))
 
     Dependencies.Compose.apply {
         implementation(UI)

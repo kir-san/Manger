@@ -1,4 +1,4 @@
-package com.san.kir.ui.utils
+package com.san.kir.core.compose_utils
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Checkbox

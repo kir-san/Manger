@@ -3,15 +3,16 @@ abstract class NestedModule(private val base: String) {
 }
 
 object Modules {
-    object UI: NestedModule("ui") {
+    object Features: NestedModule("features") {
         val viewer = module("viewer")
-        val utils = module("utils")
         val latest = module("latest")
+        val shikimori = module("shikimori")
     }
 
     object Core : NestedModule("core") {
         val support = module("support")
         val utils = module("utils")
+        val composeUtils = module("compose_utils")
         val internet = module("internet")
         val download = module("download")
     }

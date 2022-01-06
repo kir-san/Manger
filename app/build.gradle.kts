@@ -84,9 +84,9 @@ android {
 }
 
 dependencies {
-    implementation(project(Modules.UI.viewer))
-    implementation(project(Modules.UI.latest))
-    implementation(project(Modules.UI.utils))
+    implementation(project(Modules.Features.viewer))
+    implementation(project(Modules.Features.latest))
+    implementation(project(Modules.Core.composeUtils))
     implementation(project(Modules.Data.db))
     implementation(project(Modules.Data.store))
     implementation(project(Modules.Data.models))
@@ -105,6 +105,7 @@ dependencies {
     Dependencies.AndroidX.apply {
         implementation(CORE)
         implementation(SPLASH)
+        implementation(ACTIVITY)
         implementation(APPCOMPAT)
         implementation(VECTORDRAWABLE)
         implementation(CONSTRAINTLAYOUT)

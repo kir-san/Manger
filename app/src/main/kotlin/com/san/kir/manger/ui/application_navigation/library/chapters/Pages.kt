@@ -41,11 +41,10 @@ import androidx.work.WorkManager
 import com.google.accompanist.insets.navigationBarsPadding
 import com.san.kir.core.compose_utils.rememberImage
 import com.san.kir.data.models.Manga
+import com.san.kir.features.viewer.MangaViewer
 import com.san.kir.manger.R
 import com.san.kir.manger.foreground_work.workmanager.ChapterDeleteWorker
 import com.san.kir.manger.foreground_work.workmanager.ReadChapterDelete
-import com.san.kir.manger.utils.compose.rememberImage
-import com.san.kir.ui.viewer.MangaViewer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect

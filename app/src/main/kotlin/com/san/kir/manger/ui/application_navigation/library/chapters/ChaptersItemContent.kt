@@ -35,14 +35,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.san.kir.core.support.DownloadState
 import com.san.kir.core.utils.coroutines.withDefaultContext
+import com.san.kir.core.utils.longToast
+import com.san.kir.core.utils.toast
 import com.san.kir.data.models.Chapter
 import com.san.kir.data.models.Manga
 import com.san.kir.data.models.countPages
+import com.san.kir.features.viewer.MangaViewer
 import com.san.kir.manger.R
-import com.san.kir.core.download.DownloadService
-import com.san.kir.core.utils.longToast
-import com.san.kir.core.utils.toast
-import com.san.kir.ui.viewer.MangaViewer
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -208,5 +207,5 @@ fun PreviewChaptersItemContent() {
         chapter = Chapter(),
         isSelected = false,
         selectionMode = false,
-        onSelectItem = { /*TODO*/ })
+        onSelectItem = { })
 }

@@ -48,7 +48,7 @@ private fun ItemContent(item: Manga, viewModel: UpdateViewModel) {
         Column(modifier = Modifier.weight(1f)) {
             Text(item.name, maxLines = 1)
             Text(
-                stringResource(R.string.available_update_category_name, item.categories),
+                stringResource(R.string.available_update_category_name, item.category),
                 maxLines = 1,
                 style = MaterialTheme.typography.subtitle2
             )

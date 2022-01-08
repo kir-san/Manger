@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 41,
-    "identityHash": "0bb85a7da758294189d5c330c9895835",
+    "version": 42,
+    "identityHash": "16720afdb7ec540fd9cfdd3331204dc2",
     "entities": [
       {
         "tableName": "sites",
@@ -132,7 +132,7 @@
             "notNull": true
           },
           {
-            "fieldPath": "ordering",
+            "fieldPath": "order",
             "columnName": "ordering",
             "affinity": "INTEGER",
             "notNull": true
@@ -297,7 +297,7 @@
             "notNull": true
           },
           {
-            "fieldPath": "ordering",
+            "fieldPath": "order",
             "columnName": "ordering",
             "affinity": "INTEGER",
             "notNull": true
@@ -789,7 +789,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0bb85a7da758294189d5c330c9895835')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '16720afdb7ec540fd9cfdd3331204dc2')"
     ]
   }
 }

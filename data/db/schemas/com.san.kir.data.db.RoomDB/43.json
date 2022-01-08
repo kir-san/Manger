@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 41,
-    "identityHash": "0bb85a7da758294189d5c330c9895835",
+    "version": 43,
+    "identityHash": "a9a86fb3ec671b5faadb7caa58898dd1",
     "entities": [
       {
         "tableName": "sites",
@@ -132,7 +132,7 @@
             "notNull": true
           },
           {
-            "fieldPath": "ordering",
+            "fieldPath": "order",
             "columnName": "ordering",
             "affinity": "INTEGER",
             "notNull": true
@@ -191,7 +191,7 @@
       },
       {
         "tableName": "chapters",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `manga` TEXT NOT NULL, `manga_id` INTEGER NOT NULL DEFAULT 0, `name` TEXT NOT NULL, `date` TEXT NOT NULL, `path` TEXT NOT NULL, `isRead` INTEGER NOT NULL, `link` TEXT NOT NULL, `progress` INTEGER NOT NULL, `pages` TEXT NOT NULL, `isInUpdate` INTEGER NOT NULL, `totalPages` INTEGER NOT NULL, `downloadPages` INTEGER NOT NULL, `totalSize` INTEGER NOT NULL, `downloadSize` INTEGER NOT NULL, `totalTime` INTEGER NOT NULL, `status` TEXT NOT NULL, `ordering` INTEGER NOT NULL, `error` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `manga` TEXT NOT NULL, `manga_id` INTEGER NOT NULL DEFAULT 0, `name` TEXT NOT NULL, `date` TEXT NOT NULL, `path` TEXT NOT NULL, `isRead` INTEGER NOT NULL, `site` TEXT NOT NULL, `progress` INTEGER NOT NULL, `pages` TEXT NOT NULL, `isInUpdate` INTEGER NOT NULL, `totalPages` INTEGER NOT NULL, `downloadPages` INTEGER NOT NULL, `totalSize` INTEGER NOT NULL, `downloadSize` INTEGER NOT NULL, `totalTime` INTEGER NOT NULL, `status` TEXT NOT NULL, `ordering` INTEGER NOT NULL, `error` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -238,7 +238,7 @@
           },
           {
             "fieldPath": "link",
-            "columnName": "link",
+            "columnName": "site",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -297,7 +297,7 @@
             "notNull": true
           },
           {
-            "fieldPath": "ordering",
+            "fieldPath": "order",
             "columnName": "ordering",
             "affinity": "INTEGER",
             "notNull": true
@@ -789,7 +789,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0bb85a7da758294189d5c330c9895835')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a9a86fb3ec671b5faadb7caa58898dd1')"
     ]
   }
 }

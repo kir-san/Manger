@@ -80,7 +80,7 @@ fun SiteCatalogElement.toManga(category: String, path: String): Manga {
         authorsList = authors,
         logo = logo,
         about = about,
-        categories = category,
+        category = category,
         genresList = genres,
         path = path,
         shortLink = shotLink,

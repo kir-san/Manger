@@ -2,6 +2,7 @@ package com.san.kir.data.db
 
 import android.content.ContentValues
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.OnConflictStrategy
 import androidx.room.Room
@@ -10,11 +11,9 @@ import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.san.kir.core.support.CATEGORY_ALL
 import com.san.kir.core.support.DIR
-import com.san.kir.core.utils.externalDir
 import com.san.kir.core.utils.log
 import com.san.kir.data.db.dao.CategoryDao
 import com.san.kir.data.db.dao.ChapterDao
-import com.san.kir.data.db.dao.DownloadDao
 import com.san.kir.data.db.dao.LatestChapterDao
 import com.san.kir.data.db.dao.MainMenuDao
 import com.san.kir.data.db.dao.MangaDao
@@ -33,7 +32,6 @@ import com.san.kir.data.db.type_converters.PlannedTypeTypeConverter
 import com.san.kir.data.db.type_converters.PlannedWeekTypeConverter
 import com.san.kir.data.models.Category
 import com.san.kir.data.models.Chapter
-import com.san.kir.data.models.DownloadItem
 import com.san.kir.data.models.LatestChapter
 import com.san.kir.data.models.MainMenuItem
 import com.san.kir.data.models.Manga
@@ -55,7 +53,6 @@ import java.io.File
         (Storage::class),
         (MainMenuItem::class),
         (LatestChapter::class),
-        (DownloadItem::class),
         (PlannedTask::class),
         (MangaStatistic::class)
     ],

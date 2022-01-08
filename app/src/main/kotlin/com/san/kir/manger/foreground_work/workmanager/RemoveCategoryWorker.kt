@@ -31,7 +31,7 @@ class RemoveCategoryWorker(appContext: Context, workerParameters: WorkerParamete
                         *mangaDao
                             .itemsWhereCategoryNotAll(category.name)
                             .onEach {
-                                it.categories = applicationContext.CATEGORY_ALL
+                                it.category = applicationContext.CATEGORY_ALL
                             }
                             .toTypedArray()
                     )

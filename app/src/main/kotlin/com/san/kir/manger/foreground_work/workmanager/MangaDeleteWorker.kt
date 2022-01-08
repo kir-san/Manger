@@ -7,7 +7,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.san.kir.core.utils.getFullPath
-import com.san.kir.data.models.columns.MangaColumn
+import com.san.kir.data.models.Manga
 import com.san.kir.manger.repositories.ChapterRepository
 import com.san.kir.manger.repositories.MangaRepository
 import kotlinx.coroutines.coroutineScope
@@ -16,7 +16,7 @@ class MangaDeleteWorker(appContext: Context, workerParams: WorkerParameters) :
     CoroutineWorker(appContext, workerParams) {
     override suspend fun doWork(): Result = coroutineScope {
 
-        val manga = inputData.getString(MangaColumn.name)
+        val manga = inputData.getString(Manga.Col.name)
         val withFiles = inputData.getBoolean("withFiles", false)
 
         runCatching {
@@ -48,7 +48,7 @@ class MangaDeleteWorker(appContext: Context, workerParams: WorkerParameters) :
         const val tag = "mangaDelete"
 
         fun addTask(ctx: Context, mangaName: String, withFiles: Boolean = false) {
-            val data = workDataOf(MangaColumn.name to mangaName, "withFiles" to withFiles)
+            val data = workDataOf(Manga.Col.name to mangaName, "withFiles" to withFiles)
             val deleteManga = OneTimeWorkRequestBuilder<MangaDeleteWorker>()
                 .setInputData(data)
                 .addTag(tag)

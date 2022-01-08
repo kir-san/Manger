@@ -3,23 +3,20 @@ package com.san.kir.data.db.migrations
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.san.kir.core.support.ChapterFilter
-import com.san.kir.core.support.DownloadState
 import com.san.kir.data.models.columns.CategoryColumn
-import com.san.kir.data.models.columns.ChaptersColumn
 import com.san.kir.data.models.columns.DownloadColumn
 import com.san.kir.data.models.columns.MangaStatisticColumn
 import com.san.kir.data.models.columns.PlannedTaskColumn
 
 
-private fun migrate(from: Int, to: Int, vararg sql: String) =
+internal fun migrate(from: Int, to: Int, vararg sql: String) =
     object : Migration(from, to) {
         override fun migrate(database: SupportSQLiteDatabase) {
             sql.forEach { database.execSQL(it) }
         }
     }
 
-
-val migrations: Array<Migration> = arrayOf(
+internal val migrations: Array<Migration> = arrayOf(
     migrate(
         9, 10,
         "ALTER TABLE manga RENAME TO tmp_manga",
@@ -526,130 +523,42 @@ val migrations: Array<Migration> = arrayOf(
                 "FROM tmp_${DownloadColumn.tableName}",
         "DROP TABLE tmp_${DownloadColumn.tableName}"
     ),
-    migrate(
-        34, 35,
-        "ALTER TABLE manga RENAME TO tmp_manga",
-        "CREATE TABLE `manga` (" +
-                "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                "`unic` TEXT NOT NULL, " +
-                "`host` TEXT NOT NULL, " +
-                "`name` TEXT NOT NULL, " +
-                "`authors` TEXT NOT NULL, " +
-                "`logo` TEXT NOT NULL, " +
-                "`about` TEXT NOT NULL, " +
-                "`categories` TEXT NOT NULL, " +
-                "`genres` TEXT NOT NULL, " +
-                "`path` TEXT NOT NULL, " +
-                "`status` TEXT NOT NULL, " +
-                "`site` TEXT NOT NULL, " +
-                "`color` INTEGER NOT NULL, " +
-                "`populate` INTEGER NOT NULL DEFAULT 0, " +
-                "`order` INTEGER NOT NULL DEFAULT 0, " +
-                "`isAlternativeSort` INTEGER NOT NULL DEFAULT 1, " +
-                "isUpdate INTEGER NOT NULL DEFAULT 1," +
-                "chapterFilter TEXT NOT NULL DEFAULT ${ChapterFilter.ALL_READ_ASC.name}, " +
-                "isAlternativeSite INTEGER NOT NULL DEFAULT 0, " +
-                "shortLink TEXT NOT NULL DEFAULT ``)",
-        "INSERT INTO manga(" +
-                "id, unic, host, name, authors, logo, about, categories, genres, path, status, " +
-                "site, color, populate, `order`, isAlternativeSort, isUpdate, chapterFilter, " +
-                "isAlternativeSite) " +
-                "SELECT " +
-                "id, unic, host, name, authors, logo, about, categories, genres, path, status, " +
-                "site, color, populate, `order`, isAlternativeSort, isUpdate, chapterFilter, " +
-                "isAlternativeSite " +
-                "FROM tmp_manga",
-        "DROP TABLE tmp_manga"
-    ),
-    migrate(
-        35, 36,
-        "ALTER TABLE chapters RENAME TO tmp_chapters",
-        "CREATE TABLE `chapters` (" +
-                "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                "`manga` TEXT NOT NULL, " +
-                "`name` TEXT NOT NULL, " +
-                "`date` TEXT NOT NULL, " +
-                "`path` TEXT NOT NULL, " +
-                "`isRead` INTEGER NOT NULL, " +
-                "`site` TEXT NOT NULL, " +
-                "`progress` INTEGER NOT NULL, " +
-                "`pages` TEXT NOT NULL DEFAULT ``, " +
-                "`isInUpdate` INTEGER NOT NULL DEFAULT 0)",
-        "INSERT INTO chapters(" +
-                "id, manga, name, date, path, isRead, site, progress, pages) " +
-                "SELECT " +
-                "id, manga, name, date, path, isRead, site, progress, pages " +
-                "FROM tmp_chapters",
-        "DROP TABLE tmp_chapters"
-    ),
-    migrate(
-        36, 37,
-        "ALTER TABLE ${ChaptersColumn.tableName} RENAME TO ${ChaptersColumn.tableName}_tmp",
-        "CREATE TABLE `${ChaptersColumn.tableName}` (" +
-                "`${ChaptersColumn.id}` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                "`${ChaptersColumn.manga}` TEXT NOT NULL, " +
-                "`${ChaptersColumn.name}` TEXT NOT NULL, " +
-                "`${ChaptersColumn.date}` TEXT NOT NULL, " +
-                "`${ChaptersColumn.path}` TEXT NOT NULL, " +
-                "`${ChaptersColumn.isRead}` INTEGER NOT NULL, " +
-                "`${ChaptersColumn.site}` TEXT NOT NULL, " +
-                "`${ChaptersColumn.progress}` INTEGER NOT NULL, " +
-                "`${ChaptersColumn.pages}` TEXT NOT NULL DEFAULT ``, " +
-                "`${ChaptersColumn.isInUpdate}` INTEGER NOT NULL DEFAULT 0, " +
-                "`${ChaptersColumn.totalPages}` INTEGER NOT NULL DEFAULT 0, " +
-                "`${ChaptersColumn.downloadPages}` INTEGER NOT NULL DEFAULT 0, " +
-                "`${ChaptersColumn.totalSize}` INTEGER NOT NULL DEFAULT 0, " +
-                "`${ChaptersColumn.downloadSize}` INTEGER NOT NULL DEFAULT 0, " +
-                "`${ChaptersColumn.totalTime}` INTEGER NOT NULL DEFAULT 0, " +
-                "`${ChaptersColumn.status}` TEXT NOT NULL DEFAULT ${DownloadState.UNKNOWN.name}, " +
-                "`${ChaptersColumn.order}` INTEGER NOT NULL DEFAULT 0, " +
-                "`${ChaptersColumn.error}` INTEGER NOT NULL DEFAULT 0)",
-        "INSERT INTO `${ChaptersColumn.tableName}`(" +
-                "${ChaptersColumn.id}, ${ChaptersColumn.manga}, ${ChaptersColumn.name}, " +
-                "${ChaptersColumn.date}, ${ChaptersColumn.path}, ${ChaptersColumn.isRead}, " +
-                "${ChaptersColumn.site}, ${ChaptersColumn.progress}, ${ChaptersColumn.pages}, " +
-                "${ChaptersColumn.isInUpdate}) " +
-                "SELECT " +
-                "${ChaptersColumn.id}, ${ChaptersColumn.manga}, ${ChaptersColumn.name}, " +
-                "${ChaptersColumn.date}, ${ChaptersColumn.path}, ${ChaptersColumn.isRead}, " +
-                "${ChaptersColumn.site}, ${ChaptersColumn.progress}, ${ChaptersColumn.pages}, " +
-                "${ChaptersColumn.isInUpdate} " +
-                "FROM ${ChaptersColumn.tableName}_tmp",
-        "DROP TABLE ${ChaptersColumn.tableName}_tmp"
-    ),
-    migrate(
-        37, 38,
-        "ALTER TABLE ${MangaStatisticColumn.tableName} RENAME TO ${MangaStatisticColumn.tableName}_tmp",
-        "CREATE TABLE `${MangaStatisticColumn.tableName}` (" +
-                "`${MangaStatisticColumn.id}` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                "`${MangaStatisticColumn.manga}` TEXT NOT NULL, " +
-                "`${MangaStatisticColumn.allChapters}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.lastChapters}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.allPages}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.lastPages}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.allTime}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.lastTime}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.maxSpeed}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.downloadSize}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.downloadTime}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.openedTimes}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.lastDownloadSize}` INTEGER NOT NULL DEFAULT 0, " +
-                "`${MangaStatisticColumn.lastDownloadTime}` INTEGER NOT NULL DEFAULT 0)",
-        "INSERT INTO `${MangaStatisticColumn.tableName}`(" +
-                "${MangaStatisticColumn.id}, ${MangaStatisticColumn.manga}, " +
-                "${MangaStatisticColumn.allChapters}, ${MangaStatisticColumn.lastChapters}, " +
-                "${MangaStatisticColumn.allPages}, ${MangaStatisticColumn.lastPages}, " +
-                "${MangaStatisticColumn.allTime}, ${MangaStatisticColumn.lastTime}, " +
-                "${MangaStatisticColumn.maxSpeed}, ${MangaStatisticColumn.downloadSize}, " +
-                "${MangaStatisticColumn.downloadTime}, ${MangaStatisticColumn.openedTimes}) " +
-                "SELECT " +
-                "${MangaStatisticColumn.id}, ${MangaStatisticColumn.manga}, " +
-                "${MangaStatisticColumn.allChapters}, ${MangaStatisticColumn.lastChapters}, " +
-                "${MangaStatisticColumn.allPages}, ${MangaStatisticColumn.lastPages}, " +
-                "${MangaStatisticColumn.allTime}, ${MangaStatisticColumn.lastTime}, " +
-                "${MangaStatisticColumn.maxSpeed}, ${MangaStatisticColumn.downloadSize}, " +
-                "${MangaStatisticColumn.downloadTime}, ${MangaStatisticColumn.openedTimes} " +
-                "FROM ${MangaStatisticColumn.tableName}_tmp",
-        "DROP TABLE ${MangaStatisticColumn.tableName}_tmp"
-    )
+    from34to35,
+    from35to36,
+    from36to37,
+    from37to38,
+    from40to41,
+    from42to43,
 )
+
+internal fun migrate(action: MigrateForm.() -> Unit): Migration {
+    val form = MigrateForm()
+    form.action()
+
+    return object : Migration(form.from, form.to) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            form.queries.forEach { database.execSQL(it) }
+        }
+    }
+}
+
+internal class MigrateForm {
+    var queries: List<String> = emptyList()
+        private set
+
+    var from: Int = -1
+    var to: Int = -1
+
+    fun query(sql: String) {
+        queries = queries.plus(sql)
+    }
+
+    fun renameTableToTmp(tableName: String) {
+        query("ALTER TABLE $tableName RENAME TO ${tableName}_tmp")
+    }
+
+    fun removeTmpTable(tableName: String) {
+        query("DROP TABLE ${tableName}_tmp")
+    }
+
+}

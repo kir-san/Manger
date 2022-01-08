@@ -27,7 +27,6 @@ import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.models.Chapter
 import com.san.kir.data.models.Manga
 import com.san.kir.data.models.SimpleManga
-import com.san.kir.data.models.columns.MangaColumn
 import com.san.kir.data.parsing.SiteCatalogsManager
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.MainActivity
@@ -65,7 +64,7 @@ class MangaUpdaterService : Service() {
         fun add(ctx: Context, manga: Manga) = add(ctx, manga.name)
 
         private fun add(ctx: Context, mangaName: String) {
-            startService<MangaUpdaterService>(ctx, MangaColumn.tableName to mangaName)
+            startService<MangaUpdaterService>(ctx, Manga.tableName to mangaName)
         }
 
         private var taskCounter = listOf<String>()

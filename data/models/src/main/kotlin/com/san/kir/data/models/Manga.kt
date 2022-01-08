@@ -1,171 +1,98 @@
 package com.san.kir.data.models
 
-import android.os.Parcel
 import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.san.kir.core.support.ChapterFilter
-import com.san.kir.data.models.columns.MangaColumn
+import kotlinx.parcelize.Parcelize
 
-@Entity(tableName = MangaColumn.tableName)
-class Manga() : Parcelable {
+@Parcelize
+@Entity(tableName = Manga.tableName)
+data class Manga(
+    @ColumnInfo(name = Col.id)
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = MangaColumn.id)
-    var id: Long = 0
+    var id: Long = 0,
 
-    @Deprecated("дублирующий параметр, только сбивает с толку", replaceWith = ReplaceWith("manga.name"))
-    @ColumnInfo(name = MangaColumn.unic)
-    var unic = ""
-    var host = ""
+    @ColumnInfo(name = Col.host)
+    var host: String = "",
 
-    @ColumnInfo(name = MangaColumn.name)
-    var name = ""
-    var authors = ""
+    @ColumnInfo(name = Col.name)
+    var name: String = "",
 
-    @ColumnInfo(name = MangaColumn.logo)
-    var logo = ""
-    var about = ""
+    @ColumnInfo(name = Col.logo)
+    var logo: String = "",
 
-    @ColumnInfo(name = MangaColumn.categories)
-    var categories = ""
-    var genres = ""
-    var path = ""
-    var status = ""
+    @ColumnInfo(name = Col.about)
+    var about: String = "",
 
-    @Deprecated("больше не использовать")
-    var site = ""
-    @ColumnInfo(name = MangaColumn.color)
-    var color = 0
+    @ColumnInfo(name = Col.category)
+    var category: String = "",
 
-    @ColumnInfo(name = MangaColumn.populate)
-    var populate = 0
+    @ColumnInfo(name = Col.categoryId, defaultValue = "0")
+    var categoryId: Long = 0,
 
-    @ColumnInfo(name = MangaColumn.order)
-    var order = 0
-    var isAlternativeSort = true
-    var isUpdate = true
-    var chapterFilter = ChapterFilter.ALL_READ_ASC
-    var isAlternativeSite = false
-    var shortLink = ""
+    @ColumnInfo(name = Col.path)
+    var path: String = "",
 
-    @Ignore
-    constructor(parcel: Parcel) : this() {
-        id = parcel.readLong()
-        host = parcel.readString() ?: ""
-        name = parcel.readString() ?: ""
-        authors = parcel.readString() ?: ""
-        logo = parcel.readString() ?: ""
-        about = parcel.readString() ?: ""
-        categories = parcel.readString() ?: ""
-        genres = parcel.readString() ?: ""
-        path = parcel.readString() ?: ""
-        status = parcel.readString() ?: ""
-        color = parcel.readInt()
-        populate = parcel.readInt()
-        order = parcel.readInt()
-        isAlternativeSort = parcel.readByte() != 0.toByte()
-        isUpdate = parcel.readByte() != 0.toByte()
-        isAlternativeSite = parcel.readByte() != 0.toByte()
-        shortLink = parcel.readString() ?: ""
+    @ColumnInfo(name = Col.status)
+    var status: String = "",
+
+    @ColumnInfo(name = Col.color)
+    var color: Int = 0,
+
+    @ColumnInfo(name = Col.populate)
+    var populate: Int = 0,
+
+    @ColumnInfo(name = Col.order)
+    var order: Int = 0,
+
+    @ColumnInfo(name = Col.alternativeSort)
+    var isAlternativeSort: Boolean = true,
+
+    @ColumnInfo(name = Col.update)
+    var isUpdate: Boolean = true,
+
+    @ColumnInfo(name = Col.filter)
+    var chapterFilter: ChapterFilter = ChapterFilter.ALL_READ_ASC,
+
+    @ColumnInfo(name = Col.alternativeSite)
+    var isAlternativeSite: Boolean = false,
+
+    @ColumnInfo(name = Col.link)
+    var shortLink: String = "",
+
+    @ColumnInfo(name = Col.authors)
+    var authorsList: List<String> = listOf(),
+
+    @ColumnInfo(name = Col.genres)
+    var genresList: List<String> = listOf(),
+
+    ) : Parcelable {
+    companion object {
+        const val tableName = "manga"
     }
 
-    constructor(
-        id: Long = 0,
-        host: String = "",
-        name: String = "",
-        authors: String = "",
-        logo: String = "",
-        about: String = "",
-        categories: String = "",
-        genres: String = "",
-        path: String = "",
-        status: String = "",
-        color: Int = 0,
-        populate: Int = 0,
-        order: Int = 0,
-        authorsList: List<String> = listOf(),
-        categoriesList: List<String> = listOf(),
-        genresList: List<String> = listOf(),
-        isUpdate: Boolean = true,
-        chapterFilter: ChapterFilter = ChapterFilter.ALL_READ_ASC,
-        isAlternativeSite: Boolean = false,
-        shortLink: String = ""
-    ) : this() {
-        this.id = id
-        this.host = host
-        this.name = name
-        this.authors = authors
-        this.logo = logo
-        this.about = about
-        this.categories = categories
-        this.genres = genres
-        this.path = path
-        this.status = status
-        this.color = color
-        this.populate = populate
-        this.order = order
-        this.isUpdate = isUpdate
-
-        if (authorsList.isNotEmpty())
-            this.authorsList = authorsList
-
-        if (categoriesList.isNotEmpty())
-            this.categoriesList = categoriesList
-
-        if (genresList.isNotEmpty())
-            this.genresList = genresList
-
-        this.chapterFilter = chapterFilter
-        this.isAlternativeSite = isAlternativeSite
-        this.shortLink = shortLink
+    object Col {
+        const val id = "id"
+        const val host = "host"
+        const val name = "name"
+        const val category = "category"
+        const val populate = "populate"
+        const val order = "ordering"
+        const val logo = "logo"
+        const val about = "about"
+        const val color = "color"
+        const val path = "path"
+        const val status = "status"
+        const val alternativeSort = "isAlternativeSort"
+        const val alternativeSite = "isAlternativeSite"
+        const val update = "isUpdate"
+        const val filter = "chapterFilter"
+        const val link = "shortLink"
+        const val authors = "authors"
+        const val genres = "genres"
+        const val categoryId = "category_id"
     }
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeLong(id)
-        parcel.writeString(host)
-        parcel.writeString(name)
-        parcel.writeString(authors)
-        parcel.writeString(logo)
-        parcel.writeString(about)
-        parcel.writeString(categories)
-        parcel.writeString(genres)
-        parcel.writeString(path)
-        parcel.writeString(status)
-        parcel.writeInt(color)
-        parcel.writeInt(populate)
-        parcel.writeInt(order)
-        parcel.writeByte(if (isAlternativeSort) 1 else 0)
-        parcel.writeByte(if (isUpdate) 1 else 0)
-        parcel.writeByte(if (isAlternativeSite) 1 else 0)
-    }
-
-    override fun describeContents() = 0
-
-    companion object CREATOR : Parcelable.Creator<Manga> {
-        override fun createFromParcel(parcel: Parcel) = Manga(parcel)
-
-        override fun newArray(size: Int): Array<Manga?> = arrayOfNulls(size)
-    }
-
 }
-
-var Manga.authorsList: List<String>
-    get() = authors.split(",").map { it.removePrefix(" ").removeSuffix(" ") }
-    set(value) {
-        authors = value.toString().removeSurrounding("[", "]")
-    }
-
-var Manga.categoriesList: List<String>
-    get() = categories.split(",").map { it.removePrefix(" ").removeSuffix(" ") }
-    set(value) {
-        categories = value.toString().removeSurrounding("[", "]")
-    }
-
-var Manga.genresList: List<String>
-    get() = genres.split(",").map { it.removePrefix(" ").removeSuffix(" ") }
-    set(value) {
-        genres = value.toString().removeSurrounding("[", "]")
-    }
 

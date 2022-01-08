@@ -4,11 +4,13 @@ import androidx.room.TypeConverter
 
 class ListStringConverter {
     @TypeConverter
-    fun listToString(list: List<String>): String = list.toString().removeSurrounding("[", "]")
+    fun listToString(list: List<String>): String {
+        return list.toString().removeSurrounding("[", "]")
+    }
 
     @TypeConverter
-    fun stringToList(string: String): List<String> =
-            string.split(",")
-                    .map { it.removePrefix(" ").removeSuffix(" ") }
+    fun stringToList(string: String): List<String> {
+        return string.split(",").map { it.removeSurrounding(" ", " ") }
+    }
 }
 

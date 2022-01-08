@@ -8,8 +8,6 @@ import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.core.utils.coroutines.withMainContext
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.models.SiteCatalogElement
-import com.san.kir.data.models.authorsList
-import com.san.kir.data.models.genresList
 import com.san.kir.data.parsing.SiteCatalogsManager
 import com.san.kir.core.utils.longToast
 import dagger.hilt.android.lifecycle.HiltViewModel

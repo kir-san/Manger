@@ -13,7 +13,6 @@ import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.models.Category
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 
 @HiltWorker
@@ -45,7 +44,7 @@ class UpdateCategoryInMangaWorker @AssistedInject constructor(
                                     else
                                         mangaDao.itemsWhereCategoryNotAll(oldCategory)
                                     )
-                                .onEach { it.categories = category.name }
+                                .onEach { it.category = category.name }
                                 .toTypedArray()
                         )
                     }

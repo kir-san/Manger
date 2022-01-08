@@ -6,14 +6,13 @@ import com.san.kir.core.utils.delFiles
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.shortPath
 import com.san.kir.data.models.Manga
-import com.san.kir.data.models.columns.MangaColumn
 import kotlinx.coroutines.coroutineScope
 
 class AllChapterDelete(appContext: Context, workerParams: WorkerParameters) :
     ChapterDeleteWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result = coroutineScope {
-        val unic = inputData.getString(MangaColumn.name)
+        val unic = inputData.getString(Manga.Col.name)
 
         kotlin.runCatching {
             val manga = mMangaRepository.getItem(unic!!)

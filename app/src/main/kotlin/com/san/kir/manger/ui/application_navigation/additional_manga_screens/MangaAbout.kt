@@ -66,16 +66,16 @@ private fun MangaAboutContent(
     DialogText(text = manga.name)
 
     LabelText(idRes = R.string.about_manga_dialog_category)
-    DialogText(text = manga.categories)
+    DialogText(text = manga.category)
 
     LabelText(idRes = R.string.about_manga_dialog_authors)
-    DialogText(text = manga.authors)
+    DialogText(text = manga.authorsList.toString())
 
     LabelText(idRes = R.string.about_manga_dialog_status_edition)
     DialogText(text = manga.status)
 
     LabelText(idRes = R.string.about_manga_dialog_genres)
-    DialogText(text = manga.genres)
+    DialogText(text = manga.genresList.toString())
 
     LabelText(idRes = R.string.about_manga_dialog_storage)
     DialogText(text = manga.path)

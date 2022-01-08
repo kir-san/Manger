@@ -109,7 +109,7 @@ class LibraryViewModel @Inject constructor(
     fun update(manga: SimpleManga) {
         viewModelScope.defaultLaunch {
             mangaDao.item(manga.name).apply {
-                categories = manga.categories
+                category = manga.categories
                 mangaDao.update(this)
             }
         }

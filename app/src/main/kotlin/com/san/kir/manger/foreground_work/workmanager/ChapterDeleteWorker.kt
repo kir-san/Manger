@@ -7,7 +7,6 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.san.kir.data.models.Manga
-import com.san.kir.data.models.columns.MangaColumn
 import com.san.kir.manger.repositories.ChapterRepository
 import com.san.kir.manger.repositories.MangaRepository
 import com.san.kir.manger.repositories.StorageRepository
@@ -24,7 +23,7 @@ abstract class ChapterDeleteWorker(appContext: Context, workerParams: WorkerPara
     companion object {
         const val tag = "deleteChapter"
         inline fun <reified T : ChapterDeleteWorker> addTask(ctx: Context, manga: Manga) {
-            val data = workDataOf(MangaColumn.name to manga.name)
+            val data = workDataOf(Manga.Col.name to manga.name)
             val task = OneTimeWorkRequestBuilder<T>()
                 .addTag(tag)
                 .setInputData(data)

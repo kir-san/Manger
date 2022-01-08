@@ -5,14 +5,14 @@ import androidx.work.WorkerParameters
 import com.san.kir.core.utils.delChapters
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.shortPath
-import com.san.kir.data.models.columns.MangaColumn
+import com.san.kir.data.models.Manga
 import kotlinx.coroutines.coroutineScope
 
 class ReadChapterDelete(appContext: Context, workerParams: WorkerParameters) :
     ChapterDeleteWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
-        val manga = inputData.getString(MangaColumn.name)
+        val manga = inputData.getString(Manga.Col.name)
 
         return kotlin.runCatching {
             deleteReadChapters(manga!!)

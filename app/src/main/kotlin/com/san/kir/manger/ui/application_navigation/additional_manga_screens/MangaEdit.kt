@@ -91,7 +91,7 @@ private fun MangaEditContent(
     TextField(manga.name, enabled = false) { change(manga.apply { name = it }) }
 
     LabelText(idRes = R.string.about_manga_dialog_authors)
-    TextField(manga.authors) { change(manga.apply { authors = it }) }
+    TextField(manga.authorsList.toString()) {  }
 
     LabelText(idRes = R.string.about_manga_dialog_about)
     TextField(manga.about, maxLines = 10) { change(manga.apply { about = it }) }
@@ -100,7 +100,7 @@ private fun MangaEditContent(
     CategoryDropDownTextField(manga = manga, change = change)
 
     LabelText(idRes = R.string.about_manga_dialog_genres)
-    TextField(manga.genres) { change(manga.apply { genres = it }) }
+    TextField(manga.genresList.toString()) {  }
 
     LabelText(idRes = R.string.about_manga_dialog_storage)
     TextField(manga.path, enabled = false) { change(manga.apply { path = it }) }
@@ -135,9 +135,9 @@ fun CategoryDropDownTextField(
     val categoryNames by viewModel.categoryNames.collectAsState(emptyList())
 
     DropDownTextField(
-        inititalValue = manga.categories,
+        inititalValue = manga.category,
         valuesList = categoryNames,
-        onChangeValue = { change(manga.apply { categories = it }) }
+        onChangeValue = { change(manga.apply { category = it }) }
     )
 }
 

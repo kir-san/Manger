@@ -9,67 +9,95 @@ import com.san.kir.core.support.DownloadState
 import com.san.kir.core.utils.getCountPagesForChapterInMemory
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.isEmptyDirectory
-import com.san.kir.data.models.columns.ChaptersColumn
 import kotlinx.parcelize.Parcelize
 
-@Entity(tableName = ChaptersColumn.tableName)
+@Entity(tableName = Chapter.tableName)
 @Parcelize
 data class Chapter(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = ChaptersColumn.id)
+    @ColumnInfo(name = Col.id)
     var id: Long = 0,
 
-    @ColumnInfo(name = ChaptersColumn.manga)
+    @ColumnInfo(name = Col.manga)
     var manga: String = "",
 
-    @ColumnInfo(name = ChaptersColumn.name)
+    @ColumnInfo(name = Col.mangaId, defaultValue = "0")
+    var mangaId: Long = 0,
+
+    @ColumnInfo(name = Col.name)
     var name: String = "",
 
-    @ColumnInfo(name = ChaptersColumn.date)
+    @ColumnInfo(name = Col.date)
     var date: String = "",
 
-    @ColumnInfo(name = ChaptersColumn.path)
+    @ColumnInfo(name = Col.path)
     var path: String = "",
 
-    @ColumnInfo(name = ChaptersColumn.isRead)
+    @ColumnInfo(name = Col.isRead)
     var isRead: Boolean = false,
 
-    @ColumnInfo(name = ChaptersColumn.site)
+    @ColumnInfo(name = Col.link)
     var link: String = "",
 
-    @ColumnInfo(name = ChaptersColumn.progress)
+    @ColumnInfo(name = Col.progress)
     var progress: Int = 0,
 
-    @ColumnInfo(name = ChaptersColumn.pages)
+    @ColumnInfo(name = Col.pages)
     var pages: List<String> = listOf(),
 
-    @ColumnInfo(name = ChaptersColumn.isInUpdate)
+    @ColumnInfo(name = Col.isInUpdate)
     var isInUpdate: Boolean = false,
 
-    @ColumnInfo(name = ChaptersColumn.totalPages)
+    @ColumnInfo(name = Col.totalPages)
     var totalPages: Int = 0,
 
-    @ColumnInfo(name = ChaptersColumn.downloadPages)
+    @ColumnInfo(name = Col.downloadPages)
     var downloadPages: Int = 0,
 
-    @ColumnInfo(name = ChaptersColumn.totalSize)
+    @ColumnInfo(name = Col.totalSize)
     var totalSize: Long = 0L,
 
-    @ColumnInfo(name = ChaptersColumn.downloadSize)
+    @ColumnInfo(name = Col.downloadSize)
     var downloadSize: Long = 0L,
 
-    @ColumnInfo(name = ChaptersColumn.totalTime)
+    @ColumnInfo(name = Col.totalTime)
     var totalTime: Long = 0L,
 
-    @ColumnInfo(name = ChaptersColumn.status)
+    @ColumnInfo(name = Col.status)
     var status: DownloadState = DownloadState.UNKNOWN,
 
-    @ColumnInfo(name = ChaptersColumn.order)
+    @ColumnInfo(name = Col.order)
     var order: Long = 0,
 
-    @ColumnInfo(name = ChaptersColumn.error)
+    @ColumnInfo(name = Col.error)
     var isError: Boolean = false
-) : Parcelable
+) : Parcelable {
+    companion object {
+        const val tableName = "chapters"
+    }
+
+    object Col {
+        const val id = "id"
+        const val manga = "manga"
+        const val mangaId = "manga_id"
+        const val name = "name"
+        const val date = "date"
+        const val path = "path"
+        const val isRead = "isRead"
+        const val link = "site"
+        const val progress = "progress"
+        const val pages = "pages"
+        const val isInUpdate = "isInUpdate"
+        const val totalPages = "totalPages"
+        const val downloadPages = "downloadPages"
+        const val totalSize = "totalSize"
+        const val downloadSize = "downloadSize"
+        const val totalTime = "totalTime"
+        const val status = "status"
+        const val order = "ordering"
+        const val error = "error"
+    }
+}
 
 val Chapter.countPages: Int get() = getCountPagesForChapterInMemory(path)
 

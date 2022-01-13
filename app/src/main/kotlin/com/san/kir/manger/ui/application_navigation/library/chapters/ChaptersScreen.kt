@@ -30,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.imePadding
 import com.google.accompanist.insets.rememberInsetsPaddingValues
+import com.google.accompanist.insets.systemBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -63,7 +64,6 @@ fun ChaptersScreen(viewModel: ChaptersViewModel, navigateUp: () -> Unit) {
                 .padding(
                     rememberInsetsPaddingValues(
                         insets = LocalWindowInsets.current.systemBars,
-                        applyStart = true, applyEnd = true,
                         applyBottom = false, applyTop = false,
                         additionalTop = contentPadding.calculateTopPadding(),
                     )
@@ -155,13 +155,7 @@ fun ColumnScope.ChaptersContent(
                     Modifier.pagerTabIndicatorOffset(pagerState, tabPositions)
                 )
             },
-            modifier = Modifier
-                .padding(
-                    rememberInsetsPaddingValues(
-                        insets = LocalWindowInsets.current.systemBars,
-                        applyBottom = false, applyTop = false
-                    )
-                )
+            modifier = Modifier.systemBarsPadding(bottom = false, top = false)
         ) {
             pages.forEachIndexed { index, item ->
                 Tab(

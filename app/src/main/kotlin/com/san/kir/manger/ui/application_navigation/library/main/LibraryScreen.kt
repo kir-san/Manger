@@ -106,6 +106,7 @@ private fun DrawerContent(
 
     val insets = LocalWindowInsets.current
     val barsStart = with(LocalDensity.current) { insets.systemBars.left.toDp() }
+    val barsBottom = with(LocalDensity.current) { insets.systemBars.bottom.toDp() }
 
     Column(
         modifier = Modifier
@@ -128,7 +129,7 @@ private fun DrawerContent(
         }
         // Навигация по пунктам приложения
         LazyColumn(
-            contentPadding = PaddingValues(start = barsStart)
+            contentPadding = PaddingValues(start = barsStart, bottom = barsBottom)
         ) {
             itemsIndexed(items = menuItems) { index, item ->
                 MAP_SCREENS_TYPE[item.type]?.let { screen ->

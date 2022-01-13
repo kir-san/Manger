@@ -30,7 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
-import com.san.kir.data.models.CategoryWithMangas
+import com.google.accompanist.insets.systemBarsPadding
+import com.san.kir.data.models.extend.CategoryWithMangas
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.application_navigation.MainNavTarget
 import com.san.kir.core.utils.TestTags

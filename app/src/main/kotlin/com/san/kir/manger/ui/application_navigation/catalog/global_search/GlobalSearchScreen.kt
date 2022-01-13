@@ -28,6 +28,7 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.statusBarsPadding
+import com.google.accompanist.insets.systemBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
 import com.google.accompanist.insets.ui.TopAppBar
 import com.san.kir.manger.R
@@ -56,12 +57,7 @@ fun GlobalSearchScreen(
             if (action || viewState.items.isEmpty()) LinearProgressIndicator(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(
-                        rememberInsetsPaddingValues(
-                            insets = LocalWindowInsets.current.systemBars,
-                            applyTop = false, applyBottom = false,
-                        )
-                    )
+                    .systemBarsPadding(top = false, bottom = false)
             )
             LazyColumn(
                 contentPadding = rememberInsetsPaddingValues(
@@ -133,12 +129,7 @@ private fun TopBar(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(
-                    rememberInsetsPaddingValues(
-                        insets = LocalWindowInsets.current.systemBars,
-                        applyBottom = false, applyTop = false
-                    )
-                )
+                .systemBarsPadding(top = false, bottom = false)
         )
     }
 }

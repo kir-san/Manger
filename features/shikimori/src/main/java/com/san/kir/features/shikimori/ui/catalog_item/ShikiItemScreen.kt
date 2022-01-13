@@ -40,6 +40,7 @@ import com.san.kir.data.models.base.ShikimoriAccount
 import com.san.kir.data.models.extend.SimplefiedMangaWithChapterCounts
 import com.san.kir.features.shikimori.R
 import com.san.kir.features.shikimori.avatar
+import com.san.kir.features.shikimori.ui.util.ItemHeader
 import com.san.kir.features.shikimori.ui.util.MangaItemContent
 import com.san.kir.features.shikimori.ui.util.StatusText
 
@@ -155,12 +156,7 @@ internal fun LazyListScope.body(
         // Уже имеется связанная манга
         is LocalSearch.Sync -> item {
             Column {
-                Text(stringResource(R.string.local_search_sync),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(Dimensions.small),
-                    textAlign = TextAlign.Center
-                )
+                ItemHeader(R.string.local_search_sync)
                 MangaItemContent(
                     avatar = localSearch.manga.logo,
                     mangaName = localSearch.manga.name,
@@ -174,12 +170,7 @@ internal fun LazyListScope.body(
         // Список подходящей манги
         is LocalSearch.Founds -> {
             item {
-                Text(stringResource(R.string.local_search_founds),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(Dimensions.small),
-                    textAlign = TextAlign.Center
-                )
+                ItemHeader(R.string.local_search_founds)
             }
             items(localSearch.items) { item ->
                 MangaItemContent(
@@ -194,7 +185,9 @@ internal fun LazyListScope.body(
         }
         // Поиск ничего не дал
         LocalSearch.NotFounds -> item {
-            Text(stringResource(R.string.local_search_not_founds))
+            ItemHeader(R.string.local_search_not_founds)
+
+
         }
         LocalSearch.NoSearch -> {
         }

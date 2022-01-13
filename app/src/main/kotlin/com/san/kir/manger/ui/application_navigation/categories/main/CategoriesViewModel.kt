@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.san.kir.core.utils.coroutines.defaultLaunch
 import com.san.kir.data.db.dao.CategoryDao
-import com.san.kir.data.models.Category
+import com.san.kir.data.models.base.Category
 import com.san.kir.manger.foreground_work.workmanager.UpdateCategoryInMangaWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*

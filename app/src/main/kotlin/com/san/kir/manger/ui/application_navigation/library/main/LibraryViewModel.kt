@@ -15,8 +15,8 @@ import com.san.kir.core.utils.coroutines.withMainContext
 import com.san.kir.data.db.dao.CategoryDao
 import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.MangaDao
-import com.san.kir.data.models.CategoryWithMangas
-import com.san.kir.data.models.SimpleManga
+import com.san.kir.data.models.extend.CategoryWithMangas
+import com.san.kir.data.models.extend.SimplifiedManga
 import com.san.kir.data.store.MainStore
 import com.san.kir.manger.foreground_work.workmanager.MangaDeleteWorker
 import com.san.kir.manger.utils.SortLibraryUtil
@@ -106,7 +106,7 @@ class LibraryViewModel @Inject constructor(
 
     fun countNotRead(mangaUnic: String) = chapterDao.loadCountNotReadItemsWhereManga(mangaUnic)
 
-    fun update(manga: SimpleManga) {
+    fun update(manga: SimplifiedManga) {
         viewModelScope.defaultLaunch {
             mangaDao.item(manga.name).apply {
                 category = manga.categories
@@ -121,13 +121,13 @@ class LibraryViewModel @Inject constructor(
         }
     }
 
-    fun changeSelectedManga(visible: Boolean, manga: SimpleManga? = null) {
+    fun changeSelectedManga(visible: Boolean, manga: SimplifiedManga? = null) {
         selectedManga =
             manga?.let { SelectedManga(manga, visible) } ?: selectedManga.copy(visible = visible)
     }
 }
 
 data class SelectedManga(
-    val manga: SimpleManga = SimpleManga(),
+    val manga: SimplifiedManga = SimplifiedManga(),
     val visible: Boolean = false,
 )

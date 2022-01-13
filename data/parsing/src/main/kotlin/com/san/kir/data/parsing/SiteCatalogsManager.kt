@@ -2,11 +2,11 @@ package com.san.kir.data.parsing
 
 import com.san.kir.core.internet.ConnectManager
 import com.san.kir.core.utils.coroutines.withDefaultContext
-import com.san.kir.data.models.Chapter
-import com.san.kir.data.models.DownloadItem
-import com.san.kir.data.models.Manga
-import com.san.kir.data.models.SiteCatalogElement
-import com.san.kir.data.models.toDownloadItem
+import com.san.kir.data.models.base.Chapter
+import com.san.kir.data.models.base.DownloadItem
+import com.san.kir.data.models.base.Manga
+import com.san.kir.data.models.base.SiteCatalogElement
+import com.san.kir.data.models.base.toDownloadItem
 import com.san.kir.data.parsing.sites.Acomics
 import com.san.kir.data.parsing.sites.Allhentai
 import com.san.kir.data.parsing.sites.ComX

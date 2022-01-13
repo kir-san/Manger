@@ -4,9 +4,9 @@ import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.core.utils.log
 import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.StatisticDao
-import com.san.kir.data.models.Chapter
-import com.san.kir.data.models.Manga
-import com.san.kir.data.models.MangaStatistic
+import com.san.kir.data.models.base.Chapter
+import com.san.kir.data.models.base.Manga
+import com.san.kir.data.models.base.Statistic
 import com.san.kir.data.models.utils.ChapterComparator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,7 +20,7 @@ internal class ChaptersManager @Inject constructor(
 ) {
     // Вспомогательная переменная для расчета количества прочитанных страниц за сессию
     private var staticticPosition = 0
-    var statisticItem = MangaStatistic()
+    var statisticItem = Statistic()
         private set
 
     fun updateStatisticData(downloadSize: Long, downloadTime: Long) {

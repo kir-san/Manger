@@ -1,4 +1,4 @@
-package com.san.kir.data.models
+package com.san.kir.data.models.base
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo
@@ -9,7 +9,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @Entity(tableName = MangaStatisticColumn.tableName)
-data class MangaStatistic(
+data class Statistic(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = MangaStatisticColumn.id)
     var id: Long = 0L,

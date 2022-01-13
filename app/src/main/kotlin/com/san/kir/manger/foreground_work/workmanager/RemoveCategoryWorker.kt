@@ -8,7 +8,7 @@ import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.san.kir.core.support.CATEGORY_ALL
 import com.san.kir.data.db.RoomDB
-import com.san.kir.data.models.Category
+import com.san.kir.data.models.base.Category
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 

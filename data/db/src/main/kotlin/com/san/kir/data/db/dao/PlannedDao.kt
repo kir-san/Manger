@@ -2,7 +2,7 @@ package com.san.kir.data.db.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.san.kir.data.models.PlannedTask
+import com.san.kir.data.models.base.PlannedTask
 import com.san.kir.data.models.columns.PlannedTaskColumn
 import kotlinx.coroutines.flow.Flow
 

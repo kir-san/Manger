@@ -2,7 +2,7 @@ package com.san.kir.data.db.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.san.kir.data.models.LatestChapter
+import com.san.kir.data.models.base.LatestChapter
 
 @Dao
 interface LatestChapterDao : BaseDao<LatestChapter> {

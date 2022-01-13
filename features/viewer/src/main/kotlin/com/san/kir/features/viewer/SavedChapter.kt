@@ -1,7 +1,7 @@
 package com.san.kir.features.viewer
 
 import androidx.lifecycle.SavedStateHandle
-import com.san.kir.data.models.Chapter
+import com.san.kir.data.models.base.Chapter
 import javax.inject.Inject
 
 class SavedChapter @Inject constructor(private val savedStateHandle: SavedStateHandle) {

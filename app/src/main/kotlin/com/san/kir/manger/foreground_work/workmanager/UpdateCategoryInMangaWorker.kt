@@ -10,7 +10,7 @@ import androidx.work.workDataOf
 import com.san.kir.core.support.CATEGORY_ALL
 import com.san.kir.data.db.dao.CategoryDao
 import com.san.kir.data.db.dao.MangaDao
-import com.san.kir.data.models.Category
+import com.san.kir.data.models.base.Category
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first

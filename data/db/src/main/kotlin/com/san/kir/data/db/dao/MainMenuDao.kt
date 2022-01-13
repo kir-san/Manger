@@ -2,7 +2,7 @@ package com.san.kir.data.db.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.san.kir.data.models.MainMenuItem
+import com.san.kir.data.models.base.MainMenuItem
 import kotlinx.coroutines.flow.Flow
 
 @Dao

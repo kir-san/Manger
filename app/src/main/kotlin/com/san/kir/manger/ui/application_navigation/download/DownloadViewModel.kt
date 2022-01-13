@@ -1,10 +1,6 @@
 package com.san.kir.manger.ui.application_navigation.download
 
 import android.app.Application
-import android.net.ConnectivityManager
-import android.net.Network
-import android.net.NetworkCapabilities
-import android.net.NetworkRequest
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -15,23 +11,19 @@ import com.san.kir.core.utils.coroutines.defaultLaunch
 import com.san.kir.core.utils.coroutines.withMainContext
 import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.MangaDao
-import com.san.kir.data.models.Chapter
+import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.store.DownloadStore
 import com.san.kir.core.download.DownloadService
 import com.san.kir.core.internet.CellularNetwork
 import com.san.kir.core.internet.NetworkState
 import com.san.kir.core.internet.WifiNetwork
-import com.san.kir.core.utils.connectivityManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
@@ -154,7 +146,7 @@ class DownloadViewModel @Inject constructor(
             .toTypedArray())
     }
 
-    fun manga(item: Chapter) = mangaDao.loadItem(item.manga).filterNotNull()
+    fun manga(item: Chapter) = mangaDao.itemWhereName(item.manga).filterNotNull()
 
     @OptIn(ExperimentalTime::class)
     fun remove(item: Chapter) = viewModelScope.defaultLaunch {

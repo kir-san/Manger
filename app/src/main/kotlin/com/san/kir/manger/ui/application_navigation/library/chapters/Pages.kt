@@ -40,7 +40,7 @@ import androidx.lifecycle.asFlow
 import androidx.work.WorkManager
 import com.google.accompanist.insets.navigationBarsPadding
 import com.san.kir.core.compose_utils.rememberImage
-import com.san.kir.data.models.Manga
+import com.san.kir.data.models.base.Manga
 import com.san.kir.features.viewer.MangaViewer
 import com.san.kir.manger.R
 import com.san.kir.manger.foreground_work.workmanager.ChapterDeleteWorker

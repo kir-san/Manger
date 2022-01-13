@@ -2,7 +2,7 @@ package com.san.kir.data.store
 
 import android.app.Application
 import android.content.Context
-import com.san.kir.data.models.Chapters as Model
+import com.san.kir.data.models.datastore.Chapters as Model
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore

@@ -1,7 +1,7 @@
 package com.san.kir.features.viewer
 
 import android.os.Parcelable
-import com.san.kir.data.models.Chapter
+import com.san.kir.data.models.base.Chapter
 import kotlinx.parcelize.Parcelize
 
 sealed class Page {

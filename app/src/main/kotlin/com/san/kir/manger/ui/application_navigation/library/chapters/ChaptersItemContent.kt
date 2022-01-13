@@ -37,9 +37,9 @@ import com.san.kir.core.support.DownloadState
 import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.core.utils.longToast
 import com.san.kir.core.utils.toast
-import com.san.kir.data.models.Chapter
-import com.san.kir.data.models.Manga
-import com.san.kir.data.models.countPages
+import com.san.kir.data.models.base.Chapter
+import com.san.kir.data.models.base.Manga
+import com.san.kir.data.models.base.countPages
 import com.san.kir.features.viewer.MangaViewer
 import com.san.kir.manger.R
 

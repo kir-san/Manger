@@ -7,7 +7,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.san.kir.core.utils.getFullPath
-import com.san.kir.data.models.Manga
+import com.san.kir.data.models.base.Manga
 import com.san.kir.manger.repositories.ChapterRepository
 import com.san.kir.manger.repositories.MangaRepository
 import kotlinx.coroutines.coroutineScope

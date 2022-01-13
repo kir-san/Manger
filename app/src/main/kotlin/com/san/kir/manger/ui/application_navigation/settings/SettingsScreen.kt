@@ -46,7 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.san.kir.data.models.Viewer
+import com.san.kir.data.models.datastore.Viewer
 import com.san.kir.manger.R
 import com.san.kir.core.compose_utils.CheckBoxText
 import com.san.kir.manger.utils.compose.RadioGroup

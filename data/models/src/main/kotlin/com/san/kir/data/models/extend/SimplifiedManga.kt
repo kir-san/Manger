@@ -1,10 +1,11 @@
-package com.san.kir.data.models
+package com.san.kir.data.models.extend
 
 import androidx.room.ColumnInfo
 import androidx.room.DatabaseView
+import com.san.kir.data.models.base.Manga
 
 @DatabaseView(
-    viewName = SimpleManga.viewName,
+    viewName = SimplifiedManga.viewName,
     value = "SELECT " +
             "${Manga.Col.id}, " +
             "${Manga.Col.name}, " +
@@ -13,7 +14,7 @@ import androidx.room.DatabaseView
             "${Manga.Col.populate}, " +
             "${Manga.Col.category} " +
             "FROM `${Manga.tableName}`")
-data class SimpleManga(
+data class SimplifiedManga(
     @ColumnInfo(name = Manga.Col.id) var id: Long = 0,
     @ColumnInfo(name = Manga.Col.name) var name: String = "",
     @ColumnInfo(name = Manga.Col.logo) var logo: String = "",

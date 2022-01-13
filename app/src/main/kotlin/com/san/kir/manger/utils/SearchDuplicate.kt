@@ -1,8 +1,8 @@
 package com.san.kir.manger.utils
 
 import android.content.Context
-import com.san.kir.data.models.Chapter
-import com.san.kir.data.models.Manga
+import com.san.kir.data.models.base.Chapter
+import com.san.kir.data.models.base.Manga
 import com.san.kir.manger.repositories.ChapterRepository
 
 class SearchDuplicate(context: Context) {

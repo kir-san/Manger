@@ -18,8 +18,8 @@ import com.san.kir.data.db.dao.CategoryDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.PlannedDao
 import com.san.kir.data.db.dao.SiteDao
-import com.san.kir.data.models.Manga
-import com.san.kir.data.models.PlannedTask
+import com.san.kir.data.models.base.Manga
+import com.san.kir.data.models.base.PlannedTask
 import com.san.kir.manger.R
 import com.san.kir.manger.foreground_work.workmanager.ScheduleWorker
 import com.san.kir.manger.ui.MainActivity

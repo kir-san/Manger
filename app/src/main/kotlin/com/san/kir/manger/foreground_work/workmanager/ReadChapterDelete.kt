@@ -5,8 +5,7 @@ import androidx.work.WorkerParameters
 import com.san.kir.core.utils.delChapters
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.shortPath
-import com.san.kir.data.models.Manga
-import kotlinx.coroutines.coroutineScope
+import com.san.kir.data.models.base.Manga
 
 class ReadChapterDelete(appContext: Context, workerParams: WorkerParameters) :
     ChapterDeleteWorker(appContext, workerParams) {

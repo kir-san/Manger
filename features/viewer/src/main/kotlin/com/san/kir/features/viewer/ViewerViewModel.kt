@@ -6,7 +6,7 @@ import com.san.kir.core.utils.coroutines.defaultLaunch
 import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.StatisticDao
-import com.san.kir.data.models.Viewer
+import com.san.kir.data.models.datastore.Viewer
 import com.san.kir.data.parsing.SiteCatalogsManager
 import com.san.kir.data.store.ViewerStore
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -30,15 +30,15 @@ import com.san.kir.data.db.type_converters.MainMenuTypeConverter
 import com.san.kir.data.db.type_converters.PlannedPeriodTypeConverter
 import com.san.kir.data.db.type_converters.PlannedTypeTypeConverter
 import com.san.kir.data.db.type_converters.PlannedWeekTypeConverter
-import com.san.kir.data.models.Category
-import com.san.kir.data.models.Chapter
-import com.san.kir.data.models.LatestChapter
-import com.san.kir.data.models.MainMenuItem
-import com.san.kir.data.models.Manga
-import com.san.kir.data.models.MangaStatistic
-import com.san.kir.data.models.PlannedTask
-import com.san.kir.data.models.Site
-import com.san.kir.data.models.Storage
+import com.san.kir.data.models.base.Category
+import com.san.kir.data.models.base.Chapter
+import com.san.kir.data.models.base.LatestChapter
+import com.san.kir.data.models.base.MainMenuItem
+import com.san.kir.data.models.base.Manga
+import com.san.kir.data.models.base.Statistic
+import com.san.kir.data.models.base.PlannedTask
+import com.san.kir.data.models.base.Site
+import com.san.kir.data.models.base.Storage
 import com.san.kir.data.models.columns.CategoryColumn
 import com.san.kir.core.support.MainMenuType
 import java.io.File
@@ -77,7 +77,6 @@ abstract class RoomDB : RoomDatabase() {
     abstract val plannedDao: PlannedDao
     abstract val storageDao: StorageDao
     abstract val categoryDao: CategoryDao
-    abstract val downloadDao: DownloadDao
     abstract val mainMenuDao: MainMenuDao
     abstract val latestChapterDao: LatestChapterDao
     abstract val statisticDao: StatisticDao

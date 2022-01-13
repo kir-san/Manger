@@ -50,7 +50,7 @@ import com.san.kir.manger.ui.application_navigation.MAP_SCREENS_TYPE
 import com.san.kir.manger.ui.application_navigation.MainNavTarget
 import com.san.kir.core.utils.TestTags
 import com.san.kir.core.utils.coroutines.mainLaunch
-import com.san.kir.data.models.MainMenuItem
+import com.san.kir.data.models.base.MainMenuItem
 import com.san.kir.core.utils.formatDouble
 import com.san.kir.core.utils.toast
 import com.san.kir.core.compose_utils.TopBarScreenWithInsets

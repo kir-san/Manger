@@ -2,7 +2,7 @@ package com.san.kir.manger.repositories
 
 import android.content.Context
 import com.san.kir.data.db.RoomDB
-import com.san.kir.data.models.Chapter
+import com.san.kir.data.models.base.Chapter
 
 class ChapterRepository(context: Context) {
     private val db = RoomDB.getDatabase(context)

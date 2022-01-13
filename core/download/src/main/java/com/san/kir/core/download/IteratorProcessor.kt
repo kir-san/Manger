@@ -2,7 +2,7 @@ package com.san.kir.core.download
 
 import com.san.kir.core.support.DownloadState
 import com.san.kir.data.db.dao.ChapterDao
-import com.san.kir.data.models.Chapter
+import com.san.kir.data.models.base.Chapter
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex

@@ -27,7 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.san.kir.data.models.Category
+import com.san.kir.data.models.base.Category
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.application_navigation.categories.CategoriesNavTarget
 import com.san.kir.core.compose_utils.MenuIcon

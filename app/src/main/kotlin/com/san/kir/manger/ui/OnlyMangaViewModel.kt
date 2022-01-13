@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.san.kir.core.utils.coroutines.defaultLaunch
 import com.san.kir.data.db.dao.MangaDao
-import com.san.kir.data.models.Manga
+import com.san.kir.data.models.base.Manga
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -28,7 +28,7 @@ class OnlyMangaViewModel @AssistedInject constructor(
     init {
         // инициация манги
         viewModelScope.defaultLaunch {
-            mangaDao.loadItem(mangaUnic).filterNotNull().collect { manga ->
+            mangaDao.itemWhereName(mangaUnic).filterNotNull().collect { manga ->
                 _manga.value = manga
             }
         }

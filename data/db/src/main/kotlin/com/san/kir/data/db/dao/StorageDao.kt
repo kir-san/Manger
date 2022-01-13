@@ -6,8 +6,8 @@ import androidx.room.Query
 import com.san.kir.core.support.DIR
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.shortPath
-import com.san.kir.data.models.Storage
-import com.san.kir.data.models.getSizeAndIsNew
+import com.san.kir.data.models.base.Storage
+import com.san.kir.data.models.base.getSizeAndIsNew
 import kotlinx.coroutines.flow.Flow
 
 @Dao

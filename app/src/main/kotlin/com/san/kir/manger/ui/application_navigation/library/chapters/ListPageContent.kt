@@ -33,8 +33,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.navigationBarsPadding
 import com.san.kir.core.support.ChapterFilter
-import com.san.kir.data.models.Chapter
-import com.san.kir.data.models.Manga
+import com.san.kir.data.models.base.Chapter
+import com.san.kir.data.models.base.Manga
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalCoroutinesApi::class)

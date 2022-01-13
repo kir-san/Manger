@@ -11,7 +11,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.san.kir.core.utils.coroutines.defaultLaunch
 import com.san.kir.core.utils.log
-import com.san.kir.data.models.SiteCatalogElement
+import com.san.kir.data.models.base.SiteCatalogElement
 import com.san.kir.manger.ui.MainActivity
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory

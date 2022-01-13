@@ -47,8 +47,8 @@ import com.google.accompanist.insets.navigationBarsPadding
 import com.san.kir.core.internet.NetworkState
 import com.san.kir.core.support.DownloadState
 import com.san.kir.core.utils.bytesToMb
-import com.san.kir.data.models.Chapter
-import com.san.kir.data.models.Manga
+import com.san.kir.data.models.base.Chapter
+import com.san.kir.data.models.base.Manga
 import com.san.kir.manger.R
 import com.san.kir.manger.utils.TimeFormat
 import com.san.kir.core.compose_utils.MenuText

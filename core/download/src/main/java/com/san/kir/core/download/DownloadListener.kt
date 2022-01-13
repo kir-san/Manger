@@ -1,6 +1,6 @@
 package com.san.kir.core.download
 
-import com.san.kir.data.models.Chapter
+import com.san.kir.data.models.base.Chapter
 
 interface DownloadListener {
     fun onProgress(item: Chapter)

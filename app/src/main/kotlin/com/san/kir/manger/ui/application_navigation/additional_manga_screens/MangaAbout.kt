@@ -18,7 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.lengthMb
-import com.san.kir.data.models.Manga
+import com.san.kir.data.models.base.Manga
 import com.san.kir.manger.R
 import com.san.kir.core.compose_utils.DialogText
 import com.san.kir.core.compose_utils.ImageWithStatus

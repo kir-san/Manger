@@ -24,9 +24,9 @@ import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.core.utils.log
 import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.MangaDao
-import com.san.kir.data.models.Chapter
-import com.san.kir.data.models.Manga
-import com.san.kir.data.models.SimpleManga
+import com.san.kir.data.models.base.Chapter
+import com.san.kir.data.models.base.Manga
+import com.san.kir.data.models.extend.SimplifiedManga
 import com.san.kir.data.parsing.SiteCatalogsManager
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.MainActivity
@@ -59,7 +59,7 @@ class MangaUpdaterService : Service() {
         fun contains(manga: Manga) =
             taskCounter.any { it == manga.name }
 
-        fun add(ctx: Context, manga: SimpleManga) = add(ctx, manga.name)
+        fun add(ctx: Context, manga: SimplifiedManga) = add(ctx, manga.name)
 
         fun add(ctx: Context, manga: Manga) = add(ctx, manga.name)
 

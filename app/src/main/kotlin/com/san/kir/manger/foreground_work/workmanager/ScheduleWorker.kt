@@ -17,9 +17,9 @@ import com.san.kir.core.utils.log
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.PlannedDao
 import com.san.kir.data.db.dao.SiteDao
-import com.san.kir.data.models.PlannedTask
+import com.san.kir.data.models.base.PlannedTask
 import com.san.kir.data.models.columns.PlannedTaskColumn
-import com.san.kir.data.models.mangaList
+import com.san.kir.data.models.base.mangaList
 import com.san.kir.manger.R
 import com.san.kir.manger.foreground_work.services.AppUpdateService
 import com.san.kir.manger.foreground_work.services.CatalogForOneSiteUpdaterService

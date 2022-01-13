@@ -1,7 +1,9 @@
-package com.san.kir.data.models
+package com.san.kir.data.models.extend
 
 import androidx.room.Embedded
 import androidx.room.Relation
+import com.san.kir.data.models.base.Manga
+import com.san.kir.data.models.base.Category
 import com.san.kir.data.models.columns.CategoryColumn
 
 data class CategoryWithMangas(
@@ -20,5 +22,5 @@ data class CategoryWithMangas(
             Manga.Col.category
         ]
     )
-    var mangas: List<SimpleManga> = emptyList(),
+    var mangas: List<SimplifiedManga> = emptyList(),
 )

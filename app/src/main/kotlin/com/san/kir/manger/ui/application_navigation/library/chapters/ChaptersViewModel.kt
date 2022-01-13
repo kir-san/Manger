@@ -17,14 +17,13 @@ import com.san.kir.core.utils.coroutines.withMainContext
 import com.san.kir.core.utils.delChapters
 import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.MangaDao
-import com.san.kir.data.models.Chapter
-import com.san.kir.data.models.Manga
-import com.san.kir.data.models.action
+import com.san.kir.data.models.base.Chapter
+import com.san.kir.data.models.base.Manga
+import com.san.kir.data.models.base.action
 import com.san.kir.data.models.utils.ChapterComparator
 import com.san.kir.data.parsing.SiteCatalogsManager
 import com.san.kir.data.store.ChaptersStore
 import com.san.kir.manger.R
-import com.san.kir.core.download.DownloadService
 import com.san.kir.manger.ui.MainActivity
 import com.san.kir.core.utils.toast
 import dagger.assisted.Assisted
@@ -77,7 +76,7 @@ class ChaptersViewModel @AssistedInject constructor(
 
         // инициация манги
         combine(
-            mangaDao.loadItem(mangaUnic).filterNotNull(),
+            mangaDao.itemWhereName(mangaUnic).filterNotNull(),
             snapshotFlow { oneTimeFlag },
             chapterStore.data,
         ) { m, flag, store ->

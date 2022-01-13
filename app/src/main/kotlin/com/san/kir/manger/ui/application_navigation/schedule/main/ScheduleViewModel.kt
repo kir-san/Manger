@@ -12,7 +12,7 @@ import com.san.kir.core.support.PlannedWeek
 import com.san.kir.core.utils.coroutines.defaultLaunch
 import com.san.kir.core.utils.coroutines.withMainContext
 import com.san.kir.data.db.dao.PlannedDao
-import com.san.kir.data.models.PlannedTask
+import com.san.kir.data.models.base.PlannedTask
 import com.san.kir.manger.R
 import com.san.kir.manger.foreground_work.workmanager.ScheduleWorker
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -1,4 +1,4 @@
-package com.san.kir.data.models
+package com.san.kir.data.models.datastore
 
 data class Viewer(
     val orientation: Orientation,

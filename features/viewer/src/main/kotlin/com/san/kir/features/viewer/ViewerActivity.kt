@@ -20,7 +20,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.ViewPager
 import com.san.kir.core.utils.log
-import com.san.kir.data.models.Viewer
+import com.san.kir.data.models.datastore.Viewer
 import com.san.kir.features.viewer.databinding.MainBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job

@@ -29,8 +29,8 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.san.kir.core.compose_utils.TopBarScreenList
 import com.san.kir.core.compose_utils.rememberImage
-import com.san.kir.data.models.Manga
-import com.san.kir.data.models.MangaStatistic
+import com.san.kir.data.models.base.Manga
+import com.san.kir.data.models.base.Statistic
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.application_navigation.statistic.StatisticNavTarget
 import com.san.kir.manger.utils.TimeFormat
@@ -64,7 +64,7 @@ fun StatisticsScreen(
 
 @Composable
 private fun ItemView(
-    item: MangaStatistic,
+    item: Statistic,
     viewModel: StatisticViewModel,
     ctx: Context = LocalContext.current,
     onClick: () -> Unit,

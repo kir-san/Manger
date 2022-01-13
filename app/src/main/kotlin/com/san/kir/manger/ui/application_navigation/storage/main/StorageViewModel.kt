@@ -12,8 +12,8 @@ import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.StorageDao
 import com.san.kir.data.db.dao.searchNewItems
-import com.san.kir.data.models.Manga
-import com.san.kir.data.models.Storage
+import com.san.kir.data.models.base.Manga
+import com.san.kir.data.models.base.Storage
 import com.san.kir.core.utils.longToast
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow

@@ -12,7 +12,7 @@ import com.san.kir.data.store.DownloadStore
 import com.san.kir.data.store.MainStore
 import com.san.kir.data.store.ViewerStore
 import com.san.kir.core.utils.coroutines.withMainContext
-import com.san.kir.data.models.Viewer
+import com.san.kir.data.models.datastore.Viewer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.filterNotNull

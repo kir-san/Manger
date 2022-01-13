@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
-import com.san.kir.data.models.Manga
+import com.san.kir.data.models.base.Manga
 import com.san.kir.manger.R
 
 @Composable

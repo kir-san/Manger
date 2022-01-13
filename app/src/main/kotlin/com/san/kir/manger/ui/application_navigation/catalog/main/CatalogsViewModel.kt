@@ -9,9 +9,9 @@ import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.data.db.dao.CategoryDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.SiteDao
-import com.san.kir.data.models.Category
-import com.san.kir.data.models.Manga
-import com.san.kir.data.models.Site
+import com.san.kir.data.models.base.Category
+import com.san.kir.data.models.base.Manga
+import com.san.kir.data.models.base.Site
 import com.san.kir.data.parsing.SiteCatalog
 import com.san.kir.data.parsing.SiteCatalogsManager
 import com.san.kir.manger.foreground_work.services.CatalogForOneSiteUpdaterService

@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.san.kir.core.utils.coroutines.defaultLaunch
 import com.san.kir.data.db.dao.CategoryDao
-import com.san.kir.data.models.Category
+import com.san.kir.data.models.base.Category
 import com.san.kir.manger.ui.MainActivity
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory

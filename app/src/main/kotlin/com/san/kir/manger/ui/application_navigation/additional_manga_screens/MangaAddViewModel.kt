@@ -11,10 +11,10 @@ import com.san.kir.core.utils.getFullPath
 import com.san.kir.data.db.dao.CategoryDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.StatisticDao
-import com.san.kir.data.models.Category
-import com.san.kir.data.models.MangaStatistic
-import com.san.kir.data.models.SiteCatalogElement
-import com.san.kir.data.models.toManga
+import com.san.kir.data.models.base.Category
+import com.san.kir.data.models.base.Statistic
+import com.san.kir.data.models.base.SiteCatalogElement
+import com.san.kir.data.models.base.toManga
 import com.san.kir.data.parsing.SiteCatalogsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -94,7 +94,7 @@ class MangaAddViewModel @Inject constructor(
 
             manga.isAlternativeSite = manager.getSite(element.link) is com.san.kir.data.parsing.SiteCatalogAlternative
             mangaDao.insert(manga)
-            statisticDao.insert(MangaStatistic(manga = manga.name))
+            statisticDao.insert(Statistic(manga = manga.name))
             return@withContext path to manga
         }
     }

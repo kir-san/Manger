@@ -7,7 +7,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.StatisticDao
-import com.san.kir.data.models.MangaStatistic
+import com.san.kir.data.models.base.Statistic
 import com.san.kir.manger.utils.extensions.sumByLong
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.filterNotNull
@@ -19,7 +19,7 @@ class StatisticViewModel @Inject constructor(
     statisticDao: StatisticDao,
     private val mangaDao: MangaDao,
 ) : ViewModel() {
-    fun manga(item: MangaStatistic) = mangaDao.loadItem(item.manga).filterNotNull()
+    fun manga(item: Statistic) = mangaDao.itemWhereName(item.manga).filterNotNull()
     val allTime = statisticDao.loadItems().map { list -> list.sumByLong { it.allTime } }
     val allItems = Pager(
         config = PagingConfig(

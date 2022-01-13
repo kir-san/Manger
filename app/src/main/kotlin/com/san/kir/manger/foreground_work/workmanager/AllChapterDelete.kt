@@ -5,7 +5,7 @@ import androidx.work.WorkerParameters
 import com.san.kir.core.utils.delFiles
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.shortPath
-import com.san.kir.data.models.Manga
+import com.san.kir.data.models.base.Manga
 import kotlinx.coroutines.coroutineScope
 
 class AllChapterDelete(appContext: Context, workerParams: WorkerParameters) :

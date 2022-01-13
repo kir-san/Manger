@@ -44,7 +44,7 @@ import androidx.lifecycle.asFlow
 import androidx.work.WorkManager
 import com.san.kir.core.download.DownloadService
 import com.san.kir.core.support.DownloadState
-import com.san.kir.data.models.Chapter
+import com.san.kir.data.models.base.Chapter
 import com.san.kir.core.utils.longToast
 import com.san.kir.core.utils.quantitySimple
 import com.san.kir.core.utils.toast

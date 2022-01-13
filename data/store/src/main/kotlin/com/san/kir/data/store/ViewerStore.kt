@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 import javax.inject.Inject
-import com.san.kir.data.models.Viewer as Model
+import com.san.kir.data.models.datastore.Viewer as Model
 
 class ViewerStore @Inject constructor(context: Application) {
     private val tag: String = "ViewerRepo"

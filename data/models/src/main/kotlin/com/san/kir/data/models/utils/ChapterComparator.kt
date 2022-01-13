@@ -1,6 +1,6 @@
 package com.san.kir.data.models.utils
 
-import com.san.kir.data.models.Chapter
+import com.san.kir.data.models.base.Chapter
 import java.util.regex.Pattern
 
 class ChapterComparator : Comparator<Chapter> {

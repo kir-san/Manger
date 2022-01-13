@@ -22,7 +22,7 @@ import com.san.kir.core.utils.formatDouble
 import com.san.kir.core.utils.intentFor
 import com.san.kir.core.utils.log
 import com.san.kir.core.utils.startService
-import com.san.kir.data.models.Chapter
+import com.san.kir.data.models.base.Chapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
 import javax.inject.Inject

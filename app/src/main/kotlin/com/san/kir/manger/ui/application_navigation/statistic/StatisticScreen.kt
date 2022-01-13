@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import com.san.kir.core.utils.bytesToMb
-import com.san.kir.data.models.MangaStatistic
+import com.san.kir.data.models.base.Statistic
 import com.san.kir.manger.R
 import com.san.kir.core.compose_utils.DialogText
 import com.san.kir.core.compose_utils.LabelText
@@ -14,7 +14,7 @@ import com.san.kir.core.utils.formatDouble
 import com.san.kir.core.compose_utils.TopBarScreenWithInsets
 
 @Composable
-fun StatisticScreen(nav: NavHostController, item: MangaStatistic) {
+fun StatisticScreen(nav: NavHostController, item: Statistic) {
 
     TopBarScreenWithInsets(
         navigationButtonListener = { nav.navigateUp() },
@@ -71,7 +71,7 @@ private fun timePagesData(
 }
 
 @Composable
-private fun speedReading(item: MangaStatistic, context: Context = LocalContext.current): String {
+private fun speedReading(item: Statistic, context: Context = LocalContext.current): String {
     val speed = (item.lastPages / (item.lastTime.toFloat() / 60)).toInt()
     return if (speed == 0) {
         context.getString(R.string.statistic_item_full_speed_nothing)
@@ -86,7 +86,7 @@ private fun speedReading(item: MangaStatistic, context: Context = LocalContext.c
 
 @Composable
 private fun averageSpeedReading(
-    item: MangaStatistic,
+    item: Statistic,
     context: Context = LocalContext.current
 ): String {
     val speed = (item.allPages / (item.allTime.toFloat() / 60)).toInt()
@@ -102,7 +102,7 @@ private fun averageSpeedReading(
 }
 
 @Composable
-private fun maxSpeedReading(item: MangaStatistic, context: Context = LocalContext.current): String {
+private fun maxSpeedReading(item: Statistic, context: Context = LocalContext.current): String {
     val pageString = context.resources.getQuantityString(
         R.plurals.statistic_item_full_pages,
         item.maxSpeed
@@ -111,7 +111,7 @@ private fun maxSpeedReading(item: MangaStatistic, context: Context = LocalContex
 }
 
 @Composable
-private fun downloadData(item: MangaStatistic, context: Context = LocalContext.current): String {
+private fun downloadData(item: Statistic, context: Context = LocalContext.current): String {
     return context.getString(
         R.string.statistic_item_full_download_data,
         formatDouble(bytesToMb(item.downloadSize)),
@@ -120,7 +120,7 @@ private fun downloadData(item: MangaStatistic, context: Context = LocalContext.c
 }
 
 @Composable
-private fun readTimes(item: MangaStatistic, context: Context = LocalContext.current): String {
+private fun readTimes(item: Statistic, context: Context = LocalContext.current): String {
     val timesString = context.resources.getQuantityString(
         R.plurals.statistic_item_full_times,
         item.openedTimes
@@ -132,7 +132,7 @@ private fun readTimes(item: MangaStatistic, context: Context = LocalContext.curr
 }
 
 @Composable
-private fun averageSession(item: MangaStatistic, context: Context = LocalContext.current): String {
+private fun averageSession(item: Statistic, context: Context = LocalContext.current): String {
     val pageString = context.resources.getQuantityString(
         R.plurals.statistic_item_full_pages,
         item.allPages

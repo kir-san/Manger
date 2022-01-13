@@ -12,7 +12,7 @@ import com.san.kir.core.utils.externalDir
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.data.db.dao.SiteCatalogDao
 import com.san.kir.data.db.type_converters.ListStringConverter
-import com.san.kir.data.models.SiteCatalogElement
+import com.san.kir.data.models.base.SiteCatalogElement
 import com.san.kir.data.parsing.SiteCatalogsManager
 import java.io.File
 import javax.inject.Inject

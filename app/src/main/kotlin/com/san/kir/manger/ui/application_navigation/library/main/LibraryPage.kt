@@ -65,12 +65,7 @@ fun LibraryPage(
 private fun EmptyView(nav: NavHostController) {
     Column(
         Modifier
-            .padding(
-                rememberInsetsPaddingValues(
-                    insets = LocalWindowInsets.current.systemBars,
-                    applyBottom = false, applyTop = false
-                )
-            )
+            .systemBarsPadding(top = false, bottom = false)
             .testTag(TestTags.Library.empty_view),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally

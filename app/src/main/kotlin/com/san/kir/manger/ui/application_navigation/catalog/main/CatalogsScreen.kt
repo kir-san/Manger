@@ -36,7 +36,7 @@ import com.san.kir.core.compose_utils.TopBarScreenList
 import com.san.kir.core.compose_utils.rememberImage
 import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.core.utils.findInGoogle
-import com.san.kir.data.models.Site
+import com.san.kir.data.models.base.Site
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
 import com.san.kir.manger.utils.compose.navigate

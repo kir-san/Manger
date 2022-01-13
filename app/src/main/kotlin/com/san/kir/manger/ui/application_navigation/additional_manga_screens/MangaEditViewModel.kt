@@ -11,7 +11,7 @@ import com.san.kir.core.utils.coroutines.defaultLaunch
 import com.san.kir.core.utils.log
 import com.san.kir.data.db.dao.CategoryDao
 import com.san.kir.data.db.dao.MangaDao
-import com.san.kir.data.models.Manga
+import com.san.kir.data.models.base.Manga
 import com.san.kir.manger.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -45,7 +45,7 @@ class MangaEditViewModel @Inject constructor(
         snapshotFlow { mangaUnic }
             .flatMapLatest {
                 log(it)
-                val manga = mangaDao.loadItem(it)
+                val manga = mangaDao.itemWhereName(it)
                 manga
             }
             .filterNotNull()

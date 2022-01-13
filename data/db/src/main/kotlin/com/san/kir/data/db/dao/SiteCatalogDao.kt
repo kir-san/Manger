@@ -2,7 +2,7 @@ package com.san.kir.data.db.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.san.kir.data.models.SiteCatalogElement
+import com.san.kir.data.models.base.SiteCatalogElement
 
 @Dao
 interface SiteCatalogDao : BaseDao<SiteCatalogElement> {

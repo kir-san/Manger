@@ -1,10 +1,10 @@
 package com.san.kir.data.parsing.sites
 
 import com.san.kir.core.internet.ConnectManager
-import com.san.kir.data.models.Chapter
-import com.san.kir.data.models.DownloadItem
-import com.san.kir.data.models.Manga
-import com.san.kir.data.models.SiteCatalogElement
+import com.san.kir.data.models.base.Chapter
+import com.san.kir.data.models.base.DownloadItem
+import com.san.kir.data.models.base.Manga
+import com.san.kir.data.models.base.SiteCatalogElement
 import com.san.kir.data.parsing.SiteCatalogAlternative
 import com.san.kir.data.parsing.Status
 import com.san.kir.data.parsing.Translate

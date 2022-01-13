@@ -4,7 +4,7 @@ import com.san.kir.core.internet.ConnectManager
 import com.san.kir.core.utils.convertImagesToPng
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.isOkPng
-import com.san.kir.data.models.Chapter
+import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.parsing.SiteCatalogsManager
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock

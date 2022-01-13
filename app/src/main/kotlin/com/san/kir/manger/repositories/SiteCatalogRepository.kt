@@ -2,7 +2,7 @@ package com.san.kir.manger.repositories
 
 import android.content.Context
 import com.san.kir.data.db.CatalogDb.Companion.getDatabase
-import com.san.kir.data.models.SiteCatalogElement
+import com.san.kir.data.models.base.SiteCatalogElement
 import com.san.kir.data.parsing.SiteCatalogsManager
 
 class SiteCatalogRepository(context: Context, catalogName: String, manager: SiteCatalogsManager) {

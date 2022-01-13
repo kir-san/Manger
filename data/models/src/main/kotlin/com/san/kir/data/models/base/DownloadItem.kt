@@ -1,4 +1,4 @@
-package com.san.kir.data.models
+package com.san.kir.data.models.base
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo

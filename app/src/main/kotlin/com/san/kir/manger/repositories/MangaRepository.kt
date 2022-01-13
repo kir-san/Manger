@@ -3,7 +3,7 @@ package com.san.kir.manger.repositories
 import android.content.Context
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.data.db.RoomDB
-import com.san.kir.data.models.Manga
+import com.san.kir.data.models.base.Manga
 import java.io.File
 
 class MangaRepository(context: Context) {

@@ -8,16 +8,14 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.Operation
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import com.san.kir.core.support.MainMenuType
 import com.san.kir.data.db.dao.MainMenuDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.PlannedDao
 import com.san.kir.data.db.dao.SiteDao
 import com.san.kir.data.db.dao.StatisticDao
-import com.san.kir.data.models.MainMenuItem
-import com.san.kir.data.models.MangaStatistic
-import com.san.kir.data.models.Site
-import com.san.kir.data.models.Viewer
+import com.san.kir.data.models.base.Statistic
+import com.san.kir.data.models.base.Site
+import com.san.kir.data.models.datastore.Viewer
 import com.san.kir.data.parsing.SiteCatalogsManager
 import com.san.kir.data.store.ChaptersStore
 import com.san.kir.data.store.DownloadStore
@@ -44,7 +42,6 @@ class FirstInitAppWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         kotlin.runCatching {
-            updateMenuItems()
             insertMangaIntoStatistic()
             restoreSchedule()
             checkSiteCatalogs()
@@ -53,42 +50,18 @@ class FirstInitAppWorker @AssistedInject constructor(
         return Result.success()
     }
 
-    private suspend fun updateMenuItems() {
-        val items = mainMenuDao.getItems()
-        MainMenuType.values()
-            .filter { type ->
-                items.none { it.type == type }
-            }
-            .forEach {
-                if (it != MainMenuType.Default)
-                    mainMenuDao.insert(
-                        MainMenuItem(
-                            applicationContext.getString(it.stringId()),
-                            100,
-                            it
-                        )
-                    )
-            }
-
-        mainMenuDao.update(*mainMenuDao
-            .getItems()
-            .onEach { item ->
-                item.name = applicationContext.getString(item.type.stringId())
-            }
-            .toTypedArray())
-    }
 
     private suspend fun insertMangaIntoStatistic() {
         if (statisticDao.getItems().isEmpty()) {
             mangaDao.getItems().forEach { manga ->
-                statisticDao.insert(MangaStatistic(manga = manga.name))
+                statisticDao.insert(Statistic(manga = manga.name))
             }
         } else {
             val stats = statisticDao.getItems()
             val new = mangaDao.getItems()
                 .filter { manga -> !stats.any { it.manga == manga.name } }
             if (new.isNotEmpty()) {
-                new.forEach { statisticDao.insert(MangaStatistic(manga = it.name)) }
+                new.forEach { statisticDao.insert(Statistic(manga = it.name)) }
             }
         }
     }

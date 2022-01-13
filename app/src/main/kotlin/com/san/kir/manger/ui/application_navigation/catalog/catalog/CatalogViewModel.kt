@@ -18,7 +18,7 @@ import com.san.kir.core.utils.coroutines.mainLaunch
 import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.data.db.CatalogDb
 import com.san.kir.data.db.dao.SiteDao
-import com.san.kir.data.models.SiteCatalogElement
+import com.san.kir.data.models.base.SiteCatalogElement
 import com.san.kir.manger.R
 import com.san.kir.manger.foreground_work.services.CatalogForOneSiteUpdaterService
 import com.san.kir.manger.ui.MainActivity

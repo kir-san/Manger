@@ -38,7 +38,7 @@ import com.san.kir.core.compose_utils.MenuText
 import com.san.kir.core.compose_utils.TopBarScreenList
 import com.san.kir.core.compose_utils.rememberImage
 import com.san.kir.core.utils.formatDouble
-import com.san.kir.data.models.Storage
+import com.san.kir.data.models.base.Storage
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.application_navigation.storage.StorageNavTarget
 import com.san.kir.manger.utils.compose.StorageProgressBar

@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.san.kir.core.utils.log
-import com.san.kir.data.models.Manga
+import com.san.kir.data.models.base.Manga
 import com.san.kir.manger.R
 import com.san.kir.core.compose_utils.CheckBoxText
 import com.san.kir.core.compose_utils.DropDownTextField

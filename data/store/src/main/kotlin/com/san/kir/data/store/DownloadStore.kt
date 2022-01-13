@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 import javax.inject.Inject
-import com.san.kir.data.models.Download as Model
+import com.san.kir.data.models.datastore.Download as Model
 
 class DownloadStore @Inject constructor(context: Application) {
     private val TAG: String = "DownloadRepo"

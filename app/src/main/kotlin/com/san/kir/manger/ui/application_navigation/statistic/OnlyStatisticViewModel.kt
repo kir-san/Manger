@@ -9,7 +9,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.san.kir.core.utils.coroutines.defaultLaunch
 import com.san.kir.data.db.dao.StatisticDao
 import com.san.kir.manger.ui.MainActivity
-import com.san.kir.data.models.MangaStatistic
+import com.san.kir.data.models.base.Statistic
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -23,7 +23,7 @@ class OnlyStatisticViewModel @AssistedInject constructor(
     @Assisted private val mangaName: String,
     private val statisticDao: StatisticDao,
 ) : ViewModel() {
-    private val _statistic = MutableStateFlow(MangaStatistic())
+    private val _statistic = MutableStateFlow(Statistic())
     val statistic = _statistic.asStateFlow()
 
     init {

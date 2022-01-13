@@ -1,7 +1,7 @@
 package com.san.kir.data.db.migrations
 
-import com.san.kir.data.models.Chapter
-import com.san.kir.data.models.Manga
+import com.san.kir.data.models.base.Chapter
+import com.san.kir.data.models.base.Manga
 
 internal val from40to41 = migrate {
     from = 40

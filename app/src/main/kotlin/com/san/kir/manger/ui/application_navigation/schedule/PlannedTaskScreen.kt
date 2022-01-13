@@ -27,7 +27,7 @@ import androidx.navigation.NavHostController
 import com.san.kir.core.support.PlannedPeriod
 import com.san.kir.core.support.PlannedType
 import com.san.kir.core.support.PlannedWeek
-import com.san.kir.data.models.mangaList
+import com.san.kir.data.models.base.mangaList
 import com.san.kir.manger.R
 import com.san.kir.core.compose_utils.LabelText
 import com.san.kir.core.compose_utils.MenuIcon

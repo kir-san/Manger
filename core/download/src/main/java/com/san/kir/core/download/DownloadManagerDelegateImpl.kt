@@ -3,7 +3,7 @@ package com.san.kir.core.download
 import com.san.kir.core.support.DownloadState
 import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.StatisticDao
-import com.san.kir.data.models.Chapter
+import com.san.kir.data.models.base.Chapter
 import javax.inject.Inject
 import javax.inject.Singleton
 

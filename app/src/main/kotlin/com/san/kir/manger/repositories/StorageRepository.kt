@@ -4,7 +4,7 @@ import android.content.Context
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.lengthMb
 import com.san.kir.data.db.RoomDB
-import com.san.kir.data.models.Storage
+import com.san.kir.data.models.base.Storage
 
 class StorageRepository(context: Context) {
     private val db = RoomDB.getDatabase(context)

@@ -3,8 +3,8 @@ package com.san.kir.data.db.dao
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
-import com.san.kir.data.models.Category
-import com.san.kir.data.models.CategoryWithMangas
+import com.san.kir.data.models.base.Category
+import com.san.kir.data.models.extend.CategoryWithMangas
 import kotlinx.coroutines.flow.Flow
 
 @Dao

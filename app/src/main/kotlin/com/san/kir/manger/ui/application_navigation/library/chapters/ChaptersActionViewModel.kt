@@ -12,10 +12,9 @@ import com.san.kir.core.utils.coroutines.defaultLaunch
 import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.MangaDao
-import com.san.kir.data.models.Manga
-import com.san.kir.data.models.action
+import com.san.kir.data.models.base.Manga
+import com.san.kir.data.models.base.action
 import com.san.kir.manger.R
-import com.san.kir.core.download.DownloadService
 import com.san.kir.manger.ui.MainActivity
 import com.san.kir.core.utils.toast
 import dagger.assisted.Assisted
@@ -40,7 +39,7 @@ class ChaptersActionViewModel @AssistedInject constructor(
 
     init {
         viewModelScope.defaultLaunch {
-            mangaDao.loadItem(mangaUnic)
+            mangaDao.itemWhereName(mangaUnic)
                 .filterNotNull()
                 .collect { manga ->
                     _manga.value = manga

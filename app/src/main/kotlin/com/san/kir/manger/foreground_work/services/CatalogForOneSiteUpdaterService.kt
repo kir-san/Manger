@@ -24,7 +24,7 @@ import com.san.kir.core.utils.log
 import com.san.kir.data.db.CatalogDb.Factory
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.SiteDao
-import com.san.kir.data.models.SiteCatalogElement
+import com.san.kir.data.models.base.SiteCatalogElement
 import com.san.kir.manger.R
 import com.san.kir.data.parsing.SiteCatalogsManager
 import com.san.kir.manger.ui.MainActivity

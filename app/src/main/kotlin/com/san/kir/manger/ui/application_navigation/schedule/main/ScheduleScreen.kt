@@ -19,6 +19,7 @@ import com.google.accompanist.pager.rememberPagerState
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.application_navigation.schedule.ScheduleNavTarget
 import com.san.kir.core.compose_utils.MenuIcon
+import com.san.kir.core.compose_utils.ScrollableTabs
 import com.san.kir.manger.utils.compose.navigate
 import com.san.kir.core.compose_utils.TopBarScreenContent
 import kotlinx.coroutines.launch
@@ -39,24 +40,10 @@ fun SchedulesScreen(nav: NavHostController) {
     ) {
         val pagerState = rememberPagerState()
         val pages = schedulePages()
-        val scope = rememberCoroutineScope()
 
-        ScrollableTabRow(
-            selectedTabIndex = pagerState.currentPage,
-            indicator = { tabPositions ->
-                TabRowDefaults.Indicator(
-                    Modifier.pagerTabIndicatorOffset(pagerState, tabPositions)
-                )
-            },
-        ) {
-            pages.forEachIndexed { index, item ->
-                Tab(
-                    selected = pagerState.currentPage == index,
-                    text = { Text(stringResource(item.nameId)) },
-                    onClick = { scope.launch { pagerState.animateScrollToPage(index) } }
-                )
-            }
-        }
+        ScrollableTabs(pagerState,
+            items =pages.map { stringResource(it.nameId) }
+        )
 
         HorizontalPager(
             count = pages.size,

@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.GetApp
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.LocalLibrary
+import androidx.compose.material.icons.filled.ManageAccounts
 import androidx.compose.material.icons.filled.Note
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Settings
@@ -38,6 +39,8 @@ import com.san.kir.manger.ui.application_navigation.storage.StorageNavTarget
 import com.san.kir.manger.ui.application_navigation.storage.storageNavGraph
 import com.san.kir.manger.utils.compose.NavTarget
 import com.san.kir.features.viewer.MangaViewer
+import com.san.kir.manger.ui.application_navigation.accounts.AccountsNavTarget
+import com.san.kir.manger.ui.application_navigation.accounts.accountsNavGraph
 
 private val values = listOf(
     MainNavTarget.Library,
@@ -49,6 +52,7 @@ private val values = listOf(
     MainNavTarget.Settings,
     MainNavTarget.Statistic,
     MainNavTarget.Schedule,
+    MainNavTarget.Accounts
 )
 
 sealed class MainNavTarget(
@@ -124,6 +128,13 @@ sealed class MainNavTarget(
     ) {
         override val route = "schedule"
     }
+
+    object Accounts : MainNavTarget(
+        type = MainMenuType.Accounts,
+        icon = Icons.Default.ManageAccounts
+    ) {
+        override val route = "accounts"
+    }
 }
 
 val MAP_SCREENS_TYPE = values.associateBy { it.type }
@@ -197,6 +208,13 @@ fun NavGraphBuilder.mainNavGraph(nav: NavHostController) {
         route = MainNavTarget.Schedule.route
     ) {
         scheduleNavGraph(nav)
+    }
+
+    navigation(
+        startDestination = AccountsNavTarget.Main.route,
+        route = MainNavTarget.Accounts.route
+    ) {
+        accountsNavGraph(nav)
     }
 }
 

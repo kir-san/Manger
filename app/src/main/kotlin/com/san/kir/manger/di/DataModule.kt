@@ -4,10 +4,10 @@ import android.app.Application
 import com.san.kir.data.db.RoomDB
 import com.san.kir.data.db.dao.CategoryDao
 import com.san.kir.data.db.dao.ChapterDao
-import com.san.kir.data.db.dao.DownloadDao
 import com.san.kir.data.db.dao.MainMenuDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.PlannedDao
+import com.san.kir.data.db.dao.ShikimoriDao
 import com.san.kir.data.db.dao.SiteDao
 import com.san.kir.data.db.dao.StatisticDao
 import com.san.kir.data.db.dao.StorageDao
@@ -24,7 +24,8 @@ object DataModule {
     @Provides
     @Singleton
     fun provideAppDatabase(application: Application): RoomDB {
-        return RoomDB.getDatabase(application)
+        // TODO не забыть изменить
+        return RoomDB.getDefaultDatabase(application)
     }
 
     @Provides
@@ -53,11 +54,6 @@ object DataModule {
     }
 
     @Provides
-    fun provideDownloadDao(database: RoomDB): DownloadDao {
-        return database.downloadDao
-    }
-
-    @Provides
     fun provideChapterDao(database: RoomDB): ChapterDao {
         return database.chapterDao
     }
@@ -70,5 +66,10 @@ object DataModule {
     @Provides
     fun provideStatisticDao(database: RoomDB): StatisticDao {
         return database.statisticDao
+    }
+
+    @Provides
+    fun provideShikimoriDao(database: RoomDB): ShikimoriDao {
+        return database.shikimoriDao
     }
 }

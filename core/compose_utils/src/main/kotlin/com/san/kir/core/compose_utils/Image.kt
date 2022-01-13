@@ -63,8 +63,9 @@ fun ImageWithStatus(url: String?, context: Context = LocalContext.current) {
 }
 
 @Composable
-fun rememberImage(url: String?, context: Context = LocalContext.current): ImageBitmap {
+inline fun rememberImage(url: String?, context: Context = LocalContext.current): ImageBitmap {
     var logo by remember { mutableStateOf(ImageBitmap(60, 60)) }
+
     LaunchedEffect(url) {
         if (url != null && url.isNotEmpty()) {
             val manager = ConnectManager(context.applicationContext as Application)
@@ -92,7 +93,6 @@ fun rememberImage(url: String?, context: Context = LocalContext.current): ImageB
     }
     return logo
 }
-
 
 enum class StatusLogo {
     Init, Complete, Error, None

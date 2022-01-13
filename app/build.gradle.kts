@@ -86,15 +86,18 @@ android {
 dependencies {
     implementation(project(Modules.Features.viewer))
     implementation(project(Modules.Features.latest))
+    implementation(project(Modules.Features.shikimori))
+
+    implementation(project(Modules.Core.utils))
+    implementation(project(Modules.Core.support))
+    implementation(project(Modules.Core.download))
+    implementation(project(Modules.Core.internet))
     implementation(project(Modules.Core.composeUtils))
+
     implementation(project(Modules.Data.db))
     implementation(project(Modules.Data.store))
     implementation(project(Modules.Data.models))
     implementation(project(Modules.Data.parsing))
-    implementation(project(Modules.Core.utils))
-    implementation(project(Modules.Core.support))
-    implementation(project(Modules.Core.internet))
-    implementation(project(Modules.Core.download))
 
     Dependencies.Kotlin.apply {
         implementation(STDLIB)

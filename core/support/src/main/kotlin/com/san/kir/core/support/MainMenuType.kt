@@ -28,9 +28,14 @@ enum class MainMenuType {
     Statistic {
         override fun stringId() = R.string.main_menu_statistic
     },
+    Accounts {
+        override fun stringId() =R.string.main_menu_accounts
+    },
     Default {
         override fun stringId() = R.string.main_menu_storage
+        override val added = false
     };
 
     abstract fun stringId(): Int
+    open val added: Boolean = true
 }

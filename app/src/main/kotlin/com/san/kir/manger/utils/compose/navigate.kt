@@ -1,5 +1,6 @@
 package com.san.kir.manger.utils.compose
 
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 
 fun NavHostController.navigate(target: NavTarget) {
@@ -22,11 +23,15 @@ fun NavHostController.getLongElement(target: NavItem): Long? {
         ?.getLong(target.value)
 }
 
+fun NavBackStackEntry.getLongElement(target: NavTarget): Long? {
+    return arguments?.getLong(target.item.value)
+}
+
 interface NavTarget {
     val base: String
         get() = ""
     val item: NavItem
-        get() = EmptyItem
+        get() = DefaultItem
     val isOptional: Boolean
         get() = false
 
@@ -48,8 +53,9 @@ interface NavTarget {
     }
 }
 
-sealed class NavItem(val value: String)
+sealed class NavItem(val value: String = "item")
 
+object DefaultItem : NavItem(value = "item")
 object EmptyItem : NavItem(value = "")
 object MangaItem : NavItem(value = "manga")
 object SiteItem : NavItem(value = "site")

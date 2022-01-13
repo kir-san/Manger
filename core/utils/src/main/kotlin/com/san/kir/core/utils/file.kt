@@ -107,22 +107,14 @@ fun convertImagesToPng(image: File): File {
         "${image.nameWithoutExtension}.png"
     )
 
-    log = if (png.createNewFile()) {
-        "png created ${png.path}"
-    } else {
-        "png not created ${png.path}"
-    }
+    image.delete()
+
+    png.createNewFile()
 
     if (b != null) {
         val stream = FileOutputStream(png.absoluteFile)
         b.compress(Bitmap.CompressFormat.PNG, DEFAULT_COMPRESS_QUALITY, stream)
         stream.close()
-    }
-
-    log = if (image.delete()) {
-        "oldFile deleted ${image.path}"
-    } else {
-        "oldFile not deleted ${image.path}"
     }
 
     return png

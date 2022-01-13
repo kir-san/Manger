@@ -32,7 +32,6 @@ sealed class LibraryNavTarget : NavTarget {
 
     object Chapters : LibraryNavTarget() {
         override val base: String = "chapters"
-        override val item: NavItem = MangaItem
         override val isOptional: Boolean = true
     }
 
@@ -42,31 +41,26 @@ sealed class LibraryNavTarget : NavTarget {
 
     object AddLocal : LibraryNavTarget() {
         override val base: String = "add_local"
-        override val item: NavItem = SiteCatalogItem
         override val isOptional: Boolean = true
     }
 
     object About : LibraryNavTarget() {
         override val base: String = "about"
-        override val item: NavItem = MangaItem
         override val isOptional: Boolean = true
     }
 
     object Edit : LibraryNavTarget() {
         override val base: String = "edit"
-        override val item: NavItem = MangaItem
         override val isOptional: Boolean = true
     }
 
     object Storage : LibraryNavTarget() {
         override val base: String = "manga_storage"
-        override val item: NavItem = MangaItem
         override val isOptional: Boolean = true
     }
 
     object Statistic : LibraryNavTarget() {
         override val base: String = "manga_statistic"
-        override val item: NavItem = MangaItem
         override val isOptional: Boolean = true
     }
 }

@@ -29,4 +29,5 @@
     <string name="main_menu_settings">Настройки</string>
     <string name="main_menu_schedule">Расписание</string>
     <string name="main_menu_statistic">Статистика</string>
+    <string name="main_menu_accounts">Аккаунты</string>
 </resources>

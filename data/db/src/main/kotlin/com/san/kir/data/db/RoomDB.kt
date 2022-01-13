@@ -41,7 +41,13 @@ import com.san.kir.data.models.base.Site
 import com.san.kir.data.models.base.Storage
 import com.san.kir.data.models.columns.CategoryColumn
 import com.san.kir.core.support.MainMenuType
-import java.io.File
+import com.san.kir.core.utils.getFullPath
+import com.san.kir.data.db.dao.ShikimoriDao
+import com.san.kir.data.db.type_converters.ShikimoriMangaConverter
+import com.san.kir.data.db.type_converters.ShikimoriRateConverter
+import com.san.kir.data.models.base.ShikiManga
+import com.san.kir.data.models.extend.SimplefiedMangaWithChapterCounts
+import com.san.kir.data.models.extend.SimplifiedManga
 
 @Database(
     entities =
@@ -54,10 +60,20 @@ import java.io.File
         (MainMenuItem::class),
         (LatestChapter::class),
         (PlannedTask::class),
-        (MangaStatistic::class)
+        (Statistic::class),
+        (ShikiManga::class),
     ],
     version = RoomDB.VERSION,
-    exportSchema = false
+    autoMigrations = [
+        AutoMigration(from = 38, to = 39),
+        AutoMigration(from = 39, to = 40),
+        AutoMigration(from = 41, to = 42),
+        AutoMigration(from = 43, to = 44),
+    ],
+    views = [
+        SimplifiedManga::class,
+        SimplefiedMangaWithChapterCounts::class,
+    ]
 )
 @TypeConverters(
     FileConverter::class,
@@ -68,6 +84,8 @@ import java.io.File
     PlannedPeriodTypeConverter::class,
     ChapterFilterTypeConverter::class,
     DownloadStateTypeConverter::class,
+    ShikimoriRateConverter::class,
+    ShikimoriMangaConverter::class,
 )
 abstract class RoomDB : RoomDatabase() {
     abstract val siteDao: SiteDao
@@ -80,10 +98,11 @@ abstract class RoomDB : RoomDatabase() {
     abstract val mainMenuDao: MainMenuDao
     abstract val latestChapterDao: LatestChapterDao
     abstract val statisticDao: StatisticDao
+    abstract val shikimoriDao: ShikimoriDao
 
     companion object {
         const val NAME = "${DIR.PROFILE}/profile.db"
-        const val VERSION = 38
+        const val VERSION = 44
 
         private lateinit var sDb: RoomDB
 
@@ -97,6 +116,24 @@ abstract class RoomDB : RoomDatabase() {
                                 RoomDB::class.java,
                                 getFullPath(NAME).path
                             )
+                            .addMigrations(*migrations)
+                            .addCallback(Callback(context))
+                            .build()
+                }
+            return sDb
+        }
+
+        fun getDefaultDatabase(context: Context): RoomDB {
+            if (!::sDb.isInitialized)
+                synchronized(RoomDB::class.java) {
+                    if (!::sDb.isInitialized)
+                        sDb = Room
+                            .databaseBuilder(
+                                context.applicationContext,
+                                RoomDB::class.java,
+                                "default.db"
+                            )
+                            .createFromAsset("database/default.db")
                             .addMigrations(*migrations)
                             .addCallback(Callback(context))
                             .build()

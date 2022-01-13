@@ -24,6 +24,11 @@ dependencies {
     }
 
     Dependencies.Google.Accompanist.apply {
+        implementation(FLOWLAYOUT)
+        implementation(PAGER)
+        implementation(PAGER_INDICATORS)
+        implementation(PERMISSIONS)
+        implementation(SYSTEMUICONTROLLER)
         implementation(INSETS)
         implementation(INSETS_UI)
         implementation(NAVIGATION_ANIMATION)

@@ -238,6 +238,7 @@ private fun loadData(
             val count by viewModel.loadPlannedCount().collectAsState(initial = 0)
             count.toString()
         }
+        MainMenuType.Accounts,
         MainMenuType.Settings,
         MainMenuType.Statistic -> ""
     }

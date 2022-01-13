@@ -1,0 +1,54 @@
+<resources>
+    <string name="browser_host">shikimori-auth</string>
+    <string name="browser_scheme">manger</string>
+    <string name="site_name">Shikimori</string>
+    <string name="login_text">Вы вошли, как %s</string>
+    <string name="no_login_text">Не используется</string>
+    <string name="no_auth_text">Вы не авторизованы</string>
+    <string name="login">Войти</string>
+    <string name="logout">Выйти</string>
+    <string name="reading">Прочитано %1$d из %2$d</string>
+    <string name="current_status">Текущий статус: %s</string>
+    <string name="online_catalog">Манга из вашего профиля</string>
+    <string name="local_catalog">Манга из библиотеки</string>
+    <string name="desc_hide">свернуть</string>
+    <string name="desc_show">развернуть</string>
+
+    <string name="local_search_searching">Поиск совпадений в Библиотеке</string>
+    <string name="local_search_not_founds">В Библиотеке нет ничего похожего</string>
+    <string name="local_search_founds">Возможные варианты:</string>
+    <string name="local_search_sync">Связанная манга из Библиотеки:</string>
+
+    <string name="local_search_dialog_diff_title">Внимание!!</string>
+    <string name="local_search_dialog_diffall_text">
+        Требуется ваше вмешательство!\n
+        Количество глав не одинаковое:\n
+        В библиотеке - %1$d \n
+        На сайте - %2$d \n
+        Вы действительно хотите связать их?
+    </string>
+    <string name="local_search_dialog_diffall_yes">Конечно</string>
+    <string name="local_search_dialog_diffall_no">Нет</string>
+
+    <string name="local_search_dialog_diffread_text">
+        Прогресс чтения разный:\n
+        В библиотеке - %1$d \n
+        На сайте - %2$d \n
+        Какой из них верный?
+    </string>
+    <string name="local_search_dialog_diffread_local">В библиотеке</string>
+    <string name="local_search_dialog_diffread_online">На сайте</string>
+
+    <string name="local_search_dialog_cancelsync_text">
+        Вы собираетесь отменить привязку?
+    </string>
+
+    <string-array name="statuses">
+        <item>Запланировано</item>
+        <item>Читаю</item>
+        <item>Перечитываю</item>
+        <item>Прочитано</item>
+        <item>Отложено</item>
+        <item>Брошено</item>
+    </string-array>
+</resources>

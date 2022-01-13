@@ -41,13 +41,14 @@ import com.san.kir.manger.utils.compose.navigate
 @Composable
 fun GlobalSearchScreen(
     nav: NavHostController,
-    viewModel: GlobalSearchViewModel = hiltViewModel()
+    viewModel: GlobalSearchViewModel = hiltViewModel(),
+    initSearchText: String
 ) {
     val action by viewModel.action.collectAsState()
     val viewState by viewModel.state.collectAsState()
 
     Scaffold(
-        topBar = { TopBar(nav, viewState, viewModel) },
+        topBar = { TopBar(nav, viewState, viewModel, initSearchText) },
     ) {
         Column(
             modifier = Modifier
@@ -65,7 +66,7 @@ fun GlobalSearchScreen(
                     applyTop = false,
                 )
             ) {
-                items(items = viewState.items, key = { item -> item.id }) { item ->
+                items(items = viewState.items) { item ->
                     ListItem(item, item.name, item.catalogName,
                              navAddAction = {
                                  nav.navigate(CatalogsNavTarget.AddLocal, item.link)
@@ -85,8 +86,9 @@ private fun TopBar(
     nav: NavHostController,
     viewState: GlobalSearchViewState,
     viewModel: GlobalSearchViewModel,
+    initSearchText: String,
 ) {
-    var searchText by rememberSaveable { mutableStateOf("") }
+    var searchText by rememberSaveable { mutableStateOf(initSearchText) }
 
     viewModel.setSearchText(searchText)
 

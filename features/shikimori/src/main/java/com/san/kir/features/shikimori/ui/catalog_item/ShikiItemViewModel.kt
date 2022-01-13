@@ -94,7 +94,7 @@ class ShikiItemViewModel @Inject internal constructor(
 
             if (filtered.isEmpty()) {
                 // Возвращение пустого результата
-                LocalSearch.NotFounds
+                LocalSearch.NotFounds(name)
             } else {
                 // Возвращение отсортированного списка
                 LocalSearch.Founds(

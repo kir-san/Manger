@@ -9,7 +9,7 @@ sealed interface LocalSearch {
     object NoSearch : LocalSearch
     object Searching : LocalSearch
     class Founds(val items: List<SimplefiedMangaWithChapterCounts>) : LocalSearch
-    object NotFounds : LocalSearch
+    class NotFounds(val name: String) : LocalSearch
 }
 
 sealed interface Dialog {
@@ -24,7 +24,8 @@ sealed interface Dialog {
     class DifferentReadCount(
         val manga: SimplefiedMangaWithChapterCounts,
         val local: Long,
-        val online: Long) : Dialog
+        val online: Long,
+    ) : Dialog
 
     object CancelSync : Dialog
 }

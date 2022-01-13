@@ -10,8 +10,11 @@ import com.google.accompanist.navigation.animation.composable
 import com.san.kir.features.shikimori.ui.catalog.ShikimoriScreen
 import com.san.kir.features.shikimori.ui.catalog_item.ShikiItemScreen
 import com.san.kir.features.shikimori.ui.catalog_item.ShikiItemViewModel
+import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
+import com.san.kir.manger.ui.application_navigation.catalog.global_search.GlobalSearchScreen
 import com.san.kir.manger.utils.compose.NavTarget
 import com.san.kir.manger.utils.compose.getLongElement
+import com.san.kir.manger.utils.compose.getStringElement
 import com.san.kir.manger.utils.compose.navigate
 
 sealed class AccountsNavTarget : NavTarget {
@@ -30,6 +33,11 @@ sealed class AccountsNavTarget : NavTarget {
 
     object LocalItem : AccountsNavTarget() {
         override val base = "accounts_local_item"
+        override val isOptional = true
+    }
+
+    object GlobalSearch : AccountsNavTarget() {
+        override val base = "global_search"
         override val isOptional = true
     }
 }
@@ -64,11 +72,14 @@ fun NavGraphBuilder.accountsNavGraph(nav: NavHostController) {
                 type = NavType.LongType
             }),
         content = { back ->
-            val id = back.arguments?.getLong(AccountsNavTarget.ShikimoriItem.item.value)
+            val id = back.getLongElement(AccountsNavTarget.ShikimoriItem)
             val viewModel = hiltViewModel<ShikiItemViewModel>()
             id?.let { viewModel.update(it) }
 
-            ShikiItemScreen(viewModel,nav::navigateUp)
+            ShikiItemScreen(
+                viewModel,
+                nav::navigateUp
+            ) { query -> nav.navigate(AccountsNavTarget.GlobalSearch, query) }
         }
     )
 
@@ -76,12 +87,21 @@ fun NavGraphBuilder.accountsNavGraph(nav: NavHostController) {
         route = AccountsNavTarget.LocalItem.route,
         arguments = listOf(
             navArgument(AccountsNavTarget.LocalItem.item.value) {
-                type = NavType.FloatType
+                type = NavType.LongType
             }),
         content = { back ->
             val id = back.getLongElement(AccountsNavTarget.LocalItem)
 
 
+        }
+    )
+
+    composable(
+        route = AccountsNavTarget.GlobalSearch.route,
+        content = { back ->
+            val initSearchText = back.getStringElement(CatalogsNavTarget.GlobalSearch) ?: ""
+
+            GlobalSearchScreen(nav, initSearchText = initSearchText)
         }
     )
 }

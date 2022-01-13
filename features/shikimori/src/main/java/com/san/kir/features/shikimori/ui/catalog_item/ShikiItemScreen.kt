@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
@@ -48,6 +49,7 @@ import com.san.kir.features.shikimori.ui.util.StatusText
 fun ShikiItemScreen(
     viewModel: ShikiItemViewModel,
     navigateUp: () -> Unit,
+    navigateToGlobalSearch: (String) -> Unit,
 ) {
     val item by viewModel.item.collectAsState()
     val localSearch by viewModel.localSearch.collectAsState()
@@ -62,7 +64,9 @@ fun ShikiItemScreen(
                 CircularProgressIndicator()
             } else {
                 MenuIcon(Icons.Default.Update, onClick = viewModel::updateDataFromNetwork)
-                MenuIcon(Icons.Default.Cancel, onClick = viewModel::cancelDialog)
+                if (localSearch is LocalSearch.Sync) {
+                    MenuIcon(Icons.Default.Cancel, onClick = viewModel::cancelDialog)
+                }
             }
         }
     ) {
@@ -83,7 +87,8 @@ fun ShikiItemScreen(
         body(
             localSearch,
             onListItemClick = viewModel::checkAllChapters,
-            onSyncedItemClick = {}
+            onSyncedItemClick = {},
+            onGlobalSearch = navigateToGlobalSearch
         )
     }
 
@@ -143,6 +148,7 @@ internal fun LazyListScope.body(
     localSearch: LocalSearch,
     onListItemClick: (SimplefiedMangaWithChapterCounts) -> Unit,
     onSyncedItemClick: (Manga) -> Unit,
+    onGlobalSearch: (String) -> Unit,
 ) {
     when (localSearch) {
         // Поиск в базе данных, подходящей по названию манги
@@ -184,10 +190,10 @@ internal fun LazyListScope.body(
             }
         }
         // Поиск ничего не дал
-        LocalSearch.NotFounds -> item {
+        is LocalSearch.NotFounds -> item {
             ItemHeader(R.string.local_search_not_founds)
 
-
+            OpenGlobalSearch { onGlobalSearch(localSearch.name) }
         }
         LocalSearch.NoSearch -> {
         }
@@ -276,3 +282,16 @@ internal fun Dialogs(
     }
 }
 
+@Composable
+internal fun OpenGlobalSearch(onClick: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(stringResource(R.string.local_search_not_founds_ex))
+
+        Button(onClick = onClick) {
+            Text(stringResource(R.string.local_search_not_founds_go))
+        }
+    }
+}

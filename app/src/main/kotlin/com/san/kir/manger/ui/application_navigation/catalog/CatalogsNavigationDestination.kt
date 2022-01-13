@@ -32,6 +32,7 @@ sealed class CatalogsNavTarget : NavTarget {
 
     object GlobalSearch : CatalogsNavTarget() {
         override val route: String = "global_search"
+        override val isOptional: Boolean = true
     }
 
     object Info : CatalogsNavTarget() {
@@ -69,8 +70,10 @@ fun NavGraphBuilder.catalogsNavGraph(nav: NavHostController) {
 
     composable(
         route = CatalogsNavTarget.GlobalSearch.route,
-        content = {
-            GlobalSearchScreen(nav)
+        content = { back ->
+            val initSearchText = back.getStringElement(CatalogsNavTarget.GlobalSearch) ?: ""
+
+            GlobalSearchScreen(nav, initSearchText = initSearchText)
         }
     )
 

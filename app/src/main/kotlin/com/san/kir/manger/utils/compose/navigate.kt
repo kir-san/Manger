@@ -23,6 +23,10 @@ fun NavHostController.getLongElement(target: NavItem): Long? {
         ?.getLong(target.value)
 }
 
+fun NavBackStackEntry.getStringElement(target: NavTarget): String? {
+    return arguments?.getString(target.item.value)
+}
+
 fun NavBackStackEntry.getLongElement(target: NavTarget): Long? {
     return arguments?.getLong(target.item.value)
 }

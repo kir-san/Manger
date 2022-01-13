@@ -55,7 +55,9 @@ internal fun ShikimoriContent() {
                 viewModelItem.update(target.id)
                 ShikiItemScreen(
                     viewModel = viewModelItem,
-                    navigateUp = { nav = ShikiNavTarget.Catalog })
+                    navigateUp = { nav = ShikiNavTarget.Catalog },
+                    navigateToGlobalSearch = {}
+                )
             }
         }
     }

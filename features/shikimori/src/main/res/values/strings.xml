@@ -16,6 +16,8 @@
 
     <string name="local_search_searching">Поиск совпадений в Библиотеке</string>
     <string name="local_search_not_founds">В Библиотеке нет ничего похожего</string>
+    <string name="local_search_not_founds_ex">Попробуйте поискать в каталогах</string>
+    <string name="local_search_not_founds_go">Перейти</string>
     <string name="local_search_founds">Возможные варианты:</string>
     <string name="local_search_sync">Связанная манга из Библиотеки:</string>
 

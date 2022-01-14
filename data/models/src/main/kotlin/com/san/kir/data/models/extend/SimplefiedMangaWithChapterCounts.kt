@@ -13,6 +13,7 @@ import com.san.kir.data.models.base.Manga
             "${Manga.tableName}.${Manga.Col.id}, " +
             "${Manga.tableName}.${Manga.Col.name}, " +
             "${Manga.tableName}.${Manga.Col.logo}, " +
+            "${Manga.tableName}.${Manga.Col.about}, " +
             "${Manga.tableName}.${Manga.Col.alternativeSort}, " +
 
             "(SELECT COUNT(*) FROM ${Chapter.tableName} " +
@@ -30,6 +31,7 @@ data class SimplefiedMangaWithChapterCounts(
     @ColumnInfo(name = Manga.Col.id) override val id: Long = 0,
     @ColumnInfo(name = Manga.Col.name) override val name: String = "",
     @ColumnInfo(name = Manga.Col.logo) override val logo: String = "",
+    @ColumnInfo(name = Manga.Col.about) override val description: String = "",
     @ColumnInfo(name = Manga.Col.alternativeSort) val sort: Boolean = false,
     @ColumnInfo(name = Col.readChapters) override val read: Long = 0,
     @ColumnInfo(name = Col.allChapters) override val all: Long = 0,

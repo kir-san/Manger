@@ -38,7 +38,7 @@ object ShikimoriAccount {
         val chapters: Long = 0,
         val genres: List<Genre> = emptyList(),
         val description: String = "",
-        val english: List<String> = emptyList(),
+        val english: List<String>? = emptyList(),
     )
 
     data class Image(
@@ -56,6 +56,7 @@ object ShikimoriAccount {
         val logo: String
         val read: Long
         val all: Long
+        val description: String
         val status: Status?
             get() = null
     }

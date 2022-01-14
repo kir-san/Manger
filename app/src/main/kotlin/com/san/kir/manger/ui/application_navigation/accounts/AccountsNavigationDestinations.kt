@@ -10,6 +10,8 @@ import com.google.accompanist.navigation.animation.composable
 import com.san.kir.features.shikimori.ui.catalog.ShikimoriScreen
 import com.san.kir.features.shikimori.ui.catalog_item.ShikiItemScreen
 import com.san.kir.features.shikimori.ui.catalog_item.ShikiItemViewModel
+import com.san.kir.features.shikimori.ui.local_item.LocalItemScreen
+import com.san.kir.features.shikimori.ui.local_item.LocalItemViewModel
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
 import com.san.kir.manger.ui.application_navigation.catalog.global_search.GlobalSearchScreen
 import com.san.kir.manger.utils.compose.NavTarget
@@ -92,7 +94,13 @@ fun NavGraphBuilder.accountsNavGraph(nav: NavHostController) {
         content = { back ->
             val id = back.getLongElement(AccountsNavTarget.LocalItem)
 
+            val viewModel = hiltViewModel<LocalItemViewModel>()
+            id?.let { viewModel.update(it) }
 
+            LocalItemScreen(
+                viewModel,
+                nav::navigateUp
+            ) { query ->  }
         }
     )
 

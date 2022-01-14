@@ -38,6 +38,9 @@ data class ShikiManga(
     override val all: Long
         get() = manga.chapters
 
+    override val description: String
+        get() = manga.description
+
     override val status: ShikimoriAccount.Status
         get() = rate.status
 

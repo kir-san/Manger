@@ -1,4 +1,4 @@
-package com.san.kir.features.shikimori.ui.catalog_item
+package com.san.kir.features.shikimori.ui.local_item
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -34,35 +34,34 @@ import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.MenuIcon
 import com.san.kir.core.compose_utils.TopBarScreenList
 import com.san.kir.core.compose_utils.rememberImage
-import com.san.kir.data.models.base.Manga
+import com.san.kir.data.models.base.ShikiManga
 import com.san.kir.data.models.base.ShikimoriAccount
-import com.san.kir.data.models.extend.SimplefiedMangaWithChapterCounts
 import com.san.kir.features.shikimori.R
-import com.san.kir.features.shikimori.avatar
+import com.san.kir.features.shikimori.ui.catalog_item.AskState
 import com.san.kir.features.shikimori.ui.util.ItemHeader
 import com.san.kir.features.shikimori.ui.util.MangaItemContent
 import com.san.kir.features.shikimori.ui.util.StatusText
 
 @Composable
-fun ShikiItemScreen(
-    viewModel: ShikiItemViewModel,
+fun LocalItemScreen(
+    viewModel: LocalItemViewModel,
     navigateUp: () -> Unit,
     navigateToGlobalSearch: (String) -> Unit,
 ) {
     val item by viewModel.item.collectAsState()
     val localSearch by viewModel.localSearch.collectAsState()
-    val dialogState by viewModel.askState.collectAsState()
+    val askState by viewModel.askState.collectAsState()
     val hasAction by viewModel.hasForegroundWork.collectAsState()
 
     TopBarScreenList(
         navigateUp = navigateUp,
-        title = item.manga.russian,
+        title = item.name,
         actions = {
             if (hasAction) {
                 CircularProgressIndicator()
             } else {
                 MenuIcon(Icons.Default.Update, onClick = viewModel::updateDataFromNetwork)
-                if (localSearch is SyncState.Ok) {
+                if (localSearch is LocalSearch.Sync) {
                     MenuIcon(Icons.Default.Cancel, onClick = viewModel::askCancelSync)
                 }
             }
@@ -70,11 +69,11 @@ fun ShikiItemScreen(
     ) {
         item {
             Head(
-                item.manga.avatar,
-                item.rate.chapters,
-                item.manga.chapters,
-                item.rate.status,
-                item.manga.description,
+                item.logo,
+                item.read,
+                item.all,
+                item.status,
+                item.description,
             )
         }
 
@@ -91,7 +90,7 @@ fun ShikiItemScreen(
     }
 
     Dialogs(
-        dialogState,
+        askState,
         closeDialog = viewModel::askNone,
         checkReadChapters = viewModel::checkReadChapters,
         launchSync = viewModel::launchSync,
@@ -104,7 +103,7 @@ internal fun Head(
     avatar: String,
     readingChapters: Long,
     allChapters: Long,
-    currentStatus: ShikimoriAccount.Status,
+    currentStatus: ShikimoriAccount.Status?,
     description: String,
 ) {
     var showFullDesc by remember { mutableStateOf(false) }
@@ -143,14 +142,14 @@ internal fun Head(
 }
 
 internal fun LazyListScope.body(
-    localSearch: SyncState,
-    onListItemClick: (ShikimoriAccount.AbstractMangaItem) -> Unit,
-    onSyncedItemClick: (Manga) -> Unit,
+    localSearch: LocalSearch,
+    onListItemClick: (ShikiManga) -> Unit,
+    onSyncedItemClick: (ShikiManga) -> Unit,
     onGlobalSearch: (String) -> Unit,
 ) {
     when (localSearch) {
         // Поиск в базе данных, подходящей по названию манги
-        SyncState.Find -> item {
+        LocalSearch.Searching -> item {
             Row(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center) {
                 CircularProgressIndicator()
@@ -158,7 +157,7 @@ internal fun LazyListScope.body(
             }
         }
         // Уже имеется связанная манга
-        is SyncState.Ok -> item {
+        is LocalSearch.Sync -> item {
             Column {
                 ItemHeader(R.string.local_search_sync)
                 MangaItemContent(
@@ -172,7 +171,7 @@ internal fun LazyListScope.body(
             }
         }
         // Список подходящей манги
-        is SyncState.Founds -> {
+        is LocalSearch.Founds -> {
             item {
                 ItemHeader(R.string.local_search_founds)
             }
@@ -188,25 +187,25 @@ internal fun LazyListScope.body(
             }
         }
         // Поиск ничего не дал
-        is SyncState.NotFounds -> item {
+        is LocalSearch.NotFounds -> item {
             ItemHeader(R.string.local_search_not_founds)
 
-            OpenGlobalSearch { onGlobalSearch(localSearch.name) }
+            OpenSearch { onGlobalSearch(localSearch.name) }
         }
-        SyncState.NoFind -> {
+        LocalSearch.NoSearch -> {
         }
     }
 }
 
 @Composable
 internal fun Dialogs(
-    dialogState: AskState,
+    askState: AskState,
     closeDialog: () -> Unit,
     checkReadChapters: (ShikimoriAccount.AbstractMangaItem) -> Unit,
     launchSync: (ShikimoriAccount.AbstractMangaItem, Boolean) -> Unit,
     cancelSync: () -> Unit,
 ) {
-    when (dialogState) {
+    when (askState) {
         AskState.None -> {
         }
         is AskState.DifferentChapterCount -> {
@@ -217,11 +216,11 @@ internal fun Dialogs(
                 },
                 text = {
                     Text(stringResource(R.string.local_search_dialog_diffall_text,
-                        dialogState.local,
-                        dialogState.online))
+                        askState.local,
+                        askState.online))
                 },
                 confirmButton = {
-                    TextButton(onClick = { checkReadChapters(dialogState.manga) }) {
+                    TextButton(onClick = { checkReadChapters(askState.manga) }) {
                         Text(stringResource(R.string.local_search_dialog_diffall_yes))
                     }
                 },
@@ -240,16 +239,16 @@ internal fun Dialogs(
                 },
                 text = {
                     Text(stringResource(R.string.local_search_dialog_diffread_text,
-                        dialogState.local,
-                        dialogState.online))
+                        askState.local,
+                        askState.online))
                 },
                 confirmButton = {
-                    TextButton(onClick = { launchSync(dialogState.manga, false) }) {
+                    TextButton(onClick = { launchSync(askState.manga, false) }) {
                         Text(stringResource(R.string.local_search_dialog_diffread_local))
                     }
                 },
                 dismissButton = {
-                    TextButton(onClick = { launchSync(dialogState.manga, true) }) {
+                    TextButton(onClick = { launchSync(askState.manga, true) }) {
                         Text(stringResource(R.string.local_search_dialog_diffread_online))
                     }
                 }
@@ -281,7 +280,7 @@ internal fun Dialogs(
 }
 
 @Composable
-internal fun OpenGlobalSearch(onClick: () -> Unit) {
+internal fun OpenSearch(onClick: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally

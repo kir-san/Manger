@@ -1,14 +1,12 @@
-package com.san.kir.features.shikimori.ui.catalog_item
+package com.san.kir.features.shikimori.ui.local_item
 
-import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.ShikiManga
-import com.san.kir.data.models.extend.SimplefiedMangaWithChapterCounts
 
 sealed interface LocalSearch {
-    class Sync(val manga: Manga) : LocalSearch
+    class Sync(val manga: ShikiManga) : LocalSearch
     object NoSearch : LocalSearch
     object Searching : LocalSearch
-    class Founds(val items: List<SimplefiedMangaWithChapterCounts>) : LocalSearch
+    class Founds(val items: List<ShikiManga>) : LocalSearch
     class NotFounds(val name: String) : LocalSearch
 }
 
@@ -16,13 +14,13 @@ sealed interface Dialog {
     object None : Dialog
 
     class DifferentChapterCount(
-        val manga: SimplefiedMangaWithChapterCounts,
+        val manga: ShikiManga,
         val local: Long,
         val online: Long,
     ) : Dialog
 
     class DifferentReadCount(
-        val manga: SimplefiedMangaWithChapterCounts,
+        val manga: ShikiManga,
         val local: Long,
         val online: Long,
     ) : Dialog

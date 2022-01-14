@@ -13,10 +13,11 @@ import com.san.kir.data.models.base.ShikimoriAccount
 import com.san.kir.features.shikimori.R
 
 @Composable
-fun StatusText(currentStatus: ShikimoriAccount.Status) {
-    val statuses = LocalContext.current.resources.getStringArray(R.array.statuses)
-
-    Text(stringResource(R.string.current_status, statuses[currentStatus.ordinal]))
+fun StatusText(currentStatus: ShikimoriAccount.Status?) {
+    if (currentStatus != null) {
+        val statuses = LocalContext.current.resources.getStringArray(R.array.statuses)
+        Text(stringResource(R.string.current_status, statuses[currentStatus.ordinal]))
+    }
 }
 
 @Composable

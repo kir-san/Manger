@@ -134,7 +134,7 @@ internal fun CatalogContent(
                 mangaName = item.name,
                 readingChapters = item.read,
                 allChapters = item.all,
-                currentStatus = ShikimoriAccount.Status.Watching,
+                currentStatus = item.status,
                 isSynced = isSynced,
                 onClick = { navigateToItem(item.id) }
             )

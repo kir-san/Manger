@@ -3,12 +3,11 @@ package com.san.kir.features.shikimori.ui.catalog
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.san.kir.core.utils.coroutines.defaultLaunch
-import com.san.kir.core.utils.log
 import com.san.kir.data.db.dao.ShikimoriDao
 import com.san.kir.data.models.base.ShikiManga
 import com.san.kir.data.models.base.ShikimoriAccount
-import com.san.kir.data.models.extend.SimplefiedMangaWithChapterCounts
 import com.san.kir.data.models.datastore.ShikimoriAuth
+import com.san.kir.data.models.extend.SimplefiedMangaWithChapterCounts
 import com.san.kir.data.store.TokenStore
 import com.san.kir.features.shikimori.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -41,7 +40,7 @@ class ShikimoriViewModel @Inject internal constructor(
             if (auth.isLogin) {
                 shikimoriDao
                     .items()
-//                    .onStart { updateDataFromNetwork() }
+                    .onStart { updateDataFromNetwork() }
             } else {
                 flowOf(emptyList())
             }
@@ -69,7 +68,7 @@ class ShikimoriViewModel @Inject internal constructor(
 
             shikimoriDao.update(dbItem)
 
-            delay(200L) // искуственное замедление, чтобы не превышать ограничения сервера
+            delay(300L) // искуственное замедление, чтобы не превышать ограничения сервера
         }
     }
 

@@ -19,7 +19,6 @@ sealed class StorageNavTarget : NavTarget {
 
     object Storage : StorageNavTarget() {
         override val base: String = "manga_storage"
-        override val item: NavItem = MangaItem
         override val isOptional: Boolean = true
     }
 }
@@ -35,8 +34,8 @@ fun NavGraphBuilder.storageNavGraph(nav: NavHostController) {
 
     composable(
         route = StorageNavTarget.Storage.route,
-        content = {
-            val item = nav.getStringElement(MangaItem) ?: ""
+        content = { back ->
+            val item = back.getStringElement(StorageNavTarget.Storage) ?: ""
             val viewModel = mangaStorageViewModel(item)
 
             MangaStorageScreen(nav, viewModel)

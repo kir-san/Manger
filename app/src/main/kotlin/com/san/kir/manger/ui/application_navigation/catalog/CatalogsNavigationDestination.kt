@@ -26,7 +26,6 @@ sealed class CatalogsNavTarget : NavTarget {
 
     object Catalog : CatalogsNavTarget() {
         override val base: String = "catalog"
-        override val item: NavItem = SiteItem
         override val isOptional: Boolean = true
     }
 
@@ -37,13 +36,11 @@ sealed class CatalogsNavTarget : NavTarget {
 
     object Info : CatalogsNavTarget() {
         override val base: String = "info"
-        override val item: NavItem = SiteCatalogItem
         override val isOptional: Boolean = true
     }
 
     object AddLocal : CatalogsNavTarget() {
         override val base: String = "add_local"
-        override val item: NavItem = SiteCatalogItem
         override val isOptional: Boolean = true
     }
 }
@@ -60,8 +57,8 @@ fun NavGraphBuilder.catalogsNavGraph(nav: NavHostController) {
 
     composable(
         route = CatalogsNavTarget.Catalog.route,
-        content = {
-            val item = nav.getStringElement(SiteItem) ?: ""
+        content = { back ->
+            val item = back.getStringElement(CatalogsNavTarget.Catalog) ?: ""
             val viewModel = catalogViewModel(item)
 
             CatalogScreen(nav, viewModel)
@@ -79,8 +76,8 @@ fun NavGraphBuilder.catalogsNavGraph(nav: NavHostController) {
 
     composable(
         route = CatalogsNavTarget.Info.route,
-        content = {
-            val item = nav.getStringElement(SiteCatalogItem) ?: ""
+        content = { back ->
+            val item = back.getStringElement(CatalogsNavTarget.Info) ?: ""
 
             MangaInfoScreen(nav, siteCatalogItemViewModel(item))
         }
@@ -88,8 +85,8 @@ fun NavGraphBuilder.catalogsNavGraph(nav: NavHostController) {
 
     composable(
         route = CatalogsNavTarget.AddLocal.route,
-        content = {
-            val item = nav.getStringElement(SiteCatalogItem) ?: ""
+        content = { back ->
+            val item = back.getStringElement(CatalogsNavTarget.AddLocal) ?: ""
 
             MangaAddScreen(item, nav::navigateUp)
         }

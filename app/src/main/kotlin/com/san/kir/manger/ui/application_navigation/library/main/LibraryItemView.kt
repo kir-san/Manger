@@ -37,6 +37,7 @@ import androidx.navigation.NavHostController
 import com.san.kir.core.compose_utils.rememberImage
 import com.san.kir.core.support.CATEGORY_ALL
 import com.san.kir.core.utils.TestTags
+import com.san.kir.core.utils.log
 import com.san.kir.data.models.extend.SimplifiedManga
 import com.san.kir.manger.ui.application_navigation.library.LibraryNavTarget
 import com.san.kir.manger.utils.compose.navigate
@@ -64,7 +65,8 @@ private fun ItemView(
             .fillMaxWidth()
             .combinedClickable(
                 onLongClick = { viewModel.changeSelectedManga(true, manga) },
-                onClick = { nav.navigate(LibraryNavTarget.Chapters, manga.name) })
+                onClick = {
+                    nav.navigate(LibraryNavTarget.Chapters, manga.name) })
     ) {
         content()
     }

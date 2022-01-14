@@ -52,8 +52,7 @@ class LocalItemViewModel @Inject internal constructor(
     val localSearch: StateFlow<LocalSearch> = item
         .filter { it.name.isNotEmpty() }
         .flatMapLatest { item ->
-            if (shikimoriDao.item(item.id) != null) {
-                log("")
+            if (shikimoriDao.itemWhereLibId(item.id) != null) {
                 local(item.id)
             } else {
                 searchInLocal(item.name, "")
@@ -98,8 +97,7 @@ class LocalItemViewModel @Inject internal constructor(
 
     // Получение связанной с элементом манги
     private fun local(id: Long): Flow<LocalSearch> {
-        log("local")
-        return shikimoriDao.loadItem(id)
+        return shikimoriDao.loadItemWhereLibId(id)
             .filterNotNull()
             .map { m -> LocalSearch.Sync(m) }
     }

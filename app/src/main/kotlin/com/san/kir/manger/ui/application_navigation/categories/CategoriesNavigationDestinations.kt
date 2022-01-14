@@ -37,11 +37,8 @@ fun NavGraphBuilder.categoriesNavGraph(nav: NavHostController) {
 
     composable(
         route = CategoriesNavTarget.Category.route(),
-        arguments = listOf(navArgument(CategoriesNavTarget.Category.item.value) {
-            defaultValue = ""
-        }),
-        content = {
-            val item = nav.getStringElement(CategoryItem) ?: ""
+        content = { back ->
+            val item = back.getStringElement(CategoriesNavTarget.Category) ?: ""
             val viewModel: CategoryEditViewModel = hiltViewModel()
 
             viewModel.setCategory(item)

@@ -19,7 +19,6 @@ sealed class StatisticNavTarget : NavTarget {
 
     object Statistic : StatisticNavTarget() {
         override val base: String = "statistic_"
-        override val item: NavItem = StatisticItem
         override val isOptional: Boolean = true
     }
 }
@@ -35,8 +34,8 @@ fun NavGraphBuilder.statisticNavGraph(nav: NavHostController) {
 
     composable(
         route = StatisticNavTarget.Statistic.route,
-        content = {
-            val item = nav.getStringElement(StatisticItem) ?: ""
+        content = { back ->
+            val item = back.getStringElement(StatisticNavTarget.Statistic) ?: ""
             val viewModel = onlyStatisticViewModel(mangaName = item)
 
             val statistic by viewModel.statistic.collectAsState()

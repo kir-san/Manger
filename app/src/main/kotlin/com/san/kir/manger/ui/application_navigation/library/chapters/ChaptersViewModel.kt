@@ -15,6 +15,7 @@ import com.san.kir.core.support.ChapterFilter
 import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.core.utils.coroutines.withMainContext
 import com.san.kir.core.utils.delChapters
+import com.san.kir.core.utils.log
 import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.models.base.Chapter
@@ -73,7 +74,7 @@ class ChaptersViewModel @AssistedInject constructor(
     var filter by mutableStateOf(ChapterFilter.ALL_READ_ASC)
 
     init {
-
+        log("manga is $mangaUnic")
         // инициация манги
         combine(
             mangaDao.itemWhereName(mangaUnic).filterNotNull(),

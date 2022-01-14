@@ -19,7 +19,6 @@ sealed class ScheduleNavTarget : NavTarget {
 
     object Schedule : ScheduleNavTarget() {
         override val base: String = "schedule_"
-        override val item: NavItem = ScheduleItem
         override val isOptional: Boolean = true
     }
 }
@@ -38,8 +37,8 @@ fun NavGraphBuilder.scheduleNavGraph(nav: NavHostController) {
         arguments = listOf(navArgument(ScheduleNavTarget.Schedule.item.value) {
             type = NavType.LongType
         }),
-        content = {
-            val item = nav.getLongElement(ScheduleItem) ?: -1L
+        content = { back ->
+            val item = back.getLongElement(ScheduleNavTarget.Schedule) ?: -1L
 
             val viewModel = plannedTaskViewModel(item)
 

@@ -76,8 +76,9 @@ fun NavGraphBuilder.libraryNavGraph(nav: NavHostController) {
 
     composable(
         route = LibraryNavTarget.Chapters.route,
-        content = {
-            val item = nav.getStringElement(MangaItem) ?: ""
+        content = { back ->
+            val item = back.getStringElement(LibraryNavTarget.Chapters) ?: ""
+
             val viewModel = chaptersViewModel(item)
 
             ChaptersScreen(viewModel, nav::navigateUp)
@@ -98,8 +99,8 @@ fun NavGraphBuilder.libraryNavGraph(nav: NavHostController) {
 
     composable(
         route = LibraryNavTarget.AddLocal.route,
-        content = {
-            val item = nav.getStringElement(SiteCatalogItem) ?: ""
+        content = { back ->
+            val item = back.getStringElement(LibraryNavTarget.AddLocal) ?: ""
 
             MangaAddScreen(item, nav::navigateUp)
         }
@@ -107,8 +108,8 @@ fun NavGraphBuilder.libraryNavGraph(nav: NavHostController) {
 
     composable(
         route = LibraryNavTarget.About.route,
-        content = {
-            val item = nav.getStringElement(MangaItem) ?: ""
+        content = { back ->
+            val item = back.getStringElement(LibraryNavTarget.About) ?: ""
             val viewModel = onlyMangaViewModel(mangaUnic = item)
 
             val manga by viewModel.manga.collectAsState()
@@ -125,8 +126,8 @@ fun NavGraphBuilder.libraryNavGraph(nav: NavHostController) {
 
     composable(
         route = LibraryNavTarget.Edit.route,
-        content = {
-            val item = nav.getStringElement(MangaItem) ?: ""
+        content = { back ->
+            val item = back.getStringElement(LibraryNavTarget.Edit) ?: ""
 
             MangaEditScreen(nav, item)
         }
@@ -134,8 +135,8 @@ fun NavGraphBuilder.libraryNavGraph(nav: NavHostController) {
 
     composable(
         route = LibraryNavTarget.Storage.route,
-        content = {
-            val item = nav.getStringElement(MangaItem) ?: ""
+        content = { back ->
+            val item = back.getStringElement(LibraryNavTarget.Storage) ?: ""
             val viewModel = mangaStorageViewModel(item)
 
             MangaStorageScreen(nav, viewModel)
@@ -144,8 +145,8 @@ fun NavGraphBuilder.libraryNavGraph(nav: NavHostController) {
 
     composable(
         route = LibraryNavTarget.Statistic.route,
-        content = {
-            val item = nav.getStringElement(MangaItem) ?: ""
+        content = { back ->
+            val item = back.getStringElement(LibraryNavTarget.Statistic) ?: ""
             val viewModel = onlyStatisticViewModel(item)
 
             val statistic by viewModel.statistic.collectAsState()

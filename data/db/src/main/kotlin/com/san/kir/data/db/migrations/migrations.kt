@@ -527,8 +527,7 @@ internal val migrations: Array<Migration> = arrayOf(
     from35to36,
     from36to37,
     from37to38,
-    from40to41,
-    from42to43,
+    from38to39,
 )
 
 internal fun migrate(action: MigrateForm.() -> Unit): Migration {

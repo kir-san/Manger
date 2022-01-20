@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 39,
-    "identityHash": "73cb28e60fab3e8ba4f7c93c45085a1e",
+    "identityHash": "e8e06b134fa10bb7aa57adb53026464e",
     "entities": [
       {
         "tableName": "sites",
@@ -62,18 +62,12 @@
       },
       {
         "tableName": "manga",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `unic` TEXT NOT NULL, `host` TEXT NOT NULL, `name` TEXT NOT NULL, `authors` TEXT NOT NULL, `logo` TEXT NOT NULL, `about` TEXT NOT NULL, `categories` TEXT NOT NULL, `genres` TEXT NOT NULL, `path` TEXT NOT NULL, `status` TEXT NOT NULL, `site` TEXT NOT NULL, `color` INTEGER NOT NULL, `populate` INTEGER NOT NULL, `order` INTEGER NOT NULL, `isAlternativeSort` INTEGER NOT NULL, `isUpdate` INTEGER NOT NULL, `chapterFilter` TEXT NOT NULL, `isAlternativeSite` INTEGER NOT NULL, `shortLink` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `host` TEXT NOT NULL, `name` TEXT NOT NULL, `logo` TEXT NOT NULL, `about` TEXT NOT NULL, `category` TEXT NOT NULL, `category_id` INTEGER NOT NULL DEFAULT 0, `path` TEXT NOT NULL, `status` TEXT NOT NULL, `color` INTEGER NOT NULL, `populate` INTEGER NOT NULL, `ordering` INTEGER NOT NULL, `isAlternativeSort` INTEGER NOT NULL, `isUpdate` INTEGER NOT NULL, `chapterFilter` TEXT NOT NULL, `isAlternativeSite` INTEGER NOT NULL, `shortLink` TEXT NOT NULL, `authors` TEXT NOT NULL, `genres` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
             "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "unic",
-            "columnName": "unic",
-            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -85,12 +79,6 @@
           {
             "fieldPath": "name",
             "columnName": "name",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "authors",
-            "columnName": "authors",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -107,16 +95,17 @@
             "notNull": true
           },
           {
-            "fieldPath": "categories",
-            "columnName": "categories",
+            "fieldPath": "category",
+            "columnName": "category",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "genres",
-            "columnName": "genres",
-            "affinity": "TEXT",
-            "notNull": true
+            "fieldPath": "categoryId",
+            "columnName": "category_id",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           },
           {
             "fieldPath": "path",
@@ -127,12 +116,6 @@
           {
             "fieldPath": "status",
             "columnName": "status",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "site",
-            "columnName": "site",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -150,7 +133,7 @@
           },
           {
             "fieldPath": "order",
-            "columnName": "order",
+            "columnName": "ordering",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -183,6 +166,18 @@
             "columnName": "shortLink",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "authorsList",
+            "columnName": "authors",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "genresList",
+            "columnName": "genres",
+            "affinity": "TEXT",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -196,7 +191,7 @@
       },
       {
         "tableName": "chapters",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `manga` TEXT NOT NULL, `name` TEXT NOT NULL, `date` TEXT NOT NULL, `path` TEXT NOT NULL, `isRead` INTEGER NOT NULL, `site` TEXT NOT NULL, `progress` INTEGER NOT NULL, `pages` TEXT NOT NULL, `isInUpdate` INTEGER NOT NULL, `totalPages` INTEGER NOT NULL, `downloadPages` INTEGER NOT NULL, `totalSize` INTEGER NOT NULL, `downloadSize` INTEGER NOT NULL, `totalTime` INTEGER NOT NULL, `status` TEXT NOT NULL, `order` INTEGER NOT NULL, `error` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `manga` TEXT NOT NULL, `manga_id` INTEGER NOT NULL DEFAULT 0, `name` TEXT NOT NULL, `date` TEXT NOT NULL, `path` TEXT NOT NULL, `isRead` INTEGER NOT NULL, `site` TEXT NOT NULL, `progress` INTEGER NOT NULL, `pages` TEXT NOT NULL, `isInUpdate` INTEGER NOT NULL, `totalPages` INTEGER NOT NULL, `downloadPages` INTEGER NOT NULL, `totalSize` INTEGER NOT NULL, `downloadSize` INTEGER NOT NULL, `totalTime` INTEGER NOT NULL, `status` TEXT NOT NULL, `ordering` INTEGER NOT NULL, `error` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -209,6 +204,13 @@
             "columnName": "manga",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "mangaId",
+            "columnName": "manga_id",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           },
           {
             "fieldPath": "name",
@@ -296,7 +298,7 @@
           },
           {
             "fieldPath": "order",
-            "columnName": "order",
+            "columnName": "ordering",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -528,98 +530,6 @@
             "fieldPath": "site",
             "columnName": "site",
             "affinity": "TEXT",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "columnNames": [
-            "id"
-          ],
-          "autoGenerate": true
-        },
-        "indices": [],
-        "foreignKeys": []
-      },
-      {
-        "tableName": "downloads",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `manga` TEXT NOT NULL, `name` TEXT NOT NULL, `link` TEXT NOT NULL, `path` TEXT NOT NULL, `totalPages` INTEGER NOT NULL, `downloadPages` INTEGER NOT NULL, `totalSize` INTEGER NOT NULL, `downloadSize` INTEGER NOT NULL, `totalTime` INTEGER NOT NULL, `status` INTEGER NOT NULL, `order` INTEGER NOT NULL, `error` INTEGER NOT NULL)",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "manga",
-            "columnName": "manga",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "name",
-            "columnName": "name",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "link",
-            "columnName": "link",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "path",
-            "columnName": "path",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "totalPages",
-            "columnName": "totalPages",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "downloadPages",
-            "columnName": "downloadPages",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "totalSize",
-            "columnName": "totalSize",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "downloadSize",
-            "columnName": "downloadSize",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "totalTime",
-            "columnName": "totalTime",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "status",
-            "columnName": "status",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "order",
-            "columnName": "order",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "isError",
-            "columnName": "error",
-            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -867,10 +777,19 @@
         "foreignKeys": []
       }
     ],
-    "views": [],
+    "views": [
+      {
+        "viewName": "simple_manga",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT id, name, logo, color, populate, category FROM `manga`"
+      },
+      {
+        "viewName": "libarary_manga",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT manga.id, manga.name, manga.logo, manga.about, manga.isAlternativeSort, (SELECT COUNT(*) FROM chapters WHERE chapters.manga IS manga.name AND chapters.isRead IS 1) AS read_chapters, (SELECT COUNT(*) FROM chapters WHERE chapters.manga IS manga.name) AS all_chapters FROM manga"
+      }
+    ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '73cb28e60fab3e8ba4f7c93c45085a1e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e8e06b134fa10bb7aa57adb53026464e')"
     ]
   }
 }

@@ -64,13 +64,6 @@ import com.san.kir.data.models.extend.SimplifiedManga
         (ShikiManga::class),
     ],
     version = RoomDB.VERSION,
-    autoMigrations = [
-        AutoMigration(from = 38, to = 39),
-        AutoMigration(from = 39, to = 40),
-        AutoMigration(from = 41, to = 42),
-        AutoMigration(from = 43, to = 44),
-        AutoMigration(from = 44, to = 45),
-    ],
     views = [
         SimplifiedManga::class,
         SimplifiedMangaWithChapterCounts::class,
@@ -103,7 +96,7 @@ abstract class RoomDB : RoomDatabase() {
 
     companion object {
         const val NAME = "${DIR.PROFILE}/profile.db"
-        const val VERSION = 45
+        const val VERSION = 39
 
         private lateinit var sDb: RoomDB
 

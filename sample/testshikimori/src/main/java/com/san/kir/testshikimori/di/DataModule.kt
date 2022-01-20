@@ -19,8 +19,7 @@ object DataModule {
     @Provides
     @Singleton
     fun provideAppDatabase(application: Application): RoomDB {
-        // TODO не забыть изменить
-        return RoomDB.getDefaultDatabase(application)
+        return RoomDB.getDatabase(application)
     }
 
     @Provides

@@ -9,7 +9,7 @@ import com.san.kir.data.db.dao.ShikimoriDao
 import com.san.kir.data.models.base.ShikiManga
 import com.san.kir.data.models.base.ShikimoriAccount
 import com.san.kir.data.models.datastore.ShikimoriAuth
-import com.san.kir.data.models.extend.SimplefiedMangaWithChapterCounts
+import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
 import com.san.kir.data.models.utils.ChapterComparator
 import com.san.kir.data.store.TokenStore
 import com.san.kir.features.shikimori.Repository
@@ -67,7 +67,7 @@ abstract class CatalogItemViewModel internal constructor(
     // Взависимости от выбранного источника правды, происходит связывание элементов и обновление
     private fun _launchSync(
         shikiManga: ShikiManga,
-        libManga: SimplefiedMangaWithChapterCounts,
+        libManga: SimplifiedMangaWithChapterCounts,
         onlineIsTruth: Boolean,
     ) = viewModelScope.defaultLaunch {
         askNone()
@@ -107,10 +107,10 @@ abstract class CatalogItemViewModel internal constructor(
         when (currentManga) {
             is ShikiManga -> _launchSync(
                 shikiManga = currentManga,
-                libManga = item.value as SimplefiedMangaWithChapterCounts,
+                libManga = item.value as SimplifiedMangaWithChapterCounts,
                 onlineIsTruth
             )
-            is SimplefiedMangaWithChapterCounts -> _launchSync(
+            is SimplifiedMangaWithChapterCounts -> _launchSync(
                 shikiManga = item.value as ShikiManga,
                 libManga = currentManga,
                 onlineIsTruth

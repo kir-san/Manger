@@ -2,15 +2,11 @@ package com.san.kir.features.shikimori.ui.local_item
 
 import androidx.lifecycle.viewModelScope
 import com.san.kir.core.utils.coroutines.defaultLaunch
-import com.san.kir.core.utils.log
 import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.ShikimoriDao
 import com.san.kir.data.models.base.ShikiManga
-import com.san.kir.data.models.base.ShikimoriAccount
-import com.san.kir.data.models.datastore.ShikimoriAuth
-import com.san.kir.data.models.extend.SimplefiedMangaWithChapterCounts
-import com.san.kir.data.models.utils.ChapterComparator
+import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
 import com.san.kir.data.store.TokenStore
 import com.san.kir.features.shikimori.Repository
 import com.san.kir.features.shikimori.ui.catalog_item.CatalogItemViewModel
@@ -18,7 +14,6 @@ import com.san.kir.features.shikimori.ui.util.fuzzy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filter
@@ -45,8 +40,8 @@ class LocalItemViewModel @Inject internal constructor(
         .filterNotNull()
         .onEach { disableForegroundWork() }
         .stateIn(viewModelScope,
-            SharingStarted.WhileSubscribed(),
-            SimplefiedMangaWithChapterCounts())
+                 SharingStarted.WhileSubscribed(),
+                 SimplifiedMangaWithChapterCounts())
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val localSearch: StateFlow<LocalSearch> = item

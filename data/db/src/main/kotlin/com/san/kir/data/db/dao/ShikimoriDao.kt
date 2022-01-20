@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.ShikiManga
-import com.san.kir.data.models.extend.SimplefiedMangaWithChapterCounts
+import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -31,11 +31,11 @@ interface ShikimoriDao : BaseDao<ShikiManga> {
     @Query("DELETE FROM ${ShikiManga.tableName}")
     suspend fun clearAll()
 
-    @Query("SELECT * FROM ${SimplefiedMangaWithChapterCounts.viewName}")
-    fun loadLibraryItems(): Flow<List<SimplefiedMangaWithChapterCounts>>
+    @Query("SELECT * FROM ${SimplifiedMangaWithChapterCounts.viewName}")
+    fun loadLibraryItems(): Flow<List<SimplifiedMangaWithChapterCounts>>
 
-    @Query("SELECT * FROM ${SimplefiedMangaWithChapterCounts.viewName} " +
+    @Query("SELECT * FROM ${SimplifiedMangaWithChapterCounts.viewName} " +
             "WHERE ${Manga.Col.id} IS :id")
-    fun loadLibraryItem(id: Long): Flow<SimplefiedMangaWithChapterCounts>
+    fun loadLibraryItem(id: Long): Flow<SimplifiedMangaWithChapterCounts>
 }
 

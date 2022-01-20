@@ -2,13 +2,12 @@ package com.san.kir.data.models.extend
 
 import androidx.room.ColumnInfo
 import androidx.room.DatabaseView
-import androidx.room.Ignore
 import com.san.kir.data.models.base.ShikimoriAccount
 import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.models.base.Manga
 
 @DatabaseView(
-    viewName = SimplefiedMangaWithChapterCounts.viewName,
+    viewName = SimplifiedMangaWithChapterCounts.viewName,
     value = "SELECT " +
             "${Manga.tableName}.${Manga.Col.id}, " +
             "${Manga.tableName}.${Manga.Col.name}, " +
@@ -19,15 +18,15 @@ import com.san.kir.data.models.base.Manga
             "(SELECT COUNT(*) FROM ${Chapter.tableName} " +
             "WHERE ${Chapter.tableName}.${Chapter.Col.manga} IS " +
             "${Manga.tableName}.${Manga.Col.name} " +
-            "AND ${Chapter.tableName}.${Chapter.Col.isRead} IS 1) AS ${SimplefiedMangaWithChapterCounts.Col.readChapters}, " +
+            "AND ${Chapter.tableName}.${Chapter.Col.isRead} IS 1) AS ${SimplifiedMangaWithChapterCounts.Col.readChapters}, " +
 
             "(SELECT COUNT(*) FROM ${Chapter.tableName} " +
             "WHERE ${Chapter.tableName}.${Chapter.Col.manga} IS " +
-            "${Manga.tableName}.${Manga.Col.name}) AS ${SimplefiedMangaWithChapterCounts.Col.allChapters} " +
+            "${Manga.tableName}.${Manga.Col.name}) AS ${SimplifiedMangaWithChapterCounts.Col.allChapters} " +
 
             "FROM ${Manga.tableName}"
 )
-data class SimplefiedMangaWithChapterCounts(
+data class SimplifiedMangaWithChapterCounts(
     @ColumnInfo(name = Manga.Col.id) override val id: Long = 0,
     @ColumnInfo(name = Manga.Col.name) override val name: String = "",
     @ColumnInfo(name = Manga.Col.logo) override val logo: String = "",

@@ -7,7 +7,7 @@ import com.san.kir.data.db.dao.ShikimoriDao
 import com.san.kir.data.models.base.ShikiManga
 import com.san.kir.data.models.base.ShikimoriAccount
 import com.san.kir.data.models.datastore.ShikimoriAuth
-import com.san.kir.data.models.extend.SimplefiedMangaWithChapterCounts
+import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
 import com.san.kir.data.store.TokenStore
 import com.san.kir.features.shikimori.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -80,7 +80,7 @@ class ShikimoriViewModel @Inject internal constructor(
     fun checkSyncedItem(item: ShikimoriAccount.AbstractMangaItem): StateFlow<Boolean> {
         return when (item) {
             is ShikiManga -> checkSyncedItem(item)
-            is SimplefiedMangaWithChapterCounts -> checkSyncedItem(item)
+            is SimplifiedMangaWithChapterCounts -> checkSyncedItem(item)
             else -> MutableStateFlow(false).asStateFlow()
         }
     }
@@ -89,7 +89,7 @@ class ShikimoriViewModel @Inject internal constructor(
         return MutableStateFlow(item.libMangaId != -1L).asStateFlow()
     }
 
-    private fun checkSyncedItem(item: SimplefiedMangaWithChapterCounts): StateFlow<Boolean> {
+    private fun checkSyncedItem(item: SimplifiedMangaWithChapterCounts): StateFlow<Boolean> {
         val state = MutableStateFlow(false)
 
         viewModelScope.defaultLaunch {

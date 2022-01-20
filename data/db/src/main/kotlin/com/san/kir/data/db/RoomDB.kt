@@ -46,7 +46,7 @@ import com.san.kir.data.db.dao.ShikimoriDao
 import com.san.kir.data.db.type_converters.ShikimoriMangaConverter
 import com.san.kir.data.db.type_converters.ShikimoriRateConverter
 import com.san.kir.data.models.base.ShikiManga
-import com.san.kir.data.models.extend.SimplefiedMangaWithChapterCounts
+import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
 import com.san.kir.data.models.extend.SimplifiedManga
 
 @Database(
@@ -73,7 +73,7 @@ import com.san.kir.data.models.extend.SimplifiedManga
     ],
     views = [
         SimplifiedManga::class,
-        SimplefiedMangaWithChapterCounts::class,
+        SimplifiedMangaWithChapterCounts::class,
     ]
 )
 @TypeConverters(

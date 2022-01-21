@@ -1,4 +1,3 @@
-
 plugins {
     id(Plugins.ANDROID_APPLICATION)
     id(Plugins.HILT_ANDROID)
@@ -55,8 +54,10 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             signingConfig = signingConfigs.getByName("release")
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
             buildConfigField("String", "EXAMPLE", "\"release\"")
         }
         getByName("debug") {
@@ -66,6 +67,20 @@ android {
 
             applicationIdSuffix = ".debug"
             buildConfigField("String", "EXAMPLE", "\"debug\"")
+        }
+    }
+
+    flavorDimensions += "version"
+    productFlavors {
+        create("r") {
+            dimension = "version"
+            applicationIdSuffix = ""
+            versionNameSuffix = ""
+        }
+        create("alpha") {
+            dimension = "version"
+            applicationIdSuffix = ".alpha"
+            versionNameSuffix = "-alpha"
         }
     }
 

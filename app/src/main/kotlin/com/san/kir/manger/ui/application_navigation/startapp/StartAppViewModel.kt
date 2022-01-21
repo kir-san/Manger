@@ -12,7 +12,6 @@ import com.san.kir.core.utils.log
 import com.san.kir.data.store.FirstLaunchStore
 import com.san.kir.manger.foreground_work.workmanager.FirstInitAppWorker
 import com.san.kir.manger.foreground_work.workmanager.MigrateLatestChapterToChapterWorker
-import com.san.kir.manger.foreground_work.workmanager.UpdateMainMenuWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,7 +35,6 @@ class StartAppViewModel @Inject constructor(
     fun startApp() {
         viewModelScope.launch {
             createNeedFolders()
-            UpdateMainMenuWorker.addTask(ctx)
             dataStore.data.collect { data ->
                 delay(Duration.seconds(0.5))
                 if (data.isFirstLaunch.not()) {

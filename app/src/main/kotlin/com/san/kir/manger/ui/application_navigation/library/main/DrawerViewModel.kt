@@ -1,5 +1,6 @@
 package com.san.kir.manger.ui.application_navigation.library.main
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.san.kir.core.support.DownloadState
@@ -12,15 +13,18 @@ import com.san.kir.data.db.dao.PlannedDao
 import com.san.kir.data.db.dao.SiteDao
 import com.san.kir.data.db.dao.StorageDao
 import com.san.kir.data.store.MainStore
+import com.san.kir.manger.foreground_work.workmanager.UpdateMainMenuWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
 class DrawerViewModel @Inject constructor(
+    private val ctx: Application,
     private val mainMenuDao: MainMenuDao,
     private val mangaDao: MangaDao,
     private val storageDao: StorageDao,
@@ -31,7 +35,11 @@ class DrawerViewModel @Inject constructor(
     mainRepository: MainStore,
 ) : ViewModel() {
     val editMenu = mainRepository.data.map { it.editMenu }.flowOn(defaultDispatcher)
-    fun loadMainMenuItems() = mainMenuDao.loadItems().flowOn(defaultDispatcher)
+    fun loadMainMenuItems() = mainMenuDao
+        .loadItems()
+        .onStart { UpdateMainMenuWorker.addTask(ctx) }
+        .flowOn(defaultDispatcher)
+
     fun loadLibraryCounts() = mangaDao.loadItems().map { it.size }.flowOn(defaultDispatcher)
     fun loadStorageSizes() =
         storageDao.flowItems().map { list -> list.sumOf { item -> item.sizeFull } }

@@ -2,7 +2,6 @@ package com.san.kir.data.db
 
 import android.content.ContentValues
 import android.content.Context
-import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.OnConflictStrategy
 import androidx.room.Room
@@ -11,6 +10,8 @@ import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.san.kir.core.support.CATEGORY_ALL
 import com.san.kir.core.support.DIR
+import com.san.kir.core.support.MainMenuType
+import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.log
 import com.san.kir.data.db.dao.CategoryDao
 import com.san.kir.data.db.dao.ChapterDao
@@ -18,6 +19,7 @@ import com.san.kir.data.db.dao.LatestChapterDao
 import com.san.kir.data.db.dao.MainMenuDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.PlannedDao
+import com.san.kir.data.db.dao.ShikimoriDao
 import com.san.kir.data.db.dao.SiteDao
 import com.san.kir.data.db.dao.StatisticDao
 import com.san.kir.data.db.dao.StorageDao
@@ -30,24 +32,20 @@ import com.san.kir.data.db.type_converters.MainMenuTypeConverter
 import com.san.kir.data.db.type_converters.PlannedPeriodTypeConverter
 import com.san.kir.data.db.type_converters.PlannedTypeTypeConverter
 import com.san.kir.data.db.type_converters.PlannedWeekTypeConverter
+import com.san.kir.data.db.type_converters.ShikimoriMangaConverter
+import com.san.kir.data.db.type_converters.ShikimoriRateConverter
 import com.san.kir.data.models.base.Category
 import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.models.base.LatestChapter
 import com.san.kir.data.models.base.MainMenuItem
 import com.san.kir.data.models.base.Manga
-import com.san.kir.data.models.base.Statistic
 import com.san.kir.data.models.base.PlannedTask
-import com.san.kir.data.models.base.Site
-import com.san.kir.data.models.base.Storage
-import com.san.kir.data.models.columns.CategoryColumn
-import com.san.kir.core.support.MainMenuType
-import com.san.kir.core.utils.getFullPath
-import com.san.kir.data.db.dao.ShikimoriDao
-import com.san.kir.data.db.type_converters.ShikimoriMangaConverter
-import com.san.kir.data.db.type_converters.ShikimoriRateConverter
 import com.san.kir.data.models.base.ShikiManga
-import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
+import com.san.kir.data.models.base.Site
+import com.san.kir.data.models.base.Statistic
+import com.san.kir.data.models.base.Storage
 import com.san.kir.data.models.extend.SimplifiedManga
+import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
 
 @Database(
     entities =
@@ -154,17 +152,17 @@ class Callback(private val context: Context) : RoomDatabase.Callback() {
 
     private fun SupportSQLiteDatabase.addCategoryAll() {
         val cat = ContentValues()
-        cat.put(CategoryColumn.name, context.CATEGORY_ALL)
-        cat.put(CategoryColumn.order, 0)
-        cat.put(CategoryColumn.isVisible, true)
-        cat.put(CategoryColumn.typeSort, "")
-        cat.put(CategoryColumn.isReverseSort, true)
-        cat.put(CategoryColumn.spanPortrait, 2)
-        cat.put(CategoryColumn.spanLandscape, 3)
-        cat.put(CategoryColumn.isLargePortrait, true)
-        cat.put(CategoryColumn.isLargeLandscape, true)
+        cat.put(Category.Col.name, context.CATEGORY_ALL)
+        cat.put(Category.Col.order, 0)
+        cat.put(Category.Col.isVisible, true)
+        cat.put(Category.Col.typeSort, "")
+        cat.put(Category.Col.isReverseSort, true)
+        cat.put(Category.Col.spanPortrait, 2)
+        cat.put(Category.Col.spanLandscape, 3)
+        cat.put(Category.Col.isLargePortrait, true)
+        cat.put(Category.Col.isLargeLandscape, true)
 
-        insert(CategoryColumn.tableName, OnConflictStrategy.IGNORE, cat)
+        insert(Category.tableName, OnConflictStrategy.IGNORE, cat)
     }
 
     private fun SupportSQLiteDatabase.addMenuItems(ctx: Context) {

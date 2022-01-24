@@ -3,7 +3,7 @@ package com.san.kir.data.db.migrations
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.san.kir.core.support.ChapterFilter
-import com.san.kir.data.models.columns.CategoryColumn
+import com.san.kir.data.models.base.Category
 import com.san.kir.data.models.columns.DownloadColumn
 import com.san.kir.data.models.columns.MangaStatisticColumn
 import com.san.kir.data.models.columns.PlannedTaskColumn
@@ -204,17 +204,17 @@ internal val migrations: Array<Migration> = arrayOf(
     migrate(
         22, 23,
         "ALTER TABLE categories RENAME TO tmp_categories",
-        "CREATE TABLE ${CategoryColumn.tableName} (" +
-                "${CategoryColumn.id} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                "${CategoryColumn.name} TEXT NOT NULL, " +
-                "${CategoryColumn.order} INTEGER NOT NULL, " +
-                "${CategoryColumn.isVisible} INTEGER NOT NULL, " +
-                "${CategoryColumn.typeSort} TEXT NOT NULL, " +
-                "${CategoryColumn.isReverseSort} INTEGER NOT NULL, " +
-                "${CategoryColumn.spanPortrait} INTEGER NOT NULL DEFAULT 2, " +
-                "${CategoryColumn.spanLandscape} INTEGER NOT NULL DEFAULT 3, " +
-                "${CategoryColumn.isLargePortrait} INTEGER NOT NULL DEFAULT 1, " +
-                "${CategoryColumn.isLargeLandscape} INTEGER NOT NULL DEFAULT 1)",
+        "CREATE TABLE ${Category.tableName} (" +
+                "${Category.Col.id} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "${Category.Col.name} TEXT NOT NULL, " +
+                "${Category.Col.order} INTEGER NOT NULL, " +
+                "${Category.Col.isVisible} INTEGER NOT NULL, " +
+                "${Category.Col.typeSort} TEXT NOT NULL, " +
+                "${Category.Col.isReverseSort} INTEGER NOT NULL, " +
+                "${Category.Col.spanPortrait} INTEGER NOT NULL DEFAULT 2, " +
+                "${Category.Col.spanLandscape} INTEGER NOT NULL DEFAULT 3, " +
+                "${Category.Col.isLargePortrait} INTEGER NOT NULL DEFAULT 1, " +
+                "${Category.Col.isLargeLandscape} INTEGER NOT NULL DEFAULT 1)",
         "INSERT INTO `categories`(" +
                 "`id`,`name`,`order`,`isVisible`,`typeSort`,`isReverseSort`) " +
                 "SELECT " +

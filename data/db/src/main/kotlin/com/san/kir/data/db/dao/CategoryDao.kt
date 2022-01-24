@@ -8,15 +8,15 @@ import com.san.kir.data.models.extend.CategoryWithMangas
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-abstract class CategoryDao : BaseDao<Category> {
-    @Query("SELECT * FROM `categories` ORDER BY `order`")
-    abstract suspend fun getItems(): List<Category>
+interface CategoryDao : BaseDao<Category> {
+    @Query("SELECT * FROM `${Category.tableName}` ORDER BY ${Category.Col.order}")
+    suspend fun getItems(): List<Category>
 
-    @Query("SELECT * FROM `categories` ORDER BY `order`")
-    abstract fun loadItems(): Flow<List<Category>>
+    @Query("SELECT * FROM `${Category.tableName}` ORDER BY ${Category.Col.order}")
+    fun loadItems(): Flow<List<Category>>
 
-    @Query("SELECT * FROM `categories` WHERE `name` IS :name")
-    abstract fun loadItem(name: String): Flow<Category>
+    @Query("SELECT * FROM `${Category.tableName}` WHERE `name` IS :name")
+    fun loadItem(name: String): Flow<Category>
 
     @Transaction
     @Query("SELECT * FROM `categories` " +

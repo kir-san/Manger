@@ -93,8 +93,8 @@ fun PageView(
     viewModel: LibraryViewModel
 ) {
     val isPortrait = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
-    val span = if (isPortrait) item.category.spanPortrait else item.category.spanLandscape
-    val isLarge = if (isPortrait) item.category.isLargePortrait else item.category.isLargeLandscape
+    val span = if (isPortrait) item.spanPortrait else item.spanLandscape
+    val isLarge = if (isPortrait) item.isLargePortrait else item.isLargeLandscape
 
     val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden) { state ->
         if (state == ModalBottomSheetValue.Hidden) viewModel.changeSelectedManga(false)
@@ -122,7 +122,7 @@ fun PageView(
                 ),
             ) {
                 items(items = item.mangas) { manga ->
-                    LibraryLargeItemView(nav, manga, item.category.name, viewModel)
+                    LibraryLargeItemView(nav, manga, item.name, viewModel)
                 }
             }
         else
@@ -133,7 +133,7 @@ fun PageView(
                 ),
             ) {
                 items(items = item.mangas) { manga ->
-                    LibrarySmallItemView(nav, manga, item.category.name, viewModel)
+                    LibrarySmallItemView(nav, manga, item.name, viewModel)
                 }
             }
     }

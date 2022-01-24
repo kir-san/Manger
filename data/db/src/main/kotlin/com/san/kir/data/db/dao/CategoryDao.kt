@@ -19,8 +19,18 @@ interface CategoryDao : BaseDao<Category> {
     fun loadItem(name: String): Flow<Category>
 
     @Transaction
-    @Query("SELECT * FROM `categories` " +
-            "WHERE isVisible IS 1 " +
-            "ORDER BY `order`")
-    abstract fun loadItemsAdds(): Flow<List<CategoryWithMangas>>
+    @Query(
+        "SELECT " +
+                "${Category.Col.name}, " +
+                "${Category.Col.typeSort}, " +
+                "${Category.Col.isReverseSort}, " +
+                "${Category.Col.spanPortrait}, " +
+                "${Category.Col.spanLandscape}, " +
+                "${Category.Col.isLargePortrait}, " +
+                "${Category.Col.isLargeLandscape} " +
+                "FROM `${Category.tableName}` " +
+                "WHERE ${Category.Col.isVisible} IS 1 " +
+                "ORDER BY ${Category.Col.order}"
+    )
+    fun loadSpecItems(): Flow<List<CategoryWithMangas>>
 }

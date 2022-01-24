@@ -62,27 +62,27 @@ class LibraryViewModel @Inject constructor(
 
 
     val preparedCategories = categoryDao
-        .loadItemsAdds()
+        .loadSpecItems()
         .onEmpty { _isEmpty.update { true } }
         .onEach { cats ->
             withMainContext {
-                categoryNames = cats.map { it.category.name }
+                categoryNames = cats.map { it.name }
             }
         }
         .map { cats ->
             cats.onEach { c ->
-                if (c.category.name == context.CATEGORY_ALL)
+                if (c.name == context.CATEGORY_ALL)
                     c.mangas = mangaDao.simpleItems()
             }
                 .onEach { c ->
                     val list =
-                        when (c.category.typeSort) {
+                        when (c.typeSort) {
                             SortLibraryUtil.add -> c.mangas.sortedBy { it.id }
                             SortLibraryUtil.abc -> c.mangas.sortedBy { it.name }
                             SortLibraryUtil.pop -> c.mangas.sortedBy { it.populate }
                             else -> c.mangas
                         }
-                    c.mangas = if (c.category.isReverseSort)
+                    c.mangas = if (c.isReverseSort)
                         list.reversed()
                     else
                         list

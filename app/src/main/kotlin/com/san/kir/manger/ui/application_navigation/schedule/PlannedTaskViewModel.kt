@@ -6,6 +6,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -27,8 +28,13 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.EntryPointAccessors
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 
 class PlannedTaskViewModel @AssistedInject constructor(
@@ -36,7 +42,7 @@ class PlannedTaskViewModel @AssistedInject constructor(
     private val context: Application,
     private val plannedDao: PlannedDao,
     mangaDao: MangaDao,
-    categoryDao: CategoryDao,
+    private val categoryDao: CategoryDao,
     siteDao: SiteDao,
 ) : ViewModel() {
     var task by mutableStateOf(PlannedTask())
@@ -48,15 +54,24 @@ class PlannedTaskViewModel @AssistedInject constructor(
             context.getString(R.string.planned_task_title_change)
     }
 
-    var listManga by mutableStateOf(listOf<Manga>())
-        private set
-    val listMangaName by derivedStateOf { listManga.map { it.name } }
-    val listMangaUnic by derivedStateOf { listManga.map { it.name } }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val categoryName = snapshotFlow { task }
+        .flatMapLatest { categoryDao.loadItemById(it.categoryId) }
+        .filterNotNull()
+        .map { it.name }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), "")
 
-    var categoryList by mutableStateOf(listOf<String>())
-        private set
+    private var listManga by mutableStateOf(listOf<Manga>())
+    val listMangaName by derivedStateOf { listManga.map { it.name } }
+
     var catalogList by mutableStateOf(listOf<String>())
         private set
+
+    val categoryNameList = categoryDao.loadItems().map { list -> list.map { c -> c.name } }
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    val categoryIdList = categoryDao.loadItems().map { list -> list.map { c -> c.id } }
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     init {
         viewModelScope.defaultLaunch {
@@ -71,11 +86,6 @@ class PlannedTaskViewModel @AssistedInject constructor(
                 .first()
                 .filter { it.isUpdate }
                 .let { withMainContext { listManga = it } }
-
-            categoryDao.loadItems()
-                .first()
-                .map { it.name }
-                .let { withMainContext { categoryList = it } }
 
             siteDao.loadItems()
                 .first()

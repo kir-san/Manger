@@ -528,6 +528,9 @@ internal val migrations: Array<Migration> = arrayOf(
     from36to37,
     from37to38,
     from38to39,
+    from39to40, // For Category table (order -> ordering)
+    from40to41, // For Manga table (fill categoryId)
+    from42to43, // For PlannedTask table (add & fill categoryId)
 )
 
 internal fun migrate(action: MigrateForm.() -> Unit): Migration {

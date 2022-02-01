@@ -37,7 +37,6 @@ import androidx.navigation.NavHostController
 import com.san.kir.core.compose_utils.rememberImage
 import com.san.kir.core.support.CATEGORY_ALL
 import com.san.kir.core.utils.TestTags
-import com.san.kir.core.utils.log
 import com.san.kir.data.models.extend.SimplifiedManga
 import com.san.kir.manger.ui.application_navigation.library.LibraryNavTarget
 import com.san.kir.manger.utils.compose.navigate
@@ -120,7 +119,7 @@ fun LibraryLargeItemView(
 
                 if (cat == context.CATEGORY_ALL && showCategory)
                     Text(
-                        text = manga.categories,
+                        text = manga.category,
                         color = primaryColor,
                         modifier = Modifier
                             .padding(end = 3.dp)
@@ -197,7 +196,7 @@ fun LibrarySmallItemView(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = manga.categories,
+                    text = manga.category,
                     color = MaterialTheme.colors.contentColorFor(backgroundColor),
                     modifier = Modifier
                         .background(backgroundColor)

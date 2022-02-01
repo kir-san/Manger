@@ -6,33 +6,36 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.san.kir.core.utils.coroutines.defaultLaunch
+import com.san.kir.data.db.dao.CategoryDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.models.base.Manga
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.EntryPointAccessors
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 class OnlyMangaViewModel @AssistedInject constructor(
     @Assisted private val mangaUnic: String,
-    private val mangaDao: MangaDao,
+    mangaDao: MangaDao,
+    categoryDao: CategoryDao,
 ) : ViewModel() {
-    private val _manga = MutableStateFlow(Manga())
-    val manga = _manga.asStateFlow()
 
-    init {
-        // инициация манги
-        viewModelScope.defaultLaunch {
-            mangaDao.itemWhereName(mangaUnic).filterNotNull().collect { manga ->
-                _manga.value = manga
-            }
-        }
-    }
+    val manga = mangaDao
+        .loadItemByName(mangaUnic)
+        .filterNotNull()
+        .stateIn(viewModelScope, SharingStarted.Lazily, Manga())
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val categoryName = manga
+        .flatMapLatest { categoryDao.loadItemById(it.categoryId) }
+        .map { it.name }
+        .stateIn(viewModelScope, SharingStarted.Lazily, "")
 
     @AssistedFactory
     interface Factory {

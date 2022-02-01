@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 39,
-    "identityHash": "e8e06b134fa10bb7aa57adb53026464e",
+    "identityHash": "c67f730886f570bd9a14d81f2effa790",
     "entities": [
       {
         "tableName": "sites",
@@ -320,7 +320,7 @@
       },
       {
         "tableName": "categories",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `order` INTEGER NOT NULL, `isVisible` INTEGER NOT NULL, `typeSort` TEXT NOT NULL, `isReverseSort` INTEGER NOT NULL, `spanPortrait` INTEGER NOT NULL, `spanLandscape` INTEGER NOT NULL, `isListPortrait` INTEGER NOT NULL, `isListLandscape` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `'order'` INTEGER NOT NULL, `isVisible` INTEGER NOT NULL, `typeSort` TEXT NOT NULL, `isReverseSort` INTEGER NOT NULL, `spanPortrait` INTEGER NOT NULL, `spanLandscape` INTEGER NOT NULL, `isListPortrait` INTEGER NOT NULL, `isListLandscape` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -336,7 +336,7 @@
           },
           {
             "fieldPath": "order",
-            "columnName": "order",
+            "columnName": "'order'",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -785,11 +785,15 @@
       {
         "viewName": "libarary_manga",
         "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT manga.id, manga.name, manga.logo, manga.about, manga.isAlternativeSort, (SELECT COUNT(*) FROM chapters WHERE chapters.manga IS manga.name AND chapters.isRead IS 1) AS read_chapters, (SELECT COUNT(*) FROM chapters WHERE chapters.manga IS manga.name) AS all_chapters FROM manga"
+      },
+      {
+        "viewName": "cat_with_manga",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT name, typeSort, isReverseSort, spanPortrait, spanLandscape, isListPortrait, isListLandscape, (SELECT id, name, logo, color, populate, category FROM `manga`) AS mangas, FROM `categories` WHERE isVisible IS 1 ORDER BY 'order'"
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e8e06b134fa10bb7aa57adb53026464e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c67f730886f570bd9a14d81f2effa790')"
     ]
   }
 }

@@ -10,6 +10,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -17,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
-import com.san.kir.data.models.base.Manga
+import com.san.kir.data.models.extend.MiniManga
 import com.san.kir.manger.R
 
 @Composable
@@ -38,7 +40,7 @@ fun UpdateContent(
 }
 
 @Composable
-private fun ItemContent(item: Manga, viewModel: UpdateViewModel) {
+private fun ItemContent(item: MiniManga, viewModel: UpdateViewModel) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -53,9 +55,8 @@ private fun ItemContent(item: Manga, viewModel: UpdateViewModel) {
                 style = MaterialTheme.typography.subtitle2
             )
         }
-        Switch(checked = item.isUpdate, onCheckedChange = {
-            item.isUpdate = it
-            viewModel.update(item)
+        Switch(checked = item.update, onCheckedChange = {
+            viewModel.update(item, it)
         })
     }
 }

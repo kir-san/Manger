@@ -54,7 +54,7 @@ class LibraryViewModel @Inject constructor(
     val showCategory = dataStore.data.map { it.isShowCatagery }.flowOn(defaultDispatcher)
 
     val categories = categoryDao.loadItems()
-        .map { l -> l.map { it.name } }
+        .map { l -> l.map { it.id to it.name }.toMap() }
         .flowOn(defaultDispatcher)
 
     var categoryNames by mutableStateOf(emptyList<String>())
@@ -106,12 +106,13 @@ class LibraryViewModel @Inject constructor(
 
     fun countNotRead(mangaUnic: String) = chapterDao.loadCountNotReadItemsWhereManga(mangaUnic)
 
-    fun update(manga: SimplifiedManga) {
-        viewModelScope.defaultLaunch {
-            mangaDao.item(manga.name).apply {
-                category = manga.categories
-                mangaDao.update(this)
-            }
+
+    fun updateCategory(newCategoryId: Long) = viewModelScope.defaultLaunch {
+        val currentManga = selectedManga.manga
+
+        mangaDao.itemById(currentManga.id).apply {
+            categoryId = newCategoryId
+            mangaDao.update(this)
         }
     }
 

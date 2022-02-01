@@ -33,6 +33,7 @@ fun MangaAboutScreen(
     navUp: () -> Unit,
     navTo: (mangaName: String) -> Unit,
     item: Manga,
+    category: String,
 ) {
     TopBarScreenWithInsets(
         modifier = Modifier,
@@ -49,13 +50,14 @@ fun MangaAboutScreen(
         }
 
     ) {
-        MangaAboutContent(item)
+        MangaAboutContent(item, category)
     }
 }
 
 @Composable
 private fun MangaAboutContent(
     manga: Manga,
+    category: String,
     ctx: Context = LocalContext.current,
 ) {
 
@@ -66,7 +68,7 @@ private fun MangaAboutContent(
     DialogText(text = manga.name)
 
     LabelText(idRes = R.string.about_manga_dialog_category)
-    DialogText(text = manga.category)
+    DialogText(text = category)
 
     LabelText(idRes = R.string.about_manga_dialog_authors)
     DialogText(text = manga.authorsList.toString())

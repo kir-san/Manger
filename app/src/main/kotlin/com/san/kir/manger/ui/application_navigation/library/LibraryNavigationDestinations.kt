@@ -113,13 +113,15 @@ fun NavGraphBuilder.libraryNavGraph(nav: NavHostController) {
             val viewModel = onlyMangaViewModel(mangaUnic = item)
 
             val manga by viewModel.manga.collectAsState()
+            val categoryName by viewModel.categoryName.collectAsState()
 
             MangaAboutScreen(
                 nav::navigateUp,
                 {
                     nav.navigate(LibraryNavTarget.Edit, it)
                 },
-                manga
+                manga,
+                categoryName,
             )
         }
     )

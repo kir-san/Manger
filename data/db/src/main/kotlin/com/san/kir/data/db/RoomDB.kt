@@ -2,6 +2,7 @@ package com.san.kir.data.db
 
 import android.content.ContentValues
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.OnConflictStrategy
 import androidx.room.Room
@@ -44,6 +45,8 @@ import com.san.kir.data.models.base.ShikiManga
 import com.san.kir.data.models.base.Site
 import com.san.kir.data.models.base.Statistic
 import com.san.kir.data.models.base.Storage
+import com.san.kir.data.models.extend.MiniManga
+import com.san.kir.data.models.extend.PlannedTaskExt
 import com.san.kir.data.models.extend.SimplifiedManga
 import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
 
@@ -65,6 +68,13 @@ import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
     views = [
         SimplifiedManga::class,
         SimplifiedMangaWithChapterCounts::class,
+        PlannedTaskExt::class,
+        MiniManga::class,
+    ],
+    autoMigrations = [
+        AutoMigration(from = 41, to = 42), // SimplifiedManga add categoryId
+        AutoMigration(from = 43, to = 44), // add view PlannedTaskExt
+        AutoMigration(from = 44, to = 45), // add view MiniManga
     ]
 )
 @TypeConverters(
@@ -94,7 +104,7 @@ abstract class RoomDB : RoomDatabase() {
 
     companion object {
         const val NAME = "${DIR.PROFILE}/profile.db"
-        const val VERSION = 39
+        const val VERSION = 45
 
         private lateinit var sDb: RoomDB
 

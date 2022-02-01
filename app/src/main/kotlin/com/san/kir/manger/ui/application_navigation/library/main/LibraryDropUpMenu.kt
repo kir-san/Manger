@@ -83,17 +83,18 @@ fun LibraryDropUpMenu(nav: NavHostController, viewModel: LibraryViewModel) {
                 modifier = Modifier.weight(1f)
             )
             Text(
-                text = viewModel.selectedManga.manga.categories,
+                text = viewModel.selectedManga.manga.category,
                 style = MaterialTheme.typography.subtitle2
             )
         }
 
-        val categories by viewModel.categories.collectAsState(emptyList())
+        val categories by viewModel.categories.collectAsState(emptyMap())
 
-        ExpandedCategories(expandedCategory,
-            categories - viewModel.selectedManga.manga.categories) { item ->
-            viewModel.selectedManga.manga.categories = item
-            viewModel.update(viewModel.selectedManga.manga)
+        ExpandedCategories(
+            expandedCategory,
+            categories - viewModel.selectedManga.manga.categoryId
+        ) { categoryId ->
+            viewModel.updateCategory(categoryId)
             expandedCategory = false
             viewModel.changeSelectedManga(false)
         }
@@ -167,11 +168,11 @@ fun LibraryDropUpMenu(nav: NavHostController, viewModel: LibraryViewModel) {
 @Composable
 private fun ExpandedCategories(
     visibility: Boolean,
-    categories: List<String>,
-    onItemChanged: (String) -> Unit,
+    categories: Map<Long, String>,
+    onItemChanged: (Long) -> Unit,
 ) {
     CustomAnimatedItem(visibility) {
-        categories.forEach { item -> MenuText(item) { onItemChanged(item) } }
+        categories.forEach { (key, value) -> MenuText(value) { onItemChanged(key) } }
     }
 }
 

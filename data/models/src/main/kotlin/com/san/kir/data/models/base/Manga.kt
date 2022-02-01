@@ -26,6 +26,10 @@ data class Manga(
     @ColumnInfo(name = Col.about)
     var about: String = "",
 
+    @Deprecated(
+        message = "Больше не использовать, не удообное обновление",
+        replaceWith = ReplaceWith("categoryId")
+    )
     @ColumnInfo(name = Col.category)
     var category: String = "",
 

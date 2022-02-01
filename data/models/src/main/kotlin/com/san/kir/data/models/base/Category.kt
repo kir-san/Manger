@@ -48,7 +48,7 @@ data class Category(
     object Col {
         const val id = "id"
         const val name = "name"
-        const val order = "'order'"
+        const val order = "ordering"
         const val isVisible = "isVisible"
         const val typeSort = "typeSort"
         const val isReverseSort = "isReverseSort"

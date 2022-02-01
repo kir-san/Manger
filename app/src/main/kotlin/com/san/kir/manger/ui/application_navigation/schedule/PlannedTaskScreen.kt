@@ -13,6 +13,7 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +39,10 @@ import com.san.kir.core.compose_utils.TopBarScreenContent
 
 @Composable
 fun PlannedTaskScreen(nav: NavHostController, viewModel: PlannedTaskViewModel) {
+    val categoryNames by viewModel.categoryNameList.collectAsState()
+    val categoryIds by viewModel.categoryIdList.collectAsState()
+    val categoryName by viewModel.categoryName.collectAsState()
+
     TopBarScreenContent(
         navHostController = nav,
         title = viewModel.title,
@@ -67,7 +72,7 @@ fun PlannedTaskScreen(nav: NavHostController, viewModel: PlannedTaskViewModel) {
                 ) { dismiss ->
                     SingleChoiceList(
                         initialValue = viewModel.task.manga,
-                        stateList = viewModel.listMangaUnic,
+                        stateList = viewModel.listMangaName,
                         textList = viewModel.listMangaName,
                         onDismiss = dismiss
                     ) { viewModel.task = viewModel.task.copy(manga = it) }
@@ -82,7 +87,7 @@ fun PlannedTaskScreen(nav: NavHostController, viewModel: PlannedTaskViewModel) {
                 ) { dismiss ->
                     MultiChoiceList(
                         items = viewModel.task.mangaList,
-                        textList = viewModel.listMangaUnic,
+                        textList = viewModel.listMangaName,
                         onDismiss = dismiss,
                     ) {
                         viewModel.task = viewModel.task.copy(
@@ -93,15 +98,15 @@ fun PlannedTaskScreen(nav: NavHostController, viewModel: PlannedTaskViewModel) {
             PlannedType.CATEGORY ->
                 TypedItem(
                     label = R.string.planned_task_change_category,
-                    value = viewModel.task.category,
+                    value = categoryName,
                     nothingValue = R.string.planned_task_category_unknown,
                 ) { dismiss ->
                     SingleChoiceList(
-                        initialValue = viewModel.task.category,
-                        stateList = viewModel.categoryList,
-                        textList = viewModel.categoryList,
+                        initialValue = viewModel.task.categoryId,
+                        stateList = categoryIds,
+                        textList = categoryNames,
                         onDismiss = dismiss
-                    ) { viewModel.task = viewModel.task.copy(category = it) }
+                    ) { viewModel.task = viewModel.task.copy(categoryId = it) }
                 }
             PlannedType.CATALOG ->
                 TypedItem(

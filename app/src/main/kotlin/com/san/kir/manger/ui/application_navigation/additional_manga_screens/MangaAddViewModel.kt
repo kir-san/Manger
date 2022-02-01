@@ -15,6 +15,7 @@ import com.san.kir.data.models.base.Category
 import com.san.kir.data.models.base.Statistic
 import com.san.kir.data.models.base.SiteCatalogElement
 import com.san.kir.data.models.base.toManga
+import com.san.kir.data.parsing.SiteCatalogAlternative
 import com.san.kir.data.parsing.SiteCatalogsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -81,7 +82,7 @@ class MangaAddViewModel @Inject constructor(
 
     suspend fun updateSiteElement(
         url: String,
-        category: String,
+        categoryName: String,
     ) = withContext(Dispatchers.IO) {
         manager.getElementOnline(url)?.let { element ->
             val pat = Pattern.compile("[a-z/0-9]+-").matcher(element.shotLink)
@@ -90,9 +91,11 @@ class MangaAddViewModel @Inject constructor(
                 shortPath = element.shotLink.removePrefix(pat.group()).removeSuffix(".html")
             val path = "${com.san.kir.core.support.DIR.MANGA}/${element.catalogName}/$shortPath"
 
-            val manga = element.toManga(category = category, path = path)
+            val category = categoryDao.itemByName(categoryName)
 
-            manga.isAlternativeSite = manager.getSite(element.link) is com.san.kir.data.parsing.SiteCatalogAlternative
+            val manga = element.toManga(categoryId = category.id, path = path)
+
+            manga.isAlternativeSite = manager.getSite(element.link) is SiteCatalogAlternative
             mangaDao.insert(manga)
             statisticDao.insert(Statistic(manga = manga.name))
             return@withContext path to manga

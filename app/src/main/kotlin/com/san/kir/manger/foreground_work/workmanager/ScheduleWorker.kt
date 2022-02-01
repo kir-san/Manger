@@ -10,24 +10,24 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import com.san.kir.core.support.CATEGORY_ALL
 import com.san.kir.core.support.PlannedPeriod
 import com.san.kir.core.support.PlannedType
 import com.san.kir.core.utils.log
+import com.san.kir.core.utils.longToast
+import com.san.kir.data.db.dao.CategoryDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.PlannedDao
 import com.san.kir.data.db.dao.SiteDao
+import com.san.kir.data.db.dao.defaultCategory
 import com.san.kir.data.models.base.PlannedTask
-import com.san.kir.data.models.columns.PlannedTaskColumn
+import com.san.kir.data.models.base.PlannedTaskBase
 import com.san.kir.data.models.base.mangaList
 import com.san.kir.manger.R
 import com.san.kir.manger.foreground_work.services.AppUpdateService
 import com.san.kir.manger.foreground_work.services.CatalogForOneSiteUpdaterService
 import com.san.kir.manger.foreground_work.services.MangaUpdaterService
-import com.san.kir.core.utils.longToast
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.coroutineScope
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -38,6 +38,7 @@ class ScheduleWorker @AssistedInject constructor(
     private val plannedDao: PlannedDao,
     private val mangaDao: MangaDao,
     private val siteDao: SiteDao,
+    private val categoryDao: CategoryDao,
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result = coroutineScope {
@@ -62,9 +63,11 @@ class ScheduleWorker @AssistedInject constructor(
 
                     }
                     PlannedType.CATEGORY -> {
+                        val defaultCategory = categoryDao.defaultCategory(applicationContext)
+
                         val mangas =
-                            if (applicationContext.CATEGORY_ALL == task.category) mangaDao.getItems()
-                            else mangaDao.itemsWhereCategoryNotAll(task.category)
+                            if (defaultCategory.id == task.categoryId) mangaDao.items()
+                            else mangaDao.itemsByCategoryId(task.categoryId)
                         mangas.forEach {
                             MangaUpdaterService.add(applicationContext, it)
                         }
@@ -101,8 +104,7 @@ class ScheduleWorker @AssistedInject constructor(
         private const val dayPeriod = AlarmManager.INTERVAL_DAY
         private const val weekPeriod = dayPeriod * 7
 
-        fun addTask(ctx: Context, item: PlannedTask) {
-
+        fun addTask(ctx: Context, item: PlannedTaskBase) {
 
             val delay = getDelay(item)
             log("delay $delay ")
@@ -127,7 +129,7 @@ class ScheduleWorker @AssistedInject constructor(
             WorkManager.getInstance(ctx).enqueue(listOf(oneTask, perTask))
         }
 
-        fun cancelTask(ctx: Context, item: PlannedTask) {
+        fun cancelTask(ctx: Context, item: PlannedTaskBase) {
             val exe = ContextCompat.getMainExecutor(ctx)
 
             WorkManager.getInstance(ctx)
@@ -150,7 +152,7 @@ class ScheduleWorker @AssistedInject constructor(
 
         }
 
-        private fun getDelay(item: PlannedTask): Long {
+        private fun getDelay(item: PlannedTaskBase): Long {
             val calendar = Calendar.getInstance()
             calendar.timeInMillis = System.currentTimeMillis()
             calendar.set(Calendar.HOUR_OF_DAY, item.hour)

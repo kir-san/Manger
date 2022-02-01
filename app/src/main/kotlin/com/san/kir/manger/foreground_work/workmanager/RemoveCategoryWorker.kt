@@ -1,62 +1,80 @@
 package com.san.kir.manger.foreground_work.workmanager
 
 import android.content.Context
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import com.san.kir.core.support.CATEGORY_ALL
-import com.san.kir.data.db.RoomDB
+import com.san.kir.core.utils.coroutines.withDefaultContext
+import com.san.kir.data.db.dao.CategoryDao
+import com.san.kir.data.db.dao.MangaDao
+import com.san.kir.data.db.dao.defaultCategory
 import com.san.kir.data.models.base.Category
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.first
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 
-class RemoveCategoryWorker(appContext: Context, workerParameters: WorkerParameters) :
-    CoroutineWorker(appContext, workerParameters) {
+/*
+    Worker для удаления категории,
+    У всей манги, которая была свазанна с удаляемой категорией,
+    применяется категория по умолчанию
+*/
+@HiltWorker
+class RemoveCategoryWorker @AssistedInject constructor(
+    @Assisted appContext: Context,
+    @Assisted workerParameters: WorkerParameters,
+    private val categoryDao: CategoryDao,
+    private val mangaDao: MangaDao,
+) : CoroutineWorker(appContext, workerParameters) {
 
-    private val categoryDao = RoomDB.getDatabase(appContext).categoryDao
-    private val mangaDao = RoomDB.getDatabase(appContext).mangaDao
+    override suspend fun doWork(): Result {
+        val categoryId = inputData.getLong(cat, -1L)
 
-    override suspend fun doWork() = coroutineScope {
-        val categoryName = inputData.getString(cat)
-
-        if (categoryName != null) {
-            val category = com.san.kir.core.utils.coroutines.withDefaultContext {
-                categoryDao.loadItem(categoryName).first()
+        if (categoryId != -1L) {
+            // Получение удаляемой категории
+            val category = withDefaultContext {
+                categoryDao.itemById(categoryId)
             }
+
+            // Получение категории "Все"
+            val categoryAll = withDefaultContext {
+                categoryDao.defaultCategory(applicationContext)
+            }
+
             kotlin.runCatching {
-                com.san.kir.core.utils.coroutines.withDefaultContext {
+                withDefaultContext {
                     mangaDao.update(
-                        *mangaDao
-                            .itemsWhereCategoryNotAll(category.name)
+                        mangaDao
+                            // Получение всей манги, которая связана с удаляемой категорией
+                            .itemsByCategoryId(category.id)
                             .onEach {
-                                it.category = applicationContext.CATEGORY_ALL
+                                // Замена на категорию "Все"
+                                it.categoryId = categoryAll.id
                             }
-                            .toTypedArray()
                     )
                     categoryDao.delete(category)
                 }
             }.fold(
                 onSuccess = {
-                    Result.success()
+                    return Result.success()
                 },
                 onFailure = {
                     it.printStackTrace()
-                    Result.failure()
+                    return Result.failure()
                 }
             )
         } else {
-            Result.retry()
+            return Result.retry()
         }
     }
 
     companion object {
         const val tag = "removeCategory"
-        const val cat = "category"
+        const val cat = "category_id"
 
         fun addTask(ctx: Context, category: Category) {
-            val data = workDataOf(cat to category.name)
+            val data = workDataOf(cat to category.id)
             val task = OneTimeWorkRequestBuilder<RemoveCategoryWorker>()
                 .addTag(tag)
                 .setInputData(data)

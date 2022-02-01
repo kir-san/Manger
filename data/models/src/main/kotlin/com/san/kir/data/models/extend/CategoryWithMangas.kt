@@ -38,7 +38,8 @@ data class CategoryWithMangas(
             Manga.Col.logo,
             Manga.Col.color,
             Manga.Col.populate,
-            Manga.Col.category
+            Manga.Col.categoryId,
+            Manga.Col.category,
         ]
     )
     var mangas: List<SimplifiedManga> = emptyList(),

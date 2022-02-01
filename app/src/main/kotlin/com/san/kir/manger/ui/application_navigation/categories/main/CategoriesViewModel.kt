@@ -1,19 +1,16 @@
 package com.san.kir.manger.ui.application_navigation.categories.main
 
-import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.san.kir.core.utils.coroutines.defaultLaunch
 import com.san.kir.data.db.dao.CategoryDao
 import com.san.kir.data.models.base.Category
-import com.san.kir.manger.foreground_work.workmanager.UpdateCategoryInMangaWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
 class CategoriesViewModel @Inject constructor(
-    private val context: Application,
     private val categoryDao: CategoryDao,
 ) : ViewModel() {
 
@@ -28,11 +25,7 @@ class CategoriesViewModel @Inject constructor(
         }
     }
 
-    fun update(category: Category, oldName: String = "") {
-        viewModelScope.defaultLaunch {
-            categoryDao.update(category)
-            if (oldName.isNotEmpty())
-                UpdateCategoryInMangaWorker.addTask(context, category, oldName)
-        }
+    fun update(category: Category) = viewModelScope.defaultLaunch {
+        categoryDao.update(category)
     }
 }

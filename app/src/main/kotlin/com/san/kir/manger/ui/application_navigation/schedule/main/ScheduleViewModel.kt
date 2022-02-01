@@ -21,8 +21,9 @@ class ScheduleViewModel @Inject constructor(
     private val context: Application,
     private val plannedDao: PlannedDao,
 ) : ViewModel() {
-    var items by mutableStateOf(listOf<PlannedTask>())
-        private set
+    val items = plannedDao
+        .loadExtItems()
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     fun update(item: PlannedTaskExt, enable: Boolean) = viewModelScope.defaultLaunch {
         plannedDao.update(item.id, enable)

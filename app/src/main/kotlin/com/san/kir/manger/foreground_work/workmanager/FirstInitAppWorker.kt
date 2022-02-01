@@ -23,6 +23,7 @@ import com.san.kir.data.store.MainStore
 import com.san.kir.data.store.ViewerStore
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.first
 
 @HiltWorker
 class FirstInitAppWorker @AssistedInject constructor(
@@ -66,8 +67,8 @@ class FirstInitAppWorker @AssistedInject constructor(
         }
     }
 
-    private fun restoreSchedule() {
-        plannedDao.getItems().filter { it.isEnabled }.forEach { ScheduleWorker.addTask(ctx, it) }
+    private suspend fun restoreSchedule() {
+        plannedDao.loadExtItems().first().filter { it.isEnabled }.forEach { ScheduleWorker.addTask(ctx, it) }
     }
 
     private suspend fun checkSiteCatalogs() {

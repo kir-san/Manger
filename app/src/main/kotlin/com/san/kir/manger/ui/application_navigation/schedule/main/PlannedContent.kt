@@ -32,6 +32,8 @@ fun PlannedContent(
     nav: NavHostController,
     viewModel: ScheduleViewModel = hiltViewModel()
 ) {
+    val items by viewModel.items.collectAsState()
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = rememberInsetsPaddingValues(
@@ -39,9 +41,9 @@ fun PlannedContent(
             applyStart = false, applyTop = false, applyEnd = false
         )
     ) {
-        items(viewModel.items.size, { index -> viewModel.items[index].id }) { index ->
-            ItemContent(viewModel.items[index], viewModel) {
-                nav.navigate(ScheduleNavTarget.Schedule, viewModel.items[index].id)
+        items(items.size, { index -> items[index].id }) { index ->
+            ItemContent(items[index], viewModel) {
+                nav.navigate(ScheduleNavTarget.Schedule, items[index].id)
             }
         }
     }

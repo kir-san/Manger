@@ -234,10 +234,7 @@ private fun loadData(
             val count by viewModel.loadLatestCount().collectAsState(initial = 0)
             count.toString()
         }
-        MainMenuType.Schedule -> {
-            val count by viewModel.loadPlannedCount().collectAsState(initial = 0)
-            count.toString()
-        }
+        MainMenuType.Schedule -> viewModel.plannedCount.collectAsState().value.toString()
         MainMenuType.Accounts,
         MainMenuType.Settings,
         MainMenuType.Statistic -> ""

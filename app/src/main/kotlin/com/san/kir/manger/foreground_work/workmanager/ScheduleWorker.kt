@@ -48,7 +48,7 @@ class ScheduleWorker @AssistedInject constructor(
         if (id != -1L) {
             kotlin.runCatching {
 
-                val task = plannedDao.getItem(id)
+                val task = plannedDao.itemById(id)
 
                 when (task.type) {
                     PlannedType.MANGA -> {

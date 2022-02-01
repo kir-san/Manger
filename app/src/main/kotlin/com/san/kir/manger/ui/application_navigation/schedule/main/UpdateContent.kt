@@ -26,6 +26,8 @@ import com.san.kir.manger.R
 fun UpdateContent(
     viewModel: UpdateViewModel = hiltViewModel()
 ) {
+    val items by viewModel.items.collectAsState()
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = rememberInsetsPaddingValues(
@@ -33,8 +35,8 @@ fun UpdateContent(
             applyStart = false, applyTop = false, applyEnd = false
         )
     ) {
-        items(viewModel.items.size, { index -> viewModel.items[index].id }) { index ->
-            ItemContent(viewModel.items[index], viewModel)
+        items(items.size, { index -> items[index].id }) { index ->
+            ItemContent(items[index], viewModel)
         }
     }
 }

@@ -15,9 +15,11 @@ import com.san.kir.data.db.dao.StorageDao
 import com.san.kir.data.store.MainStore
 import com.san.kir.manger.foreground_work.workmanager.UpdateMainMenuWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -57,7 +59,8 @@ class DrawerViewModel @Inject constructor(
     fun loadLatestCount() =
         chapterDao.loadAllItems().map { it.size }.flowOn(defaultDispatcher)
 
-    fun loadPlannedCount() = plannedDao.loadItems().map { it.size }.flowOn(defaultDispatcher)
+    val plannedCount = plannedDao.loadItemsCount().stateIn(viewModelScope, SharingStarted.Lazily, 0)
+
     fun swapMenuItems(from: Int, to: Int) {
         viewModelScope.launch {
             val items = mainMenuDao.getItems().toMutableList()

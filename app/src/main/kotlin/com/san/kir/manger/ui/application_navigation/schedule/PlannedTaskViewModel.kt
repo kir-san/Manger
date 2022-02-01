@@ -76,7 +76,7 @@ class PlannedTaskViewModel @AssistedInject constructor(
     init {
         viewModelScope.defaultLaunch {
             if (taskId != -1L) {
-                plannedDao.loadItem(taskId)
+                plannedDao.loadItemById(taskId)
                     .filterNotNull()
                     .first()
                     .let { withMainContext { task = it } }

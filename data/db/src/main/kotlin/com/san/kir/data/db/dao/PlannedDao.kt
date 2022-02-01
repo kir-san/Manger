@@ -8,35 +8,38 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PlannedDao : BaseDao<PlannedTask> {
-    @Query("SELECT * FROM ${PlannedTaskColumn.tableName} " +
-                   "ORDER BY ${PlannedTaskColumn.id}")
-    fun loadItems(): Flow<List<PlannedTask>>
 
+    // Получение flow с количеством элементов в таблице
+    @Query("SELECT COUNT(*) FROM ${PlannedTask.tableName}")
+    fun loadItemsCount(): Flow<Int>
+
+    // Получение flow с элементов по его id
     @Query(
         "SELECT * FROM ${PlannedTask.tableName} " +
-                "WHERE `${PlannedTask.Col.id}` IS :taskId"
+                "WHERE ${PlannedTask.Col.id} IS :taskId"
     )
-    fun itemById(taskId: Long): PlannedTask
+    fun loadItemById(taskId: Long): Flow<PlannedTask>
 
-    @Query("SELECT * FROM ${PlannedTaskColumn.tableName} " +
-                   "WHERE `${PlannedTaskColumn.id}` IS :taskId")
-    fun getItem(taskId: Long): PlannedTask
-
-    @Query("SELECT * FROM ${PlannedTaskColumn.tableName} " +
-                   "WHERE `${PlannedTaskColumn.id}` IS :taskId")
-    fun loadItem(taskId: Long): Flow<PlannedTask>
-
+    // Получение flow со списком всех элементов из view
     @Query(
         "SELECT * FROM ${PlannedTaskExt.viewName} " +
                 "ORDER BY ${PlannedTask.Col.id}"
     )
     fun loadExtItems(): Flow<List<PlannedTaskExt>>
 
+    // Получение элемента по его id
+    @Query(
+        "SELECT * FROM ${PlannedTask.tableName} " +
+                "WHERE ${PlannedTask.Col.id} IS :taskId"
+    )
+    suspend fun itemById(taskId: Long): PlannedTask
+
+    // Обновление поля isEnable
     @Query(
         "UPDATE ${PlannedTask.tableName} " +
                 "SET ${PlannedTask.Col.isEnabled} = :enable " +
                 "WHERE ${PlannedTask.Col.id} = :id"
     )
-    fun update(id: Long, enable: Boolean)
+    suspend fun update(id: Long, enable: Boolean)
 }
 

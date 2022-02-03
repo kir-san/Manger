@@ -32,8 +32,6 @@ class StorageViewModel @Inject constructor(
     private val mangaDao: MangaDao,
     private val chapterDao: ChapterDao,
 ) : ViewModel() {
-    private var mangaList = listOf<Manga>()
-
     private val _state = MutableStateFlow(StorageViewState())
     val state: StateFlow<StorageViewState>
         get() = _state
@@ -50,7 +48,6 @@ class StorageViewModel @Inject constructor(
 
     init {
         viewModelScope.defaultLaunch {
-            mangaList = mangaDao.getItems()
             storageDao.flowItems()
                 .catch { t -> throw t }
                 .collect { items ->

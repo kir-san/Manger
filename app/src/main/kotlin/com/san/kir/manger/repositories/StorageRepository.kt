@@ -4,12 +4,13 @@ import android.content.Context
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.lengthMb
 import com.san.kir.data.db.RoomDB
+import com.san.kir.data.db.dao.itemByPath
 import com.san.kir.data.models.base.Storage
 
 class StorageRepository(context: Context) {
     private val db = RoomDB.getDatabase(context)
     private val mStorageDao = db.storageDao
-    private val mMangaRepository = MangaRepository(context)
+    private val mMangaDao = db.mangaDao
     private val mChapterDao = db.chapterDao
 
     suspend fun update(vararg storage: Storage) = mStorageDao.update(*storage)
@@ -19,7 +20,7 @@ class StorageRepository(context: Context) {
 
     suspend fun getSizeAndIsNew(storage: Storage): Storage {
         val file = getFullPath(storage.path)
-        mMangaRepository.getFromPath(file).let { manga ->
+        mMangaDao.itemByPath(file).let { manga ->
             storage.sizeFull = file.lengthMb
             storage.isNew = manga == null
             storage.sizeRead = manga?.let { it ->
@@ -31,5 +32,4 @@ class StorageRepository(context: Context) {
         }
         return storage
     }
-
 }

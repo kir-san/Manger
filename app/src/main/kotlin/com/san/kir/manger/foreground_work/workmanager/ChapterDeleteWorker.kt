@@ -8,14 +8,12 @@ import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.san.kir.data.models.base.Manga
 import com.san.kir.manger.repositories.ChapterRepository
-import com.san.kir.manger.repositories.MangaRepository
 import com.san.kir.manger.repositories.StorageRepository
 
 abstract class ChapterDeleteWorker(appContext: Context, workerParams: WorkerParameters) :
     CoroutineWorker(appContext, workerParams) {
 
     val mChapterRepository = ChapterRepository(appContext)
-    val mMangaRepository = MangaRepository(appContext)
     val mStorageRepository = StorageRepository(appContext)
 
     suspend fun items() = mChapterRepository.getItems()

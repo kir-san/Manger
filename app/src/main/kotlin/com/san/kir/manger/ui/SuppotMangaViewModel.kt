@@ -22,14 +22,14 @@ class SuppotMangaViewModel @Inject constructor(
 
     suspend fun isContainManga(item: SiteCatalogElement): Boolean =
         withDefaultContext {
-            mangaDao.getItems().any {
+            mangaDao.items().any {
                 it.shortLink.contains(item.shotLink)
             }
         }
 
     fun onlineUpdate(item: SiteCatalogElement) {
         viewModelScope.defaultLaunch {
-            val oldManga = mangaDao.getItems().first { it.shortLink.contains(item.shotLink) }
+            val oldManga = mangaDao.items().first { it.shortLink.contains(item.shotLink) }
             val updItem = manager.getFullElement(item)
             oldManga.authorsList = updItem.authors
             oldManga.logo = updItem.logo

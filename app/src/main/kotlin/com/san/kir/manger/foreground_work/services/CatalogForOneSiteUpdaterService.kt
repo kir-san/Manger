@@ -202,6 +202,7 @@ class CatalogForOneSiteUpdaterService : Service() {
                 var counter = 0
                 var percent = 0
                 val tempList = mutableListOf<SiteCatalogElement>()
+                val mangaList = mangaDao.items()
 
                 site.init()
                 var retry = 3
@@ -238,7 +239,7 @@ class CatalogForOneSiteUpdaterService : Service() {
                             log("$counter / ${site.volume}")
                         }
                         .map { el ->
-                            el.isAdded = mangaDao.getItems().any { it.shortLink == el.shotLink }
+                            el.isAdded = mangaList.any { it.shortLink == el.shotLink }
                             el
                         }
                         .toList(tempList)

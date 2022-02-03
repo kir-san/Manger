@@ -14,7 +14,7 @@ import com.san.kir.core.utils.shortPath
 import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.StorageDao
-import com.san.kir.data.db.dao.getFromPath
+import com.san.kir.data.db.dao.itemByPath
 import com.san.kir.data.db.dao.searchNewItems
 import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.Storage
@@ -57,7 +57,7 @@ class MangaStorageViewModel @AssistedInject constructor(
 
     init {
         mangaDao
-            .itemWhereName(mangaUnic)
+            .loadItemByName(mangaUnic)
             .filterNotNull()
             .onEach { manga ->
                 _manga.update { manga }
@@ -70,7 +70,7 @@ class MangaStorageViewModel @AssistedInject constructor(
                 storage.let { s ->
                     viewModelScope.defaultLaunch {
                         val file = getFullPath(s.path)
-                        val manga = mangaDao.getFromPath(file)
+                        val manga = mangaDao.itemByPath(file)
                         val updatedS = s.getSizeAndIsNew(
                             file, manga,
                             manga?.let { chapterDao.getItemsWhereManga(it.name) })

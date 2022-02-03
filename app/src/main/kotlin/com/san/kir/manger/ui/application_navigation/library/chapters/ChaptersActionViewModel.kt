@@ -39,7 +39,7 @@ class ChaptersActionViewModel @AssistedInject constructor(
 
     init {
         viewModelScope.defaultLaunch {
-            mangaDao.itemWhereName(mangaUnic)
+            mangaDao.loadItemByName(mangaUnic)
                 .filterNotNull()
                 .collect { manga ->
                     _manga.value = manga

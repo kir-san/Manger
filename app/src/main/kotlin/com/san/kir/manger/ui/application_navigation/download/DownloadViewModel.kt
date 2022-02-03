@@ -146,7 +146,7 @@ class DownloadViewModel @Inject constructor(
             .toTypedArray())
     }
 
-    fun manga(item: Chapter) = mangaDao.itemWhereName(item.manga).filterNotNull()
+    fun manga(item: Chapter) = mangaDao.loadItemByName(item.manga).filterNotNull()
 
     @OptIn(ExperimentalTime::class)
     fun remove(item: Chapter) = viewModelScope.defaultLaunch {

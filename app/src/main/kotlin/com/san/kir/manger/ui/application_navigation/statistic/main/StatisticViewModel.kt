@@ -19,7 +19,7 @@ class StatisticViewModel @Inject constructor(
     statisticDao: StatisticDao,
     private val mangaDao: MangaDao,
 ) : ViewModel() {
-    fun manga(item: Statistic) = mangaDao.itemWhereName(item.manga).filterNotNull()
+    fun manga(item: Statistic) = mangaDao.loadItemByName(item.manga).filterNotNull()
     val allTime = statisticDao.loadItems().map { list -> list.sumByLong { it.allTime } }
     val allItems = Pager(
         config = PagingConfig(

@@ -45,7 +45,7 @@ class MangaEditViewModel @Inject constructor(
         snapshotFlow { mangaUnic }
             .flatMapLatest {
                 log(it)
-                val manga = mangaDao.itemWhereName(it)
+                val manga = mangaDao.loadItemByName(it)
                 manga
             }
             .filterNotNull()

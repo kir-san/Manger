@@ -77,7 +77,7 @@ class ChaptersViewModel @AssistedInject constructor(
         log("manga is $mangaUnic")
         // инициация манги
         combine(
-            mangaDao.itemWhereName(mangaUnic).filterNotNull(),
+            mangaDao.loadItemByName(mangaUnic).filterNotNull(),
             snapshotFlow { oneTimeFlag },
             chapterStore.data,
         ) { m, flag, store ->

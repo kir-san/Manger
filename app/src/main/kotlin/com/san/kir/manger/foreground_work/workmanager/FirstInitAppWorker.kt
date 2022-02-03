@@ -52,14 +52,17 @@ class FirstInitAppWorker @AssistedInject constructor(
     }
 
 
+    // Добавление недостающей статистики
     private suspend fun insertMangaIntoStatistic() {
         if (statisticDao.getItems().isEmpty()) {
-            mangaDao.getItems().forEach { manga ->
+            // если совсем нет статистики, то добавляем для каждой манги
+            mangaDao.items().forEach { manga ->
                 statisticDao.insert(Statistic(manga = manga.name))
             }
         } else {
+            // иначе только для отсутствующей
             val stats = statisticDao.getItems()
-            val new = mangaDao.getItems()
+            val new = mangaDao.items()
                 .filter { manga -> !stats.any { it.manga == manga.name } }
             if (new.isNotEmpty()) {
                 new.forEach { statisticDao.insert(Statistic(manga = it.name)) }

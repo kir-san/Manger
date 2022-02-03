@@ -23,7 +23,7 @@ abstract class ChapterDeleteWorker(appContext: Context, workerParams: WorkerPara
     companion object {
         const val tag = "deleteChapter"
         inline fun <reified T : ChapterDeleteWorker> addTask(ctx: Context, manga: Manga) {
-            val data = workDataOf(Manga.Col.name to manga.name)
+            val data = workDataOf(Manga.Col.id to manga.id)
             val task = OneTimeWorkRequestBuilder<T>()
                 .addTag(tag)
                 .setInputData(data)

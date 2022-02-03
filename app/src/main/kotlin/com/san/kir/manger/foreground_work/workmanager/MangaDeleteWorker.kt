@@ -1,28 +1,37 @@
 package com.san.kir.manger.foreground_work.workmanager
 
 import android.content.Context
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.san.kir.core.utils.getFullPath
+import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.models.base.Manga
 import com.san.kir.manger.repositories.ChapterRepository
-import com.san.kir.manger.repositories.MangaRepository
-import kotlinx.coroutines.coroutineScope
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 
-class MangaDeleteWorker(appContext: Context, workerParams: WorkerParameters) :
-    CoroutineWorker(appContext, workerParams) {
-    override suspend fun doWork(): Result = coroutineScope {
+@HiltWorker
+class MangaDeleteWorker @AssistedInject constructor(
+    @Assisted appContext: Context,
+    @Assisted workerParams: WorkerParameters,
+    private val mangaDao: MangaDao,
+) : CoroutineWorker(appContext, workerParams) {
 
-        val manga = inputData.getString(Manga.Col.name)
-        val withFiles = inputData.getBoolean("withFiles", false)
+    override suspend fun doWork(): Result {
 
-        runCatching {
-            removeWithChapters(manga!!, withFiles)
+        val mangaId = inputData.getLong(Manga.Col.id, -1)
+        val withFiles = inputData.getBoolean(withFilesTag, false)
+
+        return runCatching {
+            removeWithChapters(mangaId, withFiles)
         }.fold(
-            onSuccess = { Result.success() },
+            onSuccess = {
+                Result.success()
+            },
             onFailure = {
                 it.printStackTrace()
                 Result.failure()
@@ -30,12 +39,10 @@ class MangaDeleteWorker(appContext: Context, workerParams: WorkerParameters) :
         )
     }
 
-    private suspend fun removeWithChapters(unic: String, withFiles: Boolean = false) {
+    private suspend fun removeWithChapters(mangaId: Long, withFiles: Boolean = false) {
+        val manga = mangaDao.itemById(mangaId)
 
-        val mangaRepo = MangaRepository(applicationContext)
-        val manga = mangaRepo.getItem(unic)
-
-        mangaRepo.delete(manga)
+        mangaDao.delete(manga)
 
         ChapterRepository(applicationContext).deleteItems(manga.name)
 
@@ -47,8 +54,10 @@ class MangaDeleteWorker(appContext: Context, workerParams: WorkerParameters) :
     companion object {
         const val tag = "mangaDelete"
 
-        fun addTask(ctx: Context, mangaName: String, withFiles: Boolean = false) {
-            val data = workDataOf(Manga.Col.name to mangaName, "withFiles" to withFiles)
+        const val withFilesTag = "withFiles"
+
+        fun addTask(ctx: Context, mangaId: Long, withFiles: Boolean = false) {
+            val data = workDataOf(Manga.Col.id to mangaId, withFilesTag to withFiles)
             val deleteManga = OneTimeWorkRequestBuilder<MangaDeleteWorker>()
                 .setInputData(data)
                 .addTag(tag)

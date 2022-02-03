@@ -49,7 +49,7 @@ suspend fun StorageDao.searchNewItems(mangaDao: MangaDao, chapterDao: ChapterDao
     }
     list.onEach { storage ->
         val file = getFullPath(storage.path)
-        val manga = mangaDao.getFromPath(file)
+        val manga = mangaDao.itemByPath(file)
         update(storage.getSizeAndIsNew(
             file,
             manga,

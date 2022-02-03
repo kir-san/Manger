@@ -51,7 +51,7 @@ internal class ViewerViewModel @Inject constructor(
         isInitManager = true
 
         val mangaName = chapterDao.getMangaName(chapterId)
-        val manga = mangaDao.item(mangaName)
+        val manga = mangaDao.itemByName(mangaName)
 
         chaptersManager.init(manga, chapterId)
     }

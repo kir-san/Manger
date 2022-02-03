@@ -6,17 +6,12 @@ import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.ShikimoriDao
 import com.san.kir.data.models.base.ShikiManga
-import com.san.kir.data.models.base.ShikimoriAccount
-import com.san.kir.data.models.datastore.ShikimoriAuth
-import com.san.kir.data.models.extend.SimplefiedMangaWithChapterCounts
-import com.san.kir.data.models.utils.ChapterComparator
 import com.san.kir.data.store.TokenStore
 import com.san.kir.features.shikimori.Repository
 import com.san.kir.features.shikimori.ui.util.fuzzy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filter
@@ -92,7 +87,7 @@ class ShikiItemViewModel @Inject internal constructor(
 
     // Получение связанной с элементом манги
     private fun local(id: Long): Flow<SyncState> {
-        return mangaDao.itemWhereId(id)
+        return mangaDao.loadItemById(id)
             .filterNotNull()
             .map { m -> SyncState.Ok(m) }
     }

@@ -20,8 +20,11 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.core.net.toUri
+import com.san.kir.core.utils.ID
 import com.san.kir.core.utils.coroutines.withDefaultContext
+import com.san.kir.core.utils.intentFor
 import com.san.kir.core.utils.log
+import com.san.kir.core.utils.startService
 import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.models.base.Chapter
@@ -31,10 +34,7 @@ import com.san.kir.data.parsing.SiteCatalogsManager
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.MainActivity
 import com.san.kir.manger.ui.application_navigation.MainNavTarget
-import com.san.kir.core.utils.ID
 import com.san.kir.manger.utils.SearchDuplicate
-import com.san.kir.core.utils.intentFor
-import com.san.kir.core.utils.startService
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -57,17 +57,17 @@ class MangaUpdaterService : Service() {
         private const val TAG = "MangaUpdaterService"
 
         fun contains(manga: Manga) =
-            taskCounter.any { it == manga.name }
+            taskCounter.any { it == manga.id }
 
-        fun add(ctx: Context, manga: SimplifiedManga) = add(ctx, manga.name)
+        fun add(ctx: Context, manga: SimplifiedManga) = add(ctx, manga.id)
 
-        fun add(ctx: Context, manga: Manga) = add(ctx, manga.name)
+        fun add(ctx: Context, manga: Manga) = add(ctx, manga.id)
 
-        private fun add(ctx: Context, mangaName: String) {
-            startService<MangaUpdaterService>(ctx, Manga.tableName to mangaName)
+        private fun add(ctx: Context, mangaId: Long) {
+            startService<MangaUpdaterService>(ctx, Manga.tableName to mangaId)
         }
 
-        private var taskCounter = listOf<String>()
+        private var taskCounter = listOf<Long>()
     }
 
     private var notificationId = ID.generate()
@@ -175,17 +175,19 @@ class MangaUpdaterService : Service() {
                     stopSelf()
                 }
                 else -> {
-                    intent.getStringExtra("manga")?.let { task ->
-                        taskCounter = taskCounter + task
+                    intent.getLongExtra(Manga.tableName, -1).let { task ->
+                        if (task != -1L) {
+                            taskCounter = taskCounter + task
 
-                        val intentSend = Intent(actionSend)
-                        intentSend.putExtra(ITEM_NAME, task)
-                        sendBroadcast(intentSend)
+                            val intentSend = Intent(actionSend)
+                            intentSend.putExtra(ITEM_NAME, task)
+                            sendBroadcast(intentSend)
 
-                        val msg = mServiceHandler.obtainMessage()
-                        msg.arg1 = startId
-                        msg.obj = task
-                        mServiceHandler.sendMessage(msg)
+                            val msg = mServiceHandler.obtainMessage()
+                            msg.arg1 = startId
+                            msg.obj = task
+                            mServiceHandler.sendMessage(msg)
+                        }
                     }
                 }
             }
@@ -224,13 +226,15 @@ class MangaUpdaterService : Service() {
     }
 
     @WorkerThread
-    fun onHandleIntent(mangaName: String) = runBlocking {
+    fun onHandleIntent(mangaId: Long) = runBlocking {
         var countNew = 0
         try {
-            showStartNotification(mangaName)
-
             // Получение данных из базы данных
-            val mangaDB = mangaDao.item(mangaName)
+            val mangaDB = mangaDao.itemById(mangaId)
+
+            mangaName = mangaDB.name
+
+            showStartNotification(mangaName)
 
             if (mangaDB.isUpdate.not()) return@runBlocking
 
@@ -300,7 +304,7 @@ class MangaUpdaterService : Service() {
         } finally {
             progress++
             fullCountNew += countNew
-            taskCounter = taskCounter - mangaName
+            taskCounter = taskCounter - mangaId
 
             Intent().apply {
                 action = actionGet
@@ -372,7 +376,7 @@ class MangaUpdaterService : Service() {
         val service: MangaUpdaterService,
     ) : Handler(looper) {
         override fun handleMessage(msg: Message) {
-            service.onHandleIntent(msg.obj as String)
+            service.onHandleIntent(msg.obj as Long)
             service.stopSelf(msg.arg1)
         }
     }

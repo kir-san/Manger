@@ -16,7 +16,6 @@ import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.log
 import com.san.kir.data.db.dao.CategoryDao
 import com.san.kir.data.db.dao.ChapterDao
-import com.san.kir.data.db.dao.LatestChapterDao
 import com.san.kir.data.db.dao.MainMenuDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.PlannedDao
@@ -37,7 +36,6 @@ import com.san.kir.data.db.type_converters.ShikimoriMangaConverter
 import com.san.kir.data.db.type_converters.ShikimoriRateConverter
 import com.san.kir.data.models.base.Category
 import com.san.kir.data.models.base.Chapter
-import com.san.kir.data.models.base.LatestChapter
 import com.san.kir.data.models.base.MainMenuItem
 import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.PlannedTask
@@ -59,7 +57,6 @@ import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
         (Category::class),
         (Storage::class),
         (MainMenuItem::class),
-        (LatestChapter::class),
         (PlannedTask::class),
         (Statistic::class),
         (ShikiManga::class),
@@ -98,13 +95,12 @@ abstract class RoomDB : RoomDatabase() {
     abstract val storageDao: StorageDao
     abstract val categoryDao: CategoryDao
     abstract val mainMenuDao: MainMenuDao
-    abstract val latestChapterDao: LatestChapterDao
     abstract val statisticDao: StatisticDao
     abstract val shikimoriDao: ShikimoriDao
 
     companion object {
         const val NAME = "${DIR.PROFILE}/profile.db"
-        const val VERSION = 45
+        const val VERSION = 46
 
         private lateinit var sDb: RoomDB
 

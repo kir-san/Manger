@@ -41,8 +41,8 @@ class ScheduleWorker @AssistedInject constructor(
     private val categoryDao: CategoryDao,
 ) : CoroutineWorker(appContext, workerParams) {
 
-    override suspend fun doWork(): Result = coroutineScope {
-        val id = inputData.getLong(PlannedTaskColumn.tableName, -1L)
+    override suspend fun doWork(): Result {
+        val id = inputData.getLong(PlannedTask.tableName, -1L)
 
         log("doWork $id")
         if (id != -1L) {
@@ -52,12 +52,12 @@ class ScheduleWorker @AssistedInject constructor(
 
                 when (task.type) {
                     PlannedType.MANGA -> {
-                        val manga = mangaDao.item(task.manga)
+                        val manga = mangaDao.itemByName(task.manga)
                         MangaUpdaterService.add(applicationContext, manga)
                     }
                     PlannedType.GROUP -> {
                         task.mangaList.forEach { unic ->
-                            val manga = mangaDao.item(unic)
+                            val manga = mangaDao.itemByName(unic)
                             MangaUpdaterService.add(applicationContext, manga)
                         }
 
@@ -86,17 +86,13 @@ class ScheduleWorker @AssistedInject constructor(
                     }
                 }
             }.fold(
-                onSuccess = {
-                    Result.success()
-                },
+                onSuccess = { return Result.success() },
                 onFailure = {
                     it.printStackTrace()
-                    Result.failure()
+                    return Result.failure()
                 }
             )
-        } else {
-            Result.retry()
-        }
+        } else return Result.retry()
     }
 
     companion object {
@@ -113,7 +109,7 @@ class ScheduleWorker @AssistedInject constructor(
                 1L, TimeUnit.MINUTES,
             )
                 .addTag(tag + item.id)
-                .setInputData(workDataOf(PlannedTaskColumn.tableName to item.id))
+                .setInputData(workDataOf(PlannedTask.tableName to item.id))
                 .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                 /*.setConstraints(
                     Constraints.Builder()
@@ -123,7 +119,7 @@ class ScheduleWorker @AssistedInject constructor(
                 .build()
             val oneTask = OneTimeWorkRequestBuilder<ScheduleWorker>()
                 .addTag(tag + item.id)
-                .setInputData(workDataOf(PlannedTaskColumn.tableName to item.id))
+                .setInputData(workDataOf(PlannedTask.tableName to item.id))
                 .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                 .build()
             WorkManager.getInstance(ctx).enqueue(listOf(oneTask, perTask))

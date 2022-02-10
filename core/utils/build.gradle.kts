@@ -34,6 +34,7 @@ dependencies {
     implementation(project(Modules.Core.support))
 
     Dependencies.Kotlin.apply {
+        implementation(STDLIB)
         implementation(COROUTINES_CORE)
         implementation(COROUTINES_ANDROID)
     }

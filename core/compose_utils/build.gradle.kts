@@ -33,4 +33,8 @@ dependencies {
         implementation(INSETS_UI)
         implementation(NAVIGATION_ANIMATION)
     }
+
+    Dependencies.AndroidX.apply {
+        implementation(CORE)
+    }
 }

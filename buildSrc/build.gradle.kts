@@ -13,7 +13,9 @@ dependencies {
     implementation("com.android.tools.build:gradle:7.0.4")
 
     // This should be in-sync with the Kotlin version exposed by `Versions.kt`
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10")
+
+    implementation("com.squareup:javapoet:1.13.0")
 
     implementation(kotlin("script-runtime"))
 }

@@ -11,9 +11,9 @@ object Versions {
 
     object Kotlin {
         // Make sure to update `buildSrc/build.gradle.kts` when updating this
-        const val STDLIB = "1.5.31"
-        const val COROUTINES = "1.5.2"
-        const val KSP = "1.5.31-1.0.0"
+        const val STDLIB = "1.6.10"
+        const val COROUTINES = "1.6.0"
+        const val KSP = "1.6.10-1.0.2"
     }
 
     object AndroidX {
@@ -24,21 +24,21 @@ object Versions {
         const val APPCOMPAT = "1.4.0-alpha03"
         const val LIFECYCLE = "2.4.0"
         const val VECTORDRAWABLE = "1.2.0-alpha02"
-        const val CONSTRAINTLAYOUT = "2.0.0-beta4"
+        const val CONSTRAINTLAYOUT = "2.1.3"
         const val VIEWPAGER2 = "1.0.0"
         const val EXIF = "1.3.2"
         const val PAGING = "3.0.0"
         const val WORKMANAGER = "2.7.0"
         const val HILT = "1.0.0"
         const val DATASTORE = "1.0.0"
-        const val ROOM = "2.4.0-beta01"
+        const val ROOM = "2.4.1"
         const val NAVIGATION = "2.4.0-alpha10"
     }
 
     object Compose {
-        const val COMPOSE = "1.0.4"
-        const val CONSTRAINT_LAYOUT = "1.0.0-beta02"
-        const val HILT_NAVIGATION_COMPOSE = "1.0.0-alpha03"
+        const val COMPOSE = "1.1.0-rc03"
+        const val CONSTRAINT_LAYOUT = "1.0.0"
+        const val HILT_NAVIGATION_COMPOSE = "1.0.0"
         const val PAGING = "1.0.0-alpha14"
     }
 
@@ -46,8 +46,8 @@ object Versions {
         const val MATERIAL = "1.3.0"
         const val PROTOBUF = "3.18.0"
         const val PROTOBUF_PLUGIN = "0.8.17"
-        const val ACCOMPANIST = "0.19.0"
-        const val HILT = "2.37"
+        const val ACCOMPANIST = "0.22.1-rc"
+        const val HILT = "2.40.5"
     }
 
     object Test {

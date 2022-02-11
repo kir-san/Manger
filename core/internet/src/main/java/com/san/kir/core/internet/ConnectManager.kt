@@ -256,10 +256,14 @@ class ConnectManager @Inject constructor(context: Application) {
     companion object {
 
         val defaultHeaders = Headers.Builder()
-            .add("User-Agent",
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:87.0) Gecko/20100101 Firefox/87.0")
-            .add("Accept",
-                "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+            .add(
+                "User-Agent",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:87.0) Gecko/20100101 Firefox/87.0"
+            )
+            .add(
+                "Accept",
+                "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+            )
             //                .add("Accept-Encoding", "gzip, deflate, br")
             .add("Accept-Language", "ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3")
             .add("Cache-Control", "no-cache")
@@ -275,11 +279,12 @@ fun String.getRequest(
     headers: Headers = ConnectManager.defaultHeaders,
     cacheControl: CacheControl = ConnectManager.defaultCacheControl,
 ): Request {
-    val temp = if (this.contains("http").not()) {
-        this.removePrefix("/").removePrefix("/")
-        "https://$this"
+    val prepare = trim().removeSurrounding("\"", "\"").trim()
+    val temp = if (prepare.contains("http").not()) {
+        prepare.removePrefix("/").removePrefix("/")
+        "https://$prepare"
     } else {
-        this
+        prepare
     }
 
     log("getRequest for $temp")

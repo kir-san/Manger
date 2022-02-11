@@ -27,6 +27,13 @@
         является отсутствие доступа к Internet.
     </string>
 
+    <string name="error_socket_timeout">
+        Во время загрузки произошла следующая ошибка: \n
+        %s \n
+        Попробуйте обновить страницу,\n
+        возможно плохое соединение с Internet.
+    </string>
+
     <string name="viewer_chapters_text">Главы: %1$d/%2$d</string>
     <string name="viewer_pages_text">Страницы: %1$d/%2$d</string>
 

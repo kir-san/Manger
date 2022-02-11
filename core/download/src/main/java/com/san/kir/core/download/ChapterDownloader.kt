@@ -170,7 +170,11 @@ class ChapterDownloader(
 
                 if (link.isEmpty()) return
 
-                contentLength = connectManager.downloadFile(file, link)
+                kotlin.runCatching {
+                    contentLength = connectManager.downloadFile(file, link)
+                }.onFailure { exception ->
+                    exception.printStackTrace()
+                }
 
                 // Если размер исходного и загруженного одинаков, то страница загружена
                 if (file.exists() && file.length() == contentLength) {

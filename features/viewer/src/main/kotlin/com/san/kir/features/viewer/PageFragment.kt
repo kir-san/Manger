@@ -23,6 +23,8 @@ import com.san.kir.features.viewer.databinding.PageBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import java.net.SocketException
+import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
 @AndroidEntryPoint
@@ -110,13 +112,22 @@ internal class PageFragment : Fragment() {
                     is LoadState.Error -> {
                         when (state.exception) {
                             is IllegalArgumentException -> {
-                                binding.errorText.text = getString(R.string.error_argument,
-                                    state.exception.localizedMessage)
+                                binding.errorText.text = getString(
+                                    R.string.error_argument,
+                                    state.exception.localizedMessage
+                                )
                             }
                             is UnknownHostException -> {
-                                binding.errorText.text = getString(R.string.error_host,
-                                    state.exception.localizedMessage)
-
+                                binding.errorText.text = getString(
+                                    R.string.error_host,
+                                    state.exception.localizedMessage
+                                )
+                            }
+                            is SocketTimeoutException, is SocketException -> {
+                                binding.errorText.text = getString(
+                                    R.string.error_socket_timeout,
+                                    state.exception.localizedMessage
+                                )
                             }
                         }
                         binding.errorText.isVisible = true

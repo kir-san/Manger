@@ -18,7 +18,7 @@ class CategoriesViewModel @Inject constructor(
 
     fun swapMenuItems(from: Int, to: Int) {
         viewModelScope.defaultLaunch {
-            val items = categoryDao.getItems()
+            val items = categoryDao.items()
             Collections.swap(items, from, to)
             items.onEachIndexed { i, m -> m.order = i }
             categoryDao.update(*items.toTypedArray())

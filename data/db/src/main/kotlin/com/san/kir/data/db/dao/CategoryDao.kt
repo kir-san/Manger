@@ -11,28 +11,16 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CategoryDao : BaseDao<Category> {
-    @Query("SELECT * FROM `${Category.tableName}` ORDER BY ${Category.Col.order}")
-    suspend fun getItems(): List<Category>
 
-    @Query("SELECT * FROM ${Category.tableName} WHERE ${Category.Col.id} IS :id")
-    suspend fun itemById(id: Long): Category
-
-    @Query("SELECT * FROM ${Category.tableName} WHERE ${Category.Col.name} IS :name")
-    suspend fun itemByName(name: String): Category
-
-    @Query("SELECT * FROM `${Category.tableName}` ORDER BY ${Category.Col.order}")
+    // Получение flow со списком всех элементов отсортированных по полю order
+    @Query("SELECT * FROM ${Category.tableName} ORDER BY ${Category.Col.order}")
     fun loadItems(): Flow<List<Category>>
 
-    @Query("SELECT * FROM `${Category.tableName}` WHERE `name` IS :name")
-    fun loadItem(name: String): Flow<Category>
-
-    @Query("SELECT * FROM ${Category.tableName} WHERE ${Category.Col.id} IS :id")
-    fun loadItemById(id: Long): Flow<Category>
-
-
+    // Получение flow со списком специальных элементов
     @Transaction
     @Query(
         "SELECT " +
+                "${Category.Col.id}, " +
                 "${Category.Col.name}, " +
                 "${Category.Col.typeSort}, " +
                 "${Category.Col.isReverseSort}, " +
@@ -40,12 +28,32 @@ interface CategoryDao : BaseDao<Category> {
                 "${Category.Col.spanLandscape}, " +
                 "${Category.Col.isLargePortrait}, " +
                 "${Category.Col.isLargeLandscape} " +
-                "FROM `${Category.tableName}` " +
+                "FROM ${Category.tableName} " +
                 "WHERE ${Category.Col.isVisible} IS 1 " +
                 "ORDER BY ${Category.Col.order}"
     )
     fun loadSpecItems(): Flow<List<CategoryWithMangas>>
+
+    // Получение flow с элементом по его названию
+    @Query("SELECT * FROM ${Category.tableName} WHERE ${Category.Col.name} IS :name")
+    fun loadItemByName(name: String): Flow<Category>
+
+    // Получение flow с элементом по его id
+    @Query("SELECT * FROM ${Category.tableName} WHERE ${Category.Col.id} IS :id")
+    fun loadItemById(id: Long): Flow<Category>
+
+    // Получение всех элементов отсортированных по полю Порядок
+    @Query("SELECT * FROM ${Category.tableName} ORDER BY ${Category.Col.order}")
+    suspend fun items(): List<Category>
+
+    // Получение элемента по его id
+    @Query("SELECT * FROM ${Category.tableName} WHERE ${Category.Col.id} IS :id")
+    suspend fun itemById(id: Long): Category
+
+    // Получение элемента по его названию
+    @Query("SELECT * FROM ${Category.tableName} WHERE ${Category.Col.name} IS :name")
+    suspend fun itemByName(name: String): Category
 }
 
-suspend fun CategoryDao.defaultCategory(ctx: Context) =
-    itemByName(ctx.CATEGORY_ALL)
+// Получение категории по умолчанию
+suspend fun CategoryDao.defaultCategory(ctx: Context) = itemByName(ctx.CATEGORY_ALL)

@@ -56,7 +56,7 @@ class CategoryEditViewModel @Inject constructor(
 
     fun setCategory(categoryName: String) = viewModelScope.defaultLaunch {
         if (categoryName.isNotEmpty()) {
-            _currentCategory.value = categoryDao.getItems().first { it.name == categoryName }
+            _currentCategory.value = categoryDao.itemByName(categoryName)
         } else {
             _hasCreatedNew.value = true
             _currentCategory.value = createNewCategory()
@@ -65,7 +65,7 @@ class CategoryEditViewModel @Inject constructor(
     }
 
     private suspend fun createNewCategory(): Category {
-        return Category(order = categoryDao.getItems().count() + 1)
+        return Category(order = categoryDao.items().count() + 1)
     }
 
     fun update(action: Category.() -> Unit) {

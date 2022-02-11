@@ -29,7 +29,7 @@ class OnlyCategoryViewModel @AssistedInject constructor(
     init {
         // инициация манги
         viewModelScope.defaultLaunch {
-            categoryDao.loadItem(categoryName).filterNotNull().collect { category ->
+            categoryDao.loadItemByName(categoryName).filterNotNull().collect { category ->
                 _category.value = category
             }
         }

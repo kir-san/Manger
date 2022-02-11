@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -45,7 +47,7 @@ import com.san.kir.manger.R
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun ChaptersItemContent(
+fun LazyItemScope.ChaptersItemContent(
     manga: Manga,
     chapter: Chapter,
     isSelected: Boolean,
@@ -73,6 +75,7 @@ fun ChaptersItemContent(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
+            .animateItemPlacement()
             .background(
                 when {
                     isSelected -> Color(0x9934b5e4)
@@ -203,9 +206,13 @@ fun ChaptersItemContent(
 @Preview
 @Composable
 fun PreviewChaptersItemContent() {
-    ChaptersItemContent(manga = Manga(),
-        chapter = Chapter(),
-        isSelected = false,
-        selectionMode = false,
-        onSelectItem = { })
+    LazyColumn {
+        item {
+            ChaptersItemContent(manga = Manga(),
+                                chapter = Chapter(),
+                                isSelected = false,
+                                selectionMode = false,
+                                onSelectItem = { })
+        }
+    }
 }

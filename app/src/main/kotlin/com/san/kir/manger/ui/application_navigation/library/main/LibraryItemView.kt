@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
@@ -44,7 +45,7 @@ import com.san.kir.manger.utils.compose.squareMaxSize
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun ItemView(
+private fun LazyItemScope.ItemView(
     nav: NavHostController,
     manga: SimplifiedManga,
     viewModel: LibraryViewModel,
@@ -59,6 +60,7 @@ private fun ItemView(
         shape = RoundedCornerShape(8.dp),
         border = BorderStroke(3.dp, backgroundColor),
         modifier = Modifier
+            .animateItemPlacement()
             .testTag(TestTags.Library.item)
             .padding(3.dp)
             .fillMaxWidth()
@@ -72,7 +74,7 @@ private fun ItemView(
 }
 
 @Composable
-fun LibraryLargeItemView(
+fun LazyItemScope.LibraryLargeItemView(
     nav: NavHostController,
     manga: SimplifiedManga,
     cat: String,
@@ -142,7 +144,7 @@ fun LibraryLargeItemView(
 }
 
 @Composable
-fun LibrarySmallItemView(
+fun LazyItemScope.LibrarySmallItemView(
     nav: NavHostController,
     manga: SimplifiedManga,
     cat: String,

@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
@@ -22,12 +23,15 @@ import com.san.kir.manger.foreground_work.workmanager.MangaDeleteWorker
 import com.san.kir.manger.utils.SortLibraryUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onEmpty
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
@@ -50,6 +54,12 @@ class LibraryViewModel @Inject constructor(
 
     var selectedManga by mutableStateOf(SelectedManga())
         private set
+
+    val selectedMangaCategory = snapshotFlow { selectedManga }
+        .flatMapLatest { categoryDao.loadItemById(it.manga.categoryId) }
+        .filterNotNull()
+        .map { it.name }
+        .stateIn(viewModelScope, SharingStarted.Lazily, "")
 
     val showCategory = dataStore.data.map { it.isShowCatagery }.flowOn(defaultDispatcher)
 

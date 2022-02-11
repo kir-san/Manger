@@ -63,8 +63,10 @@ fun LibraryDropUpMenu(nav: NavHostController, viewModel: LibraryViewModel) {
             viewModel.changeSelectedManga(false)
         }, modifier = Modifier.background(color = MaterialTheme.colors.primary)) {
             Text(
-                stringResource(R.string.library_popupmenu_title,
-                    viewModel.selectedManga.manga.name),
+                stringResource(
+                    R.string.library_popupmenu_title,
+                    viewModel.selectedManga.manga.name
+                ),
                 maxLines = 1, fontWeight = FontWeight.Bold
             )
         }
@@ -82,8 +84,10 @@ fun LibraryDropUpMenu(nav: NavHostController, viewModel: LibraryViewModel) {
                 stringResource(id = R.string.library_popupmenu_set_category),
                 modifier = Modifier.weight(1f)
             )
+
+            val categoryName by viewModel.selectedMangaCategory.collectAsState()
             Text(
-                text = viewModel.selectedManga.manga.category,
+                text = categoryName,
                 style = MaterialTheme.typography.subtitle2
             )
         }

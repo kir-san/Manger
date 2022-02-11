@@ -118,12 +118,7 @@ class LibraryViewModel @Inject constructor(
 
 
     fun updateCategory(newCategoryId: Long) = viewModelScope.defaultLaunch {
-        val currentManga = selectedManga.manga
-
-        mangaDao.itemById(currentManga.id).apply {
-            categoryId = newCategoryId
-            mangaDao.update(this)
-        }
+        mangaDao.update(selectedManga.manga.id, newCategoryId)
     }
 
     fun changeCurrentCategory(newCategoryWithMangas: CategoryWithMangas) {

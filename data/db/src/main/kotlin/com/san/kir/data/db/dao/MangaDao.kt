@@ -70,6 +70,14 @@ interface MangaDao : BaseDao<Manga> {
                 "WHERE ${Manga.Col.id} = :id"
     )
     fun update(id: Long, isUpdate: Boolean)
+
+    // Обновление поля categoryId
+    @Query(
+        "UPDATE ${Manga.tableName} " +
+                "SET ${Manga.Col.categoryId} = :categoryId " +
+                "WHERE ${Manga.Col.id} = :id"
+    )
+    fun update(id: Long, categoryId: Long)
 }
 
 // Получение элемента по его пути хранения

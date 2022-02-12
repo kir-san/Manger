@@ -7,6 +7,9 @@ import com.san.kir.data.models.base.Category
 import com.san.kir.data.models.base.Manga
 
 data class CategoryWithMangas(
+    @ColumnInfo(name = Category.Col.id)
+    var id: Long = 0,
+
     @ColumnInfo(name = Category.Col.name)
     var name: String = "",
 
@@ -29,8 +32,8 @@ data class CategoryWithMangas(
     var isLargeLandscape: Boolean = true,
 
     @Relation(
-        parentColumn = Category.Col.name,
-        entityColumn = Manga.Col.category,
+        parentColumn = Category.Col.id,
+        entityColumn = Manga.Col.categoryId,
         entity = Manga::class,
         projection = [
             Manga.Col.id,

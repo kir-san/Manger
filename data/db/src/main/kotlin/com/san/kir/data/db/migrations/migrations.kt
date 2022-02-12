@@ -4,9 +4,9 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.san.kir.core.support.ChapterFilter
 import com.san.kir.data.models.base.Category
+import com.san.kir.data.models.base.PlannedTask
 import com.san.kir.data.models.columns.DownloadColumn
 import com.san.kir.data.models.columns.MangaStatisticColumn
-import com.san.kir.data.models.columns.PlannedTaskColumn
 
 
 internal fun migrate(from: Int, to: Int, vararg sql: String) =
@@ -207,7 +207,7 @@ internal val migrations: Array<Migration> = arrayOf(
         "CREATE TABLE ${Category.tableName} (" +
                 "${Category.Col.id} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 "${Category.Col.name} TEXT NOT NULL, " +
-                "${Category.Col.order} INTEGER NOT NULL, " +
+                "`order` INTEGER NOT NULL, " +
                 "${Category.Col.isVisible} INTEGER NOT NULL, " +
                 "${Category.Col.typeSort} TEXT NOT NULL, " +
                 "${Category.Col.isReverseSort} INTEGER NOT NULL, " +
@@ -551,16 +551,19 @@ internal class MigrateForm {
     var from: Int = -1
     var to: Int = -1
 
+    var tmpTable: String = ""
+        private set
+
     fun query(sql: String) {
         queries = queries.plus(sql)
     }
 
     fun renameTableToTmp(tableName: String) {
-        query("ALTER TABLE $tableName RENAME TO ${tableName}_tmp")
+        tmpTable = "${tableName}_tmp"
+        query("ALTER TABLE $tableName RENAME TO $tmpTable")
     }
 
-    fun removeTmpTable(tableName: String) {
-        query("DROP TABLE ${tableName}_tmp")
+    fun removeTmpTable() {
+        query("DROP TABLE $tmpTable")
     }
-
 }

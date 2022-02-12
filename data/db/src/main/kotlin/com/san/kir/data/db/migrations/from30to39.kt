@@ -1,9 +1,5 @@
 package com.san.kir.data.db.migrations
 
-import androidx.room.DeleteColumn
-import androidx.room.DeleteTable
-import androidx.room.RenameColumn
-import androidx.room.migration.AutoMigrationSpec
 import com.san.kir.core.support.ChapterFilter
 import com.san.kir.core.support.DownloadState
 import com.san.kir.data.models.base.Chapter
@@ -53,10 +49,10 @@ internal val from34to35 = migrate {
                     "$id, unic, $host, $name, $authors, $logo, $about, $category, $genres, $path, " +
                     "$status, site, $color, $populate, `order`, $alternativeSort, $update, " +
                     "$filter, $alternativeSite " +
-                    "FROM ${Manga.tableName}_tmp"
+                    "FROM $tmpTable"
         )
 
-        removeTmpTable(Manga.tableName)
+        removeTmpTable()
     }
 }
 
@@ -86,10 +82,10 @@ internal val from35to36 = migrate {
                     "$id, $manga, $name, $date, $path, $isRead, site, $progress, $pages, $isInUpdate) " +
                     "SELECT " +
                     "$id, $manga, $name, $date, $path, $isRead, site, $progress, $pages, $isInUpdate " +
-                    "FROM ${Chapter.tableName}_tmp"
+                    "FROM $tmpTable"
         )
 
-        removeTmpTable(Chapter.tableName)
+        removeTmpTable()
     }
 }
 
@@ -126,10 +122,10 @@ internal val from36to37 = migrate {
                     "$id, $manga, $name, $date, $path, $isRead, site, $progress, $pages, $isInUpdate) " +
                     "SELECT " +
                     "$id, $manga, $name, $date, $path, $isRead, site, $progress, $pages, $isInUpdate " +
-                    "FROM ${Chapter.tableName}_tmp"
+                    "FROM $tmpTable"
         )
 
-        removeTmpTable(Chapter.tableName)
+        removeTmpTable()
     }
 }
 
@@ -165,10 +161,10 @@ internal val from37to38 = migrate {
                     "SELECT " +
                     "$id, $manga, $allChapters, $lastChapters, $allPages, $lastPages, $allTime, " +
                     "$lastTime, $maxSpeed, $downloadSize, $downloadTime, $openedTimes " +
-                    "FROM ${tableName}_tmp"
+                    "FROM $tmpTable"
         )
 
-        removeTmpTable(tableName)
+        removeTmpTable()
     }
 }
 
@@ -250,10 +246,10 @@ internal val from38to39 = migrate {
                     "$id, $host, $name, $authors, $logo, $about, categories, $genres, $path, $status, " +
                     "$color, $populate, `order`, $alternativeSort, $update, $filter, $alternativeSite, " +
                     "shortLink " +
-                    "FROM ${Manga.tableName}_tmp"
+                    "FROM $tmpTable"
         )
 
-        removeTmpTable(Manga.tableName)
+        removeTmpTable()
     }
 
     with(Chapter.Col) {
@@ -291,10 +287,10 @@ internal val from38to39 = migrate {
                     "$id, $manga, $name, $date, $path, $isRead, $link, $progress, $pages, $isInUpdate, " +
                     "$totalTime, $error, $totalSize, $downloadSize, $downloadPages, $totalPages, " +
                     "$status, `order` " +
-                    "FROM ${Chapter.tableName}_tmp"
+                    "FROM $tmpTable"
         )
 
-        removeTmpTable(Chapter.tableName)
+        removeTmpTable()
     }
 
     with(ShikiManga.Col) {

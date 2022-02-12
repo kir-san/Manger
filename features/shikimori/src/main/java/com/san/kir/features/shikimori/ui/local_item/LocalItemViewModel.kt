@@ -50,7 +50,7 @@ class LocalItemViewModel @Inject internal constructor(
             if (shikimoriDao.itemWhereLibId(item.id) != null) {
                 local(item.id)
             } else {
-                searchInLocal(item.name, "")
+                searchInLocal(item.name)
             }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), LocalSearch.Searching)
@@ -58,7 +58,7 @@ class LocalItemViewModel @Inject internal constructor(
     // Поиск в БД подходящей по названию манги
     // Так как сайт предоставляет названия на русском и английском,
     // то используем оба для повышения точности поиска
-    private fun searchInLocal(name: String, name2: String): Flow<LocalSearch> {
+    private fun searchInLocal(name: String): Flow<LocalSearch> {
         return shikimoriDao.items().map { list ->
             val filtered = list.map { manga ->
 

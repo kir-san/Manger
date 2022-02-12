@@ -64,11 +64,10 @@ class ShikimoriViewModel @Inject internal constructor(
                 newItem
             }
 
-            dbItem = dbItem.copy(manga = manager.manga(auth.value, rate))
-
-            shikimoriDao.update(dbItem)
-
-            delay(300L) // искуственное замедление, чтобы не превышать ограничения сервера
+            manager.manga(auth.value, rate)?.let { shikiManga ->
+                dbItem = dbItem.copy(manga = shikiManga)
+                shikimoriDao.update(dbItem)
+            }
         }
     }
 

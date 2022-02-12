@@ -4,6 +4,7 @@ import com.san.kir.core.utils.log
 import com.san.kir.data.models.base.ShikimoriAccount
 import com.san.kir.data.models.datastore.ShikimoriAuth
 import com.san.kir.data.store.TokenStore
+import kotlinx.coroutines.delay
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -16,14 +17,14 @@ import javax.inject.Singleton
 
 @Singleton
 internal class Repository @Inject constructor(
-    interceptor: ShikimoriInterceptor,
+    shikiInterceptor: ShikimoriInterceptor,
     private val store: TokenStore,
 ) {
     private val logging = HttpLoggingInterceptor().apply {
         setLevel(HttpLoggingInterceptor.Level.BASIC)
     }
     private val client = OkHttpClient().newBuilder()
-        .addInterceptor(interceptor)
+        .addInterceptor(shikiInterceptor)
         .addInterceptor(logging)
         .build()
 
@@ -67,11 +68,43 @@ internal class Repository @Inject constructor(
         ).await()
     }
 
-    suspend fun manga(auth: ShikimoriAuth, target: ShikimoriAccount.Rate): ShikimoriAccount.Manga {
-        return service.manga(
-            checkToken(auth.token),
-            target_id = target.target_id
-        ).await()
+    // Получение манги с сайта
+    suspend fun manga(auth: ShikimoriAuth, target: ShikimoriAccount.Rate): ShikimoriAccount.Manga? {
+
+        var retryCount = 3
+        var manga: ShikimoriAccount.Manga? = null
+
+        // Дается три попытки получить валидный ответ
+        while (retryCount != 0) {
+            retryCount--
+
+            kotlin.runCatching {
+                manga = service.manga(
+                    checkToken(auth.token),
+                    target_id = target.target_id
+                ).await()
+            }.fold(
+                onSuccess = {
+                    retryCount = 0
+
+                    // Преобразование url лого в корректное состояние
+                    manga?.let { item ->
+                        manga = item.copy(
+                            image = ShikimoriAccount.Image(
+                                ShikimoriData.baseUrl + item.image.original
+                            )
+                        )
+                    }
+                },
+                onFailure = {
+                    // при получении ошибки ждем некоторое время, так как единственная ошибка
+                    // которая появлялась связанна с частыми обращениями к сайту
+                    delay(300L)
+                    log("delay manga on $retryCount retry")
+                }
+            )
+        }
+        return manga
     }
 
     suspend fun update(auth: ShikimoriAuth, target: ShikimoriAccount.Rate): ShikimoriAccount.Rate {
@@ -93,13 +126,12 @@ internal class Repository @Inject constructor(
 internal class ShikimoriInterceptor @Inject constructor() : Interceptor {
     // Добавление юзер агента в каждый запрос
     override fun intercept(chain: Interceptor.Chain): Response {
+        val request = chain.request()
+        val originalResponse = chain.proceed(request)
 
-        return chain.proceed(
-            chain.request()
-                .newBuilder()
-                .header("User-Agent", "manger")
-                .build()
-        )
+        return originalResponse
+            .newBuilder()
+            .header("User-Agent", "manger")
+            .build()
     }
 }
-

@@ -24,6 +24,3 @@ object ShikimoriData {
     fun authToken(token: String) = "Bearer $token"
 
 }
-
-val ShikimoriAccount.Manga.avatar: String
-    get() = if (image.original.isNotEmpty()) ShikimoriData.baseUrl + image.original else ""

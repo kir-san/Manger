@@ -37,7 +37,7 @@ object ShikimoriAccount {
         val url: String = "",
         val chapters: Long = 0,
         val genres: List<Genre> = emptyList(),
-        val description: String = "",
+        val description: String? = "",
         val english: List<String>? = emptyList(),
     )
 

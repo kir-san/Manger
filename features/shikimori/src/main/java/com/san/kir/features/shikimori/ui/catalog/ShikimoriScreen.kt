@@ -10,17 +10,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Login
-import androidx.compose.material.icons.filled.Logout
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.imePadding
@@ -30,20 +25,14 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.MenuIcon
 import com.san.kir.core.compose_utils.ScrollableTabs
 import com.san.kir.core.compose_utils.TopBarScreen
-import com.san.kir.data.models.base.ShikiManga
 import com.san.kir.data.models.base.ShikimoriAccount
-import com.san.kir.data.models.extend.SimplefiedMangaWithChapterCounts
 import com.san.kir.features.shikimori.AuthActivity
 import com.san.kir.features.shikimori.R
-import com.san.kir.features.shikimori.avatar
 import com.san.kir.features.shikimori.ui.util.IconLoginOrNot
 import com.san.kir.features.shikimori.ui.util.MangaItemContent
 import com.san.kir.features.shikimori.ui.util.textLoginOrNot
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalPagerApi::class)
 @Composable

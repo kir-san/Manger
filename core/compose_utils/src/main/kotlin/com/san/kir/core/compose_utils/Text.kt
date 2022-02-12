@@ -38,7 +38,7 @@ fun LabelText(idRes: Int) {
     Text(
         text = stringResource(id = idRes),
         fontSize = 15.sp,
-        modifier = Modifier.padding(bottom = 0.dp, top = 5.dp)
+        modifier = Modifier.padding(bottom = Dimensions.zero, top = Dimensions.small)
     )
 }
 
@@ -114,15 +114,16 @@ fun CheckBoxText(
 
 @Composable
 fun CheckBoxText(
+    modifier: Modifier = Modifier,
     state: Boolean,
     onChange: (Boolean) -> Unit,
     firstText: String,
-    secondText: String = "",
-    modifier: Modifier = Modifier
+    secondText: String = ""
 ) {
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .clickable { onChange(state.not()) },
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onChange(state.not()) },
         verticalAlignment = Alignment.CenterVertically
     ) {
 

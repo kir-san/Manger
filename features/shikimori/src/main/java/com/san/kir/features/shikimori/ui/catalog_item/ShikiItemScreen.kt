@@ -36,9 +36,7 @@ import com.san.kir.core.compose_utils.TopBarScreenList
 import com.san.kir.core.compose_utils.rememberImage
 import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.ShikimoriAccount
-import com.san.kir.data.models.extend.SimplefiedMangaWithChapterCounts
 import com.san.kir.features.shikimori.R
-import com.san.kir.features.shikimori.avatar
 import com.san.kir.features.shikimori.ui.util.ItemHeader
 import com.san.kir.features.shikimori.ui.util.MangaItemContent
 import com.san.kir.features.shikimori.ui.util.StatusText
@@ -70,11 +68,11 @@ fun ShikiItemScreen(
     ) {
         item {
             Head(
-                item.manga.avatar,
-                item.rate.chapters,
-                item.manga.chapters,
-                item.rate.status,
-                item.manga.description,
+                item.logo,
+                item.read,
+                item.all,
+                item.status,
+                item.description,
             )
         }
 
@@ -110,8 +108,10 @@ internal fun Head(
     var showFullDesc by remember { mutableStateOf(false) }
 
     Row(modifier = Modifier.fillMaxWidth()) {
-        Image(rememberImage(avatar), contentDescription = "manga avatar",
-            modifier = Modifier.width(Dimensions.bigImageSize))
+        Image(
+            rememberImage(avatar), contentDescription = "manga avatar",
+            modifier = Modifier.width(Dimensions.bigImageSize)
+        )
         Column(modifier = Modifier.weight(1f, true)) {
             Text(stringResource(R.string.reading, readingChapters, allChapters))
 
@@ -151,8 +151,10 @@ internal fun LazyListScope.body(
     when (localSearch) {
         // Поиск в базе данных, подходящей по названию манги
         SyncState.Find -> item {
-            Row(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
                 CircularProgressIndicator()
                 Text(stringResource(R.string.local_search_searching))
             }
@@ -216,9 +218,12 @@ internal fun Dialogs(
                     Text(stringResource(R.string.local_search_dialog_diff_title))
                 },
                 text = {
-                    Text(stringResource(R.string.local_search_dialog_diffall_text,
-                        dialogState.local,
-                        dialogState.online))
+                    Text(
+                        stringResource(
+                            R.string.local_search_dialog_diffall_text,
+                            dialogState.local, dialogState.online
+                        )
+                    )
                 },
                 confirmButton = {
                     TextButton(onClick = { checkReadChapters(dialogState.manga) }) {
@@ -239,9 +244,12 @@ internal fun Dialogs(
                     Text(stringResource(R.string.local_search_dialog_diff_title))
                 },
                 text = {
-                    Text(stringResource(R.string.local_search_dialog_diffread_text,
-                        dialogState.local,
-                        dialogState.online))
+                    Text(
+                        stringResource(
+                            R.string.local_search_dialog_diffread_text,
+                            dialogState.local, dialogState.online
+                        )
+                    )
                 },
                 confirmButton = {
                     TextButton(onClick = { launchSync(dialogState.manga, false) }) {

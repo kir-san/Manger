@@ -334,69 +334,69 @@ internal val migrations: Array<Migration> = arrayOf(
     ),
     migrate(
         27, 28,
-        "CREATE TABLE IF NOT EXISTS `${PlannedTaskColumn.tableName}` (" +
-                "`${PlannedTaskColumn.id}` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                "`${PlannedTaskColumn.manga}` TEXT NOT NULL, " +
-                "`${PlannedTaskColumn.groupName}` TEXT NOT NULL, " +
-                "`${PlannedTaskColumn.groupContent}` TEXT NOT NULL, " +
-                "`${PlannedTaskColumn.category}` TEXT NOT NULL, " +
-                "`${PlannedTaskColumn.type}` INTEGER NOT NULL, " +
-                "`${PlannedTaskColumn.isEnabled}` INTEGER NOT NULL, " +
-                "`${PlannedTaskColumn.period}` INTEGER NOT NULL, " +
-                "`${PlannedTaskColumn.dayOfWeek}` INTEGER NOT NULL, " +
-                "`${PlannedTaskColumn.hour}` INTEGER NOT NULL, " +
-                "`${PlannedTaskColumn.minute}` INTEGER NOT NULL, " +
-                "`${PlannedTaskColumn.addedTime}` INTEGER NOT NULL, " +
-                "`${PlannedTaskColumn.errorMessage}` TEXT NOT NULL)"
+        "CREATE TABLE IF NOT EXISTS `${PlannedTask.tableName}` (" +
+                "`${PlannedTask.Col.id}` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "`${PlannedTask.Col.manga}` TEXT NOT NULL, " +
+                "`${PlannedTask.Col.groupName}` TEXT NOT NULL, " +
+                "`${PlannedTask.Col.groupContent}` TEXT NOT NULL, " +
+                "`${PlannedTask.Col.category}` TEXT NOT NULL, " +
+                "`${PlannedTask.Col.type}` INTEGER NOT NULL, " +
+                "`${PlannedTask.Col.isEnabled}` INTEGER NOT NULL, " +
+                "`${PlannedTask.Col.period}` INTEGER NOT NULL, " +
+                "`${PlannedTask.Col.dayOfWeek}` INTEGER NOT NULL, " +
+                "`${PlannedTask.Col.hour}` INTEGER NOT NULL, " +
+                "`${PlannedTask.Col.minute}` INTEGER NOT NULL, " +
+                "`${PlannedTask.Col.addedTime}` INTEGER NOT NULL, " +
+                "`${PlannedTask.Col.errorMessage}` TEXT NOT NULL)"
     ),
     migrate(
         28, 29,
-        "ALTER TABLE ${PlannedTaskColumn.tableName} RENAME TO tmp_${PlannedTaskColumn.tableName}",
-        "CREATE TABLE IF NOT EXISTS `${PlannedTaskColumn.tableName}` (" +
-                "`${PlannedTaskColumn.id}` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                "`${PlannedTaskColumn.manga}` TEXT NOT NULL, " +
-                "`${PlannedTaskColumn.groupName}` TEXT NOT NULL, " +
-                "`${PlannedTaskColumn.groupContent}` TEXT NOT NULL, " +
-                "`${PlannedTaskColumn.category}` TEXT NOT NULL, " +
-                "`${PlannedTaskColumn.catalog}` TEXT NOT NULL DEFAULT ``, " +
-                "`${PlannedTaskColumn.type}` INTEGER NOT NULL, " +
-                "`${PlannedTaskColumn.isEnabled}` INTEGER NOT NULL, " +
-                "`${PlannedTaskColumn.period}` INTEGER NOT NULL, " +
-                "`${PlannedTaskColumn.dayOfWeek}` INTEGER NOT NULL, " +
-                "`${PlannedTaskColumn.hour}` INTEGER NOT NULL, " +
-                "`${PlannedTaskColumn.minute}` INTEGER NOT NULL, " +
-                "`${PlannedTaskColumn.addedTime}` INTEGER NOT NULL, " +
-                "`${PlannedTaskColumn.errorMessage}` TEXT NOT NULL)",
-        "INSERT INTO ${PlannedTaskColumn.tableName}(" +
-                "`${PlannedTaskColumn.id}`, " +
-                "`${PlannedTaskColumn.manga}`, " +
-                "`${PlannedTaskColumn.groupName}`, " +
-                "`${PlannedTaskColumn.groupContent}`, " +
-                "`${PlannedTaskColumn.category}`, " +
-                "`${PlannedTaskColumn.type}`, " +
-                "`${PlannedTaskColumn.isEnabled}`, " +
-                "`${PlannedTaskColumn.period}`, " +
-                "`${PlannedTaskColumn.dayOfWeek}`, " +
-                "`${PlannedTaskColumn.hour}`, " +
-                "`${PlannedTaskColumn.minute}`, " +
-                "`${PlannedTaskColumn.addedTime}`, " +
-                "`${PlannedTaskColumn.errorMessage}`) " +
+        "ALTER TABLE ${PlannedTask.tableName} RENAME TO tmp_${PlannedTask.tableName}",
+        "CREATE TABLE IF NOT EXISTS `${PlannedTask.tableName}` (" +
+                "`${PlannedTask.Col.id}` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "`${PlannedTask.Col.manga}` TEXT NOT NULL, " +
+                "`${PlannedTask.Col.groupName}` TEXT NOT NULL, " +
+                "`${PlannedTask.Col.groupContent}` TEXT NOT NULL, " +
+                "`${PlannedTask.Col.category}` TEXT NOT NULL, " +
+                "`${PlannedTask.Col.catalog}` TEXT NOT NULL DEFAULT ``, " +
+                "`${PlannedTask.Col.type}` INTEGER NOT NULL, " +
+                "`${PlannedTask.Col.isEnabled}` INTEGER NOT NULL, " +
+                "`${PlannedTask.Col.period}` INTEGER NOT NULL, " +
+                "`${PlannedTask.Col.dayOfWeek}` INTEGER NOT NULL, " +
+                "`${PlannedTask.Col.hour}` INTEGER NOT NULL, " +
+                "`${PlannedTask.Col.minute}` INTEGER NOT NULL, " +
+                "`${PlannedTask.Col.addedTime}` INTEGER NOT NULL, " +
+                "`${PlannedTask.Col.errorMessage}` TEXT NOT NULL)",
+        "INSERT INTO ${PlannedTask.tableName}(" +
+                "`${PlannedTask.Col.id}`, " +
+                "`${PlannedTask.Col.manga}`, " +
+                "`${PlannedTask.Col.groupName}`, " +
+                "`${PlannedTask.Col.groupContent}`, " +
+                "`${PlannedTask.Col.category}`, " +
+                "`${PlannedTask.Col.type}`, " +
+                "`${PlannedTask.Col.isEnabled}`, " +
+                "`${PlannedTask.Col.period}`, " +
+                "`${PlannedTask.Col.dayOfWeek}`, " +
+                "`${PlannedTask.Col.hour}`, " +
+                "`${PlannedTask.Col.minute}`, " +
+                "`${PlannedTask.Col.addedTime}`, " +
+                "`${PlannedTask.Col.errorMessage}`) " +
                 "SELECT " +
-                "`${PlannedTaskColumn.id}`, " +
-                "`${PlannedTaskColumn.manga}`, " +
-                "`${PlannedTaskColumn.groupName}`, " +
-                "`${PlannedTaskColumn.groupContent}`, " +
-                "`${PlannedTaskColumn.category}`, " +
-                "`${PlannedTaskColumn.type}`, " +
-                "`${PlannedTaskColumn.isEnabled}`, " +
-                "`${PlannedTaskColumn.period}`, " +
-                "`${PlannedTaskColumn.dayOfWeek}`, " +
-                "`${PlannedTaskColumn.hour}`, " +
-                "`${PlannedTaskColumn.minute}`, " +
-                "`${PlannedTaskColumn.addedTime}`, " +
-                "`${PlannedTaskColumn.errorMessage}` " +
-                "FROM tmp_${PlannedTaskColumn.tableName}",
-        "DROP TABLE tmp_${PlannedTaskColumn.tableName}"
+                "`${PlannedTask.Col.id}`, " +
+                "`${PlannedTask.Col.manga}`, " +
+                "`${PlannedTask.Col.groupName}`, " +
+                "`${PlannedTask.Col.groupContent}`, " +
+                "`${PlannedTask.Col.category}`, " +
+                "`${PlannedTask.Col.type}`, " +
+                "`${PlannedTask.Col.isEnabled}`, " +
+                "`${PlannedTask.Col.period}`, " +
+                "`${PlannedTask.Col.dayOfWeek}`, " +
+                "`${PlannedTask.Col.hour}`, " +
+                "`${PlannedTask.Col.minute}`, " +
+                "`${PlannedTask.Col.addedTime}`, " +
+                "`${PlannedTask.Col.errorMessage}` " +
+                "FROM tmp_${PlannedTask.tableName}",
+        "DROP TABLE tmp_${PlannedTask.tableName}"
     ),
     migrate(
         29, 30,

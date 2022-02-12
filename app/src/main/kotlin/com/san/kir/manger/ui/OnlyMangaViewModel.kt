@@ -34,6 +34,7 @@ class OnlyMangaViewModel @AssistedInject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val categoryName = manga
         .flatMapLatest { categoryDao.loadItemById(it.categoryId) }
+         .filterNotNull()
         .map { it.name }
         .stateIn(viewModelScope, SharingStarted.Lazily, "")
 

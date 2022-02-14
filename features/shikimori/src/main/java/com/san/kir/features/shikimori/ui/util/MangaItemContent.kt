@@ -1,5 +1,6 @@
 package com.san.kir.features.shikimori.ui.util
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -7,6 +8,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -24,8 +27,9 @@ import com.san.kir.core.compose_utils.rememberImage
 import com.san.kir.data.models.base.ShikimoriAccount
 import com.san.kir.features.shikimori.R
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun MangaItemContent(
+internal fun LazyItemScope.MangaItemContent(
     avatar: String,
     mangaName: String,
     readingChapters: Long,
@@ -36,6 +40,7 @@ internal fun MangaItemContent(
 ) {
     Row(
         modifier = Modifier
+            .animateItemPlacement()
             .clickable(onClick = onClick)
             .fillMaxWidth()
             .padding(vertical = Dimensions.small),
@@ -73,12 +78,16 @@ internal fun MangaItemContent(
 @Preview
 @Composable
 internal fun ListItemContentPreview() {
-    MangaItemContent(
-        avatar = "",
-        mangaName = "item.manga.russian",
-        readingChapters = 10,
-        allChapters = 99,
-        isSynced = true,
-        currentStatus = ShikimoriAccount.Status.Planned
-    ) {}
+    LazyColumn {
+        item {
+            MangaItemContent(
+                avatar = "",
+                mangaName = "item.manga.russian",
+                readingChapters = 10,
+                allChapters = 99,
+                isSynced = true,
+                currentStatus = ShikimoriAccount.Status.Planned
+            ) {}
+        }
+    }
 }

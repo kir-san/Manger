@@ -4,43 +4,7 @@ import com.san.kir.data.models.base.Category
 import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.PlannedTask
 
-/*
-Таблица Category
-Переименовывание столбца "order" в "ordering"
-AutoMigration с этим справится не может
-*/
-internal val from39to40 = migrate {
-    from = 39
-    to = 40
 
-    with(Category.Col) {
-        renameTableToTmp(Category.tableName)
-
-        query(
-            "CREATE TABLE ${Category.tableName} (" +
-                    "$id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                    "$name TEXT NOT NULL, " +
-                    "$order INTEGER NOT NULL, " +
-                    "$isVisible INTEGER NOT NULL, " +
-                    "$typeSort TEXT NOT NULL, " +
-                    "$isReverseSort INTEGER NOT NULL, " +
-                    "$spanPortrait INTEGER NOT NULL DEFAULT 2, " +
-                    "$spanLandscape INTEGER NOT NULL DEFAULT 3, " +
-                    "$isLargePortrait INTEGER NOT NULL DEFAULT 1, " +
-                    "$isLargeLandscape INTEGER NOT NULL DEFAULT 1)"
-        )
-        query(
-            "INSERT INTO ${Category.tableName}(" +
-                    "$id, $name, $order, $isVisible, $typeSort, $isReverseSort, $spanPortrait, " +
-                    "$spanLandscape, $isLargePortrait, $isLargeLandscape) " +
-                    "SELECT " +
-                    "$id, $name, `order`, $isVisible, $typeSort, $isReverseSort, $spanPortrait, " +
-                    "$spanLandscape, $isLargePortrait, $isLargeLandscape " +
-                    "FROM $tmpTable"
-        )
-        removeTmpTable()
-    }
-}
 
 /*
 Таблица Manga
@@ -123,8 +87,6 @@ internal val from42to43 = migrate {
         )
     }
 }
-
-
 
 /*
 Удаление таблицы LatestChapters

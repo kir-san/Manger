@@ -2,13 +2,180 @@ package com.san.kir.data.db.migrations
 
 import com.san.kir.core.support.ChapterFilter
 import com.san.kir.core.support.DownloadState
+import com.san.kir.data.models.base.Category
 import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.ShikiManga
+import com.san.kir.data.models.columns.DownloadColumn
 import com.san.kir.data.models.columns.MangaStatisticColumn
 import com.san.kir.data.models.extend.SimplifiedManga
 import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
 
+/*
+Таблица chapters
+Добавление поля pages
+Храние списка страниц
+*/
+internal val from30to31 = migrate {
+    from = 30
+    to = 31
+
+    query("ALTER TABLE chapters RENAME TO tmp_chapters")
+    query(
+        "CREATE TABLE `chapters` (" +
+                "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "`manga` TEXT NOT NULL, " +
+                "`name` TEXT NOT NULL, " +
+                "`date` TEXT NOT NULL, " +
+                "`path` TEXT NOT NULL, " +
+                "`isRead` INTEGER NOT NULL, " +
+                "`site` TEXT NOT NULL, " +
+                "`progress` INTEGER NOT NULL, " +
+                "`pages` TEXT NOT NULL DEFAULT ``)"
+    )
+    query(
+        "INSERT INTO chapters(" +
+                "id, manga, name, date, path, isRead, site, progress) " +
+                "SELECT " +
+                "id, manga, name, date, path, isRead, site, progress " +
+                "FROM tmp_chapters"
+    )
+    query("DROP TABLE tmp_chapters")
+}
+
+/*
+Таблица manga
+Добавление поля chapterFilter
+Индивидуальная сортировка и фильтрация списка глав
+*/
+internal val from31to32 = migrate {
+    from = 31
+    to = 32
+
+    query("ALTER TABLE manga RENAME TO tmp_manga")
+    query(
+        "CREATE TABLE `manga` (" +
+                "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "`unic` TEXT NOT NULL, " +
+                "`host` TEXT NOT NULL, " +
+                "`name` TEXT NOT NULL, " +
+                "`authors` TEXT NOT NULL, " +
+                "`logo` TEXT NOT NULL, " +
+                "`about` TEXT NOT NULL, " +
+                "`categories` TEXT NOT NULL, " +
+                "`genres` TEXT NOT NULL, " +
+                "`path` TEXT NOT NULL, " +
+                "`status` TEXT NOT NULL, " +
+                "`site` TEXT NOT NULL, " +
+                "`color` INTEGER NOT NULL, " +
+                "`populate` INTEGER NOT NULL DEFAULT 0, " +
+                "`order` INTEGER NOT NULL DEFAULT 0, " +
+                "`isAlternativeSort` INTEGER NOT NULL DEFAULT 1, " +
+                "isUpdate INTEGER NOT NULL DEFAULT 1," +
+                "chapterFilter TEXT NOT NULL DEFAULT ${ChapterFilter.ALL_READ_ASC.name})"
+    )
+    query(
+        "INSERT INTO manga(" +
+                "id, unic, host, name, authors, logo, about, categories, genres, path, status, site, color, populate, `order`, isAlternativeSort, isUpdate) " +
+                "SELECT " +
+                "id, unic, host, name, authors, logo, about, categories, genres, path, status, site, color, populate, `order`, isAlternativeSort, isUpdate " +
+                "FROM tmp_manga"
+    )
+    query("DROP TABLE tmp_manga")
+}
+
+/*
+Таблица manga
+Добавление поля isAlternativeSite
+*/
+internal val from32to33 = migrate {
+    from = 32
+    to = 33
+
+    query("ALTER TABLE manga RENAME TO tmp_manga")
+
+    query(
+        "CREATE TABLE `manga` (" +
+                "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "`unic` TEXT NOT NULL, " +
+                "`host` TEXT NOT NULL, " +
+                "`name` TEXT NOT NULL, " +
+                "`authors` TEXT NOT NULL, " +
+                "`logo` TEXT NOT NULL, " +
+                "`about` TEXT NOT NULL, " +
+                "`categories` TEXT NOT NULL, " +
+                "`genres` TEXT NOT NULL, " +
+                "`path` TEXT NOT NULL, " +
+                "`status` TEXT NOT NULL, " +
+                "`site` TEXT NOT NULL, " +
+                "`color` INTEGER NOT NULL, " +
+                "`populate` INTEGER NOT NULL DEFAULT 0, " +
+                "`order` INTEGER NOT NULL DEFAULT 0, " +
+                "`isAlternativeSort` INTEGER NOT NULL DEFAULT 1, " +
+                "isUpdate INTEGER NOT NULL DEFAULT 1," +
+                "chapterFilter TEXT NOT NULL DEFAULT ${ChapterFilter.ALL_READ_ASC.name}," +
+                "isAlternativeSite INTEGER NOT NULL DEFAULT 0)"
+    )
+    query(
+        "INSERT INTO manga(" +
+                "id, unic, host, name, authors, logo, about, categories, genres, path, status, " +
+                "site, color, populate, `order`, isAlternativeSort, isUpdate, chapterFilter) " +
+                "SELECT " +
+                "id, unic, host, name, authors, logo, about, categories, genres, path, status, " +
+                "site, color, populate, `order`, isAlternativeSort, isUpdate, chapterFilter " +
+                "FROM tmp_manga"
+    )
+    query("DROP TABLE tmp_manga")
+}
+
+/*
+Таблица downloads
+Добавление поля error
+Индикация ошибки
+*/
+internal val from33to34 = migrate {
+    from = 33
+    to = 34
+
+    with(DownloadColumn) {
+        renameTableToTmp(tableName)
+
+        query(
+            "CREATE TABLE $tableName (" +
+                    "$id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                    "$manga TEXT NOT NULL DEFAULT ``, " +
+                    "$name TEXT NOT NULL, " +
+                    "$link TEXT NOT NULL, " +
+                    "$path TEXT NOT NULL, " +
+                    "$totalPages INTEGER NOT NULL, " +
+                    "$downloadPages INTEGER NOT NULL, " +
+                    "$totalSize INTEGER NOT NULL, " +
+                    "$downloadSize INTEGER NOT NULL, " +
+                    "$totalTime INTEGER NOT NULL, " +
+                    "$status INTEGER NOT NULL, " +
+                    "`$order` INTEGER NOT NULL, " +
+                    "$error INTEGER NOT NULL DEFAULT 0)",
+        )
+
+        query(
+            "INSERT INTO $tableName(" +
+                    "$id, $name, $link, $path, $totalPages, $downloadPages, $totalSize, " +
+                    "$downloadSize, $totalTime, $status, `$order`) " +
+                    "SELECT " +
+                    "$id, $name, $link, $path, $totalPages, $downloadPages, $totalSize, " +
+                    "$downloadSize, $totalTime, $status, `$order` " +
+                    "FROM $tmpTable",
+        )
+
+        removeTmpTable()
+    }
+}
+
+/*
+Таблица manga
+Добавление поля link
+Ссылка на страницу в интернете
+*/
 internal val from34to35 = migrate {
     from = 34
     to = 35
@@ -56,6 +223,11 @@ internal val from34to35 = migrate {
     }
 }
 
+/*
+Таблица chapters
+Добавление поля isInUpdate
+Отображение в обновлениях, на замену отдельной таблице LatestChapterss
+*/
 internal val from35to36 = migrate {
     from = 35
     to = 36
@@ -89,6 +261,11 @@ internal val from35to36 = migrate {
     }
 }
 
+/*
+Таблица chapters
+Добавление полей totalPages, downloadPages, totalSize, downloadSize, totalTime, status
+Объединение с таблицей downloads
+*/
 internal val from36to37 = migrate {
     from = 36
     to = 37
@@ -129,6 +306,11 @@ internal val from36to37 = migrate {
     }
 }
 
+/*
+Таблица statistic
+Добавление полей lastDownloadSize, lastDownloadTime
+Расширение статистики
+*/
 internal val from37to38 = migrate {
     from = 37
     to = 38
@@ -168,44 +350,17 @@ internal val from37to38 = migrate {
     }
 }
 
-@RenameColumn.Entries(
-    value = [
-        RenameColumn(
-            tableName = Chapter.tableName,
-            fromColumnName = "order",
-            toColumnName = Chapter.Col.order
-        ),
-        RenameColumn(
-            tableName = Manga.tableName,
-            fromColumnName = "categories",
-            toColumnName = Manga.Col.category
-        ),
-        RenameColumn(
-            tableName = Manga.tableName,
-            fromColumnName = "order",
-            toColumnName = Manga.Col.order
-        ),
-    ]
-)
-@DeleteColumn.Entries(
-    value = [
-        DeleteColumn(
-            tableName = Manga.tableName,
-            columnName = "unic"
-        ),
-        DeleteColumn(
-            tableName = Manga.tableName,
-            columnName = "site"
-        ),
-    ]
-)
-@DeleteTable.Entries(
-    value = [
-        DeleteTable(tableName = "downloads")
-    ]
-)
-internal class From38To39 : AutoMigrationSpec
+/*
+Удаление таблицы downloads
 
+Таблица manga
+Добавление поля categoryId (для более удобной работы с категориями)
+Переименовывание поля categories в category, order в ordering
+
+Таблица chapters
+Добавление поля mangaId (для более удобной работы с мангой)
+Переименовывание поля order в ordering
+*/
 internal val from38to39 = migrate {
     from = 38
     to = 39
@@ -335,4 +490,42 @@ internal val from38to39 = migrate {
 
                 "FROM ${Manga.tableName}"
     )
+}
+
+/*
+Таблица Category
+Переименовывание столбца "order" в "ordering"
+AutoMigration с этим справится не может
+*/
+internal val from39to40 = migrate {
+    from = 39
+    to = 40
+
+    with(Category.Col) {
+        renameTableToTmp(Category.tableName)
+
+        query(
+            "CREATE TABLE ${Category.tableName} (" +
+                    "$id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                    "$name TEXT NOT NULL, " +
+                    "$order INTEGER NOT NULL, " +
+                    "$isVisible INTEGER NOT NULL, " +
+                    "$typeSort TEXT NOT NULL, " +
+                    "$isReverseSort INTEGER NOT NULL, " +
+                    "$spanPortrait INTEGER NOT NULL DEFAULT 2, " +
+                    "$spanLandscape INTEGER NOT NULL DEFAULT 3, " +
+                    "$isLargePortrait INTEGER NOT NULL DEFAULT 1, " +
+                    "$isLargeLandscape INTEGER NOT NULL DEFAULT 1)"
+        )
+        query(
+            "INSERT INTO ${Category.tableName}(" +
+                    "$id, $name, $order, $isVisible, $typeSort, $isReverseSort, $spanPortrait, " +
+                    "$spanLandscape, $isLargePortrait, $isLargeLandscape) " +
+                    "SELECT " +
+                    "$id, $name, `order`, $isVisible, $typeSort, $isReverseSort, $spanPortrait, " +
+                    "$spanLandscape, $isLargePortrait, $isLargeLandscape " +
+                    "FROM $tmpTable"
+        )
+        removeTmpTable()
+    }
 }

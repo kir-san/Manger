@@ -7,7 +7,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.san.kir.core.compose_utils.TopBarScreenList
 import com.san.kir.core.support.R
-import com.san.kir.features.shikimori.ui.listItem.ShikimoriItem
+import com.san.kir.features.shikimori.ui.syncItem.ShikimoriItem
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable

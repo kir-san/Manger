@@ -1,4 +1,4 @@
-package com.san.kir.features.shikimori.ui.catalog
+package com.san.kir.features.shikimori.ui.main
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background

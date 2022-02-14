@@ -7,7 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.composable
-import com.san.kir.features.shikimori.ui.catalog.ShikimoriScreen
+import com.san.kir.features.shikimori.ui.main.ShikimoriScreen
 import com.san.kir.features.shikimori.ui.catalog_item.ShikiItemScreen
 import com.san.kir.features.shikimori.ui.catalog_item.ShikiItemViewModel
 import com.san.kir.features.shikimori.ui.local_item.LocalItemScreen

@@ -12,11 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.app.ComponentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.san.kir.features.shikimori.ui.catalog.ShikimoriScreen
-import com.san.kir.features.shikimori.ui.catalog.ShikimoriViewModel
+import com.san.kir.features.shikimori.ui.main.ShikimoriScreen
+import com.san.kir.features.shikimori.ui.main.ShikimoriViewModel
 import com.san.kir.features.shikimori.ui.catalog_item.ShikiItemScreen
 import com.san.kir.features.shikimori.ui.catalog_item.ShikiItemViewModel
-import com.san.kir.features.shikimori.ui.listItem.ShikimoriItem
+import com.san.kir.features.shikimori.ui.syncItem.ShikimoriItem
 
 fun ComponentActivity.setContent() {
     setContentView(

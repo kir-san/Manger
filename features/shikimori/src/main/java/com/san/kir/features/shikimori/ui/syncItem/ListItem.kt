@@ -1,4 +1,4 @@
-package com.san.kir.features.shikimori.ui.listItem
+package com.san.kir.features.shikimori.ui.syncItem
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -23,7 +23,7 @@ import com.san.kir.core.compose_utils.rememberImage
 import com.san.kir.features.shikimori.AuthActivity
 import com.san.kir.features.shikimori.R
 import com.san.kir.features.shikimori.ShikimoriData
-import com.san.kir.features.shikimori.ui.catalog.ShikimoriViewModel
+import com.san.kir.features.shikimori.ui.main.ShikimoriViewModel
 
 @Composable
 fun ShikimoriItem(

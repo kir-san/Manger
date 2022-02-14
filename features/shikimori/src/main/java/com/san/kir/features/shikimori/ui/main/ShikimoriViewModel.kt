@@ -1,4 +1,4 @@
-package com.san.kir.features.shikimori.ui.catalog
+package com.san.kir.features.shikimori.ui.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

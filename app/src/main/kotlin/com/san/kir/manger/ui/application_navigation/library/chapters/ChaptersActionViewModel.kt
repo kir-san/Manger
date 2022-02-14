@@ -10,7 +10,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.san.kir.core.download.DownloadService
 import com.san.kir.core.support.ChapterStatus
 import com.san.kir.core.utils.coroutines.defaultLaunch
-import com.san.kir.core.utils.coroutines.withDefaultContext
+import com.san.kir.core.utils.coroutines.withMainContext
+import com.san.kir.core.utils.toast
 import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.models.base.Manga
@@ -53,7 +54,7 @@ class ChaptersActionViewModel @AssistedInject constructor(
             }
             .size
 
-        withDefaultContext {
+        withMainContext {
             if (count == 0)
                 context.toast(R.string.list_chapters_selection_load_error)
             else
@@ -69,7 +70,7 @@ class ChaptersActionViewModel @AssistedInject constructor(
                 DownloadService.start(context, chapter)
             }
             .size
-        withDefaultContext {
+        withMainContext {
             if (count == 0)
                 context.toast(R.string.list_chapters_selection_load_error)
             else

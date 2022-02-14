@@ -1,6 +1,7 @@
 package com.san.kir.features.shikimori.ui.catalog
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -82,19 +85,19 @@ fun ShikimoriScreen(
                 modifier = Modifier.fillMaxSize(),
             ) {
                 if (it == 0) {
-                    CatalogContent(viewModel, onlineItems, navigateToShikiItem, authData.isLogin)
+                    CatalogContent(onlineItems, navigateToShikiItem, authData.isLogin)
                 } else {
-                    CatalogContent(viewModel, localItems, navigateToLocalItem)
+                    CatalogContent(localItems, navigateToLocalItem)
                 }
             }
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun CatalogContent(
-    viewModel: ShikimoriViewModel,
-    catalogItems: List<ShikimoriAccount.AbstractMangaItem>,
+    catalogItems: Map<Boolean, List<ShikimoriAccount.AbstractMangaItem>>,
     navigateToItem: (id: Long) -> Unit,
     isLogin: Boolean = true,
 ) {
@@ -115,18 +118,39 @@ internal fun CatalogContent(
                     CircularProgressIndicator()
                 }
         }
-        items(catalogItems) { item ->
-            val isSynced by viewModel.checkSyncedItem(item).collectAsState()
 
-            MangaItemContent(
-                avatar = item.logo,
-                mangaName = item.name,
-                readingChapters = item.read,
-                allChapters = item.all,
-                currentStatus = item.status,
-                isSynced = isSynced,
-                onClick = { navigateToItem(item.id) }
-            )
+        listOf(true, false).forEach { isSynced ->
+            val listItems = catalogItems[isSynced] ?: emptyList()
+
+            stickyHeader {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colors.background)
+                        .padding(Dimensions.small),
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    Text(
+                        stringResource(
+                            if (isSynced) R.string.synced_catalog_items
+                            else R.string.nonsynced_catalog_items,
+                            listItems.size
+                        )
+                    )
+                }
+            }
+
+            items(listItems) { item ->
+                MangaItemContent(
+                    avatar = item.logo,
+                    mangaName = item.name,
+                    readingChapters = item.read,
+                    allChapters = item.all,
+                    currentStatus = item.status,
+                    isSynced = isSynced,
+                    onClick = { navigateToItem(item.id) }
+                )
+            }
         }
     }
 }

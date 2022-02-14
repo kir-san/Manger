@@ -31,7 +31,10 @@ interface ShikimoriDao : BaseDao<ShikiManga> {
     @Query("DELETE FROM ${ShikiManga.tableName}")
     suspend fun clearAll()
 
-    @Query("SELECT * FROM ${SimplifiedMangaWithChapterCounts.viewName}")
+    @Query(
+        "SELECT * FROM ${SimplifiedMangaWithChapterCounts.viewName} " +
+                "ORDER BY ${Manga.Col.name}"
+    )
     fun loadLibraryItems(): Flow<List<SimplifiedMangaWithChapterCounts>>
 
     @Query("SELECT * FROM ${SimplifiedMangaWithChapterCounts.viewName} " +

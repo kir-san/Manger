@@ -11,6 +11,8 @@
     <string name="current_status">Текущий статус: %s</string>
     <string name="online_catalog">Манга из вашего профиля</string>
     <string name="local_catalog">Манга из библиотеки</string>
+    <string name="synced_catalog_items">Привязанные элементы %d</string>
+    <string name="nonsynced_catalog_items">Непривязанные элементы %d</string>
     <string name="desc_hide">свернуть</string>
     <string name="desc_show">развернуть</string>
 

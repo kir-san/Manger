@@ -15,9 +15,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.Update
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,11 +31,81 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.san.kir.core.compose_utils.Dimensions
+import com.san.kir.core.compose_utils.MenuIcon
+import com.san.kir.core.compose_utils.TopBarScreenList
 import com.san.kir.core.compose_utils.rememberImage
 import com.san.kir.data.models.base.ShikimoriAccount
 import com.san.kir.features.shikimori.R
 import com.san.kir.features.shikimori.ui.catalog_item.AskState
+import com.san.kir.features.shikimori.ui.catalog_item.CatalogItemViewModel
 import com.san.kir.features.shikimori.ui.catalog_item.SyncState
+import com.san.kir.features.shikimori.ui.local_item.LocalItemViewModel
+
+@Composable
+internal fun ItemScreen(
+    viewModel: CatalogItemViewModel,
+    navigateUp: () -> Unit,
+    navigateToSearch: (String) -> Unit,
+    findTextId: Int,
+    okTextId: Int,
+    foundsTextId: Int,
+    notFoundsTextId: Int,
+    notFoundsSearchTextId: Int,
+) {
+    val item by viewModel.item.collectAsState()
+    val syncState by viewModel.syncState.collectAsState()
+    val askState by viewModel.askState.collectAsState()
+    val hasAction by viewModel.hasForegroundWork.collectAsState()
+
+    TopBarScreenList(
+        navigateUp = navigateUp,
+        title = item.name,
+        actions = {
+            if (hasAction) {
+                CircularProgressIndicator()
+            } else {
+                MenuIcon(Icons.Default.Update, onClick = viewModel::updateDataFromNetwork)
+                if (syncState is SyncState.Ok) {
+                    MenuIcon(Icons.Default.Cancel, onClick = viewModel::askCancelSync)
+                }
+            }
+        }
+    ) {
+        item {
+            Head(
+                item.logo,
+                item.read,
+                item.all,
+                item.status,
+                item.description,
+            )
+        }
+
+        item {
+            Divider()
+        }
+
+        body(
+            syncState,
+            findTextId = findTextId,
+            okTextId = okTextId,
+            foundsTextId = foundsTextId,
+            notFoundsTextId = notFoundsTextId,
+            notFoundsSearchTextId = notFoundsSearchTextId,
+            onListItemClick = viewModel::checkAllChapters,
+            onSyncedItemClick = {},
+            onSearch = navigateToSearch
+        )
+    }
+
+    Dialogs(
+        askState,
+        closeDialog = viewModel::askNone,
+        checkReadChapters = viewModel::checkReadChapters,
+        launchSync = viewModel::launchSync,
+        cancelSync = viewModel::cancelSync
+    )
+}
 
 // Заголовок манги с описанием, данными и аватаркой
 @Composable

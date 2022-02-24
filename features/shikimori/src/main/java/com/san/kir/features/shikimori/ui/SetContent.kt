@@ -56,7 +56,7 @@ internal fun ShikimoriContent() {
                 ShikiItemScreen(
                     viewModel = viewModelItem,
                     navigateUp = { nav = ShikiNavTarget.Catalog },
-                    navigateToGlobalSearch = {}
+                    navigateToSearch = {}
                 )
             }
         }

@@ -23,6 +23,12 @@
     <string name="local_search_founds">Возможные варианты:</string>
     <string name="local_search_sync">Связанная манга из Библиотеки:</string>
 
+    <string name="online_search_searching">Поиск совпадений в Профиле</string>
+    <string name="online_search_not_founds">В Профиле нет ничего похожего</string>
+    <string name="online_search_not_founds_ex">Попробуйте поискать на сайте</string>
+    <string name="online_search_founds">Возможные варианты:</string>
+    <string name="online_search_sync">Связанная манга из Профиля:</string>
+
     <string name="local_search_dialog_diff_title">Внимание!!</string>
     <string name="local_search_dialog_diffall_text">
         Требуется ваше вмешательство!\n

@@ -41,7 +41,7 @@ class ShikiItemViewModel @Inject internal constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), ShikiManga())
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val localSearch: StateFlow<SyncState> = item
+    override val syncState: StateFlow<SyncState> = item
         .filter { it.name.isNotEmpty() }
         .flatMapLatest { item ->
             when (item.libMangaId) {
@@ -87,7 +87,7 @@ class ShikiItemViewModel @Inject internal constructor(
 
     // Получение связанной с элементом манги
     private fun local(id: Long): Flow<SyncState> {
-        return mangaDao.loadItemById(id)
+        return shikimoriDao.loadLibraryItem(id)
             .filterNotNull()
             .map { m -> SyncState.Ok(m) }
     }

@@ -39,6 +39,7 @@ abstract class CatalogItemViewModel internal constructor(
     }
 
     abstract val item: StateFlow<ShikimoriAccount.AbstractMangaItem>
+    abstract val syncState: StateFlow<SyncState>
 
     private val _hasForegroundWork = MutableStateFlow(false)
     val hasForegroundWork = _hasForegroundWork.asStateFlow()

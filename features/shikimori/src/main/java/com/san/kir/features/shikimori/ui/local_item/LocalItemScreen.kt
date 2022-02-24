@@ -1,4 +1,4 @@
-package com.san.kir.features.shikimori.ui.catalog_item
+package com.san.kir.features.shikimori.ui.local_item
 
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
@@ -11,24 +11,25 @@ import androidx.compose.runtime.getValue
 import com.san.kir.core.compose_utils.MenuIcon
 import com.san.kir.core.compose_utils.TopBarScreenList
 import com.san.kir.features.shikimori.R
+import com.san.kir.features.shikimori.ui.catalog_item.SyncState
 import com.san.kir.features.shikimori.ui.util.Dialogs
 import com.san.kir.features.shikimori.ui.util.Head
 import com.san.kir.features.shikimori.ui.util.body
 
 @Composable
-fun ShikiItemScreen(
-    viewModel: ShikiItemViewModel,
+fun LocalItemScreen(
+    viewModel: LocalItemViewModel,
     navigateUp: () -> Unit,
     navigateToSearch: (String) -> Unit,
 ) {
     val item by viewModel.item.collectAsState()
     val localSearch by viewModel.syncState.collectAsState()
-    val dialogState by viewModel.askState.collectAsState()
+    val askState by viewModel.askState.collectAsState()
     val hasAction by viewModel.hasForegroundWork.collectAsState()
 
     TopBarScreenList(
         navigateUp = navigateUp,
-        title = item.manga.russian,
+        title = item.name,
         actions = {
             if (hasAction) {
                 CircularProgressIndicator()
@@ -56,11 +57,11 @@ fun ShikiItemScreen(
 
         body(
             localSearch,
-            findTextId = R.string.local_search_searching,
-            okTextId = R.string.local_search_sync,
-            foundsTextId = R.string.local_search_founds,
-            notFoundsTextId = R.string.local_search_not_founds,
-            notFoundsSearchTextId = R.string.local_search_not_founds_ex,
+            findTextId = R.string.online_search_searching,
+            okTextId = R.string.online_search_sync,
+            foundsTextId = R.string.online_search_founds,
+            notFoundsTextId = R.string.online_search_not_founds,
+            notFoundsSearchTextId = R.string.online_search_not_founds_ex,
             onListItemClick = viewModel::checkAllChapters,
             onSyncedItemClick = {},
             onSearch = navigateToSearch
@@ -68,10 +69,13 @@ fun ShikiItemScreen(
     }
 
     Dialogs(
-        dialogState,
+        askState,
         closeDialog = viewModel::askNone,
         checkReadChapters = viewModel::checkReadChapters,
         launchSync = viewModel::launchSync,
         cancelSync = viewModel::cancelSync
     )
 }
+
+
+

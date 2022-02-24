@@ -5,7 +5,7 @@ import com.san.kir.data.models.base.ShikimoriAccount
 
 // Состояние связывания
 sealed interface SyncState {
-    class Ok(val manga: Manga) : SyncState
+    class Ok(val manga: ShikimoriAccount.AbstractMangaItem) : SyncState
     object NoFind : SyncState
     object Find : SyncState
     class Founds(val items: List<ShikimoriAccount.AbstractMangaItem>) : SyncState

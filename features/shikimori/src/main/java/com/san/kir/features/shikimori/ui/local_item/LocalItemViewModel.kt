@@ -10,6 +10,7 @@ import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
 import com.san.kir.data.store.TokenStore
 import com.san.kir.features.shikimori.Repository
 import com.san.kir.features.shikimori.ui.catalog_item.CatalogItemViewModel
+import com.san.kir.features.shikimori.ui.catalog_item.SyncState
 import com.san.kir.features.shikimori.ui.util.fuzzy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -44,7 +45,7 @@ class LocalItemViewModel @Inject internal constructor(
                  SimplifiedMangaWithChapterCounts())
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val localSearch: StateFlow<LocalSearch> = item
+    override val syncState: StateFlow<SyncState> = item
         .filter { it.name.isNotEmpty() }
         .flatMapLatest { item ->
             if (shikimoriDao.itemWhereLibId(item.id) != null) {
@@ -53,12 +54,12 @@ class LocalItemViewModel @Inject internal constructor(
                 searchInLocal(item.name)
             }
         }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), LocalSearch.Searching)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), SyncState.Find)
 
     // Поиск в БД подходящей по названию манги
     // Так как сайт предоставляет названия на русском и английском,
     // то используем оба для повышения точности поиска
-    private fun searchInLocal(name: String): Flow<LocalSearch> {
+    private fun searchInLocal(name: String): Flow<SyncState> {
         return shikimoriDao.items().map { list ->
             val filtered = list.map { manga ->
 
@@ -78,10 +79,10 @@ class LocalItemViewModel @Inject internal constructor(
 
             if (filtered.isEmpty()) {
                 // Возвращение пустого результата
-                LocalSearch.NotFounds(name)
+                SyncState.NotFounds(name)
             } else {
                 // Возвращение отсортированного списка
-                LocalSearch.Founds(
+                SyncState.Founds(
                     filtered
                         .sortedBy { (fuzzy, _) -> fuzzy }
                         .map { (_, manga) -> manga }
@@ -91,10 +92,10 @@ class LocalItemViewModel @Inject internal constructor(
     }
 
     // Получение связанной с элементом манги
-    private fun local(id: Long): Flow<LocalSearch> {
+    private fun local(id: Long): Flow<SyncState> {
         return shikimoriDao.loadItemWhereLibId(id)
             .filterNotNull()
-            .map { m -> LocalSearch.Sync(m) }
+            .map { m -> SyncState.Ok(m) }
     }
 
     override fun updateDataFromNetwork() = viewModelScope.defaultLaunch {

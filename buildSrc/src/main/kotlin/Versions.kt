@@ -66,7 +66,7 @@ object Versions {
     const val SUBSAMPLING = "3.10.0"
 
     // Make sure to update `buildSrc/build.gradle.kts` when updating this
-    const val GRADLE = "7.0.4"
+    const val GRADLE = "7.1.2"
 
     val JAVA = JavaVersion.VERSION_1_8
 

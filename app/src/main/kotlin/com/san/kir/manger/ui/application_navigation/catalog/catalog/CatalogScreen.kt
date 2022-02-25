@@ -87,6 +87,9 @@ import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewM
 import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewModel.Companion.POP
 import com.san.kir.manger.utils.compose.ListItem
 import com.san.kir.core.compose_utils.MenuIcon
+import com.san.kir.core.compose_utils.PreparedTopBar
+import com.san.kir.core.compose_utils.SearchTextField
+import com.san.kir.core.compose_utils.TopBarScreenList
 import com.san.kir.manger.utils.compose.navigate
 import kotlinx.coroutines.launch
 import java.net.URLDecoder
@@ -101,30 +104,38 @@ fun CatalogScreen(nav: NavHostController, viewModel: CatalogViewModel) {
     val items by viewModel.items.collectAsState()
     val action by viewModel.action.collectAsState()
 
-    Scaffold(
-        modifier = Modifier.navigationBarsWithImePadding(),
-        topBar = { TopBar(scaffoldState, viewModel) },
+    TopBarScreenList(
         scaffoldState = scaffoldState,
-        drawerContent = { DrawerContent(viewModel) },
-        bottomBar = { BottomBar(viewModel) }) {
+        topBar = {
+            var search by rememberSaveable { mutableStateOf(false) }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it)
-        ) {
-            if (action) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-            LazyColumn {
-                items(items = items, key = { item -> item.id }) { item ->
-                    ListItem(item, item.name, item.statusEdition,
-                        navAddAction = {
-                            nav.navigate(CatalogsNavTarget.AddLocal, item.link)
-                        },
-                        navInfoAction = {
-                            nav.navigate(CatalogsNavTarget.Info, item.link)
-                        })
+            Column(modifier = Modifier.fillMaxWidth()) {
+                PreparedTopBar(
+                    title = "${viewModel.siteName}: ${items.size}",
+                    scaffoldState = scaffoldState,
+                    actions = {
+                        MenuIcon(icon = Icons.Default.Search) { search = !search }
+                    }
+                )
+
+                AnimatedVisibility(visible = search) {
+                    SearchTextField(inititalValue = viewModel.searchText,
+                        onChangeValue = { viewModel.searchText = it })
                 }
+                if (action) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             }
+        },
+        drawerContent = { DrawerContent(viewModel) },
+        bottomBar = { BottomBar(viewModel) }
+    ) {
+        items(items = items, key = { item -> item.id }) { item ->
+            ListItem(item, item.name, item.statusEdition,
+                navAddAction = {
+                    nav.navigate(CatalogsNavTarget.AddLocal, item.link)
+                },
+                navInfoAction = {
+                    nav.navigate(CatalogsNavTarget.Info, item.link)
+                })
         }
     }
 
@@ -291,64 +302,6 @@ private fun ReloadDialog(
                 Text(text = stringResource(id = R.string.catalog_fot_one_site_redownload_cancel))
             }
         })
-}
-
-// Верхняя панель
-@OptIn(ExperimentalAnimationApi::class)
-@Composable
-private fun TopBar(
-    scaffoldState: ScaffoldState,
-    viewModel: CatalogViewModel,
-) {
-    val coroutineScope = rememberCoroutineScope()
-    var search by rememberSaveable { mutableStateOf(false) }
-    val items by viewModel.items.collectAsState()
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(0.dp)
-            .statusBarsPadding()
-    ) {
-        TopAppBar(
-            title = {
-                Text(text = "${viewModel.siteName}: ${items.size}")
-            },
-            navigationIcon = {
-                MenuIcon(icon = Icons.Default.Menu) {
-                    coroutineScope.launch {
-                        scaffoldState.drawerState.open()
-                    }
-                }
-            },
-            actions = {
-                MenuIcon(icon = Icons.Default.Search) {
-                    search = !search
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(0.dp)
-        )
-
-        AnimatedVisibility(visible = search) {
-            TextField(
-                value = viewModel.searchText,
-                onValueChange = {
-                    viewModel.searchText = it
-                },
-                leadingIcon = { Icon(Icons.Default.Search, "search") },
-                trailingIcon = {
-                    MenuIcon(icon = Icons.Default.Close) {
-                        viewModel.searchText = ""
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(0.dp)
-            )
-        }
-    }
 }
 
 // Боковое меню

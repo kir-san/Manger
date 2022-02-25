@@ -53,6 +53,7 @@ fun TopBarScreenWithInsets(
         PreparedTopBar(navigationButtonListener, title, subtitle, scaffoldState, actions)
     },
     listContent: (LazyListScope.() -> Unit)? = null,
+    bottomBar: @Composable () -> Unit = {},
     drawerContent: @Composable (ColumnScope.() -> Unit)? = null,
     paddingContent: @Composable ((PaddingValues) -> Unit)? = null,
     content: @Composable (ColumnScope.() -> Unit)? = null,
@@ -61,6 +62,7 @@ fun TopBarScreenWithInsets(
         scaffoldState = scaffoldState ?: rememberScaffoldState(),
         drawerContent = drawerContent,
         drawerGesturesEnabled = true,
+        bottomBar = bottomBar,
         topBar = topBar) { contentPadding ->
 
         paddingContent?.invoke(contentPadding)
@@ -176,16 +178,22 @@ fun TopBarScreenList(
     additionalPadding: Dp = Dimensions.small,
     title: String = "",
     subtitle: String = "",
+    scaffoldState: ScaffoldState? = null,
     topBar: @Composable () -> Unit = {
         PreparedTopBar(navigateUp, title, subtitle, null, actions)
     },
     actions: @Composable RowScope.() -> Unit = {},
+    bottomBar: @Composable () -> Unit = {},
+    drawerContent: @Composable (ColumnScope.() -> Unit)? = null,
     listContent: (LazyListScope.() -> Unit)? = null,
 ) {
     TopBarScreenWithInsets(
         modifier = modifier,
         additionalPadding = additionalPadding,
         topBar = topBar,
+        scaffoldState = scaffoldState ,
+        drawerContent = drawerContent,
+        bottomBar = bottomBar,
         listContent = listContent,
     )
 }

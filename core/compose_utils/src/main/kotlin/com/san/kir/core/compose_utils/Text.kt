@@ -16,13 +16,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Checkbox
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.insets.systemBarsPadding
 
 @Composable
 fun LabelText(idRes: Int) {
@@ -58,7 +65,7 @@ fun DialogText(text: String, color: Color = Color.Unspecified, onClick: (() -> U
 fun DropDownTextField(
     inititalValue: String,
     valuesList: List<String>,
-    onChangeValue: (String) -> Unit
+    onChangeValue: (String) -> Unit,
 ) {
     var field by remember { mutableStateOf(inititalValue) }
     onChangeValue(field)
@@ -118,7 +125,7 @@ fun CheckBoxText(
     state: Boolean,
     onChange: (Boolean) -> Unit,
     firstText: String,
-    secondText: String = ""
+    secondText: String = "",
 ) {
     Row(
         modifier = Modifier
@@ -146,3 +153,29 @@ fun CheckBoxText(
     }
 }
 
+// Настроенное текствое поле с кнопкой очистки
+@Composable
+fun SearchTextField(
+    inititalValue: String,
+    onChangeValue: (String) -> Unit,
+) {
+    var searchText by rememberSaveable { mutableStateOf(inititalValue) }
+
+    onChangeValue(searchText)
+
+    TextField(
+        value = searchText,
+        onValueChange = {
+            searchText = it
+        },
+        leadingIcon = { Icon(Icons.Default.Search, "search") },
+        trailingIcon = {
+            MenuIcon(icon = Icons.Default.Close) {
+                searchText = ""
+            }
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .systemBarsPadding(top = false, bottom = false)
+    )
+}

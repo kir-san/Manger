@@ -6,20 +6,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Icon
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -35,6 +28,7 @@ import com.san.kir.manger.R
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
 import com.san.kir.manger.utils.compose.ListItem
 import com.san.kir.core.compose_utils.MenuIcon
+import com.san.kir.core.compose_utils.SearchTextField
 import com.san.kir.manger.utils.compose.navigate
 
 // TODO добавить меню для исключения ненужных каталогов
@@ -42,7 +36,7 @@ import com.san.kir.manger.utils.compose.navigate
 fun GlobalSearchScreen(
     nav: NavHostController,
     viewModel: GlobalSearchViewModel = hiltViewModel(),
-    initSearchText: String
+    initSearchText: String,
 ) {
     val action by viewModel.action.collectAsState()
     val viewState by viewModel.state.collectAsState()
@@ -68,12 +62,12 @@ fun GlobalSearchScreen(
             ) {
                 items(items = viewState.items) { item ->
                     ListItem(item, item.name, item.catalogName,
-                             navAddAction = {
-                                 nav.navigate(CatalogsNavTarget.AddLocal, item.link)
-                             },
-                             navInfoAction = {
-                                 nav.navigate(CatalogsNavTarget.Info, item.link)
-                             })
+                        navAddAction = {
+                            nav.navigate(CatalogsNavTarget.AddLocal, item.link)
+                        },
+                        navInfoAction = {
+                            nav.navigate(CatalogsNavTarget.Info, item.link)
+                        })
                 }
             }
         }
@@ -88,10 +82,6 @@ private fun TopBar(
     viewModel: GlobalSearchViewModel,
     initSearchText: String,
 ) {
-    var searchText by rememberSaveable { mutableStateOf(initSearchText) }
-
-    viewModel.setSearchText(searchText)
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -118,20 +108,9 @@ private fun TopBar(
             )
         )
 
-        TextField(
-            value = searchText,
-            onValueChange = {
-                searchText = it
-            },
-            leadingIcon = { Icon(Icons.Default.Search, "search") },
-            trailingIcon = {
-                MenuIcon(icon = Icons.Default.Close) {
-                    searchText = ""
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .systemBarsPadding(top = false, bottom = false)
+        SearchTextField(
+            inititalValue = initSearchText,
+            onChangeValue = viewModel::setSearchText,
         )
     }
 }

@@ -176,6 +176,5 @@ fun SearchTextField(
         },
         modifier = Modifier
             .fillMaxWidth()
-            .systemBarsPadding(top = false, bottom = false)
     )
 }

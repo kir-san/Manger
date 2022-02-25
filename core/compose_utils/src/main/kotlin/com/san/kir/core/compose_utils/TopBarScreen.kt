@@ -49,58 +49,19 @@ fun TopBarScreenWithInsets(
     subtitle: String = "",
     additionalPadding: Dp = Dimensions.small,
     actions: @Composable RowScope.() -> Unit = {},
+    topBar: @Composable () -> Unit = {
+        PreparedTopBar(navigationButtonListener, title, subtitle, scaffoldState, actions)
+    },
     listContent: (LazyListScope.() -> Unit)? = null,
     drawerContent: @Composable (ColumnScope.() -> Unit)? = null,
     paddingContent: @Composable ((PaddingValues) -> Unit)? = null,
     content: @Composable (ColumnScope.() -> Unit)? = null,
 ) {
-    val coroutineScope = rememberCoroutineScope()
-
     Scaffold(modifier = modifier,
         scaffoldState = scaffoldState ?: rememberScaffoldState(),
         drawerContent = drawerContent,
         drawerGesturesEnabled = true,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(text = title, maxLines = 1)
-                        if (subtitle.isNotEmpty()) Text(
-                            text = subtitle,
-                            style = MaterialTheme.typography.subtitle2,
-                            maxLines = 1
-                        )
-                    }
-                },
-                navigationIcon = {
-                    if (scaffoldState == null) {
-                        IconButton(
-                            modifier = Modifier.testTag(TestTags.Drawer.nav_back),
-                            onClick = navigationButtonListener
-                        ) {
-                            Icon(Icons.Default.ArrowBack, "")
-                        }
-                    } else {
-                        IconButton(
-                            modifier = Modifier.testTag(TestTags.Drawer.drawer_open),
-                            onClick = {
-                                coroutineScope.launch {
-                                    scaffoldState.drawerState.open()
-                                }
-                            }) { Icon(Icons.Default.Menu, "") }
-                    }
-                },
-                modifier = Modifier
-                    .statusBarsPadding()
-                    .fillMaxWidth()
-                    .padding(0.dp),
-                actions = actions,
-                contentPadding = rememberInsetsPaddingValues(
-                    insets = LocalWindowInsets.current.systemBars,
-                    applyBottom = false, applyTop = false
-                )
-            )
-        }) { contentPadding ->
+        topBar = topBar) { contentPadding ->
 
         paddingContent?.invoke(contentPadding)
 
@@ -159,24 +120,23 @@ fun TopBarScreenWithInsets(
 
 @Composable
 fun TopBarScreen(
+    modifier: Modifier = Modifier,
     navHostController: NavHostController? = null,
     navigateUp: () -> Unit = { navHostController?.navigateUp() },
-    modifier: Modifier = Modifier,
     scaffoldState: ScaffoldState? = null,
     title: String = "",
     subtitle: String = "",
     additionalPadding: Dp = Dimensions.small,
+    topBar: @Composable () -> Unit = {
+        PreparedTopBar(navigateUp, title, subtitle, scaffoldState, actions)
+    },
     actions: @Composable RowScope.() -> Unit = {},
     drawerContent: @Composable (ColumnScope.() -> Unit)? = null,
     content: @Composable (PaddingValues) -> Unit,
 ) {
     TopBarScreenWithInsets(
         modifier = modifier,
-        scaffoldState = scaffoldState,
-        navigationButtonListener = navigateUp,
-        title = title,
-        subtitle = subtitle,
-        actions = actions,
+        topBar = topBar,
         paddingContent = content,
         drawerContent = drawerContent,
         additionalPadding = additionalPadding
@@ -185,24 +145,23 @@ fun TopBarScreen(
 
 @Composable
 fun TopBarScreenContent(
+    modifier: Modifier = Modifier,
     navHostController: NavHostController? = null,
     navigateUp: () -> Unit = { navHostController?.navigateUp() },
-    modifier: Modifier = Modifier,
     scaffoldState: ScaffoldState? = null,
     title: String = "",
     subtitle: String = "",
     additionalPadding: Dp = Dimensions.small,
+    topBar: @Composable () -> Unit = {
+        PreparedTopBar(navigateUp, title, subtitle, scaffoldState, actions)
+    },
     actions: @Composable RowScope.() -> Unit = {},
     drawerContent: @Composable (ColumnScope.() -> Unit)? = null,
     content: @Composable (ColumnScope.() -> Unit)? = null,
 ) {
     TopBarScreenWithInsets(
         modifier = modifier,
-        scaffoldState = scaffoldState,
-        navigationButtonListener = navigateUp,
-        title = title,
-        subtitle = subtitle,
-        actions = actions,
+        topBar = topBar,
         content = content,
         drawerContent = drawerContent,
         additionalPadding = additionalPadding
@@ -211,22 +170,73 @@ fun TopBarScreenContent(
 
 @Composable
 fun TopBarScreenList(
+    modifier: Modifier = Modifier,
     navHostController: NavHostController? = null,
     navigateUp: () -> Unit = { navHostController?.navigateUp() },
-    modifier: Modifier = Modifier,
     additionalPadding: Dp = Dimensions.small,
     title: String = "",
     subtitle: String = "",
+    topBar: @Composable () -> Unit = {
+        PreparedTopBar(navigateUp, title, subtitle, null, actions)
+    },
     actions: @Composable RowScope.() -> Unit = {},
     listContent: (LazyListScope.() -> Unit)? = null,
 ) {
     TopBarScreenWithInsets(
         modifier = modifier,
         additionalPadding = additionalPadding,
-        navigationButtonListener = navigateUp,
-        title = title,
-        subtitle = subtitle,
-        actions = actions,
+        topBar = topBar,
         listContent = listContent,
+    )
+}
+
+@Composable
+fun PreparedTopBar(
+    navigationButtonListener: () -> Unit = { },
+    title: String = "",
+    subtitle: String = "",
+    scaffoldState: ScaffoldState? = null,
+    actions: @Composable RowScope.() -> Unit = {},
+) {
+    val coroutineScope = rememberCoroutineScope()
+
+    TopAppBar(
+        title = {
+            Column {
+                Text(text = title, maxLines = 1)
+                if (subtitle.isNotEmpty()) Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.subtitle2,
+                    maxLines = 1
+                )
+            }
+        },
+        navigationIcon = {
+            if (scaffoldState == null) {
+                IconButton(
+                    modifier = Modifier.testTag(TestTags.Drawer.nav_back),
+                    onClick = navigationButtonListener
+                ) {
+                    Icon(Icons.Default.ArrowBack, "")
+                }
+            } else {
+                IconButton(
+                    modifier = Modifier.testTag(TestTags.Drawer.drawer_open),
+                    onClick = {
+                        coroutineScope.launch {
+                            scaffoldState.drawerState.open()
+                        }
+                    }) { Icon(Icons.Default.Menu, "") }
+            }
+        },
+        modifier = Modifier
+            .statusBarsPadding()
+            .fillMaxWidth()
+            .padding(0.dp),
+        actions = actions,
+        contentPadding = rememberInsetsPaddingValues(
+            insets = LocalWindowInsets.current.systemBars,
+            applyBottom = false, applyTop = false
+        )
     )
 }

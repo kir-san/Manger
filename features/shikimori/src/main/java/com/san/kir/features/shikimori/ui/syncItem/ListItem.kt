@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.Styles
 import com.san.kir.core.compose_utils.rememberImage
+import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
 import com.san.kir.features.shikimori.AuthActivity
 import com.san.kir.features.shikimori.R
 import com.san.kir.features.shikimori.ShikimoriData
@@ -55,6 +56,8 @@ internal fun LoginOrNot(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = navigateToManager)
+            .padding(vertical = Dimensions.smallest, horizontal = Dimensions.default)
+            .padding(systemBarsHorizontalPadding())
     ) {
         Image(
             rememberImage(ShikimoriData.iconUrl),

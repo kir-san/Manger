@@ -7,7 +7,6 @@ import android.content.IntentFilter
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,21 +29,14 @@ import androidx.compose.material.BottomAppBar
 import androidx.compose.material.Button
 import androidx.compose.material.Checkbox
 import androidx.compose.material.DrawerValue
-import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.IconToggleButton
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.material.TextField
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material.icons.filled.SortByAlpha
@@ -76,8 +68,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.google.accompanist.insets.navigationBarsWithImePadding
-import com.google.accompanist.insets.statusBarsPadding
+import com.google.accompanist.insets.systemBarsPadding
+import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.utils.log
 import com.san.kir.manger.R
 import com.san.kir.manger.foreground_work.services.CatalogForOneSiteUpdaterService
@@ -90,6 +82,11 @@ import com.san.kir.core.compose_utils.MenuIcon
 import com.san.kir.core.compose_utils.PreparedTopBar
 import com.san.kir.core.compose_utils.SearchTextField
 import com.san.kir.core.compose_utils.TopBarScreenList
+import com.san.kir.core.compose_utils.systemBarBottomPadding
+import com.san.kir.core.compose_utils.systemBarEndPadding
+import com.san.kir.core.compose_utils.systemBarStartPadding
+import com.san.kir.core.compose_utils.systemBarTopPadding
+import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
 import com.san.kir.manger.utils.compose.navigate
 import kotlinx.coroutines.launch
 import java.net.URLDecoder
@@ -126,7 +123,8 @@ fun CatalogScreen(nav: NavHostController, viewModel: CatalogViewModel) {
             }
         },
         drawerContent = { DrawerContent(viewModel) },
-        bottomBar = { BottomBar(viewModel) }
+        bottomBar = { BottomBar(viewModel) },
+        additionalPadding = Dimensions.smallest
     ) {
         items(items = items, key = { item -> item.id }) { item ->
             ListItem(item, item.name, item.statusEdition,
@@ -232,14 +230,17 @@ private fun ErrorReloadDialog(
 private fun BottomBar(viewModel: CatalogViewModel) {
     var reloadDialog by remember { mutableStateOf(false) }
 
-    BottomAppBar {
+    BottomAppBar(
+        contentPadding = systemBarBottomPadding()
+    ) {
         IconToggleButton(
+            modifier = Modifier.padding(systemBarStartPadding(Dimensions.default)),
             checked = viewModel.isReversed,
-            onCheckedChange = { viewModel.isReversed = it }) {
+            onCheckedChange = { viewModel.isReversed = it },
+        ) {
             Image(
                 Icons.Default.Sort, "",
                 Modifier
-                    .padding(start = 16.dp)
                     .size(btnSizeAddUpdate)
                     .rotate(if (viewModel.isReversed) 0f else 180f),
                 colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface)
@@ -265,12 +266,13 @@ private fun BottomBar(viewModel: CatalogViewModel) {
                 Icons.Default.ThumbsUpDown
             )
         }
-        IconButton(onClick = { reloadDialog = true }) {
+        IconButton(
+            modifier = Modifier.padding(systemBarEndPadding(Dimensions.default)),
+            onClick = { reloadDialog = true },
+        ) {
             Image(
                 Icons.Default.Update, "",
-                Modifier
-                    .padding(end = 16.dp)
-                    .size(btnSizeAddUpdate),
+                Modifier.size(btnSizeAddUpdate),
                 colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface)
             )
         }
@@ -313,17 +315,14 @@ private fun DrawerContent(viewModel: CatalogViewModel) {
         var currentIndex by rememberSaveable { mutableStateOf(0) }
 
         // Списки фильтров
-        Column(
-            modifier = Modifier
-                .statusBarsPadding()
-        ) {
+        Column {
             Crossfade(
                 targetState = currentIndex,
                 modifier = Modifier.weight(1f, true)
             ) { pageIndex ->
                 val currentFilter = filters[pageIndex]
 
-                LazyColumn {
+                LazyColumn(contentPadding = systemBarTopPadding()) {
                     itemsIndexed(currentFilter.catalog, key = { _, item -> item }) { index, item ->
                         if (currentFilter.selected[index]) {
                             viewModel.selectedNames += SelectedName(currentFilter.name, item)
@@ -337,15 +336,16 @@ private fun DrawerContent(viewModel: CatalogViewModel) {
                                 .fillMaxWidth()
                                 .clickable {
                                     currentFilter.selected[index] = !currentFilter.selected[index]
-                                }) {
+                                }
+                                .padding(systemBarStartPadding()),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Checkbox(
                                 checked = currentFilter.selected[index],
                                 onCheckedChange = { currentFilter.selected[index] = it },
-                                modifier = Modifier.padding(5.dp),
                             )
                             Text(
                                 text = URLDecoder.decode(item, "UTF-8"),
-                                modifier = Modifier.padding(5.dp),
                             )
                         }
                     }
@@ -366,6 +366,7 @@ private fun DrawerContent(viewModel: CatalogViewModel) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(IntrinsicSize.Min)
+                    .padding(systemBarStartPadding())
             ) {
                 filters.forEachIndexed { index, catalogFilter ->
                     if (catalogFilter.catalog.size > 1)
@@ -400,7 +401,7 @@ private fun DrawerContent(viewModel: CatalogViewModel) {
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(5.dp)
+                    .padding(systemBarStartPadding(Dimensions.smallest))
             ) {
                 Text(text = "Очистить")
             }

@@ -41,7 +41,6 @@ fun ScrollableTabs(
         divider = {},
         modifier = Modifier
             .background(MaterialTheme.colors.primarySurface)
-            .systemBarsPadding(top = false, bottom = false)
     ) {
         items.forEachIndexed { index, item ->
             Tab(

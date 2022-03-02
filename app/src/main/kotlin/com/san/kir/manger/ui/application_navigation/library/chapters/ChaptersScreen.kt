@@ -36,6 +36,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
+import com.san.kir.core.compose_utils.TopBarScreenPadding
 import com.san.kir.data.models.base.Manga
 import com.san.kir.manger.R
 import com.san.kir.manger.foreground_work.services.MangaUpdaterService
@@ -49,8 +50,7 @@ fun ChaptersScreen(viewModel: ChaptersViewModel, navigateUp: () -> Unit) {
 
     var (action, actionSetter) = rememberSaveable { mutableStateOf(false) }
 
-    Scaffold(
-        modifier = Modifier,
+    TopBarScreenPadding(
         topBar = {
             if (viewModel.selectionMode)
                 SelectionModeChaptersTopBar(viewModel, actionSetter)
@@ -61,14 +61,7 @@ fun ChaptersScreen(viewModel: ChaptersViewModel, navigateUp: () -> Unit) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(
-                    rememberInsetsPaddingValues(
-                        insets = LocalWindowInsets.current.systemBars,
-                        applyBottom = false, applyTop = false,
-                        additionalTop = contentPadding.calculateTopPadding(),
-                    )
-                )
-                .imePadding()
+                .padding(top = contentPadding.calculateTopPadding())
                 .verticalScroll(rememberScrollState())
         ) {
             ChaptersContent(action, viewModel)

@@ -3,6 +3,7 @@ package com.san.kir.manger.ui.application_navigation.storage.main
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,9 +35,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
+import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.MenuText
 import com.san.kir.core.compose_utils.TopBarScreenList
 import com.san.kir.core.compose_utils.rememberImage
+import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
 import com.san.kir.core.utils.formatDouble
 import com.san.kir.data.models.base.Storage
 import com.san.kir.manger.R
@@ -54,7 +57,7 @@ fun StorageScreen(
     val allStorage = viewModel.allStorage.collectAsLazyPagingItems()
 
     TopBarScreenList(
-        navHostController = nav,
+        navigateUp = nav::navigateUp,
         title = stringResource(R.string.main_menu_storage) + " " +
                 if (viewState.storageSize > 0) {
                     stringResource(
@@ -66,7 +69,8 @@ fun StorageScreen(
             R.plurals.storage_subtitle,
             viewState.storageCounts,
             viewState.storageCounts
-        )
+        ),
+        additionalPadding = Dimensions.smallest
     ) {
         items(items = allStorage) { item ->
             item?.let { ItemView(nav, item, viewModel) }
@@ -96,6 +100,8 @@ private fun ItemView(
                 manga?.let { nav.navigate(StorageNavTarget.Storage, it.name) }
                     ?: run { showMenu = true }
             }
+            .padding(vertical = Dimensions.smallest, horizontal = Dimensions.default)
+            .padding(systemBarsHorizontalPadding())
     ) {
         // Иконка манги, если для этой папки она еще есть
         Box(
@@ -124,29 +130,29 @@ private fun ItemView(
             modifier = Modifier
                 .weight(1f, true)
                 .align(Alignment.CenterVertically)
-                .padding(5.dp)
+                .padding(Dimensions.smallest),
+            verticalArrangement = Arrangement.Center
         ) {
             // Название папки с мангой
             Text(text = item.name, maxLines = 1)
+
             // Текстовая Информация о занимаемом месте
-            Row(
+            Text(
+                stringResource(
+                    R.string.storage_manga_item_size_text,
+                    formatDouble(item.sizeFull),
+                    if (viewState.storageSize != 0.0) {
+                        (item.sizeFull / viewState.storageSize * 100).roundToInt()
+                    } else {
+                        0
+                    }
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 2.dp)
-            ) {
-                Text(
-                    text = stringResource(
-                        id = R.string.storage_manga_item_size_text,
-                        formatDouble(item.sizeFull),
-                        if (viewState.storageSize != 0.0) {
-                            (item.sizeFull / viewState.storageSize * 100).roundToInt()
-                        } else {
-                            0
-                        }
-                    ), modifier = Modifier.weight(1f, true),
-                    style = MaterialTheme.typography.subtitle1
-                )
-            }
+                    .padding(vertical = 2.dp),
+                style = MaterialTheme.typography.subtitle1
+            )
+
             // Прогрессбар занимаемого места
             StorageProgressBar(
                 modifier = Modifier

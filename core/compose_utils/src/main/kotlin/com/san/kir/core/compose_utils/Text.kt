@@ -45,7 +45,6 @@ fun LabelText(idRes: Int) {
     Text(
         text = stringResource(id = idRes),
         fontSize = 15.sp,
-        modifier = Modifier.padding(bottom = Dimensions.zero, top = Dimensions.small)
     )
 }
 
@@ -168,9 +167,18 @@ fun SearchTextField(
         onValueChange = {
             searchText = it
         },
-        leadingIcon = { Icon(Icons.Default.Search, "search") },
+        leadingIcon = {
+            Icon(
+                Icons.Default.Search,
+                "search",
+                modifier = Modifier.padding(systemBarStartPadding()),
+            )
+        },
         trailingIcon = {
-            MenuIcon(icon = Icons.Default.Close) {
+            MenuIcon(
+                icon = Icons.Default.Close,
+                modifier = Modifier.padding(systemBarEndPadding()),
+            ) {
                 searchText = ""
             }
         },

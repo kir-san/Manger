@@ -35,6 +35,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.rememberImage
 import com.san.kir.core.support.CATEGORY_ALL
 import com.san.kir.core.utils.TestTags
@@ -57,17 +58,18 @@ private fun LazyItemScope.ItemView(
         mutableStateOf(runCatching { Color(manga.color) }.getOrDefault(defaultColor))
     }
     Card(
-        shape = RoundedCornerShape(8.dp),
-        border = BorderStroke(3.dp, backgroundColor),
+        shape = RoundedCornerShape(Dimensions.small),
+        border = BorderStroke(Dimensions.smallest, backgroundColor),
         modifier = Modifier
             .animateItemPlacement()
             .testTag(TestTags.Library.item)
-            .padding(3.dp)
+            .padding(Dimensions.smallest)
             .fillMaxWidth()
             .combinedClickable(
                 onLongClick = { viewModel.changeSelectedManga(true, manga) },
                 onClick = {
-                    nav.navigate(LibraryNavTarget.Chapters, manga.name) })
+                    nav.navigate(LibraryNavTarget.Chapters, manga.name)
+                })
     ) {
         content()
     }
@@ -79,7 +81,7 @@ fun LazyItemScope.LibraryLargeItemView(
     manga: SimplifiedManga,
     cat: String,
     viewModel: LibraryViewModel,
-    context: Context = LocalContext.current
+    context: Context = LocalContext.current,
 ) {
     val showCategory by viewModel.showCategory.collectAsState(false)
     val countNotRead by viewModel.countNotRead(manga.name).collectAsState(0)
@@ -149,25 +151,25 @@ fun LazyItemScope.LibrarySmallItemView(
     manga: SimplifiedManga,
     cat: String,
     viewModel: LibraryViewModel,
-    context: Context = LocalContext.current
+    context: Context = LocalContext.current,
 ) {
     val showCategory by viewModel.showCategory.collectAsState(false)
     val countNotRead by viewModel.countNotRead(manga.name).collectAsState(0)
     val primaryColor = MaterialTheme.colors.primary
     var backgroundColor by remember { mutableStateOf(primaryColor) }
 
-    val heightSize = 70.dp
+    val heightSize = 65.dp
 
     ItemView(nav, manga, viewModel) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(3.dp)
+                .padding(Dimensions.smallest)
         ) {
             Image(
                 rememberImage(manga.logo),
                 modifier = Modifier
-                    .padding(2.dp)
+                    .padding(Dimensions.smallest)
                     .size(heightSize),
                 contentDescription = null,
             )
@@ -176,7 +178,7 @@ fun LazyItemScope.LibrarySmallItemView(
                 maxLines = 1,
                 modifier = Modifier
                     .weight(1f, true)
-                    .padding(start = 5.dp)
+                    .padding(start = Dimensions.small)
                     .align(Alignment.CenterVertically),
                 fontWeight = FontWeight.Bold
             )
@@ -185,7 +187,7 @@ fun LazyItemScope.LibrarySmallItemView(
                 text = "$countNotRead",
                 maxLines = 1,
                 modifier = Modifier
-                    .padding(5.dp)
+                    .padding(horizontal = Dimensions.small)
                     .align(Alignment.CenterVertically),
                 fontWeight = FontWeight.Bold
             )

@@ -43,6 +43,7 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.pager.ExperimentalPagerApi
+import com.san.kir.core.compose_utils.TopBarScreenContent
 import com.san.kir.core.support.MainMenuType
 import com.san.kir.manger.BuildConfig
 import com.san.kir.manger.R
@@ -53,7 +54,6 @@ import com.san.kir.core.utils.coroutines.mainLaunch
 import com.san.kir.data.models.base.MainMenuItem
 import com.san.kir.core.utils.formatDouble
 import com.san.kir.core.utils.toast
-import com.san.kir.core.compose_utils.TopBarScreenWithInsets
 import kotlinx.coroutines.launch
 
 var backPressedTime = 0L
@@ -66,7 +66,7 @@ fun LibraryScreen(nav: NavHostController, viewModel: LibraryViewModel = hiltView
     val coroutineScope = rememberCoroutineScope()
     val currentCategoryWithMangas by viewModel.currentCategoryWithManga.collectAsState()
 
-    TopBarScreenWithInsets(
+    TopBarScreenContent(
         title = stringResource(
             R.string.main_menu_library_count, currentCategoryWithMangas.mangas.size
         ),

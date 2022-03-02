@@ -34,6 +34,8 @@ import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.MenuIcon
 import com.san.kir.core.compose_utils.TopBarScreenList
 import com.san.kir.core.compose_utils.rememberImage
+import com.san.kir.core.compose_utils.systemBarEndPadding
+import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
 import com.san.kir.data.models.base.ShikimoriAccount
 import com.san.kir.features.shikimori.R
 import com.san.kir.features.shikimori.ui.catalog_item.AskState
@@ -118,9 +120,17 @@ internal fun Head(
 ) {
     var showFullDesc by remember { mutableStateOf(false) }
 
-    Row(modifier = Modifier.fillMaxWidth()) {
-        Image(rememberImage(avatar), contentDescription = "manga avatar",
-            modifier = Modifier.width(Dimensions.bigImageSize))
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(systemBarsHorizontalPadding(Dimensions.default)),
+    ) {
+        Image(
+            rememberImage(avatar), contentDescription = "manga avatar",
+            modifier = Modifier
+                .width(Dimensions.bigImageSize)
+                .padding(Dimensions.small),
+        )
         Column(modifier = Modifier.weight(1f, true)) {
             Text(stringResource(R.string.reading, readingChapters, allChapters))
 
@@ -139,8 +149,7 @@ internal fun Head(
             TextButton(
                 onClick = { showFullDesc = !showFullDesc },
                 contentPadding = PaddingValues(vertical = Dimensions.zero),
-                modifier = Modifier
-                    .align(Alignment.End)
+                modifier = Modifier.align(Alignment.End)
             ) {
                 if (showFullDesc)
                     Text(stringResource(R.string.desc_hide))
@@ -166,10 +175,18 @@ internal fun LazyListScope.body(
     when (localSearch) {
         // Поиск в базе данных, подходящей по названию манги
         SyncState.Find -> item {
-            Row(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(Dimensions.default),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 CircularProgressIndicator()
-                Text(stringResource(findTextId))
+                Text(
+                    stringResource(findTextId),
+                    modifier = Modifier.padding(start = Dimensions.default),
+                )
             }
         }
         // Уже имеется связанная манга

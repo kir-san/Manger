@@ -29,16 +29,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
+import com.san.kir.core.compose_utils.TopBarScreenContent
 import com.san.kir.manger.R
-import com.san.kir.core.compose_utils.TopBarScreenWithInsets
 
 @Composable
 fun MangaAddOnlineScreen(
     navigateToBack: () -> Unit,
     navigateToNext: (String) -> Unit,
 ) {
-    TopBarScreenWithInsets(
-        navigationButtonListener = navigateToBack,
+    TopBarScreenContent(
+        navigateUp = navigateToBack,
         title = stringResource(R.string.library_add_manga_title)
     ) {
         MangaAddOnlineContent(navigateToBack, navigateToNext)

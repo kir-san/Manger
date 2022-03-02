@@ -318,6 +318,8 @@
     <string name="category_dialog_validate_contain">Название занято</string>
     <string name="category_dialog_portrait">Портретная ориентация</string>
     <string name="category_dialog_landscape">Ландшафтная ориентация</string>
+    <string name="category_dialog_sort">Сортировка</string>
+    <string name="category_dialog_visible">Видимость вкладки</string>
     <string name="category_dialog_create">Создать</string>
     <string name="category_dialog_edit">Сохранить</string>
     <string name="category_dialog_not_create">Категория не была создана</string>

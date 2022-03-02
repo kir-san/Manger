@@ -35,16 +35,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
+import com.san.kir.core.compose_utils.DialogText
+import com.san.kir.core.compose_utils.TopBarScreenContent
 import com.san.kir.manger.R
 import com.san.kir.manger.foreground_work.services.MangaUpdaterService
-import com.san.kir.core.compose_utils.DialogText
-import com.san.kir.core.compose_utils.TopBarScreenWithInsets
 import kotlinx.coroutines.delay
 
 @Composable
 fun MangaAddScreen(url: String, navigateUpAction: () -> Unit) {
-    TopBarScreenWithInsets(
-        navigationButtonListener = navigateUpAction,
+    TopBarScreenContent(
+        navigateUp = navigateUpAction,
         title = stringResource(id = R.string.add_manga_screen_title)
     ) {
         MangaAddContent(url, navigateUpAction)

@@ -27,8 +27,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
+import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.TopBarScreenList
 import com.san.kir.core.compose_utils.rememberImage
+import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
+import com.san.kir.core.utils.log
 import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.Statistic
 import com.san.kir.manger.R
@@ -46,11 +49,12 @@ fun StatisticsScreen(
     val allItems = viewModel.allItems.collectAsLazyPagingItems()
 
     TopBarScreenList(
-        navHostController = nav,
+        navigateUp = nav::navigateUp,
         title = stringResource(R.string.main_menu_statistic),
         subtitle = stringResource(
             R.string.statistic_subtitle, TimeFormat(allTime).toString(context)
         ),
+        additionalPadding = Dimensions.smallest
     ) {
         items(items = allItems, key = { stat -> stat.id }) { item ->
             item?.let {
@@ -81,7 +85,8 @@ private fun ItemView(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = 5.dp)
+            .padding(vertical = Dimensions.smallest, horizontal = Dimensions.default)
+            .padding(systemBarsHorizontalPadding())
     ) {
         Image(
             rememberImage(manga.logo),

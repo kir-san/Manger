@@ -30,10 +30,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.MenuIcon
 import com.san.kir.core.compose_utils.MenuText
 import com.san.kir.core.compose_utils.TopBarScreenList
 import com.san.kir.core.compose_utils.rememberImage
+import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
 import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.core.utils.findInGoogle
 import com.san.kir.data.models.base.Site
@@ -44,14 +46,15 @@ import com.san.kir.manger.utils.compose.navigate
 @Composable
 fun CatalogsScreen(
     navHostController: NavHostController,
-    viewModel: CatalogsViewModel = hiltViewModel()
+    viewModel: CatalogsViewModel = hiltViewModel(),
 ) {
     val siteList by viewModel.siteList.collectAsState(emptyList())
 
     TopBarScreenList(
-        navHostController = navHostController,
+        navigateUp = navHostController::navigateUp,
         title = stringResource(R.string.main_menu_catalogs),
-        actions = { CatalogsActions(navHostController, viewModel) }
+        actions = { CatalogsActions(navHostController, viewModel) },
+        additionalPadding = Dimensions.small
     ) {
         items(items = siteList, key = { site -> site.id }) { item ->
             ItemView(item, viewModel) {
@@ -71,12 +74,13 @@ fun ItemView(item: Site, viewModel: CatalogsViewModel, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
+            .padding(vertical = Dimensions.smallest, horizontal = Dimensions.default)
+            .padding(systemBarsHorizontalPadding())
     ) {
         Image(
             rememberImage(findInGoogle(item.catalogName)),
             contentDescription = "",
             modifier = Modifier
-                .padding(vertical = 10.dp)
                 .padding(end = 8.dp)
                 .size(50.dp)
         )

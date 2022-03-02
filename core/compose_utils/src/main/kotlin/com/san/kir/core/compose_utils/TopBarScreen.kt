@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,6 +29,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.google.accompanist.insets.LocalWindowInsets
@@ -37,20 +40,20 @@ import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
 import com.google.accompanist.insets.ui.TopAppBar
 import com.san.kir.core.utils.TestTags
+import com.san.kir.core.utils.log
 import kotlinx.coroutines.launch
 
-
 @Composable
-fun TopBarScreenWithInsets(
+internal fun TopBarScreenWithInsets(
     modifier: Modifier = Modifier,
-    navigationButtonListener: () -> Unit = { },
+    navigateUp: () -> Unit = { },
     scaffoldState: ScaffoldState? = null,
     title: String = "",
     subtitle: String = "",
-    additionalPadding: Dp = Dimensions.small,
+    additionalPadding: Dp = Dimensions.default,
     actions: @Composable RowScope.() -> Unit = {},
     topBar: @Composable () -> Unit = {
-        PreparedTopBar(navigationButtonListener, title, subtitle, scaffoldState, actions)
+        PreparedTopBar(navigateUp, title, subtitle, scaffoldState, actions)
     },
     listContent: (LazyListScope.() -> Unit)? = null,
     bottomBar: @Composable () -> Unit = {},
@@ -97,21 +100,11 @@ fun TopBarScreenWithInsets(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(
-                        rememberInsetsPaddingValues(
-                            insets = LocalWindowInsets.current.systemBars,
-                            applyStart = true, applyEnd = true,
-                            applyBottom = false, applyTop = false,
-                            additionalTop = contentPadding.calculateTopPadding(),
-                            additionalBottom = contentPadding.calculateBottomPadding(),
-                            additionalStart = additionalPadding, additionalEnd = additionalPadding
-                        )
-                    )
+                    .padding(top = contentPadding.calculateTopPadding())
                     .imePadding(),
-                contentPadding = rememberInsetsPaddingValues(
-                    insets = LocalWindowInsets.current.systemBars,
-                    applyTop = false,
-                    additionalTop = additionalPadding
+                contentPadding = PaddingValues(
+                    top = additionalPadding,
+                    bottom = additionalPadding
                 ),
             ) {
                 listCon()
@@ -121,18 +114,17 @@ fun TopBarScreenWithInsets(
 }
 
 @Composable
-fun TopBarScreen(
+fun TopBarScreenPadding(
     modifier: Modifier = Modifier,
-    navHostController: NavHostController? = null,
-    navigateUp: () -> Unit = { navHostController?.navigateUp() },
+    navigateUp: () -> Unit = { },
     scaffoldState: ScaffoldState? = null,
     title: String = "",
     subtitle: String = "",
-    additionalPadding: Dp = Dimensions.small,
+    additionalPadding: Dp = Dimensions.default,
+    actions: @Composable RowScope.() -> Unit = {},
     topBar: @Composable () -> Unit = {
         PreparedTopBar(navigateUp, title, subtitle, scaffoldState, actions)
     },
-    actions: @Composable RowScope.() -> Unit = {},
     drawerContent: @Composable (ColumnScope.() -> Unit)? = null,
     content: @Composable (PaddingValues) -> Unit,
 ) {
@@ -148,16 +140,15 @@ fun TopBarScreen(
 @Composable
 fun TopBarScreenContent(
     modifier: Modifier = Modifier,
-    navHostController: NavHostController? = null,
-    navigateUp: () -> Unit = { navHostController?.navigateUp() },
+    navigateUp: () -> Unit = { },
     scaffoldState: ScaffoldState? = null,
     title: String = "",
     subtitle: String = "",
-    additionalPadding: Dp = Dimensions.small,
+    additionalPadding: Dp = Dimensions.default,
+    actions: @Composable RowScope.() -> Unit = {},
     topBar: @Composable () -> Unit = {
         PreparedTopBar(navigateUp, title, subtitle, scaffoldState, actions)
     },
-    actions: @Composable RowScope.() -> Unit = {},
     drawerContent: @Composable (ColumnScope.() -> Unit)? = null,
     content: @Composable (ColumnScope.() -> Unit)? = null,
 ) {
@@ -165,6 +156,7 @@ fun TopBarScreenContent(
         modifier = modifier,
         topBar = topBar,
         content = content,
+        scaffoldState = scaffoldState,
         drawerContent = drawerContent,
         additionalPadding = additionalPadding
     )
@@ -173,16 +165,15 @@ fun TopBarScreenContent(
 @Composable
 fun TopBarScreenList(
     modifier: Modifier = Modifier,
-    navHostController: NavHostController? = null,
-    navigateUp: () -> Unit = { navHostController?.navigateUp() },
-    additionalPadding: Dp = Dimensions.small,
+    navigateUp: () -> Unit = { },
+    additionalPadding: Dp = Dimensions.default,
     title: String = "",
     subtitle: String = "",
     scaffoldState: ScaffoldState? = null,
-    topBar: @Composable () -> Unit = {
-        PreparedTopBar(navigateUp, title, subtitle, null, actions)
-    },
     actions: @Composable RowScope.() -> Unit = {},
+    topBar: @Composable () -> Unit = {
+        PreparedTopBar(navigateUp, title, subtitle, scaffoldState, actions)
+    },
     bottomBar: @Composable () -> Unit = {},
     drawerContent: @Composable (ColumnScope.() -> Unit)? = null,
     listContent: (LazyListScope.() -> Unit)? = null,
@@ -191,7 +182,7 @@ fun TopBarScreenList(
         modifier = modifier,
         additionalPadding = additionalPadding,
         topBar = topBar,
-        scaffoldState = scaffoldState ,
+        scaffoldState = scaffoldState,
         drawerContent = drawerContent,
         bottomBar = bottomBar,
         listContent = listContent,
@@ -248,3 +239,4 @@ fun PreparedTopBar(
         )
     )
 }
+

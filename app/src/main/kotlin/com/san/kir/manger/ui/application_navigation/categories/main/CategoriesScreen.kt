@@ -27,12 +27,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.data.models.base.Category
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.application_navigation.categories.CategoriesNavTarget
 import com.san.kir.core.compose_utils.MenuIcon
 import com.san.kir.manger.utils.compose.navigate
 import com.san.kir.core.compose_utils.TopBarScreenList
+import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
 
 @Composable
 fun CategoriesScreen(
@@ -42,14 +44,15 @@ fun CategoriesScreen(
     val cats by viewModel.categories.collectAsState(emptyList())
 
     TopBarScreenList(
-        navHostController = nav,
+        navigateUp = nav::navigateUp,
         title = stringResource(R.string.main_menu_category),
         actions = {
             MenuIcon(
                 icon = Icons.Default.Add,
                 onClick = { nav.navigate(CategoriesNavTarget.Category, "") })
 
-        }
+        },
+        additionalPadding = Dimensions.smallest
     ) {
         itemsIndexed(items = cats, key = { _, c -> c.id }) { index, item ->
             CategoryItemView(index, cats.count(), item) {
@@ -68,7 +71,8 @@ fun CategoryItemView(index: Int, max: Int, category: Category, onClick: () -> Un
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = 6.dp),
+            .padding(vertical = Dimensions.smallest, horizontal = Dimensions.default)
+            .padding(systemBarsHorizontalPadding()),
         verticalAlignment = Alignment.CenterVertically
     ) {
 

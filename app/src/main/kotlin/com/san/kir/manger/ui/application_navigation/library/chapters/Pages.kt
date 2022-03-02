@@ -4,9 +4,15 @@ import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
@@ -25,11 +31,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.toUpperCase
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
@@ -38,8 +46,12 @@ import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.asFlow
 import androidx.work.WorkManager
+import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.navigationBarsPadding
+import com.google.accompanist.insets.systemBarsPadding
+import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.rememberImage
+import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
 import com.san.kir.data.models.base.Manga
 import com.san.kir.features.viewer.MangaViewer
 import com.san.kir.manger.R
@@ -47,7 +59,6 @@ import com.san.kir.manger.foreground_work.workmanager.ChapterDeleteWorker
 import com.san.kir.manger.foreground_work.workmanager.ReadChapterDelete
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -91,8 +102,6 @@ private object Refs {
     const val info = "info"
 }
 
-private val defaultMargin = 16.dp
-
 @OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun AboutPageContent(
@@ -115,87 +124,63 @@ fun AboutPageContent(
 
     var deleteDialog by remember { mutableStateOf(false) }
     var progressDeleteDialog by remember { mutableStateOf(false) }
+    BoxWithConstraints() {
 
-    ConstraintLayout(
-        modifier = Modifier.fillMaxSize(),
-        constraintSet = decoupledConstraintSet(),
-    ) {
+    }
+    Box(modifier = Modifier.fillMaxSize()) {
         Image(
             rememberImage(url = viewModel.manga.logo),
-            modifier = Modifier.layoutId(Refs.logo),
             contentDescription = null,
             contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
         )
 
-        // информация о прочитанных главах
-        Text(
-            stringResource(
-                R.string.list_chapters_about_read,
-                readChaptersCount,
-                LocalContext.current.resources.getQuantityString(
-                    R.plurals.chapters,
-                    readChaptersCount
+        Column(
+            verticalArrangement = Arrangement.Bottom,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // информация о прочитанных главах
+            Text(
+                stringResource(
+                    R.string.list_chapters_about_read,
+                    readChaptersCount,
+                    LocalContext.current.resources.getQuantityString(
+                        R.plurals.chapters,
+                        readChaptersCount
+                    ),
+                    fullChaptersCount
                 ),
-                fullChaptersCount
-            ),
-            modifier = Modifier
-                .background(MaterialTheme.colors.primary)
-                .padding(18.dp)
-                .layoutId(Refs.info),
-            fontWeight = FontWeight.Bold,
-            fontSize = 18.sp,
-        )
+                modifier = Modifier
+                    .background(MaterialTheme.colors.primary)
+                    .padding(systemBarsHorizontalPadding(all = Dimensions.default))
+                    .fillMaxWidth(),
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
+            )
 
-        // удаления прочитанных глав
-        Button(
-            onClick = { deleteDialog = true },
-            modifier = Modifier
-                .layoutId(Refs.deleteBtn)
-                .padding(horizontal = defaultMargin)
-        ) {
-            Text(text = stringResource(id = R.string.list_chapters_about_delete),
-                modifier = Modifier.padding(5.dp),
-                textAlign = TextAlign.Center)
-        }
-
-        // Чтение манги с начала
-        Button(
-            onClick = {
-                scope.launch {
-                    val chapter = viewModel.firstChapter()
-                    MangaViewer.start(context, chapter.id)
-                }
-
-            },
-            modifier = Modifier
-                .layoutId(Refs.startBtn)
-                .padding(end = defaultMargin)
-        ) {
-            Text(text = stringResource(id = R.string.list_chapters_about_start),
-                modifier = Modifier.padding(5.dp),
-                textAlign = TextAlign.Center)
-        }
-
-        // Продолжение чтения
-        Button(
-            onClick = {
-                scope.launch {
-                    val chapter = viewModel.getFirstNotReadChapters().first()
-                    chapter?.let {
-                        MangaViewer.start(context, it.id)
+            // Продолжение чтения
+            Button(
+                onClick = {
+                    scope.launch {
+                        val chapter = viewModel.getFirstNotReadChapters().first()
+                        chapter?.let {
+                            MangaViewer.start(context, it.id)
+                        }
                     }
-                }
-            },
-            modifier = Modifier
-                .navigationBarsPadding(start = false, end = false)
-                .layoutId(Refs.continueBtn),
-            enabled = firstNotReadChapter != null,
-        ) {
-            if (firstNotReadChapter == null) CircularProgressIndicator()
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(Dimensions.default)
+                    .navigationBarsPadding(start = false, end = false)
+                    .systemBarsPadding(top = false, bottom = false),
+                enabled = firstNotReadChapter != null,
+            ) {
+                if (firstNotReadChapter == null) CircularProgressIndicator()
 
-            Text(messageContinue.toUpperCase(Locale.current),
-                modifier = Modifier.padding(8.dp),
-                textAlign = TextAlign.Center)
+                Text(messageContinue.toUpperCase(Locale.current),
+                    modifier = Modifier.padding(Dimensions.default),
+                    textAlign = TextAlign.Center)
+            }
         }
     }
 
@@ -205,49 +190,6 @@ fun AboutPageContent(
 
     if (progressDeleteDialog) {
         ProgressDeletingChaptersDialog(viewModel.manga) { progressDeleteDialog = false }
-    }
-}
-
-private fun decoupledConstraintSet(): ConstraintSet {
-    return ConstraintSet {
-        val logo = createRefFor(Refs.logo)
-        val continueBtn = createRefFor(Refs.continueBtn)
-        val startBtn = createRefFor(Refs.startBtn)
-        val deleteBtn = createRefFor(Refs.deleteBtn)
-        val info = createRefFor(Refs.info)
-
-        constrain(logo) {
-            centerTo(parent)
-            width = Dimension.fillToConstraints
-            height = Dimension.fillToConstraints
-        }
-
-        constrain(continueBtn) {
-            linkTo(parent.start, parent.end, defaultMargin, defaultMargin)
-            bottom.linkTo(parent.bottom, defaultMargin)
-            width = Dimension.fillToConstraints
-        }
-
-        constrain(deleteBtn) {
-            start.linkTo(parent.start)
-            bottom.linkTo(continueBtn.top, defaultMargin)
-            width = Dimension.fillToConstraints
-        }
-
-        constrain(startBtn) {
-            linkTo(deleteBtn.top, deleteBtn.bottom)
-            linkTo(deleteBtn.end, parent.end)
-            height = Dimension.fillToConstraints
-            width = Dimension.fillToConstraints
-        }
-
-        constrain(info) {
-            linkTo(parent.start, parent.end)
-            bottom.linkTo(startBtn.top, defaultMargin)
-            width = Dimension.fillToConstraints
-        }
-
-        createHorizontalChain(deleteBtn, startBtn)
     }
 }
 

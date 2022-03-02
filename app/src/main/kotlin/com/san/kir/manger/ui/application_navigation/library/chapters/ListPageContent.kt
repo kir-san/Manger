@@ -32,6 +32,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.navigationBarsPadding
+import com.google.accompanist.insets.systemBarsPadding
+import com.san.kir.core.compose_utils.FullWeightSpacer
+import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
 import com.san.kir.core.support.ChapterFilter
 import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.models.base.Manga
@@ -50,21 +53,21 @@ fun ListPageContent(
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
 
-        Box(modifier = Modifier.weight(1f)) {
-            if (chapters.isNotEmpty() && selectedItems.isNotEmpty()) {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    itemsIndexed(
-                        items = chapters,
-                        key = { _, ch -> ch.id },
-                    ) { index, chapter ->
-                        ChaptersItemContent(
-                            manga,
-                            chapter,
-                            selectedItems[index],
-                            selectionMode,
-                            { selectItem(index) }
-                        )
-                    }
+        if (chapters.isNotEmpty() && selectedItems.isNotEmpty()) {
+            LazyColumn(
+                modifier = Modifier.weight(1f),
+            ) {
+                itemsIndexed(
+                    items = chapters,
+                    key = { _, ch -> ch.id },
+                ) { index, chapter ->
+                    ChaptersItemContent(
+                        manga,
+                        chapter,
+                        selectedItems[index],
+                        selectionMode,
+                        { selectItem(index) }
+                    )
                 }
             }
         }
@@ -113,10 +116,9 @@ private fun BottomOrderBar(
             .fillMaxWidth()
             .navigationBarsPadding(start = false, end = false)
     ) {
-        Spacer(modifier = Modifier.weight(1f))
+        FullWeightSpacer()
 
         // Смена порядка сортировки
-
         IconButton(onClick = { changeFilter(currentFilter.inverse()) }) {
             Icon(
                 Icons.Default.Sort, contentDescription = "reverse sort",
@@ -126,8 +128,7 @@ private fun BottomOrderBar(
             )
         }
 
-
-        Spacer(modifier = Modifier.weight(1f))
+        FullWeightSpacer()
 
         // Кнопка включения отображения всех глав
         IconButton(
@@ -163,7 +164,7 @@ private fun BottomOrderBar(
             )
         }
 
-        Spacer(modifier = Modifier.weight(1f))
+        FullWeightSpacer()
     }
 }
 

@@ -4,25 +4,28 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
-import com.san.kir.core.utils.bytesToMb
-import com.san.kir.data.models.base.Statistic
-import com.san.kir.manger.R
 import com.san.kir.core.compose_utils.DialogText
 import com.san.kir.core.compose_utils.LabelText
-import com.san.kir.manger.utils.TimeFormat
+import com.san.kir.core.compose_utils.SmallSpacer
+import com.san.kir.core.compose_utils.TopBarScreenContent
+import com.san.kir.core.utils.bytesToMb
 import com.san.kir.core.utils.formatDouble
-import com.san.kir.core.compose_utils.TopBarScreenWithInsets
+import com.san.kir.data.models.base.Statistic
+import com.san.kir.manger.R
+import com.san.kir.manger.utils.TimeFormat
 
 @Composable
 fun StatisticScreen(nav: NavHostController, item: Statistic) {
 
-    TopBarScreenWithInsets(
-        navigationButtonListener = { nav.navigateUp() },
+    TopBarScreenContent(
+        navigateUp = nav::navigateUp,
         title = item.manga,
     ) {
         LabelText(R.string.statistic_item_full_last_session)
         DialogText(timePagesData(item.lastTime, item.lastPages, item.lastChapters))
         DialogText(speedReading(item))
+
+        SmallSpacer()
 
         LabelText(R.string.statistic_item_full_all)
         DialogText(timePagesData(item.allTime, item.allPages, item.allChapters))
@@ -87,7 +90,7 @@ private fun speedReading(item: Statistic, context: Context = LocalContext.curren
 @Composable
 private fun averageSpeedReading(
     item: Statistic,
-    context: Context = LocalContext.current
+    context: Context = LocalContext.current,
 ): String {
     val speed = (item.allPages / (item.allTime.toFloat() / 60)).toInt()
     return if (speed == 0) {

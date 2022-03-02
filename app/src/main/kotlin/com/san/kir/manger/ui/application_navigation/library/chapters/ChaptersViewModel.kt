@@ -273,25 +273,6 @@ class ChaptersViewModel @AssistedInject constructor(
                 it.firstOrNull { chapter -> !chapter.isRead }
             }
 
-    suspend fun firstChapter() = withDefaultContext {
-        val list =
-            if (manga.isAlternativeSort) {
-                try {
-                    chapters.sortedWith(ChapterComparator())
-                } catch (e: Exception) {
-                    chapters
-                }
-            } else {
-                chapters
-            }
-
-        val chapter = list.first()
-        chapter.progress = 0
-        chapterDao.update(chapter)
-
-        return@withDefaultContext chapter
-    }
-
     @AssistedFactory
     interface Factory {
         fun create(mangaUnic: String): ChaptersViewModel

@@ -42,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.asFlow
 import androidx.work.WorkManager
+import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.download.DownloadService
 import com.san.kir.core.support.DownloadState
 import com.san.kir.data.models.base.Chapter
@@ -52,6 +53,7 @@ import com.san.kir.features.latest.work.LatestClearWorkers
 import com.san.kir.core.compose_utils.MenuIcon
 import com.san.kir.core.compose_utils.MenuText
 import com.san.kir.core.compose_utils.TopBarScreenList
+import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
@@ -203,12 +205,12 @@ internal fun LatestItemContent(
                 onLongClick = {
                     viewModel.onSelectItem(index)
                 }
-            ),
+            )
+            .padding(vertical = Dimensions.smallest, horizontal = Dimensions.default)
+            .padding(systemBarsHorizontalPadding()),
     ) {
         Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(10.dp)
+            modifier = Modifier.weight(1f)
         ) {
             // name
             Text(

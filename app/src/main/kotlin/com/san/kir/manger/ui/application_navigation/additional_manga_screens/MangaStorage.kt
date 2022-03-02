@@ -45,12 +45,12 @@ import kotlinx.coroutines.flow.collect
 @Composable
 fun MangaStorageScreen(
     nav: NavHostController,
-    viewModel: MangaStorageViewModel
+    viewModel: MangaStorageViewModel,
 ) {
     val manga by viewModel.manga.collectAsState()
 
     TopBarScreenContent(
-        navHostController = nav,
+        navigateUp = nav::navigateUp,
         title = manga.name,
     ) {
         MangaStorageContent(viewModel)
@@ -61,7 +61,7 @@ fun MangaStorageScreen(
 @Composable
 private fun MangaStorageContent(
     viewModel: MangaStorageViewModel,
-    ctx: Context = LocalContext.current
+    ctx: Context = LocalContext.current,
 ) {
 
     val generalSize by viewModel.generalSize.collectAsState(0.0)

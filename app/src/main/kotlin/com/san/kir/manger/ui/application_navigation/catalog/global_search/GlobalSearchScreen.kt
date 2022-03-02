@@ -12,6 +12,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.insets.systemBarsPadding
+import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.PreparedTopBar
 import com.san.kir.core.compose_utils.SearchTextField
 import com.san.kir.core.compose_utils.TopBarScreenList
@@ -50,6 +51,7 @@ fun GlobalSearchScreen(
                 )
             }
         },
+        additionalPadding = Dimensions.smallest
     ) {
         items(items = viewState.items) { item ->
             ListItem(item, item.name, item.catalogName,

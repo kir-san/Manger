@@ -29,7 +29,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.ScrollableTabs
-import com.san.kir.core.compose_utils.TopBarScreen
+import com.san.kir.core.compose_utils.TopBarScreenPadding
 import com.san.kir.data.models.base.ShikimoriAccount
 import com.san.kir.features.shikimori.AuthActivity
 import com.san.kir.features.shikimori.R
@@ -51,7 +51,7 @@ fun ShikimoriScreen(
 
     val ctx = LocalContext.current
 
-    TopBarScreen(navigateUp = navigateUp,
+    TopBarScreenPadding(navigateUp = navigateUp,
         title = stringResource(R.string.site_name),
         subtitle = textLoginOrNot(isLogin = authData.isLogin, nickname = authData.whoami.nickname),
         actions = {

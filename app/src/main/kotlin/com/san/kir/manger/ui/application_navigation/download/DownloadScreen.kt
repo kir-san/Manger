@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -44,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.insets.navigationBarsPadding
+import com.san.kir.core.compose_utils.FullWeightSpacer
 import com.san.kir.core.internet.NetworkState
 import com.san.kir.core.support.DownloadState
 import com.san.kir.core.utils.bytesToMb
@@ -54,7 +56,11 @@ import com.san.kir.manger.utils.TimeFormat
 import com.san.kir.core.compose_utils.MenuText
 import com.san.kir.core.utils.formatDouble
 import com.san.kir.core.compose_utils.TopBarScreenContent
+import com.san.kir.core.compose_utils.TopBarScreenPadding
 import com.san.kir.core.compose_utils.rememberImage
+import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
+import com.san.kir.core.download.DownloadService
+import com.san.kir.core.download.DownloadService.Companion
 
 @Composable
 fun DownloadScreen(
@@ -62,70 +68,76 @@ fun DownloadScreen(
     viewModel: DownloadViewModel = hiltViewModel(),
     context: Context = LocalContext.current,
 ) {
-    TopBarScreenContent(
-        navHostController = nav,
+    TopBarScreenPadding(
+        navigateUp = nav::navigateUp,
         title = stringResource(R.string.main_menu_downloader_count, viewModel.loadingCount),
         subtitle = stringResource(
             R.string.download_activity_subtitle, viewModel.stoppedCount, viewModel.completedCount
         ),
         additionalPadding = 0.dp
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            contentPadding = PaddingValues(top = 10.dp, start = 10.dp, end = 10.dp)
-        ) {
-            items(count = viewModel.items.size, key = { i -> viewModel.items[i].id }) { index ->
-                ItemView(viewModel.items[index], viewModel)
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .padding(top = it.calculateTopPadding())) {
+
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                contentPadding = PaddingValues(top = 10.dp, start = 10.dp, end = 10.dp)
+            ) {
+                items(count = viewModel.items.size, key = { i -> viewModel.items[i].id }) { index ->
+                    ItemView(viewModel.items[index], viewModel)
+                }
+            }
+
+            when (viewModel.network) {
+                NetworkState.NOT_WIFI -> {
+                    Snackbar(modifier = Modifier.fillMaxWidth()) {
+                        Text(stringResource(R.string.download_view_wifi_off))
+                    }
+                }
+                NetworkState.NOT_CELLURAR -> {
+                    Snackbar(modifier = Modifier.fillMaxWidth()) {
+                        Text(stringResource(R.string.download_view_internet_off))
+                    }
+                }
+                NetworkState.OK -> {
+                    val (expandValue, expandSetter) = remember { mutableStateOf(false) }
+
+                    // Массовое управление загрузками
+                    BottomAppBar(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .navigationBarsPadding(start = false, end = false)
+                    ) {
+                        FullWeightSpacer()
+
+                        // Кнопка включения отображения всех глав
+                        IconButton(onClick = { DownloadService.startAll(context) }) {
+                            Icon(Icons.Filled.PlayArrow, contentDescription = null)
+                        }
+
+                        // Кнопка паузы
+                        IconButton(
+                            onClick = { DownloadService.pauseAll(context) },
+                            modifier = Modifier.padding(start = 16.dp)
+                        ) { Icon(Icons.Filled.Stop, contentDescription = null) }
+
+                        FullWeightSpacer()
+
+                        // Кнопка очистки списка загрузок
+                        IconButton(onClick = { expandSetter(true) }) {
+                            ClearDownloadsMenu(expandValue, expandSetter)
+                            Icon(Icons.Filled.Delete, contentDescription = null)
+                        }
+
+                        FullWeightSpacer()
+                    }
+                }
             }
         }
 
-        when (viewModel.network) {
-            NetworkState.NOT_WIFI -> {
-                Snackbar(modifier = Modifier.fillMaxWidth()) {
-                    Text(stringResource(R.string.download_view_wifi_off))
-                }
-            }
-            NetworkState.NOT_CELLURAR -> {
-                Snackbar(modifier = Modifier.fillMaxWidth()) {
-                    Text(stringResource(R.string.download_view_internet_off))
-                }
-            }
-            NetworkState.OK -> {
-                val (expandValue, expandSetter) = remember { mutableStateOf(false) }
-
-                // Массовое управление загрузками
-                BottomAppBar(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .navigationBarsPadding()
-                ) {
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    // Кнопка включения отображения всех глав
-                    IconButton(onClick = { com.san.kir.core.download.DownloadService.startAll(context) }) {
-                        Icon(Icons.Filled.PlayArrow, contentDescription = null)
-                    }
-
-                    // Кнопка паузы
-                    IconButton(
-                        onClick = { com.san.kir.core.download.DownloadService.pauseAll(context) },
-                        modifier = Modifier.padding(start = 16.dp)
-                    ) { Icon(Icons.Filled.Stop, contentDescription = null) }
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    // Кнопка очистки списка загрузок
-                    IconButton(onClick = { expandSetter(true) }) {
-                        ClearDownloadsMenu(expandValue, expandSetter)
-                        Icon(Icons.Filled.Delete, contentDescription = null)
-                    }
-
-                    Spacer(modifier = Modifier.weight(1f))
-                }
-            }
-        }
     }
 }
 
@@ -145,6 +157,7 @@ private fun ItemView(
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
+            .padding(systemBarsHorizontalPadding())
         /* .swipeToDelete(offsetX, 100f) {
              viewModel.remove(item)
          }*/
@@ -168,7 +181,10 @@ private fun ItemView(
                 }
         }
 
-        Column(modifier = Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.Center) {
+        Column(modifier = Modifier
+            .weight(1f)
+            .fillMaxHeight(),
+            verticalArrangement = Arrangement.Center) {
             Text(stringResource(R.string.download_item_name, item.manga, item.name), maxLines = 1)
             Text(
                 when (item.status) {
@@ -223,12 +239,18 @@ private fun ItemView(
 
         when (item.status) {
             DownloadState.PAUSED -> {
-                IconButton(onClick = { com.san.kir.core.download.DownloadService.start(ctx, item) }) {
+                IconButton(onClick = {
+                    com.san.kir.core.download.DownloadService.start(ctx,
+                        item)
+                }) {
                     Icon(Icons.Default.Download, contentDescription = "download button")
                 }
             }
             DownloadState.QUEUED, DownloadState.LOADING -> {
-                IconButton(onClick = { com.san.kir.core.download.DownloadService.pause(ctx, item) }) {
+                IconButton(onClick = {
+                    com.san.kir.core.download.DownloadService.pause(ctx,
+                        item)
+                }) {
                     Icon(Icons.Default.Close, contentDescription = "cancel download button")
                 }
             }

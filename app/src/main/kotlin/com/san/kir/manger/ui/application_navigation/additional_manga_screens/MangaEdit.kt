@@ -41,14 +41,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.san.kir.core.utils.log
-import com.san.kir.data.models.base.Manga
-import com.san.kir.manger.R
 import com.san.kir.core.compose_utils.CheckBoxText
 import com.san.kir.core.compose_utils.DropDownTextField
 import com.san.kir.core.compose_utils.ImageWithStatus
 import com.san.kir.core.compose_utils.LabelText
-import com.san.kir.core.compose_utils.TopBarScreenWithInsets
+import com.san.kir.core.compose_utils.TopBarScreenContent
+import com.san.kir.core.utils.log
+import com.san.kir.data.models.base.Manga
+import com.san.kir.manger.R
 
 
 @Composable
@@ -59,8 +59,8 @@ fun MangaEditScreen(
 ) {
     viewModel.mangaUnic = mangaUnic
 
-    TopBarScreenWithInsets(
-        navigationButtonListener = { nav.navigateUp() },
+    TopBarScreenContent(
+        navigateUp = { nav.navigateUp() },
         title = stringResource(id = R.string.edit_manga_title),
         actions = {
             IconButton(onClick = { /* save manga */

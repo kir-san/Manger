@@ -58,7 +58,7 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     TopBarScreenContent(
-        navHostController = nav,
+        navigateUp = nav::navigateUp,
         title = stringResource(R.string.main_menu_settings),
         additionalPadding = 0.dp
     ) {

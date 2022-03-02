@@ -44,7 +44,7 @@ fun PlannedTaskScreen(nav: NavHostController, viewModel: PlannedTaskViewModel) {
     val categoryName by viewModel.categoryName.collectAsState()
 
     TopBarScreenContent(
-        navHostController = nav,
+        navigateUp = nav::navigateUp,
         title = viewModel.title,
         actions = {
             MenuIcon(Icons.Default.Save) {

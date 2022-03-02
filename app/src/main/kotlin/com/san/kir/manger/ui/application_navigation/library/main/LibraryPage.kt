@@ -41,7 +41,7 @@ import com.san.kir.manger.utils.compose.navigate
 fun LibraryPage(
     nav: NavHostController,
     item: CategoryWithMangas,
-    viewModel: LibraryViewModel
+    viewModel: LibraryViewModel,
 ) {
     Column(
         Modifier.fillMaxSize()
@@ -66,7 +66,6 @@ fun LibraryPage(
 private fun EmptyView(nav: NavHostController) {
     Column(
         Modifier
-            .systemBarsPadding(top = false, bottom = false)
             .testTag(TestTags.Library.empty_view),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -90,7 +89,7 @@ private fun EmptyView(nav: NavHostController) {
 fun PageView(
     nav: NavHostController,
     item: CategoryWithMangas,
-    viewModel: LibraryViewModel
+    viewModel: LibraryViewModel,
 ) {
     val isPortrait = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
     val span = if (isPortrait) item.spanPortrait else item.spanLandscape
@@ -118,7 +117,8 @@ fun PageView(
                 cells = GridCells.Fixed(span),
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = rememberInsetsPaddingValues(
-                    insets = LocalWindowInsets.current.systemBars, applyTop = false
+                    insets = LocalWindowInsets.current.systemBars,
+                    applyTop = false, applyStart = false, applyEnd = false,
                 ),
             ) {
                 items(items = item.mangas) { manga ->
@@ -129,7 +129,8 @@ fun PageView(
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = rememberInsetsPaddingValues(
-                    insets = LocalWindowInsets.current.systemBars, applyTop = false
+                    insets = LocalWindowInsets.current.systemBars,
+                    applyTop = false, applyStart = false, applyEnd = false
                 ),
             ) {
                 items(items = item.mangas) { manga ->

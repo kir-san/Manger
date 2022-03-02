@@ -31,7 +31,9 @@ import androidx.navigation.NavHostController
 import com.san.kir.manger.R
 import com.san.kir.manger.utils.SortLibraryUtil
 import com.san.kir.core.compose_utils.CheckBoxText
+import com.san.kir.core.compose_utils.DefaultSpacer
 import com.san.kir.core.compose_utils.MenuIcon
+import com.san.kir.core.compose_utils.SmallSpacer
 import com.san.kir.manger.utils.compose.RadioGroup
 import com.san.kir.core.compose_utils.TopBarScreenContent
 import kotlin.math.roundToInt
@@ -40,7 +42,7 @@ import kotlin.math.roundToInt
 // Редактирование параметров категории
 fun CategoryEditScreen(
     nav: NavHostController,
-    viewModel: CategoryEditViewModel
+    viewModel: CategoryEditViewModel,
 ) {
     val viewState by viewModel.state.collectAsState()
 
@@ -48,7 +50,7 @@ fun CategoryEditScreen(
     var deleteDialog by rememberSaveable { mutableStateOf(false) }
 
     TopBarScreenContent(
-        navHostController = nav,
+        navigateUp = nav::navigateUp,
         title = stringResource(
             if (viewState.hasCreatedNew) R.string.category_dialog_title_create
             else R.string.category_dialog_title_edit
@@ -73,31 +75,35 @@ fun CategoryEditScreen(
     ) {
         TextWithValidate(viewModel, hasError) { hasError = it }
 
-        SpacerMain()
+        DefaultSpacer()
+
+        Text(stringResource(R.string.category_dialog_sort))
 
         ChangeSortType(viewModel)
 
-        SpacerMain()
+        DefaultSpacer()
 
         ChangeReverseSort(viewModel = viewModel)
 
-        SpacerMain()
+        DefaultSpacer()
+
+        Text(stringResource(R.string.category_dialog_visible))
 
         ChangeVisibility(viewModel)
 
-        SpacerMain()
+        DefaultSpacer()
 
         Text(text = stringResource(id = R.string.category_dialog_portrait))
 
-        SpacerChild()
+        SmallSpacer()
 
         ChangePortraitOptions(viewModel)
 
-        SpacerMain()
+        DefaultSpacer()
 
         Text(text = stringResource(id = R.string.category_dialog_landscape))
 
-        SpacerChild()
+        SmallSpacer()
 
         ChangeLandscapeOptions(viewModel)
     }
@@ -130,7 +136,7 @@ fun CategoryEditScreen(
 private fun TextWithValidate(
     viewModel: CategoryEditViewModel,
     hasError: Boolean,
-    changeHasError: (Boolean) -> Unit
+    changeHasError: (Boolean) -> Unit,
 ) {
     val viewState by viewModel.state.collectAsState()
 
@@ -202,7 +208,7 @@ private fun ChangeSortType(
 
 @Composable
 private fun ChangeReverseSort(
-    viewModel: CategoryEditViewModel
+    viewModel: CategoryEditViewModel,
 ) {
     val viewState by viewModel.state.collectAsState()
 
@@ -221,7 +227,7 @@ private fun ChangeReverseSort(
 
 @Composable
 private fun ChangeVisibility(
-    viewModel: CategoryEditViewModel
+    viewModel: CategoryEditViewModel,
 ) {
     val viewState by viewModel.state.collectAsState()
 
@@ -241,7 +247,7 @@ private fun ChangeVisibility(
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun ChangePortraitOptions(
-    viewModel: CategoryEditViewModel
+    viewModel: CategoryEditViewModel,
 ) {
     val viewState by viewModel.state.collectAsState()
 
@@ -261,7 +267,7 @@ private fun ChangePortraitOptions(
         secondTextId = R.string.category_dialog_small_cells
     )
 
-    SpacerChild()
+    SmallSpacer()
 
     AnimatedVisibility(isLarge) {
         TextWithSlider(R.string.category_dialog_span_text, span, 5) {
@@ -292,7 +298,7 @@ private fun ChangeLandscapeOptions(viewModel: CategoryEditViewModel) {
         secondTextId = R.string.category_dialog_small_cells
     )
 
-    SpacerChild()
+    SmallSpacer()
 
     AnimatedVisibility(visible = isLarge) {
         TextWithSlider(R.string.category_dialog_span_text, span, 7) {
@@ -308,7 +314,7 @@ private fun TextWithSlider(
     @StringRes textId: Int,
     state: Int,
     maxPosition: Int,
-    onChange: (Int) -> Unit
+    onChange: (Int) -> Unit,
 ) {
     Text(text = stringResource(id = textId, state))
 
@@ -320,16 +326,4 @@ private fun TextWithSlider(
             .fillMaxWidth()
             .padding(top = 16.dp)
     )
-}
-
-@Composable
-private fun SpacerChild() {
-    val spaceHeightChild = 8.dp
-    Spacer(modifier = Modifier.height(spaceHeightChild))
-}
-
-@Composable
-private fun SpacerMain() {
-    val spaceHeightMain = 16.dp
-    Spacer(modifier = Modifier.height(spaceHeightMain))
 }

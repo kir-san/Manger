@@ -25,6 +25,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.san.kir.core.compose_utils.Dimensions
+import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
 import com.san.kir.data.models.base.SiteCatalogElement
 import com.san.kir.manger.ui.SuppotMangaViewModel
 import com.san.kir.manger.ui.application_navigation.catalog.catalog.btnSizeAddUpdate
@@ -48,12 +50,13 @@ fun ListItem(
         Modifier
             .fillMaxWidth()
             .height(60.dp)
-            .padding(horizontal = 16.dp)
             .clickable { navInfoAction() }
+            .padding(vertical = Dimensions.smallest, horizontal = Dimensions.default)
+            .padding(systemBarsHorizontalPadding())
     ) {
         Column(
             Modifier
-                .padding(end = 16.dp)
+                .padding(end = Dimensions.default)
                 .weight(1f, true)
                 .align(Alignment.CenterVertically)
         ) {

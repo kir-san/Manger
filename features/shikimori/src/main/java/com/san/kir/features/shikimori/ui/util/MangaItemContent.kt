@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.rememberImage
+import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
 import com.san.kir.data.models.base.ShikimoriAccount
 import com.san.kir.features.shikimori.R
 
@@ -43,7 +44,8 @@ internal fun LazyItemScope.MangaItemContent(
             .animateItemPlacement()
             .clickable(onClick = onClick)
             .fillMaxWidth()
-            .padding(vertical = Dimensions.small),
+            .padding(vertical = Dimensions.small, horizontal = Dimensions.default)
+            .padding(systemBarsHorizontalPadding()),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(

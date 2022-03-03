@@ -31,10 +31,12 @@ import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.extend.SimplifiedManga
 import com.san.kir.data.parsing.SiteCatalogsManager
+import com.san.kir.manger.Main
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.MainActivity
 import com.san.kir.manger.ui.application_navigation.MainNavTarget
 import com.san.kir.manger.utils.SearchDuplicate
+import com.san.kir.manger.utils.compose.deepLinkIntent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -80,12 +82,8 @@ class MangaUpdaterService : Service() {
     private lateinit var mServiceHandler: ServiceHandler
 
     private val actionGoToLatest by lazy {
-        val deepLinkIntent = Intent(
-            Intent.ACTION_VIEW,
-            MainNavTarget.Latest.deepLink.toUri(),
-            this,
-            MainActivity::class.java
-        )
+        val deepLinkIntent = deepLinkIntent<MainActivity>(MainNavTarget.Latest)
+
         TaskStackBuilder.create(this).run {
             addNextIntentWithParentStack(deepLinkIntent)
             getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)

@@ -30,7 +30,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -39,28 +38,35 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.san.kir.core.compose_utils.TopBarScreenContent
 import com.san.kir.core.support.MainMenuType
-import com.san.kir.manger.BuildConfig
-import com.san.kir.manger.R
-import com.san.kir.manger.ui.application_navigation.MAP_SCREENS_TYPE
-import com.san.kir.manger.ui.application_navigation.MainNavTarget
 import com.san.kir.core.utils.TestTags
 import com.san.kir.core.utils.coroutines.mainLaunch
-import com.san.kir.data.models.base.MainMenuItem
 import com.san.kir.core.utils.formatDouble
 import com.san.kir.core.utils.toast
+import com.san.kir.data.models.base.MainMenuItem
+import com.san.kir.manger.BuildConfig
+import com.san.kir.manger.R
 import kotlinx.coroutines.launch
 
-var backPressedTime = 0L
+private var backPressedTime = 0L
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun LibraryScreen(nav: NavHostController, viewModel: LibraryViewModel = hiltViewModel()) {
+fun LibraryScreen(
+    navigateToScreen: (MainMenuType) -> Unit,
+    navigateToCategories: () -> Unit,
+    navigateToCatalogs: () -> Unit,
+    navigateToInfo: (String) -> Unit,
+    navigateToStorage: (String) -> Unit,
+    navigateToStats: (String) -> Unit,
+    navigateToChapters: (String) -> Unit,
+    navigateToOnline: () -> Unit,
+    viewModel: LibraryViewModel = hiltViewModel(),
+) {
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val context = LocalContext.current as? ComponentActivity
     val coroutineScope = rememberCoroutineScope()
@@ -72,10 +78,18 @@ fun LibraryScreen(nav: NavHostController, viewModel: LibraryViewModel = hiltView
         ),
         additionalPadding = 0.dp,
         scaffoldState = scaffoldState,
-        drawerContent = { DrawerContent(scaffoldState, nav) },
-        actions = { LibraryActions(nav, viewModel) }
+        drawerContent = { DrawerContent(scaffoldState, navigateToScreen) },
+        actions = { LibraryActions(navigateToOnline, viewModel) }
     ) {
-        LibraryContent(nav, viewModel)
+        LibraryContent(
+            navigateToCatalogs = navigateToCatalogs,
+            navigateToInfo = navigateToInfo,
+            navigateToStorage = navigateToStorage,
+            navigateToStats = navigateToStats,
+            navigateToChapters = navigateToChapters,
+            navigateToCategories = navigateToCategories,
+            viewModel = viewModel,
+        )
     }
 
     BackHandler {
@@ -98,7 +112,7 @@ fun LibraryScreen(nav: NavHostController, viewModel: LibraryViewModel = hiltView
 @Composable
 private fun DrawerContent(
     scaffoldState: ScaffoldState,
-    nav: NavHostController,
+    navigateToScreen: (MainMenuType) -> Unit,
     viewModel: DrawerViewModel = hiltViewModel(),
 ) {
     val menuItems by viewModel.loadMainMenuItems().collectAsState(initial = listOf())
@@ -132,13 +146,10 @@ private fun DrawerContent(
             contentPadding = PaddingValues(start = barsStart, bottom = barsBottom)
         ) {
             itemsIndexed(items = menuItems) { index, item ->
-                MAP_SCREENS_TYPE[item.type]?.let { screen ->
-                    MainMenuItemRows(index, menuItems.size, item, screen.icon, loadData(item)) {
-                        if (MainNavTarget.Library.route != screen.route)
-                            nav.navigate(screen.route)
-                        coroutineScope.launch {
-                            scaffoldState.drawerState.close()
-                        }
+                MainMenuItemRows(index, menuItems.size, item, loadData(item)) {
+                    navigateToScreen(item.type)
+                    coroutineScope.launch {
+                        scaffoldState.drawerState.close()
                     }
                 }
             }
@@ -152,10 +163,9 @@ private fun MainMenuItemRows(
     index: Int,
     max: Int,
     item: MainMenuItem,
-    icon: ImageVector,
     add: String,
     viewModel: DrawerViewModel = hiltViewModel(),
-    action: () -> Unit
+    action: () -> Unit,
 ) {
     val editMode by viewModel.editMenu.collectAsState(false)
 
@@ -166,7 +176,7 @@ private fun MainMenuItemRows(
             .clickable(onClick = action)
             .testTag(TestTags.Drawer.item)
     ) {
-        Icon(icon, "", modifier = Modifier.padding(16.dp))
+        Icon(item.type.icon, "", modifier = Modifier.padding(16.dp))
 
         Text(text = item.name, style = MaterialTheme.typography.h6)
 
@@ -205,11 +215,12 @@ private fun MainMenuItemRows(
 @Composable
 private fun loadData(
     item: MainMenuItem,
-    viewModel: DrawerViewModel = hiltViewModel()
+    viewModel: DrawerViewModel = hiltViewModel(),
 ): String {
     return when (item.type) {
         MainMenuType.Default,
-        MainMenuType.Library -> {
+        MainMenuType.Library,
+        -> {
             val count by viewModel.loadLibraryCounts().collectAsState(0)
             count.toString()
         }
@@ -237,6 +248,7 @@ private fun loadData(
         MainMenuType.Schedule -> viewModel.plannedCount.collectAsState().value.toString()
         MainMenuType.Accounts,
         MainMenuType.Settings,
-        MainMenuType.Statistic -> ""
+        MainMenuType.Statistic,
+        -> ""
     }
 }

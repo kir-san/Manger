@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.san.kir.core.support.DIR
 import com.san.kir.core.utils.coroutines.withMainContext
 import com.san.kir.core.utils.createDirs
 import com.san.kir.core.utils.getFullPath
@@ -89,7 +90,7 @@ class MangaAddViewModel @Inject constructor(
             var shortPath = element.shotLink
             if (pat.find())
                 shortPath = element.shotLink.removePrefix(pat.group()).removeSuffix(".html")
-            val path = "${com.san.kir.core.support.DIR.MANGA}/${element.catalogName}/$shortPath"
+            val path = "${DIR.MANGA}/${element.catalogName}/$shortPath"
 
             val category = categoryDao.itemByName(categoryName)
 

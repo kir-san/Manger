@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -43,33 +42,30 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.google.accompanist.insets.navigationBarsPadding
 import com.san.kir.core.compose_utils.FullWeightSpacer
-import com.san.kir.core.internet.NetworkState
-import com.san.kir.core.support.DownloadState
-import com.san.kir.core.utils.bytesToMb
-import com.san.kir.data.models.base.Chapter
-import com.san.kir.data.models.base.Manga
-import com.san.kir.manger.R
-import com.san.kir.manger.utils.TimeFormat
 import com.san.kir.core.compose_utils.MenuText
-import com.san.kir.core.utils.formatDouble
-import com.san.kir.core.compose_utils.TopBarScreenContent
 import com.san.kir.core.compose_utils.TopBarScreenPadding
 import com.san.kir.core.compose_utils.rememberImage
 import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
 import com.san.kir.core.download.DownloadService
-import com.san.kir.core.download.DownloadService.Companion
+import com.san.kir.core.internet.NetworkState
+import com.san.kir.core.support.DownloadState
+import com.san.kir.core.utils.bytesToMb
+import com.san.kir.core.utils.formatDouble
+import com.san.kir.data.models.base.Chapter
+import com.san.kir.data.models.base.Manga
+import com.san.kir.manger.R
+import com.san.kir.manger.utils.TimeFormat
 
 @Composable
 fun DownloadScreen(
-    nav: NavHostController,
+    navigateUp: () -> Unit,
     viewModel: DownloadViewModel = hiltViewModel(),
     context: Context = LocalContext.current,
 ) {
     TopBarScreenPadding(
-        navigateUp = nav::navigateUp,
+        navigateUp = navigateUp,
         title = stringResource(R.string.main_menu_downloader_count, viewModel.loadingCount),
         subtitle = stringResource(
             R.string.download_activity_subtitle, viewModel.stoppedCount, viewModel.completedCount

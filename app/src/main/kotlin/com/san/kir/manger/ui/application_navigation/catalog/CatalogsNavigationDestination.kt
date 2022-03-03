@@ -1,10 +1,8 @@
 package com.san.kir.manger.ui.application_navigation.catalog
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.navDeepLink
-import com.google.accompanist.navigation.animation.composable
+import com.san.kir.manger.ui.application_navigation.MainNavTarget
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaAddScreen
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaInfoScreen
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.siteCatalogItemViewModel
@@ -12,84 +10,73 @@ import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogScree
 import com.san.kir.manger.ui.application_navigation.catalog.catalog.catalogViewModel
 import com.san.kir.manger.ui.application_navigation.catalog.global_search.GlobalSearchScreen
 import com.san.kir.manger.ui.application_navigation.catalog.main.CatalogsScreen
-import com.san.kir.manger.utils.compose.NavItem
 import com.san.kir.manger.utils.compose.NavTarget
-import com.san.kir.manger.utils.compose.SiteCatalogItem
-import com.san.kir.manger.utils.compose.SiteItem
-import com.san.kir.manger.utils.compose.getStringElement
+import com.san.kir.manger.utils.compose.navTarget
+import com.san.kir.manger.utils.compose.navigation
 
-sealed class CatalogsNavTarget : NavTarget {
+enum class CatalogsNavTarget : NavTarget {
 
-    object Main : CatalogsNavTarget() {
-        override val route: String = "main"
-    }
-
-    object Catalog : CatalogsNavTarget() {
-        override val base: String = "catalog"
-        override val isOptional: Boolean = true
-    }
-
-    object GlobalSearch : CatalogsNavTarget() {
-        override val route: String = "global_search"
-        override val isOptional: Boolean = true
-    }
-
-    object Info : CatalogsNavTarget() {
-        override val base: String = "info"
-        override val isOptional: Boolean = true
-    }
-
-    object AddLocal : CatalogsNavTarget() {
-        override val base: String = "add_local"
-        override val isOptional: Boolean = true
-    }
-}
-
-@OptIn(ExperimentalAnimationApi::class)
-fun NavGraphBuilder.catalogsNavGraph(nav: NavHostController) {
-    composable(
-        route = CatalogsNavTarget.Main.route,
-        deepLinks = listOf(navDeepLink { uriPattern = CatalogsNavTarget.Main.deepLink }),
-        content = {
-            CatalogsScreen(nav)
+    Main {
+        override val content = navTarget(
+            route = "main", hasDeepLink = true,
+        ) {
+            CatalogsScreen(
+                navigateUp = ::navigateUp,
+                navigateToSearch = { navigate(GlobalSearch) },
+                navigateToItem = { navigate(Catalog, it) }
+            )
         }
-    )
+    },
 
-    composable(
-        route = CatalogsNavTarget.Catalog.route,
-        content = { back ->
-            val item = back.getStringElement(CatalogsNavTarget.Catalog) ?: ""
+    Catalog {
+        override val content = navTarget(route = "catalog", hasItem = true) {
+            val item = stringElement ?: ""
             val viewModel = catalogViewModel(item)
 
-            CatalogScreen(nav, viewModel)
+            CatalogScreen(
+                navigateUp = ::navigateUp,
+                navigateToInfo = { navigate(Info, it) },
+                navigateToAdd = { navigate(AddLocal, it) },
+                viewModel
+            )
         }
-    )
+    },
 
-    composable(
-        route = CatalogsNavTarget.GlobalSearch.route,
-        content = { back ->
-            val initSearchText = back.getStringElement(CatalogsNavTarget.GlobalSearch) ?: ""
-
-            GlobalSearchScreen(nav, initSearchText = initSearchText)
+    GlobalSearch {
+        override val content = navTarget(route = "global_search", hasItem = true) {
+            GlobalSearchScreen(
+                navigateUp = ::navigateUp,
+                navigateToInfo = { navigate(Info, it) },
+                navigateToAdd = { navigate(AddLocal, it) },
+                initSearchText = stringElement ?: "")
         }
-    )
+    },
 
-    composable(
-        route = CatalogsNavTarget.Info.route,
-        content = { back ->
-            val item = back.getStringElement(CatalogsNavTarget.Info) ?: ""
-
-            MangaInfoScreen(nav, siteCatalogItemViewModel(item))
+    Info {
+        override val content = navTarget(route = "info", hasItem = true) {
+            MangaInfoScreen(
+                navigateUp = ::navigateUp,
+                navigateToAdd = { navigate(AddLocal, it) },
+                siteCatalogItemViewModel(stringElement ?: "")
+            )
         }
-    )
+    },
 
-    composable(
-        route = CatalogsNavTarget.AddLocal.route,
-        content = { back ->
-            val item = back.getStringElement(CatalogsNavTarget.AddLocal) ?: ""
-
-            MangaAddScreen(item, nav::navigateUp)
+    AddLocal {
+        override val content = navTarget(route = "add", hasItem = true) {
+            MangaAddScreen(stringElement ?: "", ::navigateUp)
         }
+    };
+}
+
+private val targets = CatalogsNavTarget.values().toList()
+
+fun NavGraphBuilder.catalogsNavGraph(nav: NavHostController) {
+    navigation(
+        nav = nav,
+        startDestination = CatalogsNavTarget.Main,
+        route = MainNavTarget.Catalogs,
+        targets = targets,
     )
 }
 

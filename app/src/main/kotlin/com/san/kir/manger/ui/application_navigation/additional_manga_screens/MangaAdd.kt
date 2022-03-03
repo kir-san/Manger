@@ -218,6 +218,7 @@ private fun ContinueProcess(
                 viewModel.createDirs(path)
                 delay(1000)
 
+                // TODO: not start service
                 process = ProcessStatus.prevAndSearchChapters
                 MangaUpdaterService.add(context, manga)
                 delay(1000)

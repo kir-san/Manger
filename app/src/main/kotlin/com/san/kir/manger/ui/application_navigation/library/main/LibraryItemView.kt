@@ -34,20 +34,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.rememberImage
 import com.san.kir.core.support.CATEGORY_ALL
 import com.san.kir.core.utils.TestTags
 import com.san.kir.data.models.extend.SimplifiedManga
-import com.san.kir.manger.ui.application_navigation.library.LibraryNavTarget
-import com.san.kir.manger.utils.compose.navigate
 import com.san.kir.manger.utils.compose.squareMaxSize
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun LazyItemScope.ItemView(
-    nav: NavHostController,
+    navigateToChapters: (String) -> Unit,
     manga: SimplifiedManga,
     viewModel: LibraryViewModel,
     content: @Composable () -> Unit,
@@ -67,9 +64,7 @@ private fun LazyItemScope.ItemView(
             .fillMaxWidth()
             .combinedClickable(
                 onLongClick = { viewModel.changeSelectedManga(true, manga) },
-                onClick = {
-                    nav.navigate(LibraryNavTarget.Chapters, manga.name)
-                })
+                onClick = { navigateToChapters(manga.name) })
     ) {
         content()
     }
@@ -77,7 +72,7 @@ private fun LazyItemScope.ItemView(
 
 @Composable
 fun LazyItemScope.LibraryLargeItemView(
-    nav: NavHostController,
+    navigateToChapters: (String) -> Unit,
     manga: SimplifiedManga,
     cat: String,
     viewModel: LibraryViewModel,
@@ -88,7 +83,7 @@ fun LazyItemScope.LibraryLargeItemView(
     val primaryColor = MaterialTheme.colors.primary
     var backgroundColor by remember { mutableStateOf(primaryColor) }
 
-    ItemView(nav, manga, viewModel) {
+    ItemView(navigateToChapters, manga, viewModel) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Box(modifier = Modifier.squareMaxSize()) {
                 Image(
@@ -147,7 +142,7 @@ fun LazyItemScope.LibraryLargeItemView(
 
 @Composable
 fun LazyItemScope.LibrarySmallItemView(
-    nav: NavHostController,
+    navigateToChapters: (String) -> Unit,
     manga: SimplifiedManga,
     cat: String,
     viewModel: LibraryViewModel,
@@ -160,7 +155,7 @@ fun LazyItemScope.LibrarySmallItemView(
 
     val heightSize = 65.dp
 
-    ItemView(nav, manga, viewModel) {
+    ItemView(navigateToChapters, manga, viewModel) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()

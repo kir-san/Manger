@@ -32,7 +32,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.san.kir.core.compose_utils.Dimensions
@@ -43,21 +42,20 @@ import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
 import com.san.kir.core.utils.formatDouble
 import com.san.kir.data.models.base.Storage
 import com.san.kir.manger.R
-import com.san.kir.manger.ui.application_navigation.storage.StorageNavTarget
 import com.san.kir.manger.utils.compose.StorageProgressBar
-import com.san.kir.manger.utils.compose.navigate
 import kotlin.math.roundToInt
 
 @Composable
 fun StorageScreen(
-    nav: NavHostController,
+    navigateUp: () -> Unit,
+    navigateToItem: (String) -> Unit,
     viewModel: StorageViewModel = hiltViewModel(),
 ) {
     val viewState by viewModel.state.collectAsState()
     val allStorage = viewModel.allStorage.collectAsLazyPagingItems()
 
     TopBarScreenList(
-        navigateUp = nav::navigateUp,
+        navigateUp = navigateUp,
         title = stringResource(R.string.main_menu_storage) + " " +
                 if (viewState.storageSize > 0) {
                     stringResource(
@@ -73,7 +71,7 @@ fun StorageScreen(
         additionalPadding = Dimensions.smallest
     ) {
         items(items = allStorage) { item ->
-            item?.let { ItemView(nav, item, viewModel) }
+            item?.let { ItemView(navigateToItem, item, viewModel) }
         }
     }
 }
@@ -81,7 +79,7 @@ fun StorageScreen(
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun ItemView(
-    nav: NavHostController,
+    navigateToItem: (String) -> Unit,
     item: Storage,
     viewModel: StorageViewModel,
 ) {
@@ -97,7 +95,7 @@ private fun ItemView(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                manga?.let { nav.navigate(StorageNavTarget.Storage, it.name) }
+                manga?.let { navigateToItem(it.name) }
                     ?: run { showMenu = true }
             }
             .padding(vertical = Dimensions.smallest, horizontal = Dimensions.default)

@@ -67,17 +67,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import com.google.accompanist.insets.systemBarsPadding
 import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.utils.log
-import com.san.kir.manger.R
-import com.san.kir.manger.foreground_work.services.CatalogForOneSiteUpdaterService
-import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
-import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewModel.Companion.DATE
-import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewModel.Companion.NAME
-import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewModel.Companion.POP
-import com.san.kir.manger.utils.compose.ListItem
 import com.san.kir.core.compose_utils.MenuIcon
 import com.san.kir.core.compose_utils.PreparedTopBar
 import com.san.kir.core.compose_utils.SearchTextField
@@ -86,15 +76,25 @@ import com.san.kir.core.compose_utils.systemBarBottomPadding
 import com.san.kir.core.compose_utils.systemBarEndPadding
 import com.san.kir.core.compose_utils.systemBarStartPadding
 import com.san.kir.core.compose_utils.systemBarTopPadding
-import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
-import com.san.kir.manger.utils.compose.navigate
+import com.san.kir.core.utils.log
+import com.san.kir.manger.R
+import com.san.kir.manger.foreground_work.services.CatalogForOneSiteUpdaterService
+import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewModel.Companion.DATE
+import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewModel.Companion.NAME
+import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewModel.Companion.POP
+import com.san.kir.manger.utils.compose.ListItem
 import kotlinx.coroutines.launch
 import java.net.URLDecoder
 
 val btnSizeAddUpdate = 30.dp
 
 @Composable
-fun CatalogScreen(nav: NavHostController, viewModel: CatalogViewModel) {
+fun CatalogScreen(
+    navigateUp: () -> Unit,
+    navigateToInfo: (String) -> Unit,
+    navigateToAdd: (String) -> Unit,
+    viewModel: CatalogViewModel,
+) {
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val coroutineScope = rememberCoroutineScope()
     var errorDialog by remember { mutableStateOf(false) }
@@ -127,13 +127,11 @@ fun CatalogScreen(nav: NavHostController, viewModel: CatalogViewModel) {
         additionalPadding = Dimensions.smallest
     ) {
         items(items = items, key = { item -> item.id }) { item ->
-            ListItem(item, item.name, item.statusEdition,
-                navAddAction = {
-                    nav.navigate(CatalogsNavTarget.AddLocal, item.link)
-                },
-                navInfoAction = {
-                    nav.navigate(CatalogsNavTarget.Info, item.link)
-                })
+            ListItem(
+                item, item.name, item.statusEdition,
+                navAddAction = navigateToAdd,
+                navInfoAction = navigateToInfo,
+            )
         }
     }
 
@@ -143,7 +141,7 @@ fun CatalogScreen(nav: NavHostController, viewModel: CatalogViewModel) {
                 scaffoldState.drawerState.close()
             }
         } else {
-            nav.navigateUp()
+            navigateUp()
         }
     }
 

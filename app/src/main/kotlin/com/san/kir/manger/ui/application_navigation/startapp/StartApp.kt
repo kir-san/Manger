@@ -27,16 +27,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.google.accompanist.insets.ui.Scaffold
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.san.kir.manger.R
-import com.san.kir.manger.ui.application_navigation.MainNavTarget
-import com.san.kir.manger.utils.compose.navigate
 
 @Composable
-fun StartAppScreen(nav: NavHostController) {
+fun StartAppScreen(navigateToItem: () -> Unit,) {
     var action by remember { mutableStateOf(true) }
 
     Scaffold {
@@ -55,7 +52,7 @@ fun StartAppScreen(nav: NavHostController) {
             if (action) CircularProgressIndicator()
             Spacer(modifier = Modifier.height(20.dp))
 
-            PermissionPrepare(nav) { action = it }
+            PermissionPrepare(navigateToItem) { action = it }
         }
     }
 }
@@ -63,7 +60,7 @@ fun StartAppScreen(nav: NavHostController) {
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 private fun PermissionPrepare(
-    nav: NavHostController,
+    navigateToItem: () -> Unit,
     viewModel: StartAppViewModel = hiltViewModel(),
     action: (Boolean) -> Unit,
 ) {
@@ -82,7 +79,7 @@ private fun PermissionPrepare(
         storagePermissionState.hasPermission -> {
             action(true)
             viewModel.startApp()
-            if (state == OperationState.SUCCESS) nav.navigate(MainNavTarget.Library)
+            if (state == OperationState.SUCCESS) navigateToItem()
         }
 
         storagePermissionState.shouldShowRationale || !storagePermissionState.permissionRequested -> {

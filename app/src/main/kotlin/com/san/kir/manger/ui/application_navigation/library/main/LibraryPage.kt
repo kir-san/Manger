@@ -27,19 +27,19 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
-import com.google.accompanist.insets.systemBarsPadding
+import com.san.kir.core.utils.TestTags
 import com.san.kir.data.models.extend.CategoryWithMangas
 import com.san.kir.manger.R
-import com.san.kir.manger.ui.application_navigation.MainNavTarget
-import com.san.kir.core.utils.TestTags
-import com.san.kir.manger.utils.compose.navigate
 
 @Composable
 fun LibraryPage(
-    nav: NavHostController,
+    navigateToCatalogs: () -> Unit,
+    navigateToInfo: (String) -> Unit,
+    navigateToStorage: (String) -> Unit,
+    navigateToStats: (String) -> Unit,
+    navigateToChapters: (String) -> Unit,
     item: CategoryWithMangas,
     viewModel: LibraryViewModel,
 ) {
@@ -54,16 +54,23 @@ fun LibraryPage(
             verticalArrangement = Arrangement.Center
         ) {
             if (item.mangas.isEmpty()) {
-                EmptyView(nav)
+                EmptyView(navigateToCatalogs)
             } else {
-                PageView(nav, item, viewModel)
+                PageView(
+                    navigateToInfo = navigateToInfo,
+                    navigateToStorage = navigateToStorage,
+                    navigateToStats = navigateToStats,
+                    navigateToChapters = navigateToChapters,
+                    item = item,
+                    viewModel = viewModel,
+                )
             }
         }
     }
 }
 
 @Composable
-private fun EmptyView(nav: NavHostController) {
+private fun EmptyView(navigateToCatalogs: () -> Unit) {
     Column(
         Modifier
             .testTag(TestTags.Library.empty_view),
@@ -74,7 +81,7 @@ private fun EmptyView(nav: NavHostController) {
 
         Button(
             modifier = Modifier.padding(16.dp),
-            onClick = { nav.navigate(MainNavTarget.Catalogs) }) {
+            onClick = navigateToCatalogs) {
             Text(
                 text = stringResource(id = R.string.library_help_go)
             )
@@ -87,7 +94,10 @@ private fun EmptyView(nav: NavHostController) {
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun PageView(
-    nav: NavHostController,
+    navigateToInfo: (String) -> Unit,
+    navigateToStorage: (String) -> Unit,
+    navigateToStats: (String) -> Unit,
+    navigateToChapters: (String) -> Unit,
     item: CategoryWithMangas,
     viewModel: LibraryViewModel,
 ) {
@@ -108,7 +118,12 @@ fun PageView(
     ModalBottomSheetLayout(
         modifier = Modifier.fillMaxSize(),
         sheetContent = {
-            LibraryDropUpMenu(nav = nav, viewModel = viewModel)
+            LibraryDropUpMenu(
+                navigateToInfo = navigateToInfo,
+                navigateToStorage = navigateToStorage,
+                navigateToStats = navigateToStats,
+                viewModel = viewModel,
+            )
         },
         sheetState = sheetState
     ) {
@@ -122,7 +137,7 @@ fun PageView(
                 ),
             ) {
                 items(items = item.mangas) { manga ->
-                    LibraryLargeItemView(nav, manga, item.name, viewModel)
+                    LibraryLargeItemView(navigateToChapters, manga, item.name, viewModel)
                 }
             }
         else
@@ -134,7 +149,7 @@ fun PageView(
                 ),
             ) {
                 items(items = item.mangas) { manga ->
-                    LibrarySmallItemView(nav, manga, item.name, viewModel)
+                    LibrarySmallItemView(navigateToChapters, manga, item.name, viewModel)
                 }
             }
     }

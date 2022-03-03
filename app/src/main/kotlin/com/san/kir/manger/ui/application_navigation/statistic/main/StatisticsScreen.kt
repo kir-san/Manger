@@ -24,24 +24,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.TopBarScreenList
 import com.san.kir.core.compose_utils.rememberImage
 import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
-import com.san.kir.core.utils.log
 import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.Statistic
 import com.san.kir.manger.R
-import com.san.kir.manger.ui.application_navigation.statistic.StatisticNavTarget
 import com.san.kir.manger.utils.TimeFormat
-import com.san.kir.manger.utils.compose.navigate
 
 @Composable
 fun StatisticsScreen(
-    nav: NavHostController,
+    navigateUp: () -> Unit,
+    navigateToItem: (String) -> Unit,
     viewModel: StatisticViewModel = hiltViewModel(),
     context: Context = LocalContext.current,
 ) {
@@ -49,7 +46,7 @@ fun StatisticsScreen(
     val allItems = viewModel.allItems.collectAsLazyPagingItems()
 
     TopBarScreenList(
-        navigateUp = nav::navigateUp,
+        navigateUp = navigateUp,
         title = stringResource(R.string.main_menu_statistic),
         subtitle = stringResource(
             R.string.statistic_subtitle, TimeFormat(allTime).toString(context)
@@ -58,9 +55,7 @@ fun StatisticsScreen(
     ) {
         items(items = allItems, key = { stat -> stat.id }) { item ->
             item?.let {
-                ItemView(item, viewModel) {
-                    nav.navigate(StatisticNavTarget.Statistic, item.manga)
-                }
+                ItemView(item, viewModel) { navigateToItem(item.manga) }
             }
         }
     }

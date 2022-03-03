@@ -54,11 +54,11 @@ import com.san.kir.core.compose_utils.TopBarScreenContent
 
 @Composable
 fun SettingsScreen(
-    nav: NavHostController,
+    navigateUp: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     TopBarScreenContent(
-        navigateUp = nav::navigateUp,
+        navigateUp = navigateUp,
         title = stringResource(R.string.main_menu_settings),
         additionalPadding = 0.dp
     ) {

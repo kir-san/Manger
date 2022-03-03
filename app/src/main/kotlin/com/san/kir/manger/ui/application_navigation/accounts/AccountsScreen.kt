@@ -12,11 +12,11 @@ import com.san.kir.features.shikimori.ui.syncItem.ShikimoriItem
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun AccountsScreen(
-    navigateToUp: () -> Unit,
+    navigateUp: () -> Unit,
     navigateToShiki: () -> Unit,
 ) {
     TopBarScreenList(
-        navigateUp = navigateToUp,
+        navigateUp = navigateUp,
         title = stringResource(R.string.main_menu_accounts),
         additionalPadding = 0.dp
     ) {

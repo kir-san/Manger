@@ -1,46 +1,43 @@
 package com.san.kir.manger.ui.application_navigation.statistic
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import com.google.accompanist.navigation.animation.composable
+import com.san.kir.manger.ui.application_navigation.MainNavTarget
 import com.san.kir.manger.ui.application_navigation.statistic.main.StatisticsScreen
-import com.san.kir.manger.utils.compose.NavItem
 import com.san.kir.manger.utils.compose.NavTarget
-import com.san.kir.manger.utils.compose.StatisticItem
-import com.san.kir.manger.utils.compose.getStringElement
+import com.san.kir.manger.utils.compose.navTarget
+import com.san.kir.manger.utils.compose.navigation
 
-sealed class StatisticNavTarget : NavTarget {
-    object Main : StatisticNavTarget() {
-        override val route: String = "main"
-    }
-
-    object Statistic : StatisticNavTarget() {
-        override val base: String = "statistic_"
-        override val isOptional: Boolean = true
-    }
-}
-
-@OptIn(ExperimentalAnimationApi::class)
-fun NavGraphBuilder.statisticNavGraph(nav: NavHostController) {
-    composable(
-        route = StatisticNavTarget.Main.route,
-        content = {
-            StatisticsScreen(nav)
+enum class StatisticNavTarget : NavTarget {
+    Main {
+        override val content = navTarget(route = "main") {
+            StatisticsScreen(
+                navigateUp = ::navigateUp,
+                navigateToItem = { navigate(Statistic, it) },
+            )
         }
-    )
+    },
 
-    composable(
-        route = StatisticNavTarget.Statistic.route,
-        content = { back ->
-            val item = back.getStringElement(StatisticNavTarget.Statistic) ?: ""
-            val viewModel = onlyStatisticViewModel(mangaName = item)
+    Statistic {
+        override val content = navTarget(route = "statistic_item", hasItem = true) {
+            val viewModel = onlyStatisticViewModel(stringElement ?: "")
 
             val statistic by viewModel.statistic.collectAsState()
 
-            StatisticScreen(nav, statistic)
+            StatisticScreen(navigateUp = ::navigateUp, statistic)
         }
+    };
+}
+
+private val targets = StatisticNavTarget.values().toList()
+
+fun NavGraphBuilder.statisticNavGraph(nav: NavHostController) {
+    navigation(
+        nav = nav,
+        startDestination = StatisticNavTarget.Main,
+        route = MainNavTarget.Statistic,
+        targets = targets
     )
 }

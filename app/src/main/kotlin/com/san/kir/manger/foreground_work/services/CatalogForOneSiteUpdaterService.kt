@@ -32,6 +32,7 @@ import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
 import com.san.kir.core.utils.ID
 import com.san.kir.core.utils.intentFor
 import com.san.kir.core.utils.startService
+import com.san.kir.manger.utils.compose.deepLinkIntent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.map
@@ -60,8 +61,9 @@ class CatalogForOneSiteUpdaterService : Service() {
         private var taskCounter = listOf<String>()
         fun isContain(name: String) = taskCounter.contains(name)
         fun add(ctx: Context, name: String) {
-           startService<CatalogForOneSiteUpdaterService>(ctx, INTENT_DATA to name)
+            startService<CatalogForOneSiteUpdaterService>(ctx, INTENT_DATA to name)
         }
+
         fun addIfNotContain(ctx: Context, name: String) {
             if (isContain(name).not()) {
                 add(ctx, name)
@@ -78,12 +80,8 @@ class CatalogForOneSiteUpdaterService : Service() {
     private var notificationId = ID.generate()
 
     private val actionGoToCatalogs by lazy {
-        val deepLinkIntent = Intent(
-            Intent.ACTION_VIEW,
-            CatalogsNavTarget.Main.deepLink.toUri(),
-            this,
-            MainActivity::class.java
-        )
+        val deepLinkIntent = deepLinkIntent<MainActivity>(CatalogsNavTarget.Main)
+
         TaskStackBuilder.create(this).run {
             addNextIntentWithParentStack(deepLinkIntent)
             getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)

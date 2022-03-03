@@ -5,155 +5,83 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import com.google.accompanist.navigation.animation.composable
+import com.san.kir.core.support.MainMenuType
+import com.san.kir.manger.ui.application_navigation.MainNavTarget
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaAboutScreen
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaAddOnlineScreen
-import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaAddScreen
-import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaEditScreen
-import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaStorageScreen
-import com.san.kir.manger.ui.application_navigation.additional_manga_screens.mangaStorageViewModel
+import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
 import com.san.kir.manger.ui.application_navigation.library.chapters.ChaptersScreen
 import com.san.kir.manger.ui.application_navigation.library.chapters.chaptersViewModel
 import com.san.kir.manger.ui.application_navigation.library.main.LibraryScreen
-import com.san.kir.manger.ui.application_navigation.statistic.StatisticScreen
-import com.san.kir.manger.ui.application_navigation.statistic.onlyStatisticViewModel
+import com.san.kir.manger.ui.application_navigation.mainMenuItems
+import com.san.kir.manger.ui.application_navigation.statistic.StatisticNavTarget
+import com.san.kir.manger.ui.application_navigation.storage.StorageNavTarget
 import com.san.kir.manger.ui.onlyMangaViewModel
-import com.san.kir.manger.utils.compose.MangaItem
-import com.san.kir.manger.utils.compose.NavItem
 import com.san.kir.manger.utils.compose.NavTarget
-import com.san.kir.manger.utils.compose.SiteCatalogItem
-import com.san.kir.manger.utils.compose.getStringElement
-import com.san.kir.manger.utils.compose.navigate
+import com.san.kir.manger.utils.compose.navigation
+import com.san.kir.manger.utils.compose.navTarget
 
-sealed class LibraryNavTarget : NavTarget {
-    object Main : LibraryNavTarget() {
-        override val base: String = "main"
-    }
-
-    object Chapters : LibraryNavTarget() {
-        override val base: String = "chapters"
-        override val isOptional: Boolean = true
-    }
-
-    object AddOnline : LibraryNavTarget() {
-        override val base: String = "add_online"
-    }
-
-    object AddLocal : LibraryNavTarget() {
-        override val base: String = "add_local"
-        override val isOptional: Boolean = true
-    }
-
-    object About : LibraryNavTarget() {
-        override val base: String = "about"
-        override val isOptional: Boolean = true
-    }
-
-    object Edit : LibraryNavTarget() {
-        override val base: String = "edit"
-        override val isOptional: Boolean = true
-    }
-
-    object Storage : LibraryNavTarget() {
-        override val base: String = "manga_storage"
-        override val isOptional: Boolean = true
-    }
-
-    object Statistic : LibraryNavTarget() {
-        override val base: String = "manga_statistic"
-        override val isOptional: Boolean = true
-    }
-}
-
-@OptIn(ExperimentalAnimationApi::class)
-fun NavGraphBuilder.libraryNavGraph(nav: NavHostController) {
-    composable(
-        route = LibraryNavTarget.Main.route,
-        content = {
-            LibraryScreen(nav)
+enum class LibraryNavTarget : NavTarget {
+    Main {
+        override val content = navTarget(route = "main") {
+            LibraryScreen(
+                navigateToScreen = { type ->
+                    if (MainMenuType.Library != type)
+                        mainMenuItems[type]?.let { navigate(it) }
+                },
+                navigateToCategories = { navigate(MainNavTarget.Categories) },
+                navigateToCatalogs = { navigate(MainNavTarget.Catalogs) },
+                navigateToInfo = { navigate(About, it) },
+                navigateToStorage = { navigate(StorageNavTarget.Storage, it) },
+                navigateToStats = { navigate(StatisticNavTarget.Statistic, it) },
+                navigateToChapters = { navigate(Chapters, it) },
+                navigateToOnline = { navigate(AddOnline) },
+            )
         }
-    )
+    },
 
-    composable(
-        route = LibraryNavTarget.Chapters.route,
-        content = { back ->
-            val item = back.getStringElement(LibraryNavTarget.Chapters) ?: ""
+    Chapters {
+        override val content = navTarget(route = "chapters", hasItem = true) {
+            val viewModel = chaptersViewModel(stringElement ?: "")
 
-            val viewModel = chaptersViewModel(item)
-
-            ChaptersScreen(viewModel, nav::navigateUp)
+            ChaptersScreen(viewModel, ::navigateUp)
         }
-    )
+    },
 
-    composable(
-        route = LibraryNavTarget.AddOnline.route,
-        content = {
+    AddOnline {
+        override val content = navTarget(route = "add_online") {
             MangaAddOnlineScreen(
-                navigateToBack = nav::navigateUp,
+                navigateUp = ::navigateUp,
                 navigateToNext = { arg ->
-                    nav.navigate(LibraryNavTarget.AddLocal, arg)
+                    navigate(CatalogsNavTarget.AddLocal, arg)
                 }
             )
         }
-    )
+    },
 
-    composable(
-        route = LibraryNavTarget.AddLocal.route,
-        content = { back ->
-            val item = back.getStringElement(LibraryNavTarget.AddLocal) ?: ""
-
-            MangaAddScreen(item, nav::navigateUp)
-        }
-    )
-
-    composable(
-        route = LibraryNavTarget.About.route,
-        content = { back ->
-            val item = back.getStringElement(LibraryNavTarget.About) ?: ""
-            val viewModel = onlyMangaViewModel(mangaUnic = item)
+    About {
+        override val content = navTarget(
+            route = "about",
+            hasItem = true,
+        ) {
+            val viewModel = onlyMangaViewModel(mangaUnic = stringElement ?: "")
 
             val manga by viewModel.manga.collectAsState()
             val categoryName by viewModel.categoryName.collectAsState()
 
-            MangaAboutScreen(
-                nav::navigateUp,
-                {
-                    nav.navigate(LibraryNavTarget.Edit, it)
-                },
-                manga,
-                categoryName,
-            )
+            MangaAboutScreen(::navigateUp, manga, categoryName)
         }
-    )
+    };
+}
 
-    composable(
-        route = LibraryNavTarget.Edit.route,
-        content = { back ->
-            val item = back.getStringElement(LibraryNavTarget.Edit) ?: ""
+private val targets = LibraryNavTarget.values().toList()
 
-            MangaEditScreen(nav, item)
-        }
-    )
-
-    composable(
-        route = LibraryNavTarget.Storage.route,
-        content = { back ->
-            val item = back.getStringElement(LibraryNavTarget.Storage) ?: ""
-            val viewModel = mangaStorageViewModel(item)
-
-            MangaStorageScreen(nav, viewModel)
-        }
-    )
-
-    composable(
-        route = LibraryNavTarget.Statistic.route,
-        content = { back ->
-            val item = back.getStringElement(LibraryNavTarget.Statistic) ?: ""
-            val viewModel = onlyStatisticViewModel(item)
-
-            val statistic by viewModel.statistic.collectAsState()
-
-            StatisticScreen(nav, statistic)
-        }
+@OptIn(ExperimentalAnimationApi::class)
+fun NavGraphBuilder.libraryNavGraph(nav: NavHostController) {
+    navigation(
+        nav = nav,
+        startDestination = LibraryNavTarget.Main,
+        route = MainNavTarget.Library,
+        targets = targets
     )
 }

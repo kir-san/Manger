@@ -38,17 +38,17 @@ import com.san.kir.manger.utils.compose.SingleChoiceList
 import com.san.kir.core.compose_utils.TopBarScreenContent
 
 @Composable
-fun PlannedTaskScreen(nav: NavHostController, viewModel: PlannedTaskViewModel) {
+fun PlannedTaskScreen(navigateUp: () -> Unit, viewModel: PlannedTaskViewModel) {
     val categoryNames by viewModel.categoryNameList.collectAsState()
     val categoryIds by viewModel.categoryIdList.collectAsState()
     val categoryName by viewModel.categoryName.collectAsState()
 
     TopBarScreenContent(
-        navigateUp = nav::navigateUp,
+        navigateUp = navigateUp,
         title = viewModel.title,
         actions = {
             MenuIcon(Icons.Default.Save) {
-                viewModel.save { nav.navigateUp() }
+                viewModel.save(navigateUp)
             }
         }
     ) {
@@ -174,7 +174,7 @@ private fun TypedItem(
     label: Int,
     nothingValue: Int,
     value: String,
-    dialogContent: @Composable (dismiss: () -> Unit) -> Unit
+    dialogContent: @Composable (dismiss: () -> Unit) -> Unit,
 ) {
     LabelText(label)
 
@@ -200,7 +200,7 @@ private fun TypedItemList(
     onValueChange: (String) -> Unit,
     label2: Int,
     items: List<String>,
-    dialogContent: @Composable (dismiss: () -> Unit) -> Unit
+    dialogContent: @Composable (dismiss: () -> Unit) -> Unit,
 ) {
     LabelText(label)
 
@@ -233,7 +233,7 @@ private fun showTimePicker(
     activity: ComponentActivity,
     hour: Int,
     minute: Int,
-    updateTime: (hour: Int, minute: Int) -> Unit
+    updateTime: (hour: Int, minute: Int) -> Unit,
 ) {
     val dialog = TimePickerDialog(activity, { _, h, m -> updateTime(h, m) }, hour, minute, true)
     dialog.show()

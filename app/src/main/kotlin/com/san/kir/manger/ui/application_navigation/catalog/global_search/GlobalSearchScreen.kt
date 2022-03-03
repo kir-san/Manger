@@ -10,21 +10,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.google.accompanist.insets.systemBarsPadding
 import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.PreparedTopBar
 import com.san.kir.core.compose_utils.SearchTextField
 import com.san.kir.core.compose_utils.TopBarScreenList
 import com.san.kir.manger.R
-import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
 import com.san.kir.manger.utils.compose.ListItem
-import com.san.kir.manger.utils.compose.navigate
 
 // TODO добавить меню для исключения ненужных каталогов
 @Composable
 fun GlobalSearchScreen(
-    nav: NavHostController,
+    navigateUp: () -> Unit,
+    navigateToInfo: (String) -> Unit,
+    navigateToAdd: (String) -> Unit,
     viewModel: GlobalSearchViewModel = hiltViewModel(),
     initSearchText: String,
 ) {
@@ -35,7 +34,7 @@ fun GlobalSearchScreen(
         topBar = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 PreparedTopBar(
-                    nav::navigateUp,
+                    navigateUp,
                     title = "${stringResource(R.string.main_menu_search)}: ${viewState.items.size}",
                 )
 
@@ -54,13 +53,11 @@ fun GlobalSearchScreen(
         additionalPadding = Dimensions.smallest
     ) {
         items(items = viewState.items) { item ->
-            ListItem(item, item.name, item.catalogName,
-                navAddAction = {
-                    nav.navigate(CatalogsNavTarget.AddLocal, item.link)
-                },
-                navInfoAction = {
-                    nav.navigate(CatalogsNavTarget.Info, item.link)
-                })
+            ListItem(
+                item, item.name, item.catalogName,
+                navAddAction = navigateToAdd,
+                navInfoAction = navigateToInfo
+            )
         }
     }
 }

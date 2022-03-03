@@ -29,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.MenuIcon
 import com.san.kir.core.compose_utils.MenuText
@@ -40,40 +39,38 @@ import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.core.utils.findInGoogle
 import com.san.kir.data.models.base.Site
 import com.san.kir.manger.R
-import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
-import com.san.kir.manger.utils.compose.navigate
 
 @Composable
 fun CatalogsScreen(
-    navHostController: NavHostController,
+    navigateUp: () -> Unit,
+    navigateToItem: (String) -> Unit,
+    navigateToSearch: () -> Unit,
     viewModel: CatalogsViewModel = hiltViewModel(),
 ) {
     val siteList by viewModel.siteList.collectAsState(emptyList())
 
     TopBarScreenList(
-        navigateUp = navHostController::navigateUp,
+        navigateUp = navigateUp,
         title = stringResource(R.string.main_menu_catalogs),
-        actions = { CatalogsActions(navHostController, viewModel) },
+        actions = { CatalogsActions(navigateToSearch, viewModel) },
         additionalPadding = Dimensions.small
     ) {
         items(items = siteList, key = { site -> site.id }) { item ->
-            ItemView(item, viewModel) {
-                navHostController.navigate(CatalogsNavTarget.Catalog, item.name)
-            }
+            ItemView(item, viewModel, navigateToItem)
         }
 
     }
 }
 
 @Composable
-fun ItemView(item: Site, viewModel: CatalogsViewModel, onClick: () -> Unit) {
+fun ItemView(item: Site, viewModel: CatalogsViewModel, onClick: (String) -> Unit) {
     var isError by remember { mutableStateOf(false) }
     var isInit by remember { mutableStateOf(false) }
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .clickable { onClick(item.name) }
             .padding(vertical = Dimensions.smallest, horizontal = Dimensions.default)
             .padding(systemBarsHorizontalPadding())
     ) {
@@ -139,12 +136,12 @@ fun ItemView(item: Site, viewModel: CatalogsViewModel, onClick: () -> Unit) {
 }
 
 @Composable
-fun CatalogsActions(nav: NavHostController, viewModel: CatalogsViewModel) {
+fun CatalogsActions(navigateToSearch: () -> Unit, viewModel: CatalogsViewModel) {
     var expanded by remember { mutableStateOf(false) }
 
     MenuIcon(
         icon = Icons.Default.Search,
-        onClick = { nav.navigate(CatalogsNavTarget.GlobalSearch) })
+        onClick = navigateToSearch)
 
     MenuIcon(icon = Icons.Default.MoreVert, onClick = { expanded = true })
 

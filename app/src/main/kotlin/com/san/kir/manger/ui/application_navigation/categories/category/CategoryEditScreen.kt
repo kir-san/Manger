@@ -41,7 +41,7 @@ import kotlin.math.roundToInt
 @Composable
 // Редактирование параметров категории
 fun CategoryEditScreen(
-    nav: NavHostController,
+    navigateUp: () -> Unit,
     viewModel: CategoryEditViewModel,
 ) {
     val viewState by viewModel.state.collectAsState()
@@ -50,7 +50,7 @@ fun CategoryEditScreen(
     var deleteDialog by rememberSaveable { mutableStateOf(false) }
 
     TopBarScreenContent(
-        navigateUp = nav::navigateUp,
+        navigateUp = navigateUp,
         title = stringResource(
             if (viewState.hasCreatedNew) R.string.category_dialog_title_create
             else R.string.category_dialog_title_edit
@@ -115,7 +115,7 @@ fun CategoryEditScreen(
             confirmButton = {
                 OutlinedButton(onClick = {
                     viewModel.delete()
-                    nav.navigateUp()
+                    navigateUp()
                 }) {
                     Text(text = stringResource(id = R.string.category_item_question_delete_yes))
                 }

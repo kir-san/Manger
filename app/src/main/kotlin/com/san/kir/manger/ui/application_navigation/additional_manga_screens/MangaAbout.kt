@@ -31,13 +31,12 @@ import com.san.kir.manger.R
 
 @Composable
 fun MangaAboutScreen(
-    navUp: () -> Unit,
-    navTo: (mangaName: String) -> Unit,
+    navigateUp: () -> Unit,
     item: Manga,
     category: String,
 ) {
     TopBarScreenContent(
-        navigateUp = navUp,
+        navigateUp = navigateUp,
         title = stringResource(id = R.string.manga_info_dialog_title),
         actions = {
             IconButton(onClick = { navTo(item.name) }) {

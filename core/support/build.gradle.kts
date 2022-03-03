@@ -31,3 +31,10 @@ android {
     prepareKotlinOptions()
 }
 
+dependencies {
+    Dependencies.Compose.apply {
+        implementation(UI)
+        implementation(MATERIAL_ICONS_CORE)
+        implementation(MATERIAL_ICONS_EXTENDED)
+    }
+}

@@ -1,219 +1,111 @@
 package com.san.kir.manger.ui.application_navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.FormatListBulleted
-import androidx.compose.material.icons.filled.GetApp
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.LocalLibrary
-import androidx.compose.material.icons.filled.ManageAccounts
-import androidx.compose.material.icons.filled.Note
-import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Storage
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.navDeepLink
-import androidx.navigation.navigation
-import com.google.accompanist.navigation.animation.composable
+import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.san.kir.core.support.MainMenuType
-import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
+import com.san.kir.features.latest.LatestScreen
+import com.san.kir.features.viewer.MangaViewer
+import com.san.kir.manger.ui.application_navigation.accounts.accountsNavGraph
 import com.san.kir.manger.ui.application_navigation.catalog.catalogsNavGraph
-import com.san.kir.manger.ui.application_navigation.categories.CategoriesNavTarget
 import com.san.kir.manger.ui.application_navigation.categories.categoriesNavGraph
 import com.san.kir.manger.ui.application_navigation.download.DownloadScreen
-import com.san.kir.features.latest.LatestScreen
-import com.san.kir.manger.ui.application_navigation.library.LibraryNavTarget
 import com.san.kir.manger.ui.application_navigation.library.libraryNavGraph
-import com.san.kir.manger.ui.application_navigation.schedule.ScheduleNavTarget
 import com.san.kir.manger.ui.application_navigation.schedule.scheduleNavGraph
 import com.san.kir.manger.ui.application_navigation.settings.SettingsScreen
 import com.san.kir.manger.ui.application_navigation.startapp.StartAppScreen
-import com.san.kir.manger.ui.application_navigation.statistic.StatisticNavTarget
 import com.san.kir.manger.ui.application_navigation.statistic.statisticNavGraph
-import com.san.kir.manger.ui.application_navigation.storage.StorageNavTarget
 import com.san.kir.manger.ui.application_navigation.storage.storageNavGraph
 import com.san.kir.manger.utils.compose.NavTarget
-import com.san.kir.features.viewer.MangaViewer
-import com.san.kir.manger.ui.application_navigation.accounts.AccountsNavTarget
-import com.san.kir.manger.ui.application_navigation.accounts.accountsNavGraph
+import com.san.kir.manger.utils.compose.composable
+import com.san.kir.manger.utils.compose.navTarget
 
-private val values = listOf(
-    MainNavTarget.Library,
-    MainNavTarget.Storage,
-    MainNavTarget.Categories,
-    MainNavTarget.Catalogs,
-    MainNavTarget.Downloader,
-    MainNavTarget.Latest,
-    MainNavTarget.Settings,
-    MainNavTarget.Statistic,
-    MainNavTarget.Schedule,
-    MainNavTarget.Accounts
-)
-
-sealed class MainNavTarget(
+enum class MainNavTarget(
     val type: MainMenuType,
-    val icon: ImageVector,
 ) : NavTarget {
-    object StartApp : MainNavTarget(
-        type = MainMenuType.Library,
-        icon = Icons.Default.LocalLibrary
-    ) {
-        override val route: String = "start"
-    }
+    StartApp(MainMenuType.Library) {
+        override val content = navTarget(route = "start") {
+            StartAppScreen { navigate(Library) }
+        }
+    },
 
-    object Library : MainNavTarget(
-        type = MainMenuType.Library,
-        icon = Icons.Default.LocalLibrary
-    ) {
-        override val route: String = "library"
-    }
+    Library(MainMenuType.Library) {
+        override val content = navTarget(route = "library")
+    },
 
-    object Storage : MainNavTarget(
-        type = MainMenuType.Storage,
-        icon = Icons.Default.Storage
-    ) {
-        override val route = "storage"
-    }
+    Storage(MainMenuType.Storage) {
+        override val content = navTarget(route = "storage")
+    },
 
-    object Categories : MainNavTarget(
-        type = MainMenuType.Category,
-        icon = Icons.Default.Category,
-    ) {
-        override val route = "categories"
-    }
+    Categories(MainMenuType.Category) {
+        override val content = navTarget(route = "categories")
+    },
 
-    object Catalogs : MainNavTarget(
-        type = MainMenuType.Catalogs,
-        icon = Icons.Default.FormatListBulleted
-    ) {
-        override val route: String = "catalogs"
-    }
+    Catalogs(MainMenuType.Catalogs) {
 
-    object Downloader : MainNavTarget(
-        type = MainMenuType.Downloader,
-        icon = Icons.Default.GetApp
-    ) {
-        override val route = "downloader"
-    }
+        override val content = navTarget(route = "catalogs")
+    },
 
-    object Latest : MainNavTarget(
-        type = MainMenuType.Latest,
-        icon = Icons.Default.History
-    ) {
-        override val route = "latest"
-    }
+    Downloader(MainMenuType.Downloader) {
+        override val content = navTarget(route = "downloader", hasDeepLink = true) {
+            DownloadScreen(::navigateUp)
+        }
+    },
 
-    object Settings : MainNavTarget(
-        type = MainMenuType.Settings,
-        icon = Icons.Default.Settings
-    ) {
-        override val route = "settings"
-    }
+    Latest(MainMenuType.Latest) {
+        override val content = navTarget(route = "latest", hasDeepLink = true) {
+            val context = LocalContext.current
+            LatestScreen(
+                navigateUp = ::navigateUp,
+                navigateToViewer = { MangaViewer.start(context, it.id) },
+                viewModel = hiltViewModel()
+            )
+        }
+    },
 
-    object Statistic : MainNavTarget(
-        type = MainMenuType.Statistic,
-        icon = Icons.Default.Note
-    ) {
-        override val route = "statistic"
-    }
+    Settings(MainMenuType.Settings) {
+        override val content = navTarget(route = "settings") {
+            SettingsScreen(::navigateUp)
+        }
+    },
 
-    object Schedule : MainNavTarget(
-        type = MainMenuType.Schedule,
-        icon = Icons.Default.Schedule
-    ) {
-        override val route = "schedule"
-    }
+    Statistic(MainMenuType.Statistic) {
+        override val content = navTarget(route = "statistic")
+    },
 
-    object Accounts : MainNavTarget(
-        type = MainMenuType.Accounts,
-        icon = Icons.Default.ManageAccounts
-    ) {
-        override val route = "accounts"
-    }
+    Schedule(MainMenuType.Schedule) {
+        override val content = navTarget(route = "schedule")
+    },
+
+    Accounts(MainMenuType.Accounts) {
+        override val content = navTarget(route = "accounts")
+    },
 }
 
-val MAP_SCREENS_TYPE = values.associateBy { it.type }
+private val targets = MainNavTarget.values()
+val mainMenuItems = targets.associateBy { it.type }
 
+@Composable
 @OptIn(ExperimentalAnimationApi::class)
-fun NavGraphBuilder.mainNavGraph(nav: NavHostController) {
-    composable(route = MainNavTarget.StartApp.route) {
-        StartAppScreen(nav)
-    }
-
-    navigation(
-        startDestination = LibraryNavTarget.Main.route,
-        route = MainNavTarget.Library.route
+fun MainNavGraph(nav: NavHostController) {
+    AnimatedNavHost(
+        navController = nav,
+        startDestination = MainNavTarget.StartApp.content.route(),
     ) {
+        composable(nav = nav, target = MainNavTarget.StartApp)
+        composable(nav = nav, target = MainNavTarget.Downloader)
+        composable(nav = nav, target = MainNavTarget.Latest)
+        composable(nav = nav, target = MainNavTarget.Settings)
+
         libraryNavGraph(nav)
-    }
-
-    navigation(
-        startDestination = StorageNavTarget.Main.route,
-        route = MainNavTarget.Storage.route
-    ) {
         storageNavGraph(nav)
-    }
-
-    navigation(
-        startDestination = CategoriesNavTarget.Main.route,
-        route = MainNavTarget.Categories.route
-    ) {
         categoriesNavGraph(nav)
-    }
-
-    navigation(
-        startDestination = CatalogsNavTarget.Main.route,
-        route = MainNavTarget.Catalogs.route,
-    ) {
-        catalogsNavGraph(nav)
-    }
-
-    composable(
-        route = MainNavTarget.Downloader.route,
-        deepLinks = listOf(navDeepLink { uriPattern = MainNavTarget.Downloader.deepLink })
-    ) {
-        DownloadScreen(nav)
-    }
-
-    composable(
-        route = MainNavTarget.Latest.route,
-        deepLinks = listOf(navDeepLink { uriPattern = MainNavTarget.Latest.deepLink })
-    ) {
-        val context = LocalContext.current
-        LatestScreen(
-            navigateUp = nav::navigateUp,
-            navigateToViewer = { MangaViewer.start(context, it.id) },
-            viewModel = hiltViewModel()
-        )
-    }
-
-    composable(route = MainNavTarget.Settings.route) {
-        SettingsScreen(nav)
-    }
-
-    navigation(
-        startDestination = StatisticNavTarget.Main.route,
-        route = MainNavTarget.Statistic.route
-    ) {
         statisticNavGraph(nav)
-    }
-
-    navigation(
-        startDestination = ScheduleNavTarget.Main.route,
-        route = MainNavTarget.Schedule.route
-    ) {
         scheduleNavGraph(nav)
-    }
-
-    navigation(
-        startDestination = AccountsNavTarget.Main.route,
-        route = MainNavTarget.Accounts.route
-    ) {
+        catalogsNavGraph(nav)
         accountsNavGraph(nav)
     }
 }

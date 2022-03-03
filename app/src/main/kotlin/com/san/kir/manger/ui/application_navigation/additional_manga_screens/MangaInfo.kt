@@ -21,7 +21,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.san.kir.core.compose_utils.DialogText
 import com.san.kir.core.compose_utils.ImageWithStatus
 import com.san.kir.core.compose_utils.LabelText
@@ -30,14 +29,13 @@ import com.san.kir.core.utils.browse
 import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.manger.R
 import com.san.kir.manger.ui.SuppotMangaViewModel
-import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
-import com.san.kir.manger.utils.compose.navigate
 import com.san.kir.manger.utils.extensions.listStrToString
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MangaInfoScreen(
-    nav: NavHostController,
+    navigateUp: () -> Unit,
+    navigateToAdd: (String) -> Unit,
     vm: SiteCatalogItemViewModel,
     viewModel: SuppotMangaViewModel = hiltViewModel(),
 ) {
@@ -50,11 +48,11 @@ fun MangaInfoScreen(
     }
 
     TopBarScreenContent(
-        navigateUp = { nav.navigateUp() },
+        navigateUp = navigateUp,
         title = stringResource(id = R.string.manga_info_dialog_title),
         actions = {
             AnimatedVisibility(visible = isAdded) {
-                IconButton(onClick = { nav.navigate(CatalogsNavTarget.AddLocal, vm.url) }) {
+                IconButton(onClick = { navigateToAdd(vm.url) }) {
                     Icon(
                         Icons.Default.Add,
                         contentDescription = "add manga",

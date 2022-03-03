@@ -15,10 +15,10 @@ import com.san.kir.manger.R
 import com.san.kir.manger.utils.TimeFormat
 
 @Composable
-fun StatisticScreen(nav: NavHostController, item: Statistic) {
+fun StatisticScreen(navigateUp: () -> Unit, item: Statistic) {
 
     TopBarScreenContent(
-        navigateUp = nav::navigateUp,
+        navigateUp = navigateUp,
         title = item.manga,
     ) {
         LabelText(R.string.statistic_item_full_last_session)

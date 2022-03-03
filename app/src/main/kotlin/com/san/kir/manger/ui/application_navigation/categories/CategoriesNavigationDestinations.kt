@@ -1,49 +1,47 @@
 package com.san.kir.manger.ui.application_navigation.categories
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.navArgument
-import com.google.accompanist.navigation.animation.composable
+import com.san.kir.manger.ui.application_navigation.MainNavTarget
 import com.san.kir.manger.ui.application_navigation.categories.category.CategoryEditScreen
 import com.san.kir.manger.ui.application_navigation.categories.category.CategoryEditViewModel
 import com.san.kir.manger.ui.application_navigation.categories.main.CategoriesScreen
-import com.san.kir.manger.utils.compose.CategoryItem
-import com.san.kir.manger.utils.compose.NavItem
 import com.san.kir.manger.utils.compose.NavTarget
-import com.san.kir.manger.utils.compose.getStringElement
+import com.san.kir.manger.utils.compose.navTarget
+import com.san.kir.manger.utils.compose.navigation
 
-sealed class CategoriesNavTarget : NavTarget {
-    object Main : CategoriesNavTarget() {
-        override val route: String = "main"
-    }
+enum class CategoriesNavTarget : NavTarget {
+    Main {
+        override val content = navTarget(route = "main") {
+            CategoriesScreen(
+                navigateUp = ::navigateUp,
+                navigateToItem = { navigate(Category, it) },
+            )
+        }
+    },
 
-    object Category : CategoriesNavTarget() {
-        override val base: String = "category"
-        override val item: NavItem = CategoryItem
-        override val isOptional: Boolean = true
+    Category {
+        override val content = navTarget(route = "category_item", hasItem = true) {
+            val viewModel: CategoryEditViewModel = hiltViewModel()
+
+            viewModel.setCategory(stringElement ?: "")
+
+            CategoryEditScreen(
+                navigateUp = ::navigateUp,
+                viewModel
+            )
+        }
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
+private val targets = CategoriesNavTarget.values().toList()
+
 fun NavGraphBuilder.categoriesNavGraph(nav: NavHostController) {
-    composable(
-        route = CategoriesNavTarget.Main.route,
-        content = {
-            CategoriesScreen(nav)
-        }
-    )
-
-    composable(
-        route = CategoriesNavTarget.Category.route(),
-        content = { back ->
-            val item = back.getStringElement(CategoriesNavTarget.Category) ?: ""
-            val viewModel: CategoryEditViewModel = hiltViewModel()
-
-            viewModel.setCategory(item)
-
-            CategoryEditScreen(nav, viewModel)
-        }
+    navigation(
+        nav = nav,
+        startDestination = CategoriesNavTarget.Main,
+        route = MainNavTarget.Categories,
+        targets = targets
     )
 }

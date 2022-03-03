@@ -24,39 +24,36 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.data.models.base.Category
-import com.san.kir.manger.R
-import com.san.kir.manger.ui.application_navigation.categories.CategoriesNavTarget
 import com.san.kir.core.compose_utils.MenuIcon
-import com.san.kir.manger.utils.compose.navigate
 import com.san.kir.core.compose_utils.TopBarScreenList
 import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
+import com.san.kir.data.models.base.Category
+import com.san.kir.manger.R
 
 @Composable
 fun CategoriesScreen(
-    nav: NavHostController,
+    navigateUp: () -> Unit,
+    navigateToItem: (String) -> Unit,
     viewModel: CategoriesViewModel = hiltViewModel(),
 ) {
     val cats by viewModel.categories.collectAsState(emptyList())
 
     TopBarScreenList(
-        navigateUp = nav::navigateUp,
+        navigateUp = navigateUp,
         title = stringResource(R.string.main_menu_category),
         actions = {
             MenuIcon(
                 icon = Icons.Default.Add,
-                onClick = { nav.navigate(CategoriesNavTarget.Category, "") })
+                onClick = { navigateToItem("") })
 
         },
         additionalPadding = Dimensions.smallest
     ) {
         itemsIndexed(items = cats, key = { _, c -> c.id }) { index, item ->
             CategoryItemView(index, cats.count(), item) {
-                nav.navigate(CategoriesNavTarget.Category, item.name)
+                navigateToItem(item.name)
             }
         }
     }

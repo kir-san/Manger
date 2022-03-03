@@ -1,44 +1,41 @@
 package com.san.kir.manger.ui.application_navigation.storage
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import com.google.accompanist.navigation.animation.composable
+import com.san.kir.manger.ui.application_navigation.MainNavTarget
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaStorageScreen
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.mangaStorageViewModel
 import com.san.kir.manger.ui.application_navigation.storage.main.StorageScreen
-import com.san.kir.manger.utils.compose.MangaItem
-import com.san.kir.manger.utils.compose.NavItem
 import com.san.kir.manger.utils.compose.NavTarget
-import com.san.kir.manger.utils.compose.getStringElement
+import com.san.kir.manger.utils.compose.navTarget
+import com.san.kir.manger.utils.compose.navigation
 
-sealed class StorageNavTarget : NavTarget {
-    object Main : StorageNavTarget() {
-        override val route: String = "main"
-    }
+enum class StorageNavTarget : NavTarget {
+    Main {
+        override val content = navTarget(route = "main") {
+            StorageScreen(
+                navigateUp = ::navigateUp,
+                navigateToItem = { navigate(Storage, it) },
+            )
+        }
+    },
 
-    object Storage : StorageNavTarget() {
-        override val base: String = "manga_storage"
-        override val isOptional: Boolean = true
+    Storage {
+        override val content = navTarget(route = "storage_item", hasItem = true) {
+            val viewModel = mangaStorageViewModel(stringElement ?: "")
+
+            MangaStorageScreen(navigateUp = ::navigateUp, viewModel)
+        }
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
+private val targets = StorageNavTarget.values().toList()
+
 fun NavGraphBuilder.storageNavGraph(nav: NavHostController) {
-    composable(
-        route = StorageNavTarget.Main.route,
-        content = {
-            StorageScreen(nav)
-        }
-    )
-
-    composable(
-        route = StorageNavTarget.Storage.route,
-        content = { back ->
-            val item = back.getStringElement(StorageNavTarget.Storage) ?: ""
-            val viewModel = mangaStorageViewModel(item)
-
-            MangaStorageScreen(nav, viewModel)
-        }
+    navigation(
+        nav = nav,
+        startDestination = StorageNavTarget.Main,
+        route = MainNavTarget.Storage,
+        targets = targets
     )
 }

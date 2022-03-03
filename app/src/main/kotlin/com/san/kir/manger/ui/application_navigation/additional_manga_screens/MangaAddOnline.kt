@@ -34,14 +34,14 @@ import com.san.kir.manger.R
 
 @Composable
 fun MangaAddOnlineScreen(
-    navigateToBack: () -> Unit,
+    navigateUp: () -> Unit,
     navigateToNext: (String) -> Unit,
 ) {
     TopBarScreenContent(
-        navigateUp = navigateToBack,
+        navigateUp = navigateUp,
         title = stringResource(R.string.library_add_manga_title)
     ) {
-        MangaAddOnlineContent(navigateToBack, navigateToNext)
+        MangaAddOnlineContent(navigateUp, navigateToNext)
     }
 }
 

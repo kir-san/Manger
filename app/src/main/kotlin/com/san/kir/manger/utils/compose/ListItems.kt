@@ -37,8 +37,8 @@ fun ListItem(
     firstName: String,
     secondName: String,
     viewModel: SuppotMangaViewModel = hiltViewModel(),
-    navAddAction: () -> Unit,
-    navInfoAction: () -> Unit,
+    navAddAction: (link: String) -> Unit,
+    navInfoAction: (link: String) -> Unit,
 ) {
     var isAdded by remember { mutableStateOf(ItemState.ADDED) }
 
@@ -50,7 +50,7 @@ fun ListItem(
         Modifier
             .fillMaxWidth()
             .height(60.dp)
-            .clickable { navInfoAction() }
+            .clickable { navInfoAction(item.link) }
             .padding(vertical = Dimensions.smallest, horizontal = Dimensions.default)
             .padding(systemBarsHorizontalPadding())
     ) {
@@ -79,7 +79,7 @@ fun ListItem(
                     modifier = Modifier
                         .size(btnSizeAddUpdate)
                         .align(Alignment.CenterVertically)
-                        .clickable { navAddAction() }
+                        .clickable { navAddAction(item.link) }
                 )
             ItemState.UPDATE ->
                 Image(

@@ -11,18 +11,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavHostController
+import com.san.kir.core.compose_utils.MenuIcon
+import com.san.kir.core.compose_utils.MenuText
 import com.san.kir.manger.R
 import com.san.kir.manger.foreground_work.services.AppUpdateService
 import com.san.kir.manger.foreground_work.services.MangaUpdaterService
-import com.san.kir.manger.ui.application_navigation.library.LibraryNavTarget
-import com.san.kir.core.compose_utils.MenuIcon
-import com.san.kir.core.compose_utils.MenuText
-import com.san.kir.manger.utils.compose.navigate
 
 @Composable
 fun LibraryActions(
-    nav: NavHostController,
+    navigateToOnline: () -> Unit,
     viewModel: LibraryViewModel,
 ) {
     val categories by viewModel.preparedCategories.collectAsState(emptyList())
@@ -30,9 +27,7 @@ fun LibraryActions(
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
 
-    MenuIcon(icon = Icons.Default.Add) {
-        nav.navigate(LibraryNavTarget.AddOnline)
-    }
+    MenuIcon(icon = Icons.Default.Add, onClick = navigateToOnline)
 
     MenuIcon(icon = Icons.Default.MoreVert) {
         expanded = true

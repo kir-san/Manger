@@ -20,17 +20,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.san.kir.data.models.extend.PlannedTaskExt
-import com.san.kir.manger.ui.application_navigation.schedule.ScheduleNavTarget
-import com.san.kir.manger.utils.compose.navigate
 
 @Composable
 fun PlannedContent(
-    nav: NavHostController,
-    viewModel: ScheduleViewModel = hiltViewModel()
+    navigateToItem: (Long) -> Unit,
+    viewModel: ScheduleViewModel = hiltViewModel(),
 ) {
     val items by viewModel.items.collectAsState()
 
@@ -43,7 +40,7 @@ fun PlannedContent(
     ) {
         items(items.size, { index -> items[index].id }) { index ->
             ItemContent(items[index], viewModel) {
-                nav.navigate(ScheduleNavTarget.Schedule, items[index].id)
+                navigateToItem(items[index].id)
             }
         }
     }

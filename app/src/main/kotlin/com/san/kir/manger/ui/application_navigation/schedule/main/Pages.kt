@@ -6,7 +6,7 @@ import com.san.kir.manger.R
 
 sealed class SchedulePages(
     val nameId: Int,
-    val content: @Composable (NavHostController) -> Unit
+    val content: @Composable (navigateToItem: (Long) -> Unit) -> Unit
 )
 
 fun schedulePages() = listOf(PlannedPage, UpdatePages)

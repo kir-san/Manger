@@ -38,15 +38,6 @@ fun MangaAboutScreen(
     TopBarScreenContent(
         navigateUp = navigateUp,
         title = stringResource(id = R.string.manga_info_dialog_title),
-        actions = {
-            IconButton(onClick = { navTo(item.name) }) {
-                Icon(
-                    Icons.Default.Edit,
-                    contentDescription = "edit manga",
-                    tint = MaterialTheme.colors.onBackground
-                )
-            }
-        }
     ) {
         MangaAboutContent(item, category)
     }

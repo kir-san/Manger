@@ -17,8 +17,6 @@ import com.san.kir.manger.ui.application_navigation.additional_manga_screens.Man
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.SiteCatalogItemViewModel
 import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewModel
 import com.san.kir.manger.ui.application_navigation.categories.OnlyCategoryViewModel
-import com.san.kir.manger.ui.application_navigation.library.chapters.ChaptersActionViewModel
-import com.san.kir.manger.ui.application_navigation.library.chapters.ChaptersViewModel
 import com.san.kir.manger.ui.application_navigation.schedule.PlannedTaskViewModel
 import com.san.kir.manger.ui.application_navigation.statistic.OnlyStatisticViewModel
 import dagger.hilt.EntryPoint
@@ -33,8 +31,6 @@ class MainActivity : ComponentActivity() {
     @EntryPoint
     @InstallIn(ActivityComponent::class)
     interface ViewModelFactoryProvider {
-        fun chaptersActionViewModelFactory(): ChaptersActionViewModel.Factory
-        fun chaptersViewModelFactory(): ChaptersViewModel.Factory
         fun catalogViewModelFactory(): CatalogViewModel.Factory
         fun mangaStorageViewModelFactory(): MangaStorageViewModel.Factory
         fun onlyMangaViewModelFactory(): OnlyMangaViewModel.Factory

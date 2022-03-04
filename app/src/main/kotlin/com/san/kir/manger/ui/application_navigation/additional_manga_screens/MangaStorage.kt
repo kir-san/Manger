@@ -33,14 +33,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.asFlow
-import androidx.navigation.NavHostController
 import androidx.work.WorkManager
 import com.san.kir.manger.R
 import com.san.kir.manger.utils.compose.StorageProgressBar
 import com.san.kir.manger.utils.extensions.format
-import com.san.kir.manger.foreground_work.workmanager.ChapterDeleteWorker
+import com.san.kir.background.works.ChapterDeleteWorker
 import com.san.kir.core.compose_utils.TopBarScreenContent
-import kotlinx.coroutines.flow.collect
 
 @Composable
 fun MangaStorageScreen(

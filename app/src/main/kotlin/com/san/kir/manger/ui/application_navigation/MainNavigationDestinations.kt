@@ -6,9 +6,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.san.kir.background.services.MangaUpdaterService
 import com.san.kir.core.support.MainMenuType
 import com.san.kir.features.latest.LatestScreen
 import com.san.kir.features.viewer.MangaViewer
+import com.san.kir.manger.ui.MainActivity
 import com.san.kir.manger.ui.application_navigation.accounts.accountsNavGraph
 import com.san.kir.manger.ui.application_navigation.catalog.catalogsNavGraph
 import com.san.kir.manger.ui.application_navigation.categories.categoriesNavGraph
@@ -21,6 +23,7 @@ import com.san.kir.manger.ui.application_navigation.statistic.statisticNavGraph
 import com.san.kir.manger.ui.application_navigation.storage.storageNavGraph
 import com.san.kir.manger.utils.compose.NavTarget
 import com.san.kir.manger.utils.compose.composable
+import com.san.kir.manger.utils.compose.deepLinkIntent
 import com.san.kir.manger.utils.compose.navTarget
 
 enum class MainNavTarget(
@@ -58,6 +61,12 @@ enum class MainNavTarget(
     Latest(MainMenuType.Latest) {
         override val content = navTarget(route = "latest", hasDeepLink = true) {
             val context = LocalContext.current
+
+            MangaUpdaterService.setLatestDeepLink(
+                context,
+                context.deepLinkIntent<MainActivity>(Latest),
+            )
+
             LatestScreen(
                 navigateUp = ::navigateUp,
                 navigateToViewer = { MangaViewer.start(context, it.id) },

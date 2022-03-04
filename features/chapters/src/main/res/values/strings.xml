@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="list_chapters_selection_load_error">Все было скачано раньше</string>
+    <string name="list_chapters_selection_load_ok">Качаю главы. Их всего %d</string>
+    <string name="list_chapters_open_is_download">Спокойствие, только спокойствие! Скоро скачается.</string>
+    <string name="list_chapters_open_not_exists">Обновите эту мангу перед тем как продолжить чтение</string>
+    <string name="list_chapters_read">Прочитано %1$d из %2$d (%3$d)</string>
+    <string name="list_chapters_download_progress">Загрузка %d%%</string>
+    <string name="list_chapters_queue">Ожидание…</string>
+    <string name="list_chapters_selection_del_error">Нельзя удалить то чего нет</string>
+    <string name="list_chapters_selection_del_ok">У вас нет больше этих глав</string>
+    <string name="list_chapters_message_error">Произошла ошибка при обновлении</string>
+    <string name="list_chapters_message_no_found">Новых глав найти не удалось</string>
+    <string name="list_chapters_message_count_new">Новые главы есть, их а ж %d</string>
+    <string name="list_chapters_download_next">Скачать следующую</string>
+    <string name="list_chapters_download_not_read">Скачать непрочитанное</string>
+    <string name="list_chapters_download_all">Скачать все</string>
+    <string name="list_chapters_change_sort">Изменить сортировку</string>
+    <string name="list_chapters_is_update">Разрешить обновления</string>
+    <string name="list_chapters_page_about">Описание</string>
+    <string name="list_chapters_page_list">Содержимое</string>
+    <string name="list_chapters_about_start">Читать с начала</string>
+    <string name="list_chapters_about_delete">Удалить прочитанное</string>
+    <string name="list_chapters_about_continue">"Продолжить чтение\n%s"</string>
+    <string name="list_chapters_about_not_continue">"Нет глав для чтения"</string>
+    <string name="list_chapters_about_search_continue">"Поиск главы для чтения"</string>
+    <string name="list_chapters_about_read">"Вы прочитали %1$d %2$s из %3$d"</string>
+    <string name="list_chapters_remove_text">Вы действительно хотите удалить</string>
+    <string name="list_chapters_remove_yes">Да</string>
+    <string name="list_chapters_remove_no">Нет</string>
+
+    <string name="library_popupmenu_delete_read_chapters_message">Своими действиями вы хотите лишить себя такой кучи манги?</string>
+    <string name="library_popupmenu_delete_read_chapters_ok">Да</string>
+    <string name="library_popupmenu_delete_read_chapters_no">Не, не</string>
+    <string name="library_popupmenu_delete_read_chapters_delete">Удаляю…</string>
+    <string name="library_popupmenu_delete_read_chapters_btn_close">Закрыть</string>
+    <string name="library_popupmenu_delete_read_chapters_ready">Готово</string>
+
+    <string name="action_delete">Удалить</string>
+    <string name="action_set_read">Пометить прочитаными</string>
+    <string name="action_set_not_read">Пометить не прочитаными</string>
+    <string name="action_update_pages">Обновить страницы</string>
+    <string name="action_select_above">Выбрать все выше</string>
+    <string name="action_select_below">Выбрать все ниже</string>
+    <string name="action_full_delete">Удалить из базы данных</string>
+    <string name="action_full_delete_title">Внимание!!!</string>
+    <string name="action_full_delete_message">Данное действие приведет к удалению глав из базы данных. Все файлы и папки будут не тронуты, но приложение больше не будет видеть эти главы. Рекомендуется использовать это при появлении копий существующих глав.</string>
+
+
+    <plurals name="chapters">
+        <item quantity="zero">глав</item>
+        <item quantity="one">главу</item>
+        <item quantity="few">главы</item>
+        <item quantity="many">глав</item>
+        <item quantity="other">глав.</item>
+    </plurals>
+
+    <plurals name="list_chapters_action_selected">
+        <item quantity="one">%d выбран</item>
+        <item quantity="other">%d выбрано</item>
+    </plurals>
+</resources>

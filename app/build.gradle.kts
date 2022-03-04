@@ -102,12 +102,14 @@ dependencies {
     implementation(project(Modules.Features.viewer))
     implementation(project(Modules.Features.latest))
     implementation(project(Modules.Features.shikimori))
+    implementation(project(Modules.Features.chapters))
 
     implementation(project(Modules.Core.utils))
     implementation(project(Modules.Core.support))
     implementation(project(Modules.Core.download))
     implementation(project(Modules.Core.internet))
     implementation(project(Modules.Core.composeUtils))
+    implementation(project(Modules.Core.background))
 
     implementation(project(Modules.Data.db))
     implementation(project(Modules.Data.store))

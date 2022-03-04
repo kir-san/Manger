@@ -15,7 +15,7 @@ import com.san.kir.core.compose_utils.MenuIcon
 import com.san.kir.core.compose_utils.MenuText
 import com.san.kir.manger.R
 import com.san.kir.manger.foreground_work.services.AppUpdateService
-import com.san.kir.manger.foreground_work.services.MangaUpdaterService
+import com.san.kir.background.services.MangaUpdaterService
 
 @Composable
 fun LibraryActions(

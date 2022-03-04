@@ -44,7 +44,6 @@
             android:theme="@style/AppTheme.Viewer" />
 
         <service android:name="com.san.kir.manger.foreground_work.services.CatalogForOneSiteUpdaterService" />
-        <service android:name="com.san.kir.manger.foreground_work.services.MangaUpdaterService" />
         <service android:name="com.san.kir.manger.foreground_work.services.AppUpdateService" />
 
         <provider

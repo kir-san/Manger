@@ -7,6 +7,7 @@ object Modules {
         val viewer = module("viewer")
         val latest = module("latest")
         val shikimori = module("shikimori")
+        val chapters = module("chapters")
     }
 
     object Core : NestedModule("core") {
@@ -15,6 +16,7 @@ object Modules {
         val composeUtils = module("compose_utils")
         val internet = module("internet")
         val download = module("download")
+        val background = module("background")
     }
 
     object Data : NestedModule("data") {

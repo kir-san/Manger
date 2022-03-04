@@ -25,7 +25,7 @@ import com.san.kir.data.models.base.mangaList
 import com.san.kir.manger.R
 import com.san.kir.manger.foreground_work.services.AppUpdateService
 import com.san.kir.manger.foreground_work.services.CatalogForOneSiteUpdaterService
-import com.san.kir.manger.foreground_work.services.MangaUpdaterService
+import com.san.kir.background.services.MangaUpdaterService
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.util.*

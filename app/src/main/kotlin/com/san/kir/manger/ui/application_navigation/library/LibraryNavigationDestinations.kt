@@ -3,15 +3,15 @@ package com.san.kir.manger.ui.application_navigation.library
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import com.san.kir.chapters.ChaptersScreen
 import com.san.kir.core.support.MainMenuType
 import com.san.kir.manger.ui.application_navigation.MainNavTarget
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaAboutScreen
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaAddOnlineScreen
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
-import com.san.kir.manger.ui.application_navigation.library.chapters.ChaptersScreen
-import com.san.kir.manger.ui.application_navigation.library.chapters.chaptersViewModel
 import com.san.kir.manger.ui.application_navigation.library.main.LibraryScreen
 import com.san.kir.manger.ui.application_navigation.mainMenuItems
 import com.san.kir.manger.ui.application_navigation.statistic.StatisticNavTarget
@@ -42,9 +42,7 @@ enum class LibraryNavTarget : NavTarget {
 
     Chapters {
         override val content = navTarget(route = "chapters", hasItem = true) {
-            val viewModel = chaptersViewModel(stringElement ?: "")
-
-            ChaptersScreen(viewModel, ::navigateUp)
+            ChaptersScreen(hiltViewModel(), stringElement ?: "", ::navigateUp)
         }
     },
 

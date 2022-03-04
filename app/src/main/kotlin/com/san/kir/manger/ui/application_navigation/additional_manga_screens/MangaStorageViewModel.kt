@@ -19,9 +19,9 @@ import com.san.kir.data.db.dao.searchNewItems
 import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.Storage
 import com.san.kir.data.models.base.getSizeAndIsNew
-import com.san.kir.manger.foreground_work.workmanager.AllChapterDelete
-import com.san.kir.manger.foreground_work.workmanager.ChapterDeleteWorker
-import com.san.kir.manger.foreground_work.workmanager.ReadChapterDelete
+import com.san.kir.background.works.AllChapterDelete
+import com.san.kir.background.works.ChapterDeleteWorker
+import com.san.kir.background.works.ReadChapterDelete
 import com.san.kir.manger.ui.MainActivity
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory

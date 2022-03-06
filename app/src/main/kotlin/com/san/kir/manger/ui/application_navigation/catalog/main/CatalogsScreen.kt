@@ -75,7 +75,7 @@ fun ItemView(item: Site, viewModel: CatalogsViewModel, onClick: (String) -> Unit
             .padding(systemBarsHorizontalPadding())
     ) {
         Image(
-            rememberImage(findInGoogle(item.catalogName)),
+            rememberImage(findInGoogle(item.host)),
             contentDescription = "",
             modifier = Modifier
                 .padding(end = 8.dp)

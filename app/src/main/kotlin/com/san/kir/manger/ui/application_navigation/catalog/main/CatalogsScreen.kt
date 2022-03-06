@@ -71,7 +71,7 @@ fun ItemView(item: Site, viewModel: CatalogsViewModel, onClick: (String) -> Unit
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick(item.name) }
-            .padding(vertical = Dimensions.smallest, horizontal = Dimensions.default)
+            .padding(vertical = Dimensions.smaller, horizontal = Dimensions.default)
             .padding(systemBarsHorizontalPadding())
     ) {
         Image(

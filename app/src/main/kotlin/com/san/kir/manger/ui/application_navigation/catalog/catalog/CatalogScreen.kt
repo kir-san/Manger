@@ -124,7 +124,7 @@ fun CatalogScreen(
         },
         drawerContent = { DrawerContent(viewModel) },
         bottomBar = { BottomBar(viewModel) },
-        additionalPadding = Dimensions.smallest
+        additionalPadding = Dimensions.smaller
     ) {
         items(items = items, key = { item -> item.id }) { item ->
             ListItem(
@@ -399,7 +399,7 @@ private fun DrawerContent(viewModel: CatalogViewModel) {
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(systemBarStartPadding(Dimensions.smallest))
+                    .padding(systemBarStartPadding(Dimensions.smaller))
             ) {
                 Text(text = "Очистить")
             }

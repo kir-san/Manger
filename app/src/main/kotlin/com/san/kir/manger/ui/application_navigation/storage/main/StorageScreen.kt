@@ -68,7 +68,7 @@ fun StorageScreen(
             viewState.storageCounts,
             viewState.storageCounts
         ),
-        additionalPadding = Dimensions.smallest
+        additionalPadding = Dimensions.smaller
     ) {
         items(items = allStorage) { item ->
             item?.let { ItemView(navigateToItem, item, viewModel) }
@@ -98,7 +98,7 @@ private fun ItemView(
                 manga?.let { navigateToItem(it.name) }
                     ?: run { showMenu = true }
             }
-            .padding(vertical = Dimensions.smallest, horizontal = Dimensions.default)
+            .padding(vertical = Dimensions.smaller, horizontal = Dimensions.default)
             .padding(systemBarsHorizontalPadding())
     ) {
         // Иконка манги, если для этой папки она еще есть
@@ -128,7 +128,7 @@ private fun ItemView(
             modifier = Modifier
                 .weight(1f, true)
                 .align(Alignment.CenterVertically)
-                .padding(Dimensions.smallest),
+                .padding(Dimensions.smaller),
             verticalArrangement = Arrangement.Center
         ) {
             // Название папки с мангой

@@ -54,7 +54,6 @@ import com.san.kir.core.compose_utils.MenuIcon
 import com.san.kir.core.compose_utils.MenuText
 import com.san.kir.core.compose_utils.TopBarScreenList
 import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 
@@ -206,7 +205,7 @@ internal fun LatestItemContent(
                     viewModel.onSelectItem(index)
                 }
             )
-            .padding(vertical = Dimensions.smallest, horizontal = Dimensions.default)
+            .padding(vertical = Dimensions.smaller, horizontal = Dimensions.default)
             .padding(systemBarsHorizontalPadding()),
     ) {
         Column(

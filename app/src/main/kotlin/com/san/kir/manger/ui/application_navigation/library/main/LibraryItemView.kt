@@ -54,9 +54,10 @@ private fun LazyItemScope.ItemView(
     val backgroundColor by remember {
         mutableStateOf(runCatching { Color(manga.color) }.getOrDefault(defaultColor))
     }
+
     Card(
         shape = RoundedCornerShape(Dimensions.small),
-        border = BorderStroke(Dimensions.smallest, backgroundColor),
+        border = BorderStroke(Dimensions.smaller, backgroundColor),
         modifier = Modifier
             .animateItemPlacement()
             .testTag(TestTags.Library.item)
@@ -159,12 +160,12 @@ fun LazyItemScope.LibrarySmallItemView(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(Dimensions.smallest)
+                .padding(Dimensions.smaller)
         ) {
             Image(
                 rememberImage(manga.logo),
                 modifier = Modifier
-                    .padding(Dimensions.smallest)
+                    .padding(Dimensions.smaller)
                     .size(heightSize),
                 contentDescription = null,
             )

@@ -51,7 +51,7 @@ fun ListItem(
             .fillMaxWidth()
             .height(60.dp)
             .clickable { navInfoAction(item.link) }
-            .padding(vertical = Dimensions.smallest, horizontal = Dimensions.default)
+            .padding(vertical = Dimensions.smaller, horizontal = Dimensions.default)
             .padding(systemBarsHorizontalPadding())
     ) {
         Column(

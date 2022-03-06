@@ -50,7 +50,7 @@ fun GlobalSearchScreen(
                 )
             }
         },
-        additionalPadding = Dimensions.smallest
+        additionalPadding = Dimensions.smaller
     ) {
         items(items = viewState.items) { item ->
             ListItem(

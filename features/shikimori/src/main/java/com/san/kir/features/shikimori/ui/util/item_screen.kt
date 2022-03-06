@@ -34,14 +34,12 @@ import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.MenuIcon
 import com.san.kir.core.compose_utils.TopBarScreenList
 import com.san.kir.core.compose_utils.rememberImage
-import com.san.kir.core.compose_utils.systemBarEndPadding
 import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
 import com.san.kir.data.models.base.ShikimoriAccount
 import com.san.kir.features.shikimori.R
 import com.san.kir.features.shikimori.ui.catalog_item.AskState
 import com.san.kir.features.shikimori.ui.catalog_item.CatalogItemViewModel
 import com.san.kir.features.shikimori.ui.catalog_item.SyncState
-import com.san.kir.features.shikimori.ui.local_item.LocalItemViewModel
 
 @Composable
 internal fun ItemScreen(
@@ -134,11 +132,11 @@ internal fun Head(
         Column(modifier = Modifier.weight(1f, true)) {
             Text(stringResource(R.string.reading, readingChapters, allChapters))
 
-            Spacer(modifier = Modifier.padding(Dimensions.smallest))
+            Spacer(modifier = Modifier.padding(Dimensions.smaller))
 
             StatusText(currentStatus)
 
-            Spacer(modifier = Modifier.padding(Dimensions.smallest))
+            Spacer(modifier = Modifier.padding(Dimensions.smaller))
 
             Text(
                 description,

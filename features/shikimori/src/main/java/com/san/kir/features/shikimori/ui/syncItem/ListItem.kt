@@ -56,11 +56,11 @@ internal fun LoginOrNot(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = navigateToManager)
-            .padding(vertical = Dimensions.smallest, horizontal = Dimensions.default)
+            .padding(vertical = Dimensions.smaller, horizontal = Dimensions.default)
             .padding(systemBarsHorizontalPadding())
     ) {
         Image(
-            rememberImage(ShikimoriData.iconUrl),
+            painter = rememberImage(ShikimoriData.iconUrl),
             contentDescription = "Shikimori site icon",
             modifier = Modifier
                 .padding(vertical = Dimensions.small)

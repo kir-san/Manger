@@ -51,7 +51,7 @@ fun StatisticsScreen(
         subtitle = stringResource(
             R.string.statistic_subtitle, TimeFormat(allTime).toString(context)
         ),
-        additionalPadding = Dimensions.smallest
+        additionalPadding = Dimensions.smaller
     ) {
         items(items = allItems, key = { stat -> stat.id }) { item ->
             item?.let {
@@ -80,7 +80,7 @@ private fun ItemView(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = Dimensions.smallest, horizontal = Dimensions.default)
+            .padding(vertical = Dimensions.smaller, horizontal = Dimensions.default)
             .padding(systemBarsHorizontalPadding())
     ) {
         Image(

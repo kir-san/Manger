@@ -49,7 +49,6 @@ class MangaUpdaterService : Service() {
         const val actionSend = "MangaUpdaterActionSend"
 
         const val ITEM_NAME = "mangaName"
-        const val IS_FOUND_NEW = "isFoundNew"
         const val COUNT_NEW = "countNew"
 
         private const val TAG = "MangaUpdaterService"
@@ -166,7 +165,6 @@ class MangaUpdaterService : Service() {
                 ACTION_CANCEL_ALL -> {
                     val tempIntent = Intent(actionGet)
                     tempIntent.putExtra(ITEM_NAME, mangaName)
-                    tempIntent.putExtra(IS_FOUND_NEW, false)
                     tempIntent.putExtra(COUNT_NEW, -1)
                     sendBroadcast(tempIntent)
                     stopSelf()
@@ -307,7 +305,6 @@ class MangaUpdaterService : Service() {
             Intent().apply {
                 action = actionGet
                 putExtra(ITEM_NAME, mangaName)
-                putExtra(IS_FOUND_NEW, countNew > 0)
                 putExtra(COUNT_NEW, countNew)
 
                 sendBroadcast(this)

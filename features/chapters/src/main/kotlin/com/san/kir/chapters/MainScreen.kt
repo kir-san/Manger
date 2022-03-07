@@ -90,22 +90,14 @@ private fun ReceiverHandler(
                         // Реагирование только если текущее название соотвествует полученному
                         if (mangaName != null && mangaName == currentManga.name) {
                             // Получаем результаты работы
-                            // Были ли найдены новые главы TODO избавиться от лишнего флага в сервисе
-                            val isFoundNew =
-                                intent.getBooleanExtra(MangaUpdaterService.IS_FOUND_NEW, false)
-                            // Сколько найдено
                             val countNew = intent.getIntExtra(MangaUpdaterService.COUNT_NEW, 0)
 
                             // Отображение сообщения в зависимости от результата
-                            if (countNew == -1) {
-                                context?.longToast(R.string.list_chapters_message_error)
-                            } else {
-                                if (isFoundNew.not()) {
-                                    context?.longToast(R.string.list_chapters_message_no_found)
-                                } else {
-                                    context?.longToast(R.string.list_chapters_message_count_new,
-                                        countNew)
-                                }
+                            when (countNew) {
+                                -1 -> context?.longToast(R.string.list_chapters_message_error)
+                                0 -> context?.longToast(R.string.list_chapters_message_no_found)
+                                else -> context?.longToast(R.string.list_chapters_message_count_new,
+                                    countNew)
                             }
                         }
                         currentOnSystemEvent(false)

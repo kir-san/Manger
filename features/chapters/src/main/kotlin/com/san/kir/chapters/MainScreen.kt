@@ -5,53 +5,47 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.Tab
-import androidx.compose.material.TabRow
-import androidx.compose.material.TabRowDefaults
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import com.google.accompanist.insets.systemBarsPadding
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.pagerTabIndicatorOffset
-import com.google.accompanist.pager.rememberPagerState
 import com.san.kir.background.services.MangaUpdaterService
 import com.san.kir.core.compose_utils.TopBarScreenPadding
 import com.san.kir.data.models.base.Manga
 import com.san.kir.core.utils.longToast
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
 
 @Composable
-fun ChaptersScreen(viewModel: ChaptersViewModel, mangaUnic: String, navigateUp: () -> Unit) {
+fun ChaptersScreen(
+    viewModel: MainViewModel,
+    mangaUnic: String,
+    navigateUp: () -> Unit,
+) {
+    // Инициация данных во vm
     viewModel.setMangaUnic(mangaUnic)
 
+    val selectionMode by viewModel.selection.isEnable.collectAsState()
+    val manga by viewModel.manga.collectAsState()
+
+    // Индикатор выполнения каких-либо действий
     var (action, actionSetter) = rememberSaveable { mutableStateOf(false) }
 
     TopBarScreenPadding(
         topBar = {
-            if (viewModel.selectionMode)
-                SelectionModeChaptersTopBar(viewModel, actionSetter)
-            else
-                ChaptersTopBar(navigateUp, viewModel, actionSetter)
+            // В зависимости от состояния активации меняется AppBar
+            if (selectionMode) {
+                SelectionModeTopBar(viewModel, actionSetter)
+            } else {
+                DefaultTopBar(navigateUp, viewModel, actionSetter)
+            }
         },
     ) { contentPadding ->
         Column(
@@ -60,20 +54,21 @@ fun ChaptersScreen(viewModel: ChaptersViewModel, mangaUnic: String, navigateUp: 
                 .padding(top = contentPadding.calculateTopPadding())
                 .verticalScroll(rememberScrollState())
         ) {
-            ChaptersContent(action, viewModel)
+            Content(action, viewModel)
         }
     }
 
-    if (MangaUpdaterService.contains(viewModel.manga))
+
+    if (MangaUpdaterService.contains(manga))
         action = true
 
-    ReceiverHandler(viewModel.manga) { state -> action = state }
+    ReceiverHandler(manga, changeAction = actionSetter)
 }
 
+// Подписка на сообщения от сервиса MangaUpdateService
 @Composable
 private fun ReceiverHandler(
     manga: Manga,
-    ctx: Context = LocalContext.current,
     changeAction: (Boolean) -> Unit,
 ) {
     val context = LocalContext.current
@@ -88,19 +83,27 @@ private fun ReceiverHandler(
         val broadcast = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 intent?.let {
+
                     val mangaName = intent.getStringExtra(MangaUpdaterService.ITEM_NAME)
+
                     if (intent.action == MangaUpdaterService.actionGet) {
+                        // Реагирование только если текущее название соотвествует полученному
                         if (mangaName != null && mangaName == currentManga.name) {
+                            // Получаем результаты работы
+                            // Были ли найдены новые главы TODO избавиться от лишнего флага в сервисе
                             val isFoundNew =
                                 intent.getBooleanExtra(MangaUpdaterService.IS_FOUND_NEW, false)
+                            // Сколько найдено
                             val countNew = intent.getIntExtra(MangaUpdaterService.COUNT_NEW, 0)
+
+                            // Отображение сообщения в зависимости от результата
                             if (countNew == -1) {
-                                ctx.longToast(R.string.list_chapters_message_error)
+                                context?.longToast(R.string.list_chapters_message_error)
                             } else {
                                 if (isFoundNew.not()) {
-                                    ctx.longToast(R.string.list_chapters_message_no_found)
+                                    context?.longToast(R.string.list_chapters_message_no_found)
                                 } else {
-                                    ctx.longToast(R.string.list_chapters_message_count_new,
+                                    context?.longToast(R.string.list_chapters_message_count_new,
                                         countNew)
                                 }
                             }
@@ -118,50 +121,5 @@ private fun ReceiverHandler(
             context.unregisterReceiver(broadcast)
         }
     }
-}
-
-@OptIn(ExperimentalPagerApi::class, ExperimentalCoroutinesApi::class)
-@Composable
-fun ColumnScope.ChaptersContent(
-    action: Boolean,
-    viewModel: ChaptersViewModel,
-    scope: CoroutineScope = rememberCoroutineScope(),
-) {
-    val isTitle by viewModel.isTitle.collectAsState(true)
-
-    val pagerState = rememberPagerState()
-    val pages = chapterPages(viewModel.manga.isAlternativeSite)
-
-    // ПрогрессБар для отображения фоновых операций
-    if (action || viewModel.chapters.isEmpty())
-        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-
-    if (isTitle)
-        TabRow(
-            selectedTabIndex = pagerState.currentPage,
-            indicator = { tabPositions ->
-                TabRowDefaults.Indicator(
-                    Modifier.pagerTabIndicatorOffset(pagerState, tabPositions)
-                )
-            },
-            modifier = Modifier.systemBarsPadding(bottom = false, top = false)
-        ) {
-            pages.forEachIndexed { index, item ->
-                Tab(
-                    selected = pagerState.currentPage == index,
-                    text = { Text(text = stringResource(id = item.nameId)) },
-                    onClick = { scope.launch { pagerState.animateScrollToPage(index) } }
-                )
-            }
-        }
-
-    HorizontalPager(
-        count = pages.size,
-        state = pagerState,
-        modifier = Modifier.weight(1f)
-    ) { index ->
-        pages[index].content(viewModel)
-    }
-
 }
 

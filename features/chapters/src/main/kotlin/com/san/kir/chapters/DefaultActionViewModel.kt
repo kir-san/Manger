@@ -25,7 +25,7 @@ import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
-class ChaptersActionViewModel @Inject constructor(
+class DefaultActionViewModel @Inject constructor(
     private val mangaDao: MangaDao,
     private val chapterDao: ChapterDao,
     private val context: Application,

@@ -109,6 +109,10 @@ class ConnectManager @Inject constructor(context: Application) {
         return name
     }
 
+    fun nameFromUrl2(url: String): String {
+        return url.split("/").last()
+    }
+
     suspend fun downloadBitmap(
         url: String,
         onFinish: (bm: Bitmap?, size: Long, time: Long) -> Unit = { _, _, _ -> },

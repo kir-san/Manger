@@ -67,8 +67,7 @@ fun rememberImage(url: String?, context: Context = LocalContext.current): ImageB
 
     LaunchedEffect(url) {
         if (url != null && url.isNotEmpty()) {
-            val manager = ConnectManager(context.applicationContext as Application)
-            val name = manager.nameFromUrl(url)
+            val name = manager.nameFromUrl2(url)
 
             val imageCacheDirectory = File(context.cacheDir, "image_cache")
 

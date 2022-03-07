@@ -60,7 +60,7 @@ internal fun LoginOrNot(
             .padding(systemBarsHorizontalPadding())
     ) {
         Image(
-            painter = rememberImage(ShikimoriData.iconUrl),
+            rememberImage(ShikimoriData.iconUrl),
             contentDescription = "Shikimori site icon",
             modifier = Modifier
                 .padding(vertical = Dimensions.small)

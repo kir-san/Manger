@@ -1,6 +1,5 @@
 package com.san.kir.core.compose_utils
 
-import android.app.Application
 import android.content.Context
 import android.graphics.BitmapFactory
 import androidx.compose.animation.AnimatedVisibility
@@ -20,12 +19,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
-import com.san.kir.core.internet.ConnectManager
+import com.san.kir.core.internet.LocalConnectManager
 import java.io.File
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun ImageWithStatus(url: String?, context: Context = LocalContext.current) {
+fun ImageWithStatus(url: String?) {
+    val manager = LocalConnectManager.current
     var statusLogo by remember { mutableStateOf(StatusLogo.Init) }
     var logo by remember { mutableStateOf(ImageBitmap(60, 60)) }
 
@@ -48,8 +48,6 @@ fun ImageWithStatus(url: String?, context: Context = LocalContext.current) {
     LaunchedEffect(url) {
         if (url != null && url.isNotEmpty()) {
 
-            val manager = ConnectManager(context.applicationContext as Application)
-
             manager.downloadBitmap(url)?.let { bitmap ->
                 logo = bitmap.asImageBitmap()
                 statusLogo = StatusLogo.Complete
@@ -63,7 +61,8 @@ fun ImageWithStatus(url: String?, context: Context = LocalContext.current) {
 }
 
 @Composable
-inline fun rememberImage(url: String?, context: Context = LocalContext.current): ImageBitmap {
+fun rememberImage(url: String?, context: Context = LocalContext.current): ImageBitmap {
+    val manager = LocalConnectManager.current
     var logo by remember { mutableStateOf(ImageBitmap(60, 60)) }
 
     LaunchedEffect(url) {

@@ -45,6 +45,10 @@ dependencies {
         implementation(OKHTTP)
     }
 
+    Dependencies.Compose.apply {
+        implementation(RUNTIME)
+    }
+
     implementation(Dependencies.INJECT)
 
     Dependencies.Test.apply {

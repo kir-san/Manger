@@ -1,10 +1,11 @@
 package com.san.kir.core.compose_utils
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Tab
+import androidx.compose.material.TabPosition
+import androidx.compose.material.TabRow
 import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.primarySurface
@@ -13,8 +14,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.systemBarsPadding
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
@@ -22,6 +21,13 @@ import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.san.kir.core.utils.TestTags
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+
+@OptIn(ExperimentalPagerApi::class)
+private fun indicator(pagerState: PagerState): @Composable (tabPositions: List<TabPosition>) -> Unit = { tabPositions ->
+    TabRowDefaults.Indicator(
+        Modifier.pagerTabIndicatorOffset(pagerState, tabPositions)
+    )
+}
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -33,14 +39,9 @@ fun ScrollableTabs(
 ) {
     ScrollableTabRow(
         selectedTabIndex = pagerState.currentPage,
-        indicator = { tabPositions ->
-            TabRowDefaults.Indicator(
-                Modifier.pagerTabIndicatorOffset(pagerState, tabPositions)
-            )
-        },
+        indicator = indicator(pagerState),
         divider = {},
-        modifier = Modifier
-            .background(MaterialTheme.colors.primarySurface)
+        modifier = Modifier.background(MaterialTheme.colors.primarySurface)
     ) {
         items.forEachIndexed { index, item ->
             Tab(
@@ -52,3 +53,28 @@ fun ScrollableTabs(
         }
     }
 }
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun Tabs(
+    pagerState: PagerState,
+    items: List<Int>,
+    scope: CoroutineScope = rememberCoroutineScope(),
+    onTabClick: suspend (index: Int) -> Unit = { pagerState.animateScrollToPage(it) },
+) {
+
+    TabRow(
+        selectedTabIndex = pagerState.currentPage,
+        indicator = indicator(pagerState),
+        modifier = Modifier.systemBarsPadding(bottom = false, top = false)
+    ) {
+        items.forEachIndexed { index, item ->
+            Tab(
+                selected = pagerState.currentPage == index,
+                text = { Text(text = stringResource(id = item)) },
+                onClick = { scope.launch { onTabClick(index) } }
+            )
+        }
+    }
+}
+

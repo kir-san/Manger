@@ -18,3 +18,4 @@ include(":features:shikimori")
 include(":features:chapters")
 
 include("sample:testshikimori")
+include(":sample:test_compose")

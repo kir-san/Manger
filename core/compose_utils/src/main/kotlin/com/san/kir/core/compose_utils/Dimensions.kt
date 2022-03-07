@@ -10,4 +10,6 @@ object Dimensions {
     val default = 16.dp
     val imageSize = 56.dp
     val bigImageSize = 126.dp
+
+    val appBarHeight = 56.dp
 }

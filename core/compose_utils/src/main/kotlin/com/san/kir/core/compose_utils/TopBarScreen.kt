@@ -1,5 +1,6 @@
 package com.san.kir.core.compose_utils
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,8 +26,13 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
@@ -39,6 +45,7 @@ import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.ui.Scaffold
 import com.google.accompanist.insets.ui.TopAppBar
+import com.san.kir.core.compose_utils.animation.rememberNestedScrollConnection
 import com.san.kir.core.utils.TestTags
 import com.san.kir.core.utils.log
 import kotlinx.coroutines.launch
@@ -52,21 +59,37 @@ internal fun TopBarScreenWithInsets(
     subtitle: String = "",
     additionalPadding: Dp = Dimensions.default,
     actions: @Composable RowScope.() -> Unit = {},
-    topBar: @Composable () -> Unit = {
-        PreparedTopBar(navigateUp, title, subtitle, scaffoldState, actions)
+    enableCollapsingBars: Boolean = true,
+    topBar: @Composable (Dp) -> Unit = { height ->
+        PreparedTopBar(navigateUp, title, subtitle, height, scaffoldState, actions)
     },
     listContent: (LazyListScope.() -> Unit)? = null,
-    bottomBar: @Composable () -> Unit = {},
+    bottomBar: @Composable (Dp) -> Unit = {},
     drawerContent: @Composable (ColumnScope.() -> Unit)? = null,
     paddingContent: @Composable ((PaddingValues) -> Unit)? = null,
     content: @Composable (ColumnScope.() -> Unit)? = null,
 ) {
-    Scaffold(modifier = modifier,
+    val density = LocalDensity.current
+    val pixelValue = with(density) { Dimensions.appBarHeight.toPx() }
+    val (height, heightChanger) = remember { mutableStateOf(pixelValue) }
+
+    val animatedHeight by animateDpAsState(targetValue = with(density) { height.toDp() })
+
+    Scaffold(
+        modifier = modifier
+            .nestedScroll(
+                rememberNestedScrollConnection(
+                    onHeightChanged = heightChanger,
+                    maxHeight = pixelValue,
+                    enable = enableCollapsingBars,
+                )
+            ),
         scaffoldState = scaffoldState ?: rememberScaffoldState(),
         drawerContent = drawerContent,
         drawerGesturesEnabled = true,
-        bottomBar = bottomBar,
-        topBar = topBar) { contentPadding ->
+        bottomBar = { bottomBar(animatedHeight) },
+        topBar = { topBar(animatedHeight) },
+    ) { contentPadding ->
 
         paddingContent?.invoke(contentPadding)
 
@@ -122,8 +145,9 @@ fun TopBarScreenPadding(
     subtitle: String = "",
     additionalPadding: Dp = Dimensions.default,
     actions: @Composable RowScope.() -> Unit = {},
-    topBar: @Composable () -> Unit = {
-        PreparedTopBar(navigateUp, title, subtitle, scaffoldState, actions)
+    enableCollapsingBars: Boolean = true,
+    topBar: @Composable (Dp) -> Unit = { height ->
+        PreparedTopBar(navigateUp, title, subtitle, height, scaffoldState, actions)
     },
     drawerContent: @Composable (ColumnScope.() -> Unit)? = null,
     content: @Composable (PaddingValues) -> Unit,
@@ -133,7 +157,8 @@ fun TopBarScreenPadding(
         topBar = topBar,
         paddingContent = content,
         drawerContent = drawerContent,
-        additionalPadding = additionalPadding
+        additionalPadding = additionalPadding,
+        enableCollapsingBars = enableCollapsingBars
     )
 }
 
@@ -146,8 +171,9 @@ fun TopBarScreenContent(
     subtitle: String = "",
     additionalPadding: Dp = Dimensions.default,
     actions: @Composable RowScope.() -> Unit = {},
-    topBar: @Composable () -> Unit = {
-        PreparedTopBar(navigateUp, title, subtitle, scaffoldState, actions)
+    enableCollapsingBars: Boolean = true,
+    topBar: @Composable (Dp) -> Unit = { height ->
+        PreparedTopBar(navigateUp, title, subtitle, height, scaffoldState, actions)
     },
     drawerContent: @Composable (ColumnScope.() -> Unit)? = null,
     content: @Composable (ColumnScope.() -> Unit)? = null,
@@ -158,7 +184,8 @@ fun TopBarScreenContent(
         content = content,
         scaffoldState = scaffoldState,
         drawerContent = drawerContent,
-        additionalPadding = additionalPadding
+        additionalPadding = additionalPadding,
+        enableCollapsingBars = enableCollapsingBars
     )
 }
 
@@ -171,10 +198,11 @@ fun TopBarScreenList(
     subtitle: String = "",
     scaffoldState: ScaffoldState? = null,
     actions: @Composable RowScope.() -> Unit = {},
-    topBar: @Composable () -> Unit = {
-        PreparedTopBar(navigateUp, title, subtitle, scaffoldState, actions)
+    enableCollapsingBars: Boolean = true,
+    topBar: @Composable (Dp) -> Unit = { height ->
+        PreparedTopBar(navigateUp, title, subtitle, height, scaffoldState, actions)
     },
-    bottomBar: @Composable () -> Unit = {},
+    bottomBar: @Composable (Dp) -> Unit = {},
     drawerContent: @Composable (ColumnScope.() -> Unit)? = null,
     listContent: (LazyListScope.() -> Unit)? = null,
 ) {
@@ -186,6 +214,7 @@ fun TopBarScreenList(
         drawerContent = drawerContent,
         bottomBar = bottomBar,
         listContent = listContent,
+        enableCollapsingBars = enableCollapsingBars
     )
 }
 
@@ -194,6 +223,7 @@ fun PreparedTopBar(
     navigationButtonListener: () -> Unit = { },
     title: String = "",
     subtitle: String = "",
+    height: Dp = Dimensions.appBarHeight,
     scaffoldState: ScaffoldState? = null,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
@@ -231,7 +261,8 @@ fun PreparedTopBar(
         modifier = Modifier
             .statusBarsPadding()
             .fillMaxWidth()
-            .padding(0.dp),
+            .padding(Dimensions.zero)
+            .height(height),
         actions = actions,
         contentPadding = rememberInsetsPaddingValues(
             insets = LocalWindowInsets.current.systemBars,

@@ -34,8 +34,8 @@ class Acomics(private val connectManager: ConnectManager) : SiteCatalogAlternati
     override suspend fun init(): Acomics {
         if (!isInit) {
             var docLocal = Elements()
-            var i = 542
-            volume = 5429
+            var i = 560
+            volume = 5600
 
             suspend fun isGetNext(): Boolean {
                 val document = connectManager.getDocument(siteCatalog + "&skip=${10 * i}")

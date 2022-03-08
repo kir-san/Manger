@@ -185,6 +185,7 @@
     <string name="storage_dialog_close">Закрыть</string>
 
     <!-- Library -->
+    <string name="library_title">Библиотека</string>
     <string name="library_sort_dialog_add">По дате добавления</string>
     <string name="library_sort_dialog_abc">В алфавитном порядке</string>
     <string name="library_sort_dialog_pop">По частоте использования</string>

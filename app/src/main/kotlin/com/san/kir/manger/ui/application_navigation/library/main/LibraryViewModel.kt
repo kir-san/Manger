@@ -76,7 +76,7 @@ class LibraryViewModel @Inject constructor(
         .onEmpty { _isEmpty.update { true } }
         .onEach { cats ->
             withMainContext {
-                categoryNames = cats.map { it.name }
+                categoryNames = cats.map { it.name + ": " + it.mangas.count() }
             }
         }
         .map { cats ->

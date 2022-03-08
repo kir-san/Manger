@@ -70,16 +70,14 @@ fun LibraryScreen(
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val context = LocalContext.current as? ComponentActivity
     val coroutineScope = rememberCoroutineScope()
-    val currentCategoryWithMangas by viewModel.currentCategoryWithManga.collectAsState()
 
     TopBarScreenContent(
-        title = stringResource(
-            R.string.main_menu_library_count, currentCategoryWithMangas.mangas.size
-        ),
+        title = stringResource(R.string.library_title),
         additionalPadding = 0.dp,
         scaffoldState = scaffoldState,
         drawerContent = { DrawerContent(scaffoldState, navigateToScreen) },
-        actions = { LibraryActions(navigateToOnline, viewModel) }
+        actions = { LibraryActions(navigateToOnline, viewModel) },
+        enableCollapsingBars = false,
     ) {
         LibraryContent(
             navigateToCatalogs = navigateToCatalogs,

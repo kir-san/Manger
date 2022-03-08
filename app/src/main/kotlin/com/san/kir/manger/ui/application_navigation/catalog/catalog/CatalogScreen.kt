@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -66,6 +67,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.MenuIcon
@@ -103,7 +105,7 @@ fun CatalogScreen(
 
     TopBarScreenList(
         scaffoldState = scaffoldState,
-        topBar = {
+        topBar = { height ->
             var search by rememberSaveable { mutableStateOf(false) }
 
             Column(modifier = Modifier.fillMaxWidth()) {
@@ -112,7 +114,8 @@ fun CatalogScreen(
                     scaffoldState = scaffoldState,
                     actions = {
                         MenuIcon(icon = Icons.Default.Search) { search = !search }
-                    }
+                    },
+                    height = height,
                 )
 
                 AnimatedVisibility(visible = search) {
@@ -123,8 +126,9 @@ fun CatalogScreen(
             }
         },
         drawerContent = { DrawerContent(viewModel) },
-        bottomBar = { BottomBar(viewModel) },
-        additionalPadding = Dimensions.smaller
+        bottomBar = { height -> BottomBar(viewModel, height) },
+        additionalPadding = Dimensions.smaller,
+//        enableCollapsingBars = true,
     ) {
         items(items = items, key = { item -> item.id }) { item ->
             ListItem(
@@ -225,11 +229,14 @@ private fun ErrorReloadDialog(
 
 // Нижняя панель с кнопками сортировки списка
 @Composable
-private fun BottomBar(viewModel: CatalogViewModel) {
+private fun BottomBar(viewModel: CatalogViewModel, height: Dp = Dimensions.appBarHeight) {
     var reloadDialog by remember { mutableStateOf(false) }
 
     BottomAppBar(
-        contentPadding = systemBarBottomPadding()
+        contentPadding =
+        if (height == Dimensions.zero) PaddingValues(Dimensions.zero)
+        else systemBarBottomPadding(),
+        modifier = Modifier.height(height + systemBarBottomPadding().calculateBottomPadding())
     ) {
         IconToggleButton(
             modifier = Modifier.padding(systemBarStartPadding(Dimensions.default)),

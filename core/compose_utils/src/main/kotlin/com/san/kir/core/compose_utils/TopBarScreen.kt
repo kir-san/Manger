@@ -59,7 +59,7 @@ internal fun TopBarScreenWithInsets(
     subtitle: String = "",
     additionalPadding: Dp = Dimensions.default,
     actions: @Composable RowScope.() -> Unit = {},
-    enableCollapsingBars: Boolean = true,
+    enableCollapsingBars: Boolean = false,
     topBar: @Composable (Dp) -> Unit = { height ->
         PreparedTopBar(navigateUp, title, subtitle, height, scaffoldState, actions)
     },
@@ -145,7 +145,7 @@ fun TopBarScreenPadding(
     subtitle: String = "",
     additionalPadding: Dp = Dimensions.default,
     actions: @Composable RowScope.() -> Unit = {},
-    enableCollapsingBars: Boolean = true,
+    enableCollapsingBars: Boolean = false,
     topBar: @Composable (Dp) -> Unit = { height ->
         PreparedTopBar(navigateUp, title, subtitle, height, scaffoldState, actions)
     },
@@ -171,7 +171,7 @@ fun TopBarScreenContent(
     subtitle: String = "",
     additionalPadding: Dp = Dimensions.default,
     actions: @Composable RowScope.() -> Unit = {},
-    enableCollapsingBars: Boolean = true,
+    enableCollapsingBars: Boolean = false,
     topBar: @Composable (Dp) -> Unit = { height ->
         PreparedTopBar(navigateUp, title, subtitle, height, scaffoldState, actions)
     },
@@ -198,7 +198,7 @@ fun TopBarScreenList(
     subtitle: String = "",
     scaffoldState: ScaffoldState? = null,
     actions: @Composable RowScope.() -> Unit = {},
-    enableCollapsingBars: Boolean = true,
+    enableCollapsingBars: Boolean = false,
     topBar: @Composable (Dp) -> Unit = { height ->
         PreparedTopBar(navigateUp, title, subtitle, height, scaffoldState, actions)
     },

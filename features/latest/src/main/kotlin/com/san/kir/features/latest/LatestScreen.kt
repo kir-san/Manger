@@ -66,7 +66,7 @@ fun LatestScreen(
     var isAction by remember { mutableStateOf(false) }
 
     TopBarScreenList(
-        additionalPadding = 0.dp,
+        additionalPadding = Dimensions.zero,
         navigateUp = navigateUp,
         title = if (viewModel.selectionMode) {
             LocalContext.current.quantitySimple(
@@ -75,7 +75,8 @@ fun LatestScreen(
         } else {
             stringResource(R.string.main_menu_latest_count, viewModel.allItems.size)
         },
-        actions = { LatestActions(viewModel) }
+        actions = { LatestActions(viewModel) },
+        enableCollapsingBars = true,
     ) {
         item {
             if (isAction) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())

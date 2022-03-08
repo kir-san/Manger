@@ -2,6 +2,7 @@ package com.san.kir.manger.ui.application_navigation.catalog.global_search
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.runtime.Composable
@@ -31,11 +32,12 @@ fun GlobalSearchScreen(
     val viewState by viewModel.state.collectAsState()
 
     TopBarScreenList(
-        topBar = {
+        topBar = { height ->
             Column(modifier = Modifier.fillMaxWidth()) {
                 PreparedTopBar(
                     navigateUp,
                     title = "${stringResource(R.string.main_menu_search)}: ${viewState.items.size}",
+                    height = height,
                 )
 
                 SearchTextField(
@@ -50,7 +52,8 @@ fun GlobalSearchScreen(
                 )
             }
         },
-        additionalPadding = Dimensions.smaller
+        additionalPadding = Dimensions.smaller,
+        enableCollapsingBars = true
     ) {
         items(items = viewState.items) { item ->
             ListItem(

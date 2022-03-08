@@ -2,6 +2,7 @@ package com.san.kir.chapters
 
 import android.content.Context
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.Icon
@@ -19,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.Dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
@@ -36,6 +38,7 @@ fun DefaultTopBar(
     navigateUp: () -> Unit,
     viewModel: MainViewModel,
     changeActionState: (Boolean) -> Unit,
+    height: Dp = Dimensions.appBarHeight,
 ) {
     val manga by viewModel.manga.collectAsState()
 
@@ -53,7 +56,8 @@ fun DefaultTopBar(
         modifier = Modifier
             .statusBarsPadding()
             .fillMaxWidth()
-            .padding(Dimensions.zero),
+            .padding(Dimensions.zero)
+            .height(height),
 
         actions = {
             if (manga.name.isNotBlank()) {

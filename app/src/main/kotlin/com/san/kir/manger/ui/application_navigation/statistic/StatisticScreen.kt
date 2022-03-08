@@ -20,6 +20,7 @@ fun StatisticScreen(navigateUp: () -> Unit, item: Statistic) {
     TopBarScreenContent(
         navigateUp = navigateUp,
         title = item.manga,
+        enableCollapsingBars = true,
     ) {
         LabelText(R.string.statistic_item_full_last_session)
         DialogText(timePagesData(item.lastTime, item.lastPages, item.lastChapters))

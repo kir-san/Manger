@@ -68,7 +68,8 @@ fun StorageScreen(
             viewState.storageCounts,
             viewState.storageCounts
         ),
-        additionalPadding = Dimensions.smaller
+        additionalPadding = Dimensions.smaller,
+        enableCollapsingBars = true,
     ) {
         items(items = allStorage) { item ->
             item?.let { ItemView(navigateToItem, item, viewModel) }

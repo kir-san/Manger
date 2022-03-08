@@ -39,9 +39,9 @@ fun rememberNestedScrollConnection(
             // При получении события о начале скролла
             // высчитываем новую высоту сложение старой и смещения
             // обязательно проверяем на выход за допустимые границы
-            currentHeight = (currentHeight + available.y)
-                .coerceIn(minimumValue = 0f, maximumValue = maxHeight)
-
+            if (enable)
+                currentHeight = (currentHeight + available.y)
+                    .coerceIn(minimumValue = 0f, maximumValue = maxHeight)
 
             sendOffset(currentHeight)
 

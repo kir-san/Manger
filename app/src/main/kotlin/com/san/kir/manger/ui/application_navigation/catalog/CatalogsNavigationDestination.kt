@@ -1,5 +1,6 @@
 package com.san.kir.manger.ui.application_navigation.catalog
 
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.san.kir.manger.ui.application_navigation.MainNavTarget
@@ -9,6 +10,7 @@ import com.san.kir.manger.ui.application_navigation.additional_manga_screens.sit
 import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogScreen
 import com.san.kir.manger.ui.application_navigation.catalog.catalog.catalogViewModel
 import com.san.kir.manger.ui.application_navigation.catalog.global_search.GlobalSearchScreen
+import com.san.kir.manger.ui.application_navigation.catalog.global_search.GlobalSearchViewModel
 import com.san.kir.manger.ui.application_navigation.catalog.main.CatalogsScreen
 import com.san.kir.manger.utils.compose.NavTarget
 import com.san.kir.manger.utils.compose.navTarget
@@ -48,7 +50,8 @@ enum class CatalogsNavTarget : NavTarget {
                 navigateUp = ::navigateUp,
                 navigateToInfo = { navigate(Info, it) },
                 navigateToAdd = { navigate(AddLocal, it) },
-                initSearchText = stringElement ?: "")
+                searchText = stringElement ?: "",
+                viewModel = hiltViewModel())
         }
     },
 

@@ -16,7 +16,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Checkbox
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
@@ -35,10 +37,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.accompanist.insets.systemBarsPadding
 
 @Composable
 fun LabelText(idRes: Int) {
@@ -94,9 +97,13 @@ fun DropDownTextField(
         Column {
             // Выпадающее меню для выбора категории
             valuesList.forEach { value ->
-                MenuText(value) {
-                    field = value
-                    dropDownList = false
+                DropdownMenuItem(
+                    onClick = {
+                        field = value
+                        dropDownList = false
+                    }
+                ) {
+                    Text(text = value)
                 }
             }
         }
@@ -175,14 +182,25 @@ fun SearchTextField(
             )
         },
         trailingIcon = {
-            MenuIcon(
-                icon = Icons.Default.Close,
+            IconButton(
                 modifier = Modifier.padding(systemBarEndPadding()),
+                onClick = { searchText = "" },
             ) {
-                searchText = ""
+                Icon(Icons.Default.Close, "")
             }
         },
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+
+@Composable
+fun TextWithFirstWordBold(text: String, textAlign: TextAlign? = null) {
+    val wordEndIndex = text.indexOf(" ")
+    Text(
+        AnnotatedString(
+            text,
+            spanStyles = Fonts.Annotated.bold(wordEndIndex)
+        ),
+        textAlign = textAlign,
     )
 }

@@ -9,9 +9,9 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.san.kir.core.compose_utils.MenuIcon
 import com.san.kir.core.compose_utils.ScrollableTabs
-import com.san.kir.core.compose_utils.TopBarScreenContent
+import com.san.kir.core.compose_utils.ScreenContent
+import com.san.kir.core.compose_utils.topBar
 import com.san.kir.manger.R
 
 @OptIn(ExperimentalPagerApi::class)
@@ -20,15 +20,17 @@ fun SchedulesScreen(
     navigateUp: () -> Unit,
     navigateToItem: (Long) -> Unit,
 ) {
-    TopBarScreenContent(
-        navigateUp = navigateUp,
-        title = stringResource(R.string.main_menu_schedule),
-        actions = {
-            MenuIcon(
-                icon = Icons.Default.Add,
-                onClick = { navigateToItem(-1L) })
-
-        },
+    ScreenContent(
+        topBar = topBar(
+            navigationListener = navigateUp,
+            title = stringResource(R.string.main_menu_schedule),
+            actions = {
+                MenuIcon(
+                    icon = Icons.Default.Add,
+                    onClick = { navigateToItem(-1L) }
+                )
+            },
+        ),
         additionalPadding = 0.dp
     ) {
         val pagerState = rememberPagerState()

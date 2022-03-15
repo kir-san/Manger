@@ -41,7 +41,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.san.kir.core.compose_utils.TopBarScreenContent
+import com.san.kir.core.compose_utils.ScreenContent
+import com.san.kir.core.compose_utils.topBar
 import com.san.kir.core.support.MainMenuType
 import com.san.kir.core.utils.TestTags
 import com.san.kir.core.utils.coroutines.mainLaunch
@@ -71,12 +72,15 @@ fun LibraryScreen(
     val context = LocalContext.current as? ComponentActivity
     val coroutineScope = rememberCoroutineScope()
 
-    TopBarScreenContent(
-        title = stringResource(R.string.library_title),
+    ScreenContent(
+        topBar = topBar(
+            title = stringResource(R.string.library_title),
+            actions = libraryActions(navigateToOnline, viewModel),
+            scaffoldState = scaffoldState
+        ),
         additionalPadding = 0.dp,
         scaffoldState = scaffoldState,
         drawerContent = { DrawerContent(scaffoldState, navigateToScreen) },
-        actions = { LibraryActions(navigateToOnline, viewModel) },
         enableCollapsingBars = false,
     ) {
         LibraryContent(

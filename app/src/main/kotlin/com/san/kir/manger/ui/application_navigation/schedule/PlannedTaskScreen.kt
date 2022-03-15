@@ -24,18 +24,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
+import com.san.kir.core.compose_utils.LabelText
+import com.san.kir.core.compose_utils.ScreenContent
+import com.san.kir.core.compose_utils.topBar
 import com.san.kir.core.support.PlannedPeriod
 import com.san.kir.core.support.PlannedType
 import com.san.kir.core.support.PlannedWeek
 import com.san.kir.data.models.base.mangaList
 import com.san.kir.manger.R
-import com.san.kir.core.compose_utils.LabelText
-import com.san.kir.core.compose_utils.MenuIcon
 import com.san.kir.manger.utils.compose.MultiChoiceList
 import com.san.kir.manger.utils.compose.RadioGroup
 import com.san.kir.manger.utils.compose.SingleChoiceList
-import com.san.kir.core.compose_utils.TopBarScreenContent
 
 @Composable
 fun PlannedTaskScreen(navigateUp: () -> Unit, viewModel: PlannedTaskViewModel) {
@@ -43,14 +42,16 @@ fun PlannedTaskScreen(navigateUp: () -> Unit, viewModel: PlannedTaskViewModel) {
     val categoryIds by viewModel.categoryIdList.collectAsState()
     val categoryName by viewModel.categoryName.collectAsState()
 
-    TopBarScreenContent(
-        navigateUp = navigateUp,
-        title = viewModel.title,
-        actions = {
-            MenuIcon(Icons.Default.Save) {
-                viewModel.save(navigateUp)
+    ScreenContent(
+        topBar = topBar(
+            navigationListener = navigateUp,
+            title = viewModel.title,
+            actions = {
+                MenuIcon(Icons.Default.Save) {
+                    viewModel.save(navigateUp)
+                }
             }
-        }
+        )
     ) {
         LabelText(idRes = R.string.planned_task_type_of_update)
 

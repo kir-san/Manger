@@ -9,13 +9,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.DropdownMenu
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeviceUnknown
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,11 +28,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.MenuIcon
-import com.san.kir.core.compose_utils.MenuText
-import com.san.kir.core.compose_utils.TopBarScreenList
+import com.san.kir.core.compose_utils.TopBarActions
+import com.san.kir.core.compose_utils.ScreenList
 import com.san.kir.core.compose_utils.rememberImage
 import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
+import com.san.kir.core.compose_utils.topBar
 import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.core.utils.findInGoogle
 import com.san.kir.data.models.base.Site
@@ -49,10 +47,12 @@ fun CatalogsScreen(
 ) {
     val siteList by viewModel.siteList.collectAsState(emptyList())
 
-    TopBarScreenList(
-        navigateUp = navigateUp,
-        title = stringResource(R.string.main_menu_catalogs),
-        actions = { CatalogsActions(navigateToSearch, viewModel) },
+    ScreenList(
+        topBar = topBar(
+            navigationListener = navigateUp,
+            title = stringResource(R.string.main_menu_catalogs),
+            actions = catalogsActions(navigateToSearch, viewModel)
+        ),
         additionalPadding = Dimensions.small
     ) {
         items(items = siteList, key = { site -> site.id }) { item ->
@@ -135,27 +135,24 @@ fun ItemView(item: Site, viewModel: CatalogsViewModel, onClick: (String) -> Unit
 
 }
 
-@Composable
-fun CatalogsActions(navigateToSearch: () -> Unit, viewModel: CatalogsViewModel) {
-    var expanded by remember { mutableStateOf(false) }
-
+fun catalogsActions(
+    navigateToSearch: () -> Unit,
+    viewModel: CatalogsViewModel,
+): @Composable TopBarActions.() -> Unit = {
     MenuIcon(
         icon = Icons.Default.Search,
-        onClick = navigateToSearch)
+        onClick = navigateToSearch,
+    )
 
-    MenuIcon(icon = Icons.Default.MoreVert, onClick = { expanded = true })
+    ExpandedMenu {
+        MenuText(
+            id = R.string.catalog_for_one_site_update_all,
+            onClick = viewModel::update,
+        )
 
-    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-
-        MenuText(id = R.string.catalog_for_one_site_update_all, onClick = {
-            expanded = false
-            viewModel.update()
-        })
-
-        MenuText(id = R.string.catalog_for_one_site_update_catalog_contain, onClick = {
-            expanded = false
-            viewModel.updateCatalogs()
-        })
+        MenuText(
+            id = R.string.catalog_for_one_site_update_catalog_contain,
+            onClick = viewModel::updateCatalogs,
+        )
     }
-
 }

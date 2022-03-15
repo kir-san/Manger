@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.DropdownMenu
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
@@ -26,7 +25,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -43,17 +41,17 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.asFlow
 import androidx.work.WorkManager
 import com.san.kir.core.compose_utils.Dimensions
+import com.san.kir.core.compose_utils.TopBarActions
+import com.san.kir.core.compose_utils.ScreenList
+import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
+import com.san.kir.core.compose_utils.topBar
 import com.san.kir.core.download.DownloadService
 import com.san.kir.core.support.DownloadState
-import com.san.kir.data.models.base.Chapter
 import com.san.kir.core.utils.longToast
 import com.san.kir.core.utils.quantitySimple
 import com.san.kir.core.utils.toast
+import com.san.kir.data.models.base.Chapter
 import com.san.kir.features.latest.work.LatestClearWorkers
-import com.san.kir.core.compose_utils.MenuIcon
-import com.san.kir.core.compose_utils.MenuText
-import com.san.kir.core.compose_utils.TopBarScreenList
-import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 
@@ -63,19 +61,23 @@ fun LatestScreen(
     navigateToViewer: (Chapter) -> Unit,
     viewModel: LatestViewModel,
 ) {
+    val context = LocalContext.current
+
     var isAction by remember { mutableStateOf(false) }
 
-    TopBarScreenList(
+    ScreenList(
+        topBar = topBar(
+            navigationListener = navigateUp,
+            title = if (viewModel.selectionMode) {
+                context.quantitySimple(
+                    R.plurals.list_chapters_action_selected, viewModel.selectedItems.count { it }
+                )
+            } else {
+                stringResource(R.string.main_menu_latest_count, viewModel.allItems.size)
+            },
+            actions = latestActions(viewModel),
+        ),
         additionalPadding = Dimensions.zero,
-        navigateUp = navigateUp,
-        title = if (viewModel.selectionMode) {
-            LocalContext.current.quantitySimple(
-                R.plurals.list_chapters_action_selected, viewModel.selectedItems.count { it }
-            )
-        } else {
-            stringResource(R.string.main_menu_latest_count, viewModel.allItems.size)
-        },
-        actions = { LatestActions(viewModel) },
         enableCollapsingBars = true,
     ) {
         item {
@@ -92,8 +94,6 @@ fun LatestScreen(
         }
     }
 
-    val context = LocalContext.current
-
     LaunchedEffect("collect") {
         WorkManager
             .getInstance(context)
@@ -105,45 +105,34 @@ fun LatestScreen(
     }
 }
 
-@Composable
-internal fun LatestActions(
-    viewModel: LatestViewModel,
-    context: Context = LocalContext.current,
-) {
-    var expanded by remember { mutableStateOf(false) }
-
+internal fun latestActions(viewModel: LatestViewModel): @Composable TopBarActions.() -> Unit = {
     if (viewModel.selectionMode) {
-        MenuIcon(icon = Icons.Default.Delete) {
-            viewModel.deleteSelectedItems()
-        }
+        MenuIcon(
+            icon = Icons.Default.Delete,
+            onClick = viewModel::deleteSelectedItems
+        )
     } else {
-        MenuIcon(icon = Icons.Default.MoreVert) {
-            expanded = true
-        }
-    }
+        ExpandedMenu {
+            val context = LocalContext.current
 
-    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-
-        if (viewModel.hasNewChapters) {
-            MenuText(R.string.latest_chapter_download_new) {
-                expanded = false
-                viewModel.downloadNewChapters()
+            if (viewModel.hasNewChapters) {
+                MenuText(
+                    R.string.latest_chapter_download_new,
+                    onClick = viewModel::downloadNewChapters
+                )
             }
-        }
 
-        MenuText(R.string.latest_chapter_clean) {
-            expanded = false
-            LatestClearWorkers.clearAll(context)
-        }
+            MenuText(R.string.latest_chapter_clean) {
+                LatestClearWorkers.clearAll(context)
+            }
 
-        MenuText(R.string.latest_chapter_clean_read) {
-            expanded = false
-            LatestClearWorkers.clearReaded(context)
-        }
+            MenuText(R.string.latest_chapter_clean_read) {
+                LatestClearWorkers.clearReaded(context)
+            }
 
-        MenuText(R.string.latest_chapter_clean_download) {
-            expanded = false
-            LatestClearWorkers.clearDownloaded(context)
+            MenuText(R.string.latest_chapter_clean_download) {
+                LatestClearWorkers.clearDownloaded(context)
+            }
         }
     }
 }

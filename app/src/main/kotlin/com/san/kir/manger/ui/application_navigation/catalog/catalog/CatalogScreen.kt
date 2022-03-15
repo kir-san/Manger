@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -32,7 +31,6 @@ import androidx.compose.material.Checkbox
 import androidx.compose.material.DrawerValue
 import androidx.compose.material.IconButton
 import androidx.compose.material.IconToggleButton
-import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -70,14 +68,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.MenuIcon
-import com.san.kir.core.compose_utils.PreparedTopBar
-import com.san.kir.core.compose_utils.SearchTextField
-import com.san.kir.core.compose_utils.TopBarScreenList
+import com.san.kir.core.compose_utils.ScreenList
 import com.san.kir.core.compose_utils.systemBarBottomPadding
 import com.san.kir.core.compose_utils.systemBarEndPadding
 import com.san.kir.core.compose_utils.systemBarStartPadding
 import com.san.kir.core.compose_utils.systemBarTopPadding
+import com.san.kir.core.compose_utils.topBar
 import com.san.kir.core.utils.log
 import com.san.kir.manger.R
 import com.san.kir.manger.foreground_work.services.CatalogForOneSiteUpdaterService
@@ -101,30 +97,22 @@ fun CatalogScreen(
     val coroutineScope = rememberCoroutineScope()
     var errorDialog by remember { mutableStateOf(false) }
     val items by viewModel.items.collectAsState()
-    val action by viewModel.action.collectAsState()
+    val hasAction by viewModel.action.collectAsState()
+    var enableSearch by rememberSaveable { mutableStateOf(false) }
 
-    TopBarScreenList(
+    ScreenList(
         scaffoldState = scaffoldState,
-        topBar = { height ->
-            var search by rememberSaveable { mutableStateOf(false) }
-
-            Column(modifier = Modifier.fillMaxWidth()) {
-                PreparedTopBar(
-                    title = "${viewModel.siteName}: ${items.size}",
-                    scaffoldState = scaffoldState,
-                    actions = {
-                        MenuIcon(icon = Icons.Default.Search) { search = !search }
-                    },
-                    height = height,
-                )
-
-                AnimatedVisibility(visible = search) {
-                    SearchTextField(inititalValue = viewModel.searchText,
-                        onChangeValue = { viewModel.searchText = it })
-                }
-                if (action) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-            }
-        },
+        topBar = topBar(
+            title = "${viewModel.siteName}: ${items.size}",
+            scaffoldState = scaffoldState,
+            actions = {
+                MenuIcon(Icons.Default.Search) { enableSearch = !enableSearch }
+            },
+            enableSearchField = enableSearch,
+            initSearchText = viewModel.searchText,
+            onSearchTextChange = { viewModel.searchText = it },
+            hasAction = hasAction
+        ),
         drawerContent = { DrawerContent(viewModel) },
         bottomBar = { height -> BottomBar(viewModel, height) },
         additionalPadding = Dimensions.smaller,

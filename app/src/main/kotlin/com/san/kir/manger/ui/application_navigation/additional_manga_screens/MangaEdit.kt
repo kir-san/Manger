@@ -17,8 +17,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Slider
@@ -45,7 +43,8 @@ import com.san.kir.core.compose_utils.CheckBoxText
 import com.san.kir.core.compose_utils.DropDownTextField
 import com.san.kir.core.compose_utils.ImageWithStatus
 import com.san.kir.core.compose_utils.LabelText
-import com.san.kir.core.compose_utils.TopBarScreenContent
+import com.san.kir.core.compose_utils.ScreenContent
+import com.san.kir.core.compose_utils.topBar
 import com.san.kir.core.utils.log
 import com.san.kir.data.models.base.Manga
 import com.san.kir.manger.R
@@ -55,26 +54,21 @@ import com.san.kir.manger.R
 fun MangaEditScreen(
     nav: NavHostController,
     mangaUnic: String,
-    viewModel: MangaEditViewModel = hiltViewModel()
+    viewModel: MangaEditViewModel = hiltViewModel(),
 ) {
     viewModel.mangaUnic = mangaUnic
 
-    TopBarScreenContent(
-        navigateUp = { nav.navigateUp() },
-        title = stringResource(id = R.string.edit_manga_title),
-        actions = {
-            IconButton(onClick = { /* save manga */
-                viewModel.update()
-                nav.navigateUp()
-            }) {
-                Icon(
-                    Icons.Default.Save,
-                    contentDescription = "save manga",
-                    tint = MaterialTheme.colors.onBackground
-                )
+    ScreenContent(
+        topBar = topBar(
+            navigationListener = nav::navigateUp,
+            title = stringResource(id = R.string.edit_manga_title),
+            actions = {
+                MenuIcon(icon = Icons.Default.Save) {
+                    viewModel.update()
+                    nav.navigateUp()
+                }
             }
-        }
-
+        ),
     ) {
         MangaEditContent(viewModel.manga) { viewModel.manga = it }
     }
@@ -100,7 +94,7 @@ private fun MangaEditContent(
     CategoryDropDownTextField(manga = manga, change = change)
 
     LabelText(idRes = R.string.about_manga_dialog_genres)
-    TextField(manga.genresList.toString()) {  }
+    TextField(manga.genresList.toString()) { }
 
     LabelText(idRes = R.string.about_manga_dialog_storage)
     TextField(manga.path, enabled = false) { change(manga.apply { path = it }) }
@@ -123,7 +117,7 @@ private fun MangaEditContent(
 
     LabelText(idRes = R.string.about_manga_dialog_logo)
     TextField(manga.logo, enabled = false) { change(manga.apply { logo = it }) }
-     ImageWithStatus(manga.logo)
+    ImageWithStatus(manga.logo)
 }
 
 @Composable
@@ -264,7 +258,7 @@ private fun TextField(
     initialValue: String,
     maxLines: Int = Int.MAX_VALUE,
     enabled: Boolean = true,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
 ) {
     var value by rememberSaveable { mutableStateOf(initialValue) }
     onValueChange(value)

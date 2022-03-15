@@ -31,10 +31,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.MenuIcon
-import com.san.kir.core.compose_utils.TopBarScreenList
+import com.san.kir.core.compose_utils.ScreenList
 import com.san.kir.core.compose_utils.rememberImage
 import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
+import com.san.kir.core.compose_utils.topBar
 import com.san.kir.data.models.base.ShikimoriAccount
 import com.san.kir.features.shikimori.R
 import com.san.kir.features.shikimori.ui.catalog_item.AskState
@@ -57,19 +57,21 @@ internal fun ItemScreen(
     val askState by viewModel.askState.collectAsState()
     val hasAction by viewModel.hasForegroundWork.collectAsState()
 
-    TopBarScreenList(
-        navigateUp = navigateUp,
-        title = item.name,
-        actions = {
-            if (hasAction) {
-                CircularProgressIndicator()
-            } else {
-                MenuIcon(Icons.Default.Update, onClick = viewModel::updateDataFromNetwork)
-                if (syncState is SyncState.Ok) {
-                    MenuIcon(Icons.Default.Cancel, onClick = viewModel::askCancelSync)
+    ScreenList(
+        topBar = topBar(
+            navigationListener = navigateUp,
+            title = item.name,
+            actions = {
+                if (hasAction) {
+                    CircularProgressIndicator()
+                } else {
+                    MenuIcon(Icons.Default.Update, onClick = viewModel::updateDataFromNetwork)
+                    if (syncState is SyncState.Ok) {
+                        MenuIcon(Icons.Default.Cancel, onClick = viewModel::askCancelSync)
+                    }
                 }
             }
-        }
+        ),
     ) {
         item {
             Head(

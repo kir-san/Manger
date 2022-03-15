@@ -1,10 +1,11 @@
 package com.san.kir.features.shikimori.ui.util
 
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Login
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.runtime.Composable
-import com.san.kir.core.compose_utils.MenuIcon
 
 @Composable
 internal fun IconLoginOrNot(
@@ -13,7 +14,11 @@ internal fun IconLoginOrNot(
     logout: () -> Unit,
 ) {
     if (isLogin)
-        MenuIcon(icon = Icons.Default.Logout, onClick = logout)
+        IconButton(onClick = logout) {
+            Icon(Icons.Default.Logout, "")
+        }
     else
-        MenuIcon(icon = Icons.Default.Login, onClick = login)
+        IconButton(onClick = login) {
+            Icon(Icons.Default.Login, "")
+        }
 }

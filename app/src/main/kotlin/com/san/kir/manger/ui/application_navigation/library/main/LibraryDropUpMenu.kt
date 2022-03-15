@@ -40,7 +40,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.systemBarsPadding
-import com.san.kir.core.compose_utils.MenuText
 import com.san.kir.manger.R
 import com.san.kir.manger.foreground_work.workmanager.MangaDeleteWorker
 
@@ -62,9 +61,12 @@ fun LibraryDropUpMenu(
             .systemBarsPadding(top = false)
     ) {
 
-        DropdownMenuItem(onClick = {
-            viewModel.changeSelectedManga(false)
-        }, modifier = Modifier.background(color = MaterialTheme.colors.primary)) {
+        DropdownMenuItem(
+            onClick = {
+                viewModel.changeSelectedManga(false)
+            },
+            modifier = Modifier.background(color = MaterialTheme.colors.primary),
+        ) {
             Text(
                 stringResource(
                     R.string.library_popupmenu_title,
@@ -74,15 +76,20 @@ fun LibraryDropUpMenu(
             )
         }
 
-        MenuText(id = R.string.library_popupmenu_about, onClick = {
-            viewModel.changeSelectedManga(false)
-            navigateToInfo(viewModel.selectedManga.manga.name)
-        })
+        DropdownMenuItem(
+            onClick = {
+                viewModel.changeSelectedManga(false)
+                navigateToInfo(viewModel.selectedManga.manga.name)
+            }) {
+            Text(stringResource(R.string.library_popupmenu_about))
+        }
 
-        DropdownMenuItem(onClick = {
-            expandedCategory = !expandedCategory
-            deleteDialog = false
-        }) {
+        DropdownMenuItem(
+            onClick = {
+                expandedCategory = !expandedCategory
+                deleteDialog = false
+            },
+        ) {
             Text(
                 stringResource(id = R.string.library_popupmenu_set_category),
                 modifier = Modifier.weight(1f)
@@ -106,20 +113,29 @@ fun LibraryDropUpMenu(
             viewModel.changeSelectedManga(false)
         }
 
-        MenuText(id = R.string.library_popupmenu_storage, onClick = {
-            viewModel.changeSelectedManga(false)
-            navigateToStorage(viewModel.selectedManga.manga.name)
-        })
+        DropdownMenuItem(
+            onClick = {
+                viewModel.changeSelectedManga(false)
+                navigateToStorage(viewModel.selectedManga.manga.name)
+            }) {
+            Text(stringResource(R.string.library_popupmenu_storage))
+        }
 
-        MenuText(id = R.string.library_popupmenu_statistic, onClick = {
-            viewModel.changeSelectedManga(false)
-            navigateToStats(viewModel.selectedManga.manga.name)
-        })
+        DropdownMenuItem(
+            onClick = {
+                viewModel.changeSelectedManga(false)
+                navigateToStats(viewModel.selectedManga.manga.name)
+            }) {
+            Text(stringResource(R.string.library_popupmenu_statistic))
+        }
 
-        MenuText(id = R.string.library_popupmenu_delete, onClick = {
-            deleteDialog = !deleteDialog
-            expandedCategory = false
-        })
+        DropdownMenuItem(
+            onClick = {
+                deleteDialog = !deleteDialog
+                expandedCategory = false
+            }) {
+            Text(stringResource(R.string.library_popupmenu_delete))
+        }
 
         CustomAnimatedItem(deleteDialog) {
             Row(
@@ -179,7 +195,11 @@ private fun ExpandedCategories(
     onItemChanged: (Long) -> Unit,
 ) {
     CustomAnimatedItem(visibility) {
-        categories.forEach { (key, value) -> MenuText(value) { onItemChanged(key) } }
+        categories.forEach { (key, value) ->
+            DropdownMenuItem(onClick = { onItemChanged(key) }) {
+                Text(text = value)
+            }
+        }
     }
 }
 

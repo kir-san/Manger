@@ -3,11 +3,11 @@ package com.san.kir.manger.ui.application_navigation.statistic
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavHostController
 import com.san.kir.core.compose_utils.DialogText
 import com.san.kir.core.compose_utils.LabelText
 import com.san.kir.core.compose_utils.SmallSpacer
-import com.san.kir.core.compose_utils.TopBarScreenContent
+import com.san.kir.core.compose_utils.ScreenContent
+import com.san.kir.core.compose_utils.topBar
 import com.san.kir.core.utils.bytesToMb
 import com.san.kir.core.utils.formatDouble
 import com.san.kir.data.models.base.Statistic
@@ -17,9 +17,11 @@ import com.san.kir.manger.utils.TimeFormat
 @Composable
 fun StatisticScreen(navigateUp: () -> Unit, item: Statistic) {
 
-    TopBarScreenContent(
-        navigateUp = navigateUp,
-        title = item.manga,
+    ScreenContent(
+        topBar = topBar(
+            navigationListener = navigateUp,
+            title = item.manga,
+        ),
         enableCollapsingBars = true,
     ) {
         LabelText(R.string.statistic_item_full_last_session)

@@ -19,7 +19,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.san.kir.background.services.MangaUpdaterService
-import com.san.kir.core.compose_utils.TopBarScreenPadding
+import com.san.kir.core.compose_utils.ScreenPadding
 import com.san.kir.data.models.base.Manga
 import com.san.kir.core.utils.longToast
 
@@ -32,20 +32,19 @@ fun ChaptersScreen(
     // Инициация данных во vm
     viewModel.setMangaUnic(mangaUnic)
 
+    val selectionItems by viewModel.selection.items.collectAsState()
     val selectionMode by viewModel.selection.isEnable.collectAsState()
     val manga by viewModel.manga.collectAsState()
 
     // Индикатор выполнения каких-либо действий
     var (action, actionSetter) = rememberSaveable { mutableStateOf(false) }
 
-    TopBarScreenPadding(
-        topBar = {
-            // В зависимости от состояния активации меняется AppBar
-            if (selectionMode) {
-                SelectionModeTopBar(viewModel, actionSetter)
-            } else {
-                DefaultTopBar(navigateUp, viewModel, actionSetter)
-            }
+    ScreenPadding(
+        // В зависимости от состояния активации меняется AppBar
+        topBar = if (selectionMode) {
+            selectionModeTopBar(viewModel, selectionItems, actionSetter)
+        } else {
+            defaultTopBar(navigateUp, manga, actionSetter)
         },
     ) { contentPadding ->
         Column(

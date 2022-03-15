@@ -28,10 +28,9 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.ScrollableTabs
-import com.san.kir.core.compose_utils.TopBarScreenPadding
-import com.san.kir.data.models.base.ShikimoriAccount
-import com.san.kir.features.shikimori.AuthActivity
+import com.san.kir.core.compose_utils.ScreenPadding
+import com.san.kir.core.compose_utils.topBar
+import com.san.kir.data.models.base.ShikiManga
 import com.san.kir.features.shikimori.R
 import com.san.kir.features.shikimori.ui.util.IconLoginOrNot
 import com.san.kir.features.shikimori.ui.util.MangaItemContent
@@ -51,15 +50,34 @@ fun ShikimoriScreen(
 
     val ctx = LocalContext.current
 
-    TopBarScreenPadding(navigateUp = navigateUp,
-        title = stringResource(R.string.site_name),
-        subtitle = textLoginOrNot(isLogin = authData.isLogin, nickname = authData.whoami.nickname),
-        actions = {
-            IconLoginOrNot(isLogin = authData.isLogin,
-                login = { AuthActivity.start(ctx) },
-                logout = viewModel::logout)
-        },
-        additionalPadding = 0.dp
+    ScreenPadding(
+        topBar = topBar(
+            navigationListener = navigateUp,
+            title = stringResource(R.string.site_name),
+            subtitle = textLoginOrNot(
+                isLogin = authData.isLogin,
+                nickname = authData.whoami.nickname
+            ),
+            actions = {
+                if (authData.isLogin)
+                    MenuIcon(icon = Icons.Default.Search, onClick = navigateToSearch)
+
+                ExpandedMenu {
+                    MenuText(R.string.update_data, onClick = viewModel::updateDataFromNetwork)
+                    MenuText(R.string.logout, onClick = viewModel::logout)
+                }
+            },
+            hasAction = hasAction.network || hasAction.checkBindOnline,
+        ),
+        additionalPadding = Dimensions.zero,
+        fab = {
+            FloatingActionButton(onClick = { }) {
+                if (hasAction.checkBindLocal)
+                    CircularProgressIndicator()
+                else
+                    Icon(Icons.Default.LocalLibrary, contentDescription = "local library")
+            }
+        }
     ) { contentPadding ->
         Column(
             modifier = Modifier
@@ -99,7 +117,6 @@ fun ShikimoriScreen(
 internal fun CatalogContent(
     catalogItems: Map<Boolean, List<ShikimoriAccount.AbstractMangaItem>>,
     navigateToItem: (id: Long) -> Unit,
-    isLogin: Boolean = true,
 ) {
     LazyColumn(
         modifier = Modifier

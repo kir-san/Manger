@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.AlertDialog
-import androidx.compose.material.DropdownMenu
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
@@ -35,10 +34,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.MenuText
-import com.san.kir.core.compose_utils.TopBarScreenList
+import com.san.kir.core.compose_utils.ExpandedMenu
+import com.san.kir.core.compose_utils.ScreenList
 import com.san.kir.core.compose_utils.rememberImage
 import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
+import com.san.kir.core.compose_utils.topBar
 import com.san.kir.core.utils.formatDouble
 import com.san.kir.data.models.base.Storage
 import com.san.kir.manger.R
@@ -54,19 +54,21 @@ fun StorageScreen(
     val viewState by viewModel.state.collectAsState()
     val allStorage = viewModel.allStorage.collectAsLazyPagingItems()
 
-    TopBarScreenList(
-        navigateUp = navigateUp,
-        title = stringResource(R.string.main_menu_storage) + " " +
-                if (viewState.storageSize > 0) {
-                    stringResource(
-                        R.string.main_menu_storage_size_mb,
-                        formatDouble(viewState.storageSize)
-                    )
-                } else "",
-        subtitle = LocalContext.current.resources.getQuantityString(
-            R.plurals.storage_subtitle,
-            viewState.storageCounts,
-            viewState.storageCounts
+    ScreenList(
+        topBar = topBar(
+            navigationListener = navigateUp,
+            title = stringResource(R.string.main_menu_storage) + " " +
+                    if (viewState.storageSize > 0) {
+                        stringResource(
+                            R.string.main_menu_storage_size_mb,
+                            formatDouble(viewState.storageSize)
+                        )
+                    } else "",
+            subtitle = LocalContext.current.resources.getQuantityString(
+                R.plurals.storage_subtitle,
+                viewState.storageCounts,
+                viewState.storageCounts
+            ),
         ),
         additionalPadding = Dimensions.smaller,
         enableCollapsingBars = true,
@@ -164,10 +166,10 @@ private fun ItemView(
             )
         }
 
-        DropdownMenu(
+        ExpandedMenu(
             expanded = showMenu,
-            onDismissRequest = { showMenu = false },
-            modifier = Modifier.fillMaxWidth()
+            onCloseMenu = { showMenu = false },
+            modifier = Modifier.fillMaxWidth(),
         ) {
             MenuText(id = R.string.storage_item_menu_full_delete) {
                 showDeleteDialog = true

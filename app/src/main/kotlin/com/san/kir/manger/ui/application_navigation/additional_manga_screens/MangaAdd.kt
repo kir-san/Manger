@@ -36,16 +36,19 @@ import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.san.kir.core.compose_utils.DialogText
-import com.san.kir.core.compose_utils.TopBarScreenContent
+import com.san.kir.core.compose_utils.ScreenContent
 import com.san.kir.manger.R
 import com.san.kir.background.services.MangaUpdaterService
+import com.san.kir.core.compose_utils.topBar
 import kotlinx.coroutines.delay
 
 @Composable
 fun MangaAddScreen(url: String, navigateUpAction: () -> Unit) {
-    TopBarScreenContent(
-        navigateUp = navigateUpAction,
-        title = stringResource(id = R.string.add_manga_screen_title)
+    ScreenContent(
+        topBar = topBar(
+            navigationListener = navigateUpAction,
+            title = stringResource(R.string.add_manga_screen_title)
+        ),
     ) {
         MangaAddContent(url, navigateUpAction)
     }

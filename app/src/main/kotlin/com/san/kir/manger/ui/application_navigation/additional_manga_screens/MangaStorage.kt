@@ -38,7 +38,8 @@ import com.san.kir.manger.R
 import com.san.kir.manger.utils.compose.StorageProgressBar
 import com.san.kir.manger.utils.extensions.format
 import com.san.kir.background.works.ChapterDeleteWorker
-import com.san.kir.core.compose_utils.TopBarScreenContent
+import com.san.kir.core.compose_utils.ScreenContent
+import com.san.kir.core.compose_utils.topBar
 
 @Composable
 fun MangaStorageScreen(
@@ -47,9 +48,11 @@ fun MangaStorageScreen(
 ) {
     val manga by viewModel.manga.collectAsState()
 
-    TopBarScreenContent(
-        navigateUp = navigateUp,
-        title = manga.name,
+    ScreenContent(
+        topBar = topBar(
+            navigationListener = navigateUp,
+            title = manga.name,
+        ),
     ) {
         MangaStorageContent(viewModel)
     }

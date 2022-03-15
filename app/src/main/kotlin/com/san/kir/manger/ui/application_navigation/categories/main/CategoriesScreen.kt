@@ -26,9 +26,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.MenuIcon
-import com.san.kir.core.compose_utils.TopBarScreenList
+import com.san.kir.core.compose_utils.ScreenList
 import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
+import com.san.kir.core.compose_utils.topBar
 import com.san.kir.data.models.base.Category
 import com.san.kir.manger.R
 
@@ -40,15 +40,16 @@ fun CategoriesScreen(
 ) {
     val cats by viewModel.categories.collectAsState(emptyList())
 
-    TopBarScreenList(
-        navigateUp = navigateUp,
-        title = stringResource(R.string.main_menu_category),
-        actions = {
-            MenuIcon(
-                icon = Icons.Default.Add,
-                onClick = { navigateToItem("") })
-
-        },
+    ScreenList(
+        topBar = topBar(
+            navigationListener = navigateUp,
+            title = stringResource(R.string.main_menu_category),
+            actions = {
+                MenuIcon(
+                    icon = Icons.Default.Add,
+                    onClick = { navigateToItem("") })
+            },
+        ),
         additionalPadding = Dimensions.smaller
     ) {
         itemsIndexed(items = cats, key = { _, c -> c.id }) { index, item ->

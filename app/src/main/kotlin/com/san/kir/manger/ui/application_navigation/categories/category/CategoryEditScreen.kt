@@ -3,9 +3,7 @@ package com.san.kir.manger.ui.application_navigation.categories.category
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.OutlinedButton
@@ -27,15 +25,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import com.san.kir.manger.R
-import com.san.kir.manger.utils.SortLibraryUtil
 import com.san.kir.core.compose_utils.CheckBoxText
 import com.san.kir.core.compose_utils.DefaultSpacer
-import com.san.kir.core.compose_utils.MenuIcon
 import com.san.kir.core.compose_utils.SmallSpacer
+import com.san.kir.core.compose_utils.ScreenContent
+import com.san.kir.core.compose_utils.topBar
+import com.san.kir.manger.R
+import com.san.kir.manger.utils.SortLibraryUtil
 import com.san.kir.manger.utils.compose.RadioGroup
-import com.san.kir.core.compose_utils.TopBarScreenContent
 import kotlin.math.roundToInt
 
 @Composable
@@ -49,29 +46,30 @@ fun CategoryEditScreen(
     var hasError by rememberSaveable { mutableStateOf(false) }
     var deleteDialog by rememberSaveable { mutableStateOf(false) }
 
-    TopBarScreenContent(
-        navigateUp = navigateUp,
-        title = stringResource(
-            if (viewState.hasCreatedNew) R.string.category_dialog_title_create
-            else R.string.category_dialog_title_edit
-        ),
-        actions = {
-            if (viewState.hasChanges and hasError.not())
-                MenuIcon(
-                    icon =
-                    if (viewState.hasCreatedNew) Icons.Default.Create
-                    else Icons.Default.Save,
-                ) {
-                    viewModel.save()
-                    viewModel.nullChanges()
-                }
-            // Удаление категории полностью
-            if (viewState.hasAll.not())
-                MenuIcon(icon = Icons.Default.Delete) {
-                    deleteDialog = true
-                }
-
-        }
+    ScreenContent(
+        topBar = topBar(
+            title = stringResource(
+                if (viewState.hasCreatedNew) R.string.category_dialog_title_create
+                else R.string.category_dialog_title_edit
+            ),
+            navigationListener = navigateUp,
+            actions = {
+                if (viewState.hasChanges and hasError.not())
+                    MenuIcon(
+                        icon =
+                        if (viewState.hasCreatedNew) Icons.Default.Create
+                        else Icons.Default.Save,
+                    ) {
+                        viewModel.save()
+                        viewModel.nullChanges()
+                    }
+                // Удаление категории полностью
+                if (viewState.hasAll.not())
+                    MenuIcon(icon = Icons.Default.Delete) {
+                        deleteDialog = true
+                    }
+            }
+        )
     ) {
         TextWithValidate(viewModel, hasError) { hasError = it }
 

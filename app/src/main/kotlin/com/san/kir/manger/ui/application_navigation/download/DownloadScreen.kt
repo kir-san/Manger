@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.BottomAppBar
-import androidx.compose.material.DropdownMenu
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
@@ -43,11 +42,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.insets.navigationBarsPadding
+import com.san.kir.core.compose_utils.ExpandedMenu
 import com.san.kir.core.compose_utils.FullWeightSpacer
-import com.san.kir.core.compose_utils.MenuText
-import com.san.kir.core.compose_utils.TopBarScreenPadding
+import com.san.kir.core.compose_utils.ScreenPadding
 import com.san.kir.core.compose_utils.rememberImage
 import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
+import com.san.kir.core.compose_utils.topBar
 import com.san.kir.core.download.DownloadService
 import com.san.kir.core.internet.NetworkState
 import com.san.kir.core.support.DownloadState
@@ -64,11 +64,15 @@ fun DownloadScreen(
     viewModel: DownloadViewModel = hiltViewModel(),
     context: Context = LocalContext.current,
 ) {
-    TopBarScreenPadding(
-        navigateUp = navigateUp,
-        title = stringResource(R.string.main_menu_downloader_count, viewModel.loadingCount),
-        subtitle = stringResource(
-            R.string.download_activity_subtitle, viewModel.stoppedCount, viewModel.completedCount
+    ScreenPadding(
+        topBar = topBar(
+            navigationListener = navigateUp,
+            title = stringResource(R.string.main_menu_downloader_count, viewModel.loadingCount),
+            subtitle = stringResource(
+                R.string.download_activity_subtitle,
+                viewModel.stoppedCount,
+                viewModel.completedCount
+            ),
         ),
         additionalPadding = 0.dp
     ) {
@@ -236,16 +240,14 @@ private fun ItemView(
         when (item.status) {
             DownloadState.PAUSED -> {
                 IconButton(onClick = {
-                    com.san.kir.core.download.DownloadService.start(ctx,
-                        item)
+                    DownloadService.start(ctx, item)
                 }) {
                     Icon(Icons.Default.Download, contentDescription = "download button")
                 }
             }
             DownloadState.QUEUED, DownloadState.LOADING -> {
                 IconButton(onClick = {
-                    com.san.kir.core.download.DownloadService.pause(ctx,
-                        item)
+                    DownloadService.pause(ctx, item)
                 }) {
                     Icon(Icons.Default.Close, contentDescription = "cancel download button")
                 }
@@ -262,25 +264,23 @@ fun ClearDownloadsMenu(
     changeExpand: (Boolean) -> Unit,
     viewModel: DownloadViewModel = hiltViewModel(),
 ) {
-    DropdownMenu(expanded = expanded, onDismissRequest = { changeExpand(false) }) {
-        Column {
-            MenuText(R.string.download_activity_option_submenu_clean_completed) {
-                viewModel.clearCompletedDownloads()
-                changeExpand(false)
-            }
-            MenuText(R.string.download_activity_option_submenu_clean_paused) {
-                viewModel.clearPausedDownloads()
-                changeExpand(false)
-            }
-            MenuText(R.string.download_activity_option_submenu_clean_error) {
-                viewModel.clearErrorDownloads()
-                changeExpand(false)
-            }
-            MenuText(R.string.download_activity_option_submenu_clean_all) {
-                viewModel.clearAllDownloads()
-                changeExpand(false)
-            }
-        }
+    ExpandedMenu(expanded = expanded, onCloseMenu = { changeExpand(false) }) {
+        MenuText(
+            id = R.string.download_activity_option_submenu_clean_completed,
+            onClick = viewModel::clearCompletedDownloads,
+        )
+        MenuText(
+            id = R.string.download_activity_option_submenu_clean_paused,
+            onClick = viewModel::clearPausedDownloads,
+        )
+        MenuText(
+            id = R.string.download_activity_option_submenu_clean_error,
+            onClick = viewModel::clearErrorDownloads,
+        )
+        MenuText(
+            id = R.string.download_activity_option_submenu_clean_all,
+            onClick = viewModel::clearAllDownloads,
+        )
     }
 }
 

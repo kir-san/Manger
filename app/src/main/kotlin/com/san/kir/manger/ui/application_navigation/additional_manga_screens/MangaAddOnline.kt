@@ -29,7 +29,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
-import com.san.kir.core.compose_utils.TopBarScreenContent
+import com.san.kir.core.compose_utils.ScreenContent
+import com.san.kir.core.compose_utils.topBar
 import com.san.kir.manger.R
 
 @Composable
@@ -37,9 +38,11 @@ fun MangaAddOnlineScreen(
     navigateUp: () -> Unit,
     navigateToNext: (String) -> Unit,
 ) {
-    TopBarScreenContent(
-        navigateUp = navigateUp,
-        title = stringResource(R.string.library_add_manga_title)
+    ScreenContent(
+        topBar = topBar(
+            navigationListener = navigateUp,
+            title = stringResource(R.string.library_add_manga_title)
+        ),
     ) {
         MangaAddOnlineContent(navigateUp, navigateToNext)
     }

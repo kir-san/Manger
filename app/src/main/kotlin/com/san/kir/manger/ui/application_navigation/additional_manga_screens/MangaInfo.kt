@@ -4,8 +4,6 @@ import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
@@ -24,7 +22,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.san.kir.core.compose_utils.DialogText
 import com.san.kir.core.compose_utils.ImageWithStatus
 import com.san.kir.core.compose_utils.LabelText
-import com.san.kir.core.compose_utils.TopBarScreenContent
+import com.san.kir.core.compose_utils.ScreenContent
+import com.san.kir.core.compose_utils.topBar
 import com.san.kir.core.utils.browse
 import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.manger.R
@@ -47,20 +46,21 @@ fun MangaInfoScreen(
         }
     }
 
-    TopBarScreenContent(
-        navigateUp = navigateUp,
-        title = stringResource(id = R.string.manga_info_dialog_title),
-        actions = {
-            AnimatedVisibility(visible = isAdded) {
-                IconButton(onClick = { navigateToAdd(vm.url) }) {
-                    Icon(
-                        Icons.Default.Add,
-                        contentDescription = "add manga",
+    ScreenContent(
+        topBar = topBar(
+            navigationListener = navigateUp,
+            title = stringResource(R.string.manga_info_dialog_title),
+            actions = {
+                AnimatedVisibility(visible = isAdded) {
+                    MenuIcon(
+                        icon = Icons.Default.Add,
                         tint = MaterialTheme.colors.onBackground
-                    )
+                    ) {
+                        navigateToAdd(vm.url)
+                    }
                 }
             }
-        }
+        ),
     ) {
         MangaInfoContent(vm, viewModel)
     }

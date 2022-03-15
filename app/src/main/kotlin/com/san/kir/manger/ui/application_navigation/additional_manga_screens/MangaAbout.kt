@@ -14,7 +14,8 @@ import com.san.kir.core.compose_utils.DialogText
 import com.san.kir.core.compose_utils.ImageWithStatus
 import com.san.kir.core.compose_utils.LabelText
 import com.san.kir.core.compose_utils.SmallSpacer
-import com.san.kir.core.compose_utils.TopBarScreenContent
+import com.san.kir.core.compose_utils.ScreenContent
+import com.san.kir.core.compose_utils.topBar
 import com.san.kir.core.utils.browse
 import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.core.utils.formatDouble
@@ -30,9 +31,11 @@ fun MangaAboutScreen(
     item: Manga,
     category: String,
 ) {
-    TopBarScreenContent(
-        navigateUp = navigateUp,
-        title = stringResource(id = R.string.manga_info_dialog_title),
+    ScreenContent(
+        topBar = topBar(
+            navigationListener = navigateUp,
+            title = stringResource(R.string.manga_info_dialog_title),
+        ),
     ) {
         MangaAboutContent(item, category)
     }

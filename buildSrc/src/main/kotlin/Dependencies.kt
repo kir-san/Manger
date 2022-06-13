@@ -69,12 +69,8 @@ object Dependencies {
             "androidx.vectordrawable:vectordrawable:${Versions.AndroidX.VECTORDRAWABLE}"
         const val CONSTRAINTLAYOUT =
             "androidx.constraintlayout:constraintlayout:${Versions.AndroidX.CONSTRAINTLAYOUT}"
-        const val VIEWPAGER2 =
-            "androidx.viewpager2:viewpager2:${Versions.AndroidX.VIEWPAGER2}"
         const val PAGING =
             "androidx.paging:paging-common-ktx:${Versions.AndroidX.PAGING}"
-        const val EXIF =
-            "androidx.exifinterface:exifinterface:${Versions.AndroidX.EXIF}"
     }
 
     const val INJECT =
@@ -82,6 +78,9 @@ object Dependencies {
 
     const val SUBSAMPLING =
         "com.davemorrissey.labs:subsampling-scale-image-view-androidx:${Versions.SUBSAMPLING}"
+
+    const val TIMBER =
+        "com.jakewharton.timber:timber:${Versions.TIMBER}"
 
 
     object Google {
@@ -102,6 +101,8 @@ object Dependencies {
                 "com.google.accompanist:accompanist-insets-ui:${Versions.Google.ACCOMPANIST}"
             const val NAVIGATION_ANIMATION =
                 "com.google.accompanist:accompanist-navigation-animation:${Versions.Google.ACCOMPANIST}"
+            const val SWIPE_REFRESH =
+                "com.google.accompanist:accompanist-swiperefresh:${Versions.Google.ACCOMPANIST}"
         }
 
         object Hilt {

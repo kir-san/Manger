@@ -5,7 +5,7 @@ import com.san.kir.core.support.DownloadState
 import com.san.kir.data.models.base.Category
 import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.models.base.Manga
-import com.san.kir.data.models.base.ShikiManga
+import com.san.kir.data.models.base.ShikiDbManga
 import com.san.kir.data.models.columns.DownloadColumn
 import com.san.kir.data.models.columns.MangaStatisticColumn
 import com.san.kir.data.models.extend.SimplifiedManga
@@ -448,10 +448,10 @@ internal val from38to39 = migrate {
         removeTmpTable()
     }
 
-    with(ShikiManga.Col) {
+    with(ShikiDbManga.Col) {
         query(
-            "CREATE TABLE IF NOT EXISTS `${ShikiManga.tableName}` (" +
-                    "$id INTEGER PRIMARY KEY NOT NULL, " +
+            "CREATE TABLE IF NOT EXISTS `${ShikiDbManga.tableName}` (" +
+                    "$targetId INTEGER PRIMARY KEY NOT NULL, " +
                     "$libMangaId INTEGER NOT NULL, " +
                     "$rate TEXT NOT NULL, " +
                     "$data TEXT NOT NULL)"

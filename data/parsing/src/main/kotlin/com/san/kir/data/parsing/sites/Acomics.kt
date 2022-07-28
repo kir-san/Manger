@@ -113,9 +113,9 @@ class Acomics(private val connectManager: ConnectManager) : SiteCatalogAlternati
         element.host = host
         element.catalogName = catalogName
 
-        element.name = elem.select(".catdata2 .title a").first().text()
+        element.name = elem.select(".catdata2 .title a").first()?.text() ?: ""
 
-        element.link = elem.select(".catdata2 .title a").first().attr("href")
+        element.link = elem.select(".catdata2 .title a").first()?.attr("href") ?: ""
         element.shotLink = element.link.split(catalogName).last()
 
         element.about = elem.select(".catdata2 .about").text()

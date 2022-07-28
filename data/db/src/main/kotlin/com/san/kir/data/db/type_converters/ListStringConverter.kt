@@ -2,7 +2,7 @@ package com.san.kir.data.db.type_converters
 
 import androidx.room.TypeConverter
 
-class ListStringConverter {
+internal class ListStringConverter {
     @TypeConverter
     fun listToString(list: List<String>): String {
         return list.toString().removeSurrounding("[", "]")

@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.san.kir.core.utils.coroutines.withIoContext
 import com.san.kir.core.utils.createDirs
-import com.san.kir.core.utils.log
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -25,6 +24,7 @@ import okio.buffer
 import okio.sink
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import timber.log.Timber
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -33,6 +33,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.resumeWithException
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 
 @Singleton
@@ -50,6 +51,10 @@ class ConnectManager @Inject constructor(context: Application) {
         OkHttpClient.Builder()
             .cache(defaultCache)
             .cookieJar(cookieJar)
+            .callTimeout(20_0000L, TimeUnit.MILLISECONDS)
+            .readTimeout(20_0000L, TimeUnit.MILLISECONDS)
+            .writeTimeout(20_0000L, TimeUnit.MILLISECONDS)
+            .retryOnConnectionFailure(true)
             .build()
     }
 
@@ -87,10 +92,10 @@ class ConnectManager @Inject constructor(context: Application) {
                 val toMultimap = responce.headers.toMultimap()
                 val timeOut = toMultimap[retryKey]?.first()?.toLong()
                 if (timeOut != null) {
-                    log("delay $timeOut seconds")
-                    delay(Duration.seconds(timeOut))
+                    Timber.v("delay $timeOut seconds")
+                    delay(timeOut.seconds)
                 } else {
-                    delay(Duration.seconds(10))
+                    delay(10.seconds)
                 }
             }
             else -> {
@@ -155,7 +160,8 @@ class ConnectManager @Inject constructor(context: Application) {
 
             file.createNewFile()
 
-            defaultClient.newCall(url.getRequest(cacheControl = noCacheControl))
+            defaultClient
+                .newCall(url.getRequest(cacheControl = noCacheControl))
                 .awaitDownload(file.sink().buffer(), onProgress, onFinish)
 
             file.length()
@@ -233,7 +239,7 @@ class ConnectManager @Inject constructor(context: Application) {
                                 sink.close()
                                 body.source().close()
 
-                                it.printStackTrace()
+                                Timber.v(it)
                                 continuation.resumeWithException(it)
                             }
                         }
@@ -291,7 +297,8 @@ fun String.getRequest(
         prepare
     }
 
-    log("getRequest for $temp")
+    Timber.v("getRequest for $temp")
+//    log("")
 
     return Request.Builder()
         .url(temp)

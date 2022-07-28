@@ -8,7 +8,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.san.kir.core.utils.coroutines.defaultLaunch
-import com.san.kir.core.utils.log
 import com.san.kir.data.db.dao.CategoryDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.models.base.Manga
@@ -20,6 +19,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import timber.log.Timber
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -44,7 +44,7 @@ class MangaEditViewModel @Inject constructor(
     init {
         snapshotFlow { mangaUnic }
             .flatMapLatest {
-                log(it)
+                Timber.v(it)
                 val manga = mangaDao.loadItemByName(it)
                 manga
             }

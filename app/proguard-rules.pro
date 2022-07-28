@@ -55,6 +55,8 @@
 
 -dontwarn com.squareup.okhttp.**
 
+-dontwarn org.codehaus.mojo.animal_sniffer.*
+
 -keeppackagenames org.jsoup.nodes
 -keep public class org.jsoup.** {
     public *;

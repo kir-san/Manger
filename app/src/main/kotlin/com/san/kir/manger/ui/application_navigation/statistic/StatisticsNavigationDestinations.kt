@@ -21,7 +21,7 @@ enum class StatisticNavTarget : NavTarget {
     },
 
     Statistic {
-        override val content = navTarget(route = "statistic_item", hasItem = true) {
+        override val content = navTarget(route = "statistic_item", hasItems = true) {
             val viewModel = onlyStatisticViewModel(stringElement ?: "")
 
             val statistic by viewModel.statistic.collectAsState()

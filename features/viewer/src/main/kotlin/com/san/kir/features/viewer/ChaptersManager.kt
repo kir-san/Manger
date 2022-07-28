@@ -1,7 +1,6 @@
 package com.san.kir.features.viewer
 
 import com.san.kir.core.utils.coroutines.withDefaultContext
-import com.san.kir.core.utils.log
 import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.StatisticDao
 import com.san.kir.data.models.base.Chapter
@@ -11,6 +10,7 @@ import com.san.kir.data.models.utils.ChapterComparator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import timber.log.Timber
 import javax.inject.Inject
 
 // класс для управления страницами и главами
@@ -139,8 +139,8 @@ internal class ChaptersManager @Inject constructor(
         when {
             pos < 1 -> p = 1 // если меньше единицы значение, то приравнять к еденице
             pos == currentState.pages.size - 2 -> { // если текущая позиция последняя
-                log("pos is $pos")
-                log("size is ${currentState.pages.size}")
+                Timber.v("pos is $pos")
+                Timber.v("size is ${currentState.pages.size}")
                 p = currentState.pages.size - 2
                 // Сделать главу прочитанной
                 chapter.isRead = true

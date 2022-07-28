@@ -20,7 +20,6 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.core.net.toUri
 import com.san.kir.core.utils.coroutines.defaultDispatcher
-import com.san.kir.core.utils.log
 import com.san.kir.data.db.CatalogDb.Factory
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.SiteDao
@@ -40,6 +39,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -234,7 +234,7 @@ class CatalogForOneSiteUpdaterService : Service() {
                                 }
                             }
 
-                            log("$counter / ${site.volume}")
+                            Timber.v("$counter / ${site.volume}")
                         }
                         .map { el ->
                             el.isAdded = mangaList.any { it.shortLink == el.shotLink }
@@ -244,7 +244,7 @@ class CatalogForOneSiteUpdaterService : Service() {
                     if (tempList.size >= site.volume - 10) break
                 }
 
-                log("update finish. elements getting ${tempList.size}")
+                Timber.v("update finish. elements getting ${tempList.size}")
 
                 dbFactory.create(site.name).apply {
                     dao.deleteAll()
@@ -252,22 +252,22 @@ class CatalogForOneSiteUpdaterService : Service() {
                     close()
                 }
 
-                log("save items in db")
+                Timber.v("save items in db")
 
                 siteDb?.oldVolume = counter
                 siteDao.update(siteDb)
 
-                log("save counter in db")
+                Timber.v("save counter in db")
 
                 sendPositiveBroadcast(site.name)
 
                 taskCounter = taskCounter - site.name
             } catch (e: Exception) {
-                log("error")
+                Timber.v("error")
                 e.printStackTrace()
                 isError = true
             } finally { //
-                log("finally")
+                Timber.v("finally")
             }
         }.join()
     }
@@ -276,7 +276,7 @@ class CatalogForOneSiteUpdaterService : Service() {
     override fun onDestroy() {
         super.onDestroy()
 
-        log("onDestroy")
+        Timber.v("onDestroy")
 
         job.cancel()
         stopForeground(false)

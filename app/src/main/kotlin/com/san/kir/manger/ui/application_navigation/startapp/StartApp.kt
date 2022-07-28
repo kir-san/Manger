@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -27,10 +28,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.insets.ui.Scaffold
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.san.kir.manger.R
+import timber.log.Timber
 
 @Composable
 fun StartAppScreen(navigateToItem: () -> Unit,) {
@@ -77,12 +78,14 @@ private fun PermissionPrepare(
     when {
         // permission is granted
         storagePermissionState.hasPermission -> {
+            Timber.v("hasPermission")
             action(true)
             viewModel.startApp()
             if (state == OperationState.SUCCESS) navigateToItem()
         }
 
         storagePermissionState.shouldShowRationale || !storagePermissionState.permissionRequested -> {
+            Timber.v("shouldShowRationale or permissionRequested")
             action(false)
             if (doNotShowRationale) {
                 Text(stringResource(R.string.main_permission_error))

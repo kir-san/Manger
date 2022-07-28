@@ -19,16 +19,15 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.ViewPager
-import com.san.kir.core.utils.log
-import com.san.kir.data.models.datastore.Viewer
+import com.san.kir.data.models.base.Settings
 import com.san.kir.features.viewer.databinding.MainBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 object MangaViewer {
     fun start(
@@ -78,7 +77,7 @@ internal class ViewerActivity : AppCompatActivity() {
         binding.pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
                 lifecycleScope.launch {
-                    log("onPageSelected with $position")
+                    Timber.v("onPageSelected with $position")
                     viewModel.chaptersManager.updatePagePosition(position)
                 }
             }
@@ -100,15 +99,15 @@ internal class ViewerActivity : AppCompatActivity() {
         super.onResume()
         // Загрузка настроек
         lifecycleScope.launchWhenResumed {
-            viewModel.store.data.collect { data: Viewer ->
+            viewModel.settingsRepository.viewer().collect { data: Settings.Viewer ->
                 requestedOrientation = when (data.orientation) {
-                    Viewer.Orientation.PORT -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                    Viewer.Orientation.LAND -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                    Viewer.Orientation.AUTO -> ActivityInfo.SCREEN_ORIENTATION_SENSOR
-                    Viewer.Orientation.PORT_REV -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
-                    Viewer.Orientation.LAND_REV -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
-                    Viewer.Orientation.AUTO_PORT -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
-                    Viewer.Orientation.AUTO_LAND -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+                    Settings.Viewer.Orientation.PORT -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                    Settings.Viewer.Orientation.LAND -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                    Settings.Viewer.Orientation.AUTO -> ActivityInfo.SCREEN_ORIENTATION_SENSOR
+                    Settings.Viewer.Orientation.PORT_REV -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
+                    Settings.Viewer.Orientation.LAND_REV -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
+                    Settings.Viewer.Orientation.AUTO_PORT -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
+                    Settings.Viewer.Orientation.AUTO_LAND -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
                     else -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
                 }
 
@@ -171,7 +170,7 @@ internal class ViewerActivity : AppCompatActivity() {
 
                     // установка страницы ViewPager
                     if (binding.pager.currentItem != state.pagePosition) {
-                        log("pagePosition is ${state.pagePosition}")
+                        Timber.v("pagePosition is ${state.pagePosition}")
                         binding.pager.currentItem =
                             if (state.pagePosition < 0) 0 else state.pagePosition
                     }

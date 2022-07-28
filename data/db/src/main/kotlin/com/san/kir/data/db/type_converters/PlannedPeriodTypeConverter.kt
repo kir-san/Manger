@@ -3,7 +3,7 @@ package com.san.kir.data.db.type_converters
 import androidx.room.TypeConverter
 import com.san.kir.core.support.PlannedPeriod
 
-class PlannedPeriodTypeConverter {
+internal class PlannedPeriodTypeConverter {
     @TypeConverter
     fun typeToInt(type: PlannedPeriod): Int = type.order
 

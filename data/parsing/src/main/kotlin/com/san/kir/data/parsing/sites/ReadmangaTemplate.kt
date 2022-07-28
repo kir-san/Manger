@@ -18,6 +18,7 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.util.regex.Pattern
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 
 abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
@@ -81,10 +82,11 @@ abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
             val status = doc.select("#mangaBox .leftContent .expandable .subject-meta p")
 
             // Статус выпуска
+            // TODO пересмотреть этот момент
             element.statusEdition = Status.COMPLETE
-            if (status.first().text().contains(Status.SINGLE, true))
+            if (status.first()?.text()?.contains(Status.SINGLE, true) == true)
                 element.statusEdition = Status.SINGLE
-            else if (status.first().text().contains(Status.NOT_COMPLETE, true))
+            else if (status.first()?.text()?.contains(Status.NOT_COMPLETE, true) == true)
                 element.statusEdition = Status.NOT_COMPLETE
 
             // Статус перевода
@@ -95,7 +97,7 @@ abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
 
             getFullElement(element)
         }.fold(onSuccess = { it },
-            onFailure = { null })
+               onFailure = { null })
     }
 
     override suspend fun getFullElement(element: SiteCatalogElement): SiteCatalogElement {
@@ -208,7 +210,7 @@ abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
         connectManager.getDocument(host + manga.shortLink)
             .select("div.leftContent .chapters-link")
             .select("tr")
-            .filter { it.select("a").text().isNotEmpty() }
+            .filterNot { it.select("a").text().isEmpty() }
             .map {
                 var name = it.select("a").text()
                 val pat = Pattern.compile("v.+").matcher(name)
@@ -217,7 +219,7 @@ abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
                 Chapter(
                     manga = manga.name,
                     name = name,
-                    date = it.select("td").last().text(),
+                    date = it.select("td").last()?.text() ?: "",
                     link = host + it.select("a").attr("href"),
                     path = "${manga.path}/$name"
                 )
@@ -231,7 +233,7 @@ abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
 
         val shortLink = getShortLink(item.link)
 
-        delay(Duration.seconds(1))
+        delay(1.seconds)
         val doc = connectManager.getDocument("$host$shortLink?mtr=1")
         // с помощью регулярных выражений ищу нужные данные
         val pat = Pattern.compile("rm_h.init.+").matcher(doc.body().html())

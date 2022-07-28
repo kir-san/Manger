@@ -3,11 +3,12 @@ package com.san.kir.manger.ui.application_navigation.accounts
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import com.san.kir.features.shikimori.ui.catalog_item.ShikiItemScreen
-import com.san.kir.features.shikimori.ui.catalog_item.ShikiItemViewModel
 import com.san.kir.features.shikimori.ui.local_item.LocalItemScreen
 import com.san.kir.features.shikimori.ui.local_item.LocalItemViewModel
+import com.san.kir.features.shikimori.ui.local_items.LocalItemsScreen
 import com.san.kir.features.shikimori.ui.main.ShikimoriScreen
+import com.san.kir.features.shikimori.ui.profile_item.ProfileItemScreen
+import com.san.kir.features.shikimori.ui.search.ShikiSearchScreen
 import com.san.kir.manger.ui.application_navigation.MainNavTarget
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
 import com.san.kir.manger.utils.compose.NavTarget
@@ -28,39 +29,66 @@ enum class AccountsNavTarget : NavTarget {
         override val content = navTarget(route = "shikimori") {
             ShikimoriScreen(hiltViewModel(),
                 ::navigateUp,
-                { navigate(ShikimoriItem, it) },
-                { navigate(LocalItem, it) }
+                navigateToShikiItem = { navigate(ProfileItem, it, -1L) },
+                navigateToLocalItems = { navigate(LocalItems) },
+                navigateToSearch = { navigate(Search) }
             )
         }
     },
-    ShikimoriItem {
-        override val content = navTarget(
-            route = "shikimori_item",
-            hasItem = true,
-            arguments = listOf(navLongArgument()),
-        ) {
-            val viewModel = hiltViewModel<ShikiItemViewModel>()
-            longElement?.let { viewModel.update(it) }
-
-            ShikiItemScreen(
-                viewModel,
-                ::navigateUp
-            ) { query -> navigate(CatalogsNavTarget.GlobalSearch, query) }
+    LocalItems {
+        override val content = navTarget(route = "library_items") {
+            LocalItemsScreen(
+                viewModel = hiltViewModel(),
+                navigateUp = ::navigateUp,
+                navigateToItem = { navigate(LocalItem, it) }
+            )
         }
     },
     LocalItem {
         override val content = navTarget(
             route = "local_item",
-            hasItem = true,
+            hasItems = true,
             arguments = listOf(navLongArgument()),
         ) {
             val viewModel = hiltViewModel<LocalItemViewModel>()
-            longElement?.let { viewModel.update(it) }
+            longElement?.let { viewModel.setId(it) }
 
             LocalItemScreen(
                 viewModel,
-                ::navigateUp
-            ) { query -> }
+                ::navigateUp,
+                navigateToSearch = { query -> navigate(Search, query) }
+            )
+        }
+    },
+    Search {
+        override val content = navTarget(
+            route = "shiki_search",
+            hasItems = true,
+        ) {
+            ShikiSearchScreen(
+                navigateUp = ::navigateUp,
+                navigateToItem = { mangaId -> navigate(ProfileItem, mangaId, -1L) },
+                searchText = stringElement ?: "",
+                viewModel = hiltViewModel(),
+            )
+        }
+    },
+    ProfileItem {
+        private val mangaId = "shiki_profile_item_manga_id"
+        private val rateId = "shiki_profile_item_rate_id"
+
+        override val content = navTarget(
+            route = "shiki_search_item",
+            hasItems = true,
+            arguments = listOf(navLongArgument(mangaId), navLongArgument(rateId))
+        ) {
+            ProfileItemScreen(
+                navigateUp = ::navigateUp,
+                navigateToSearch = { query -> navigate(CatalogsNavTarget.GlobalSearch, query) },
+                mangaId = longElement(mangaId) ?: -1L,
+                rateId = longElement(rateId) ?: -1L,
+                viewModel = hiltViewModel(),
+            )
         }
     };
 }

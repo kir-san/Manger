@@ -7,6 +7,7 @@ import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.MainMenuDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.PlannedDao
+import com.san.kir.data.db.dao.SettingsDao
 import com.san.kir.data.db.dao.ShikimoriDao
 import com.san.kir.data.db.dao.SiteDao
 import com.san.kir.data.db.dao.StatisticDao
@@ -70,5 +71,10 @@ object DataModule {
     @Provides
     fun provideShikimoriDao(database: RoomDB): ShikimoriDao {
         return database.shikimoriDao
+    }
+
+    @Provides
+    fun provideSettingsDao(database: RoomDB): SettingsDao {
+        return database.settingsDao
     }
 }

@@ -100,6 +100,7 @@ class MangaStorageViewModel @AssistedInject constructor(
                 ChapterDeleteWorker.addTask<AllChapterDelete>(ctx, manga.value)
             DeleteStatus.Read ->
                 ChapterDeleteWorker.addTask<ReadChapterDelete>(ctx, manga.value)
+            else -> {}
         }
     }
 

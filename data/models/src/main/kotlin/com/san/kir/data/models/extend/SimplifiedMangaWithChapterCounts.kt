@@ -2,9 +2,9 @@ package com.san.kir.data.models.extend
 
 import androidx.room.ColumnInfo
 import androidx.room.DatabaseView
-import com.san.kir.data.models.base.ShikimoriAccount
 import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.models.base.Manga
+import com.san.kir.data.models.base.ShikimoriMangaItem
 
 @DatabaseView(
     viewName = SimplifiedMangaWithChapterCounts.viewName,
@@ -34,7 +34,7 @@ data class SimplifiedMangaWithChapterCounts(
     @ColumnInfo(name = Manga.Col.alternativeSort) val sort: Boolean = false,
     @ColumnInfo(name = Col.readChapters) override val read: Long = 0,
     @ColumnInfo(name = Col.allChapters) override val all: Long = 0,
-) : ShikimoriAccount.AbstractMangaItem {
+) : ShikimoriMangaItem {
 
     companion object {
         const val viewName = "libarary_manga"

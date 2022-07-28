@@ -1,39 +1,17 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
+
 plugins {
-    id(Plugins.ANDROID_LIBRARY)
-    id(Plugins.KOTLIN_ANDROID)
-    id(Plugins.KSP) version Versions.Kotlin.KSP
-    id(Plugins.PARCELIZE)
+    id("base.library")
+    alias(libs.plugins.kotlin.ksp)
+    id(Plugins.parcelize)
 }
 
 android {
-    compileSdk = Versions.App.COMPILE_SDK
-
     defaultConfig {
-        minSdk = Versions.App.MIN_SDK
-        targetSdk = Versions.App.TARGET_SDK
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
-
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
     }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro")
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility = Versions.JAVA
-        targetCompatibility = Versions.JAVA
-    }
-
-    prepareKotlinOptions()
 }
 
 dependencies {
@@ -42,22 +20,14 @@ dependencies {
     implementation(project(Modules.Core.utils))
     implementation(project(Modules.Core.support))
 
-    Dependencies.Google.Hilt.apply {
-        implementation(HILT_ANDROID)
-    }
+    implementation(libs.hilt.android)
 
-    Dependencies.AndroidX.Room.apply {
-        ksp(ROOM_COMPILER)
-        implementation(ROOM_RUNTIME)
-        implementation(ROOM_KTX)
-        implementation(ROOM_PAGING)
-    }
+    ksp(libs.room.compiler)
+    api(libs.room.runtime)
+    implementation(libs.bundles.room)
 
-    Dependencies.AndroidX.apply {
-        implementation(PAGING)
-    }
+    implementation(libs.paging)
 
-    Dependencies.ForInternet.apply {
-        implementation(GSON)
-    }
+    implementation(libs.gson)
+    implementation(libs.timber)
 }

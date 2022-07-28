@@ -8,19 +8,13 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.Operation
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import com.san.kir.data.db.dao.MainMenuDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.PlannedDao
 import com.san.kir.data.db.dao.SiteDao
 import com.san.kir.data.db.dao.StatisticDao
-import com.san.kir.data.models.base.Statistic
 import com.san.kir.data.models.base.Site
-import com.san.kir.data.models.datastore.Viewer
+import com.san.kir.data.models.base.Statistic
 import com.san.kir.data.parsing.SiteCatalogsManager
-import com.san.kir.data.store.ChaptersStore
-import com.san.kir.data.store.DownloadStore
-import com.san.kir.data.store.MainStore
-import com.san.kir.data.store.ViewerStore
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first
@@ -29,16 +23,11 @@ import kotlinx.coroutines.flow.first
 class FirstInitAppWorker @AssistedInject constructor(
     @Assisted private val ctx: Context,
     @Assisted params: WorkerParameters,
-    private val mainMenuDao: MainMenuDao,
     private val statisticDao: StatisticDao,
     private val mangaDao: MangaDao,
     private val plannedDao: PlannedDao,
     private val siteDao: SiteDao,
     private val siteCatalogsManager: SiteCatalogsManager,
-    private val chapterStore: ChaptersStore,
-    private val mainStore: MainStore,
-    private val downloadStore: DownloadStore,
-    private val viewerStore: ViewerStore,
 ) : CoroutineWorker(ctx, params) {
 
     override suspend fun doWork(): Result {
@@ -46,7 +35,6 @@ class FirstInitAppWorker @AssistedInject constructor(
             insertMangaIntoStatistic()
             restoreSchedule()
             checkSiteCatalogs()
-            setDefaultValueForStore()
         }.onFailure { return Result.retry() }
         return Result.success()
     }
@@ -104,24 +92,6 @@ class FirstInitAppWorker @AssistedInject constructor(
                 )
             }
         }
-    }
-
-    private suspend fun setDefaultValueForStore() {
-        chapterStore.setFilter(com.san.kir.core.support.ChapterFilter.ALL_READ_ASC.name)
-        chapterStore.setIndividualFilter(true)
-        chapterStore.setTitleVisibility(true)
-
-        mainStore.setShowCategory(true)
-        mainStore.setTheme(true)
-
-        downloadStore.setConcurrent(true)
-        downloadStore.setRetry(false)
-        downloadStore.setWifi(false)
-
-        viewerStore.setOrientation(Viewer.Orientation.AUTO_LAND)
-        viewerStore.setCutOut(true)
-        viewerStore.setControl(taps = false, swipes = true, keys = false)
-        viewerStore.setWithoutSaveFiles(false)
     }
 
     companion object {

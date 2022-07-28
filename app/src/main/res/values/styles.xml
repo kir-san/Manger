@@ -10,15 +10,8 @@
         <item name="windowSplashScreenIconBackgroundColor">@color/transparent_dark2</item>
     </style>
 
-    <style name="AppTheme.Viewer" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:windowTranslucentNavigation">true</item>
-        <item name="android:navigationBarColor" tools:targetApi="lollipop">@color/transparent_dark</item>
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/transparent_dark</item>
-    </style>
-
     <style name="MyTheme.Viewer.ActionBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="elevation" tools:targetApi="lollipop">0dp</item>
+        <item name="elevation" >0dp</item>
         <item name="background">@color/transparent_dark</item>
     </style>
 

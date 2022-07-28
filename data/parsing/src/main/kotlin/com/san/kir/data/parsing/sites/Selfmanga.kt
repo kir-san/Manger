@@ -19,8 +19,9 @@ class Selfmanga(private val connectManager: ConnectManager) : ReadmangaTemplate(
         if (!isInit) {
             val doc = connectManager.getDocument(host)
             doc.select(".rightContent .rightBlock h5")
-                    .filter { it.text() == "У нас сейчас" }
-                    .forEach { volume = it.parent().select("li b").first().text().toInt() }
+                .filterNot { it.text() != "У нас сейчас" }
+                // TODO пересмотреть этот момент
+                .forEach { volume = it.parent()?.select("li b")?.first()?.text()?.toInt()!! }
             isInit = true
         }
         return this

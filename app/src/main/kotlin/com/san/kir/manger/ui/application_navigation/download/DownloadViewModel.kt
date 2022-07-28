@@ -6,17 +6,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.san.kir.core.download.DownloadService
+import com.san.kir.core.internet.CellularNetwork
+import com.san.kir.core.internet.NetworkState
+import com.san.kir.core.internet.WifiNetwork
 import com.san.kir.core.support.DownloadState
 import com.san.kir.core.utils.coroutines.defaultLaunch
 import com.san.kir.core.utils.coroutines.withMainContext
 import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.models.base.Chapter
-import com.san.kir.data.store.DownloadStore
-import com.san.kir.core.download.DownloadService
-import com.san.kir.core.internet.CellularNetwork
-import com.san.kir.core.internet.NetworkState
-import com.san.kir.core.internet.WifiNetwork
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
@@ -25,8 +24,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
-import kotlin.time.Duration
-import kotlin.time.ExperimentalTime
+import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class DownloadViewModel @Inject constructor(
@@ -35,7 +33,7 @@ class DownloadViewModel @Inject constructor(
     private val mangaDao: MangaDao,
     private val cellularNetwork: CellularNetwork,
     private val wifiNetwork: WifiNetwork,
-    download: DownloadStore,
+    settingsRepository: SettingsRepository,
 ) : ViewModel() {
 
     var items by mutableStateOf(listOf<Chapter>())
@@ -89,7 +87,11 @@ class DownloadViewModel @Inject constructor(
             }
             .launchIn(viewModelScope)
 
-        combine(cellularNetwork.state, wifiNetwork.state, download.data) { cell, wifi, data ->
+        combine(
+            cellularNetwork.state,
+            wifiNetwork.state,
+            settingsRepository.download()
+        ) { cell, wifi, data ->
             if (data.wifi) {
                 if (wifi) {
                     NetworkState.OK
@@ -148,10 +150,9 @@ class DownloadViewModel @Inject constructor(
 
     fun manga(item: Chapter) = mangaDao.loadItemByName(item.manga).filterNotNull()
 
-    @OptIn(ExperimentalTime::class)
     fun remove(item: Chapter) = viewModelScope.defaultLaunch {
         DownloadService.pause(ctx, item)
-        delay(Duration.Companion.seconds(1))
+        delay(1.seconds)
         item.status = DownloadState.UNKNOWN
         chapterDao.update(item)
     }

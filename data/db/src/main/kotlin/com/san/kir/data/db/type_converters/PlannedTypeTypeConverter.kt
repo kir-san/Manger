@@ -3,7 +3,7 @@ package com.san.kir.data.db.type_converters
 import androidx.room.TypeConverter
 import com.san.kir.core.support.PlannedType
 
-class PlannedTypeTypeConverter {
+internal class PlannedTypeTypeConverter {
     @TypeConverter
     fun typeToInt(type: PlannedType): Int = type.order
 

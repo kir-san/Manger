@@ -44,7 +44,7 @@ import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.models.base.Manga
 import com.san.kir.features.viewer.MangaViewer
 
-@OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun LazyItemScope.ItemContent(
     manga: Manga,

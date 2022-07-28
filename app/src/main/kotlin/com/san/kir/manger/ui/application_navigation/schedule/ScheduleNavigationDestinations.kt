@@ -22,7 +22,7 @@ enum class ScheduleNavTarget : NavTarget {
     Schedule {
         override val content = navTarget(
             route = "schedule_item",
-            hasItem = true,
+            hasItems = true,
             arguments = listOf(navLongArgument())
         ) {
             val viewModel = plannedTaskViewModel(longElement ?: -1L)

@@ -2,28 +2,31 @@ package com.san.kir.data.db.type_converters
 
 import androidx.room.TypeConverter
 import com.google.gson.Gson
-import com.san.kir.data.models.base.ShikimoriAccount
+import com.san.kir.data.models.base.ShikimoriManga
+import com.san.kir.data.models.base.ShikimoriRate
 
-class ShikimoriRateConverter {
+private val gson = Gson()
+
+internal class ShikimoriRateConverter {
     @TypeConverter
-    fun rateToString(state: ShikimoriAccount.Rate): String {
-        return Gson().toJson(state)
+    fun rateToString(state: ShikimoriRate): String {
+        return gson.toJson(state)
     }
 
     @TypeConverter
-    fun stringToRate(json: String): ShikimoriAccount.Rate {
-        return Gson().fromJson(json, ShikimoriAccount.Rate::class.java)
+    fun stringToRate(json: String): ShikimoriRate {
+        return gson.fromJson(json, ShikimoriRate::class.java)
     }
 }
 
-class ShikimoriMangaConverter {
+internal class ShikimoriMangaConverter {
     @TypeConverter
-    fun rateToString(state: ShikimoriAccount.Manga): String {
-        return Gson().toJson(state)
+    fun rateToString(state: ShikimoriManga): String {
+        return gson.toJson(state)
     }
 
     @TypeConverter
-    fun stringToRate(json: String): ShikimoriAccount.Manga {
-        return Gson().fromJson(json, ShikimoriAccount.Manga::class.java)
+    fun stringToRate(json: String): ShikimoriManga {
+        return gson.fromJson(json, ShikimoriManga::class.java)
     }
 }

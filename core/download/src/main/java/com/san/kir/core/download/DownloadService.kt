@@ -20,11 +20,11 @@ import com.san.kir.core.utils.ID
 import com.san.kir.core.utils.bytesToMb
 import com.san.kir.core.utils.formatDouble
 import com.san.kir.core.utils.intentFor
-import com.san.kir.core.utils.log
 import com.san.kir.core.utils.startService
 import com.san.kir.data.models.base.Chapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
+import timber.log.Timber
 import javax.inject.Inject
 
 @SuppressLint("UnspecifiedImmutableFlag")
@@ -64,7 +64,7 @@ class DownloadService : LifecycleService(), DownloadListener {
     lateinit var downloadManager: ChapterLoader
 
     @Inject
-    lateinit var downloadStore: com.san.kir.data.store.DownloadStore
+    lateinit var settingsRepository: SettingsRepository
 
     @Inject
     lateinit var wifiNetwork: WifiNetwork
@@ -111,7 +111,7 @@ class DownloadService : LifecycleService(), DownloadListener {
 
         lifecycleScope.launchWhenCreated {
             combine(
-                downloadStore.data,
+                settingsRepository.download(),
                 wifiNetwork.state
             ) { data, wifi ->
                 downloadManager.setConcurrentPages(if (data.concurrent) 4 else 1)
@@ -193,7 +193,7 @@ class DownloadService : LifecycleService(), DownloadListener {
     }
 
     override fun onQueued(item: Chapter) {
-        log("onQueued item = $item")
+        Timber.v("onQueued item = $item")
         totalCount++
         queueCount++
         if (queueCount == 1) {
@@ -202,12 +202,12 @@ class DownloadService : LifecycleService(), DownloadListener {
     }
 
     override fun onProgress(item: Chapter) {
-        log("onProgress item = $item")
+        Timber.v("onProgress item = $item")
         sendProgressNotification(item)
     }
 
     override fun onPaused(item: Chapter) {
-        log("onPaused item = $item")
+        Timber.v("onPaused item = $item")
         queueCount--
         totalCount--
         if (queueCount == 0)

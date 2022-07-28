@@ -1,72 +1,34 @@
 plugins {
-    id(Plugins.ANDROID_LIBRARY)
-    id(Plugins.KOTLIN_ANDROID)
-    kotlin(Plugins.KAPT)
-    id(Plugins.HILT_ANDROID)
+    id("compose.library")
+    id(Plugins.kapt)
+    id(Plugins.hilt)
 }
-
-androidComposeLibraryConfig()
 
 dependencies {
     implementation(project(Modules.Core.utils))
     implementation(project(Modules.Data.models))
-    implementation(project(Modules.Data.store))
     implementation(project(Modules.Data.db))
     implementation(project(Modules.Core.composeUtils))
     implementation(project(Modules.Core.support))
+    implementation(project(Modules.Core.internet))
 
-    implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
+    implementation(libs.okhttp.loging)
 
-    Dependencies.AndroidX.apply {
-        implementation(CORE)
-        implementation(ACTIVITY)
-        implementation(APPCOMPAT)
-    }
+    implementation(libs.core)
+    implementation(libs.activity)
+    implementation(libs.appcompat)
 
-    Dependencies.Google.apply {
-        implementation(MATERIAL)
-    }
+    implementation(libs.material)
 
-    Dependencies.Compose.apply {
-        implementation(UI)
-        implementation(UI_TOOLING)
-        implementation(UI_TOOLING_PREVIEW)
-        implementation(RUNTIME)
-        implementation(COMPILER)
-        implementation(ANIMATION)
-        implementation(FOUNDATION)
-        implementation(FOUNDATION_LAYOUT)
-        implementation(MATERIAL)
-        implementation(MATERIAL_ICONS_CORE)
-        implementation(MATERIAL_ICONS_EXTENDED)
+    implementation(libs.bundles.retrofit)
 
-        implementation(HILT_NAVIGATION)
-    }
+    implementation(libs.lifecycle.runtime)
+    implementation(libs.lifecycle.common)
+    implementation(libs.lifecycle.viewmodel)
 
-    Dependencies.Google.Accompanist.apply {
-        implementation(PAGER)
-        implementation(PAGER_INDICATORS)
-        implementation(INSETS)
-        implementation(INSETS_UI)
-    }
+    implementation(libs.compose.hilt.navigation)
+    implementation(libs.hilt.android)
+    kapt(libs.bundles.hiltCompilers)
 
-    Dependencies.ForInternet.apply {
-        implementation(RETROFIT)
-        implementation(RETROFIT_GSON)
-    }
-
-    Dependencies.AndroidX.Lifecycle.apply {
-        implementation(LIFECYCLE_RUNTIME)
-        implementation(LIFECYCLE_COMMON)
-        implementation(LIFECYCLE_VIEWMODEL)
-    }
-
-    Dependencies.Google.Hilt.apply {
-        implementation(HILT_ANDROID)
-        kapt(HILT_COMPILER)
-    }
-
-    Dependencies.AndroidX.Hilt.apply {
-        kapt(HILT_COMPILER)
-    }
+    implementation(libs.timber)
 }

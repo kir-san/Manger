@@ -21,7 +21,7 @@ enum class StorageNavTarget : NavTarget {
     },
 
     Storage {
-        override val content = navTarget(route = "storage_item", hasItem = true) {
+        override val content = navTarget(route = "storage_item", hasItems = true) {
             val viewModel = mangaStorageViewModel(stringElement ?: "")
 
             MangaStorageScreen(navigateUp = ::navigateUp, viewModel)

@@ -10,15 +10,16 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.san.kir.core.support.CATEGORY_ALL
+import com.san.kir.core.support.ChapterFilter
 import com.san.kir.core.support.DIR
 import com.san.kir.core.support.MainMenuType
 import com.san.kir.core.utils.getFullPath
-import com.san.kir.core.utils.log
 import com.san.kir.data.db.dao.CategoryDao
 import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.MainMenuDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.PlannedDao
+import com.san.kir.data.db.dao.SettingsDao
 import com.san.kir.data.db.dao.ShikimoriDao
 import com.san.kir.data.db.dao.SiteDao
 import com.san.kir.data.db.dao.StatisticDao
@@ -39,7 +40,8 @@ import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.models.base.MainMenuItem
 import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.PlannedTask
-import com.san.kir.data.models.base.ShikiManga
+import com.san.kir.data.models.base.Settings
+import com.san.kir.data.models.base.ShikiDbManga
 import com.san.kir.data.models.base.Site
 import com.san.kir.data.models.base.Statistic
 import com.san.kir.data.models.base.Storage
@@ -47,6 +49,7 @@ import com.san.kir.data.models.extend.MiniManga
 import com.san.kir.data.models.extend.PlannedTaskExt
 import com.san.kir.data.models.extend.SimplifiedManga
 import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
+import timber.log.Timber
 
 @Database(
     entities =
@@ -59,7 +62,8 @@ import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
         (MainMenuItem::class),
         (PlannedTask::class),
         (Statistic::class),
-        (ShikiManga::class),
+        (ShikiDbManga::class),
+        (Settings::class)
     ],
     version = RoomDB.VERSION,
     views = [
@@ -72,6 +76,7 @@ import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
         AutoMigration(from = 41, to = 42), // SimplifiedManga add categoryId
         AutoMigration(from = 43, to = 44), // add view PlannedTaskExt
         AutoMigration(from = 44, to = 45), // add view MiniManga
+        AutoMigration(from = 46, to = 47), // add table Settings
     ]
 )
 @TypeConverters(
@@ -88,7 +93,6 @@ import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
 )
 abstract class RoomDB : RoomDatabase() {
     abstract val siteDao: SiteDao
-
     abstract val mangaDao: MangaDao
     abstract val chapterDao: ChapterDao
     abstract val plannedDao: PlannedDao
@@ -97,10 +101,11 @@ abstract class RoomDB : RoomDatabase() {
     abstract val mainMenuDao: MainMenuDao
     abstract val statisticDao: StatisticDao
     abstract val shikimoriDao: ShikimoriDao
+    abstract val settingsDao: SettingsDao
 
     companion object {
         const val NAME = "${DIR.PROFILE}/profile.db"
-        const val VERSION = 46
+        const val VERSION = 47
 
         private lateinit var sDb: RoomDB
 
@@ -145,13 +150,13 @@ class Callback(private val context: Context) : RoomDatabase.Callback() {
     override fun onCreate(db: SupportSQLiteDatabase) {
         super.onCreate(db)
 
-        log("db create")
+        Timber.v("db create")
 
         db.addCategoryAll()
-        log("category ALL was added to db")
+        Timber.v("category ALL was added to db")
 
         db.addMenuItems(context)
-        log("menuitems was added to db")
+        Timber.v("menuitems was added to db")
 
     }
 
@@ -185,4 +190,44 @@ class Callback(private val context: Context) : RoomDatabase.Callback() {
                 insert("mainmenuitems", OnConflictStrategy.REPLACE, item)
             }
     }
+
+    override fun onOpen(db: SupportSQLiteDatabase) {
+        super.onOpen(db)
+
+        val result = db.query("SELECT id from ${Settings.tableName}")
+        if (result.count == 0) {
+            db.insert(Settings.tableName, OnConflictStrategy.REPLACE, defaultSettings())
+        }
+    }
+
+    private fun defaultSettings() = ContentValues().apply {
+        put(Settings.Col.id, 1)
+        put(Settings.Col.isIndividual, true)
+        put(Settings.Col.isTitle, true)
+        put(Settings.Col.filterStatus, ChapterFilter.ALL_READ_ASC.name)
+        put(Settings.Col.concurrent, true)
+        put(Settings.Col.retry, false)
+        put(Settings.Col.wifi, false)
+        put(Settings.Col.isFirstLaunch, true)
+        put(Settings.Col.theme, true)
+        put(Settings.Col.isShowCategory, true)
+        put(Settings.Col.editMenu, false)
+        put(Settings.Col.orientation, Settings.Viewer.Orientation.AUTO_LAND.name)
+        put(Settings.Col.cutOut, true)
+        put(Settings.Col.withoutSaveFiles, false)
+        put(Settings.Col.isLogin, false)
+        put(Settings.Col.taps, false)
+        put(Settings.Col.swipes, true)
+        put(Settings.Col.keys, false)
+        put(Settings.Col.accessToken, "")
+        put(Settings.Col.tokenType, "")
+        put(Settings.Col.expiresIn, 0L)
+        put(Settings.Col.refreshToken, "")
+        put(Settings.Col.scope, "")
+        put(Settings.Col.createdAt, 0L)
+        put(Settings.Col.shikimoriWhoamiId, 0)
+        put(Settings.Col.nickname, "")
+        put(Settings.Col.avatar, "")
+    }
+
 }

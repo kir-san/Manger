@@ -30,7 +30,6 @@ import com.san.kir.manger.R
 import com.san.kir.manger.ui.SuppotMangaViewModel
 import com.san.kir.manger.utils.extensions.listStrToString
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MangaInfoScreen(
     navigateUp: () -> Unit,
@@ -38,13 +37,8 @@ fun MangaInfoScreen(
     vm: SiteCatalogItemViewModel,
     viewModel: SuppotMangaViewModel = hiltViewModel(),
 ) {
+    var isUpdate by remember { mutableStateOf(false) }
     var isAdded by remember { mutableStateOf(false) }
-
-    LaunchedEffect(vm.item) {
-        isAdded = withDefaultContext {
-            viewModel.isContainManga(vm.item).not()
-        }
-    }
 
     ScreenContent(
         topBar = topBar(
@@ -59,24 +53,36 @@ fun MangaInfoScreen(
                         navigateToAdd(vm.url)
                     }
                 }
-            }
+            },
+            hasAction = isUpdate
         ),
     ) {
         MangaInfoContent(vm, viewModel)
     }
+
+    LaunchedEffect(vm.item) {
+        isAdded = withDefaultContext {
+            viewModel.isContainManga(vm.item).not()
+        }
+    }
+
+    LaunchedEffect(true) {
+        kotlin.runCatching {
+            isUpdate = true
+            vm.item = viewModel.fullElement(vm.item)
+        }.fold(
+            onSuccess = { isUpdate = false },
+            onFailure = {}
+        )
+    }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun MangaInfoContent(
     vm: SiteCatalogItemViewModel,
     viewModel: SuppotMangaViewModel,
     ctx: Context = LocalContext.current,
 ) {
-    var isUpdate by remember { mutableStateOf(false) }
-
-    if (isUpdate) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-
     LabelText(R.string.manga_info_dialog_name)
     DialogText(vm.item.name)
 
@@ -105,15 +111,4 @@ private fun MangaInfoContent(
     DialogText(vm.item.about)
 
     LabelText(R.string.manga_info_dialog_logo)
-    ImageWithStatus(vm.item.logo)
-
-    LaunchedEffect(true) {
-        kotlin.runCatching {
-            isUpdate = true
-            vm.item = viewModel.fullElement(vm.item)
-        }.fold(
-            onSuccess = { isUpdate = false },
-            onFailure = {}
-        )
-    }
-}
+    ImageWithStatus(vm.item.logo)}

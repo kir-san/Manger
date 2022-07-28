@@ -3,7 +3,6 @@ package com.san.kir.data.parsing.sites
 import com.google.gson.GsonBuilder
 import com.san.kir.core.internet.ConnectManager
 import com.san.kir.core.internet.postRequest
-import com.san.kir.core.utils.log
 import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.models.base.DownloadItem
 import com.san.kir.data.models.base.Manga
@@ -16,6 +15,8 @@ import okhttp3.FormBody
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
+import org.jsoup.select.NodeFilter
+import timber.log.Timber
 
 class ComX(private val connectManager: ConnectManager) : SiteCatalogClassic() {
     override val name: String = "COM-X.LIFE"
@@ -38,8 +39,9 @@ class ComX(private val connectManager: ConnectManager) : SiteCatalogClassic() {
                 val next = docLocal.select(".bnnavi > .nextprev > a")
                 val check = next.select(".pnext")
 
+                // TODO пересмотреть этот момент
                 if (check.isNotEmpty())
-                    docLocal = getDocument(next.last().attr("href"))
+                    docLocal = getDocument(next.last()!!.attr("href"))
 
                 return check.isNotEmpty()
             }
@@ -94,10 +96,10 @@ class ComX(private val connectManager: ConnectManager) : SiteCatalogClassic() {
 
         getFullElement(element)
     }.fold(onSuccess = { it },
-        onFailure = {
-            it.printStackTrace()
-            null
-        })
+           onFailure = {
+               it.printStackTrace()
+               null
+           })
 
     override suspend fun getFullElement(element: SiteCatalogElement): SiteCatalogElement {
         val doc = getDocument(element.link).select("#dle-content .fullstory")
@@ -112,7 +114,7 @@ class ComX(private val connectManager: ConnectManager) : SiteCatalogClassic() {
         }
 
         element.volume =
-            doc.select("ul.comix-list > li > i").first().text().removePrefix("#").toInt()
+            doc.select("ul.comix-list > li > i").first()?.text()?.removePrefix("#")?.toInt() ?: 0
 
         element.isFull = true
 
@@ -160,8 +162,9 @@ class ComX(private val connectManager: ConnectManager) : SiteCatalogClassic() {
             val next = docLocal.select(".bnnavi > .nextprev > a")
             val check = next.select(".pnext")
 
+            // TODO пересмотреть этот момент
             if (check.isNotEmpty())
-                docLocal = getDocument(next.last().attr("href"))
+                docLocal = getDocument(next.last()!!.attr("href"))
 
             return check.isNotEmpty()
         }
@@ -177,7 +180,7 @@ class ComX(private val connectManager: ConnectManager) : SiteCatalogClassic() {
             getDocument(host + manga.shortLink)
                 .select("ul.comix-list > li > a")
                 .first()
-                .attr("href")
+                ?.attr("href")
 
         val jsonData = jsonData(host + lastChapterLink)
         return jsonData.chapters.map { chapter ->
@@ -198,7 +201,7 @@ class ComX(private val connectManager: ConnectManager) : SiteCatalogClassic() {
     private suspend fun jsonData(url: String): ChaptersData {
         val temp = getDocument(url)
             .select("script")
-            .filter { it.toString().contains("window.__DATA__") }
+            .filterNot { it.toString().contains("window.__DATA__").not() }
             .toString()
             .removePrefix("[<script>window.__DATA__ = ")
             .removeSuffix(";</script>]")
@@ -214,7 +217,7 @@ class ComX(private val connectManager: ConnectManager) : SiteCatalogClassic() {
         do {
             isRetry = false
             if (document.html().contains("Если вы человек, нажмите на кнопку с цветом,")) {
-                log("проверка на робота")
+                Timber.v("проверка на робота")
                 isRetry = true
                 val temp = document.select("script")
                     .toString()
@@ -237,14 +240,14 @@ class ComX(private val connectManager: ConnectManager) : SiteCatalogClassic() {
                 delay(1000L)
                 document = connectManager.getDocument(request = url.postRequest(formData.build()))
             } else if (document.html().contains("<script>document.location=")) {
-                log("странный ретрай")
+                Timber.v("странный ретрай")
                 isRetry = true
                 document = connectManager.getDocument(url)
             }
-            log("isRetry = $isRetry")
+            Timber.v("isRetry = $isRetry")
         } while (isRetry)
 
-        log("url is $url")
+        Timber.v("url is $url")
 //        log("parser start \n")
 //        log(document.toString())
 //        log("\nparser stop")

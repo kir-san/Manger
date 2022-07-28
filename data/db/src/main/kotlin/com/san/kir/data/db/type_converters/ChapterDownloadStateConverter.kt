@@ -3,7 +3,7 @@ package com.san.kir.data.db.type_converters
 import androidx.room.TypeConverter
 import com.san.kir.core.support.DownloadState
 
-class DownloadStateTypeConverter {
+internal class DownloadStateTypeConverter {
     @TypeConverter
     fun stateToString(state: DownloadState): String {
         return state.name

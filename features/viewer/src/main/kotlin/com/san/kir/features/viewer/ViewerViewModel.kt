@@ -6,15 +6,15 @@ import com.san.kir.core.utils.coroutines.defaultLaunch
 import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.StatisticDao
-import com.san.kir.data.models.datastore.Viewer
+import com.san.kir.data.models.base.Settings
 import com.san.kir.data.parsing.SiteCatalogsManager
-import com.san.kir.data.store.ViewerStore
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -22,9 +22,10 @@ import javax.inject.Inject
 import kotlin.concurrent.timer
 import kotlin.math.max
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 internal class ViewerViewModel @Inject constructor(
-    val store: ViewerStore,
+    val settingsRepository: SettingsRepository,
     val chaptersManager: ChaptersManager,
     private val siteCatalogManager: SiteCatalogsManager,
     private val chapterDao: ChapterDao,
@@ -41,8 +42,8 @@ internal class ViewerViewModel @Inject constructor(
     }
 
     // Хранение способов листания глав
-    val control = store.data.map { it.control }
-        .stateIn(viewModelScope, SharingStarted.Lazily, Viewer.Control())
+    val control = settingsRepository.viewer().mapLatest { it.control }
+        .stateIn(viewModelScope, SharingStarted.Lazily, Settings.Viewer.Control())
 
     // инициализация данных
     private var isInitManager = false

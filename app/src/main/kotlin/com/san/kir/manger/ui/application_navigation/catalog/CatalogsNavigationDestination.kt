@@ -10,7 +10,6 @@ import com.san.kir.manger.ui.application_navigation.additional_manga_screens.sit
 import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogScreen
 import com.san.kir.manger.ui.application_navigation.catalog.catalog.catalogViewModel
 import com.san.kir.manger.ui.application_navigation.catalog.global_search.GlobalSearchScreen
-import com.san.kir.manger.ui.application_navigation.catalog.global_search.GlobalSearchViewModel
 import com.san.kir.manger.ui.application_navigation.catalog.main.CatalogsScreen
 import com.san.kir.manger.utils.compose.NavTarget
 import com.san.kir.manger.utils.compose.navTarget
@@ -31,7 +30,7 @@ enum class CatalogsNavTarget : NavTarget {
     },
 
     Catalog {
-        override val content = navTarget(route = "catalog", hasItem = true) {
+        override val content = navTarget(route = "catalog", hasItems = true) {
             val item = stringElement ?: ""
             val viewModel = catalogViewModel(item)
 
@@ -45,7 +44,7 @@ enum class CatalogsNavTarget : NavTarget {
     },
 
     GlobalSearch {
-        override val content = navTarget(route = "global_search", hasItem = true) {
+        override val content = navTarget(route = "global_search", hasItems = true) {
             GlobalSearchScreen(
                 navigateUp = ::navigateUp,
                 navigateToInfo = { navigate(Info, it) },
@@ -56,7 +55,7 @@ enum class CatalogsNavTarget : NavTarget {
     },
 
     Info {
-        override val content = navTarget(route = "info", hasItem = true) {
+        override val content = navTarget(route = "info", hasItems = true) {
             MangaInfoScreen(
                 navigateUp = ::navigateUp,
                 navigateToAdd = { navigate(AddLocal, it) },
@@ -66,7 +65,7 @@ enum class CatalogsNavTarget : NavTarget {
     },
 
     AddLocal {
-        override val content = navTarget(route = "add", hasItem = true) {
+        override val content = navTarget(route = "add", hasItems = true) {
             MangaAddScreen(stringElement ?: "", ::navigateUp)
         }
     };

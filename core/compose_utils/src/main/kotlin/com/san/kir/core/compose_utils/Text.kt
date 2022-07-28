@@ -2,7 +2,6 @@ package com.san.kir.core.compose_utils
 
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -62,7 +61,6 @@ fun DialogText(text: String, color: Color = Color.Unspecified, onClick: (() -> U
     )
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun DropDownTextField(
     inititalValue: String,
@@ -189,18 +187,25 @@ fun SearchTextField(
                 Icon(Icons.Default.Close, "")
             }
         },
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
     )
 }
 
 @Composable
-fun TextWithFirstWordBold(text: String, textAlign: TextAlign? = null) {
-    val wordEndIndex = text.indexOf(" ")
+fun TextWithFirstWordBold(
+    text: String,
+    textAlign: TextAlign? = null,
+    maxLines: Int = Int.MAX_VALUE,
+) {
+    val wordEndIndex = text.indexOf(":")
     Text(
         AnnotatedString(
             text,
             spanStyles = Fonts.Annotated.bold(wordEndIndex)
         ),
         textAlign = textAlign,
+        maxLines = maxLines,
+        modifier = Modifier.padding(vertical = Dimensions.smaller)
     )
 }

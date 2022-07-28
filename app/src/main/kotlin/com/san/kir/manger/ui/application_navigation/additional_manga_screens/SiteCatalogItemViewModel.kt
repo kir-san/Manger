@@ -10,13 +10,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.san.kir.core.utils.coroutines.defaultLaunch
-import com.san.kir.core.utils.log
 import com.san.kir.data.models.base.SiteCatalogElement
 import com.san.kir.manger.ui.MainActivity
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.EntryPointAccessors
+import timber.log.Timber
 
 class SiteCatalogItemViewModel @AssistedInject constructor(
     @Assisted val url: String,
@@ -27,9 +27,9 @@ class SiteCatalogItemViewModel @AssistedInject constructor(
     init {
         // инициация манги
         viewModelScope.defaultLaunch {
-            log(url)
+            Timber.v(url)
             val it = manager.getElementOnline(url)
-            log(it.toString())
+            Timber.v(it.toString())
             if (it != null) {
                 com.san.kir.core.utils.coroutines.withMainContext {
                     item = it

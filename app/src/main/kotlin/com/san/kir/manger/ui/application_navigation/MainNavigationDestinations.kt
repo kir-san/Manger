@@ -25,16 +25,11 @@ import com.san.kir.manger.utils.compose.NavTarget
 import com.san.kir.manger.utils.compose.composable
 import com.san.kir.manger.utils.compose.deepLinkIntent
 import com.san.kir.manger.utils.compose.navTarget
+import timber.log.Timber
 
 enum class MainNavTarget(
     val type: MainMenuType,
 ) : NavTarget {
-    StartApp(MainMenuType.Library) {
-        override val content = navTarget(route = "start") {
-            StartAppScreen { navigate(Library) }
-        }
-    },
-
     Library(MainMenuType.Library) {
         override val content = navTarget(route = "library")
     },
@@ -102,9 +97,8 @@ val mainMenuItems = targets.associateBy { it.type }
 fun MainNavGraph(nav: NavHostController) {
     AnimatedNavHost(
         navController = nav,
-        startDestination = MainNavTarget.StartApp.content.route(),
+        startDestination = MainNavTarget.Library.content.route(),
     ) {
-        composable(nav = nav, target = MainNavTarget.StartApp)
         composable(nav = nav, target = MainNavTarget.Downloader)
         composable(nav = nav, target = MainNavTarget.Latest)
         composable(nav = nav, target = MainNavTarget.Settings)

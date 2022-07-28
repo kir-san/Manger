@@ -13,6 +13,7 @@ import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
@@ -33,7 +34,6 @@ import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.insets.systemBarsPadding
-import com.google.accompanist.insets.ui.TopAppBar
 import com.san.kir.core.utils.TestTags
 import kotlinx.coroutines.launch
 
@@ -82,15 +82,16 @@ fun PreparedTopBar(
             modifier = Modifier
                 .statusBarsPadding()
                 .fillMaxWidth()
-                .padding(Dimensions.zero)
+                .padding(
+                    rememberInsetsPaddingValues(
+                        insets = LocalWindowInsets.current.systemBars,
+                        applyBottom = false, applyTop = false
+                    )
+                )
                 .height(height),
             actions = {
                 TopBarActions().actions()
             },
-            contentPadding = rememberInsetsPaddingValues(
-                insets = LocalWindowInsets.current.systemBars,
-                applyBottom = false, applyTop = false
-            ),
             backgroundColor = backgroundColor,
         )
 
@@ -130,7 +131,8 @@ fun topBar(
         AnimatedVisibility(visible = enableSearchField) {
             SearchTextField(
                 inititalValue = initSearchText,
-                onChangeValue = onSearchTextChange)
+                onChangeValue = onSearchTextChange
+            )
         }
 
         if (hasAction)

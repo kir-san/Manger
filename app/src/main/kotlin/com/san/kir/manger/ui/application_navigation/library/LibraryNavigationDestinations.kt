@@ -1,6 +1,5 @@
 package com.san.kir.manger.ui.application_navigation.library
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -18,8 +17,8 @@ import com.san.kir.manger.ui.application_navigation.statistic.StatisticNavTarget
 import com.san.kir.manger.ui.application_navigation.storage.StorageNavTarget
 import com.san.kir.manger.ui.onlyMangaViewModel
 import com.san.kir.manger.utils.compose.NavTarget
-import com.san.kir.manger.utils.compose.navigation
 import com.san.kir.manger.utils.compose.navTarget
+import com.san.kir.manger.utils.compose.navigation
 
 enum class LibraryNavTarget : NavTarget {
     Main {
@@ -41,7 +40,7 @@ enum class LibraryNavTarget : NavTarget {
     },
 
     Chapters {
-        override val content = navTarget(route = "chapters", hasItem = true) {
+        override val content = navTarget(route = "chapters", hasItems = true) {
             ChaptersScreen(hiltViewModel(), stringElement ?: "", ::navigateUp)
         }
     },
@@ -60,7 +59,7 @@ enum class LibraryNavTarget : NavTarget {
     About {
         override val content = navTarget(
             route = "about",
-            hasItem = true,
+            hasItems = true,
         ) {
             val viewModel = onlyMangaViewModel(mangaUnic = stringElement ?: "")
 
@@ -74,7 +73,6 @@ enum class LibraryNavTarget : NavTarget {
 
 private val targets = LibraryNavTarget.values().toList()
 
-@OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.libraryNavGraph(nav: NavHostController) {
     navigation(
         nav = nav,

@@ -1,61 +1,28 @@
 plugins {
-    id(Plugins.ANDROID_LIBRARY)
-    id(Plugins.KOTLIN_ANDROID)
-}
-
-android {
-    compileSdk = Versions.App.COMPILE_SDK
-
-    defaultConfig {
-        minSdk = Versions.App.MIN_SDK
-        targetSdk = Versions.App.TARGET_SDK
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro")
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility = Versions.JAVA
-        targetCompatibility = Versions.JAVA
-    }
-
-    prepareKotlinOptions()
+    id("base.library")
 }
 
 dependencies {
     implementation(project(Modules.Core.utils))
 
-    Dependencies.Kotlin.apply {
-        implementation(COROUTINES_CORE)
-    }
+    implementation(libs.stdlib)
 
-    Dependencies.ForInternet.apply {
-        implementation(JSOUP)
-//        implementation(GSON)
-        implementation(OKIO)
-//        implementation(RETROFIT)
-        implementation(OKHTTP)
-    }
+    implementation(libs.coroutines.core)
 
-    Dependencies.Compose.apply {
-        implementation(RUNTIME)
-    }
+    api(libs.jsoup)
+    api(libs.okio)
+    api(libs.okhttp)
 
-    implementation(Dependencies.INJECT)
+    api(libs.bundles.ktor)
 
-    Dependencies.Test.apply {
+    implementation(libs.compose.runtime)
+    implementation(libs.hilt.inject)
+    implementation(libs.timber)
+
 //        testImplementation(JUNIT)
 //        androidTestImplementation(TEST_CORE)
 //        androidTestImplementation(TEST_RULES)
-        androidTestImplementation(TEST_JUNIT)
+    androidTestImplementation(libs.test.junit)
 //        androidTestImplementation(TEST_RUNNER)
 //        androidTestImplementation(TRUTH)
 //        androidTestImplementation(BENCHMARK_JUNIT)
@@ -64,5 +31,4 @@ dependencies {
 //        androidTestImplementation(ESPRESSO)
 //        androidTestImplementation(NAVIGATION)
 //        debugImplementation(COMPOSE_MANIFEST)
-    }
 }

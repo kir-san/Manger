@@ -79,7 +79,7 @@ fun LazyItemScope.LibraryLargeItemView(
     viewModel: LibraryViewModel,
     context: Context = LocalContext.current,
 ) {
-    val showCategory by viewModel.showCategory.collectAsState(false)
+    val showCategory by viewModel.showCategory.collectAsState()
     val countNotRead by viewModel.countNotRead(manga.name).collectAsState(0)
     val primaryColor = MaterialTheme.colors.primary
     var backgroundColor by remember { mutableStateOf(primaryColor) }
@@ -149,7 +149,7 @@ fun LazyItemScope.LibrarySmallItemView(
     viewModel: LibraryViewModel,
     context: Context = LocalContext.current,
 ) {
-    val showCategory by viewModel.showCategory.collectAsState(false)
+    val showCategory by viewModel.showCategory.collectAsState()
     val countNotRead by viewModel.countNotRead(manga.name).collectAsState(0)
     val primaryColor = MaterialTheme.colors.primary
     var backgroundColor by remember { mutableStateOf(primaryColor) }

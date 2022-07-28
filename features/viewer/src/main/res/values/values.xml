@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <style name="AppTheme.Viewer" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:navigationBarColor" >@color/transparent_dark</item>
+        <item name="android:statusBarColor" >@color/transparent_dark</item>
+    </style>
+
     <declare-styleable name="SubsamplingScaleImageView">
         <attr format="reference" name="src"/>
         <attr format="string" name="assetName"/>

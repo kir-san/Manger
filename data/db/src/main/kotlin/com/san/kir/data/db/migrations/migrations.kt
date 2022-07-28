@@ -1,12 +1,6 @@
 package com.san.kir.data.db.migrations
 
 import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
-import com.san.kir.core.support.ChapterFilter
-import com.san.kir.data.models.base.Category
-import com.san.kir.data.models.base.PlannedTask
-import com.san.kir.data.models.columns.DownloadColumn
-import com.san.kir.data.models.columns.MangaStatisticColumn
 
 internal val migrations: Array<Migration> = arrayOf(
     from9to10,  // Table Manga recreate

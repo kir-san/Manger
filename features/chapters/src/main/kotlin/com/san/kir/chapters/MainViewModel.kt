@@ -13,16 +13,15 @@ import com.san.kir.core.support.ChapterStatus
 import com.san.kir.core.utils.coroutines.defaultLaunch
 import com.san.kir.core.utils.coroutines.withMainContext
 import com.san.kir.core.utils.delChapters
-import com.san.kir.core.utils.log
 import com.san.kir.core.utils.toast
 import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.MangaDao
+import com.san.kir.data.db.dao.SettingsDao
 import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.action
 import com.san.kir.data.models.utils.ChapterComparator
 import com.san.kir.data.parsing.SiteCatalogsManager
-import com.san.kir.data.store.ChaptersStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,6 +39,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -47,7 +47,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val chapterDao: ChapterDao,
     private val mangaDao: MangaDao,
-    private val chapterStore: ChaptersStore,
+    private val settingsDao: SettingsDao,
     private val context: Application,
     private val manager: SiteCatalogsManager,
 ) : ViewModel() {
@@ -57,7 +57,7 @@ class MainViewModel @Inject constructor(
     private var oneTimeFlag = MutableStateFlow(true)
 
     // Настройка отображения заголовков вкладок
-    val hasTitle = chapterStore.data.map { it.isTitle }
+    val hasTitle = settingsDao.loadItems().map { it.chapters.isTitle }
 
     // Используется такая инициация вместо AssistedInject
     private val mangaUnic = MutableStateFlow("")
@@ -76,7 +76,7 @@ class MainViewModel @Inject constructor(
     val manga = mangaUnic
         .filterNot { it.isEmpty() }
         .flatMapLatest {
-            log("manga is $it")
+            Timber.v("manga is $it")
             mangaDao.loadItemByName(it)
         }
         .filterNotNull()
@@ -113,7 +113,7 @@ class MainViewModel @Inject constructor(
 
     init {
         // инициация фильтра
-        combine(oneTimeFlag, manga, chapterStore.data) { flag, manga, store ->
+        combine(oneTimeFlag, manga, settingsDao.loadItems()) { flag, manga, settings ->
             // Производится единожды, как и инкремента использования манги
             if (flag) {
                 manga.populate += 1
@@ -122,24 +122,26 @@ class MainViewModel @Inject constructor(
 
                 // взависимости от настройки используется общий или индивидуальный фильтр
                 _filter.update {
-                    if (store.isIndividual) {
+                    if (settings.chapters.isIndividual) {
                         manga.chapterFilter
                     } else {
-                        ChapterFilter.valueOf(store.filterStatus)
+                        settings.chapters.filterStatus
                     }
                 }
             }
         }.launchIn(viewModelScope)
 
         // Прослушивание фильтра для сохранения
-        combine(chapterStore.data, filter) { store, f ->
-            if (store.isIndividual) {
+        combine(settingsDao.loadItems(), filter) { settings, f ->
+            if (settings.chapters.isIndividual) {
                 manga.value.apply {
                     chapterFilter = f
                     mangaDao.update(this)
                 }
             } else {
-                chapterStore.setFilter(f.name)
+                settingsDao.update(
+                    settings.copy(chapters = settings.chapters.copy(filterStatus = f))
+                )
             }
         }.launchIn(viewModelScope)
     }

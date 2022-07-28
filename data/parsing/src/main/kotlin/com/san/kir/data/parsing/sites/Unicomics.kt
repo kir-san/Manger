@@ -69,7 +69,7 @@ class Unicomics(private val connectManager: ConnectManager) : SiteCatalogClassic
             }
         }
 
-        runCatching { info.select("p").last().text() }.onSuccess { element.about = it }
+        runCatching { info.select("p").last()!!.text() }.onSuccess { element.about = it }
 
         element.volume = getChapters(element.link).size
 

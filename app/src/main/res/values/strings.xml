@@ -257,12 +257,6 @@
     <string name="download_view_wifi_off">Вай вай! Не включен Wi-fi!</string>
     <string name="download_view_internet_off">Нет доступа в интернет</string>
 
-    <!--DownloadService-->
-
-
-
-
-
     <!--Category-->
     <string name="category_item_question_delete">Вы действительно хотите удалить?</string>
     <string name="category_item_question_delete_yes">Да</string>
@@ -289,7 +283,6 @@
     <string name="category_dialog_cancel">Я передумал</string>
     <string name="category_dialog_delete">Удалить!</string>
 
-    <!-- Parsing Status -->
     <!-- Manga Status -->
     <string name="manga_status_unknown">Не выбрано</string>
     <string name="manga_status_continue">Выпуск продолжается</string>
@@ -375,6 +368,7 @@
     <!-- OTHER -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nothing_founds">Ничего не найдено</string>
 
     <string name="site_volume">Объем: %1$d + %2$d</string>
 

@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
@@ -27,7 +28,6 @@ import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.imePadding
 import com.google.accompanist.insets.navigationBarsHeight
 import com.google.accompanist.insets.rememberInsetsPaddingValues
-import com.google.accompanist.insets.ui.Scaffold
 import com.san.kir.core.compose_utils.animation.rememberNestedScrollConnection
 
 @Composable

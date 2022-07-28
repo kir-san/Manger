@@ -16,8 +16,8 @@ class SquareMaxSizeModifier : LayoutModifier {
     ): MeasureResult {
         val minWidth: Int = constraints.minWidth
         val maxWidth: Int = constraints.maxWidth
-        val minHeight: Int = constraints.minHeight
-        val maxHeight: Int = constraints.maxHeight
+//        val minHeight: Int = constraints.minHeight
+//        val maxHeight: Int = constraints.maxHeight
 
         val placeable = measurable.measure(
             Constraints(minWidth, maxWidth, minWidth, maxWidth)

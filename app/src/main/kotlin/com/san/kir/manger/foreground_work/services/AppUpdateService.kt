@@ -11,7 +11,6 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.san.kir.core.internet.ConnectManager
-import com.san.kir.core.utils.log
 import com.san.kir.manger.BuildConfig
 import com.san.kir.manger.R
 import com.san.kir.core.utils.ID
@@ -23,6 +22,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.regex.Pattern
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
@@ -130,7 +130,7 @@ class AppUpdateService : Service(), CoroutineScope {
 
                     if (matcher.find()) {
                         val version = matcher.group()
-                        log("version = $version")
+                        Timber.v("version = $version")
                         val message = if (version != BuildConfig.VERSION_NAME)
                             getString(
                                 R.string.main_check_app_ver_find,

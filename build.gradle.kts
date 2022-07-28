@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 plugins {
-    id("com.github.ivancarras.graphfity") version "1.0.0"
+    alias(libs.plugins.graphfity)
 }
 
 buildscript {
@@ -14,12 +14,12 @@ buildscript {
     }
 
     dependencies {
-        classpath("com.android.tools.build:gradle:${Versions.GRADLE}")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.Kotlin.STDLIB}")
+        classpath(libs.gradlePlugin.kotlin)
+        classpath(libs.gradlePlugin.android)
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
-        classpath("com.google.dagger:hilt-android-gradle-plugin:${Versions.Google.HILT}")
-        classpath("com.github.ivancarras:graphfity-plugin:1.0.0")
+        classpath(libs.gradlePlugin.hilt)
+        classpath(libs.gradlePlugin.graphfity)
     }
 }
 

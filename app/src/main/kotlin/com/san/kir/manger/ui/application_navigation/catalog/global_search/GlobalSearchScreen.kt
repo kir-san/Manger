@@ -30,7 +30,8 @@ fun GlobalSearchScreen(
             title = "${stringResource(R.string.main_menu_search)}: ${items.size}",
             initSearchText = searchText,
             onSearchTextChange = viewModel::setSearchText,
-            hasAction = action || items.isEmpty()
+            hasAction = action || items.isEmpty(),
+            enableSearchField = true,
         ),
         additionalPadding = Dimensions.smaller,
         enableCollapsingBars = true

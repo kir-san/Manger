@@ -25,7 +25,6 @@ android {
 
 dependencies {
     common()
-    testImplementation(Dependencies.Test.Unit.JUNIT)
 }
 
 //plugins {

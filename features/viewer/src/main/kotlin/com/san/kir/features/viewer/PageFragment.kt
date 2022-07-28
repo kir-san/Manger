@@ -18,11 +18,11 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView.SCALE_TYPE_CUSTOM
-import com.san.kir.core.utils.log
 import com.san.kir.features.viewer.databinding.PageBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import timber.log.Timber
 import java.net.SocketException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -47,7 +47,7 @@ internal class PageFragment : Fragment() {
 
     private val eventListener = object : SubsamplingScaleImageView.DefaultOnImageEventListener() {
         override fun onReady() {
-            log("onReady")
+            Timber.v("onReady")
             // Установка зума и расположения страницы
             binding.viewer.setMinimumScaleType(SCALE_TYPE_CUSTOM)
             binding.viewer.minScale = binding.viewer.width / binding.viewer.sWidth.toFloat()
@@ -58,24 +58,24 @@ internal class PageFragment : Fragment() {
         }
 
         override fun onImageLoaded() {
-            log("onImageLoaded")
+            Timber.v("onImageLoaded")
             binding.progress.isVisible = false
         }
 
         override fun onPreviewLoadError(e: Exception?) {
-            log("onPreviewLoadError")
+            Timber.v("onPreviewLoadError")
         }
 
         override fun onImageLoadError(e: Exception?) {
-            log("onImageLoadError")
+            Timber.v("onImageLoadError")
         }
 
         override fun onTileLoadError(e: Exception?) {
-            log("onTileLoadError")
+            Timber.v("onTileLoadError")
         }
 
         override fun onPreviewReleased() {
-            log("onPreviewReleased")
+            Timber.v("onPreviewReleased")
         }
     }
 

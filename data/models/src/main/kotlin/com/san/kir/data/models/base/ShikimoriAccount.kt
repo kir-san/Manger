@@ -1,63 +1,82 @@
 package com.san.kir.data.models.base
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-object ShikimoriAccount {
-    data class Rate(
-        val id: Long = -1,
-        val target_id: Long = -1,
-        val status: Status = Status.Planned,
-        val chapters: Long = 0,
-    )
+@Serializable
+data class ShikimoriRate(
+    @SerialName("id") val id: Long = -1,
+    @SerialName("user_id") val userId: Long = -1,
+    @SerialName("target_id") val targetId: Long = -1,
+    @SerialName("status") val status: ShikimoriStatus = ShikimoriStatus.Planned,
+    @SerialName("chapters") val chapters: Long = 0,
+    @SerialName("target_type") val targetType: String = "Manga",
+    @SerialName("score") val score: Long = -1,
+    @SerialName("rewatches") val rewatches: Long = 0,
+)
 
-    enum class Status {
-        @SerializedName("planned")
-        Planned,
+@Serializable
+enum class ShikimoriStatus {
+    @SerialName("planned")
+    Planned,
 
-        @SerializedName("watching")
-        Watching,
+    @SerialName("watching")
+    Watching,
 
-        @SerializedName("rewatching")
-        Rewatching,
+    @SerialName("rewatching")
+    Rewatching,
 
-        @SerializedName("completed")
-        Completed,
+    @SerialName("completed")
+    Completed,
 
-        @SerializedName("on_hold")
-        OnHold,
+    @SerialName("on_hold")
+    OnHold,
 
-        @SerializedName("dropped")
-        Dropped
-    }
-
-    data class Manga(
-        val id: Long = -1,
-        val russian: String = "",
-        val image: Image = Image(),
-        val url: String = "",
-        val chapters: Long = 0,
-        val genres: List<Genre> = emptyList(),
-        val description: String? = "",
-        val english: List<String>? = emptyList(),
-    )
-
-    data class Image(
-        val original: String = "",
-    )
-
-    data class Genre(
-        val name: String = "",
-        val russian: String = "",
-    )
-
-    interface AbstractMangaItem {
-        val id: Long
-        val name: String
-        val logo: String
-        val read: Long
-        val all: Long
-        val description: String
-        val status: Status?
-            get() = null
-    }
+    @SerialName("dropped")
+    Dropped
 }
+
+data class ShikimoriManga(
+    val id: Long = -1,
+    val name: String? = null,
+    val russian: String = "",
+    val image: ShikimoriImage = ShikimoriImage(),
+    val url: String = "",
+    val chapters: Long = 0,
+    val genres: List<ShikimoriGenre> = emptyList(),
+    val description: String? = null,
+    val english: List<String>? = emptyList(),
+    val kind: String? = null,
+    val score: Float? = null,
+    val volumes: Long? = null,
+) {
+    val isEmpty: Boolean
+        get() = id == -1L
+
+    val preparedName: String
+        get() = russian.ifEmpty { name ?: "" }
+
+    val logo: String
+        get() = image.original
+}
+
+data class ShikimoriImage(
+    val original: String = "",
+)
+
+data class ShikimoriGenre(
+    val name: String = "",
+    val russian: String = "",
+)
+
+interface ShikimoriMangaItem {
+    val id: Long
+    val name: String
+    val logo: String
+    val read: Long
+    val all: Long
+    val description: String
+    val status: ShikimoriStatus?
+        get() = null
+}
+

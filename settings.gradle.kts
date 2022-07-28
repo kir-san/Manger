@@ -8,7 +8,6 @@ include(":core:compose_utils")
 include(":core:background")
 
 include(":data:db")
-include(":data:store")
 include(":data:models")
 include(":data:parsing")
 

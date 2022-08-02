@@ -5,9 +5,8 @@ plugins {
 dependencies {
     implementation(project(Modules.Core.utils))
 
-    implementation(libs.stdlib)
-
     implementation(libs.coroutines.core)
+    implementation(libs.stdlib)
 
     api(libs.jsoup)
     api(libs.okio)

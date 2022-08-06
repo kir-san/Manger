@@ -2,9 +2,16 @@ package com.san.kir.core.compose_utils
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
@@ -30,10 +37,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.rememberInsetsPaddingValues
-import com.google.accompanist.insets.statusBarsPadding
-import com.google.accompanist.insets.systemBarsPadding
 import com.san.kir.core.utils.TestTags
 import kotlinx.coroutines.launch
 
@@ -83,10 +86,9 @@ fun PreparedTopBar(
                 .statusBarsPadding()
                 .fillMaxWidth()
                 .padding(
-                    rememberInsetsPaddingValues(
-                        insets = LocalWindowInsets.current.systemBars,
-                        applyBottom = false, applyTop = false
-                    )
+                    WindowInsets.systemBars
+                        .only(WindowInsetsSides.Horizontal)
+                        .asPaddingValues()
                 )
                 .height(height),
             actions = {
@@ -99,7 +101,7 @@ fun PreparedTopBar(
             LinearProgressIndicator(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .systemBarsPadding(top = false, bottom = false),
+                    .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
             )
     }
 }
@@ -139,7 +141,7 @@ fun topBar(
             LinearProgressIndicator(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .systemBarsPadding(top = false, bottom = false),
+                    .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
             )
     }
 }

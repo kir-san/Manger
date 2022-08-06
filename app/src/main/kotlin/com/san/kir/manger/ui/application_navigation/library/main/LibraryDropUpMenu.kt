@@ -1,6 +1,5 @@
 package com.san.kir.manger.ui.application_navigation.library.main
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.Transition
@@ -13,9 +12,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.MaterialTheme
@@ -39,12 +43,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.systemBarsPadding
 import com.san.kir.manger.R
 import com.san.kir.manger.foreground_work.workmanager.MangaDeleteWorker
 
 // TODO: fix insets
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun LibraryDropUpMenu(
     navigateToInfo: (String) -> Unit,
@@ -58,7 +60,11 @@ fun LibraryDropUpMenu(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .systemBarsPadding(top = false)
+            .windowInsetsPadding(
+                WindowInsets
+                    .systemBars
+                    .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+            )
     ) {
 
         DropdownMenuItem(
@@ -69,18 +75,15 @@ fun LibraryDropUpMenu(
         ) {
             Text(
                 stringResource(
-                    R.string.library_popupmenu_title,
-                    viewModel.selectedManga.manga.name
-                ),
-                maxLines = 1, fontWeight = FontWeight.Bold
+                    R.string.library_popupmenu_title, viewModel.selectedManga.manga.name
+                ), maxLines = 1, fontWeight = FontWeight.Bold
             )
         }
 
-        DropdownMenuItem(
-            onClick = {
-                viewModel.changeSelectedManga(false)
-                navigateToInfo(viewModel.selectedManga.manga.name)
-            }) {
+        DropdownMenuItem(onClick = {
+            viewModel.changeSelectedManga(false)
+            navigateToInfo(viewModel.selectedManga.manga.name)
+        }) {
             Text(stringResource(R.string.library_popupmenu_about))
         }
 
@@ -97,43 +100,38 @@ fun LibraryDropUpMenu(
 
             val categoryName by viewModel.selectedMangaCategory.collectAsState()
             Text(
-                text = categoryName,
-                style = MaterialTheme.typography.subtitle2
+                text = categoryName, style = MaterialTheme.typography.subtitle2
             )
         }
 
         val categories by viewModel.categories.collectAsState(emptyMap())
 
         ExpandedCategories(
-            expandedCategory,
-            categories - viewModel.selectedManga.manga.categoryId
+            expandedCategory, categories - viewModel.selectedManga.manga.categoryId
         ) { categoryId ->
             viewModel.updateCategory(categoryId)
             expandedCategory = false
             viewModel.changeSelectedManga(false)
         }
 
-        DropdownMenuItem(
-            onClick = {
-                viewModel.changeSelectedManga(false)
-                navigateToStorage(viewModel.selectedManga.manga.name)
-            }) {
+        DropdownMenuItem(onClick = {
+            viewModel.changeSelectedManga(false)
+            navigateToStorage(viewModel.selectedManga.manga.name)
+        }) {
             Text(stringResource(R.string.library_popupmenu_storage))
         }
 
-        DropdownMenuItem(
-            onClick = {
-                viewModel.changeSelectedManga(false)
-                navigateToStats(viewModel.selectedManga.manga.name)
-            }) {
+        DropdownMenuItem(onClick = {
+            viewModel.changeSelectedManga(false)
+            navigateToStats(viewModel.selectedManga.manga.name)
+        }) {
             Text(stringResource(R.string.library_popupmenu_statistic))
         }
 
-        DropdownMenuItem(
-            onClick = {
-                deleteDialog = !deleteDialog
-                expandedCategory = false
-            }) {
+        DropdownMenuItem(onClick = {
+            deleteDialog = !deleteDialog
+            expandedCategory = false
+        }) {
             Text(stringResource(R.string.library_popupmenu_delete))
         }
 
@@ -178,8 +176,7 @@ fun LibraryDropUpMenu(
                 }
 
                 OutlinedButton(
-                    onClick = { deleteDialog = false },
-                    modifier = Modifier.padding(pad)
+                    onClick = { deleteDialog = false }, modifier = Modifier.padding(pad)
                 ) {
                     Text(text = stringResource(id = R.string.library_popupmenu_delete_no))
                 }
@@ -241,8 +238,7 @@ private fun Transition<Boolean>.alphaAnimate(): State<Float> {
             if (false isTransitioningTo true) {
                 // Dismissed to expanded
                 tween(
-                    durationMillis = transitionDuration,
-                    easing = FastOutSlowInEasing
+                    durationMillis = transitionDuration, easing = FastOutSlowInEasing
                 )
             } else {
                 // Expanded to dismissed.
@@ -269,8 +265,7 @@ private fun Transition<Boolean>.scaleAnimate(): State<Float> {
             if (false isTransitioningTo true) {
                 // Dismissed to expanded
                 tween(
-                    durationMillis = transitionDuration,
-                    easing = FastOutSlowInEasing
+                    durationMillis = transitionDuration, easing = FastOutSlowInEasing
                 )
             } else {
                 // Expanded to dismissed.

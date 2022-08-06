@@ -5,11 +5,17 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.GridCells
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
 import androidx.compose.material.ExperimentalMaterialApi
@@ -27,8 +33,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.san.kir.core.utils.TestTags
 import com.san.kir.data.models.extend.CategoryWithMangas
 import com.san.kir.manger.R
@@ -81,7 +85,8 @@ private fun EmptyView(navigateToCatalogs: () -> Unit) {
 
         Button(
             modifier = Modifier.padding(16.dp),
-            onClick = navigateToCatalogs) {
+            onClick = navigateToCatalogs
+        ) {
             Text(
                 text = stringResource(id = R.string.library_help_go)
             )
@@ -129,24 +134,24 @@ fun PageView(
     ) {
         if (isLarge)
             LazyVerticalGrid(
-                cells = GridCells.Fixed(span),
+                columns = GridCells.Fixed(span),
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = rememberInsetsPaddingValues(
-                    insets = LocalWindowInsets.current.systemBars,
-                    applyTop = false, applyStart = false, applyEnd = false,
-                ),
+                contentPadding = WindowInsets
+                    .systemBars
+                    .only(WindowInsetsSides.Bottom)
+                    .asPaddingValues(),
             ) {
-                items(items = item.mangas) { manga ->
+                items(item.mangas) { manga ->
                     LibraryLargeItemView(navigateToChapters, manga, item.name, viewModel)
                 }
             }
         else
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = rememberInsetsPaddingValues(
-                    insets = LocalWindowInsets.current.systemBars,
-                    applyTop = false, applyStart = false, applyEnd = false
-                ),
+                contentPadding = WindowInsets
+                    .systemBars
+                    .only(WindowInsetsSides.Bottom)
+                    .asPaddingValues(),
             ) {
                 items(items = item.mangas) { manga ->
                     LibrarySmallItemView(navigateToChapters, manga, item.name, viewModel)

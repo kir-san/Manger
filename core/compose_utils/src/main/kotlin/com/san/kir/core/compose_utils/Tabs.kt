@@ -1,6 +1,11 @@
 package com.san.kir.core.compose_utils
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Tab
@@ -14,7 +19,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import com.google.accompanist.insets.systemBarsPadding
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.pagerTabIndicatorOffset
@@ -23,11 +27,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
-private fun indicator(pagerState: PagerState): @Composable (tabPositions: List<TabPosition>) -> Unit = { tabPositions ->
-    TabRowDefaults.Indicator(
-        Modifier.pagerTabIndicatorOffset(pagerState, tabPositions)
-    )
-}
+private fun indicator(pagerState: PagerState): @Composable (tabPositions: List<TabPosition>) -> Unit =
+    { tabPositions ->
+        TabRowDefaults.Indicator(
+            Modifier.pagerTabIndicatorOffset(pagerState, tabPositions)
+        )
+    }
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -66,7 +71,8 @@ fun Tabs(
     TabRow(
         selectedTabIndex = pagerState.currentPage,
         indicator = indicator(pagerState),
-        modifier = Modifier.systemBarsPadding(bottom = false, top = false)
+        modifier = Modifier
+            .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
     ) {
         items.forEachIndexed { index, item ->
             Tab(

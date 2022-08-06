@@ -5,9 +5,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.rememberScrollState
@@ -24,10 +34,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.imePadding
-import com.google.accompanist.insets.navigationBarsHeight
-import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.san.kir.core.compose_utils.animation.rememberNestedScrollConnection
 
 @Composable
@@ -74,22 +80,33 @@ internal fun BaseScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(
-                        rememberInsetsPaddingValues(
-                            insets = LocalWindowInsets.current.systemBars,
-                            applyStart = true, applyEnd = true,
-                            applyBottom = false, applyTop = false,
-                            additionalTop = contentPadding.calculateTopPadding(),
-                            additionalBottom = contentPadding.calculateBottomPadding(),
-                            additionalStart = additionalPadding, additionalEnd = additionalPadding
-                        )
+                        WindowInsets.statusBars
+                            .only(
+                                WindowInsetsSides.Horizontal
+                            )
+                            .add(
+                                WindowInsets(
+                                    top = contentPadding.calculateTopPadding(),
+                                    bottom = contentPadding.calculateBottomPadding(),
+                                    left = additionalPadding, right = additionalPadding
+                                )
+                            )
+                            .asPaddingValues()
+
                     )
                     .imePadding()
                     .verticalScroll(rememberScrollState())
             ) {
                 Spacer(modifier = Modifier.height(additionalPadding))
                 con()
-                if (LocalWindowInsets.current.ime.bottom <= 0 && additionalPadding > 0.dp)
-                    Spacer(modifier = Modifier.navigationBarsHeight(additionalPadding))
+                if (WindowInsets.ime.getBottom(LocalDensity.current) <= 0 && additionalPadding > 0.dp)
+                    Spacer(
+                        modifier = Modifier.windowInsetsBottomHeight(
+                            WindowInsets.navigationBars.add(
+                                WindowInsets(top = additionalPadding)
+                            )
+                        )
+                    )
                 else
                     Spacer(modifier = Modifier.height(additionalPadding))
             }

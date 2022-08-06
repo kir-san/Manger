@@ -7,12 +7,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.BottomAppBar
@@ -41,7 +46,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.insets.navigationBarsPadding
 import com.san.kir.core.compose_utils.ExpandedMenu
 import com.san.kir.core.compose_utils.FullWeightSpacer
 import com.san.kir.core.compose_utils.ScreenPadding
@@ -73,12 +77,13 @@ fun DownloadScreen(
                 viewModel.stoppedCount,
                 viewModel.completedCount
             ),
-        ),
-        additionalPadding = 0.dp
+        ), additionalPadding = 0.dp
     ) {
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .padding(top = it.calculateTopPadding())) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = it.calculateTopPadding())
+        ) {
 
             LazyColumn(
                 modifier = Modifier
@@ -109,7 +114,7 @@ fun DownloadScreen(
                     BottomAppBar(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .navigationBarsPadding(start = false, end = false)
+                            .windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Vertical))
                     ) {
                         FullWeightSpacer()
 
@@ -172,19 +177,23 @@ private fun ItemView(
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
             )
-            if (item.isError)
-                Box(contentAlignment = Alignment.TopEnd, modifier = Modifier.size(heightSize)) {
-                    Icon(
-                        painterResource(R.drawable.unknown), contentDescription = "unknown",
-                        modifier = Modifier.size(errorSize)
-                    )
-                }
+            if (item.isError) Box(
+                contentAlignment = Alignment.TopEnd,
+                modifier = Modifier.size(heightSize)
+            ) {
+                Icon(
+                    painterResource(R.drawable.unknown),
+                    contentDescription = "unknown",
+                    modifier = Modifier.size(errorSize)
+                )
+            }
         }
 
-        Column(modifier = Modifier
-            .weight(1f)
-            .fillMaxHeight(),
-            verticalArrangement = Arrangement.Center) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight(), verticalArrangement = Arrangement.Center
+        ) {
             Text(stringResource(R.string.download_item_name, item.manga, item.name), maxLines = 1)
             Text(
                 when (item.status) {
@@ -222,8 +231,7 @@ private fun ItemView(
                 }
                 DownloadState.LOADING -> {
                     LinearProgressIndicator(
-                        progress =
-                        if (item.totalPages != 0) item.downloadPages.toFloat() / item.totalPages.toFloat()
+                        progress = if (item.totalPages != 0) item.downloadPages.toFloat() / item.totalPages.toFloat()
                         else 0F,
                         modifier = Modifier
                             .padding(top = 4.dp)

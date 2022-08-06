@@ -1,16 +1,11 @@
 package com.san.kir.chapters
 
 import android.app.Application
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.san.kir.core.download.DownloadService
 import com.san.kir.core.support.ChapterFilter
 import com.san.kir.core.support.ChapterStatus
-import com.san.kir.core.utils.coroutines.defaultLaunch
 import com.san.kir.core.utils.coroutines.withMainContext
 import com.san.kir.core.utils.delChapters
 import com.san.kir.core.utils.toast

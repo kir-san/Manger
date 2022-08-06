@@ -2,9 +2,14 @@ package com.san.kir.manger.ui.application_navigation.schedule.main
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Switch
@@ -17,8 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.san.kir.data.models.extend.MiniManga
 import com.san.kir.manger.R
 
@@ -30,10 +33,7 @@ fun UpdateContent(
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = rememberInsetsPaddingValues(
-            LocalWindowInsets.current.systemBars,
-            applyStart = false, applyTop = false, applyEnd = false
-        )
+        contentPadding = WindowInsets.systemBars.only(WindowInsetsSides.Bottom).asPaddingValues(),
     ) {
         items(items.size, { index -> items[index].id }) { index ->
             ItemContent(items[index], viewModel)

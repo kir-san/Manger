@@ -30,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.san.kir.manger.R
 import timber.log.Timber
@@ -78,38 +79,37 @@ private fun PermissionPrepare(
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
 
-    when {
-        // permission is granted
-        storagePermissionState.hasPermission -> {
+    when (val status = storagePermissionState.status) {
+        is PermissionStatus.Denied -> {
+            if (status.shouldShowRationale.not()) {
+                Timber.v("shouldShowRationale or permissionRequested")
+                action(false)
+                if (doNotShowRationale) {
+                    Text(stringResource(R.string.main_permission_error))
+                } else {
+                    Text(stringResource(R.string.main_permission_reason))
+                    Spacer(Modifier.height(16.dp))
+                    Row {
+                        Button(onClick = { storagePermissionState.launchPermissionRequest() }) {
+                            Text(stringResource(R.string.main_permission_request))
+                        }
+                        Spacer(Modifier.width(16.dp))
+                        Button(onClick = { doNotShowRationale = true }) {
+                            Text(stringResource(R.string.main_permission_no_rationale))
+                        }
+                    }
+                }
+            } else {
+                action(false)
+                Text(stringResource(R.string.main_permission_nonpermission))
+            }
+        }
+
+        PermissionStatus.Granted -> {
             Timber.v("hasPermission")
             action(true)
             viewModel.startApp()
             if (state == OperationState.SUCCESS) navigateToItem()
-        }
-
-        storagePermissionState.shouldShowRationale || !storagePermissionState.permissionRequested -> {
-            Timber.v("shouldShowRationale or permissionRequested")
-            action(false)
-            if (doNotShowRationale) {
-                Text(stringResource(R.string.main_permission_error))
-            } else {
-                Text(stringResource(R.string.main_permission_reason))
-                Spacer(Modifier.height(16.dp))
-                Row {
-                    Button(onClick = { storagePermissionState.launchPermissionRequest() }) {
-                        Text(stringResource(R.string.main_permission_request))
-                    }
-                    Spacer(Modifier.width(16.dp))
-                    Button(onClick = { doNotShowRationale = true }) {
-                        Text(stringResource(R.string.main_permission_no_rationale))
-                    }
-                }
-            }
-        }
-
-        else -> {
-            action(false)
-            Text(stringResource(R.string.main_permission_nonpermission))
         }
     }
 }

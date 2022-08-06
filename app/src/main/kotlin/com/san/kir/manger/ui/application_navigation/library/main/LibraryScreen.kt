@@ -8,9 +8,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.DrawerValue
@@ -36,11 +39,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.statusBarsPadding
-import com.google.accompanist.pager.ExperimentalPagerApi
 import com.san.kir.core.compose_utils.ScreenContent
 import com.san.kir.core.compose_utils.topBar
 import com.san.kir.core.support.MainMenuType
@@ -55,7 +56,6 @@ import kotlinx.coroutines.launch
 
 private var backPressedTime = 0L
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun LibraryScreen(
     navigateToScreen: (MainMenuType) -> Unit,
@@ -120,9 +120,11 @@ private fun DrawerContent(
     val menuItems by viewModel.loadMainMenuItems().collectAsState(initial = listOf())
     val coroutineScope = rememberCoroutineScope()
 
-    val insets = LocalWindowInsets.current
-    val barsStart = with(LocalDensity.current) { insets.systemBars.left.toDp() }
-    val barsBottom = with(LocalDensity.current) { insets.systemBars.bottom.toDp() }
+    val barsStart =
+        with(LocalDensity.current) {
+            WindowInsets.systemBars.getLeft(this, LayoutDirection.Rtl).toDp()
+        }
+    val barsBottom = with(LocalDensity.current) { WindowInsets.systemBars.getBottom(this).toDp() }
 
     Column(
         modifier = Modifier

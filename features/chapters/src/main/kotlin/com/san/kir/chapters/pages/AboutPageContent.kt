@@ -6,9 +6,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -24,8 +31,6 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.sp
-import com.google.accompanist.insets.navigationBarsPadding
-import com.google.accompanist.insets.systemBarsPadding
 import com.san.kir.chapters.MainViewModel
 import com.san.kir.chapters.R
 import com.san.kir.core.compose_utils.Dimensions
@@ -35,7 +40,6 @@ import com.san.kir.features.viewer.MangaViewer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 // Простая страница с минимум возможностей для быстрого продолжения чтения
-@OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 internal fun AboutPageContent(
     viewModel: MainViewModel,
@@ -98,8 +102,13 @@ internal fun AboutPageContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(Dimensions.default)
-                    .navigationBarsPadding(start = false, end = false)
-                    .systemBarsPadding(top = false, bottom = false),
+                    .windowInsetsPadding(
+                        WindowInsets.navigationBars
+                            .only(WindowInsetsSides.Vertical)
+                            .add(
+                                WindowInsets.systemBars.only(WindowInsetsSides.Horizontal)
+                            )
+                    ),
                 enabled = firstNotReadChapter != null,
             ) {
                 Text(

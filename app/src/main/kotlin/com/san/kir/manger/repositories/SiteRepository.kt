@@ -6,7 +6,7 @@ import com.san.kir.data.models.base.Site
 
 class SiteRepository(context: Context) {
     private val db = RoomDB.getDatabase(context)
-    private val mSiteDao = db.siteDao
+    private val mSiteDao = db.siteDao()
 
     suspend fun getItems() = mSiteDao.getItems()
     fun getItem(name: String) = mSiteDao.getItem(name)

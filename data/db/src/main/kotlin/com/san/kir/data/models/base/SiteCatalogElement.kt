@@ -30,8 +30,8 @@ data class SiteCatalogElement(
     var isFull: Boolean = false,
 ) : Parcelable
 
-fun SiteCatalogElement.toManga(categoryId: Long, path: String): Manga {
-    return Manga(
+fun SiteCatalogElement.toManga(categoryId: Long, path: String): com.san.kir.data.models.base.Manga {
+    return com.san.kir.data.models.base.Manga(
         name = name,
         host = host,
         authorsList = authors,

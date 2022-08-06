@@ -7,13 +7,10 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
-import com.san.kir.core.support.DIR
 import com.san.kir.core.utils.externalDir
-import com.san.kir.core.utils.getFullPath
 import com.san.kir.data.db.dao.SiteCatalogDao
 import com.san.kir.data.db.typeConverters.ListStringConverter
 import com.san.kir.data.models.base.SiteCatalogElement
-import com.san.kir.data.parsing.SiteCatalogsManager
 import java.io.File
 import javax.inject.Inject
 
@@ -26,26 +23,16 @@ import javax.inject.Inject
 abstract class CatalogDb : RoomDatabase() {
     companion object {
         const val VERSION = 1
-        val NAME: (String) -> String = { "${DIR.CATALOGS}/$it.db" }
 
         fun getDatabase(
             context: Context,
             catalogName: String,
-            manager: SiteCatalogsManager,
         ): CatalogDb {
-            val first = manager.catalog.first { it.catalogName == catalogName }
-            var catName = first.catalogName
-            first.allCatalogName
-                .firstOrNull { getFullPath(NAME(it)).exists() }
-                ?.also {
-                    catName = it
-                }
-
             return Room
                 .databaseBuilder(
                     context.applicationContext,
                     CatalogDb::class.java,
-                    File(externalDir, NAME(catName)).absolutePath
+                    File(externalDir, catalogName).absolutePath
                 )
                 .addMigrations(*Migrate.migrations)
                 .allowMainThreadQueries()
@@ -59,28 +46,9 @@ abstract class CatalogDb : RoomDatabase() {
         val migrations: Array<Migration> = arrayOf()
     }
 
-    class Factory @Inject constructor(
-        private val context: Application,
-        private val manager: SiteCatalogsManager,
-    ) {
-        fun create(siteName: String): CatalogDb {
-            val first = manager.catalog.first { it.name == siteName }
-
-            var catName = first.catalogName
-
-            first.allCatalogName
-                .firstOrNull { getFullPath(NAME(it)).exists() }
-                ?.also { catName = it }
-
-            return Room
-                .databaseBuilder(
-                    context.applicationContext,
-                    CatalogDb::class.java,
-                    File(externalDir, NAME(catName)).absolutePath
-                )
-                .addMigrations(*Migrate.migrations)
-                .allowMainThreadQueries()
-                .build()
+    class Factory @Inject constructor(private val context: Application) {
+        fun create(catalogName: String): CatalogDb {
+            return getDatabase(context, catalogName)
         }
     }
 }

@@ -25,11 +25,8 @@ import com.san.kir.data.db.dao.SiteDao
 import com.san.kir.data.db.dao.StatisticDao
 import com.san.kir.data.db.dao.StorageDao
 import com.san.kir.data.db.migrations.migrations
-import com.san.kir.data.db.typeConverters.ChapterFilterTypeConverter
-import com.san.kir.data.db.typeConverters.DownloadStateTypeConverter
 import com.san.kir.data.db.typeConverters.FileConverter
 import com.san.kir.data.db.typeConverters.ListStringConverter
-import com.san.kir.data.db.typeConverters.MainMenuTypeConverter
 import com.san.kir.data.db.typeConverters.PlannedPeriodTypeConverter
 import com.san.kir.data.db.typeConverters.PlannedTypeTypeConverter
 import com.san.kir.data.db.typeConverters.PlannedWeekTypeConverter

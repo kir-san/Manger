@@ -5,6 +5,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.san.kir.core.support.ChapterFilter
+import kotlinx.serialization.SerialName
 
 @Entity(tableName = Settings.tableName)
 data class Settings(
@@ -136,32 +137,48 @@ data class Settings(
         @Embedded
         val whoami: ShikimoriWhoami = ShikimoriWhoami(),
     ) {
+        @kotlinx.serialization.Serializable
         data class ShikimoriAccessToken(
             @ColumnInfo(name = Col.accessToken)
+            @SerialName(Col.accessToken)
             val accessToken: String = "",
+
             @ColumnInfo(name = Col.tokenType)
+            @SerialName(Col.tokenType)
             val tokenType: String = "",
+
             @ColumnInfo(name = Col.expiresIn)
+            @SerialName(Col.expiresIn)
             val expiresIn: Long = 0,
+
             @ColumnInfo(name = Col.refreshToken)
+            @SerialName(Col.refreshToken)
             val refreshToken: String = "",
+
             @ColumnInfo(name = Col.scope)
+            @SerialName(Col.scope)
             val scope: String = "",
+
             @ColumnInfo(name = Col.createdAt)
+            @SerialName(Col.createdAt)
             val createdAt: Long = 0,
         ) {
             val isExpired: Boolean
                 get() = (System.currentTimeMillis() / 1000) > (createdAt + expiresIn - 3600)
         }
 
+        @kotlinx.serialization.Serializable
         data class ShikimoriWhoami(
             @ColumnInfo(name = Col.shikimoriWhoamiId)
+            @SerialName(Col.id)
             val id: Long = 0,
 
             @ColumnInfo(name = Col.nickname)
+            @SerialName(Col.nickname)
             val nickname: String = "",
 
             @ColumnInfo(name = Col.avatar)
+            @SerialName(Col.avatar)
             val avatar: String = "",
         )
     }

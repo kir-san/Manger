@@ -79,7 +79,7 @@ class GlobalSearchViewModel @Inject constructor(
 
     private suspend fun getItems(siteCatalog: SiteCatalog): List<SiteCatalogElement> =
         withDefaultContext {
-            val db = CatalogDb.getDatabase(application, siteCatalog.catalogName, manager)
+            val db = CatalogDb.getDatabase(application, manager.catalogName(siteCatalog.catalogName))
             val items = db.dao.getItems()
             db.close()
             items

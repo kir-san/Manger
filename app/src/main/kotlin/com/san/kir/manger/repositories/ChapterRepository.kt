@@ -6,7 +6,7 @@ import com.san.kir.data.models.base.Chapter
 
 class ChapterRepository(context: Context) {
     private val db = RoomDB.getDatabase(context)
-    private val mChapterDao = db.chapterDao
+    private val mChapterDao = db.chapterDao()
 
     private suspend fun getItems(mangaUnic: String) = mChapterDao.getItemsWhereManga(mangaUnic)
 

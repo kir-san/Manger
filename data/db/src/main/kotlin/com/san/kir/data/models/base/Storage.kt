@@ -5,7 +5,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.lengthMb
-import com.san.kir.data.models.base.Manga
 import kotlinx.parcelize.Parcelize
 import java.io.File
 

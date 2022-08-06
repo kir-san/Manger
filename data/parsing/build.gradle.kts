@@ -6,7 +6,7 @@ dependencies {
     implementation(project(Modules.Core.internet))
     implementation(project(Modules.Core.utils))
     implementation(project(Modules.Core.support))
-    implementation(project(Modules.Data.models))
+    implementation(project(Modules.Data.db))
 
     implementation(libs.hilt.inject)
 

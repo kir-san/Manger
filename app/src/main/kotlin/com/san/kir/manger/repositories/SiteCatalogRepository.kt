@@ -6,7 +6,7 @@ import com.san.kir.data.models.base.SiteCatalogElement
 import com.san.kir.data.parsing.SiteCatalogsManager
 
 class SiteCatalogRepository(context: Context, catalogName: String, manager: SiteCatalogsManager) {
-    private val db = getDatabase(context, catalogName, manager)
+    private val db = getDatabase(context, manager.catalogName(catalogName))
     private val mDao = db.dao
 
     suspend fun items() = mDao.getItems()

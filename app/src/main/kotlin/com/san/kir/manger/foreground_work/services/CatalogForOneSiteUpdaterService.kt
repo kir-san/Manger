@@ -246,7 +246,7 @@ class CatalogForOneSiteUpdaterService : Service() {
 
                 Timber.v("update finish. elements getting ${tempList.size}")
 
-                dbFactory.create(site.name).apply {
+                dbFactory.create(manager.catalogName(site.name)).apply {
                     dao.deleteAll()
                     dao.insert(*tempList.toTypedArray())
                     close()

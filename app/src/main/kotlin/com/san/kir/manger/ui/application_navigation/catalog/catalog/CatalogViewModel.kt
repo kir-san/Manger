@@ -19,6 +19,7 @@ import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.data.db.CatalogDb
 import com.san.kir.data.db.dao.SiteDao
 import com.san.kir.data.models.base.SiteCatalogElement
+import com.san.kir.data.parsing.SiteCatalogsManager
 import com.san.kir.manger.R
 import com.san.kir.manger.foreground_work.services.CatalogForOneSiteUpdaterService
 import com.san.kir.manger.ui.MainActivity
@@ -40,6 +41,7 @@ class CatalogViewModel @AssistedInject constructor(
     private val context: Application,
     private val siteDao: SiteDao,
     private val dbFactory: CatalogDb.Factory,
+    private val siteCatalogsManager: SiteCatalogsManager
 ) : ViewModel() {
     private val genres = context.getString(R.string.catalog_fot_one_site_genres)
     private val type = context.getString(R.string.catalog_fot_one_site_type)
@@ -144,7 +146,7 @@ class CatalogViewModel @AssistedInject constructor(
     }
 
     fun update() = viewModelScope.defaultLaunch {
-        dbFactory.create(siteName).apply {
+        dbFactory.create(siteCatalogsManager.catalogName(siteName)).apply {
             _items.update { dao.getItems() }
             close()
         }

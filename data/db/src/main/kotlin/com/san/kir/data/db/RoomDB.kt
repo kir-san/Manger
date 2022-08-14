@@ -129,7 +129,6 @@ abstract class RoomDB : RoomDatabase() {
                                 RoomDB::class.java,
                                 "default.db"
                             )
-                            .createFromAsset("database/default.db")
                             .addMigrations(*migrations)
                             .addCallback(Callback(context))
                             .build()

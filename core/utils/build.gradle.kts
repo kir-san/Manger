@@ -9,4 +9,5 @@ dependencies {
     implementation(libs.stdlib)
     api(libs.bundles.coroutines)
     implementation(libs.timber)
+    implementation(libs.lifecycle.viewmodel)
 }

@@ -17,9 +17,9 @@ constraintlayout = "2.1.4"
 paging = "3.1.1"
 workmanager = "2.8.0-alpha02"
 hilt = "1.0.0"
-datastore = "1.0.0"
-room = "2.5.0-alpha02" # 2.4.3
+room = "2.4.3"
 navigation = "2.5.0"
+datastore = "1.0.0"
 
 # Compose
 compose = "1.2.0"
@@ -47,7 +47,7 @@ kakaocup = "0.0.2"
 espresso = "3.4.0"
 
 #
-gradle = "7.2.1"
+gradle = "7.2.2"
 
 hyperion = "0.9.31"
 subsampling = "3.10.0"
@@ -129,6 +129,8 @@ swipe_refresh = { module = "com.google.accompanist:accompanist-swiperefresh", ve
 # ProtoBuf
 protobuf-kotlin = { module = "com.google.protobuf:protobuf-kotlin", version.ref = "protobuf" }
 protobuf-protoc = { module = "com.google.protobuf:protoc", version.ref = "protobuf" }
+
+datastore = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
 # For Internet
 jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }

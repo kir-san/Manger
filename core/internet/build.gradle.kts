@@ -11,6 +11,7 @@ dependencies {
     api(libs.jsoup)
     api(libs.okio)
     api(libs.okhttp)
+    implementation(libs.okhttp.loging)
 
     api(libs.bundles.ktor)
 

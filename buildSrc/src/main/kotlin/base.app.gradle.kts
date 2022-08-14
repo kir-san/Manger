@@ -36,18 +36,17 @@ android {
             isShrinkResources = true
             signingConfig = signingConfigs.getByName("release")
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android.txt"),
+                "proguard-rules.pro",
+                "proguard-common.txt"
             )
-            buildConfigField("String", "EXAMPLE", "\"release\"")
+            isDebuggable = false
         }
         getByName("debug") {
-            signingConfig = signingConfigs.getByName("release")
-            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
             extra["enableCrashlytics"] = false
-
+            isDebuggable = true
             applicationIdSuffix = ".debug"
-            buildConfigField("String", "EXAMPLE", "\"debug\"")
+            versionNameSuffix = "-debug"
         }
     }
 

@@ -86,3 +86,28 @@
     boolean getDEBUG() return false;
     boolean getRECOVER_STACK_TRACES() return false;
 }
+
+-keepnames !abstract class com.customername.android.injection.*
+
+#Keeping the members of that have static vars
+-keepclassmembers public class com.customername.android.** {
+        	public static * ;
+        	public *;
+        }
+
+# Below will be classes you want to explicity keep AND obfuscate - you shouldn't need to do this unless your class is only referenced at runtime and not compile time (IE injected via annotation or reflection)
+#-keep,allowobfuscation class com.customername.android.** { *; }
+
+#Things you don't want to obfuscate and you don't want to be shrunk usually GSON pojos. Add your domain/JSON below here
+-keep class com.customername.android.model.** { *; }
+
+-dontwarn okio.**
+-dontwarn org.simpleframework.**
+-keep class com.google.common.** { *; }
+
+
+-keep class okhttp3.** { *; }
+-keep interface okhttp3.** { *; }
+-dontwarn okhttp3.**
+-dontwarn okio.**
+-dontwarn javax.annotation**

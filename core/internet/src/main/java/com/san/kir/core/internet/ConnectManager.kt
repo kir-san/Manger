@@ -17,6 +17,7 @@ import io.ktor.util.*
 import kotlinx.coroutines.delay
 import okhttp3.Cache
 import okhttp3.CacheControl
+import okhttp3.logging.HttpLoggingInterceptor
 import okio.Buffer
 import okio.BufferedSink
 import okio.buffer
@@ -55,16 +56,10 @@ class ConnectManager @Inject constructor(context: Application) {
                     callTimeout(20_0000L, TimeUnit.MILLISECONDS)
                     readTimeout(20_0000L, TimeUnit.MILLISECONDS)
                     writeTimeout(20_0000L, TimeUnit.MILLISECONDS)
+                    addInterceptor(HttpLoggingInterceptor().apply {
+                        level = HttpLoggingInterceptor.Level.BODY
+                    })
                 }
-            }
-
-            install(Logging) {
-                logger = object : Logger {
-                    override fun log(message: String) {
-                        Timber.i("HTTP Client", message)
-                    }
-                }
-                level = LogLevel.ALL
             }
 
             defaultRequest {
@@ -191,32 +186,37 @@ class ConnectManager @Inject constructor(context: Application) {
 
             val response = defaultClient.get(url.prepare())
             val source = response.bodyAsChannel()
-            val byteBuffer = ByteArray(SEGMENT_SIZE)
             val contentLength = response.contentLength() ?: 1
 
             var total = 0
             var read: Int
 
-            do {
-                read = source.readAvailable(byteBuffer, 0, SEGMENT_SIZE)
+            val tempBuffer = Buffer()
+            tempBuffer.use {
+                val byteBuffer = ByteArray(SEGMENT_SIZE)
+                do {
+                    read = source.readAvailable(byteBuffer, 0, SEGMENT_SIZE)
 
-                if (read > 0) {
-                    buffer.write(
-                        if (read < SEGMENT_SIZE) {
-                            byteBuffer.sliceArray(0 until read)
-                        } else {
-                            byteBuffer
-                        }
-                    )
-                    total += read
-                    onProgress(total.toFloat() / contentLength)
-                }
-            } while (read >= 0)
+                    if (read > 0) {
+                        it.write(
+                            if (read < SEGMENT_SIZE) {
+                                byteBuffer.sliceArray(0 until read)
+                            } else {
+                                byteBuffer
+                            }
+                        )
+                        total += read
+                        onProgress(total.toFloat() / contentLength)
+                    }
+                } while (read >= 0)
+            }
+
+            buffer.use {
+                it.writeAll(tempBuffer)
+            }
 
             onFinish(contentLength, System.currentTimeMillis() - startTime)
         }.onFailure(Timber::e)
-
-        buffer.close()
     }
 
     companion object {

@@ -3,7 +3,6 @@ package com.san.kir.core.compose_utils
 import android.content.Context
 import android.graphics.BitmapFactory
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -23,7 +22,6 @@ import com.san.kir.core.internet.LocalConnectManager
 import timber.log.Timber
 import java.io.File
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun ImageWithStatus(url: String?) {
     val manager = LocalConnectManager.current

@@ -39,17 +39,17 @@ enum class ShikimoriStatus {
 @Serializable
 data class ShikimoriManga(
     val id: Long = -1,
-    val name: String = "",
+    val name: String? = null,
     val russian: String = "",
     val image: ShikimoriImage = ShikimoriImage(),
     val url: String = "",
     val chapters: Long = 0,
     val genres: List<ShikimoriGenre> = emptyList(),
-    val description: String = "",
-    val english: List<String> = emptyList(),
-    val kind: String = "",
-    val score: Float = -1f,
-    val volumes: Long = -1,
+    val description: String? = null,
+    val english: List<String?>? = emptyList(),
+    val kind: String? = null,
+    val score: Float? = null,
+    val volumes: Long? = null,
 ) {
     val isEmpty: Boolean
         get() = id == -1L

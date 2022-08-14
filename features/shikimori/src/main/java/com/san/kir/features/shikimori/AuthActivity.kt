@@ -4,40 +4,43 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.viewModels
-import com.san.kir.core.utils.log
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.lifecycleScope
+import com.san.kir.core.utils.coroutines.withMainContext
+import com.san.kir.features.shikimori.api.ShikimoriData
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
-object ShikimoriAuth {
-    fun start(
-        context: Context,
-    ) {
-        AuthActivity.start(context)
-    }
-}
+internal val Context.authCodeStore by preferencesDataStore(name = "shikimori")
+internal val CODE = stringPreferencesKey("auth_code")
 
 @AndroidEntryPoint
 internal class AuthActivity : ComponentActivity() {
     companion object {
-        fun start(
-            context: Context,
-        ) {
+        fun start(context: Context) {
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data = ShikimoriData.authorizeUrl
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             context.startActivity(intent)
         }
     }
-
-    private val viewModel: ShikimoriAuthViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val code = intent.data?.getQueryParameter("code")
-        log("code is $code")
+        Timber.v("code is $code")
         if (code != null) {
-            viewModel.login(code).invokeOnCompletion {
-                finish()
+            lifecycleScope.launch {
+                authCodeStore.edit { settings ->
+                    settings[CODE] = code
+                }
+                withMainContext {
+                    finish()
+                }
             }
         } else finish()
     }

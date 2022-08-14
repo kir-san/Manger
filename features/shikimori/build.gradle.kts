@@ -2,6 +2,7 @@ plugins {
     id("compose.library")
     id(Plugins.kapt)
     id(Plugins.hilt)
+    alias(libs.plugins.serialization)
 }
 
 dependencies {
@@ -20,8 +21,6 @@ dependencies {
 
     implementation(libs.material)
 
-    implementation(libs.bundles.retrofit)
-
     implementation(libs.lifecycle.runtime)
     implementation(libs.lifecycle.common)
     implementation(libs.lifecycle.viewmodel)
@@ -31,4 +30,6 @@ dependencies {
     kapt(libs.bundles.hiltCompilers)
 
     implementation(libs.timber)
+    implementation(libs.serialization)
+    implementation(libs.datastore)
 }

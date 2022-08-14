@@ -1,7 +1,7 @@
-package com.san.kir.features.shikimori
+package com.san.kir.features.shikimori.api
 
 import android.net.Uri
-import com.san.kir.data.models.base.ShikimoriAccount
+import io.ktor.http.*
 
 object ShikimoriData {
     const val siteName = "shikimori.one"
@@ -12,6 +12,25 @@ object ShikimoriData {
     const val clientId = "HVh4u3DNW6qCmFHGCdKMt65SeFUuElar9tdxwtAzos4"
     const val clientSecret = "_htbF82BTgPwh775gTVvM4DW2Z3eHVjcqP8TMt_IkaA"
     const val redirectUri = "manger://shikimori-auth"
+
+    private val baseParameters = parametersOf(
+        "client_id" to listOf(clientId),
+        "client_secret" to listOf(clientSecret)
+    )
+
+    fun getTokenParameters(code: String) =
+        baseParameters + parametersOf(
+            "grant_type" to listOf("authorization_code"),
+            "redirect_uri" to listOf(redirectUri),
+            "code" to listOf(code)
+        )
+
+    fun refreshTokenParameters(refreshToken: String) =
+        baseParameters + parametersOf(
+            "grant_type" to listOf("refresh_token"),
+            "refresh_token" to listOf(refreshToken)
+        )
+
 
     val authorizeUrl: Uri =
         Uri.parse("$baseUrl/oauth/authorize")

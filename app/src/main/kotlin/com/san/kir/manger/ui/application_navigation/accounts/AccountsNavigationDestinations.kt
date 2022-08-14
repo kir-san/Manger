@@ -27,7 +27,7 @@ enum class AccountsNavTarget : NavTarget {
     },
     Shikimori {
         override val content = navTarget(route = "shikimori") {
-            ShikimoriScreen(hiltViewModel(),
+            ShikimoriScreen(
                 ::navigateUp,
                 navigateToShikiItem = { navigate(ProfileItem, it, -1L) },
                 navigateToLocalItems = { navigate(LocalItems) },

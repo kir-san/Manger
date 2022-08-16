@@ -2,6 +2,9 @@ package com.san.kir.features.shikimori.ui.util
 
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
+import com.san.kir.data.models.base.ShikiDbManga
+import com.san.kir.data.models.base.ShikimoriMangaItem
+import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
 
 // Алгоритм нечеткого сравнения предолжений
 // Исходный код взят с этого проекта https://github.com/denxc/SentencesFuzzyComparison
@@ -11,11 +14,30 @@ internal infix fun String.fuzzy(that: String): Pair<Double, Boolean> {
     return FuzzyComparison().fuzzyEqual(this, that)
 }
 
+internal infix fun ShikimoriMangaItem.fuzzy(that: ShikimoriMangaItem): Pair<Double, Boolean> {
+    return when (this) {
+        is ShikiDbManga -> this fuzzy (that as SimplifiedMangaWithChapterCounts)
+        is SimplifiedMangaWithChapterCounts -> this fuzzy (that as ShikiDbManga)
+        else -> 0.0 to false
+    }
+}
+
+internal infix fun SimplifiedMangaWithChapterCounts.fuzzy(that: ShikiDbManga) = that fuzzy this
+internal infix fun ShikiDbManga.fuzzy(that: SimplifiedMangaWithChapterCounts): Pair<Double, Boolean> {
+    // сравниваем названия с помочью нечеткого сравнения
+    val fuzzy1 = name fuzzy that.name
+    val fuzzy2 = (manga.english?.firstOrNull() ?: "") fuzzy that.name
+
+    // Если хотя бы одно из них дало положительный результат
+    // то находим значение наилучшего совпадения
+    return maxOf(fuzzy1.first, fuzzy2.first) to (fuzzy1.second || fuzzy2.second)
+}
+
 private class FuzzyComparison(
     /// Порог принятия предложений эквивалентными.
     /// Характеризует отношение количества одинаковых слов
     /// к количеству различных.
-    private var thresholdSentence: Double = 0.25,
+    private var thresholdSentence: Double = 0.35,
 
     /// Порог принятия слов эквивалентными.
     /// Характеризует отношение количества одинаковых подстрок

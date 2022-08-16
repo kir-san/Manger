@@ -10,12 +10,10 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.AlertDialog
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Login
@@ -28,13 +26,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.Styles
-import com.san.kir.core.compose_utils.animation.FromBottomToBottomAnimContent
 import com.san.kir.core.compose_utils.animation.FromEndToEndAnimContent
 import com.san.kir.core.compose_utils.rememberImage
 import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
 import com.san.kir.features.shikimori.R
 import com.san.kir.features.shikimori.api.ShikimoriData
+import com.san.kir.features.shikimori.ui.util.LogOutDialog
+import com.san.kir.features.shikimori.ui.util.TextLoginOrNot
 
 @Composable
 fun ShikimoriAccountItem(navigateToManager: () -> Unit) {
@@ -92,20 +90,7 @@ private fun LoginOrNot(
                 .weight(1f, true)
         ) {
             Text(stringResource(R.string.site_name))
-            FromBottomToBottomAnimContent(targetState = state) { targetState ->
-                when (targetState) {
-                    is LoginState.LogIn -> {
-                        Text(stringResource(R.string.login_text, targetState.nickName))
-                    }
-                    LoginState.LogOut -> {
-                        Text(stringResource(R.string.no_login_text), style = Styles.secondaryText)
-                    }
-                    LoginState.Error -> {
-                        Text(stringResource(R.string.error_try_again), style = Styles.secondaryText)
-                    }
-                    else -> {}
-                }
-            }
+            TextLoginOrNot(state)
         }
 
         Row(modifier = Modifier.fillMaxHeight(), verticalAlignment = Alignment.CenterVertically) {
@@ -139,26 +124,4 @@ private fun LoginOrNot(
     }
 }
 
-@Composable
-private fun LogOutDialog(state: DialogState, onDismiss: () -> Unit, onConfirm: () -> Unit) {
-    when (state) {
-        DialogState.Hide -> {}
-        DialogState.Show -> {
-            AlertDialog(
-                onDismissRequest = onDismiss,
-                text = { Text(stringResource(R.string.logout_dialog_text)) },
-                title = { Text(stringResource(R.string.logout_dialog_title)) },
-                dismissButton = {
-                    TextButton(onClick = onDismiss) {
-                        Text(stringResource(R.string.logout_dialog_cancel))
-                    }
-                },
-                confirmButton = {
-                    TextButton(onClick = onConfirm) {
-                        Text(stringResource(R.string.logout_dialog_ok))
-                    }
-                }
-            )
-        }
-    }
-}
+

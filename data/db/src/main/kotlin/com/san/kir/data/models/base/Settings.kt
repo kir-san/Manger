@@ -6,6 +6,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.san.kir.core.support.ChapterFilter
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 @Entity(tableName = Settings.tableName)
 data class Settings(
@@ -137,7 +138,7 @@ data class Settings(
         @Embedded
         val whoami: ShikimoriWhoami = ShikimoriWhoami(),
     ) {
-        @kotlinx.serialization.Serializable
+        @Serializable
         data class ShikimoriAccessToken(
             @ColumnInfo(name = Col.accessToken)
             @SerialName(Col.accessToken)
@@ -167,7 +168,7 @@ data class Settings(
                 get() = (System.currentTimeMillis() / 1000) > (createdAt + expiresIn - 3600)
         }
 
-        @kotlinx.serialization.Serializable
+        @Serializable
         data class ShikimoriWhoami(
             @ColumnInfo(name = Col.shikimoriWhoamiId)
             @SerialName(Col.id)

@@ -1,8 +1,6 @@
 package com.san.kir.features.shikimori.ui
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -10,7 +8,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
 import androidx.core.app.ComponentActivity
@@ -24,6 +21,8 @@ import com.san.kir.core.support.R
 import com.san.kir.features.shikimori.ui.profile_item.ProfileItemScreen
 import com.san.kir.features.shikimori.ui.search.ShikiSearchScreen
 import com.san.kir.features.shikimori.ui.accountItem.ShikimoriAccountItem
+import com.san.kir.features.shikimori.ui.accountScreen.ShikimoriScreen
+import timber.log.Timber
 
 fun ComponentActivity.setContent() {
     val connectManager = ConnectManager(this.application)
@@ -45,8 +44,8 @@ fun ComponentActivity.setContent() {
 @Composable
 internal fun ShikimoriContent() {
 //    val viewModelItem = hiltViewModel<ShikiItemViewModel>()
-    var nav: ShikiNavTarget by remember { mutableStateOf(ShikiNavTarget.Start) }
-
+    var nav: ShikiNavTarget by remember { mutableStateOf(ShikiNavTarget.Catalog) }
+    Timber.plant(Timber.DebugTree())
 
     Crossfade(targetState = nav) { target ->
         when (target) {
@@ -59,18 +58,17 @@ internal fun ShikimoriContent() {
                     additionalPadding = Dimensions.zero
                 ) {
                     item(key = "Shiki") {
-                        ShikimoriAccountItem { nav = ShikiNavTarget.Search }
+                        ShikimoriAccountItem { nav = ShikiNavTarget.Catalog }
                     }
 
                 }
-//            ShikiNavTarget.Catalog ->
-//                ShikimoriScreen(
-//                    viewModel,
-//                    navigateUp = { nav = ShikiNavTarget.Start },
-//                    navigateToShikiItem = { nav = ShikiNavTarget.ShikiItem(it) },
-//                    navigateToLocalItem = {},
-//                    navigateToSearch = { nav = ShikiNavTarget.Search }
-//                )
+            ShikiNavTarget.Catalog ->
+                ShikimoriScreen(
+                    navigateUp = { nav = ShikiNavTarget.Start },
+                    navigateToShikiItem = { /*nav = ShikiNavTarget.ShikiItem(it)*/ },
+                    navigateToLocalItems = {},
+                    navigateToSearch = { /*nav = ShikiNavTarget.Search*/ }
+                )
 //            is ShikiNavTarget.ShikiItem -> {
 //                viewModelItem.update(target.id)
 //                ShikiItemScreen(

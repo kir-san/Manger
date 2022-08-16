@@ -44,6 +44,16 @@ internal class SettingsRepository @Inject constructor(
         )
     }
 
+    suspend fun update(
+        isLogin: Boolean,
+    ) = withIoContext {
+        settingsDao.update(
+            currentSettings().copy(
+                auth = currentAuth().copy(isLogin = isLogin)
+            )
+        )
+    }
+
     suspend fun clearAuth() = withIoContext {
         settingsDao.update(
             currentSettings().copy(auth = Settings.ShikimoriAuth())

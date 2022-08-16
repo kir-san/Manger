@@ -29,8 +29,12 @@ internal class TokenRepository @Inject constructor(private val client: HttpClien
         }
 
 
-    suspend fun getWhoami(): Settings.ShikimoriAuth.ShikimoriWhoami = withIoContext {
-        client.get(ShikimoriApi.Users.Whoami()).body()
+    suspend fun getWhoami(): Settings.ShikimoriAuth.ShikimoriWhoami? = withIoContext {
+        try {
+            client.get(ShikimoriApi.Users.Whoami()).body<Settings.ShikimoriAuth.ShikimoriWhoami>()
+        } catch (ex: Throwable) {
+            null
+        }
     }
 }
 

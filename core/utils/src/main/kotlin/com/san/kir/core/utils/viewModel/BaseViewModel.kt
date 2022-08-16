@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import timber.log.Timber
 
-abstract class BaseViewModel<in E : Event, out S : State> : ViewModel(), StateHolder<E, S> {
+abstract class BaseViewModel<in E : ScreenEvent, out S : State> : ViewModel(), StateHolder<E, S> {
 
     abstract val tempState: Flow<S>
     abstract val defaultState: S
@@ -33,7 +33,7 @@ abstract class BaseViewModel<in E : Event, out S : State> : ViewModel(), StateHo
     }
 }
 
-interface StateHolder<in E : Event, out S : State> {
+interface StateHolder<in E : ScreenEvent, out S : State> {
     val state: StateFlow<S>
     fun sendEvent(event: E)
 }

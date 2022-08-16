@@ -13,7 +13,7 @@ fun AccountsScreen(
     navigateUp: () -> Unit,
     navigateToShiki: () -> Unit,
 ) {
-        ScreenList(
+    ScreenList(
         topBar = topBar(
             navigationListener = navigateUp,
             title = stringResource(R.string.main_menu_accounts),

@@ -5,9 +5,17 @@
     <string name="login_text">Вы вошли, как %s</string>
     <string name="no_login_text">Не используется</string>
     <string name="no_auth_text">Вы не авторизованы</string>
+    <string name="error_try_again">Произошла ошибка! Попробуйте снова.</string>
     <string name="login">Войти</string>
     <string name="logout">Выйти</string>
-    <string name="reading">Прочитано %1$d из %2$d</string>
+    <string name="logout_dialog_title">Внимание!</string>
+    <string name="logout_dialog_text">Вы собираетесь выйти из профиля.</string>
+    <string name="logout_dialog_ok">Так и есть</string>
+    <string name="logout_dialog_cancel">Нет</string>
+    <string name="update_data">Обновить данные</string>
+    <string name="reading">Прочитано: %1$d из %2$d</string>
+    <string name="volumes_and_chapters">Томов: %1$d - Глав: %2$d</string>
+    <string name="nothing_founds">Ничего не найдено</string>
     <string name="current_status">Текущий статус: %s</string>
     <string name="online_catalog">Манга из вашего профиля</string>
     <string name="local_catalog">Манга из библиотеки</string>
@@ -15,6 +23,20 @@
     <string name="nonsynced_catalog_items">Непривязанные элементы %d</string>
     <string name="desc_hide">свернуть</string>
     <string name="desc_show">развернуть</string>
+    <string name="change">Изменить</string>
+
+    <string name="local_items_title">Библиотека</string>
+    <string name="local_items_subtitle">Непривязанной манги: %d</string>
+
+    <string name="profile_item_title">Описание</string>
+    <string name="profile_item_volumes">Томов: %d шт.</string>
+    <string name="profile_item_chapters">Глав: %d</string>
+    <string name="profile_item_score">Оценка: %.2f из 10</string>
+    <string name="profile_item_genres">Жанры: %s</string>
+    <string name="profile_item_desc">Описание: %s</string>
+    <string name="profile_item_chapters_change">Главы </string>
+    <string name="profile_item_score_change">Оценка </string>
+    <string name="profile_item_rewrite_change">Прочитано раз</string>
 
     <string name="local_search_searching">Поиск совпадений в Библиотеке</string>
     <string name="local_search_not_founds">В Библиотеке нет ничего похожего</string>

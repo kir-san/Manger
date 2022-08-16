@@ -40,5 +40,14 @@ interface ShikimoriDao : BaseDao<ShikiDbManga> {
     @Query("SELECT * FROM ${SimplifiedMangaWithChapterCounts.viewName} " +
             "WHERE ${Manga.Col.id} IS :id")
     fun loadLibraryItemById(id: Long): Flow<SimplifiedMangaWithChapterCounts>
+
+    @Query("DELETE FROM ${ShikiDbManga.tableName} " +
+                   "WHERE ${ShikiDbManga.Col.targetId} IS :targetID")
+    suspend fun removeByTargetId(targetID: Long)
+
+    @Query("UPDATE ${ShikiDbManga.tableName} " +
+                   "SET ${ShikiDbManga.Col.libMangaId} = :libId " +
+                   "WHERE ${ShikiDbManga.Col.targetId} IS :targetID")
+    suspend fun updateLibIdByTargetId(targetID: Long, libId: Long)
 }
 

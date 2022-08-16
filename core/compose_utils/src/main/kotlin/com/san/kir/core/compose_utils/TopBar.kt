@@ -18,6 +18,7 @@ import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -44,6 +45,7 @@ import kotlinx.coroutines.launch
 fun PreparedTopBar(
     navigationListener: () -> Unit = { },
     title: String = "",
+    subtitleContent: @Composable (() -> Unit)? = null,
     subtitle: String = "",
     height: Dp = Dimensions.appBarHeight,
     scaffoldState: ScaffoldState? = null,
@@ -57,11 +59,18 @@ fun PreparedTopBar(
             title = {
                 Column {
                     Text(text = title, maxLines = 1)
-                    if (subtitle.isNotEmpty()) Text(
-                        text = subtitle,
-                        style = MaterialTheme.typography.subtitle2,
-                        maxLines = 1
-                    )
+
+                    ProvideTextStyle(value = MaterialTheme.typography.subtitle2) {
+                        if (subtitleContent != null) {
+                            subtitleContent()
+                        } else
+                            if (subtitle.isNotEmpty()) {
+                                Text(
+                                    text = subtitle,
+                                    maxLines = 1
+                                )
+                            }
+                    }
                 }
             },
             navigationIcon = {
@@ -110,6 +119,7 @@ fun PreparedTopBar(
 fun topBar(
     title: String = "",
     subtitle: String = "",
+    subtitleContent: @Composable (() -> Unit)? = null,
     scaffoldState: ScaffoldState? = null,
     actions: @Composable TopBarActions.() -> Unit = {},
     navigationListener: () -> Unit = {},
@@ -123,6 +133,7 @@ fun topBar(
         PreparedTopBar(
             title = title,
             subtitle = subtitle,
+            subtitleContent = subtitleContent,
             scaffoldState = scaffoldState,
             actions = actions,
             navigationListener = navigationListener,

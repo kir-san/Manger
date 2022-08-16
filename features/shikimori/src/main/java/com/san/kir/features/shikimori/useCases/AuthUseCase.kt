@@ -29,8 +29,12 @@ internal class AuthUseCase @Inject constructor(
         val newToken = tokenRepository.getAccessToken(code)
         settingsRepository.update(token = newToken)
 
-        val newWhoami = tokenRepository.getWhoami()
-        settingsRepository.update(isLogin = true, token = newToken, whoami = newWhoami)
+        tokenRepository.getWhoami()?.let {new ->
+            settingsRepository.update(isLogin = true, token = newToken, whoami = new)
+        } ?: let {
+            settingsRepository.update(isLogin = false)
+        }
+
     }
 
     suspend fun logout() = withIoContext {

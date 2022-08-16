@@ -1,6 +1,7 @@
 package com.san.kir.features.shikimori.ui.accountItem
 
 import com.san.kir.core.utils.viewModel.State
+import com.san.kir.features.shikimori.ui.util.DialogState
 
 internal data class ScreenState(
     val login: LoginState,
@@ -14,7 +15,4 @@ internal sealed interface LoginState {
     object Error : LoginState
 }
 
-internal sealed interface DialogState {
-    object Show : DialogState
-    object Hide : DialogState
-}
+

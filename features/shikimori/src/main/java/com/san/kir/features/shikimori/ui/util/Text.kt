@@ -9,8 +9,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.data.models.base.ShikimoriAccount
+import com.san.kir.core.compose_utils.Fonts
+import com.san.kir.core.compose_utils.Styles
+import com.san.kir.core.compose_utils.animation.FromBottomToBottomAnimContent
+import com.san.kir.data.models.base.ShikimoriStatus
 import com.san.kir.features.shikimori.R
+import com.san.kir.features.shikimori.ui.accountItem.LoginState
 
 @Composable
 fun StatusText(currentStatus: ShikimoriAccount.Status?) {
@@ -21,11 +25,20 @@ fun StatusText(currentStatus: ShikimoriAccount.Status?) {
 }
 
 @Composable
-internal fun textLoginOrNot(isLogin: Boolean, nickname: String): String {
-    return if (isLogin) {
-        stringResource(R.string.login_text, nickname)
-    } else {
-        stringResource(R.string.no_auth_text)
+internal fun TextLoginOrNot(state: LoginState) {
+    FromBottomToBottomAnimContent(targetState = state) { targetState ->
+        when (targetState) {
+            is LoginState.LogIn -> {
+                Text(stringResource(R.string.login_text, targetState.nickName))
+            }
+            LoginState.LogOut -> {
+                Text(stringResource(R.string.no_login_text), style = Styles.secondaryText)
+            }
+            LoginState.Error -> {
+                Text(stringResource(R.string.error_try_again), style = Styles.secondaryText)
+            }
+            else -> {}
+        }
     }
 }
 

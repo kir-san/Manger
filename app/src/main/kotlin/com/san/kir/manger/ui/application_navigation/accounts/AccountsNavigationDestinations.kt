@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import com.san.kir.features.shikimori.ui.local_item.LocalItemScreen
 import com.san.kir.features.shikimori.ui.local_item.LocalItemViewModel
 import com.san.kir.features.shikimori.ui.local_items.LocalItemsScreen
-import com.san.kir.features.shikimori.ui.main.ShikimoriScreen
+import com.san.kir.features.shikimori.ui.accountScreen.ShikimoriScreen
 import com.san.kir.features.shikimori.ui.profile_item.ProfileItemScreen
 import com.san.kir.features.shikimori.ui.search.ShikiSearchScreen
 import com.san.kir.manger.ui.application_navigation.MainNavTarget

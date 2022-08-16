@@ -1,12 +1,14 @@
 package com.san.kir.features.shikimori.ui.accountItem
 
-import com.san.kir.core.utils.viewModel.State
+import androidx.compose.runtime.Stable
+import com.san.kir.core.utils.viewModel.ScreenState
 import com.san.kir.features.shikimori.ui.util.DialogState
 
+@Stable
 internal data class ScreenState(
     val login: LoginState,
     val dialog: DialogState,
-) : State
+) : ScreenState
 
 internal sealed interface LoginState {
     object Loading : LoginState

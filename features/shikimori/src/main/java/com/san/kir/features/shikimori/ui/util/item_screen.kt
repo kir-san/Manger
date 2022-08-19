@@ -1,49 +1,35 @@
 package com.san.kir.features.shikimori.ui.util
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material.icons.filled.Update
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.ScreenList
-import com.san.kir.core.compose_utils.rememberImage
-import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
+import com.san.kir.core.compose_utils.SmallSpacer
 import com.san.kir.core.compose_utils.topBar
-import com.san.kir.data.models.base.ShikimoriAccount
+import com.san.kir.data.models.base.ShikimoriMangaItem
 import com.san.kir.features.shikimori.R
-import com.san.kir.features.shikimori.ui.catalog_item.AskState
-import com.san.kir.features.shikimori.ui.catalog_item.CatalogItemViewModel
-import com.san.kir.features.shikimori.ui.catalog_item.SyncState
+import com.san.kir.features.shikimori.ui.accountRate.AccountRateEvent
+import com.san.kir.features.shikimori.ui.accountRate.SyncState
+import com.san.kir.features.shikimori.useCases.CanBind
+import com.san.kir.features.shikimori.ui.accountRate.DialogState
 
 @Composable
 internal fun ItemScreen(
-    viewModel: CatalogItemViewModel,
+//    viewModel: CatalogItemViewModel,
     navigateUp: () -> Unit,
     navigateToSearch: (String) -> Unit,
     findTextId: Int,
@@ -52,111 +38,12 @@ internal fun ItemScreen(
     notFoundsTextId: Int,
     notFoundsSearchTextId: Int,
 ) {
-    val item by viewModel.item.collectAsState()
-    val syncState by viewModel.syncState.collectAsState()
-    val askState by viewModel.askState.collectAsState()
-    val hasAction by viewModel.hasForegroundWork.collectAsState()
-
     ScreenList(
         topBar = topBar(
-            navigationListener = navigateUp,
-            title = item.name,
             actions = {
-                if (hasAction) {
-                    CircularProgressIndicator()
-                } else {
-                    MenuIcon(Icons.Default.Update, onClick = viewModel::updateDataFromNetwork)
-                    if (syncState is SyncState.Ok) {
-                        MenuIcon(Icons.Default.Cancel, onClick = viewModel::askCancelSync)
-                    }
-                }
             }
         ),
     ) {
-        item {
-            Head(
-                item.logo,
-                item.read,
-                item.all,
-                item.status,
-                item.description,
-            )
-        }
-
-        item {
-            Divider()
-        }
-
-        body(
-            syncState,
-            findTextId = findTextId,
-            okTextId = okTextId,
-            foundsTextId = foundsTextId,
-            notFoundsTextId = notFoundsTextId,
-            notFoundsSearchTextId = notFoundsSearchTextId,
-            onListItemClick = viewModel::checkAllChapters,
-            onSyncedItemClick = {},
-            onSearch = navigateToSearch
-        )
-    }
-
-    Dialogs(
-        askState,
-        closeDialog = viewModel::askNone,
-        checkReadChapters = viewModel::checkReadChapters,
-        launchSync = viewModel::launchSync,
-        cancelSync = viewModel::cancelSync
-    )
-}
-
-// Заголовок манги с описанием, данными и аватаркой
-@Composable
-internal fun Head(
-    avatar: String,
-    readingChapters: Long,
-    allChapters: Long,
-    currentStatus: ShikimoriAccount.Status?,
-    description: String,
-) {
-    var showFullDesc by remember { mutableStateOf(false) }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(systemBarsHorizontalPadding(Dimensions.default)),
-    ) {
-        Image(
-            rememberImage(avatar), contentDescription = "manga avatar",
-            modifier = Modifier
-                .width(Dimensions.bigImageSize)
-                .padding(Dimensions.small),
-        )
-        Column(modifier = Modifier.weight(1f, true)) {
-            Text(stringResource(R.string.reading, readingChapters, allChapters))
-
-            Spacer(modifier = Modifier.padding(Dimensions.smaller))
-
-            StatusText(currentStatus)
-
-            Spacer(modifier = Modifier.padding(Dimensions.smaller))
-
-            Text(
-                description,
-                maxLines = if (showFullDesc) Int.MAX_VALUE else 4,
-                modifier = Modifier.clickable { showFullDesc = !showFullDesc }
-            )
-
-            TextButton(
-                onClick = { showFullDesc = !showFullDesc },
-                contentPadding = PaddingValues(vertical = Dimensions.zero),
-                modifier = Modifier.align(Alignment.End)
-            ) {
-                if (showFullDesc)
-                    Text(stringResource(R.string.desc_hide))
-                else
-                    Text(stringResource(R.string.desc_show))
-            }
-        }
     }
 }
 
@@ -168,13 +55,13 @@ internal fun LazyListScope.body(
     foundsTextId: Int,
     notFoundsTextId: Int,
     notFoundsSearchTextId: Int,
-    onListItemClick: (ShikimoriAccount.AbstractMangaItem) -> Unit,
-    onSyncedItemClick: (ShikimoriAccount.AbstractMangaItem) -> Unit,
+    onListItemClick: (ShikimoriMangaItem) -> Unit,
+    onSyncedItemClick: (ShikimoriMangaItem) -> Unit,
     onSearch: (String) -> Unit,
 ) {
     when (localSearch) {
         // Поиск в базе данных, подходящей по названию манги
-        SyncState.Find -> item {
+        SyncState.Finding -> item {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -182,7 +69,7 @@ internal fun LazyListScope.body(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(modifier = Modifier.padding(Dimensions.default))
                 Text(
                     stringResource(findTextId),
                     modifier = Modifier.padding(start = Dimensions.default),
@@ -199,7 +86,7 @@ internal fun LazyListScope.body(
                     readingChapters = 0,
                     allChapters = 0,
                     currentStatus = null,
-                    isSynced = false,
+                    canBind = CanBind.Already,
                     onClick = { onSyncedItemClick(localSearch.manga) })
             }
         }
@@ -215,94 +102,133 @@ internal fun LazyListScope.body(
                     readingChapters = item.read,
                     allChapters = item.all,
                     currentStatus = item.status,
-                    isSynced = false,
+                    canBind = CanBind.No,
                     onClick = { onListItemClick(item) })
             }
         }
         // Поиск ничего не дал
         is SyncState.NotFounds -> item {
-            ItemHeader(notFoundsTextId)
-
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(stringResource(notFoundsSearchTextId))
+                ItemHeader(notFoundsTextId)
+
+                SmallSpacer()
+
+                ItemHeader(notFoundsSearchTextId)
+
+                SmallSpacer()
 
                 Button(onClick = { onSearch(localSearch.name) }) {
                     Text(stringResource(R.string.local_search_not_founds_go))
                 }
             }
         }
-        SyncState.NoFind -> {
-        }
+        SyncState.None -> {}
     }
 }
 
 // Диалоги появляющиеся в спорных ситуациях
 @Composable
-internal fun Dialogs(
-    askState: AskState,
-    closeDialog: () -> Unit,
-    checkReadChapters: (ShikimoriAccount.AbstractMangaItem) -> Unit,
-    launchSync: (ShikimoriAccount.AbstractMangaItem, Boolean) -> Unit,
-    cancelSync: () -> Unit,
+internal fun DialogsSyncState(
+    state: DialogState,
+    onSendEvent: (AccountRateEvent) -> Unit,
 ) {
-    when (askState) {
-        AskState.None -> {
+    when (state) {
+        DialogState.None -> {
         }
-        // Разное количество глав
-        is AskState.DifferentChapterCount -> {
+
+        is DialogState.Init -> {
             AlertDialog(
-                onDismissRequest = closeDialog,
+                onDismissRequest = { onSendEvent(AccountRateEvent.DialogDismiss) },
                 title = {
                     Text(stringResource(R.string.local_search_dialog_diff_title))
                 },
                 text = {
-                    Text(stringResource(R.string.local_search_dialog_diffall_text,
-                        askState.local,
-                        askState.online))
+                    Text(stringResource(R.string.local_search_dialog_bind_items))
                 },
                 confirmButton = {
-                    TextButton(onClick = { checkReadChapters(askState.manga) }) {
+                    TextButton(onClick = { onSendEvent(AccountRateEvent.SyncNext(state.manga)) }) {
                         Text(stringResource(R.string.local_search_dialog_diffall_yes))
                     }
                 },
                 dismissButton = {
-                    TextButton(onClick = closeDialog) {
+                    TextButton(onClick = { onSendEvent(AccountRateEvent.DialogDismiss) }) {
+                        Text(stringResource(R.string.local_search_dialog_diffall_no))
+                    }
+                }
+            )
+        }
+
+        // Разное количество глав
+        is DialogState.DifferentChapterCount -> {
+            AlertDialog(
+                onDismissRequest = { onSendEvent(AccountRateEvent.DialogDismiss) },
+                title = {
+                    Text(stringResource(R.string.local_search_dialog_diff_title))
+                },
+                text = {
+                    Text(
+                        stringResource(
+                            R.string.local_search_dialog_diffall_text,
+                            state.local,
+                            state.online
+                        )
+                    )
+                },
+                confirmButton = {
+                    TextButton(onClick = { onSendEvent(AccountRateEvent.SyncNext(state.manga)) }) {
+                        Text(stringResource(R.string.local_search_dialog_diffall_yes))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { onSendEvent(AccountRateEvent.DialogDismiss) }) {
                         Text(stringResource(R.string.local_search_dialog_diffall_no))
                     }
                 }
             )
         }
         // Разное количество прочитанных глав
-        is AskState.DifferentReadCount -> {
+        is DialogState.DifferentReadCount -> {
             AlertDialog(
-                onDismissRequest = closeDialog,
+                onDismissRequest = { onSendEvent(AccountRateEvent.DialogDismiss) },
                 title = {
                     Text(stringResource(R.string.local_search_dialog_diff_title))
                 },
                 text = {
-                    Text(stringResource(R.string.local_search_dialog_diffread_text,
-                        askState.local,
-                        askState.online))
+                    Text(
+                        stringResource(
+                            R.string.local_search_dialog_diffread_text,
+                            state.local,
+                            state.online
+                        )
+                    )
                 },
                 confirmButton = {
-                    TextButton(onClick = { launchSync(askState.manga, false) }) {
+                    TextButton(
+                        onClick = {
+                            onSendEvent(AccountRateEvent.SyncNext(state.manga, false))
+                        }
+                    ) {
                         Text(stringResource(R.string.local_search_dialog_diffread_local))
                     }
                 },
                 dismissButton = {
-                    TextButton(onClick = { launchSync(askState.manga, true) }) {
+                    TextButton(
+                        onClick = {
+                            onSendEvent(AccountRateEvent.SyncNext(state.manga, true))
+                        }
+                    ) {
                         Text(stringResource(R.string.local_search_dialog_diffread_online))
                     }
                 }
             )
         }
         // Отмена привязки
-        AskState.CancelSync -> {
+        DialogState.CancelSync -> {
             AlertDialog(
-                onDismissRequest = closeDialog,
+                onDismissRequest = { onSendEvent(AccountRateEvent.DialogDismiss) },
                 title = {
                     Text(stringResource(R.string.local_search_dialog_diff_title))
                 },
@@ -310,12 +236,12 @@ internal fun Dialogs(
                     Text(stringResource(R.string.local_search_dialog_cancelsync_text))
                 },
                 confirmButton = {
-                    TextButton(onClick = cancelSync) {
+                    TextButton(onClick = { onSendEvent(AccountRateEvent.SyncCancel) }) {
                         Text(stringResource(R.string.local_search_dialog_diffall_yes))
                     }
                 },
                 dismissButton = {
-                    TextButton(onClick = closeDialog) {
+                    TextButton(onClick = { onSendEvent(AccountRateEvent.DialogDismiss) }) {
                         Text(stringResource(R.string.local_search_dialog_diffall_no))
                     }
                 }

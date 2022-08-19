@@ -16,5 +16,13 @@ object Dimensions {
         val big = 126.dp
     }
 
+    object ProgressBar {
+        val default = 18.dp
+        val toolbar = 40.dp
+
+        val strokeSmall = 2.dp
+        val strokeDefault= 4.dp
+    }
+
     val appBarHeight = 56.dp
 }

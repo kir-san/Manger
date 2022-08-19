@@ -195,6 +195,7 @@ fun SearchTextField(
 @Composable
 fun TextWithFirstWordBold(
     text: String,
+    modifier: Modifier = Modifier,
     textAlign: TextAlign? = null,
     maxLines: Int = Int.MAX_VALUE,
 ) {
@@ -206,6 +207,6 @@ fun TextWithFirstWordBold(
         ),
         textAlign = textAlign,
         maxLines = maxLines,
-        modifier = Modifier.padding(vertical = Dimensions.smaller)
+        modifier = modifier.padding(vertical = Dimensions.smaller)
     )
 }

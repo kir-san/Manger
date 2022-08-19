@@ -2,7 +2,6 @@ plugins {
     id("base.library")
     alias(libs.plugins.kotlin.ksp)
     id(Plugins.parcelize)
-    alias(libs.plugins.serialization)
 }
 
 android {
@@ -29,6 +28,6 @@ dependencies {
 
     implementation(libs.paging)
 
-    implementation(libs.serialization)
+    implementation(libs.gson)
     implementation(libs.timber)
 }

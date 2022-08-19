@@ -2,6 +2,7 @@ package com.san.kir.features.shikimori.ui.util
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,10 +18,13 @@ import com.san.kir.features.shikimori.R
 import com.san.kir.features.shikimori.ui.accountItem.LoginState
 
 @Composable
-fun StatusText(currentStatus: ShikimoriAccount.Status?) {
+fun StatusText(currentStatus: ShikimoriStatus?) {
     if (currentStatus != null) {
         val statuses = LocalContext.current.resources.getStringArray(R.array.statuses)
-        Text(stringResource(R.string.current_status, statuses[currentStatus.ordinal]))
+        Text(
+            stringResource(R.string.current_status, statuses[currentStatus.ordinal]),
+            fontSize = Fonts.Size.less,
+        )
     }
 }
 
@@ -51,4 +55,24 @@ internal fun ItemHeader(id: Int) {
             .padding(Dimensions.small),
         textAlign = TextAlign.Center
     )
+}
+
+// Отображение названий манги с установленым стилем
+@Composable
+internal fun MangaNames(
+    name: String? = null,
+    russianName: String? = null,
+) {
+    ProvideTextStyle(Fonts.Style.bigBoldCenter) {
+        name?.let { name ->
+            Text(name, modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = Dimensions.default))
+        }
+
+        russianName?.let { name ->
+            if (name.isNotEmpty())
+                Text(name, modifier = Modifier.fillMaxWidth())
+        }
+    }
 }

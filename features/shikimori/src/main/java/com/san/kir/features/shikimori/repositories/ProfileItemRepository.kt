@@ -14,6 +14,7 @@ import io.ktor.client.call.*
 import io.ktor.client.plugins.resources.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.http.*
 import kotlinx.coroutines.flow.first
 import timber.log.Timber
 import javax.inject.Inject
@@ -40,17 +41,18 @@ internal class ProfileItemRepository @Inject constructor(
             shikimoriDao.update(dbItem)
         } else {
             // Отсутствующие элементы сразу добавляются
-            dbItem = ShikiDbManga(target_id = rate.targetId, rate = rate)
+            dbItem = ShikiDbManga(targetId = rate.targetId, rate = rate)
             shikimoriDao.insert(dbItem)
         }
 
         // Информация о манге обновляется только если ее нет
         if (dbItem.manga.isEmpty) {
-            manga(rate)?.let { newManga ->
-                shikimoriDao.update(
-                    dbItem.copy(manga = newManga)
-                )
-            }
+            manga(rate)
+                .onSuccess { newManga ->
+                    shikimoriDao.update(
+                        dbItem.copy(manga = newManga)
+                    )
+                }
         }
 
         return dbItem
@@ -75,18 +77,19 @@ internal class ProfileItemRepository @Inject constructor(
     suspend fun rates(
         auth: Settings.ShikimoriAuth,
         targetId: Long? = null,
-    ): List<ShikimoriRate> = withIoContext {
-//        retryWithDelay(
-//            retries = 3,
-//            delay = 500,
-//            default = emptyList()
-//        ) {
-
-        client.get(
-            ShikimoriApi.V2
-                .UserRates(user_id = auth.whoami.id, target_id = targetId)
-        ).apply { Timber.v("result ${bodyAsText()}") }.body()
-//        }
+    ): Result<List<ShikimoriRate>> = withIoContext {
+        kotlin.runCatching {
+            client
+                .get(
+                    ShikimoriApi.V2.UserRates(
+                        user_id = auth.whoami.id,
+                        target_id = targetId,
+                        target_type = "Manga"
+                    )
+                )
+                .apply { Timber.v("result ${bodyAsText()}") }
+                .body()
+        }
     }
 
     // Получение данных из сети и сохранение в базе данных
@@ -94,58 +97,67 @@ internal class ProfileItemRepository @Inject constructor(
         auth: Settings.ShikimoriAuth,
         targetId: Long? = null,
     ) = withIoContext {
-        Timber.i("updateRates")
-        val newRates = rates(auth, targetId)
-        newRates.forEach { rate ->
-            Timber.i("new rate is $rate")
-            addOrUpdate(rate)
+        rates(auth, targetId).onSuccess { newRates ->
+            newRates.forEach { rate ->
+                Timber.i("new rate is $rate")
+                addOrUpdate(rate)
+            }
         }
     }
 
-    suspend fun rate(target: ShikimoriRate): ShikimoriRate = withIoContext {
-        client.get(ShikimoriApi.V2.UserRates.Id(id = target.id)).body()
+    suspend fun rate(target: ShikimoriRate): Result<ShikimoriRate> = withIoContext {
+        kotlin.runCatching {
+            client.get(ShikimoriApi.V2.UserRates.Id(id = target.id)).body()
+        }
     }
 
-    suspend fun add(target: ShikimoriRate): ShikimoriRate = withIoContext {
-        val newRate: ShikimoriRate =
-            client.post(ShikimoriApi.V2.UserRates()) { setBody(target) }.body()
+    suspend fun add(target: ShikimoriRate): Result<ShikimoriRate> = withIoContext {
+        Timber.v("add $target")
+        kotlin.runCatching {
+            val newRate: ShikimoriRate =
+                client.post(ShikimoriApi.V2.UserRates()) {
+                    contentType(ContentType.Application.Json)
+                    setBody(target)
+                }.body()
 
-        addOrUpdate(newRate)
+            addOrUpdate(newRate)
 
-        newRate
+            newRate
+        }
     }
 
     suspend fun remove(target: ShikimoriRate) = withIoContext {
-        client.delete(ShikimoriApi.V2.UserRates.Id(id = target.id))
-        removeByRate(target)
+        kotlin.runCatching {
+            client.delete(ShikimoriApi.V2.UserRates.Id(id = target.id))
+            removeByRate(target)
+        }
     }
 
-    suspend fun update(target: ShikimoriRate): ShikimoriRate = withIoContext {
+    suspend fun update(target: ShikimoriRate): Result<ShikimoriRate> = withIoContext {
+        kotlin.runCatching {
+            val newRate: ShikimoriRate =
+                client.put(ShikimoriApi.V2.UserRates.Id(id = target.id)) {
+                    contentType(ContentType.Application.Json)
+                    setBody(target)
+                }.body()
 
-        val newRate: ShikimoriRate =
-            client.put(ShikimoriApi.V2.UserRates.Id(id = target.id)) { setBody(target) }.body()
+            addOrUpdate(target)
 
-        addOrUpdate(target)
-
-        newRate
+            newRate
+        }
     }
 
     suspend fun manga(target: ShikimoriRate) = manga(target.targetId)
 
     // Получение манги с сайта
-    suspend fun manga(targetId: Long): ShikimoriManga = withIoContext {
-
-//        retryWithDelay(
-//            retries = 3,
-//            delay = 500,
-//            default = null
-//        ) {
-        val manga: ShikimoriManga = client.get(ShikimoriApi.Mangas.Id(id = targetId)).body()
-        manga.copy(
-            // Преобразование url лого в корректное состояние
-            image = ShikimoriImage(ShikimoriData.baseUrl + manga.image.original)
-        )
-//        }
+    suspend fun manga(targetId: Long): Result<ShikimoriManga> = withIoContext {
+        kotlin.runCatching {
+            val manga: ShikimoriManga = client.get(ShikimoriApi.Mangas.Id(id = targetId)).body()
+            manga.copy(
+                // Преобразование url лого в корректное состояние
+                image = ShikimoriImage(ShikimoriData.baseUrl + manga.image.original)
+            )
+        }
     }
 
     suspend fun search(target: String): List<ShikimoriManga> = withIoContext {
@@ -156,9 +168,7 @@ internal class ProfileItemRepository @Inject constructor(
         }.onSuccess {
             // Преобразование url лого в корректное состояние
             mangas = mangas.map { item ->
-                item.copy(
-                    image = ShikimoriImage(ShikimoriData.baseUrl + item.image.original)
-                )
+                item.copy(image = ShikimoriImage(ShikimoriData.baseUrl + item.image.original))
             }
         }
 

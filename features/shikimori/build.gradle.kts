@@ -30,6 +30,6 @@ dependencies {
     kapt(libs.bundles.hiltCompilers)
 
     implementation(libs.timber)
-    implementation(libs.serialization)
+    implementation(libs.gson)
     implementation(libs.datastore)
 }

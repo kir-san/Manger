@@ -2,10 +2,13 @@
     <string name="browser_host">shikimori-auth</string>
     <string name="browser_scheme">manger</string>
     <string name="site_name">Shikimori</string>
+
     <string name="login_text">Вы вошли, как %s</string>
     <string name="no_login_text">Не используется</string>
     <string name="no_auth_text">Вы не авторизованы</string>
     <string name="error_try_again">Произошла ошибка! Попробуйте снова.</string>
+    <string name="error">Произошла ошибка!</string>
+    <string name="try_again">Попробовать снова</string>
     <string name="login">Войти</string>
     <string name="logout">Выйти</string>
     <string name="logout_dialog_title">Внимание!</string>
@@ -45,12 +48,14 @@
     <string name="local_search_founds">Возможные варианты:</string>
     <string name="local_search_sync">Связанная манга из Библиотеки:</string>
 
+    <string name="online_search_title">Онлайн-поиск</string>
     <string name="online_search_searching">Поиск совпадений в Профиле</string>
     <string name="online_search_not_founds">В Профиле нет ничего похожего</string>
     <string name="online_search_not_founds_ex">Попробуйте поискать на сайте</string>
     <string name="online_search_founds">Возможные варианты:</string>
     <string name="online_search_sync">Связанная манга из Профиля:</string>
 
+    <string name="local_search_dialog_bind_items">Вы собиратесь связать две манги</string>
     <string name="local_search_dialog_diff_title">Внимание!!</string>
     <string name="local_search_dialog_diffall_text">
         Требуется ваше вмешательство!\n
@@ -70,10 +75,7 @@
     </string>
     <string name="local_search_dialog_diffread_local">В библиотеке</string>
     <string name="local_search_dialog_diffread_online">На сайте</string>
-
-    <string name="local_search_dialog_cancelsync_text">
-        Вы собираетесь отменить привязку?
-    </string>
+    <string name="local_search_dialog_cancelsync_text">Вы собираетесь отменить привязку?</string>
 
     <string-array name="statuses">
         <item>Запланировано</item>

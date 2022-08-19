@@ -3,11 +3,11 @@ package com.san.kir.manger.ui.application_navigation.accounts
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import com.san.kir.features.shikimori.ui.accountRate.AccountRateScreen
+import com.san.kir.features.shikimori.ui.accountScreen.ShikimoriScreen
+import com.san.kir.features.shikimori.ui.localItems.LocalItemsScreen
 import com.san.kir.features.shikimori.ui.local_item.LocalItemScreen
 import com.san.kir.features.shikimori.ui.local_item.LocalItemViewModel
-import com.san.kir.features.shikimori.ui.local_items.LocalItemsScreen
-import com.san.kir.features.shikimori.ui.accountScreen.ShikimoriScreen
-import com.san.kir.features.shikimori.ui.profile_item.ProfileItemScreen
 import com.san.kir.features.shikimori.ui.search.ShikiSearchScreen
 import com.san.kir.manger.ui.application_navigation.MainNavTarget
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
@@ -38,7 +38,6 @@ enum class AccountsNavTarget : NavTarget {
     LocalItems {
         override val content = navTarget(route = "library_items") {
             LocalItemsScreen(
-                viewModel = hiltViewModel(),
                 navigateUp = ::navigateUp,
                 navigateToItem = { navigate(LocalItem, it) }
             )
@@ -82,12 +81,11 @@ enum class AccountsNavTarget : NavTarget {
             hasItems = true,
             arguments = listOf(navLongArgument(mangaId), navLongArgument(rateId))
         ) {
-            ProfileItemScreen(
+            AccountRateScreen(
                 navigateUp = ::navigateUp,
                 navigateToSearch = { query -> navigate(CatalogsNavTarget.GlobalSearch, query) },
                 mangaId = longElement(mangaId) ?: -1L,
                 rateId = longElement(rateId) ?: -1L,
-                viewModel = hiltViewModel(),
             )
         }
     };

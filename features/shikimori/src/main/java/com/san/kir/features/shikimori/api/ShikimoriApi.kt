@@ -37,9 +37,9 @@ class ShikimoriApi {
         @Resource("user_rates")
         class UserRates(
             val parent: V2 = V2(),
-            val user_id: Long = 0,
+            val user_id: Long? = null,
             val target_id: Long? = null,
-            val target_type: String = "Manga"
+            val target_type: String? = null
         ) {
 
             @Serializable

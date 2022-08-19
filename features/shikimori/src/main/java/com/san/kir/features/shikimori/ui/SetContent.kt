@@ -18,10 +18,11 @@ import com.san.kir.core.compose_utils.topBar
 import com.san.kir.core.internet.ConnectManager
 import com.san.kir.core.internet.LocalConnectManager
 import com.san.kir.core.support.R
-import com.san.kir.features.shikimori.ui.profile_item.ProfileItemScreen
-import com.san.kir.features.shikimori.ui.search.ShikiSearchScreen
 import com.san.kir.features.shikimori.ui.accountItem.ShikimoriAccountItem
+import com.san.kir.features.shikimori.ui.accountRate.AccountRateScreen
 import com.san.kir.features.shikimori.ui.accountScreen.ShikimoriScreen
+import com.san.kir.features.shikimori.ui.localItems.LocalItemsScreen
+import com.san.kir.features.shikimori.ui.search.ShikiSearchScreen
 import timber.log.Timber
 
 fun ComponentActivity.setContent() {
@@ -43,8 +44,7 @@ fun ComponentActivity.setContent() {
 
 @Composable
 internal fun ShikimoriContent() {
-//    val viewModelItem = hiltViewModel<ShikiItemViewModel>()
-    var nav: ShikiNavTarget by remember { mutableStateOf(ShikiNavTarget.Catalog) }
+    var nav: ShikiNavTarget by remember { mutableStateOf(ShikiNavTarget.AccountRate(58999)) }
     Timber.plant(Timber.DebugTree())
 
     Crossfade(targetState = nav) { target ->
@@ -65,33 +65,33 @@ internal fun ShikimoriContent() {
             ShikiNavTarget.Catalog ->
                 ShikimoriScreen(
                     navigateUp = { nav = ShikiNavTarget.Start },
-                    navigateToShikiItem = { /*nav = ShikiNavTarget.ShikiItem(it)*/ },
-                    navigateToLocalItems = {},
+                    navigateToShikiItem = {
+                        Timber.v(it.toString())
+                        nav = ShikiNavTarget.AccountRate(it)
+                    },
+                    navigateToLocalItems = { nav = ShikiNavTarget.LocalItems },
                     navigateToSearch = { /*nav = ShikiNavTarget.Search*/ }
                 )
-//            is ShikiNavTarget.ShikiItem -> {
-//                viewModelItem.update(target.id)
-//                ShikiItemScreen(
-//                    viewModel = viewModelItem,
-//                    navigateUp = { nav = ShikiNavTarget.Catalog },
-//                    navigateToSearch = {}
-//                )
-//            }
-            ShikiNavTarget.Search -> {
-                ShikiSearchScreen(
-                    navigateUp = { nav = ShikiNavTarget.Start },
-                    navigateToItem = { nav = ShikiNavTarget.SearchItem(it) },
-                    searchText = "Fetish na Yuu",
-                    viewModel = hiltViewModel(),
-                )
-            }
-            is ShikiNavTarget.SearchItem -> {
-                ProfileItemScreen(
+            is ShikiNavTarget.AccountRate -> {
+                AccountRateScreen(
                     navigateUp = { nav = ShikiNavTarget.Search },
                     navigateToSearch = {},
                     mangaId = target.id,
                     rateId = -1L,
+                )
+            }
+            ShikiNavTarget.Search -> {
+                ShikiSearchScreen(
+                    navigateUp = { nav = ShikiNavTarget.Start },
+                    navigateToItem = { nav = ShikiNavTarget.AccountRate(it) },
+                    searchText = "Fetish na Yuu",
                     viewModel = hiltViewModel(),
+                )
+            }
+            ShikiNavTarget.LocalItems -> {
+                LocalItemsScreen(
+                    navigateUp = { nav = ShikiNavTarget.Catalog },
+                    navigateToItem = {}
                 )
             }
             else -> {}
@@ -102,7 +102,7 @@ internal fun ShikimoriContent() {
 sealed class ShikiNavTarget(val id: Long = 0) {
     object Start : ShikiNavTarget()
     object Catalog : ShikiNavTarget()
-    class ShikiItem(id: Long) : ShikiNavTarget(id)
+    class AccountRate(id: Long) : ShikiNavTarget(id)
     object Search : ShikiNavTarget()
-    class SearchItem(id: Long) : ShikiNavTarget(id)
+    object LocalItems : ShikiNavTarget()
 }

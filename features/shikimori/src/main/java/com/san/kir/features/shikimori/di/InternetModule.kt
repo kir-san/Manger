@@ -2,7 +2,9 @@ package com.san.kir.features.shikimori.di
 
 import android.content.Context
 import com.san.kir.data.models.base.Settings
+import com.san.kir.features.shikimori.ShikiAuth
 import com.san.kir.features.shikimori.api.ShikimoriData
+import com.san.kir.features.shikimori.bearer
 import com.san.kir.features.shikimori.repositories.SettingsRepository
 import dagger.Module
 import dagger.Provides
@@ -13,15 +15,13 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.plugins.*
-import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.resources.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
-import kotlinx.serialization.json.Json
+import io.ktor.serialization.gson.*
 import okhttp3.Cache
 import okhttp3.logging.HttpLoggingInterceptor
 import timber.log.Timber
@@ -72,7 +72,7 @@ internal class InternetModule {
                 }
             }
 
-            install(Auth) {
+            ShikiAuth {
                 bearer {
                     var token: BearerTokens? = null
                     loadTokens {
@@ -103,11 +103,10 @@ internal class InternetModule {
             }
 
             install(ContentNegotiation) {
-                json(Json {
-                    prettyPrint = true
-                    isLenient = true
-                    ignoreUnknownKeys = true
-                })
+                gson {
+                    setPrettyPrinting()
+                    setLenient()
+                }
             }
 
             install(Resources)

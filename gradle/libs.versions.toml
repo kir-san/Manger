@@ -3,7 +3,7 @@
 kotlin = "1.7.0"
 coroutines = "1.6.4"
 ksp = "1.7.0-1.0.6"
-serialization = "1.3.2"
+serialization = "1.4.0"
 
 # AndroidX
 core = "1.8.0"
@@ -124,11 +124,6 @@ permissions = { module = "com.google.accompanist:accompanist-permissions", versi
 systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 navigation_animation = { module = "com.google.accompanist:accompanist-navigation-animation", version.ref = "accompanist" }
 swipe_refresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
-#insets = { module = "com.google.accompanist:accompanist-insets", version.ref = "accompanist" }
-
-# ProtoBuf
-protobuf-kotlin = { module = "com.google.protobuf:protobuf-kotlin", version.ref = "protobuf" }
-protobuf-protoc = { module = "com.google.protobuf:protoc", version.ref = "protobuf" }
 
 datastore = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
@@ -144,7 +139,7 @@ ktor_logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor_res = { module = "io.ktor:ktor-client-resources", version.ref = "ktor" }
 ktor_auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 ktor_content = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
-ktor_json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor_json = { module = "io.ktor:ktor-serialization-gson", version.ref = "ktor" }
 
 # Compose
 compose_ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }

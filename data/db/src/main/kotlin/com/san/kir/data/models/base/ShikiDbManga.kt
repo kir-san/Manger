@@ -10,7 +10,7 @@ data class ShikiDbManga(
     // ID манги, которые указан на сайте
     @PrimaryKey
     @ColumnInfo(name = Col.targetId)
-    val target_id: Long = -1,
+    val targetId: Long = -1,
 
     // ID манги из локальной библиотеки, с которой связана эта манга
     @ColumnInfo(name = Col.libMangaId)
@@ -25,7 +25,7 @@ data class ShikiDbManga(
     ) : ShikimoriMangaItem {
 
     override val id: Long
-        get() = target_id
+        get() = targetId
 
     override val name: String
         get() = manga.preparedName

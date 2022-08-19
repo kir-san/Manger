@@ -43,6 +43,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.ScreenPadding
 import com.san.kir.core.compose_utils.SmallSpacer
+import com.san.kir.core.compose_utils.ToolbarProgress
 import com.san.kir.core.compose_utils.topBar
 import com.san.kir.features.shikimori.BackgroundTasks
 import com.san.kir.features.shikimori.R
@@ -127,6 +128,7 @@ private fun topBar(
                     MenuText(R.string.logout, onClick = { viewModel.sendEvent(UIEvent.LogOut) })
                 }
             }
+            LoginState.Loading -> ToolbarProgress()
             else -> {}
         }
 

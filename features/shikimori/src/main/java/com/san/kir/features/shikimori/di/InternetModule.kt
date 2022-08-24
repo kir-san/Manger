@@ -76,19 +76,17 @@ internal class InternetModule {
                 bearer {
                     var token: BearerTokens? = null
                     loadTokens {
-                        Timber.v("loadTokens")
+                        val t = settingsRepository.currentToken()
+                        Timber.v("local Tokens $t")
+                        if (t.accessToken.isNotEmpty() && t.refreshToken.isNotEmpty())
+                            token = BearerTokens(t.accessToken, t.refreshToken)
 
-                        if (token == null) {
-                            val t = settingsRepository.currentToken()
-                            if (t.accessToken.isNotEmpty() && t.refreshToken.isNotEmpty())
-                                token = BearerTokens(t.accessToken, t.refreshToken)
-                        }
-
+                        Timber.v("loadedToken $token")
                         token
                     }
 
                     refreshTokens {
-                        Timber.v("refresh token")
+                        Timber.v("refresh token $token")
                         val newToken: Settings.ShikimoriAuth.ShikimoriAccessToken =
                             client.submitForm(
                                 url = ShikimoriData.tokenUrl,

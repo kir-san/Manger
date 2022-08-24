@@ -6,7 +6,7 @@ import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.ScreenList
 import com.san.kir.core.compose_utils.topBar
 import com.san.kir.core.support.R
-import com.san.kir.features.shikimori.ui.accountItem.ShikimoriAccountItem
+import com.san.kir.features.shikimori.ui.accountItem.AccountItem
 
 @Composable
 fun AccountsScreen(
@@ -21,7 +21,7 @@ fun AccountsScreen(
         additionalPadding = Dimensions.zero
     ) {
         item(key = "Shiki") {
-            ShikimoriAccountItem(navigateToShiki)
+            AccountItem(navigateToShiki)
         }
 
     }

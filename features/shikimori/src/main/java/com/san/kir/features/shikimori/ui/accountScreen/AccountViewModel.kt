@@ -29,17 +29,16 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
-internal class ShikimoriViewModel @Inject internal constructor(
+internal class AccountViewModel @Inject internal constructor(
     private val authUseCase: AuthUseCase,
     private val profileRepository: ProfileItemRepository,
     private val settingsRepository: SettingsRepository,
     libraryRepository: LibraryItemRepository,
-) : BaseViewModel<UIEvent, ScreenState>(), Helper<ShikiDbManga> by HelperImpl() {
+) : BaseViewModel<AccountEvent, AccountScreenState>(), Helper<ShikiDbManga> by HelperImpl() {
     private val bindingHelper = BindingHelper(libraryRepository)
 
     private val loginState = MutableStateFlow<LoginState>(LoginState.Loading)
@@ -95,19 +94,19 @@ internal class ShikimoriViewModel @Inject internal constructor(
         unbindedItems,
         hasAction
     ) { login, dialog, bind, unbind, action ->
-        ScreenState(login, dialog, action, ScreenItems(bind, unbind))
+        AccountScreenState(login, dialog, action, ScreenItems(bind, unbind))
     }
 
-    override val defaultState = ScreenState(
+    override val defaultState = AccountScreenState(
         login = LoginState.Loading,
         dialog = DialogState.Hide,
         action = BackgroundTasks(),
         items = ScreenItems(emptyList(), emptyList())
     )
 
-    override fun onEvent(event: UIEvent) = viewModelScope.launch {
+    override suspend fun onEvent(event: AccountEvent) {
         when (event) {
-            UIEvent.LogOut -> {
+            AccountEvent.LogOut -> {
                 when (dialogState.value) {
                     DialogState.Hide -> {
                         dialogState.update { DialogState.Show }
@@ -119,7 +118,7 @@ internal class ShikimoriViewModel @Inject internal constructor(
                     }
                 }
             }
-            UIEvent.CancelLogOut -> {
+            AccountEvent.CancelLogOut -> {
                 when (dialogState.value) {
                     DialogState.Hide -> {}
                     DialogState.Show -> {
@@ -127,7 +126,7 @@ internal class ShikimoriViewModel @Inject internal constructor(
                     }
                 }
             }
-            UIEvent.Update -> {
+            AccountEvent.Update -> {
                 updateDataFromNetwork()
             }
         }

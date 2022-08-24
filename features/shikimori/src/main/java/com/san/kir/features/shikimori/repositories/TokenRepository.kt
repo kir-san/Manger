@@ -2,12 +2,12 @@ package com.san.kir.features.shikimori.repositories
 
 import com.san.kir.core.utils.coroutines.withIoContext
 import com.san.kir.data.models.base.Settings
+import com.san.kir.features.shikimori.ShikiAuth
 import com.san.kir.features.shikimori.api.ShikimoriApi
 import com.san.kir.features.shikimori.api.ShikimoriData
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
-import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.resources.*
 import io.ktor.client.request.forms.*
@@ -22,7 +22,7 @@ internal class TokenRepository @Inject constructor(private val client: HttpClien
                 formParameters = ShikimoriData.getTokenParameters(code)
             ).body<Settings.ShikimoriAuth.ShikimoriAccessToken>().apply {
                 // Очитстка текущего токена в плагине, для его новой инициализации
-                client.plugin(Auth).providers
+                client.plugin(ShikiAuth).providers
                     .filterIsInstance<BearerAuthProvider>()
                     .firstOrNull()?.clearToken()
             }

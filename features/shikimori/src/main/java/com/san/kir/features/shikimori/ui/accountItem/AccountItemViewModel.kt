@@ -19,14 +19,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-internal class ShikimoriAccountItemViewModel @Inject internal constructor(
+internal class AccountItemViewModel @Inject internal constructor(
     private val app: Application,
     private val authUseCase: AuthUseCase,
-) : BaseViewModel<UIEvent, ScreenState>() {
+) : BaseViewModel<AccountItemEvent, AccountItemState>() {
     private val loginState = MutableStateFlow<LoginState>(LoginState.Loading)
     private val dialogState = MutableStateFlow<DialogState>(DialogState.Hide)
 
@@ -61,23 +60,22 @@ internal class ShikimoriAccountItemViewModel @Inject internal constructor(
 
     override val tempState =
         combine(loginState, dialogState) { login, dialog ->
-            ScreenState(login, dialog)
+            AccountItemState(login, dialog)
         }
 
     override val defaultState =
-        ScreenState(
+        AccountItemState(
             login = LoginState.Loading,
             dialog = DialogState.Hide
         )
 
-    override fun onEvent(event: UIEvent) = viewModelScope.launch {
-
+    override suspend fun onEvent(event: AccountItemEvent) {
         when (event) {
-            UIEvent.LogIn -> {
+            AccountItemEvent.LogIn -> {
                 loginState.update { LoginState.Loading }
                 AuthActivity.start(app)
             }
-            UIEvent.LogOut -> {
+            AccountItemEvent.LogOut -> {
                 when (dialogState.value) {
                     DialogState.Hide -> {
                         dialogState.update { DialogState.Show }
@@ -89,7 +87,7 @@ internal class ShikimoriAccountItemViewModel @Inject internal constructor(
                     }
                 }
             }
-            UIEvent.CancelLogOut -> {
+            AccountItemEvent.CancelLogOut -> {
                 when (dialogState.value) {
                     DialogState.Hide -> {}
                     DialogState.Show -> {

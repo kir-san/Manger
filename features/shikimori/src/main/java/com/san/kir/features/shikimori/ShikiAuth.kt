@@ -10,6 +10,7 @@ import io.ktor.http.*
 import io.ktor.http.auth.*
 import io.ktor.util.*
 import kotlinx.coroutines.CompletableDeferred
+import timber.log.Timber
 import java.util.concurrent.atomic.AtomicReference
 
 
@@ -36,7 +37,7 @@ class ShikiAuth private constructor(
 
             scope.plugin(HttpSend).intercept { context ->
                 val origin = execute(context)
-                if (origin.response.status != HttpStatusCode.Unauthorized) return@intercept origin
+                if (origin.response.status != HttpStatusCode.Forbidden) return@intercept origin
                 if (origin.request.attributes.contains(AuthCircuitBreaker)) return@intercept origin
 
                 var call = origin
@@ -87,7 +88,9 @@ class BearerAuthProvider(
 ) : AuthProvider {
 
     @Suppress("OverridingDeprecatedMember")
-    @Deprecated("Please use sendWithoutRequest function instead")
+    @Deprecated("Please use sendWithoutRequest function instead",
+                ReplaceWith("error(\"Deprecated\")")
+    )
     override val sendWithoutRequest: Boolean
         get() = error("Deprecated")
 
@@ -122,6 +125,7 @@ class BearerAuthProvider(
     }
 
     override suspend fun refreshToken(response: HttpResponse): Boolean {
+        Timber.d("refreshToken")
         val newToken = tokensHolder.setToken {
             refreshTokens(RefreshTokensParams(response.call.client, response, tokensHolder.loadToken()))
         }

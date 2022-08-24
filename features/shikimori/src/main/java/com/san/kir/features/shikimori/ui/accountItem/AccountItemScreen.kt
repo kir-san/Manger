@@ -35,27 +35,27 @@ import com.san.kir.features.shikimori.ui.util.LogOutDialog
 import com.san.kir.features.shikimori.ui.util.TextLoginOrNot
 
 @Composable
-fun ShikimoriAccountItem(navigateToManager: () -> Unit) {
-    val viewModel: ShikimoriAccountItemViewModel = hiltViewModel()
+fun AccountItem(navigateToManager: () -> Unit) {
+    val viewModel: AccountItemViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
 
     LoginOrNot(
         state = state.login,
         navigateToManager = {
             when (state.login) {
-                LoginState.LogOut, LoginState.Error -> viewModel.sendEvent(UIEvent.LogIn)
+                LoginState.LogOut, LoginState.Error -> viewModel.sendEvent(AccountItemEvent.LogIn)
                 is LoginState.LogIn -> navigateToManager()
                 else -> {}
             }
         },
-        login = { viewModel.sendEvent(UIEvent.LogIn) },
-        logout = { viewModel.sendEvent(UIEvent.LogOut) }
+        login = { viewModel.sendEvent(AccountItemEvent.LogIn) },
+        logout = { viewModel.sendEvent(AccountItemEvent.LogOut) }
     )
 
     LogOutDialog(
         state = state.dialog,
-        onDismiss = { viewModel.sendEvent(UIEvent.CancelLogOut) },
-        onConfirm = { viewModel.sendEvent(UIEvent.LogOut) }
+        onDismiss = { viewModel.sendEvent(AccountItemEvent.CancelLogOut) },
+        onConfirm = { viewModel.sendEvent(AccountItemEvent.LogOut) }
     )
 }
 

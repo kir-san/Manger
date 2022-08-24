@@ -11,16 +11,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
 import androidx.core.app.ComponentActivity
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.ScreenList
 import com.san.kir.core.compose_utils.topBar
 import com.san.kir.core.internet.ConnectManager
 import com.san.kir.core.internet.LocalConnectManager
 import com.san.kir.core.support.R
-import com.san.kir.features.shikimori.ui.accountItem.ShikimoriAccountItem
+import com.san.kir.features.shikimori.ui.accountItem.AccountItem
 import com.san.kir.features.shikimori.ui.accountRate.AccountRateScreen
-import com.san.kir.features.shikimori.ui.accountScreen.ShikimoriScreen
+import com.san.kir.features.shikimori.ui.accountScreen.AccountScreen
 import com.san.kir.features.shikimori.ui.localItems.LocalItemsScreen
 import com.san.kir.features.shikimori.ui.search.ShikiSearchScreen
 import timber.log.Timber
@@ -44,7 +43,7 @@ fun ComponentActivity.setContent() {
 
 @Composable
 internal fun ShikimoriContent() {
-    var nav: ShikiNavTarget by remember { mutableStateOf(ShikiNavTarget.AccountRate(58999)) }
+    var nav: ShikiNavTarget by remember { mutableStateOf(ShikiNavTarget.Search) }
     Timber.plant(Timber.DebugTree())
 
     Crossfade(targetState = nav) { target ->
@@ -58,12 +57,12 @@ internal fun ShikimoriContent() {
                     additionalPadding = Dimensions.zero
                 ) {
                     item(key = "Shiki") {
-                        ShikimoriAccountItem { nav = ShikiNavTarget.Catalog }
+                        AccountItem { nav = ShikiNavTarget.Catalog }
                     }
 
                 }
             ShikiNavTarget.Catalog ->
-                ShikimoriScreen(
+                AccountScreen(
                     navigateUp = { nav = ShikiNavTarget.Start },
                     navigateToShikiItem = {
                         Timber.v(it.toString())
@@ -85,7 +84,6 @@ internal fun ShikimoriContent() {
                     navigateUp = { nav = ShikiNavTarget.Start },
                     navigateToItem = { nav = ShikiNavTarget.AccountRate(it) },
                     searchText = "Fetish na Yuu",
-                    viewModel = hiltViewModel(),
                 )
             }
             ShikiNavTarget.LocalItems -> {

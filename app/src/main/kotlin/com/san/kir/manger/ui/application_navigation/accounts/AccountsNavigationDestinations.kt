@@ -4,7 +4,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.san.kir.features.shikimori.ui.accountRate.AccountRateScreen
-import com.san.kir.features.shikimori.ui.accountScreen.ShikimoriScreen
+import com.san.kir.features.shikimori.ui.accountScreen.AccountScreen
 import com.san.kir.features.shikimori.ui.localItems.LocalItemsScreen
 import com.san.kir.features.shikimori.ui.local_item.LocalItemScreen
 import com.san.kir.features.shikimori.ui.local_item.LocalItemViewModel
@@ -27,7 +27,7 @@ enum class AccountsNavTarget : NavTarget {
     },
     Shikimori {
         override val content = navTarget(route = "shikimori") {
-            ShikimoriScreen(
+            AccountScreen(
                 ::navigateUp,
                 navigateToShikiItem = { navigate(ProfileItem, it, -1L) },
                 navigateToLocalItems = { navigate(LocalItems) },
@@ -68,7 +68,6 @@ enum class AccountsNavTarget : NavTarget {
                 navigateUp = ::navigateUp,
                 navigateToItem = { mangaId -> navigate(ProfileItem, mangaId, -1L) },
                 searchText = stringElement ?: "",
-                viewModel = hiltViewModel(),
             )
         }
     },

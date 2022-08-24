@@ -11,13 +11,10 @@ import com.san.kir.features.shikimori.repositories.ProfileItemRepository
 import com.san.kir.features.shikimori.useCases.BindingHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -51,7 +48,7 @@ internal class LocalItemsViewModel @Inject internal constructor(
         unbind = emptyList()
     )
 
-    override fun onEvent(event: LocalItemsEvent) = viewModelScope.launch {
+    override suspend fun onEvent(event: LocalItemsEvent) {
         when (event) {
             else -> {}
         }

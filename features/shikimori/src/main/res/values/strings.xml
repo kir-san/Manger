@@ -54,6 +54,7 @@
     <string name="online_search_not_founds_ex">Попробуйте поискать на сайте</string>
     <string name="online_search_founds">Возможные варианты:</string>
     <string name="online_search_sync">Связанная манга из Профиля:</string>
+    <string name="online_search_nothing">Ничего не найдено.\nПопробуйте изменить запрос.</string>
 
     <string name="local_search_dialog_bind_items">Вы собиратесь связать две манги</string>
     <string name="local_search_dialog_diff_title">Внимание!!</string>

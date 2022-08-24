@@ -9,7 +9,7 @@ import com.san.kir.features.shikimori.ui.util.DialogState
 import com.san.kir.features.shikimori.useCases.BindStatus
 
 @Stable
-internal data class ScreenState(
+internal data class AccountScreenState(
     val login: LoginState,
     val dialog: DialogState,
     val action: BackgroundTasks,

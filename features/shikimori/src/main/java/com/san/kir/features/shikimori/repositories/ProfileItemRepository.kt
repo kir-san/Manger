@@ -160,18 +160,17 @@ internal class ProfileItemRepository @Inject constructor(
         }
     }
 
-    suspend fun search(target: String): List<ShikimoriManga> = withIoContext {
-        var mangas = emptyList<ShikimoriManga>()
-
+    suspend fun search(target: String): Result<List<ShikimoriManga>> = withIoContext {
         kotlin.runCatching {
-            mangas = client.get(ShikimoriApi.Mangas(search = target)).body()
-        }.onSuccess {
-            // Преобразование url лого в корректное состояние
-            mangas = mangas.map { item ->
-                item.copy(image = ShikimoriImage(ShikimoriData.baseUrl + item.image.original))
-            }
+            client
+                .get(ShikimoriApi.Mangas(search = target))
+                .body<List<ShikimoriManga>>()
+                .map { item ->
+                    // Преобразование url лого в корректное состояние
+                    item.copy(
+                        image = ShikimoriImage(ShikimoriData.baseUrl + item.image.original)
+                    )
+                }
         }
-
-        mangas
     }
 }

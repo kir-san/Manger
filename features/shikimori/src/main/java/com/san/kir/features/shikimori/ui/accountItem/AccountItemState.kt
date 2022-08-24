@@ -5,7 +5,7 @@ import com.san.kir.core.utils.viewModel.ScreenState
 import com.san.kir.features.shikimori.ui.util.DialogState
 
 @Stable
-internal data class ScreenState(
+internal data class AccountItemState(
     val login: LoginState,
     val dialog: DialogState,
 ) : ScreenState

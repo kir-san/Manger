@@ -4,9 +4,11 @@ import com.san.kir.core.utils.coroutines.withIoContext
 import com.san.kir.features.shikimori.repositories.SettingsRepository
 import com.san.kir.features.shikimori.repositories.TokenRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.mapLatest
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class AuthUseCase @Inject constructor(
@@ -15,11 +17,13 @@ internal class AuthUseCase @Inject constructor(
 ) {
 
     val authData = settingsRepository
-        .auth()
-        .mapLatest { auth ->
+        .settings()
+        .mapLatest { settings ->
             AuthData(
-                nickName = auth.whoami.nickname,
-                isLogin = auth.isLogin
+                nickName = settings.auth.whoami.nickname,
+                isLogin = settings.auth.isLogin
+                        && settings.auth.token.accessToken.isNotEmpty()
+                        && settings.auth.token.refreshToken.isNotEmpty()
             )
         }
         .distinctUntilChanged { old, new -> old.isLogin == new.isLogin }
@@ -29,7 +33,9 @@ internal class AuthUseCase @Inject constructor(
         val newToken = tokenRepository.getAccessToken(code)
         settingsRepository.update(token = newToken)
 
-        tokenRepository.getWhoami()?.let {new ->
+        delay(1.seconds)
+
+        tokenRepository.getWhoami()?.let { new ->
             settingsRepository.update(isLogin = true, token = newToken, whoami = new)
         } ?: let {
             settingsRepository.update(isLogin = false)

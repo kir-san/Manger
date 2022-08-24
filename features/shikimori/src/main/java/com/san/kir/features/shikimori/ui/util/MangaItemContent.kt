@@ -38,11 +38,11 @@ import com.san.kir.features.shikimori.useCases.CanBind
 internal fun LazyItemScope.MangaItemContent(
     avatar: String,
     mangaName: String,
+    canBind: CanBind,
     readingChapters: Long = 0,
     allChapters: Long = 0,
     secondaryText: String? = null,
     currentStatus: ShikimoriStatus? = null,
-    canBind: CanBind,
     onClick: () -> Unit,
 ) {
     Row(

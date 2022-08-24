@@ -23,7 +23,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
@@ -32,7 +31,6 @@ import kotlin.time.Duration.Companion.seconds
 @HiltViewModel
 internal class AccountRateViewModel @Inject internal constructor(
     libraryItemRepository: LibraryItemRepository,
-
     private val settingsRepository: SettingsRepository,
     private val profileItemRepository: ProfileItemRepository,
     private val syncManager: SyncManager,
@@ -67,7 +65,7 @@ internal class AccountRateViewModel @Inject internal constructor(
         manga = MangaState.Load
     )
 
-    override fun onEvent(event: AccountRateEvent) = viewModelScope.launch {
+    override suspend fun onEvent(event: AccountRateEvent) {
         when (event) {
             AccountRateEvent.SyncCancel -> {
                 when (state.value.dialog) {
@@ -97,12 +95,12 @@ internal class AccountRateViewModel @Inject internal constructor(
             }
             is AccountRateEvent.SyncNext -> {
                 val profile = state.value.profile
-                if (profile !is ProfileState.Ok) return@launch
+                if (profile !is ProfileState.Ok) return
 
                 when (state.value.dialog) {
                     DialogState.None -> {
                         val manga = state.value.manga
-                        if (manga !is MangaState.Ok) return@launch
+                        if (manga !is MangaState.Ok) return
                         syncManager.checkAllChapters(manga.item.chapters, profile.rate, event.item)
                     }
                     is DialogState.DifferentChapterCount -> {

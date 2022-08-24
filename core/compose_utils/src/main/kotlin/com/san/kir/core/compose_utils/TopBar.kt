@@ -143,7 +143,7 @@ fun topBar(
 
         AnimatedVisibility(visible = enableSearchField) {
             SearchTextField(
-                inititalValue = initSearchText,
+                initialValue = initSearchText,
                 onChangeValue = onSearchTextChange
             )
         }

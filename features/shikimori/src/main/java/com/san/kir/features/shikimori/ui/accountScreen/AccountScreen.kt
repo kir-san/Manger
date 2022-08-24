@@ -54,13 +54,13 @@ import com.san.kir.features.shikimori.ui.util.TextLoginOrNot
 import com.san.kir.features.shikimori.useCases.CanBind
 
 @Composable
-fun ShikimoriScreen(
+fun AccountScreen(
     navigateUp: () -> Unit,
     navigateToShikiItem: (id: Long) -> Unit,
     navigateToLocalItems: () -> Unit,
     navigateToSearch: () -> Unit,
 ) {
-    val viewModel: ShikimoriViewModel = hiltViewModel()
+    val viewModel: AccountViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
 
     ScreenPadding(
@@ -81,7 +81,7 @@ fun ShikimoriScreen(
     ) { contentPadding ->
         SwipeRefresh(
             state = rememberSwipeRefreshState(false),
-            onRefresh = { viewModel.sendEvent(UIEvent.Update) },
+            onRefresh = { viewModel.sendEvent(AccountEvent.Update) },
         ) {
             Column(
                 modifier = Modifier
@@ -100,14 +100,14 @@ fun ShikimoriScreen(
 
     LogOutDialog(
         state = state.dialog,
-        onDismiss = { viewModel.sendEvent(UIEvent.CancelLogOut) },
-        onConfirm = { viewModel.sendEvent(UIEvent.LogOut) }
+        onDismiss = { viewModel.sendEvent(AccountEvent.CancelLogOut) },
+        onConfirm = { viewModel.sendEvent(AccountEvent.LogOut) }
     )
 }
 
 @Composable
 private fun topBar(
-    viewModel: ShikimoriViewModel,
+    viewModel: AccountViewModel,
     navigateUp: () -> Unit,
     navigateToSearch: () -> Unit,
     state: LoginState,
@@ -124,8 +124,8 @@ private fun topBar(
                 ExpandedMenu {
                     MenuText(
                         R.string.update_data,
-                        onClick = { viewModel.sendEvent(UIEvent.Update) })
-                    MenuText(R.string.logout, onClick = { viewModel.sendEvent(UIEvent.LogOut) })
+                        onClick = { viewModel.sendEvent(AccountEvent.Update) })
+                    MenuText(R.string.logout, onClick = { viewModel.sendEvent(AccountEvent.LogOut) })
                 }
             }
             LoginState.Loading -> ToolbarProgress()

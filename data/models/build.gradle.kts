@@ -1,7 +1,6 @@
 plugins {
     id("compose.library")
     id(Plugins.parcelize)
-    alias(libs.plugins.serialization)
 }
 
 dependencies {
@@ -10,5 +9,5 @@ dependencies {
 
     implementation(libs.compose.runtime)
     implementation(libs.room.ktx)
-    implementation(libs.serialization)
+    implementation(libs.gson)
 }

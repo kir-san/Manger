@@ -160,17 +160,21 @@ fun CheckBoxText(
 // Настроенное текствое поле с кнопкой очистки
 @Composable
 fun SearchTextField(
-    inititalValue: String,
+    initialValue: String,
     onChangeValue: (String) -> Unit,
 ) {
-    var searchText by rememberSaveable { mutableStateOf(inititalValue) }
-
-    onChangeValue(searchText)
+    var searchText by rememberSaveable {
+        onChangeValue(initialValue)
+        mutableStateOf(initialValue)
+    }
 
     TextField(
         value = searchText,
         onValueChange = {
-            searchText = it
+            if (searchText != it) {
+                searchText = it
+                onChangeValue(it)
+            }
         },
         leadingIcon = {
             Icon(
@@ -182,7 +186,10 @@ fun SearchTextField(
         trailingIcon = {
             IconButton(
                 modifier = Modifier.padding(systemBarEndPadding()),
-                onClick = { searchText = "" },
+                onClick = {
+                    searchText = ""
+                    onChangeValue("")
+                },
             ) {
                 Icon(Icons.Default.Close, "")
             }
@@ -195,6 +202,7 @@ fun SearchTextField(
 @Composable
 fun TextWithFirstWordBold(
     text: String,
+    modifier: Modifier = Modifier,
     textAlign: TextAlign? = null,
     maxLines: Int = Int.MAX_VALUE,
 ) {
@@ -206,6 +214,6 @@ fun TextWithFirstWordBold(
         ),
         textAlign = textAlign,
         maxLines = maxLines,
-        modifier = Modifier.padding(vertical = Dimensions.smaller)
+        modifier = modifier.padding(vertical = Dimensions.smaller)
     )
 }

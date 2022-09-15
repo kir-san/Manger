@@ -3,6 +3,7 @@ package com.san.kir.features.shikimori.ui.util
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +14,8 @@ import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.HelpOutline
+import androidx.compose.material.icons.filled.NotificationImportant
 import androidx.compose.material.icons.filled.SyncAlt
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,22 +23,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.san.kir.core.compose_utils.Dimensions
+import com.san.kir.core.compose_utils.Fonts
 import com.san.kir.core.compose_utils.rememberImage
 import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
-import com.san.kir.data.models.base.ShikimoriAccount
+import com.san.kir.data.models.base.ShikimoriStatus
 import com.san.kir.features.shikimori.R
+import com.san.kir.features.shikimori.logic.useCases.CanBind
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun LazyItemScope.MangaItemContent(
     avatar: String,
     mangaName: String,
-    readingChapters: Long,
-    allChapters: Long,
-    currentStatus: ShikimoriAccount.Status?,
-    isSynced: Boolean,
+    canBind: CanBind,
+    readingChapters: Long = 0,
+    allChapters: Long = 0,
+    secondaryText: String? = null,
+    currentStatus: ShikimoriStatus? = null,
     onClick: () -> Unit,
 ) {
     Row(
@@ -51,7 +58,7 @@ internal fun LazyItemScope.MangaItemContent(
             rememberImage(avatar),
             contentDescription = "manga avatar",
             modifier = Modifier
-                .size(Dimensions.imageSize)
+                .size(Dimensions.Image.default)
                 .padding(end = Dimensions.small),
             contentScale = ContentScale.Crop,
         )
@@ -63,16 +70,32 @@ internal fun LazyItemScope.MangaItemContent(
                 mangaName,
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
-            Text(stringResource(R.string.reading, readingChapters, allChapters))
+            Text(
+                secondaryText ?: stringResource(R.string.reading, readingChapters, allChapters),
+                fontSize = Fonts.Size.less,
+            )
             currentStatus?.let { StatusText(it) }
         }
 
-        if (isSynced)
-            Icon(
-                Icons.Default.SyncAlt,
-                contentDescription = "has synchronized item"
-            )
+        Box(modifier = Modifier.size(Dimensions.Image.small), contentAlignment = Alignment.Center) {
+            when (canBind) {
+                CanBind.Already -> Icon(
+                    Icons.Default.SyncAlt,
+                    contentDescription = "has synchronized item"
+                )
+                CanBind.Ok -> Icon(
+                    Icons.Default.NotificationImportant,
+                    contentDescription = "has synchronized item"
+                )
+                CanBind.No -> {}
+                CanBind.Check -> Icon(
+                    Icons.Default.HelpOutline,
+                    contentDescription = "has synchronized item"
+                )
+            }
+        }
     }
 }
 
@@ -86,8 +109,8 @@ internal fun ListItemContentPreview() {
                 mangaName = "item.manga.russian",
                 readingChapters = 10,
                 allChapters = 99,
-                isSynced = true,
-                currentStatus = ShikimoriAccount.Status.Planned
+                canBind = CanBind.Already,
+                currentStatus = ShikimoriStatus.Planned
             ) {}
         }
     }

@@ -18,14 +18,12 @@ import com.san.kir.manger.ui.application_navigation.download.DownloadScreen
 import com.san.kir.manger.ui.application_navigation.library.libraryNavGraph
 import com.san.kir.manger.ui.application_navigation.schedule.scheduleNavGraph
 import com.san.kir.manger.ui.application_navigation.settings.SettingsScreen
-import com.san.kir.manger.ui.application_navigation.startapp.StartAppScreen
 import com.san.kir.manger.ui.application_navigation.statistic.statisticNavGraph
 import com.san.kir.manger.ui.application_navigation.storage.storageNavGraph
 import com.san.kir.manger.utils.compose.NavTarget
 import com.san.kir.manger.utils.compose.composable
 import com.san.kir.manger.utils.compose.deepLinkIntent
 import com.san.kir.manger.utils.compose.navTarget
-import timber.log.Timber
 
 enum class MainNavTarget(
     val type: MainMenuType,

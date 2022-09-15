@@ -18,6 +18,7 @@ import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -44,6 +45,7 @@ import kotlinx.coroutines.launch
 fun PreparedTopBar(
     navigationListener: () -> Unit = { },
     title: String = "",
+    subtitleContent: @Composable (() -> Unit)? = null,
     subtitle: String = "",
     height: Dp = Dimensions.appBarHeight,
     scaffoldState: ScaffoldState? = null,
@@ -57,11 +59,18 @@ fun PreparedTopBar(
             title = {
                 Column {
                     Text(text = title, maxLines = 1)
-                    if (subtitle.isNotEmpty()) Text(
-                        text = subtitle,
-                        style = MaterialTheme.typography.subtitle2,
-                        maxLines = 1
-                    )
+
+                    ProvideTextStyle(value = MaterialTheme.typography.subtitle2) {
+                        if (subtitleContent != null) {
+                            subtitleContent()
+                        } else
+                            if (subtitle.isNotEmpty()) {
+                                Text(
+                                    text = subtitle,
+                                    maxLines = 1
+                                )
+                            }
+                    }
                 }
             },
             navigationIcon = {
@@ -110,6 +119,7 @@ fun PreparedTopBar(
 fun topBar(
     title: String = "",
     subtitle: String = "",
+    subtitleContent: @Composable (() -> Unit)? = null,
     scaffoldState: ScaffoldState? = null,
     actions: @Composable TopBarActions.() -> Unit = {},
     navigationListener: () -> Unit = {},
@@ -117,12 +127,14 @@ fun topBar(
     initSearchText: String = "",
     onSearchTextChange: (String) -> Unit = {},
     hasAction: Boolean = false,
+    progressAction: Float? = null,
     backgroundColor: Color = MaterialTheme.colors.primarySurface,
 ): @Composable (Dp) -> Unit = {
     Column(modifier = Modifier.fillMaxWidth()) {
         PreparedTopBar(
             title = title,
             subtitle = subtitle,
+            subtitleContent = subtitleContent,
             scaffoldState = scaffoldState,
             actions = actions,
             navigationListener = navigationListener,
@@ -132,17 +144,27 @@ fun topBar(
 
         AnimatedVisibility(visible = enableSearchField) {
             SearchTextField(
-                inititalValue = initSearchText,
+                initialValue = initSearchText,
                 onChangeValue = onSearchTextChange
             )
         }
 
-        if (hasAction)
-            LinearProgressIndicator(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
-            )
+        if (hasAction) {
+            if (progressAction != null) {
+                LinearProgressIndicator(
+                    progress = progressAction,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
+                )
+            } else {
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
+                )
+            }
+        }
     }
 }
 

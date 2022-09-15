@@ -4,7 +4,7 @@ object Versions {
     object App {
         const val MIN_SDK = 21
         const val TARGET_SDK = 30
-        const val COMPILE_SDK = 32
+        const val COMPILE_SDK = 33
     }
 
     object Compose {

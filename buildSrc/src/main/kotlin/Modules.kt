@@ -1,4 +1,4 @@
-abstract class NestedModule(private val base: String) {
+open class NestedModule(private val base: String) {
     fun module(name: String) = ":$base:$name"
 }
 
@@ -23,6 +23,5 @@ object Modules {
         val db = module("db")
         val parsing = module("parsing")
         val models = module("models")
-        val store = module("store")
     }
 }

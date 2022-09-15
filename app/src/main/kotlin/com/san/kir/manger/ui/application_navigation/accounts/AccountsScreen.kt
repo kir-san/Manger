@@ -2,26 +2,27 @@ package com.san.kir.manger.ui.application_navigation.accounts
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.san.kir.core.compose_utils.TopBarScreenList
+import com.san.kir.core.compose_utils.Dimensions
+import com.san.kir.core.compose_utils.ScreenList
+import com.san.kir.core.compose_utils.topBar
 import com.san.kir.core.support.R
-import com.san.kir.features.shikimori.ui.syncItem.ShikimoriItem
+import com.san.kir.features.shikimori.ui.accountItem.AccountItem
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun AccountsScreen(
     navigateUp: () -> Unit,
     navigateToShiki: () -> Unit,
 ) {
-    TopBarScreenList(
-        navigateUp = navigateUp,
-        title = stringResource(R.string.main_menu_accounts),
-        additionalPadding = 0.dp
+    ScreenList(
+        topBar = topBar(
+            navigationListener = navigateUp,
+            title = stringResource(R.string.main_menu_accounts),
+        ),
+        additionalPadding = Dimensions.zero
     ) {
-        item {
-            ShikimoriItem(hiltViewModel(), navigateToShiki)
+        item(key = "Shiki") {
+            AccountItem(navigateToShiki)
         }
+
     }
 }

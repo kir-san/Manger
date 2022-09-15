@@ -5,35 +5,32 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.san.kir.core.utils.coroutines.withIoContext
 import com.san.kir.core.utils.createDirs
-import com.san.kir.core.utils.log
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import io.ktor.client.*
+import io.ktor.client.engine.okhttp.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.logging.*
+import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.util.*
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Cache
 import okhttp3.CacheControl
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.Headers
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.Response
-import okhttp3.internal.closeQuietly
+import okhttp3.logging.HttpLoggingInterceptor
 import okio.Buffer
 import okio.BufferedSink
 import okio.buffer
 import okio.sink
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import timber.log.Timber
 import java.io.File
-import java.io.IOException
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.coroutines.resumeWithException
-import kotlin.time.Duration
-import kotlin.time.ExperimentalTime
+import kotlin.time.Duration.Companion.seconds
 
 @Singleton
 class ConnectManager @Inject constructor(context: Application) {
@@ -47,58 +44,64 @@ class ConnectManager @Inject constructor(context: Application) {
     private val cookieJar = AndroidCookieJar()
 
     private val defaultClient by lazy {
-        OkHttpClient.Builder()
-            .cache(defaultCache)
-            .cookieJar(cookieJar)
-            .build()
+        HttpClient(OkHttp) {
+
+            expectSuccess = true
+
+            engine {
+                config {
+                    cache(defaultCache)
+                    cookieJar(cookieJar)
+                    retryOnConnectionFailure(true)
+                    callTimeout(20_0000L, TimeUnit.MILLISECONDS)
+                    readTimeout(20_0000L, TimeUnit.MILLISECONDS)
+                    writeTimeout(20_0000L, TimeUnit.MILLISECONDS)
+                    addInterceptor(HttpLoggingInterceptor().apply {
+                        level = HttpLoggingInterceptor.Level.BODY
+                    })
+                }
+            }
+
+            defaultRequest {
+                headers { appendAll(defaultHeaders) }
+            }
+
+            BrowserUserAgent()
+
+        }
     }
 
     private val retryKey = "Retry-After"
 
-    private suspend fun awaitNewCall(
-        url: String = "",
-        client: OkHttpClient = defaultClient,
-        headers: Headers = defaultHeaders,
-        cacheControl: CacheControl = defaultCacheControl,
-        request: Request = url.getRequest(headers, cacheControl),
-    ): Response {
-        return client.newCall(request).await()
-    }
-
     suspend fun getText(url: String = ""): String = getDocument(url = url).body().wholeText()
 
-    @OptIn(ExperimentalTime::class)
     suspend fun getDocument(
         url: String = "",
-        client: OkHttpClient = defaultClient,
-        headers: Headers = defaultHeaders,
-        cacheControl: CacheControl = defaultCacheControl,
-        request: Request = url.getRequest(headers, cacheControl),
-    ): Document = withIoContext {
-        val responce = awaitNewCall(
-            client = client,
-            headers = headers,
-            cacheControl = cacheControl,
-            request = request,
-        )
+        formParams: Parameters? = null,
+    ): Document =
+        withIoContext {
+            val response =
+                formParams
+                    ?.let { defaultClient.submitForm(url.prepare(), it) }
+                    ?: defaultClient.get(url.prepare())
 
-        when (responce.code) {
-            429 -> {
-                val toMultimap = responce.headers.toMultimap()
-                val timeOut = toMultimap[retryKey]?.first()?.toLong()
-                if (timeOut != null) {
-                    log("delay $timeOut seconds")
-                    delay(Duration.seconds(timeOut))
-                } else {
-                    delay(Duration.seconds(10))
+            when (response.status) {
+                HttpStatusCode.TooManyRequests -> {
+                    val toMultimap = response.headers
+                    val timeOut = toMultimap[retryKey]?.first()?.code?.toLong()
+                    if (timeOut != null) {
+                        Timber.v("delay $timeOut seconds")
+                        delay(timeOut.seconds)
+                    } else {
+                        delay(10.seconds)
+                    }
+                }
+                else -> {
+                    return@withIoContext Jsoup.parse(response.bodyAsText(), url)
                 }
             }
-            else -> {
-                return@withIoContext Jsoup.parse(responce.body?.byteStream(), "UTF-8", "")
-            }
+            Document("")
         }
-        Document("")
-    }
 
     fun nameFromUrl(url: String): String {
         val pat = Pattern.compile("[\\w.-]+\\.[a-z]{3,4}")
@@ -122,11 +125,11 @@ class ConnectManager @Inject constructor(context: Application) {
             val buffer = Buffer()
             var size: Long = 0
             var time: Long = 0
-            defaultClient.newCall(url.getRequest())
-                .awaitDownload(buffer, onProgress) { s, t ->
-                    size = s
-                    time = t
-                }
+
+            download(buffer, url, onProgress) { s, t ->
+                size = s
+                time = t
+            }
 
             val bm = tryGetBitmap(buffer)
 
@@ -143,6 +146,7 @@ class ConnectManager @Inject constructor(context: Application) {
         }
     }
 
+    @Suppress("BlockingMethodInNonBlockingContext")
     suspend fun downloadFile(
         file: File,
         url: String,
@@ -152,164 +156,83 @@ class ConnectManager @Inject constructor(context: Application) {
         withIoContext {
             file.delete()
             file.parentFile?.createDirs()
-
             file.createNewFile()
 
-            defaultClient.newCall(url.getRequest(cacheControl = noCacheControl))
-                .awaitDownload(file.sink().buffer(), onProgress, onFinish)
+            download(file.sink().buffer(), url, onProgress, onFinish)
 
             file.length()
         }
 
-
     fun prepareUrl(url: String) = url.removeSurrounding("\"", "\"")
 
-    // Based on https://github.com/gildor/kotlin-coroutines-okhttp
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private suspend fun Call.await(): Response {
-        return suspendCancellableCoroutine { continuation ->
-            enqueue(
-                object : Callback {
-                    override fun onResponse(call: Call, response: Response) {
-                        continuation.resume(response) {
-                            response.body?.closeQuietly()
-                        }
-                    }
-
-                    override fun onFailure(call: Call, e: IOException) {
-                        // Don't bother with resuming the continuation if it is already cancelled.
-                        if (continuation.isCancelled) return
-                        continuation.resumeWithException(e)
-                    }
-                }
-            )
-
-            continuation.invokeOnCancellation {
-                try {
-                    cancel()
-                } catch (ex: Throwable) {
-                    // Ignore cancel exception
-                }
-            }
+    private fun String.prepare(): String {
+        val prepare = trim().removeSurrounding("\"", "\"").trim()
+        return if (prepare.contains("http").not()) {
+            prepare.removePrefix("/").removePrefix("/")
+            "https://$prepare"
+        } else {
+            prepare
         }
     }
 
-    // Based on https://github.com/gildor/kotlin-coroutines-okhttp
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private suspend fun Call.awaitDownload(
-        sink: BufferedSink,
-        onProgress: (percent: Float) -> Unit,
+    private suspend fun download(
+        buffer: BufferedSink,
+        url: String,
+        onProgress: ((percent: Float) -> Unit) = {},
         onFinish: (size: Long, time: Long) -> Unit = { _, _ -> },
     ) {
-        return suspendCancellableCoroutine { continuation ->
-            enqueue(
-                object : Callback {
-                    private val SEGMENT_SIZE = 2048L // okio.Segment.SIZE
+        kotlin.runCatching {
+            val startTime = System.currentTimeMillis()
 
-                    override fun onResponse(call: Call, response: Response) {
-                        response.body?.let { body ->
-                            kotlin.runCatching {
-                                val startTime = System.currentTimeMillis()
-                                val contentLength = body.contentLength()
-                                var total: Long = 0
-                                var read: Long
+            val response = defaultClient.get(url.prepare())
+            val source = response.bodyAsChannel()
+            val contentLength = response.contentLength() ?: 1
 
-                                while (
-                                    body.source().read(sink.buffer, SEGMENT_SIZE)
-                                        .apply { read = this } != -1L
-                                ) {
-                                    total += read
-                                    sink.emitCompleteSegments()
-                                    onProgress(total.toFloat() / contentLength.toFloat())
-                                }
+            var total = 0
+            var read: Int
 
-                                sink.writeAll(body.source())
-                                sink.close()
-                                body.source().close()
+            val tempBuffer = Buffer()
+            tempBuffer.use {
+                val byteBuffer = ByteArray(SEGMENT_SIZE)
+                do {
+                    read = source.readAvailable(byteBuffer, 0, SEGMENT_SIZE)
 
-                                onFinish(contentLength, System.currentTimeMillis() - startTime)
-                                continuation.resume(Unit) {}
-                            }.onFailure {
-                                sink.close()
-                                body.source().close()
-
-                                it.printStackTrace()
-                                continuation.resumeWithException(it)
+                    if (read > 0) {
+                        it.write(
+                            if (read < SEGMENT_SIZE) {
+                                byteBuffer.sliceArray(0 until read)
+                            } else {
+                                byteBuffer
                             }
-                        }
+                        )
+                        total += read
+                        onProgress(total.toFloat() / contentLength)
                     }
-
-                    override fun onFailure(call: Call, e: IOException) {
-                        // Don't bother with resuming the continuation if it is already cancelled.
-                        if (continuation.isCancelled) return
-                        continuation.resumeWithException(e)
-                    }
-                }
-            )
-
-            continuation.invokeOnCancellation {
-                try {
-                    cancel()
-                } catch (ex: Throwable) {
-                    // Ignore cancel exception
-                }
+                } while (read >= 0)
             }
-        }
+
+            buffer.use {
+                it.writeAll(tempBuffer)
+            }
+
+            onFinish(contentLength, System.currentTimeMillis() - startTime)
+        }.onFailure(Timber::e)
     }
 
     companion object {
+        private val SEGMENT_SIZE = 2048 // okio.Segment.SIZE
 
-        val defaultHeaders = Headers.Builder()
-            .add(
-                "User-Agent",
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:87.0) Gecko/20100101 Firefox/87.0"
-            )
-            .add(
-                "Accept",
+        val defaultHeaders = StringValuesBuilderImpl(true, 4).apply {
+            append(
+                HttpHeaders.Accept,
                 "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
             )
-            //                .add("Accept-Encoding", "gzip, deflate, br")
-            .add("Accept-Language", "ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3")
-            .add("Cache-Control", "no-cache")
-            .add("Connection", "keep-alive")
-            .add("Upgrade-Insecure-Requests", "1").build()
+            append(HttpHeaders.AcceptLanguage, "ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3")
+            append(HttpHeaders.Connection, "keep-alive")
+            append("Upgrade-Insecure-Requests", "1")
+        }.build()
 
         val defaultCacheControl = CacheControl.Builder().maxAge(10, TimeUnit.MINUTES).build()
         val noCacheControl = CacheControl.Builder().noCache().noStore().build()
     }
 }
-
-fun String.getRequest(
-    headers: Headers = ConnectManager.defaultHeaders,
-    cacheControl: CacheControl = ConnectManager.defaultCacheControl,
-): Request {
-    val prepare = trim().removeSurrounding("\"", "\"").trim()
-    val temp = if (prepare.contains("http").not()) {
-        prepare.removePrefix("/").removePrefix("/")
-        "https://$prepare"
-    } else {
-        prepare
-    }
-
-    log("getRequest for $temp")
-
-    return Request.Builder()
-        .url(temp)
-        .headers(headers)
-        .cacheControl(cacheControl)
-        .build()
-}
-
-fun String.postRequest(
-    postData: RequestBody,
-    headers: Headers = ConnectManager.defaultHeaders,
-    cacheControl: CacheControl = ConnectManager.defaultCacheControl,
-): Request {
-    return Request.Builder()
-        .url(this)
-        .post(postData)
-        .headers(headers)
-        .cacheControl(cacheControl)
-        .build()
-}
-

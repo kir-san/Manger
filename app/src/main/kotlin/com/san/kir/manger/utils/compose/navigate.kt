@@ -16,6 +16,7 @@ import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import com.google.accompanist.navigation.animation.composable
+import timber.log.Timber
 
 // Ключ по которому передаются аргументы
 internal const val itemKey = "sended_item"
@@ -29,19 +30,49 @@ interface NavTargetContent {
     val arguments: List<NamedNavArgument>
 
     // Принимает ли экран какие-либо параметры
-    val hasItem: Boolean
+    val hasItems: Boolean
 
     // Построитель шаблона в зависимости от найстроек экрана
-    fun route(value: String = itemKey): String {
-        // Флаг, является ли в данный момент передача параметра или шаблон для регистрации в контроллере
-        val isTemplate = value == itemKey
+    fun route(vararg values: Any = arrayOf(itemKey)): String {
 
-        fun surround(value: String) = if (isTemplate) "{$value}" else value
+        // Флаг isTemplate, является ли в данный момент передача параметра или шаблон для регистрации в контроллере
+        fun surround(isTemplate: Boolean, value: String): String {
+            return if (isTemplate) "{$value}" else value
+        }
 
-        return if (hasItem)
-            "$route?${itemKey}=${surround(value)}"
-        else
-            route
+        val buildString = buildString {
+            append(route)
+
+            if (hasItems) {
+                if (arguments.isNotEmpty())
+                    arguments.forEachIndexed { index, argument ->
+                        var gettedValue = (values.getOrNull(index) ?: argument.name).toString()
+                        if (gettedValue == itemKey) gettedValue = argument.name
+
+                        val surround = surround(gettedValue == argument.name, gettedValue)
+
+                        Timber.d("gettedValue is $gettedValue")
+                        Timber.d("surround is $surround")
+
+                        if (index == 0) append("?")
+                        else append("&")
+
+                        append("${argument.name}=$surround")
+                    }
+                else
+                    values.forEachIndexed { index, value ->
+                        val surround = surround(value.toString() == itemKey, value.toString())
+
+                        if (index == 0) append("?")
+                        else append("&")
+
+                        append("${itemKey}=$surround")
+                    }
+            }
+        }
+
+        Timber.d(buildString)
+        return buildString
     }
 
     val deepLink: String
@@ -89,14 +120,19 @@ fun NavGraphBuilder.navigation(
 interface ContentScope {
     fun navigateUp()
     fun navigate(target: NavTarget)
-    fun navigate(target: NavTarget, dest: Any)
+    fun navigate(target: NavTarget, vararg dest: Any)
+    fun longElement(itemKey: String): Long?
+    fun stringElement(itemKey: String): String?
     val stringElement: String?
     val longElement: Long?
 }
 
-fun NavHostController.navigate(target: NavTarget, dest: Any? = null) {
-    dest?.let { navigate(target.content.route(dest.toString())) }
-        ?: navigate(target.content.route())
+fun NavHostController.navigate(target: NavTarget, vararg dest: Any = emptyArray()) {
+    if (dest.isEmpty()) {
+        navigate(target.content.route())
+    } else {
+        navigate(target.content.route(*dest))
+    }
 }
 
 internal class ContentScopeImpl(
@@ -111,8 +147,16 @@ internal class ContentScopeImpl(
         nav.navigate(target)
     }
 
-    override fun navigate(target: NavTarget, dest: Any) {
-        nav.navigate(target, dest)
+    override fun navigate(target: NavTarget, vararg dest: Any) {
+        nav.navigate(target, *dest)
+    }
+
+    override fun longElement(itemKey: String): Long? {
+        return back.longElement(itemKey)
+    }
+
+    override fun stringElement(itemKey: String): String? {
+        return back.stringElement(itemKey)
     }
 
     override val stringElement: String?
@@ -128,7 +172,7 @@ internal class ContentScopeImpl(
 fun navTarget(
     route: String,
     arguments: List<NamedNavArgument> = emptyList(),
-    hasItem: Boolean = false,
+    hasItems: Boolean = false,
     hasDeepLink: Boolean = false,
     content: @Composable ContentScope.() -> Unit = {},
 ): NavTargetContent {
@@ -139,11 +183,12 @@ fun navTarget(
         override val deepLinks: List<NavDeepLink> =
             if (hasDeepLink) listOf(navDeepLink { uriPattern = deepLink }) else emptyList()
         override val arguments: List<NamedNavArgument> = arguments
-        override val hasItem: Boolean = hasItem
+        override val hasItems: Boolean = hasItems
     }
 }
 
-fun navLongArgument() = navArgument(itemKey) { type = NavType.LongType }
+fun navLongArgument(customItemKey: String = itemKey) =
+    navArgument(customItemKey) { type = NavType.LongType }
 
 inline fun <reified T : ComponentActivity> Context.deepLinkIntent(target: NavTarget) = Intent(
     Intent.ACTION_VIEW,
@@ -154,10 +199,10 @@ inline fun <reified T : ComponentActivity> Context.deepLinkIntent(target: NavTar
 
 // Получение данных из аргументов
 
-fun NavBackStackEntry.stringElement(): String? {
-    return arguments?.getString(itemKey)
+fun NavBackStackEntry.stringElement(customItemKey: String = itemKey): String? {
+    return arguments?.getString(customItemKey)
 }
 
-fun NavBackStackEntry.longElement(): Long? {
-    return arguments?.getLong(itemKey)
+fun NavBackStackEntry.longElement(customItemKey: String = itemKey): Long? {
+    return arguments?.getLong(customItemKey)
 }

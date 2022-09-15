@@ -15,4 +15,6 @@ object DIR {
         LOCAL,
         CACHE
     )
+
+    val catalogName: (String) -> String = { "$CATALOGS/$it.db" }
 }

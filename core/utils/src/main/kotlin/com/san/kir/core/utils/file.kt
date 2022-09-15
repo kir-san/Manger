@@ -3,6 +3,7 @@ package com.san.kir.core.utils
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.san.kir.core.support.DIR
+import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 import java.util.*
@@ -79,7 +80,7 @@ fun delFiles(filesPath: List<String>): ResultDeleting {
 fun File.createDirs(): Boolean {
     mkdirs()
     if (!isDirectory)
-        log = "Error $path"
+        Timber.v("Error $path")
     return exists()
 }
 

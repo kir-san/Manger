@@ -7,6 +7,7 @@ import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.MainMenuDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.PlannedDao
+import com.san.kir.data.db.dao.SettingsDao
 import com.san.kir.data.db.dao.ShikimoriDao
 import com.san.kir.data.db.dao.SiteDao
 import com.san.kir.data.db.dao.StatisticDao
@@ -29,46 +30,51 @@ object DataModule {
 
     @Provides
     fun provideMainMenuDao(database: RoomDB): MainMenuDao {
-        return database.mainMenuDao
+        return database.mainMenuDao()
     }
 
     @Provides
     fun provideMangaDao(database: RoomDB): MangaDao {
-        return database.mangaDao
+        return database.mangaDao()
     }
 
     @Provides
     fun provideStorageDao(database: RoomDB): StorageDao {
-        return database.storageDao
+        return database.storageDao()
     }
 
     @Provides
     fun provideCategoryDao(database: RoomDB): CategoryDao {
-        return database.categoryDao
+        return database.categoryDao()
     }
 
     @Provides
     fun provideSiteDao(database: RoomDB): SiteDao {
-        return database.siteDao
+        return database.siteDao()
     }
 
     @Provides
     fun provideChapterDao(database: RoomDB): ChapterDao {
-        return database.chapterDao
+        return database.chapterDao()
     }
 
     @Provides
     fun providePlannedDao(database: RoomDB): PlannedDao {
-        return database.plannedDao
+        return database.plannedDao()
     }
 
     @Provides
     fun provideStatisticDao(database: RoomDB): StatisticDao {
-        return database.statisticDao
+        return database.statisticDao()
     }
 
     @Provides
     fun provideShikimoriDao(database: RoomDB): ShikimoriDao {
-        return database.shikimoriDao
+        return database.shikimoriDao()
+    }
+
+    @Provides
+    fun provideSettingsDao(database: RoomDB): SettingsDao {
+        return database.settingsDao()
     }
 }

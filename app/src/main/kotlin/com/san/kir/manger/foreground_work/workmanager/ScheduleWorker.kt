@@ -12,7 +12,6 @@ import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.san.kir.core.support.PlannedPeriod
 import com.san.kir.core.support.PlannedType
-import com.san.kir.core.utils.log
 import com.san.kir.core.utils.longToast
 import com.san.kir.data.db.dao.CategoryDao
 import com.san.kir.data.db.dao.MangaDao
@@ -28,6 +27,7 @@ import com.san.kir.manger.foreground_work.services.CatalogForOneSiteUpdaterServi
 import com.san.kir.background.services.MangaUpdaterService
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import timber.log.Timber
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -44,7 +44,7 @@ class ScheduleWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         val id = inputData.getLong(PlannedTask.tableName, -1L)
 
-        log("doWork $id")
+        Timber.v("doWork $id")
         if (id != -1L) {
             kotlin.runCatching {
 
@@ -103,7 +103,7 @@ class ScheduleWorker @AssistedInject constructor(
         fun addTask(ctx: Context, item: PlannedTaskBase) {
 
             val delay = getDelay(item)
-            log("delay $delay ")
+            Timber.v("delay $delay ")
             val perTask = PeriodicWorkRequestBuilder<ScheduleWorker>(
                 if (item.period == PlannedPeriod.DAY) 1L else 7L, TimeUnit.DAYS,
                 1L, TimeUnit.MINUTES,

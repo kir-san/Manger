@@ -6,9 +6,14 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.BottomAppBar
@@ -31,7 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import com.google.accompanist.insets.navigationBarsPadding
 import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.FullWeightSpacer
 import com.san.kir.core.support.ChapterFilter
@@ -42,7 +46,6 @@ import com.san.kir.data.models.base.countPages
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 // Страница со списком и инструментами для манипуляции с ним
-@OptIn(ExperimentalAnimationApi::class, ExperimentalCoroutinesApi::class)
 @Composable
 internal fun ListPageContent(
     manga: Manga,
@@ -110,12 +113,12 @@ fun PreviewListPageContent() {
 
     MaterialTheme {
         ListPageContent(manga = Manga(),
-            chapterFilter = filter,
-            changeChapterFilter = filterSetter,
-            chapters = chapters,
-            selectedItems = selectedItems,
-            selectionMode = selectionMode,
-            selectItem = {})
+                        chapterFilter = filter,
+                        changeChapterFilter = filterSetter,
+                        chapters = chapters,
+                        selectedItems = selectedItems,
+                        selectionMode = selectionMode,
+                        selectItem = {})
     }
 }
 
@@ -128,7 +131,7 @@ private fun BottomOrderBar(
     BottomAppBar(
         modifier = Modifier
             .fillMaxWidth()
-            .navigationBarsPadding(start = false, end = false)
+            .windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Vertical))
     ) {
         FullWeightSpacer()
 

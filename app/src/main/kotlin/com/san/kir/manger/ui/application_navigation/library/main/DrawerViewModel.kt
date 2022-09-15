@@ -12,18 +12,20 @@ import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.PlannedDao
 import com.san.kir.data.db.dao.SiteDao
 import com.san.kir.data.db.dao.StorageDao
-import com.san.kir.data.store.MainStore
 import com.san.kir.manger.foreground_work.workmanager.UpdateMainMenuWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class DrawerViewModel @Inject constructor(
     private val ctx: Application,
@@ -34,9 +36,13 @@ class DrawerViewModel @Inject constructor(
     private val siteDao: SiteDao,
     private val chapterDao: ChapterDao,
     private val plannedDao: PlannedDao,
-    mainRepository: MainStore,
+    settingsRepository: SettingsRepository,
 ) : ViewModel() {
-    val editMenu = mainRepository.data.map { it.editMenu }.flowOn(defaultDispatcher)
+    val editMenu = settingsRepository
+        .main()
+        .mapLatest { it.editMenu }
+        .stateIn(viewModelScope, SharingStarted.Lazily, false)
+
     fun loadMainMenuItems() = mainMenuDao
         .loadItems()
         .onStart { UpdateMainMenuWorker.addTask(ctx) }

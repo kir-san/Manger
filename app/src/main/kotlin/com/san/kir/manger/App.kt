@@ -7,6 +7,7 @@ import androidx.work.Configuration
 import com.san.kir.data.parsing.Status
 import com.san.kir.data.parsing.Translate
 import dagger.hilt.android.HiltAndroidApp
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -22,6 +23,10 @@ class App : Application(), Configuration.Provider {
 
         Status.init(this)
         Translate.init(this)
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
     }
 
     override fun getWorkManagerConfiguration(): Configuration {

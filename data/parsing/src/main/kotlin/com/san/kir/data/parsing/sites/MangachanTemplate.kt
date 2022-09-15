@@ -95,7 +95,8 @@ abstract class MangachanTemplate(private val connectManager: ConnectManager) :
         val ext = right.select(".ext")
         val link = ext.select(".user_link")
         val first = link.first()
-        val id1 = first.id()
+        // TODO пересмотреть этот момент
+        val id1 = first?.id() ?: ""
         val matcher3 = Pattern.compile("\\d+")
             .matcher(id1)
         if (matcher3.find())
@@ -122,15 +123,15 @@ abstract class MangachanTemplate(private val connectManager: ConnectManager) :
         element.host = host
         element.catalogName = catalogName
 
-        element.name = elem.select("a.title_link").first().text()
+        element.name = elem.select("a.title_link").first()?.text() ?: ""
 
-        element.shotLink = elem.select("a.title_link").first().attr("href")
+        element.shotLink = elem.select("a.title_link").first()?.attr("href") ?: ""
         element.link = host + element.shotLink
 
         element.type = elem.select("a[href*=type]").text()
 
         val authorsTemp = elem.select("a[href*=mangaka]")
-        element.authors = authorsTemp.filter { it != authorsTemp.last() }.map { it.text() }
+        element.authors = authorsTemp.filterNot { it == authorsTemp.last() }.map { it.text() }
 
 
         var s = elem.select(".manga_row3 .item2").html()
@@ -165,8 +166,9 @@ abstract class MangachanTemplate(private val connectManager: ConnectManager) :
 
         element.populate = elem.select("div.manga_images font b").text().toInt()
 
+        // TODO пересмотреть этот момент
         val matcher3 = Pattern.compile("\\d+")
-            .matcher(elem.select(".manga_row4 .row4_left .user_link_short").first().id())
+            .matcher(elem.select(".manga_row4 .row4_left .user_link_short").first()?.id() ?: "")
         if (matcher3.find())
             element.dateId = matcher3.group().toInt()
 
@@ -197,7 +199,7 @@ abstract class MangachanTemplate(private val connectManager: ConnectManager) :
         connectManager.getDocument(host + manga.shortLink)
             .select(".table_cha")
             .select("tr")
-            .filter { it.select("a").text().isNotEmpty() }
+            .filterNot { it.select("a").text().isEmpty() }
             .map {
                 var name = it.select("a").text()
                 val pat = Pattern.compile("v.+").matcher(name)

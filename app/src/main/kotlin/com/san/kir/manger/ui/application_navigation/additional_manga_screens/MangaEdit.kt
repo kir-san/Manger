@@ -45,9 +45,9 @@ import com.san.kir.core.compose_utils.ImageWithStatus
 import com.san.kir.core.compose_utils.LabelText
 import com.san.kir.core.compose_utils.ScreenContent
 import com.san.kir.core.compose_utils.topBar
-import com.san.kir.core.utils.log
 import com.san.kir.data.models.base.Manga
 import com.san.kir.manger.R
+import timber.log.Timber
 
 
 @Composable
@@ -72,7 +72,7 @@ fun MangaEditScreen(
     ) {
         MangaEditContent(viewModel.manga) { viewModel.manga = it }
     }
-    log = ("viewModel.manga is ${viewModel.manga.name}")
+    Timber.v("viewModel.manga is ${viewModel.manga.name}")
 }
 
 @Composable
@@ -80,7 +80,7 @@ private fun MangaEditContent(
     manga: Manga,
     change: (Manga) -> Unit,
 ) {
-    log = ("manga is ${manga.name}")
+    Timber.v("manga is ${manga.name}")
     LabelText(idRes = R.string.about_manga_dialog_name)
     TextField(manga.name, enabled = false) { change(manga.apply { name = it }) }
 
@@ -129,9 +129,9 @@ fun CategoryDropDownTextField(
     val categoryNames by viewModel.categoryNames.collectAsState(emptyList())
 
     DropDownTextField(
-        inititalValue = manga.category,
+        inititalValue = manga.categoryId.toString(),
         valuesList = categoryNames,
-        onChangeValue = { change(manga.apply { category = it }) }
+        onChangeValue = { change(manga.apply { categoryId = it.toLong() }) }
     )
 }
 

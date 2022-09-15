@@ -23,9 +23,7 @@ import com.san.kir.background.R
 import com.san.kir.background.util.SearchDuplicate
 import com.san.kir.core.utils.ID
 import com.san.kir.core.utils.coroutines.withDefaultContext
-import com.san.kir.core.utils.coroutines.withIoContext
 import com.san.kir.core.utils.intentFor
-import com.san.kir.core.utils.log
 import com.san.kir.core.utils.startService
 import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.MangaDao
@@ -37,7 +35,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import timber.log.Timber
 import javax.inject.Inject
 
 @SuppressLint("UnspecifiedImmutableFlag")
@@ -293,7 +291,7 @@ class MangaUpdaterService : Service() {
                 }
             }
         } catch (ex: Exception) {
-            log("manga = $mangaName")
+            Timber.v("manga = $mangaName")
             ex.printStackTrace()
             error++
             countNew = 0

@@ -6,3 +6,5 @@
 /buildSrc/build
 /app/build
 /.idea
+local.properties
+composeReport2Html.jar

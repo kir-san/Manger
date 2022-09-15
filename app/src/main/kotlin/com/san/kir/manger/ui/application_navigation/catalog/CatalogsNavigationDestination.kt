@@ -1,5 +1,6 @@
 package com.san.kir.manger.ui.application_navigation.catalog
 
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.san.kir.manger.ui.application_navigation.MainNavTarget
@@ -29,7 +30,7 @@ enum class CatalogsNavTarget : NavTarget {
     },
 
     Catalog {
-        override val content = navTarget(route = "catalog", hasItem = true) {
+        override val content = navTarget(route = "catalog", hasItems = true) {
             val item = stringElement ?: ""
             val viewModel = catalogViewModel(item)
 
@@ -43,17 +44,18 @@ enum class CatalogsNavTarget : NavTarget {
     },
 
     GlobalSearch {
-        override val content = navTarget(route = "global_search", hasItem = true) {
+        override val content = navTarget(route = "global_search", hasItems = true) {
             GlobalSearchScreen(
                 navigateUp = ::navigateUp,
                 navigateToInfo = { navigate(Info, it) },
                 navigateToAdd = { navigate(AddLocal, it) },
-                initSearchText = stringElement ?: "")
+                searchText = stringElement ?: "",
+                viewModel = hiltViewModel())
         }
     },
 
     Info {
-        override val content = navTarget(route = "info", hasItem = true) {
+        override val content = navTarget(route = "info", hasItems = true) {
             MangaInfoScreen(
                 navigateUp = ::navigateUp,
                 navigateToAdd = { navigate(AddLocal, it) },
@@ -63,7 +65,7 @@ enum class CatalogsNavTarget : NavTarget {
     },
 
     AddLocal {
-        override val content = navTarget(route = "add", hasItem = true) {
+        override val content = navTarget(route = "add", hasItems = true) {
             MangaAddScreen(stringElement ?: "", ::navigateUp)
         }
     };

@@ -2,17 +2,26 @@ package com.san.kir.core.compose_utils
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
@@ -29,11 +38,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.rememberInsetsPaddingValues
-import com.google.accompanist.insets.statusBarsPadding
-import com.google.accompanist.insets.systemBarsPadding
-import com.google.accompanist.insets.ui.TopAppBar
 import com.san.kir.core.utils.TestTags
 import kotlinx.coroutines.launch
 
@@ -41,6 +45,7 @@ import kotlinx.coroutines.launch
 fun PreparedTopBar(
     navigationListener: () -> Unit = { },
     title: String = "",
+    subtitleContent: @Composable (() -> Unit)? = null,
     subtitle: String = "",
     height: Dp = Dimensions.appBarHeight,
     scaffoldState: ScaffoldState? = null,
@@ -54,11 +59,18 @@ fun PreparedTopBar(
             title = {
                 Column {
                     Text(text = title, maxLines = 1)
-                    if (subtitle.isNotEmpty()) Text(
-                        text = subtitle,
-                        style = MaterialTheme.typography.subtitle2,
-                        maxLines = 1
-                    )
+
+                    ProvideTextStyle(value = MaterialTheme.typography.subtitle2) {
+                        if (subtitleContent != null) {
+                            subtitleContent()
+                        } else
+                            if (subtitle.isNotEmpty()) {
+                                Text(
+                                    text = subtitle,
+                                    maxLines = 1
+                                )
+                            }
+                    }
                 }
             },
             navigationIcon = {
@@ -82,15 +94,15 @@ fun PreparedTopBar(
             modifier = Modifier
                 .statusBarsPadding()
                 .fillMaxWidth()
-                .padding(Dimensions.zero)
+                .padding(
+                    WindowInsets.systemBars
+                        .only(WindowInsetsSides.Horizontal)
+                        .asPaddingValues()
+                )
                 .height(height),
             actions = {
                 TopBarActions().actions()
             },
-            contentPadding = rememberInsetsPaddingValues(
-                insets = LocalWindowInsets.current.systemBars,
-                applyBottom = false, applyTop = false
-            ),
             backgroundColor = backgroundColor,
         )
 
@@ -98,7 +110,7 @@ fun PreparedTopBar(
             LinearProgressIndicator(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .systemBarsPadding(top = false, bottom = false),
+                    .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
             )
     }
 }
@@ -107,6 +119,7 @@ fun PreparedTopBar(
 fun topBar(
     title: String = "",
     subtitle: String = "",
+    subtitleContent: @Composable (() -> Unit)? = null,
     scaffoldState: ScaffoldState? = null,
     actions: @Composable TopBarActions.() -> Unit = {},
     navigationListener: () -> Unit = {},
@@ -114,12 +127,14 @@ fun topBar(
     initSearchText: String = "",
     onSearchTextChange: (String) -> Unit = {},
     hasAction: Boolean = false,
+    progressAction: Float? = null,
     backgroundColor: Color = MaterialTheme.colors.primarySurface,
 ): @Composable (Dp) -> Unit = {
     Column(modifier = Modifier.fillMaxWidth()) {
         PreparedTopBar(
             title = title,
             subtitle = subtitle,
+            subtitleContent = subtitleContent,
             scaffoldState = scaffoldState,
             actions = actions,
             navigationListener = navigationListener,
@@ -129,16 +144,27 @@ fun topBar(
 
         AnimatedVisibility(visible = enableSearchField) {
             SearchTextField(
-                inititalValue = initSearchText,
-                onChangeValue = onSearchTextChange)
+                initialValue = initSearchText,
+                onChangeValue = onSearchTextChange
+            )
         }
 
-        if (hasAction)
-            LinearProgressIndicator(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .systemBarsPadding(top = false, bottom = false),
-            )
+        if (hasAction) {
+            if (progressAction != null) {
+                LinearProgressIndicator(
+                    progress = progressAction,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
+                )
+            } else {
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
+                )
+            }
+        }
     }
 }
 

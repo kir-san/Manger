@@ -22,7 +22,7 @@ enum class CategoriesNavTarget : NavTarget {
     },
 
     Category {
-        override val content = navTarget(route = "category_item", hasItem = true) {
+        override val content = navTarget(route = "category_item", hasItems = true) {
             val viewModel: CategoryEditViewModel = hiltViewModel()
 
             viewModel.setCategory(stringElement ?: "")

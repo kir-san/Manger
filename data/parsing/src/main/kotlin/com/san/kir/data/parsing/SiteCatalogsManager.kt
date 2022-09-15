@@ -1,7 +1,9 @@
 package com.san.kir.data.parsing
 
 import com.san.kir.core.internet.ConnectManager
+import com.san.kir.core.support.DIR
 import com.san.kir.core.utils.coroutines.withDefaultContext
+import com.san.kir.core.utils.getFullPath
 import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.models.base.DownloadItem
 import com.san.kir.data.models.base.Manga
@@ -77,4 +79,15 @@ class SiteCatalogsManager @Inject constructor(
 
             return@withDefaultContext getSite(lUrl).getElementOnline(lUrl)
         }
+
+    fun catalogName(siteName: String): String {
+        val first = catalog.first { it.name == siteName }
+        var catName = first.catalogName
+
+        first.allCatalogName
+            .firstOrNull { getFullPath(DIR.catalogName(catName)).exists() }
+            ?.also { catName = it }
+
+        return first.catalogName
+    }
 }

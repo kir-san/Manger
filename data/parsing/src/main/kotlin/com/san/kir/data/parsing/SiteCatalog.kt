@@ -1,11 +1,11 @@
 package com.san.kir.data.parsing
 
-import com.san.kir.core.utils.log
 import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.models.base.DownloadItem
 import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.SiteCatalogElement
 import kotlinx.coroutines.flow.Flow
+import timber.log.Timber
 
 abstract class SiteCatalog {
     open var isInit: Boolean = false
@@ -46,7 +46,7 @@ fun SiteCatalog.getShortLink(fullLink: String): String {
     if (foundedCatalogs.size == 1) {
         shortLink = fullLink.split(foundedCatalogs.first()).last()
     } else {
-        log("fullLink = $fullLink")
+        Timber.v("fullLink = $fullLink")
         throw Throwable("Каталогов найдено больше одного или не найдено совсем")
     }
 

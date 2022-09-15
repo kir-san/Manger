@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -27,32 +29,35 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.insets.ui.Scaffold
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.san.kir.manger.R
+import timber.log.Timber
 
 @Composable
-fun StartAppScreen(navigateToItem: () -> Unit,) {
-    var action by remember { mutableStateOf(true) }
+fun StartAppScreen(navigateToItem: () -> Unit) {
+    MaterialTheme {
+        var action by remember { mutableStateOf(true) }
 
-    Scaffold {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            Image(
-                painterResource(R.mipmap.ic_launcher_foreground),
-                "app icon",
-                modifier = Modifier.size(300.dp),
-            )
-            if (action) CircularProgressIndicator()
-            Spacer(modifier = Modifier.height(20.dp))
+        Scaffold {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                Image(
+                    painterResource(R.mipmap.ic_launcher_foreground),
+                    "app icon",
+                    modifier = Modifier.size(300.dp),
+                )
+                if (action) CircularProgressIndicator()
+                Spacer(modifier = Modifier.height(20.dp))
 
-            PermissionPrepare(navigateToItem) { action = it }
+                PermissionPrepare(navigateToItem) { action = it }
+            }
         }
     }
 }
@@ -74,36 +79,37 @@ private fun PermissionPrepare(
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
 
-    when {
-        // permission is granted
-        storagePermissionState.hasPermission -> {
-            action(true)
-            viewModel.startApp()
-            if (state == OperationState.SUCCESS) navigateToItem()
-        }
-
-        storagePermissionState.shouldShowRationale || !storagePermissionState.permissionRequested -> {
-            action(false)
-            if (doNotShowRationale) {
-                Text(stringResource(R.string.main_permission_error))
-            } else {
-                Text(stringResource(R.string.main_permission_reason))
-                Spacer(Modifier.height(16.dp))
-                Row {
-                    Button(onClick = { storagePermissionState.launchPermissionRequest() }) {
-                        Text(stringResource(R.string.main_permission_request))
-                    }
-                    Spacer(Modifier.width(16.dp))
-                    Button(onClick = { doNotShowRationale = true }) {
-                        Text(stringResource(R.string.main_permission_no_rationale))
+    when (val status = storagePermissionState.status) {
+        is PermissionStatus.Denied -> {
+            if (status.shouldShowRationale.not()) {
+                Timber.v("shouldShowRationale or permissionRequested")
+                action(false)
+                if (doNotShowRationale) {
+                    Text(stringResource(R.string.main_permission_error))
+                } else {
+                    Text(stringResource(R.string.main_permission_reason))
+                    Spacer(Modifier.height(16.dp))
+                    Row {
+                        Button(onClick = { storagePermissionState.launchPermissionRequest() }) {
+                            Text(stringResource(R.string.main_permission_request))
+                        }
+                        Spacer(Modifier.width(16.dp))
+                        Button(onClick = { doNotShowRationale = true }) {
+                            Text(stringResource(R.string.main_permission_no_rationale))
+                        }
                     }
                 }
+            } else {
+                action(false)
+                Text(stringResource(R.string.main_permission_nonpermission))
             }
         }
 
-        else -> {
-            action(false)
-            Text(stringResource(R.string.main_permission_nonpermission))
+        PermissionStatus.Granted -> {
+            Timber.v("hasPermission")
+            action(true)
+            viewModel.startApp()
+            if (state == OperationState.SUCCESS) navigateToItem()
         }
     }
 }

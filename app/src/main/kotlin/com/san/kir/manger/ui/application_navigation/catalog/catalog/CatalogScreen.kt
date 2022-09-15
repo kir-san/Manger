@@ -74,7 +74,6 @@ import com.san.kir.core.compose_utils.systemBarEndPadding
 import com.san.kir.core.compose_utils.systemBarStartPadding
 import com.san.kir.core.compose_utils.systemBarTopPadding
 import com.san.kir.core.compose_utils.topBar
-import com.san.kir.core.utils.log
 import com.san.kir.manger.R
 import com.san.kir.manger.foreground_work.services.CatalogForOneSiteUpdaterService
 import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewModel.Companion.DATE
@@ -82,6 +81,7 @@ import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewM
 import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewModel.Companion.POP
 import com.san.kir.manger.utils.compose.ListItem
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.net.URLDecoder
 
 val btnSizeAddUpdate = 30.dp
@@ -171,7 +171,7 @@ private fun ReceiverHandler(
                 if (intent != null
                     && intent.action == CatalogForOneSiteUpdaterService.ACTION_CATALOG_UPDATER_SERVICE
                 ) {
-                    log("onReceiver $intent")
+                    Timber.v("onReceiver $intent")
                     intent.getStringExtra(CatalogForOneSiteUpdaterService.EXTRA_KEY_OUT)
                         ?.let { out ->
                             when (out) {

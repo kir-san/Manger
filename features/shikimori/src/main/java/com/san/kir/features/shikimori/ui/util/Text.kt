@@ -2,6 +2,7 @@ package com.san.kir.features.shikimori.ui.util
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -9,23 +10,39 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.data.models.base.ShikimoriAccount
+import com.san.kir.core.compose_utils.Fonts
+import com.san.kir.core.compose_utils.Styles
+import com.san.kir.core.compose_utils.animation.FromBottomToBottomAnimContent
+import com.san.kir.data.models.base.ShikimoriStatus
 import com.san.kir.features.shikimori.R
+import com.san.kir.features.shikimori.ui.accountItem.LoginState
 
 @Composable
-fun StatusText(currentStatus: ShikimoriAccount.Status?) {
+fun StatusText(currentStatus: ShikimoriStatus?) {
     if (currentStatus != null) {
         val statuses = LocalContext.current.resources.getStringArray(R.array.statuses)
-        Text(stringResource(R.string.current_status, statuses[currentStatus.ordinal]))
+        Text(
+            stringResource(R.string.current_status, statuses[currentStatus.ordinal]),
+            fontSize = Fonts.Size.less,
+        )
     }
 }
 
 @Composable
-internal fun textLoginOrNot(isLogin: Boolean, nickname: String): String {
-    return if (isLogin) {
-        stringResource(R.string.login_text, nickname)
-    } else {
-        stringResource(R.string.no_auth_text)
+internal fun TextLoginOrNot(state: LoginState) {
+    FromBottomToBottomAnimContent(targetState = state) { targetState ->
+        when (targetState) {
+            is LoginState.LogIn -> {
+                Text(stringResource(R.string.login_text, targetState.nickName))
+            }
+            LoginState.LogOut -> {
+                Text(stringResource(R.string.no_login_text), style = Styles.secondaryText)
+            }
+            LoginState.Error -> {
+                Text(stringResource(R.string.error_try_again), style = Styles.secondaryText)
+            }
+            else -> {}
+        }
     }
 }
 
@@ -38,4 +55,24 @@ internal fun ItemHeader(id: Int) {
             .padding(Dimensions.small),
         textAlign = TextAlign.Center
     )
+}
+
+// Отображение названий манги с установленым стилем
+@Composable
+internal fun MangaNames(
+    name: String? = null,
+    russianName: String? = null,
+) {
+    ProvideTextStyle(Fonts.Style.bigBoldCenter) {
+        name?.let { name ->
+            Text(name, modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = Dimensions.default))
+        }
+
+        russianName?.let { name ->
+            if (name.isNotEmpty())
+                Text(name, modifier = Modifier.fillMaxWidth())
+        }
+    }
 }

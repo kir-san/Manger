@@ -3,32 +3,32 @@ package com.san.kir.data.db.dao
 import androidx.room.Dao
 import androidx.room.Query
 import com.san.kir.data.models.base.Manga
-import com.san.kir.data.models.base.ShikiManga
+import com.san.kir.data.models.base.ShikiDbManga
 import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface ShikimoriDao : BaseDao<ShikiManga> {
-    @Query("SELECT * FROM ${ShikiManga.tableName}")
-    fun items(): Flow<List<ShikiManga>>
+interface ShikimoriDao : BaseDao<ShikiDbManga> {
+    @Query("SELECT * FROM ${ShikiDbManga.tableName}")
+    fun loadItems(): Flow<List<ShikiDbManga>>
 
-    @Query("SELECT * FROM ${ShikiManga.tableName} " +
-            "WHERE ${ShikiManga.Col.id} IS :targetID")
-    suspend fun item(targetID: Long): ShikiManga?
+    @Query("SELECT * FROM ${ShikiDbManga.tableName} " +
+            "WHERE ${ShikiDbManga.Col.targetId} IS :targetID")
+    suspend fun itemByTargetId(targetID: Long): ShikiDbManga?
 
-    @Query("SELECT * FROM ${ShikiManga.tableName} " +
-            "WHERE ${ShikiManga.Col.id} IS :targetID")
-    fun loadItem(targetID: Long): Flow<ShikiManga?>
+    @Query("SELECT * FROM ${ShikiDbManga.tableName} " +
+            "WHERE ${ShikiDbManga.Col.targetId} IS :targetID")
+    fun loadItemByTargetId(targetID: Long): Flow<ShikiDbManga?>
 
-    @Query("SELECT * FROM ${ShikiManga.tableName} " +
-            "WHERE ${ShikiManga.Col.libMangaId} IS :libId")
-    suspend fun itemWhereLibId(libId: Long): ShikiManga?
+    @Query("SELECT * FROM ${ShikiDbManga.tableName} " +
+            "WHERE ${ShikiDbManga.Col.libMangaId} IS :libId")
+    suspend fun itemByLibId(libId: Long): ShikiDbManga?
 
-    @Query("SELECT * FROM ${ShikiManga.tableName} " +
-            "WHERE ${ShikiManga.Col.libMangaId} IS :libId")
-    fun loadItemWhereLibId(libId: Long): Flow<ShikiManga?>
+    @Query("SELECT * FROM ${ShikiDbManga.tableName} " +
+            "WHERE ${ShikiDbManga.Col.libMangaId} IS :libId")
+    fun loadItemByLibId(libId: Long): Flow<ShikiDbManga?>
 
-    @Query("DELETE FROM ${ShikiManga.tableName}")
+    @Query("DELETE FROM ${ShikiDbManga.tableName}")
     suspend fun clearAll()
 
     @Query(
@@ -39,6 +39,15 @@ interface ShikimoriDao : BaseDao<ShikiManga> {
 
     @Query("SELECT * FROM ${SimplifiedMangaWithChapterCounts.viewName} " +
             "WHERE ${Manga.Col.id} IS :id")
-    fun loadLibraryItem(id: Long): Flow<SimplifiedMangaWithChapterCounts>
+    fun loadLibraryItemById(id: Long): Flow<SimplifiedMangaWithChapterCounts>
+
+    @Query("DELETE FROM ${ShikiDbManga.tableName} " +
+                   "WHERE ${ShikiDbManga.Col.targetId} IS :targetID")
+    suspend fun removeByTargetId(targetID: Long)
+
+    @Query("UPDATE ${ShikiDbManga.tableName} " +
+                   "SET ${ShikiDbManga.Col.libMangaId} = :libId " +
+                   "WHERE ${ShikiDbManga.Col.targetId} IS :targetID")
+    suspend fun updateLibIdByTargetId(targetID: Long, libId: Long)
 }
 

@@ -2,7 +2,7 @@ package com.san.kir.manger
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import com.san.kir.data.db.getDatabase
+//import com.san.kir.data.db.getDatabase
 import com.san.kir.manger.ui.MainActivity
 import com.san.kir.core.utils.TestTags
 import kotlinx.coroutines.runBlocking
@@ -21,11 +21,11 @@ class UIInstrumentedTest {
     fun print() {
         composeTestRule.onRoot(true).printToLog("TAG")
         runBlocking {
-            categoryCount = com.san.kir.data.db.getDatabase(composeTestRule.activity)
-                .categoryDao
-                .getItems()
-                .filter { it.isVisible }
-                .count()
+//            categoryCount = com.san.kir.data.db.getDatabase(composeTestRule.activity)
+//                .categoryDao
+//                .getItems()
+//                .filter { it.isVisible }
+//                .count()
         }
     }
 

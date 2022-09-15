@@ -45,12 +45,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.san.kir.data.models.datastore.Viewer
 import com.san.kir.manger.R
 import com.san.kir.core.compose_utils.CheckBoxText
 import com.san.kir.manger.utils.compose.RadioGroup
 import com.san.kir.core.compose_utils.ScreenContent
 import com.san.kir.core.compose_utils.topBar
+import com.san.kir.data.models.base.Settings
 
 @Composable
 fun SettingsScreen(
@@ -119,7 +119,7 @@ fun SettingsScreen(
             subtitle = R.string.settings_viewer_orientation_summary,
             icon = Icons.Default.CropLandscape,
             entries = R.array.settings_viewer_orientation_array,
-            entryValues = Viewer.Orientation.values().toList(),
+            entryValues = Settings.Viewer.Orientation.values().toList(),
             initialValue = viewModel.orientation,
             onValueChange = { viewModel.orientation = it }
         )

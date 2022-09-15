@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyItemScope
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
@@ -40,6 +42,36 @@ import com.san.kir.core.support.CATEGORY_ALL
 import com.san.kir.core.utils.TestTags
 import com.san.kir.data.models.extend.SimplifiedManga
 import com.san.kir.manger.utils.compose.squareMaxSize
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun LazyGridItemScope.ItemView(
+    navigateToChapters: (String) -> Unit,
+    manga: SimplifiedManga,
+    viewModel: LibraryViewModel,
+    content: @Composable () -> Unit,
+) {
+
+    val defaultColor = MaterialTheme.colors.primary
+    val backgroundColor by remember {
+        mutableStateOf(runCatching { Color(manga.color) }.getOrDefault(defaultColor))
+    }
+
+    Card(
+        shape = RoundedCornerShape(Dimensions.small),
+        border = BorderStroke(Dimensions.smaller, backgroundColor),
+        modifier = Modifier
+            .animateItemPlacement()
+            .testTag(TestTags.Library.item)
+            .padding(Dimensions.smallest)
+            .fillMaxWidth()
+            .combinedClickable(
+                onLongClick = { viewModel.changeSelectedManga(true, manga) },
+                onClick = { navigateToChapters(manga.name) })
+    ) {
+        content()
+    }
+}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -72,14 +104,14 @@ private fun LazyItemScope.ItemView(
 }
 
 @Composable
-fun LazyItemScope.LibraryLargeItemView(
+fun LazyGridItemScope.LibraryLargeItemView(
     navigateToChapters: (String) -> Unit,
     manga: SimplifiedManga,
     cat: String,
     viewModel: LibraryViewModel,
     context: Context = LocalContext.current,
 ) {
-    val showCategory by viewModel.showCategory.collectAsState(false)
+    val showCategory by viewModel.showCategory.collectAsState()
     val countNotRead by viewModel.countNotRead(manga.name).collectAsState(0)
     val primaryColor = MaterialTheme.colors.primary
     var backgroundColor by remember { mutableStateOf(primaryColor) }
@@ -149,7 +181,7 @@ fun LazyItemScope.LibrarySmallItemView(
     viewModel: LibraryViewModel,
     context: Context = LocalContext.current,
 ) {
-    val showCategory by viewModel.showCategory.collectAsState(false)
+    val showCategory by viewModel.showCategory.collectAsState()
     val countNotRead by viewModel.countNotRead(manga.name).collectAsState(0)
     val primaryColor = MaterialTheme.colors.primary
     var backgroundColor by remember { mutableStateOf(primaryColor) }

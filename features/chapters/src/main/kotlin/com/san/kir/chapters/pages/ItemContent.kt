@@ -2,7 +2,6 @@ package com.san.kir.chapters.pages
 
 import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -44,7 +43,7 @@ import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.models.base.Manga
 import com.san.kir.features.viewer.MangaViewer
 
-@OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun LazyItemScope.ItemContent(
     manga: Manga,

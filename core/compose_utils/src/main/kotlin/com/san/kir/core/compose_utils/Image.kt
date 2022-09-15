@@ -3,7 +3,6 @@ package com.san.kir.core.compose_utils
 import android.content.Context
 import android.graphics.BitmapFactory
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -20,9 +19,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.san.kir.core.internet.LocalConnectManager
+import timber.log.Timber
 import java.io.File
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun ImageWithStatus(url: String?) {
     val manager = LocalConnectManager.current
@@ -73,6 +72,8 @@ fun rememberImage(url: String?, context: Context = LocalContext.current): ImageB
 
             val icon = File(imageCacheDirectory, name)
 
+            Timber.v("remember image with path ${icon.path}")
+
             kotlin.runCatching {
                 logo = BitmapFactory.decodeFile(icon.path).asImageBitmap()
                 return@LaunchedEffect
@@ -83,8 +84,8 @@ fun rememberImage(url: String?, context: Context = LocalContext.current): ImageB
                     logo = BitmapFactory.decodeFile(icon.path).asImageBitmap()
                 })
             }.onFailure {
-                ContextCompat.getDrawable(context, R.drawable.unknown)?.let {
-                    logo = it.toBitmap().asImageBitmap()
+                ContextCompat.getDrawable(context, R.drawable.unknown)?.let { draw ->
+                    logo = draw.toBitmap().asImageBitmap()
                 }
             }
         }

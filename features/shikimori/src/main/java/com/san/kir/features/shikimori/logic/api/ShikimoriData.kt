@@ -1,4 +1,4 @@
-package com.san.kir.features.shikimori.api
+package com.san.kir.features.shikimori.logic.api
 
 import android.net.Uri
 import io.ktor.http.*

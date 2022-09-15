@@ -45,13 +45,13 @@ import com.san.kir.core.compose_utils.ScreenPadding
 import com.san.kir.core.compose_utils.SmallSpacer
 import com.san.kir.core.compose_utils.ToolbarProgress
 import com.san.kir.core.compose_utils.topBar
-import com.san.kir.features.shikimori.BackgroundTasks
 import com.san.kir.features.shikimori.R
+import com.san.kir.features.shikimori.logic.BackgroundTasks
+import com.san.kir.features.shikimori.logic.useCases.CanBind
 import com.san.kir.features.shikimori.ui.accountItem.LoginState
 import com.san.kir.features.shikimori.ui.util.LogOutDialog
 import com.san.kir.features.shikimori.ui.util.MangaItemContent
 import com.san.kir.features.shikimori.ui.util.TextLoginOrNot
-import com.san.kir.features.shikimori.useCases.CanBind
 
 @Composable
 fun AccountScreen(
@@ -65,7 +65,7 @@ fun AccountScreen(
 
     ScreenPadding(
         topBar = topBar(
-            viewModel = viewModel,
+            onSendEvent = viewModel::sendEvent,
             navigateUp = navigateUp,
             navigateToSearch = navigateToSearch,
             state = state.login,
@@ -107,7 +107,7 @@ fun AccountScreen(
 
 @Composable
 private fun topBar(
-    viewModel: AccountViewModel,
+    onSendEvent: (AccountEvent) -> Unit,
     navigateUp: () -> Unit,
     navigateToSearch: () -> Unit,
     state: LoginState,
@@ -124,8 +124,8 @@ private fun topBar(
                 ExpandedMenu {
                     MenuText(
                         R.string.update_data,
-                        onClick = { viewModel.sendEvent(AccountEvent.Update) })
-                    MenuText(R.string.logout, onClick = { viewModel.sendEvent(AccountEvent.LogOut) })
+                        onClick = { onSendEvent(AccountEvent.Update) })
+                    MenuText(R.string.logout, onClick = { onSendEvent(AccountEvent.LogOut) })
                 }
             }
             LoginState.Loading -> ToolbarProgress()
@@ -134,6 +134,7 @@ private fun topBar(
 
     },
     hasAction = if (state is LoginState.LogIn) hasAction.loading || hasAction.checkBind else false,
+    progressAction = hasAction.progress
 )
 
 @Composable

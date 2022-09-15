@@ -3,15 +3,17 @@ package com.san.kir.features.shikimori.ui.localItems
 import androidx.lifecycle.viewModelScope
 import com.san.kir.core.utils.viewModel.BaseViewModel
 import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
-import com.san.kir.features.shikimori.BackgroundTasks
-import com.san.kir.features.shikimori.Helper
-import com.san.kir.features.shikimori.HelperImpl
-import com.san.kir.features.shikimori.repositories.LibraryItemRepository
-import com.san.kir.features.shikimori.repositories.ProfileItemRepository
-import com.san.kir.features.shikimori.useCases.BindingHelper
+import com.san.kir.features.shikimori.logic.BackgroundTasks
+import com.san.kir.features.shikimori.logic.Helper
+import com.san.kir.features.shikimori.logic.HelperImpl
+import com.san.kir.features.shikimori.logic.repo.LibraryItemRepository
+import com.san.kir.features.shikimori.logic.repo.ProfileItemRepository
+import com.san.kir.features.shikimori.logic.useCases.BindingUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -20,21 +22,16 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 internal class LocalItemsViewModel @Inject internal constructor(
-    libraryRepository: LibraryItemRepository,
+    private val libraryRepository: LibraryItemRepository,
     profileRepository: ProfileItemRepository,
 ) : BaseViewModel<LocalItemsEvent, LocalItemsState>(),
     Helper<SimplifiedMangaWithChapterCounts> by HelperImpl() {
 
-    private val bindingHelper = BindingHelper(profileRepository)
+    private var job: Job? = null
+    private val bindingHelper = BindingUseCase(profileRepository)
 
     init {
-        libraryRepository
-            .loadItems()
-            .mapLatest(bindingHelper.prepareData())
-            .onEach(send(true))
-            .mapLatest(bindingHelper.checkBinding())
-            .onEach(send(false))
-            .launchIn(viewModelScope)
+        sendEvent(LocalItemsEvent.Update)
     }
 
     override val tempState = combine(
@@ -50,8 +47,19 @@ internal class LocalItemsViewModel @Inject internal constructor(
 
     override suspend fun onEvent(event: LocalItemsEvent) {
         when (event) {
-            else -> {}
+            LocalItemsEvent.Update -> updateItemsAndBinding()
         }
+    }
+
+    private fun updateItemsAndBinding() {
+        job?.cancel()
+        job = libraryRepository
+            .loadItems()
+            .mapLatest(bindingHelper.prepareData())
+            .onEach(send(true))
+            .flatMapLatest(bindingHelper.checkBinding())
+            .onEach(send())
+            .launchIn(viewModelScope)
     }
 }
 

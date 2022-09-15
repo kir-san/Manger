@@ -30,7 +30,7 @@ import com.san.kir.core.compose_utils.animation.FromEndToEndAnimContent
 import com.san.kir.core.compose_utils.rememberImage
 import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
 import com.san.kir.features.shikimori.R
-import com.san.kir.features.shikimori.api.ShikimoriData
+import com.san.kir.features.shikimori.logic.api.ShikimoriData
 import com.san.kir.features.shikimori.ui.util.LogOutDialog
 import com.san.kir.features.shikimori.ui.util.TextLoginOrNot
 

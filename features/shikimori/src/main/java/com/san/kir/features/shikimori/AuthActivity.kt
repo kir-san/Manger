@@ -9,7 +9,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.lifecycleScope
 import com.san.kir.core.utils.coroutines.withMainContext
-import com.san.kir.features.shikimori.api.ShikimoriData
+import com.san.kir.features.shikimori.logic.api.ShikimoriData
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import timber.log.Timber

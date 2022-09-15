@@ -3,7 +3,7 @@ package com.san.kir.features.shikimori.ui.search
 import androidx.lifecycle.viewModelScope
 import com.san.kir.core.utils.coroutines.defaultLaunch
 import com.san.kir.core.utils.viewModel.BaseViewModel
-import com.san.kir.features.shikimori.repositories.ProfileItemRepository
+import com.san.kir.features.shikimori.logic.repo.ProfileItemRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

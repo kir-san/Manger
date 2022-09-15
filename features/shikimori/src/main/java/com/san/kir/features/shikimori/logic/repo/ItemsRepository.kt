@@ -1,4 +1,4 @@
-package com.san.kir.features.shikimori.repositories
+package com.san.kir.features.shikimori.logic.repo
 
 import com.san.kir.data.models.base.ShikimoriMangaItem
 import kotlinx.coroutines.flow.Flow

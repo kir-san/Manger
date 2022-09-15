@@ -1,5 +1,6 @@
-package com.san.kir.features.shikimori.repositories
+package com.san.kir.features.shikimori.logic.repo
 
+import com.san.kir.core.utils.coroutines.withIoContext
 import com.san.kir.data.db.dao.ShikimoriDao
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
@@ -12,7 +13,8 @@ class LibraryItemRepository @Inject constructor(
 
     override fun loadItemById(id: Long) = shikimoriDao.loadLibraryItemById(id)
 
-    override suspend fun items() = loadItems().first()
+    override suspend fun items() = withIoContext { loadItems().first() }
 
-    override suspend fun itemById(id: Long) = shikimoriDao.loadLibraryItemById(id).firstOrNull()
+    override suspend fun itemById(id: Long) =
+        withIoContext { shikimoriDao.loadLibraryItemById(id).firstOrNull() }
 }

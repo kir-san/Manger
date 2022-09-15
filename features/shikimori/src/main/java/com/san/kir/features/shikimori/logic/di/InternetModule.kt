@@ -1,11 +1,11 @@
-package com.san.kir.features.shikimori.di
+package com.san.kir.features.shikimori.logic.di
 
 import android.content.Context
 import com.san.kir.data.models.base.Settings
 import com.san.kir.features.shikimori.ShikiAuth
-import com.san.kir.features.shikimori.api.ShikimoriData
 import com.san.kir.features.shikimori.bearer
-import com.san.kir.features.shikimori.repositories.SettingsRepository
+import com.san.kir.features.shikimori.logic.api.ShikimoriData
+import com.san.kir.features.shikimori.logic.repo.SettingsRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

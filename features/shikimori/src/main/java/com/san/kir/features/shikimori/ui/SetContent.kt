@@ -20,6 +20,7 @@ import com.san.kir.core.support.R
 import com.san.kir.features.shikimori.ui.accountItem.AccountItem
 import com.san.kir.features.shikimori.ui.accountRate.AccountRateScreen
 import com.san.kir.features.shikimori.ui.accountScreen.AccountScreen
+import com.san.kir.features.shikimori.ui.localItem.LocalItemScreen
 import com.san.kir.features.shikimori.ui.localItems.LocalItemsScreen
 import com.san.kir.features.shikimori.ui.search.ShikiSearchScreen
 import timber.log.Timber
@@ -43,7 +44,7 @@ fun ComponentActivity.setContent() {
 
 @Composable
 internal fun ShikimoriContent() {
-    var nav: ShikiNavTarget by remember { mutableStateOf(ShikiNavTarget.Search) }
+    var nav: ShikiNavTarget by remember { mutableStateOf(ShikiNavTarget.LocalItems) }
     Timber.plant(Timber.DebugTree())
 
     Crossfade(targetState = nav) { target ->
@@ -89,18 +90,24 @@ internal fun ShikimoriContent() {
             ShikiNavTarget.LocalItems -> {
                 LocalItemsScreen(
                     navigateUp = { nav = ShikiNavTarget.Catalog },
-                    navigateToItem = {}
+                    navigateToItem = { nav = ShikiNavTarget.LocalItem(it) }
                 )
             }
-            else -> {}
+            is ShikiNavTarget.LocalItem -> {
+                LocalItemScreen(
+                    mangaId = target.id,
+                    navigateUp = { nav = ShikiNavTarget.LocalItems },
+                    navigateToSearch = {})
+            }
         }
     }
 }
 
-sealed class ShikiNavTarget(val id: Long = 0) {
-    object Start : ShikiNavTarget()
-    object Catalog : ShikiNavTarget()
-    class AccountRate(id: Long) : ShikiNavTarget(id)
-    object Search : ShikiNavTarget()
-    object LocalItems : ShikiNavTarget()
+sealed interface ShikiNavTarget {
+    object Start : ShikiNavTarget
+    object Catalog : ShikiNavTarget
+    data class AccountRate(val id: Long) : ShikiNavTarget
+    object Search : ShikiNavTarget
+    object LocalItems : ShikiNavTarget
+    data class LocalItem(val id: Long) : ShikiNavTarget
 }

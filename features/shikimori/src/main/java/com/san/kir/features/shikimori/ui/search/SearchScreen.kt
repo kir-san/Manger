@@ -18,8 +18,8 @@ import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.ScreenList
 import com.san.kir.core.compose_utils.topBar
 import com.san.kir.features.shikimori.R
+import com.san.kir.features.shikimori.logic.useCases.CanBind
 import com.san.kir.features.shikimori.ui.util.MangaItemContent
-import com.san.kir.features.shikimori.useCases.CanBind
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

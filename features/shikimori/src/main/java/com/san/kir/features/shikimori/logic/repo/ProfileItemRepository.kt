@@ -1,4 +1,4 @@
-package com.san.kir.features.shikimori.repositories
+package com.san.kir.features.shikimori.logic.repo
 
 import com.san.kir.core.utils.coroutines.withIoContext
 import com.san.kir.data.db.dao.ShikimoriDao
@@ -7,8 +7,8 @@ import com.san.kir.data.models.base.ShikiDbManga
 import com.san.kir.data.models.base.ShikimoriImage
 import com.san.kir.data.models.base.ShikimoriManga
 import com.san.kir.data.models.base.ShikimoriRate
-import com.san.kir.features.shikimori.api.ShikimoriApi
-import com.san.kir.features.shikimori.api.ShikimoriData
+import com.san.kir.features.shikimori.logic.api.ShikimoriApi
+import com.san.kir.features.shikimori.logic.api.ShikimoriData
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.resources.*
@@ -28,11 +28,12 @@ internal class ProfileItemRepository @Inject constructor(
 
     override fun loadItemById(id: Long) = shikimoriDao.loadItemByTargetId(id)
 
-    override suspend fun items() = loadItems().first()
+    override suspend fun items() = withIoContext { loadItems().first() }
 
-    override suspend fun itemById(libId: Long): ShikiDbManga? = shikimoriDao.itemByLibId(libId)
+    override suspend fun itemById(libId: Long): ShikiDbManga? =
+        withIoContext { shikimoriDao.itemByLibId(libId) }
 
-    suspend fun addOrUpdate(rate: ShikimoriRate): ShikiDbManga {
+    private suspend fun addOrUpdate(rate: ShikimoriRate): ShikiDbManga {
         var dbItem = shikimoriDao.itemByTargetId(rate.targetId)
 
         if (dbItem != null) {
@@ -58,8 +59,8 @@ internal class ProfileItemRepository @Inject constructor(
         return dbItem
     }
 
-    suspend fun removeByRate(rate: ShikimoriRate) =
-        withIoContext { shikimoriDao.removeByTargetId(rate.targetId) }
+    private suspend fun removeByRate(rate: ShikimoriRate) =
+        shikimoriDao.removeByTargetId(rate.targetId)
 
     suspend fun bindItem(rate: ShikimoriRate, libraryMangaId: Long) = withIoContext {
         Timber.i(

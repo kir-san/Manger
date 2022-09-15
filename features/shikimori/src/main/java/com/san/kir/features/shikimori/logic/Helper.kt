@@ -1,13 +1,14 @@
-package com.san.kir.features.shikimori
+package com.san.kir.features.shikimori.logic
 
 import com.san.kir.data.models.base.ShikimoriMangaItem
-import com.san.kir.features.shikimori.useCases.BindStatus
+import com.san.kir.features.shikimori.logic.useCases.BindStatus
+import com.san.kir.features.shikimori.logic.useCases.CheckingStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-interface Helper<T : ShikimoriMangaItem> {
+internal interface Helper<T : ShikimoriMangaItem> {
 
     val unbindedItems: StateFlow<List<BindStatus<T>>>
 
@@ -15,11 +16,13 @@ interface Helper<T : ShikimoriMangaItem> {
 
     fun send(checkingState: Boolean): (List<BindStatus<T>>) -> Unit
 
+    fun send(): (CheckingStatus<T>) -> Unit
+
     fun updateLoading(loading: Boolean)
 
 }
 
-class HelperImpl<T : ShikimoriMangaItem> : Helper<T> {
+internal class HelperImpl<T : ShikimoriMangaItem> : Helper<T> {
 
     // Манга без привязки
     private val _unbindedItems = MutableStateFlow(emptyList<BindStatus<T>>())
@@ -34,6 +37,13 @@ class HelperImpl<T : ShikimoriMangaItem> : Helper<T> {
         _hasAction.update { old -> old.copy(checkBind = checkingState) }
     }
 
+    override fun send(): (CheckingStatus<T>) -> Unit = {
+        it.items?.let { items -> _unbindedItems.value = items }
+        _hasAction.update { old ->
+            old.copy(checkBind = it.progress != null, progress = it.progress)
+        }
+    }
+
     override fun updateLoading(loading: Boolean) {
         _hasAction.update { old -> old.copy(loading = loading) }
     }
@@ -42,4 +52,5 @@ class HelperImpl<T : ShikimoriMangaItem> : Helper<T> {
 data class BackgroundTasks(
     val loading: Boolean = true,
     val checkBind: Boolean = true,
+    val progress: Float? = null
 )

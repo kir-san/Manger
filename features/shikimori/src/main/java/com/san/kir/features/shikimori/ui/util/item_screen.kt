@@ -17,49 +17,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.ScreenList
 import com.san.kir.core.compose_utils.SmallSpacer
-import com.san.kir.core.compose_utils.topBar
-import com.san.kir.data.models.base.ShikimoriMangaItem
 import com.san.kir.features.shikimori.R
-import com.san.kir.features.shikimori.ui.accountRate.AccountRateEvent
-import com.san.kir.features.shikimori.ui.accountRate.SyncState
-import com.san.kir.features.shikimori.useCases.CanBind
-import com.san.kir.features.shikimori.ui.accountRate.DialogState
-
-@Composable
-internal fun ItemScreen(
-//    viewModel: CatalogItemViewModel,
-    navigateUp: () -> Unit,
-    navigateToSearch: (String) -> Unit,
-    findTextId: Int,
-    okTextId: Int,
-    foundsTextId: Int,
-    notFoundsTextId: Int,
-    notFoundsSearchTextId: Int,
-) {
-    ScreenList(
-        topBar = topBar(
-            actions = {
-            }
-        ),
-    ) {
-    }
-}
+import com.san.kir.features.shikimori.logic.SyncDialogEvent
+import com.san.kir.features.shikimori.logic.SyncDialogState
+import com.san.kir.features.shikimori.logic.useCases.CanBind
+import com.san.kir.features.shikimori.logic.useCases.SyncState
 
 // Отображение соответствующих элементов в зависимости от статуса привязки
 internal fun LazyListScope.body(
-    localSearch: SyncState,
+    state: SyncState,
     findTextId: Int,
     okTextId: Int,
     foundsTextId: Int,
     notFoundsTextId: Int,
     notFoundsSearchTextId: Int,
-    onListItemClick: (ShikimoriMangaItem) -> Unit,
-    onSyncedItemClick: (ShikimoriMangaItem) -> Unit,
+    onSendEvent: (SyncDialogEvent) -> Unit,
     onSearch: (String) -> Unit,
 ) {
-    when (localSearch) {
+    when (state) {
         // Поиск в базе данных, подходящей по названию манги
         SyncState.Finding -> item {
             Row(
@@ -81,13 +57,13 @@ internal fun LazyListScope.body(
             Column {
                 ItemHeader(okTextId)
                 MangaItemContent(
-                    avatar = localSearch.manga.logo,
-                    mangaName = localSearch.manga.name,
-                    readingChapters = 0,
-                    allChapters = 0,
-                    currentStatus = null,
+                    avatar = state.manga.logo,
+                    mangaName = state.manga.name,
+                    readingChapters = state.manga.read,
+                    allChapters = state.manga.all,
+                    currentStatus = state.manga.status,
                     canBind = CanBind.Already,
-                    onClick = { onSyncedItemClick(localSearch.manga) })
+                    onClick = { onSendEvent(SyncDialogEvent.SyncToggle(state.manga)) })
             }
         }
         // Список подходящей манги
@@ -95,7 +71,7 @@ internal fun LazyListScope.body(
             item {
                 ItemHeader(foundsTextId)
             }
-            items(localSearch.items) { item ->
+            items(state.items) { item ->
                 MangaItemContent(
                     avatar = item.logo,
                     mangaName = item.name,
@@ -103,7 +79,7 @@ internal fun LazyListScope.body(
                     allChapters = item.all,
                     currentStatus = item.status,
                     canBind = CanBind.No,
-                    onClick = { onListItemClick(item) })
+                    onClick = { onSendEvent(SyncDialogEvent.SyncToggle(item)) })
             }
         }
         // Поиск ничего не дал
@@ -120,7 +96,7 @@ internal fun LazyListScope.body(
 
                 SmallSpacer()
 
-                Button(onClick = { onSearch(localSearch.name) }) {
+                Button(onClick = { onSearch(state.name) }) {
                     Text(stringResource(R.string.local_search_not_founds_go))
                 }
             }
@@ -132,16 +108,16 @@ internal fun LazyListScope.body(
 // Диалоги появляющиеся в спорных ситуациях
 @Composable
 internal fun DialogsSyncState(
-    state: DialogState,
-    onSendEvent: (AccountRateEvent) -> Unit,
+    state: SyncDialogState,
+    onSendEvent: (SyncDialogEvent) -> Unit,
 ) {
     when (state) {
-        DialogState.None -> {
+        SyncDialogState.None -> {
         }
 
-        is DialogState.Init -> {
+        is SyncDialogState.Init -> {
             AlertDialog(
-                onDismissRequest = { onSendEvent(AccountRateEvent.DialogDismiss) },
+                onDismissRequest = { onSendEvent(SyncDialogEvent.DialogDismiss) },
                 title = {
                     Text(stringResource(R.string.local_search_dialog_diff_title))
                 },
@@ -149,12 +125,12 @@ internal fun DialogsSyncState(
                     Text(stringResource(R.string.local_search_dialog_bind_items))
                 },
                 confirmButton = {
-                    TextButton(onClick = { onSendEvent(AccountRateEvent.SyncNext(state.manga)) }) {
+                    TextButton(onClick = { onSendEvent(SyncDialogEvent.SyncNext()) }) {
                         Text(stringResource(R.string.local_search_dialog_diffall_yes))
                     }
                 },
                 dismissButton = {
-                    TextButton(onClick = { onSendEvent(AccountRateEvent.DialogDismiss) }) {
+                    TextButton(onClick = { onSendEvent(SyncDialogEvent.DialogDismiss) }) {
                         Text(stringResource(R.string.local_search_dialog_diffall_no))
                     }
                 }
@@ -162,9 +138,9 @@ internal fun DialogsSyncState(
         }
 
         // Разное количество глав
-        is DialogState.DifferentChapterCount -> {
+        is SyncDialogState.DifferentChapterCount -> {
             AlertDialog(
-                onDismissRequest = { onSendEvent(AccountRateEvent.DialogDismiss) },
+                onDismissRequest = { onSendEvent(SyncDialogEvent.DialogDismiss) },
                 title = {
                     Text(stringResource(R.string.local_search_dialog_diff_title))
                 },
@@ -178,21 +154,21 @@ internal fun DialogsSyncState(
                     )
                 },
                 confirmButton = {
-                    TextButton(onClick = { onSendEvent(AccountRateEvent.SyncNext(state.manga)) }) {
+                    TextButton(onClick = { onSendEvent(SyncDialogEvent.SyncNext()) }) {
                         Text(stringResource(R.string.local_search_dialog_diffall_yes))
                     }
                 },
                 dismissButton = {
-                    TextButton(onClick = { onSendEvent(AccountRateEvent.DialogDismiss) }) {
+                    TextButton(onClick = { onSendEvent(SyncDialogEvent.DialogDismiss) }) {
                         Text(stringResource(R.string.local_search_dialog_diffall_no))
                     }
                 }
             )
         }
         // Разное количество прочитанных глав
-        is DialogState.DifferentReadCount -> {
+        is SyncDialogState.DifferentReadCount -> {
             AlertDialog(
-                onDismissRequest = { onSendEvent(AccountRateEvent.DialogDismiss) },
+                onDismissRequest = { onSendEvent(SyncDialogEvent.DialogDismiss) },
                 title = {
                     Text(stringResource(R.string.local_search_dialog_diff_title))
                 },
@@ -208,7 +184,7 @@ internal fun DialogsSyncState(
                 confirmButton = {
                     TextButton(
                         onClick = {
-                            onSendEvent(AccountRateEvent.SyncNext(state.manga, false))
+                            onSendEvent(SyncDialogEvent.SyncNext(false))
                         }
                     ) {
                         Text(stringResource(R.string.local_search_dialog_diffread_local))
@@ -217,7 +193,7 @@ internal fun DialogsSyncState(
                 dismissButton = {
                     TextButton(
                         onClick = {
-                            onSendEvent(AccountRateEvent.SyncNext(state.manga, true))
+                            onSendEvent(SyncDialogEvent.SyncNext(true))
                         }
                     ) {
                         Text(stringResource(R.string.local_search_dialog_diffread_online))
@@ -226,9 +202,9 @@ internal fun DialogsSyncState(
             )
         }
         // Отмена привязки
-        DialogState.CancelSync -> {
+        is SyncDialogState.CancelSync -> {
             AlertDialog(
-                onDismissRequest = { onSendEvent(AccountRateEvent.DialogDismiss) },
+                onDismissRequest = { onSendEvent(SyncDialogEvent.DialogDismiss) },
                 title = {
                     Text(stringResource(R.string.local_search_dialog_diff_title))
                 },
@@ -236,12 +212,12 @@ internal fun DialogsSyncState(
                     Text(stringResource(R.string.local_search_dialog_cancelsync_text))
                 },
                 confirmButton = {
-                    TextButton(onClick = { onSendEvent(AccountRateEvent.SyncCancel) }) {
+                    TextButton(onClick = { onSendEvent(SyncDialogEvent.SyncCancel(state.rate)) }) {
                         Text(stringResource(R.string.local_search_dialog_diffall_yes))
                     }
                 },
                 dismissButton = {
-                    TextButton(onClick = { onSendEvent(AccountRateEvent.DialogDismiss) }) {
+                    TextButton(onClick = { onSendEvent(SyncDialogEvent.DialogDismiss) }) {
                         Text(stringResource(R.string.local_search_dialog_diffall_no))
                     }
                 }

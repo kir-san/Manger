@@ -31,7 +31,7 @@ import com.san.kir.core.compose_utils.rememberImage
 import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
 import com.san.kir.data.models.base.ShikimoriStatus
 import com.san.kir.features.shikimori.R
-import com.san.kir.features.shikimori.useCases.CanBind
+import com.san.kir.features.shikimori.logic.useCases.CanBind
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

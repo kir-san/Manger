@@ -28,6 +28,7 @@ import com.san.kir.core.compose_utils.ScreenPadding
 import com.san.kir.core.compose_utils.ToolbarProgress
 import com.san.kir.core.compose_utils.topBar
 import com.san.kir.features.shikimori.R
+import com.san.kir.features.shikimori.logic.useCases.SyncState
 import com.san.kir.features.shikimori.ui.util.AdditionalInfo
 import com.san.kir.features.shikimori.ui.util.Description
 import com.san.kir.features.shikimori.ui.util.DialogsSyncState
@@ -132,14 +133,11 @@ fun AccountRateScreen(
             }
         }
 
-        DialogsSyncState(
-            state.dialog,
-            onSendEvent = viewModel::sendEvent,
-        )
+        DialogsSyncState(state.dialog) { viewModel.sendEvent(AccountRateEvent.Sync(it)) }
     }
 }
 
-internal fun LazyListScope.content(
+private fun LazyListScope.content(
     manga: MangaState.Ok,
     profile: ProfileState,
     sync: SyncState,
@@ -171,14 +169,13 @@ internal fun LazyListScope.content(
     }
 
     body(
-        localSearch = sync,
+        state = sync,
         findTextId = R.string.local_search_searching,
         okTextId = R.string.local_search_sync,
         foundsTextId = R.string.local_search_founds,
         notFoundsTextId = R.string.local_search_not_founds,
         notFoundsSearchTextId = R.string.local_search_not_founds_ex,
-        onListItemClick = { sendEvent(AccountRateEvent.SyncToggle(it)) },
-        onSyncedItemClick = { sendEvent(AccountRateEvent.SyncCancel) },
+        onSendEvent = { sendEvent(AccountRateEvent.Sync(it)) },
         onSearch = navigateToSearch
     )
 }

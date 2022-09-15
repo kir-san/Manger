@@ -127,6 +127,7 @@ fun topBar(
     initSearchText: String = "",
     onSearchTextChange: (String) -> Unit = {},
     hasAction: Boolean = false,
+    progressAction: Float? = null,
     backgroundColor: Color = MaterialTheme.colors.primarySurface,
 ): @Composable (Dp) -> Unit = {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -148,12 +149,22 @@ fun topBar(
             )
         }
 
-        if (hasAction)
-            LinearProgressIndicator(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
-            )
+        if (hasAction) {
+            if (progressAction != null) {
+                LinearProgressIndicator(
+                    progress = progressAction,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
+                )
+            } else {
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
+                )
+            }
+        }
     }
 }
 

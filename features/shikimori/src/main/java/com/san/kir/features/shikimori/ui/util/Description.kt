@@ -69,3 +69,35 @@ internal fun Description(
         }
     }
 }
+
+@Composable
+internal fun Description(description: String?) {
+    val smallText = 7
+    val fullText = 100
+
+    if (description != null && description.isNotEmpty()) {
+        var showFullDesc by remember { mutableStateOf(false) }
+        val animateSize by animateIntAsState(if (showFullDesc) fullText else smallText)
+
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.End,
+        ) {
+            TextWithFirstWordBold(
+                stringResource(R.string.profile_item_desc, description),
+                textAlign = TextAlign.Justify,
+                maxLines = animateSize,
+            )
+
+            TextButton(
+                onClick = { showFullDesc = !showFullDesc },
+                contentPadding = PaddingValues(vertical = Dimensions.zero),
+            ) {
+                if (showFullDesc)
+                    Text(stringResource(R.string.desc_hide))
+                else
+                    Text(stringResource(R.string.desc_show))
+            }
+        }
+    }
+}

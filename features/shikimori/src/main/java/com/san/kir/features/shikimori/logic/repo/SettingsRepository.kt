@@ -1,9 +1,9 @@
-package com.san.kir.features.shikimori.repositories
+package com.san.kir.features.shikimori.logic.repo
 
 import com.san.kir.core.utils.coroutines.withIoContext
-import com.san.kir.data.db.repositories.AbstractSettingsRepository
 import com.san.kir.data.db.dao.SettingsDao
 import com.san.kir.data.db.dao.ShikimoriDao
+import com.san.kir.data.db.repositories.AbstractSettingsRepository
 import com.san.kir.data.models.base.Settings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.mapLatest

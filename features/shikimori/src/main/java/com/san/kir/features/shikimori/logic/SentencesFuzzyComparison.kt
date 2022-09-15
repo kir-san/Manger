@@ -1,4 +1,4 @@
-package com.san.kir.features.shikimori.ui.util
+package com.san.kir.features.shikimori.logic
 
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase

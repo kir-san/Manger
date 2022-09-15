@@ -5,11 +5,14 @@ import com.san.kir.core.utils.coroutines.defaultExcLaunch
 import com.san.kir.core.utils.viewModel.BaseViewModel
 import com.san.kir.data.models.base.ShikiDbManga
 import com.san.kir.data.models.base.ShikimoriRate
-import com.san.kir.features.shikimori.SyncCheck
-import com.san.kir.features.shikimori.SyncManager
-import com.san.kir.features.shikimori.repositories.LibraryItemRepository
-import com.san.kir.features.shikimori.repositories.ProfileItemRepository
-import com.san.kir.features.shikimori.repositories.SettingsRepository
+import com.san.kir.features.shikimori.logic.SyncDialogEvent
+import com.san.kir.features.shikimori.logic.SyncDialogState
+import com.san.kir.features.shikimori.logic.SyncManager
+import com.san.kir.features.shikimori.logic.repo.LibraryItemRepository
+import com.san.kir.features.shikimori.logic.repo.ProfileItemRepository
+import com.san.kir.features.shikimori.logic.repo.SettingsRepository
+import com.san.kir.features.shikimori.logic.useCases.SyncState
+import com.san.kir.features.shikimori.logic.useCases.SyncUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -35,7 +38,7 @@ internal class AccountRateViewModel @Inject internal constructor(
     private val profileItemRepository: ProfileItemRepository,
     private val syncManager: SyncManager,
 ) : BaseViewModel<AccountRateEvent, AccountRateState>() {
-    private val syncCheck = SyncCheck<ShikiDbManga>(libraryItemRepository)
+    private val syncCheck = SyncUseCase<ShikiDbManga>(libraryItemRepository)
     private val profileState = MutableStateFlow<ProfileState>(ProfileState.Load)
     private val mangaState = MutableStateFlow<MangaState>(MangaState.Load)
 
@@ -46,8 +49,11 @@ internal class AccountRateViewModel @Inject internal constructor(
             .flatMapLatest(profileItemRepository::loadItemById)
             .filterNotNull()
             .distinctUntilChanged()
-            .onEach { syncCheck.launchSyncCheck(it, it.libMangaId) { it.libMangaId != -1L } }
+            .onEach { syncCheck.launchSyncCheck(it) }
             .launchIn(viewModelScope)
+
+        syncManager.beforeBindChange { syncCheck.findingSyncCheck() }
+        syncManager.onBindChange { syncCheck.launchSyncCheck() }
     }
 
     override val tempState = combine(
@@ -55,65 +61,18 @@ internal class AccountRateViewModel @Inject internal constructor(
         syncManager.dialogState,
         profileState,
         mangaState,
-    ) { sync, dialog, profile, manga ->
-        AccountRateState(sync, dialog, profile, manga)
-    }
+        ::AccountRateState
+    )
+
     override val defaultState = AccountRateState(
         sync = SyncState.None,
-        dialog = DialogState.None,
+        dialog = SyncDialogState.None,
         profile = ProfileState.Load,
         manga = MangaState.Load
     )
 
     override suspend fun onEvent(event: AccountRateEvent) {
         when (event) {
-            AccountRateEvent.SyncCancel -> {
-                when (state.value.dialog) {
-                    DialogState.None -> syncManager.askCancelSync()
-                    DialogState.CancelSync -> {
-                        val profile = state.value.profile
-                        if (profile is ProfileState.Ok) {
-                            syncCheck.findingSyncCheck()
-                            syncManager.cancelSync(profile.rate)
-                            syncCheck.launchSyncCheck(itemId = -1L) { false }
-                        }
-                    }
-                    else -> {}
-                }
-            }
-            AccountRateEvent.DialogDismiss -> syncManager.dialogNone()
-            is AccountRateEvent.SyncToggle -> {
-                when (state.value.sync) {
-                    is SyncState.Founds -> syncManager.initSync(event.item)
-                    is SyncState.Ok -> {
-                        val profile = state.value.profile
-                        if (profile is ProfileState.Ok)
-                            syncManager.cancelSync(profile.rate)
-                    }
-                    else -> {}
-                }
-            }
-            is AccountRateEvent.SyncNext -> {
-                val profile = state.value.profile
-                if (profile !is ProfileState.Ok) return
-
-                when (state.value.dialog) {
-                    DialogState.None -> {
-                        val manga = state.value.manga
-                        if (manga !is MangaState.Ok) return
-                        syncManager.checkAllChapters(manga.item.chapters, profile.rate, event.item)
-                    }
-                    is DialogState.DifferentChapterCount -> {
-                        syncManager.checkReadChapters(profile.rate, event.item)
-                    }
-                    is DialogState.DifferentReadCount -> {
-                        syncCheck.findingSyncCheck()
-                        syncManager.launchSync(profile.rate, event.item, event.onlineIsTruth)
-                        syncCheck.launchSyncCheck(itemId = event.item.id) { event.item.id != -1L }
-                    }
-                    else -> {}
-                }
-            }
             AccountRateEvent.ExistToggle -> {
                 when (val profile = state.value.profile) {
                     ProfileState.Load -> {}
@@ -138,6 +97,47 @@ internal class AccountRateViewModel @Inject internal constructor(
                     event.item != null ->
                         updateStateInProfile { profileItemRepository.update(event.item) }
                     else -> updateStateInProfile { }
+                }
+            }
+            is AccountRateEvent.Sync -> onSyncEvent(event.event)
+        }
+    }
+
+    private suspend fun onSyncEvent(event: SyncDialogEvent) {
+        when (event) {
+            SyncDialogEvent.DialogDismiss -> syncManager.dialogNone()
+            is SyncDialogEvent.SyncCancel -> syncManager.cancelSync(event.rate)
+            is SyncDialogEvent.SyncToggle ->
+                when (state.value.sync) {
+                    is SyncState.Founds -> syncManager.initSync(event.item)
+                    is SyncState.Ok -> {
+                        val profile = state.value.profile
+                        if (profile is ProfileState.Ok)
+                            syncManager.askCancelSync(profile.rate)
+                    }
+                    else -> {}
+                }
+            is SyncDialogEvent.SyncNext -> {
+                when (val currentState = state.value.dialog) {
+                    is SyncDialogState.Init -> {
+                        val manga = state.value.manga
+                        if (manga !is MangaState.Ok) return
+
+                        val profile = state.value.profile
+                        if (profile !is ProfileState.Ok) return
+
+                        syncManager.checkAllChapters(
+                            manga.item.chapters, profile.rate, currentState.manga
+                        )
+                    }
+                    is SyncDialogState.DifferentChapterCount ->
+                        syncManager.checkReadChapters(currentState.profileRate, currentState.manga)
+                    is SyncDialogState.DifferentReadCount -> {
+                        syncManager.launchSync(
+                            currentState.profileRate, currentState.manga, event.onlineIsTruth
+                        )
+                    }
+                    else -> {}
                 }
             }
         }

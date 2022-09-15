@@ -29,6 +29,8 @@ class ShikiAuth private constructor(
 
         @OptIn(InternalAPI::class)
         override fun install(plugin: ShikiAuth, scope: HttpClient) {
+            Timber.v("install")
+
             scope.requestPipeline.intercept(HttpRequestPipeline.State) {
                 plugin.providers.filter { it.sendWithoutRequest(context) }.forEach {
                     it.addRequestHeaders(context)
@@ -36,13 +38,17 @@ class ShikiAuth private constructor(
             }
 
             scope.plugin(HttpSend).intercept { context ->
+                Timber.v("intercept")
                 val origin = execute(context)
+                Timber.tag("ShikiAuth").i("status is ${origin.response.status}")
                 if (origin.response.status != HttpStatusCode.Forbidden) return@intercept origin
+                Timber.tag("ShikiAuth").i("attributes is ${origin.request.attributes}")
                 if (origin.request.attributes.contains(AuthCircuitBreaker)) return@intercept origin
 
                 var call = origin
 
                 val candidateProviders = HashSet(plugin.providers)
+                Timber.tag("ShikiAuth").i("${candidateProviders}")
 
                 while (call.response.status == HttpStatusCode.Forbidden) {
                     val headerValue = call.response.headers[HttpHeaders.WWWAuthenticate]
@@ -51,7 +57,8 @@ class ShikiAuth private constructor(
                     val provider = when {
                         authHeader == null && candidateProviders.size == 1 -> candidateProviders.first()
                         authHeader == null -> return@intercept call
-                        else -> candidateProviders.find { it.isApplicable(authHeader) } ?: return@intercept call
+                        else -> candidateProviders.find { it.isApplicable(authHeader) }
+                            ?: return@intercept call
                     }
                     if (!provider.refreshToken(call.response)) return@intercept call
 
@@ -76,7 +83,14 @@ internal fun HttpClientConfig<*>.ShikiAuth(block: ShikiAuth.() -> Unit) {
 
 fun ShikiAuth.bearer(block: BearerAuthConfig.() -> Unit) {
     with(BearerAuthConfig().apply(block)) {
-        this@bearer.providers.add(BearerAuthProvider(_refreshTokens, _loadTokens, _sendWithoutRequest, realm))
+        this@bearer.providers.add(
+            BearerAuthProvider(
+                _refreshTokens,
+                _loadTokens,
+                _sendWithoutRequest,
+                realm
+            )
+        )
     }
 }
 
@@ -88,15 +102,17 @@ class BearerAuthProvider(
 ) : AuthProvider {
 
     @Suppress("OverridingDeprecatedMember")
-    @Deprecated("Please use sendWithoutRequest function instead",
-                ReplaceWith("error(\"Deprecated\")")
+    @Deprecated(
+        "Please use sendWithoutRequest function instead",
+        ReplaceWith("error(\"Deprecated\")")
     )
     override val sendWithoutRequest: Boolean
         get() = error("Deprecated")
 
     private val tokensHolder = AuthTokenHolder(loadTokens)
 
-    override fun sendWithoutRequest(request: HttpRequestBuilder): Boolean = sendWithoutRequestCallback(request)
+    override fun sendWithoutRequest(request: HttpRequestBuilder): Boolean =
+        sendWithoutRequestCallback(request)
 
     /**
      * Checks if current provider is applicable to the request.
@@ -112,7 +128,10 @@ class BearerAuthProvider(
     /**
      * Adds an authentication method headers and credentials.
      */
-    override suspend fun addRequestHeaders(request: HttpRequestBuilder, authHeader: HttpAuthHeader?) {
+    override suspend fun addRequestHeaders(
+        request: HttpRequestBuilder,
+        authHeader: HttpAuthHeader?
+    ) {
         val token = tokensHolder.loadToken() ?: return
 
         request.headers {
@@ -127,7 +146,13 @@ class BearerAuthProvider(
     override suspend fun refreshToken(response: HttpResponse): Boolean {
         Timber.d("refreshToken")
         val newToken = tokensHolder.setToken {
-            refreshTokens(RefreshTokensParams(response.call.client, response, tokensHolder.loadToken()))
+            refreshTokens(
+                RefreshTokensParams(
+                    response.call.client,
+                    response,
+                    tokensHolder.loadToken()
+                )
+            )
         }
         return newToken != null
     }

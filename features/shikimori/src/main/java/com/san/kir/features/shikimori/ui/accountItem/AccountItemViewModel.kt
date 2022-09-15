@@ -10,7 +10,7 @@ import com.san.kir.features.shikimori.AuthActivity
 import com.san.kir.features.shikimori.CODE
 import com.san.kir.features.shikimori.authCodeStore
 import com.san.kir.features.shikimori.ui.util.DialogState
-import com.san.kir.features.shikimori.useCases.AuthUseCase
+import com.san.kir.features.shikimori.logic.useCases.AuthUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine

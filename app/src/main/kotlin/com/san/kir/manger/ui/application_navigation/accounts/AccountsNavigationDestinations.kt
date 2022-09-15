@@ -1,13 +1,11 @@
 package com.san.kir.manger.ui.application_navigation.accounts
 
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.san.kir.features.shikimori.ui.accountRate.AccountRateScreen
 import com.san.kir.features.shikimori.ui.accountScreen.AccountScreen
+import com.san.kir.features.shikimori.ui.localItem.LocalItemScreen
 import com.san.kir.features.shikimori.ui.localItems.LocalItemsScreen
-import com.san.kir.features.shikimori.ui.local_item.LocalItemScreen
-import com.san.kir.features.shikimori.ui.local_item.LocalItemViewModel
 import com.san.kir.features.shikimori.ui.search.ShikiSearchScreen
 import com.san.kir.manger.ui.application_navigation.MainNavTarget
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
@@ -15,6 +13,7 @@ import com.san.kir.manger.utils.compose.NavTarget
 import com.san.kir.manger.utils.compose.navLongArgument
 import com.san.kir.manger.utils.compose.navTarget
 import com.san.kir.manger.utils.compose.navigation
+import timber.log.Timber
 
 enum class AccountsNavTarget : NavTarget {
     Main {
@@ -49,13 +48,13 @@ enum class AccountsNavTarget : NavTarget {
             hasItems = true,
             arguments = listOf(navLongArgument()),
         ) {
-            val viewModel = hiltViewModel<LocalItemViewModel>()
-            longElement?.let { viewModel.setId(it) }
-
             LocalItemScreen(
-                viewModel,
-                ::navigateUp,
-                navigateToSearch = { query -> navigate(Search, query) }
+                mangaId = longElement ?: -1L,
+                navigateUp = ::navigateUp,
+                navigateToSearch = { query ->
+                    Timber.v("query")
+                    navigate(Search, query)
+                }
             )
         }
     },

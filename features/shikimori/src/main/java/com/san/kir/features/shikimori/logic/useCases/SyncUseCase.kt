@@ -1,15 +1,15 @@
-package com.san.kir.features.shikimori
+package com.san.kir.features.shikimori.logic.useCases
 
+import com.san.kir.data.models.base.ShikiDbManga
 import com.san.kir.data.models.base.ShikimoriMangaItem
 import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
-import com.san.kir.features.shikimori.repositories.ItemsRepository
-import com.san.kir.features.shikimori.ui.accountRate.SyncState
-import com.san.kir.features.shikimori.ui.util.fuzzy
+import com.san.kir.features.shikimori.logic.fuzzy
+import com.san.kir.features.shikimori.logic.repo.ItemsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import timber.log.Timber
 
-class SyncCheck<T : ShikimoriMangaItem>(
+internal class SyncUseCase<T : ShikimoriMangaItem>(
     private val oppositeItemsRepository: ItemsRepository,
 ) {
 
@@ -19,7 +19,7 @@ class SyncCheck<T : ShikimoriMangaItem>(
 
     private var _item: T? = null
 
-    suspend fun launchSyncCheck(item: T? = null, itemId: Long, condition: () -> Boolean) {
+    suspend fun launchSyncCheck(item: T? = _item) {
         Timber.v("launchSyncCheck")
 
         if (item == null) return
@@ -27,8 +27,12 @@ class SyncCheck<T : ShikimoriMangaItem>(
 
         findingSyncCheck()
 
-        _syncState.value = if (condition()) {
-            getSyncedItem(itemId)
+        _syncState.value = if (checkBind(item)) {
+            when (item) {
+                is ShikiDbManga -> getSyncedItem(item.libMangaId)
+                is SimplifiedMangaWithChapterCounts -> getSyncedItem(item.id)
+                else -> SyncState.None
+            }
         } else {
             searchForSync(item)
         }
@@ -83,4 +87,21 @@ class SyncCheck<T : ShikimoriMangaItem>(
             )
         }
     }
+
+    private suspend fun checkBind(item: ShikimoriMangaItem): Boolean {
+        return when (item) {
+            is ShikiDbManga -> item.libMangaId != -1L
+            is SimplifiedMangaWithChapterCounts -> oppositeItemsRepository.itemById(item.id) != null
+            else -> false
+        }
+    }
+}
+
+// Состояние связывания
+internal sealed interface SyncState {
+    object None : SyncState
+    class Ok(val manga: ShikimoriMangaItem) : SyncState
+    object Finding : SyncState
+    class Founds(val items: List<ShikimoriMangaItem>) : SyncState
+    class NotFounds(val name: String) : SyncState
 }

@@ -101,8 +101,8 @@ internal fun AdditionalInfo(
             }
         }
     }
-
 }
+
 
 @Composable
 private fun Status(state: ProfileState) {
@@ -157,6 +157,15 @@ private fun Chapters(all: Long, state: ProfileState) {
                 modifier = Modifier.fillMaxWidth()
             )
     }
+}
+
+@Composable
+internal fun Chapters(all: Long, read: Long) {
+    TextWithFirstWordBold(
+        stringResource(R.string.reading, read, all),
+        modifier = Modifier.fillMaxWidth(),
+        textAlign = TextAlign.Center
+    )
 }
 
 @Composable

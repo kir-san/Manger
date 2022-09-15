@@ -6,16 +6,16 @@ import com.san.kir.core.utils.flow.Result
 import com.san.kir.core.utils.flow.asResult
 import com.san.kir.core.utils.viewModel.BaseViewModel
 import com.san.kir.data.models.base.ShikiDbManga
-import com.san.kir.features.shikimori.BackgroundTasks
-import com.san.kir.features.shikimori.Helper
-import com.san.kir.features.shikimori.HelperImpl
-import com.san.kir.features.shikimori.repositories.LibraryItemRepository
-import com.san.kir.features.shikimori.repositories.ProfileItemRepository
-import com.san.kir.features.shikimori.repositories.SettingsRepository
+import com.san.kir.features.shikimori.logic.BackgroundTasks
+import com.san.kir.features.shikimori.logic.Helper
+import com.san.kir.features.shikimori.logic.HelperImpl
+import com.san.kir.features.shikimori.logic.repo.LibraryItemRepository
+import com.san.kir.features.shikimori.logic.repo.ProfileItemRepository
+import com.san.kir.features.shikimori.logic.repo.SettingsRepository
+import com.san.kir.features.shikimori.logic.useCases.AuthUseCase
+import com.san.kir.features.shikimori.logic.useCases.BindingUseCase
 import com.san.kir.features.shikimori.ui.accountItem.LoginState
 import com.san.kir.features.shikimori.ui.util.DialogState
-import com.san.kir.features.shikimori.useCases.AuthUseCase
-import com.san.kir.features.shikimori.useCases.BindingHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,7 +39,7 @@ internal class AccountViewModel @Inject internal constructor(
     private val settingsRepository: SettingsRepository,
     libraryRepository: LibraryItemRepository,
 ) : BaseViewModel<AccountEvent, AccountScreenState>(), Helper<ShikiDbManga> by HelperImpl() {
-    private val bindingHelper = BindingHelper(libraryRepository)
+    private val bindingHelper = BindingUseCase(libraryRepository)
 
     private val loginState = MutableStateFlow<LoginState>(LoginState.Loading)
     private val dialogState = MutableStateFlow<DialogState>(DialogState.Hide)
@@ -62,8 +62,8 @@ internal class AccountViewModel @Inject internal constructor(
             .mapLatest(bindingHelper.prepareData())
             .onEach(send(true))
             // Проверка каждого элемента на возможность привязки
-            .mapLatest(bindingHelper.checkBinding())
-            .onEach(send(false))
+            .flatMapLatest(bindingHelper.checkBinding())
+            .onEach(send())
             .launchIn(viewModelScope)
 
         // Данные об авторизации

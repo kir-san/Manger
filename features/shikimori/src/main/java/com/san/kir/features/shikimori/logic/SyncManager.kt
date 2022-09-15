@@ -1,34 +1,44 @@
-package com.san.kir.features.shikimori
+package com.san.kir.features.shikimori.logic
 
 import com.san.kir.data.models.base.ShikimoriMangaItem
 import com.san.kir.data.models.base.ShikimoriRate
 import com.san.kir.data.models.base.ShikimoriStatus
 import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
 import com.san.kir.data.models.utils.ChapterComparator
-import com.san.kir.features.shikimori.repositories.ChapterRepository
-import com.san.kir.features.shikimori.repositories.ProfileItemRepository
-import com.san.kir.features.shikimori.ui.accountRate.DialogState
+import com.san.kir.features.shikimori.logic.repo.ChapterRepository
+import com.san.kir.features.shikimori.logic.repo.ProfileItemRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import timber.log.Timber
 import javax.inject.Inject
 
-class SyncManager @Inject internal constructor(
+internal class SyncManager @Inject internal constructor(
     private val profileItemRepository: ProfileItemRepository,
     private val chapterRepository: ChapterRepository,
 ) {
     // Состояние опроса
-    private val _dialogState = MutableStateFlow<DialogState>(DialogState.None)
+    private val _dialogState = MutableStateFlow<SyncDialogState>(SyncDialogState.None)
     val dialogState = _dialogState.asStateFlow()
+
+    private var bindChangeAction: suspend () -> Unit = {}
+    private var beforeBindChangeAction: suspend () -> Unit = {}
+
+    fun beforeBindChange(action: suspend () -> Unit) {
+        beforeBindChangeAction = action
+    }
+
+    fun onBindChange(action: suspend () -> Unit) {
+        bindChangeAction = action
+    }
 
     // Сброс состояния
     fun dialogNone() {
-        _dialogState.value = DialogState.None
+        _dialogState.value = SyncDialogState.None
     }
 
     // запрос на отмену связывания объектов
-    fun askCancelSync() {
-        _dialogState.value = DialogState.CancelSync
+    fun askCancelSync(rate: ShikimoriRate) {
+        _dialogState.value = SyncDialogState.CancelSync(rate)
     }
 
     // Взависимости от выбранного источника правды, происходит связывание элементов и обновление
@@ -37,6 +47,8 @@ class SyncManager @Inject internal constructor(
         libraryManga: ShikimoriMangaItem,
         onlineIsTruth: Boolean,
     ) {
+        beforeBindChangeAction()
+
         Timber.i(
             "launchSync\n" +
                     "profileRate is ${profileRate.targetId}\n" +
@@ -67,6 +79,8 @@ class SyncManager @Inject internal constructor(
 
             chapterRepository.update(list)
         }
+
+        bindChangeAction()
     }
 
     fun initSync(libraryManga: ShikimoriMangaItem) {
@@ -75,10 +89,12 @@ class SyncManager @Inject internal constructor(
                     "libraryManga is ${libraryManga.name}"
         )
 
-        _dialogState.value = DialogState.Init(libraryManga)
+        _dialogState.value = SyncDialogState.Init(libraryManga)
     }
 
     suspend fun cancelSync(profileRate: ShikimoriRate) {
+        beforeBindChangeAction()
+
         Timber.i(
             "cancelSync\n" +
                     "profileRate is ${profileRate.targetId}"
@@ -93,6 +109,8 @@ class SyncManager @Inject internal constructor(
         )
 
         profileItemRepository.update(newRate)
+
+        bindChangeAction()
     }
 
     // Вывод запроса на подтверждение,
@@ -110,8 +128,9 @@ class SyncManager @Inject internal constructor(
         when (libraryManga.read) {
             profileRate.chapters -> launchSync(profileRate, libraryManga, false)
             else -> {
-                _dialogState.value = DialogState.DifferentReadCount(
+                _dialogState.value = SyncDialogState.DifferentReadCount(
                     manga = libraryManga,
+                    profileRate = profileRate,
                     local = libraryManga.read,
                     online = profileRate.chapters
                 )
@@ -136,12 +155,55 @@ class SyncManager @Inject internal constructor(
         when (libraryManga.all) {
             mangaAllChapters -> checkReadChapters(profileRate, libraryManga)
             else -> {
-                _dialogState.value = DialogState.DifferentChapterCount(
+                _dialogState.value = SyncDialogState.DifferentChapterCount(
                     manga = libraryManga,
+                    profileRate = profileRate,
                     local = libraryManga.all,
                     online = mangaAllChapters
                 )
             }
         }
     }
+}
+
+// Запросы при выполнении связывания
+internal sealed interface SyncDialogState {
+    object None : SyncDialogState
+
+    data class Init(
+        val manga: ShikimoriMangaItem,
+    ) : SyncDialogState
+
+    data class DifferentChapterCount(
+        val manga: ShikimoriMangaItem,
+        val profileRate: ShikimoriRate,
+        val local: Long,
+        val online: Long,
+    ) : SyncDialogState
+
+    data class DifferentReadCount(
+        val manga: ShikimoriMangaItem,
+        val profileRate: ShikimoriRate,
+        val local: Long,
+        val online: Long,
+    ) : SyncDialogState
+
+    data class CancelSync(
+        val rate: ShikimoriRate
+    ) : SyncDialogState
+}
+
+internal sealed interface SyncDialogEvent {
+    data class SyncToggle(
+        val item: ShikimoriMangaItem
+    ) : SyncDialogEvent
+
+    data class SyncNext(
+        val onlineIsTruth: Boolean = false
+    ) : SyncDialogEvent
+
+    object DialogDismiss : SyncDialogEvent
+    data class SyncCancel(
+        val rate: ShikimoriRate
+    ) : SyncDialogEvent
 }

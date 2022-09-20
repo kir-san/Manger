@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name_version" translatable="false">Manger: %s</string>
+    <string name="name">Автор: Kir San</string>
+
+    <string name="first_run_exit_text">Двойное нажатие закроет приложение</string>
+
+    <string name="library_title">Библиотека</string>
+    <string name="library_sort_dialog_add">По дате добавления</string>
+    <string name="library_sort_dialog_abc">В алфавитном порядке</string>
+    <string name="library_sort_dialog_pop">По частоте использования</string>
+    <string name="library_popupmenu_about">Свойства</string>
+    <string name="library_popupmenu_delete">Удалить</string>
+    <string name="library_popupmenu_storage">Используемая память</string>
+    <string name="library_popupmenu_statistic">Статистика чтения</string>
+    <string name="library_popupmenu_delete_message">Вы действительно хотите удалить эту мангу</string>
+    <string name="library_popupmenu_delete_title">Внимание!!!</string>
+    <string name="library_popupmenu_delete_ok">Конечно</string>
+    <string name="library_popupmenu_delete_ok_with_files">Конечно, c файлами</string>
+    <string name="library_popupmenu_delete_no">Никогда</string>
+    <string name="library_popupmenu_title">Выбранная манга: %s</string>
+    <string name="library_popupmenu_set_category">Сменить категорию</string>
+    <string name="library_popupmenu_delete_read_chapters">Удалить прочитанное</string>
+    <string name="library_popupmenu_delete_all">Очистить папку</string>
+    <string name="library_popupmenu_delete_read_chapters_message">Своими действиями вы хотите лишить себя такой кучи манги?</string>
+    <string name="library_popupmenu_delete_all_chapters_message">Своими действиями вы хотите лишить себя всей манги?</string>
+    <string name="library_popupmenu_delete_read_chapters_ok">Да</string>
+    <string name="library_popupmenu_delete_read_chapters_delete_nothing">Удалять нечего</string>
+    <string name="library_popupmenu_delete_read_chapters_delete">Удаляю…</string>
+    <string name="library_popupmenu_delete_read_chapters_no">Не, не</string>
+    <string name="library_no_categories">У вас скрыты все категории, вернитесь в пункт "Категории" и измените видимость у нужных</string>
+    <string name="library_to_categories">Перейти в категории</string>
+    <string name="library_help">Библиотека пуста.\n Перейдите в каталоги\n и добавьте новой манги</string>
+    <string name="library_help2">Или добавьте мангу с помощью ссылки на нее,\n используйте для этого\n кнопку с крестиком сверху</string>
+    <string name="library_help_go">В КАТАЛОГИ</string>
+    <string name="library_sort_dialog_reverse">Изменить порядок?</string>
+    <string name="library_sort_dialog_visible">Скрыть ?</string>
+    <string name="library_page_item_read_status">%1$d</string>
+    <string name="library_menu_reload">Обновить текущую категорию</string>
+    <string name="library_menu_reload_all">Обновить все</string>
+    <string name="library_menu_update">Поиск обновлений приложения</string>
+    <string name="library_menu_add_manga">Добавить мангу</string>
+    <string name="library_page_item_size">%s Мб</string>
+    <string name="library_error_hide_categories">Все категории скрыты?</string>
+    <string name="library_add_manga_title">Добавление новой манги</string>
+    <string name="library_add_manga_hint">Введите ссылку на мангу</string>
+    <string name="library_add_manga_add_btn">Добавить</string>
+    <string name="library_add_manga_cancel_btn">Отменить</string>
+    <string name="library_add_manga_error">Ошибка в ссылке или нет интернета</string>
+
+    <!-- MainMenu -->
+    <string name="main_menu_storage">Хранилище</string>
+    <string name="main_menu_statistic">Статистика</string>
+    <string name="main_menu_settings">Настройки</string>
+    <string name="main_menu_schedule">Расписание</string>
+    <string name="main_menu_category">Категории</string>
+    <string name="main_menu_catalogs">Каталоги</string>
+    <string name="main_menu_library_count">Библиотека: %d</string>
+    <string name="main_menu_storage_size_mb">%s Мб</string>
+    <string name="main_menu_downloader_count">Загрузчик: %d</string>
+    <string name="main_menu_latest_count">Обновления: %d</string>
+    <string name="main_menu_search">Поиск</string>
+    <string name="main_menu_item_catalogs">%1$d - %2$d</string>
+</resources>

@@ -1,4 +1,4 @@
-package com.san.kir.manger.ui.application_navigation.library.main
+package com.san.kir.library.logic.repo
 
 import com.san.kir.data.db.dao.SettingsDao
 import com.san.kir.data.db.repositories.AbstractSettingsRepository

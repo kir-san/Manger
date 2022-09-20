@@ -1,29 +1,30 @@
 [versions]
 # Kotlin
-kotlin = "1.7.0"
+kotlin = "1.7.10"
 coroutines = "1.6.4"
-ksp = "1.7.0-1.0.6"
+ksp = "1.7.10-1.0.6"
 serialization = "1.4.0"
+collections_immutable = "0.3.5"
 
 # AndroidX
-core = "1.8.0"
-activity = "1.5.0"
-fragment = "1.5.0"
-splash = "1.0.0-alpha02"
-appcompat = "1.4.2"
-lifecycle = "2.5.0"
-vectordrawable = "1.2.0-beta01"
+activity = "1.5.1"
+appcompat = "1.5.1"
 constraintlayout = "2.1.4"
-paging = "3.1.1"
-workmanager = "2.8.0-alpha02"
-hilt = "1.0.0"
-room = "2.4.3"
-navigation = "2.5.0"
+core = "1.9.0"
 datastore = "1.0.0"
+fragment = "1.5.2"
+hilt = "1.0.0"
+lifecycle = "2.5.1"
+navigation = "2.5.2"
+paging = "3.1.1"
+room = "2.4.3"
+splash = "1.0.0-alpha02"
+vectordrawable = "1.2.0-beta01"
+workmanager = "2.8.0-alpha04"
 
 # Compose
-compose = "1.2.0"
-compose_compiler = "1.2.0"
+compose = "1.2.1"
+compose_compiler = "1.3.1" # Don`t forget change field in Version.kt in buildSrc
 constraint_layout = "1.0.1"
 hilt_navigation_compose = "1.0.0"
 compose_paging = "1.0.0-alpha15"
@@ -32,8 +33,8 @@ compose_paging = "1.0.0-alpha15"
 material = "1.3.0"
 protobuf = "3.18.0"
 protobuf_plugin = "0.8.17"
-accompanist = "0.25.0"
-google_hilt = "2.42"
+accompanist = "0.25.1"
+google_hilt = "2.43.2"
 
 # Test
 junit = "4.13.2"
@@ -58,7 +59,7 @@ jsoup = "1.15.2"
 gson = "2.9.0"
 okio = "3.2.0"
 okhttp = "4.10.0"
-ktor = "2.0.3"
+ktor = "2.1.1"
 
 graphfity = "1.0.0"
 detekt = "1.21.0"
@@ -75,6 +76,7 @@ stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "ko
 coroutines_core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines_android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
+collections_immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "collections_immutable"}
 
 # Room
 room_runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
@@ -104,7 +106,7 @@ hilt-compiler-google = { module = "com.google.dagger:hilt-compiler", version.ref
 
 # Main Android
 core = { module = "androidx.core:core-ktx", version.ref = "core" }
-activity = { module = "androidx.activity:activity-ktx", version.ref = "activity" }
+activity = { module = "androidx.activity:activity-compose", version.ref = "activity" }
 fragment = { module = "androidx.fragment:fragment-ktx", version.ref = "fragment" }
 splash = { module = "androidx.core:core-splashscreen", version.ref = "splash" }
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }

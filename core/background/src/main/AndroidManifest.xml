@@ -4,5 +4,6 @@
 
     <application>
         <service android:name="com.san.kir.background.services.MangaUpdaterService" />
+        <service android:name="com.san.kir.background.services.AppUpdateService" />
     </application>
 </manifest>

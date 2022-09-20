@@ -1,4 +1,4 @@
-package com.san.kir.manger.foreground_work.workmanager
+package com.san.kir.background.works
 
 import android.content.Context
 import androidx.hilt.work.HiltWorker
@@ -49,8 +49,8 @@ class UpdateMainMenuWorker @AssistedInject constructor(
         // Обновление старых
         mainMenuDao.update(*mainMenuDao
             .getItems()
-            .onEach { item ->
-                item.name = ctx.getString(item.type.stringId())
+            .map { item ->
+                item.copy(name = ctx.getString(item.type.stringId()))
             }
             .toTypedArray())
 
@@ -78,7 +78,8 @@ class UpdateMainMenuWorker @AssistedInject constructor(
             return WorkManager.getInstance(ctx).enqueueUniqueWork(
                 tag + "Unique",
                 ExistingWorkPolicy.KEEP,
-                task)
+                task
+            )
         }
     }
 }

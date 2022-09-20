@@ -12,4 +12,12 @@
     <string name="manga_update_notify_searching">Поиск новых глав</string>
     <string name="manga_update_notify_remained">Осталось: %d</string>
 
+    <!-- AppUpdateService -->
+    <string name="app_update_service_action_cancel_all">Отменить все</string>
+    <string name="app_update_service_title">Поиск обновлений приложения</string>
+    <string name="main_check_app_ver_go_to">Перейти на 4pda.ru</string>
+    <string name="main_check_app_ver_find">Найденная версия: %1$s.\nТекущая версия: %2$s</string>
+    <string name="main_check_app_ver_no_find">У вас установленна актуальная версия</string>
+    <string name="main_check_app_ver_error">Произошла ошибка при поиске обновлений, возможно у вас интернет отключен</string>
+
 </resources>

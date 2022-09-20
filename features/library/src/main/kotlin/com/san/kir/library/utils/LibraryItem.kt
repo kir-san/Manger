@@ -1,6 +1,5 @@
-package com.san.kir.manger.ui.application_navigation.library.main
+package com.san.kir.library.utils
 
-import android.content.Context
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyItemScope
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -22,12 +20,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,86 +32,43 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.san.kir.core.compose_utils.Dimensions
+import com.san.kir.core.compose_utils.endInsetsPadding
+import com.san.kir.core.compose_utils.horizontalInsetsPadding
 import com.san.kir.core.compose_utils.rememberImage
+import com.san.kir.core.compose_utils.squareMaxSize
 import com.san.kir.core.support.CATEGORY_ALL
 import com.san.kir.core.utils.TestTags
 import com.san.kir.data.models.extend.SimplifiedManga
-import com.san.kir.manger.utils.compose.squareMaxSize
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun LazyGridItemScope.ItemView(
-    navigateToChapters: (String) -> Unit,
-    manga: SimplifiedManga,
-    viewModel: LibraryViewModel,
-    content: @Composable () -> Unit,
-) {
-
-    val defaultColor = MaterialTheme.colors.primary
-    val backgroundColor by remember {
-        mutableStateOf(runCatching { Color(manga.color) }.getOrDefault(defaultColor))
-    }
-
-    Card(
-        shape = RoundedCornerShape(Dimensions.small),
-        border = BorderStroke(Dimensions.smaller, backgroundColor),
-        modifier = Modifier
-            .animateItemPlacement()
-            .testTag(TestTags.Library.item)
-            .padding(Dimensions.smallest)
-            .fillMaxWidth()
-            .combinedClickable(
-                onLongClick = { viewModel.changeSelectedManga(true, manga) },
-                onClick = { navigateToChapters(manga.name) })
-    ) {
-        content()
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun LazyItemScope.ItemView(
-    navigateToChapters: (String) -> Unit,
-    manga: SimplifiedManga,
-    viewModel: LibraryViewModel,
-    content: @Composable () -> Unit,
-) {
-
-    val defaultColor = MaterialTheme.colors.primary
-    val backgroundColor by remember {
-        mutableStateOf(runCatching { Color(manga.color) }.getOrDefault(defaultColor))
-    }
-
-    Card(
-        shape = RoundedCornerShape(Dimensions.small),
-        border = BorderStroke(Dimensions.smaller, backgroundColor),
-        modifier = Modifier
-            .animateItemPlacement()
-            .testTag(TestTags.Library.item)
-            .padding(Dimensions.smallest)
-            .fillMaxWidth()
-            .combinedClickable(
-                onLongClick = { viewModel.changeSelectedManga(true, manga) },
-                onClick = { navigateToChapters(manga.name) })
-    ) {
-        content()
-    }
-}
-
-@Composable
-fun LazyGridItemScope.LibraryLargeItemView(
-    navigateToChapters: (String) -> Unit,
+fun LazyGridItemScope.LibraryLargeItem(
+    onClick: (String) -> Unit,
+    onLongClick: (SimplifiedManga) -> Unit,
     manga: SimplifiedManga,
     cat: String,
-    viewModel: LibraryViewModel,
-    context: Context = LocalContext.current,
+    showCategory: Boolean
 ) {
-    val showCategory by viewModel.showCategory.collectAsState()
-    val countNotRead by viewModel.countNotRead(manga.name).collectAsState(0)
-    val primaryColor = MaterialTheme.colors.primary
-    var backgroundColor by remember { mutableStateOf(primaryColor) }
+    val context = LocalContext.current
+    val defaultColor = MaterialTheme.colors.primary
+    val backgroundColor = remember {
+        runCatching { if (manga.color != 0) Color(manga.color) else null }
+            .getOrNull() ?: defaultColor
+    }
 
-    ItemView(navigateToChapters, manga, viewModel) {
+    Card(
+        shape = RoundedCornerShape(Dimensions.small),
+        border = BorderStroke(Dimensions.smaller, backgroundColor),
+        elevation = 3.dp,
+        modifier = Modifier
+            .animateItemPlacement()
+            .testTag(TestTags.Library.item)
+            .padding(Dimensions.smallest)
+            .fillMaxWidth()
+            .combinedClickable(
+                onLongClick = { onLongClick(manga) },
+                onClick = { onClick(manga.name) })
+    ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Box(modifier = Modifier.squareMaxSize()) {
                 Image(
@@ -133,7 +85,8 @@ fun LazyGridItemScope.LibraryLargeItemView(
                     .fillMaxWidth()
                     .background(backgroundColor)
                     .padding(bottom = 5.dp)
-                    .padding(horizontal = 6.dp)
+                    .padding(horizontal = 6.dp),
+                color = contentColorFor(backgroundColor)
             )
         }
         Box(
@@ -142,63 +95,66 @@ fun LazyGridItemScope.LibraryLargeItemView(
         ) {
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = "$countNotRead",
+                    text = "${manga.noRead}",
                     maxLines = 1,
                     modifier = Modifier
                         .background(backgroundColor)
-                        .padding(4.dp)
+                        .padding(4.dp),
+                    color = contentColorFor(backgroundColor)
                 )
 
                 if (cat == context.CATEGORY_ALL && showCategory)
                     Text(
                         text = manga.category,
-                        color = primaryColor,
+                        color = defaultColor,
                         modifier = Modifier
                             .padding(end = 3.dp)
-                            .background(MaterialTheme.colors.contentColorFor(primaryColor))
+                            .background(MaterialTheme.colors.contentColorFor(defaultColor))
                             .padding(start = 3.dp, bottom = 1.dp, end = 3.dp)
                     )
             }
         }
     }
-
-    LaunchedEffect(manga) {
-        if (manga.color != 0) {
-            backgroundColor = try {
-                Color(manga.color)
-            } catch (e: Exception) {
-                primaryColor
-            }
-        }
-    }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun LazyItemScope.LibrarySmallItemView(
-    navigateToChapters: (String) -> Unit,
+fun LazyItemScope.LibrarySmallItem(
+    onClick: (String) -> Unit,
+    onLongClick: (SimplifiedManga) -> Unit,
     manga: SimplifiedManga,
     cat: String,
-    viewModel: LibraryViewModel,
-    context: Context = LocalContext.current,
+    showCategory: Boolean,
 ) {
-    val showCategory by viewModel.showCategory.collectAsState()
-    val countNotRead by viewModel.countNotRead(manga.name).collectAsState(0)
-    val primaryColor = MaterialTheme.colors.primary
-    var backgroundColor by remember { mutableStateOf(primaryColor) }
+    val context = LocalContext.current
+    val defaultColor = MaterialTheme.colors.primary
+    val backgroundColor by remember {
+        mutableStateOf(runCatching { Color(manga.color) }.getOrDefault(defaultColor))
+    }
 
-    val heightSize = 65.dp
-
-    ItemView(navigateToChapters, manga, viewModel) {
+    Card(
+        shape = RoundedCornerShape(Dimensions.small),
+        border = BorderStroke(Dimensions.smaller, backgroundColor),
+        modifier = Modifier
+            .animateItemPlacement()
+            .testTag(TestTags.Library.item)
+            .padding(Dimensions.smallest)
+            .fillMaxWidth()
+            .combinedClickable(
+                onLongClick = { onLongClick(manga) },
+                onClick = { onClick(manga.name) })
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .horizontalInsetsPadding()
                 .padding(Dimensions.smaller)
         ) {
             Image(
                 rememberImage(manga.logo),
                 modifier = Modifier
                     .padding(Dimensions.smaller)
-                    .size(heightSize),
+                    .size(Dimensions.Image.bigger),
                 contentDescription = null,
             )
             Text(
@@ -212,7 +168,7 @@ fun LazyItemScope.LibrarySmallItemView(
             )
 
             Text(
-                text = "$countNotRead",
+                text = "${manga.noRead}",
                 maxLines = 1,
                 modifier = Modifier
                     .padding(horizontal = Dimensions.small)
@@ -224,7 +180,8 @@ fun LazyItemScope.LibrarySmallItemView(
             Box(
                 contentAlignment = Alignment.BottomEnd,
                 modifier = Modifier
-                    .padding(3.dp)
+                    .endInsetsPadding()
+                    .padding(Dimensions.smallest)
                     .fillMaxWidth()
             ) {
                 Text(
@@ -232,18 +189,8 @@ fun LazyItemScope.LibrarySmallItemView(
                     color = MaterialTheme.colors.contentColorFor(backgroundColor),
                     modifier = Modifier
                         .background(backgroundColor)
-                        .padding(2.dp)
+                        .padding(Dimensions.smallest)
                 )
             }
-    }
-
-    LaunchedEffect(manga) {
-        if (manga.color != 0) {
-            backgroundColor = try {
-                Color(manga.color)
-            } catch (e: Exception) {
-                primaryColor
-            }
-        }
     }
 }

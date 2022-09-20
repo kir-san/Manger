@@ -13,6 +13,7 @@ object Dimensions {
     object Image {
         val small = 36.dp
         val default = 56.dp
+        val bigger = 65.dp
         val big = 126.dp
     }
 
@@ -21,7 +22,11 @@ object Dimensions {
         val toolbar = 40.dp
 
         val strokeSmall = 2.dp
-        val strokeDefault= 4.dp
+        val strokeDefault = 4.dp
+    }
+
+    object Items {
+        val height = 48.dp
     }
 
     val appBarHeight = 56.dp

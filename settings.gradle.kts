@@ -15,6 +15,7 @@ include(":features:latest")
 include(":features:viewer")
 include(":features:shikimori")
 include(":features:chapters")
+include(":features:library")
 
-include("sample:testshikimori")
+include(":sample:testshikimori")
 include(":sample:test_compose")

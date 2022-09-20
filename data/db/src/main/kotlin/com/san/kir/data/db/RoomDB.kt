@@ -61,7 +61,7 @@ import timber.log.Timber
         ShikiDbManga::class,
         Settings::class
     ],
-    version = RoomDB.VERSION,
+    version = 49,
     views = [
         SimplifiedManga::class,
         SimplifiedMangaWithChapterCounts::class,
@@ -73,6 +73,8 @@ import timber.log.Timber
         AutoMigration(from = 43, to = 44), // add view PlannedTaskExt
         AutoMigration(from = 44, to = 45), // add view MiniManga
         AutoMigration(from = 46, to = 47), // add table Settings
+        AutoMigration(from = 47, to = 48), // add noRead field to view SimplifiedManga
+        AutoMigration(from = 48, to = 49), // rename name field in view SimplifiedManga
     ]
 )
 @TypeConverters(
@@ -98,7 +100,6 @@ abstract class RoomDB : RoomDatabase() {
 
     companion object {
         private const val NAME = "${DIR.PROFILE}/profile.db"
-        const val VERSION = 47
 
         private lateinit var sDb: RoomDB
 

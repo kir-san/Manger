@@ -27,6 +27,7 @@ dependencies {
     implementation(libs.bundles.room)
 
     implementation(libs.paging)
+    implementation(libs.compose.runtime)
 
     implementation(libs.gson)
     implementation(libs.timber)

@@ -11,12 +11,16 @@ interface ChapterDao : BaseDao<Chapter> {
     @Query("SELECT * FROM ${Chapter.tableName}")
     suspend fun items(): List<Chapter>
 
-    @Query("SELECT ${Chapter.Col.manga} FROM ${Chapter.tableName} " +
-            "WHERE ${Chapter.Col.id} IS :chapterID")
+    @Query(
+        "SELECT ${Chapter.Col.manga} FROM ${Chapter.tableName} " +
+                "WHERE ${Chapter.Col.id} IS :chapterID"
+    )
     suspend fun getMangaName(chapterID: Long): String
 
-    @Query("SELECT * FROM ${Chapter.tableName} " +
-            "WHERE ${Chapter.Col.id} IS :chapterID")
+    @Query(
+        "SELECT * FROM ${Chapter.tableName} " +
+                "WHERE ${Chapter.Col.id} IS :chapterID"
+    )
     suspend fun itemWhereId(chapterID: Long): Chapter
 
     @Query(
@@ -65,6 +69,12 @@ interface ChapterDao : BaseDao<Chapter> {
                 "ORDER BY ${Chapter.Col.id} ASC"
     )
     suspend fun getItemsNotReadAsc(manga: String): List<Chapter>
+
+    @Query("SELECT COUNT(id) FROM chapters WHERE status='QUEUED' OR status='LOADING'")
+    fun loadDownloadCount(): Flow<Int>
+
+    @Query("SELECT COUNT(id) FROM chapters WHERE isInUpdate=1")
+    fun loadAllItemsCount(): Flow<Int>
 
     @Query(
         "SELECT * FROM ${Chapter.tableName} " +

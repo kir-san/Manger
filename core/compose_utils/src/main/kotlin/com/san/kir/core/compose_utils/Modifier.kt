@@ -1,4 +1,4 @@
-package com.san.kir.manger.utils.compose
+package com.san.kir.core.compose_utils
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.LayoutModifier
@@ -16,8 +16,6 @@ class SquareMaxSizeModifier : LayoutModifier {
     ): MeasureResult {
         val minWidth: Int = constraints.minWidth
         val maxWidth: Int = constraints.maxWidth
-//        val minHeight: Int = constraints.minHeight
-//        val maxHeight: Int = constraints.maxHeight
 
         val placeable = measurable.measure(
             Constraints(minWidth, maxWidth, minWidth, maxWidth)

@@ -6,17 +6,13 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.add
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -80,19 +76,11 @@ internal fun BaseScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(
-                        WindowInsets.statusBars
-                            .only(
-                                WindowInsetsSides.Horizontal
-                            )
-                            .add(
-                                WindowInsets(
-                                    top = contentPadding.calculateTopPadding(),
-                                    bottom = contentPadding.calculateBottomPadding(),
-                                    left = additionalPadding, right = additionalPadding
-                                )
-                            )
-                            .asPaddingValues()
-
+                        PaddingValues(
+                            top = contentPadding.calculateTopPadding(),
+                            bottom = contentPadding.calculateBottomPadding(),
+                            start = additionalPadding, end = additionalPadding
+                        )
                     )
                     .imePadding()
                     .verticalScroll(rememberScrollState())

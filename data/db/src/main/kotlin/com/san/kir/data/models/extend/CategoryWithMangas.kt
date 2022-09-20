@@ -1,49 +1,17 @@
 package com.san.kir.data.models.extend
 
-import androidx.room.ColumnInfo
-import androidx.room.Relation
+import androidx.compose.runtime.Immutable
 import com.san.kir.core.support.SortLibraryUtil
-import com.san.kir.data.models.base.Category
-import com.san.kir.data.models.base.Manga
 
+@Immutable
 data class CategoryWithMangas(
-    @ColumnInfo(name = Category.Col.id)
-    var id: Long = 0,
-
-    @ColumnInfo(name = Category.Col.name)
-    var name: String = "",
-
-    @ColumnInfo(name = Category.Col.typeSort)
-    var typeSort: String = SortLibraryUtil.abc,
-
-    @ColumnInfo(name = Category.Col.isReverseSort)
-    var isReverseSort: Boolean = false,
-
-    @ColumnInfo(name = Category.Col.spanPortrait)
-    var spanPortrait: Int = 2,
-
-    @ColumnInfo(name = Category.Col.spanLandscape)
-    var spanLandscape: Int = 3,
-
-    @ColumnInfo(name = Category.Col.isLargePortrait)
-    var isLargePortrait: Boolean = true,
-
-    @ColumnInfo(name = Category.Col.isLargeLandscape)
-    var isLargeLandscape: Boolean = true,
-
-    @Relation(
-        parentColumn = Category.Col.id,
-        entityColumn = Manga.Col.categoryId,
-        entity = Manga::class,
-        projection = [
-            Manga.Col.id,
-            Manga.Col.name,
-            Manga.Col.logo,
-            Manga.Col.color,
-            Manga.Col.populate,
-            Manga.Col.categoryId,
-            Manga.Col.category,
-        ]
-    )
-    var mangas: List<SimplifiedManga> = emptyList(),
+    val id: Long = 0,
+    val name: String = "",
+    val typeSort: String = SortLibraryUtil.abc,
+    val isReverseSort: Boolean = false,
+    val spanPortrait: Int = 2,
+    val spanLandscape: Int = 3,
+    val isLargePortrait: Boolean = true,
+    val isLargeLandscape: Boolean = true,
+    val mangas: List<SimplifiedManga> = emptyList(),
 )

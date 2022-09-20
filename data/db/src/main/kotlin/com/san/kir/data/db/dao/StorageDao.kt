@@ -12,6 +12,10 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface StorageDao : BaseDao<Storage> {
+
+    @Query("SELECT SUM(sizeFull) FROM StorageItem")
+    fun loadFullSize(): Flow<Int>
+
     @Query("SELECT * FROM StorageItem ORDER BY sizeFull DESC")
     fun flowItems(): Flow<List<Storage>>
 

@@ -1,38 +1,36 @@
-package com.san.kir.manger.ui.application_navigation.library.main
+package com.san.kir.library.utils
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
+import com.san.kir.background.services.AppUpdateService
 import com.san.kir.background.services.MangaUpdaterService
 import com.san.kir.core.compose_utils.TopBarActions
-import com.san.kir.manger.R
-import com.san.kir.manger.foreground_work.services.AppUpdateService
+import com.san.kir.library.R
+import com.san.kir.library.ui.library.ItemsState
+import com.san.kir.library.ui.library.LibraryState
 
-@Composable
-fun libraryActions(
+internal fun libraryActions(
     navigateToOnline: () -> Unit,
-    viewModel: LibraryViewModel,
+    state: LibraryState,
 ): @Composable TopBarActions.() -> Unit = {
-    val categories by viewModel.preparedCategories.collectAsState(emptyList())
-    val currentCategoryWithMangas by viewModel.currentCategoryWithManga.collectAsState()
     val context = LocalContext.current
 
     MenuIcon(icon = Icons.Default.Add, onClick = navigateToOnline)
 
     ExpandedMenu {
         MenuText(id = R.string.library_menu_reload) {
-            currentCategoryWithMangas.mangas.forEach {
+            state.currentCategory.mangas.forEach {
                 MangaUpdaterService.add(context, it)
             }
         }
 
         MenuText(id = R.string.library_menu_reload_all) {
-            categories.flatMap { it.mangas }.forEach {
-                MangaUpdaterService.add(context, it)
-            }
+            if (state.items is ItemsState.Ok)
+                state.items.items.flatMap { it.mangas }.forEach {
+                    MangaUpdaterService.add(context, it)
+                }
         }
 
         MenuText(id = R.string.library_menu_update) {

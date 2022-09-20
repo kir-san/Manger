@@ -1,17 +1,12 @@
 package com.san.kir.core.compose_utils
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
@@ -74,34 +69,33 @@ fun PreparedTopBar(
                 }
             },
             navigationIcon = {
-                if (scaffoldState == null) {
-                    IconButton(
-                        modifier = Modifier.testTag(TestTags.Drawer.nav_back),
-                        onClick = navigationListener
-                    ) {
-                        Icon(Icons.Default.ArrowBack, "")
+                Box(modifier = Modifier.startInsetsPadding()) {
+                    if (scaffoldState == null) {
+                        IconButton(
+                            modifier = Modifier.testTag(TestTags.Drawer.nav_back),
+                            onClick = navigationListener
+                        ) {
+                            Icon(Icons.Default.ArrowBack, "")
+                        }
+                    } else {
+                        IconButton(
+                            modifier = Modifier.testTag(TestTags.Drawer.drawer_open),
+                            onClick = {
+                                coroutineScope.launch {
+                                    scaffoldState.drawerState.open()
+                                }
+                            }) { Icon(Icons.Default.Menu, "") }
                     }
-                } else {
-                    IconButton(
-                        modifier = Modifier.testTag(TestTags.Drawer.drawer_open),
-                        onClick = {
-                            coroutineScope.launch {
-                                scaffoldState.drawerState.open()
-                            }
-                        }) { Icon(Icons.Default.Menu, "") }
                 }
             },
             modifier = Modifier
                 .statusBarsPadding()
                 .fillMaxWidth()
-                .padding(
-                    WindowInsets.systemBars
-                        .only(WindowInsetsSides.Horizontal)
-                        .asPaddingValues()
-                )
                 .height(height),
             actions = {
-                TopBarActions().actions()
+                Row(modifier = Modifier.endInsetsPadding()) {
+                    TopBarActions().actions()
+                }
             },
             backgroundColor = backgroundColor,
         )
@@ -110,7 +104,6 @@ fun PreparedTopBar(
             LinearProgressIndicator(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
             )
     }
 }
@@ -155,13 +148,12 @@ fun topBar(
                     progress = progressAction,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
+                        .horizontalInsetsPadding()
                 )
             } else {
                 LinearProgressIndicator(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
                 )
             }
         }

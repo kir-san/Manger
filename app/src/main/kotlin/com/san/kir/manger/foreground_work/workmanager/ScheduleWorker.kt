@@ -22,7 +22,7 @@ import com.san.kir.data.models.base.PlannedTask
 import com.san.kir.data.models.base.PlannedTaskBase
 import com.san.kir.data.models.base.mangaList
 import com.san.kir.manger.R
-import com.san.kir.manger.foreground_work.services.AppUpdateService
+import com.san.kir.background.services.AppUpdateService
 import com.san.kir.manger.foreground_work.services.CatalogForOneSiteUpdaterService
 import com.san.kir.background.services.MangaUpdaterService
 import dagger.assisted.Assisted

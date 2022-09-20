@@ -1,4 +1,4 @@
-package com.san.kir.manger.foreground_work.services
+package com.san.kir.background.services
 
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
@@ -10,9 +10,8 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.san.kir.background.R
 import com.san.kir.core.internet.ConnectManager
-import com.san.kir.manger.BuildConfig
-import com.san.kir.manger.R
 import com.san.kir.core.utils.ID
 import com.san.kir.core.utils.browse
 import com.san.kir.core.utils.intentFor
@@ -131,11 +130,11 @@ class AppUpdateService : Service(), CoroutineScope {
                     if (matcher.find()) {
                         val version = matcher.group()
                         Timber.v("version = $version")
-                        val message = if (version != BuildConfig.VERSION_NAME)
+                        val message = if (version != appVersion)
                             getString(
                                 R.string.main_check_app_ver_find,
                                 version,
-                                BuildConfig.VERSION_NAME
+                                appVersion
                             )
                         else
                             getString(R.string.main_check_app_ver_no_find)
@@ -168,6 +167,13 @@ class AppUpdateService : Service(), CoroutineScope {
         }
         return super.onStartCommand(intent, flags, startId)
     }
+
+    private val appVersion by lazy {
+        kotlin.runCatching {
+            applicationContext.packageManager.getPackageInfo(packageName, 0).versionName
+        }.getOrNull() ?: ""
+    }
+
 
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Default + job

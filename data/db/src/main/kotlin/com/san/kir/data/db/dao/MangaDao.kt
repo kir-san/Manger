@@ -12,6 +12,9 @@ import java.io.File
 @Dao
 interface MangaDao : BaseDao<Manga> {
 
+    @Query("SELECT COUNT(${Manga.Col.id}) FROM ${Manga.tableName}")
+    fun loadItemsCount(): Flow<Int>
+
     // Получение flow со списком всех элементов
     @Query("SELECT * FROM ${Manga.tableName}")
     fun loadItems(): Flow<List<Manga>>
@@ -19,6 +22,10 @@ interface MangaDao : BaseDao<Manga> {
     // Получение flow со списком всех элементов из view
     @Query("SELECT * FROM ${MiniManga.viewName}")
     fun loadMiniItems(): Flow<List<MiniManga>>
+
+    // Получение всех упрощенных элементов из View
+    @Query("SELECT * FROM ${SimplifiedManga.viewName}")
+    fun loadSimpleItems(): Flow<List<SimplifiedManga>>
 
     // Получение flow с элементом по его названию
     @Query(
@@ -37,10 +44,6 @@ interface MangaDao : BaseDao<Manga> {
     // Получение всех элементов
     @Query("SELECT * FROM ${Manga.tableName}")
     suspend fun items(): List<Manga>
-
-    // Получение всех упрощенных элементов из View
-    @Query("SELECT * FROM ${SimplifiedManga.viewName}")
-    suspend fun simpleItems(): List<SimplifiedManga>
 
     // Получение элемента по названию
     @Query(

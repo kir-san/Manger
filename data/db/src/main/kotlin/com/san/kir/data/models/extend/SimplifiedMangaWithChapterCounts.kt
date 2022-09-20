@@ -18,7 +18,8 @@ import com.san.kir.data.models.base.ShikimoriMangaItem
             "(SELECT COUNT(*) FROM ${Chapter.tableName} " +
             "WHERE ${Chapter.tableName}.${Chapter.Col.manga} IS " +
             "${Manga.tableName}.${Manga.Col.name} " +
-            "AND ${Chapter.tableName}.${Chapter.Col.isRead} IS 1) AS ${SimplifiedMangaWithChapterCounts.Col.readChapters}, " +
+            "AND ${Chapter.tableName}.${Chapter.Col.isRead} IS 1) AS " +
+            "${SimplifiedMangaWithChapterCounts.Col.readChapters}, " +
 
             "(SELECT COUNT(*) FROM ${Chapter.tableName} " +
             "WHERE ${Chapter.tableName}.${Chapter.Col.manga} IS " +

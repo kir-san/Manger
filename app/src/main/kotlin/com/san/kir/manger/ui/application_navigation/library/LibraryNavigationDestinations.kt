@@ -7,11 +7,12 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.san.kir.chapters.ChaptersScreen
 import com.san.kir.core.support.MainMenuType
+import com.san.kir.library.ui.library.LibraryNavigation
+import com.san.kir.library.ui.library.LibraryScreen
 import com.san.kir.manger.ui.application_navigation.MainNavTarget
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaAboutScreen
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaAddOnlineScreen
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
-import com.san.kir.manger.ui.application_navigation.library.main.LibraryScreen
 import com.san.kir.manger.ui.application_navigation.mainMenuItems
 import com.san.kir.manger.ui.application_navigation.statistic.StatisticNavTarget
 import com.san.kir.manger.ui.application_navigation.storage.StorageNavTarget
@@ -24,17 +25,19 @@ enum class LibraryNavTarget : NavTarget {
     Main {
         override val content = navTarget(route = "main") {
             LibraryScreen(
-                navigateToScreen = { type ->
-                    if (MainMenuType.Library != type)
-                        mainMenuItems[type]?.let { navigate(it) }
-                },
-                navigateToCategories = { navigate(MainNavTarget.Categories) },
-                navigateToCatalogs = { navigate(MainNavTarget.Catalogs) },
-                navigateToInfo = { navigate(About, it) },
-                navigateToStorage = { navigate(StorageNavTarget.Storage, it) },
-                navigateToStats = { navigate(StatisticNavTarget.Statistic, it) },
-                navigateToChapters = { navigate(Chapters, it) },
-                navigateToOnline = { navigate(AddOnline) },
+                LibraryNavigation(
+                    navigateToScreen = { type ->
+                        if (MainMenuType.Library != type)
+                            mainMenuItems[type]?.let { navigate(it) }
+                    },
+                    navigateToCategories = { navigate(MainNavTarget.Categories) },
+                    navigateToCatalogs = { navigate(MainNavTarget.Catalogs) },
+                    navigateToInfo = { navigate(About, it) },
+                    navigateToStorage = { navigate(StorageNavTarget.Storage, it) },
+                    navigateToStats = { navigate(StatisticNavTarget.Statistic, it) },
+                    navigateToChapters = { navigate(Chapters, it) },
+                    navigateToOnline = { navigate(AddOnline) },
+                )
             )
         }
     },

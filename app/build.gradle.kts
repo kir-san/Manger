@@ -46,6 +46,7 @@ dependencies {
     implementation(project(Modules.Features.latest))
     implementation(project(Modules.Features.shikimori))
     implementation(project(Modules.Features.chapters))
+    implementation(project(Modules.Features.library))
 
     implementation(project(Modules.Core.utils))
     implementation(project(Modules.Core.support))

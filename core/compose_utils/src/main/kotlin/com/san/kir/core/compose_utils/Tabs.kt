@@ -39,6 +39,7 @@ private fun indicator(pagerState: PagerState): @Composable (tabPositions: List<T
 fun ScrollableTabs(
     pagerState: PagerState,
     items: List<String>,
+    modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     onTabClick: suspend (index: Int) -> Unit = { pagerState.animateScrollToPage(it) },
 ) {
@@ -46,7 +47,8 @@ fun ScrollableTabs(
         selectedTabIndex = pagerState.currentPage,
         indicator = indicator(pagerState),
         divider = {},
-        modifier = Modifier.background(MaterialTheme.colors.primarySurface)
+        modifier = modifier
+            .background(MaterialTheme.colors.primarySurface)
     ) {
         items.forEachIndexed { index, item ->
             Tab(

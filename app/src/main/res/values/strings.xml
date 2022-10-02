@@ -257,32 +257,6 @@
     <string name="download_view_wifi_off">Вай вай! Не включен Wi-fi!</string>
     <string name="download_view_internet_off">Нет доступа в интернет</string>
 
-    <!--Category-->
-    <string name="category_item_question_delete">Вы действительно хотите удалить?</string>
-    <string name="category_item_question_delete_yes">Да</string>
-    <string name="category_item_question_delete_no">Нет</string>
-
-    <!--CategoryDialog-->
-    <string name="category_dialog_span_text">Количество столбцов: %d</string>
-    <string name="category_dialog_large_cells">Крупные ячейки</string>
-    <string name="category_dialog_small_cells">Мелкие ячейки</string>
-    <string name="category_dialog_title_create">Создание категории</string>
-    <string name="category_dialog_title_edit">Настройка категории</string>
-    <string name="category_dialog_hint">Введите название</string>
-    <string name="category_dialog_validate_length">Слишком коротко</string>
-    <string name="category_dialog_validate_equal">Старое имя</string>
-    <string name="category_dialog_validate_contain">Название занято</string>
-    <string name="category_dialog_portrait">Портретная ориентация</string>
-    <string name="category_dialog_landscape">Ландшафтная ориентация</string>
-    <string name="category_dialog_sort">Сортировка</string>
-    <string name="category_dialog_visible">Видимость вкладки</string>
-    <string name="category_dialog_create">Создать</string>
-    <string name="category_dialog_edit">Сохранить</string>
-    <string name="category_dialog_not_create">Категория не была создана</string>
-    <string name="category_dialog_save_old_name">Имя не прошло проверку, сохранено старое</string>
-    <string name="category_dialog_cancel">Я передумал</string>
-    <string name="category_dialog_delete">Удалить!</string>
-
     <!-- Manga Status -->
     <string name="manga_status_unknown">Не выбрано</string>
     <string name="manga_status_continue">Выпуск продолжается</string>

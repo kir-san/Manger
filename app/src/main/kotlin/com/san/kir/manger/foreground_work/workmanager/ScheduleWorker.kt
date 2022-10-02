@@ -17,7 +17,6 @@ import com.san.kir.data.db.dao.CategoryDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.PlannedDao
 import com.san.kir.data.db.dao.SiteDao
-import com.san.kir.data.db.dao.defaultCategory
 import com.san.kir.data.models.base.PlannedTask
 import com.san.kir.data.models.base.PlannedTaskBase
 import com.san.kir.data.models.base.mangaList

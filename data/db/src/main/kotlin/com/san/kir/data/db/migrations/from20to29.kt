@@ -1,6 +1,5 @@
 package com.san.kir.data.db.migrations
 
-import com.san.kir.data.models.base.Category
 import com.san.kir.data.models.base.PlannedTask
 import com.san.kir.data.models.columns.DownloadColumn
 import com.san.kir.data.models.columns.MangaStatisticColumn
@@ -65,17 +64,17 @@ internal val from22to23 = migrate {
 
     query("ALTER TABLE categories RENAME TO tmp_categories")
     query(
-        "CREATE TABLE ${Category.tableName} (" +
-                "${Category.Col.id} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                "${Category.Col.name} TEXT NOT NULL, " +
+        "CREATE TABLE categories (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "name TEXT NOT NULL, " +
                 "`order` INTEGER NOT NULL, " +
-                "${Category.Col.isVisible} INTEGER NOT NULL, " +
-                "${Category.Col.typeSort} TEXT NOT NULL, " +
-                "${Category.Col.isReverseSort} INTEGER NOT NULL, " +
-                "${Category.Col.spanPortrait} INTEGER NOT NULL DEFAULT 2, " +
-                "${Category.Col.spanLandscape} INTEGER NOT NULL DEFAULT 3, " +
-                "${Category.Col.isLargePortrait} INTEGER NOT NULL DEFAULT 1, " +
-                "${Category.Col.isLargeLandscape} INTEGER NOT NULL DEFAULT 1)"
+                "isVisible INTEGER NOT NULL, " +
+                "typeSort TEXT NOT NULL, " +
+                "isReverseSort INTEGER NOT NULL, " +
+                "spanPortrait INTEGER NOT NULL DEFAULT 2, " +
+                "spanLandscape INTEGER NOT NULL DEFAULT 3, " +
+                "isListPortrait INTEGER NOT NULL DEFAULT 1, " +
+                "isListLandscape INTEGER NOT NULL DEFAULT 1)"
     )
     query(
         "INSERT INTO `categories`(" +

@@ -2,7 +2,6 @@ package com.san.kir.data.models.extend
 
 import androidx.room.ColumnInfo
 import androidx.room.DatabaseView
-import com.san.kir.data.models.base.Category
 import com.san.kir.data.models.base.Manga
 
 @DatabaseView(
@@ -11,8 +10,8 @@ import com.san.kir.data.models.base.Manga
             "${Manga.tableName}.${Manga.Col.id}, " +
             "${Manga.tableName}.${Manga.Col.name}, " +
 
-            "(SELECT ${Category.Col.name} FROM ${Category.tableName} " +
-            "WHERE ${Manga.tableName}.${Manga.Col.categoryId} = ${Category.tableName}.${Category.Col.id}) " +
+            "(SELECT name FROM categories " +
+            "WHERE ${Manga.tableName}.${Manga.Col.categoryId} = categories.id) " +
             "AS ${Manga.Col.category}, " +
 
             "${Manga.tableName}.${Manga.Col.update} " +

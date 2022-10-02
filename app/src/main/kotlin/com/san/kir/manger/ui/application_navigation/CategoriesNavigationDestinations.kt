@@ -1,12 +1,9 @@
-package com.san.kir.manger.ui.application_navigation.categories
+package com.san.kir.manger.ui.application_navigation
 
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import com.san.kir.manger.ui.application_navigation.MainNavTarget
-import com.san.kir.manger.ui.application_navigation.categories.category.CategoryEditScreen
-import com.san.kir.manger.ui.application_navigation.categories.category.CategoryEditViewModel
-import com.san.kir.manger.ui.application_navigation.categories.main.CategoriesScreen
+import com.san.kir.categories.ui.categories.CategoriesScreen
+import com.san.kir.categories.ui.category.CategoryScreen
 import com.san.kir.manger.utils.compose.NavTarget
 import com.san.kir.manger.utils.compose.navTarget
 import com.san.kir.manger.utils.compose.navigation
@@ -23,13 +20,9 @@ enum class CategoriesNavTarget : NavTarget {
 
     Category {
         override val content = navTarget(route = "category_item", hasItems = true) {
-            val viewModel: CategoryEditViewModel = hiltViewModel()
-
-            viewModel.setCategory(stringElement ?: "")
-
-            CategoryEditScreen(
+            CategoryScreen(
                 navigateUp = ::navigateUp,
-                viewModel
+                categoryName = stringElement ?: "",
             )
         }
     }

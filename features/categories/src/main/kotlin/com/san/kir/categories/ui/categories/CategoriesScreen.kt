@@ -1,5 +1,7 @@
-package com.san.kir.manger.ui.application_navigation.categories.main
+package com.san.kir.categories.ui.categories
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -25,20 +27,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.san.kir.categories.R
 import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.ScreenList
 import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
 import com.san.kir.core.compose_utils.topBar
 import com.san.kir.data.models.base.Category
-import com.san.kir.manger.R
 
 @Composable
 fun CategoriesScreen(
     navigateUp: () -> Unit,
     navigateToItem: (String) -> Unit,
-    viewModel: CategoriesViewModel = hiltViewModel(),
 ) {
-    val cats by viewModel.categories.collectAsState(emptyList())
+
+    val viewModel: CategoriesViewModel = hiltViewModel()
+    val state by viewModel.state.collectAsState()
 
     ScreenList(
         topBar = topBar(
@@ -52,17 +55,27 @@ fun CategoriesScreen(
         ),
         additionalPadding = Dimensions.smaller
     ) {
-        itemsIndexed(items = cats, key = { _, c -> c.id }) { index, item ->
-            CategoryItemView(index, cats.count(), item) {
-                navigateToItem(item.name)
-            }
+        itemsIndexed(items = state.items, key = { _, c -> c.id }) { index, item ->
+            CategoryItemView(
+                index = index,
+                max = state.items.count(),
+                category = item,
+                sendEvent = viewModel::sendEvent,
+                onClick = { navigateToItem(item.name) }
+            )
         }
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun CategoryItemView(index: Int, max: Int, category: Category, onClick: () -> Unit) {
-    val viewModel: CategoriesViewModel = hiltViewModel()
+private fun CategoryItemView(
+    index: Int,
+    max: Int,
+    category: Category,
+    sendEvent: (CategoriesEvent) -> Unit,
+    onClick: () -> Unit
+) {
     var visibleState by remember { mutableStateOf(category.isVisible) }
 
     Row(
@@ -80,32 +93,31 @@ fun CategoryItemView(index: Int, max: Int, category: Category, onClick: () -> Un
             modifier = Modifier.weight(1f, true)
         )
 
-        Row(
-            horizontalArrangement = Arrangement.End,
-        ) {
+        Row(horizontalArrangement = Arrangement.End) {
 
             // Переключение видимости категории в библиотеке
             IconButton(onClick = {
                 visibleState = visibleState.not()
-                category.isVisible = category.isVisible.not()
-                viewModel.update(category)
+                sendEvent(CategoriesEvent.ChangeVisibility(category, visibleState))
             }) {
-                if (visibleState)
-                    Icon(Icons.Default.Visibility, "")
-                else
-                    Icon(Icons.Default.VisibilityOff, "")
+                AnimatedContent(targetState = visibleState) {
+                    when (it) {
+                        true -> Icon(Icons.Default.Visibility, "")
+                        false -> Icon(Icons.Default.VisibilityOff, "")
+                    }
+                }
             }
 
             // Кнопки изменения порядка расположения
             IconButton(
-                onClick = { viewModel.swapMenuItems(index, index - 1) },
+                onClick = { sendEvent(CategoriesEvent.Reorder(index, index - 1)) },
                 enabled = index > 0
             ) {
                 Icon(Icons.Default.ArrowDropUp, "")
             }
 
             IconButton(
-                onClick = { viewModel.swapMenuItems(index, index + 1) },
+                onClick = { sendEvent(CategoriesEvent.Reorder(index, index + 1)) },
                 enabled = index < max - 1
             ) {
                 Icon(Icons.Default.ArrowDropDown, "")

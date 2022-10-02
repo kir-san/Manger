@@ -1,4 +1,4 @@
-package com.san.kir.manger.utils.compose
+package com.san.kir.core.compose_utils
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -12,7 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.san.kir.core.compose_utils.Dimensions
 
 @Composable
 fun <T> RadioGroup(

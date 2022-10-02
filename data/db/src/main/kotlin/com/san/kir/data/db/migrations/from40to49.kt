@@ -1,6 +1,5 @@
 package com.san.kir.data.db.migrations
 
-import com.san.kir.data.models.base.Category
 import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.PlannedTask
 
@@ -18,8 +17,8 @@ internal val from40to41 = migrate {
         query(
             "UPDATE ${Manga.tableName} " +
                     "SET $categoryId = " +
-                    "(SELECT ${Category.Col.id} FROM ${Category.tableName} " +
-                    "WHERE ${Manga.tableName}.$category = ${Category.Col.name})"
+                    "(SELECT id FROM categories " +
+                    "WHERE ${Manga.tableName}.$category = name)"
         )
     }
 }
@@ -37,8 +36,8 @@ internal val from42to43 = migrate {
         query(
             "UPDATE ${Manga.tableName} " +
                     "SET $categoryId = " +
-                    "(SELECT ${Category.Col.id} FROM ${Category.tableName} " +
-                    "WHERE ${Manga.tableName}.$category = ${Category.Col.name})"
+                    "(SELECT id FROM categories " +
+                    "WHERE ${Manga.tableName}.$category = name)"
         )
     }
 
@@ -78,12 +77,12 @@ internal val from42to43 = migrate {
         query(
             "UPDATE ${PlannedTask.tableName} " +
                     "SET $categoryId = " +
-                    "(SELECT ${Category.Col.id} FROM ${Category.tableName} " +
-                    "WHERE ${PlannedTask.tableName}.${category} = ${Category.Col.name}) " +
+                    "(SELECT id FROM categories " +
+                    "WHERE ${PlannedTask.tableName}.${category} = name) " +
 
                     "WHERE EXISTS " +
-                    "(SELECT ${Category.Col.id} FROM ${Category.tableName} " +
-                    "WHERE ${PlannedTask.tableName}.${category} = ${Category.Col.name})"
+                    "(SELECT id FROM categories " +
+                    "WHERE ${PlannedTask.tableName}.${category} = name)"
         )
     }
 }

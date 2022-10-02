@@ -156,17 +156,17 @@ class Callback(private val context: Context) : RoomDatabase.Callback() {
 
     private fun SupportSQLiteDatabase.addCategoryAll() {
         val cat = ContentValues()
-        cat.put(Category.Col.name, context.CATEGORY_ALL)
-        cat.put(Category.Col.order, 0)
-        cat.put(Category.Col.isVisible, true)
-        cat.put(Category.Col.typeSort, "")
-        cat.put(Category.Col.isReverseSort, true)
-        cat.put(Category.Col.spanPortrait, 2)
-        cat.put(Category.Col.spanLandscape, 3)
-        cat.put(Category.Col.isLargePortrait, true)
-        cat.put(Category.Col.isLargeLandscape, true)
+        cat.put("name", context.CATEGORY_ALL)
+        cat.put("ordering", 0)
+        cat.put("isVisible", true)
+        cat.put("typeSort", "")
+        cat.put("isReverseSort", true)
+        cat.put("spanPortrait", 2)
+        cat.put("spanLandscape", 3)
+        cat.put("isListPortrait", true)
+        cat.put("isListLandscape", true)
 
-        insert(Category.tableName, OnConflictStrategy.IGNORE, cat)
+        insert("categories", OnConflictStrategy.IGNORE, cat)
     }
 
     private fun SupportSQLiteDatabase.addMenuItems(ctx: Context) {

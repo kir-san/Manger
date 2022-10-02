@@ -2,7 +2,6 @@ package com.san.kir.data.db.migrations
 
 import com.san.kir.core.support.ChapterFilter
 import com.san.kir.core.support.DownloadState
-import com.san.kir.data.models.base.Category
 import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.ShikiDbManga
@@ -501,31 +500,29 @@ internal val from39to40 = migrate {
     from = 39
     to = 40
 
-    with(Category.Col) {
-        renameTableToTmp(Category.tableName)
+    renameTableToTmp("categories")
 
-        query(
-            "CREATE TABLE ${Category.tableName} (" +
-                    "$id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                    "$name TEXT NOT NULL, " +
-                    "$order INTEGER NOT NULL, " +
-                    "$isVisible INTEGER NOT NULL, " +
-                    "$typeSort TEXT NOT NULL, " +
-                    "$isReverseSort INTEGER NOT NULL, " +
-                    "$spanPortrait INTEGER NOT NULL DEFAULT 2, " +
-                    "$spanLandscape INTEGER NOT NULL DEFAULT 3, " +
-                    "$isLargePortrait INTEGER NOT NULL DEFAULT 1, " +
-                    "$isLargeLandscape INTEGER NOT NULL DEFAULT 1)"
-        )
-        query(
-            "INSERT INTO ${Category.tableName}(" +
-                    "$id, $name, $order, $isVisible, $typeSort, $isReverseSort, $spanPortrait, " +
-                    "$spanLandscape, $isLargePortrait, $isLargeLandscape) " +
-                    "SELECT " +
-                    "$id, $name, `order`, $isVisible, $typeSort, $isReverseSort, $spanPortrait, " +
-                    "$spanLandscape, $isLargePortrait, $isLargeLandscape " +
-                    "FROM $tmpTable"
-        )
-        removeTmpTable()
-    }
+    query(
+        "CREATE TABLE categories (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "name TEXT NOT NULL, " +
+                "ordering INTEGER NOT NULL, " +
+                "isVisible INTEGER NOT NULL, " +
+                "typeSort TEXT NOT NULL, " +
+                "isReverseSort INTEGER NOT NULL, " +
+                "spanPortrait INTEGER NOT NULL DEFAULT 2, " +
+                "spanLandscape INTEGER NOT NULL DEFAULT 3, " +
+                "isListPortrait INTEGER NOT NULL DEFAULT 1, " +
+                "isListLandscape INTEGER NOT NULL DEFAULT 1)"
+    )
+    query(
+        "INSERT INTO categories(" +
+                "id, name, ordering, isVisible, typeSort, isReverseSort, spanPortrait, " +
+                "spanLandscape, isListPortrait, isListLandscape) " +
+                "SELECT " +
+                "id, name, `order`, isVisible, typeSort, isReverseSort, spanPortrait, " +
+                "spanLandscape, isListPortrait, isListLandscape " +
+                "FROM $tmpTable"
+    )
+    removeTmpTable()
 }

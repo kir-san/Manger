@@ -13,7 +13,7 @@ import com.san.kir.data.models.base.MainMenuItem
 import com.san.kir.library.R
 import com.san.kir.library.ui.drawer.MenuItem
 import kotlinx.coroutines.flow.combine
-import java.util.*
+import java.util.Collections
 import javax.inject.Inject
 
 internal class MainMenuRepository @Inject constructor(
@@ -46,20 +46,13 @@ internal class MainMenuRepository @Inject constructor(
     suspend fun swap(from: Int, to: Int) {
         val items = mainMenuDao.getItems().toMutableList()
         Collections.swap(items, from, to)
-        items.mapIndexed { i, m -> m.copy(order = i) }
-        mainMenuDao.update(*items.toTypedArray())
+        mainMenuDao.update(*items.mapIndexed { i, m -> m.copy(order = i) }.toTypedArray())
     }
 
     private fun transform(site: String, transition: Transition): (MainMenuItem) -> MenuItem = {
         when (it.type) {
             MainMenuType.Default,
             MainMenuType.Library -> MenuItem(it, transition.libraryCount)
-            MainMenuType.Storage -> {
-                MenuItem(
-                    it,
-                    context.getString(R.string.main_menu_storage_size_mb, transition.storageSize)
-                )
-            }
             MainMenuType.Category -> MenuItem(it, transition.categoryCount)
             MainMenuType.Catalogs -> MenuItem(it, site)
             MainMenuType.Downloader -> MenuItem(it, transition.downloadCount)
@@ -68,6 +61,12 @@ internal class MainMenuRepository @Inject constructor(
             MainMenuType.Settings,
             MainMenuType.Statistic,
             MainMenuType.Accounts -> MenuItem(it, "")
+            MainMenuType.Storage -> {
+                MenuItem(
+                    it,
+                    context.getString(R.string.main_menu_storage_size_mb, transition.storageSize)
+                )
+            }
         }
     }
 

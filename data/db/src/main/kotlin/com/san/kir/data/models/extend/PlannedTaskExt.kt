@@ -6,7 +6,6 @@ import androidx.room.Ignore
 import com.san.kir.core.support.PlannedPeriod
 import com.san.kir.core.support.PlannedType
 import com.san.kir.core.support.PlannedWeek
-import com.san.kir.data.models.base.Category
 import com.san.kir.data.models.base.PlannedTask
 import com.san.kir.data.models.base.PlannedTaskBase
 
@@ -19,9 +18,9 @@ import com.san.kir.data.models.base.PlannedTaskBase
             "${PlannedTask.tableName}.${PlannedTask.Col.groupName}, " +
             "${PlannedTask.tableName}.${PlannedTask.Col.groupContent}, " +
 
-            "(SELECT ${Category.Col.name} FROM ${Category.tableName} " +
+            "(SELECT name FROM categories " +
             "WHERE ${PlannedTask.tableName}.${PlannedTask.Col.categoryId} =" +
-            " ${Category.tableName}.${Category.Col.id}) " +
+            " categories.id) " +
             "AS ${PlannedTask.Col.category}, " +
 
             "${PlannedTask.tableName}.${PlannedTask.Col.categoryId}, " +

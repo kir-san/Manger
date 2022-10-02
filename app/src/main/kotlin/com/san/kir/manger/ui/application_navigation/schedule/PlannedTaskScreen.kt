@@ -25,6 +25,7 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import com.san.kir.core.compose_utils.LabelText
+import com.san.kir.core.compose_utils.RadioGroup
 import com.san.kir.core.compose_utils.ScreenContent
 import com.san.kir.core.compose_utils.topBar
 import com.san.kir.core.support.PlannedPeriod
@@ -33,7 +34,6 @@ import com.san.kir.core.support.PlannedWeek
 import com.san.kir.data.models.base.mangaList
 import com.san.kir.manger.R
 import com.san.kir.manger.utils.compose.MultiChoiceList
-import com.san.kir.manger.utils.compose.RadioGroup
 import com.san.kir.manger.utils.compose.SingleChoiceList
 
 @Composable

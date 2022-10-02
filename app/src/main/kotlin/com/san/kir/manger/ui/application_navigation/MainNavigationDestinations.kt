@@ -13,9 +13,7 @@ import com.san.kir.features.viewer.MangaViewer
 import com.san.kir.manger.ui.MainActivity
 import com.san.kir.manger.ui.application_navigation.accounts.accountsNavGraph
 import com.san.kir.manger.ui.application_navigation.catalog.catalogsNavGraph
-import com.san.kir.manger.ui.application_navigation.categories.categoriesNavGraph
 import com.san.kir.manger.ui.application_navigation.download.DownloadScreen
-import com.san.kir.manger.ui.application_navigation.library.libraryNavGraph
 import com.san.kir.manger.ui.application_navigation.schedule.scheduleNavGraph
 import com.san.kir.manger.ui.application_navigation.settings.SettingsScreen
 import com.san.kir.manger.ui.application_navigation.statistic.statisticNavGraph

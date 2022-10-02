@@ -45,12 +45,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.san.kir.manger.R
 import com.san.kir.core.compose_utils.CheckBoxText
-import com.san.kir.manger.utils.compose.RadioGroup
+import com.san.kir.core.compose_utils.RadioGroup
 import com.san.kir.core.compose_utils.ScreenContent
 import com.san.kir.core.compose_utils.topBar
 import com.san.kir.data.models.base.Settings
+import com.san.kir.manger.R
 
 @Composable
 fun SettingsScreen(

@@ -1,4 +1,4 @@
-package com.san.kir.manger.foreground_work.workmanager
+package com.san.kir.background.works
 
 import android.content.Context
 import androidx.hilt.work.HiltWorker
@@ -10,7 +10,6 @@ import androidx.work.workDataOf
 import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.data.db.dao.CategoryDao
 import com.san.kir.data.db.dao.MangaDao
-import com.san.kir.data.db.dao.defaultCategory
 import com.san.kir.data.models.base.Category
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject

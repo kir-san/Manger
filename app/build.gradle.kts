@@ -47,6 +47,7 @@ dependencies {
     implementation(project(Modules.Features.shikimori))
     implementation(project(Modules.Features.chapters))
     implementation(project(Modules.Features.library))
+    implementation(project(Modules.Features.categories))
 
     implementation(project(Modules.Core.utils))
     implementation(project(Modules.Core.support))
@@ -67,7 +68,6 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.appcompat)
     implementation(libs.vectordrawable)
-    implementation(libs.constraintlayout)
 
     implementation(libs.material)
 

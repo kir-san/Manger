@@ -3,7 +3,6 @@ package com.san.kir.data.models.extend
 import androidx.compose.runtime.Immutable
 import androidx.room.ColumnInfo
 import androidx.room.DatabaseView
-import com.san.kir.data.models.base.Category
 import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.models.base.Manga
 
@@ -17,8 +16,8 @@ import com.san.kir.data.models.base.Manga
             "${Manga.tableName}.${Manga.Col.populate}, " +
             "${Manga.tableName}.${Manga.Col.categoryId}, " +
 
-            "(SELECT ${Category.Col.name} FROM ${Category.tableName} " +
-            "WHERE ${Manga.tableName}.${Manga.Col.categoryId} = ${Category.tableName}.${Category.Col.id}) " +
+            "(SELECT name FROM categories " +
+            "WHERE ${Manga.tableName}.${Manga.Col.categoryId} = categories.id) " +
             "AS ${Manga.Col.category}, " +
 
             "(SELECT COUNT(*) FROM ${Chapter.tableName} " +

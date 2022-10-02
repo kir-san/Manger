@@ -9,6 +9,7 @@ object Modules {
         val shikimori = module("shikimori")
         val chapters = module("chapters")
         val library = module("library")
+        val categories = module("categories")
     }
 
     object Core : NestedModule("core") {

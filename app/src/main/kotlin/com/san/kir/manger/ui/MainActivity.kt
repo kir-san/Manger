@@ -14,7 +14,6 @@ import com.san.kir.core.internet.LocalConnectManager
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaStorageViewModel
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.SiteCatalogItemViewModel
 import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewModel
-import com.san.kir.manger.ui.application_navigation.categories.OnlyCategoryViewModel
 import com.san.kir.manger.ui.application_navigation.schedule.PlannedTaskViewModel
 import com.san.kir.manger.ui.application_navigation.startapp.StartAppScreen
 import com.san.kir.manger.ui.application_navigation.statistic.OnlyStatisticViewModel
@@ -35,7 +34,6 @@ class MainActivity : ComponentActivity() {
         fun catalogViewModelFactory(): CatalogViewModel.Factory
         fun mangaStorageViewModelFactory(): MangaStorageViewModel.Factory
         fun onlyMangaViewModelFactory(): OnlyMangaViewModel.Factory
-        fun onlyCategoryViewModelFactory(): OnlyCategoryViewModel.Factory
         fun siteCatalogItemViewModelFactory(): SiteCatalogItemViewModel.Factory
         fun onlyStatisticViewModelFactory(): OnlyStatisticViewModel.Factory
         fun plannedTaskViewModelFactory(): PlannedTaskViewModel.Factory

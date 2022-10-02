@@ -1,4 +1,4 @@
-package com.san.kir.manger.ui.application_navigation.library
+package com.san.kir.manger.ui.application_navigation
 
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -9,11 +9,9 @@ import com.san.kir.chapters.ChaptersScreen
 import com.san.kir.core.support.MainMenuType
 import com.san.kir.library.ui.library.LibraryNavigation
 import com.san.kir.library.ui.library.LibraryScreen
-import com.san.kir.manger.ui.application_navigation.MainNavTarget
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaAboutScreen
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaAddOnlineScreen
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
-import com.san.kir.manger.ui.application_navigation.mainMenuItems
 import com.san.kir.manger.ui.application_navigation.statistic.StatisticNavTarget
 import com.san.kir.manger.ui.application_navigation.storage.StorageNavTarget
 import com.san.kir.manger.ui.onlyMangaViewModel

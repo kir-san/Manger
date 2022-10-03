@@ -1,14 +1,13 @@
-package com.san.kir.manger.ui.application_navigation.statistic
+package com.san.kir.manger.ui.application_navigation
 
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import com.san.kir.manger.ui.application_navigation.MainNavTarget
-import com.san.kir.manger.ui.application_navigation.statistic.main.StatisticsScreen
 import com.san.kir.manger.utils.compose.NavTarget
+import com.san.kir.manger.utils.compose.navLongArgument
 import com.san.kir.manger.utils.compose.navTarget
 import com.san.kir.manger.utils.compose.navigation
+import com.san.kir.statistic.ui.statistic.StatisticScreen
+import com.san.kir.statistic.ui.statistics.StatisticsScreen
 
 enum class StatisticNavTarget : NavTarget {
     Main {
@@ -21,12 +20,15 @@ enum class StatisticNavTarget : NavTarget {
     },
 
     Statistic {
-        override val content = navTarget(route = "statistic_item", hasItems = true) {
-            val viewModel = onlyStatisticViewModel(stringElement ?: "")
-
-            val statistic by viewModel.statistic.collectAsState()
-
-            StatisticScreen(navigateUp = ::navigateUp, statistic)
+        override val content = navTarget(
+            route = "statistic_item",
+            hasItems = true,
+            arguments = listOf(navLongArgument())
+        ) {
+            StatisticScreen(
+                navigateUp = ::navigateUp,
+                itemId = longElement ?: -1L
+            )
         }
     };
 }

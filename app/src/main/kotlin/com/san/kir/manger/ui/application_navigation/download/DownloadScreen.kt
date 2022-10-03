@@ -60,7 +60,7 @@ import com.san.kir.core.utils.formatDouble
 import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.models.base.Manga
 import com.san.kir.manger.R
-import com.san.kir.manger.utils.TimeFormat
+import com.san.kir.core.utils.TimeFormat
 
 @Composable
 fun DownloadScreen(

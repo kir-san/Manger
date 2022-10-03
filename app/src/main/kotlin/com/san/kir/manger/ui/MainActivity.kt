@@ -16,7 +16,6 @@ import com.san.kir.manger.ui.application_navigation.additional_manga_screens.Sit
 import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewModel
 import com.san.kir.manger.ui.application_navigation.schedule.PlannedTaskViewModel
 import com.san.kir.manger.ui.application_navigation.startapp.StartAppScreen
-import com.san.kir.manger.ui.application_navigation.statistic.OnlyStatisticViewModel
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,7 +34,6 @@ class MainActivity : ComponentActivity() {
         fun mangaStorageViewModelFactory(): MangaStorageViewModel.Factory
         fun onlyMangaViewModelFactory(): OnlyMangaViewModel.Factory
         fun siteCatalogItemViewModelFactory(): SiteCatalogItemViewModel.Factory
-        fun onlyStatisticViewModelFactory(): OnlyStatisticViewModel.Factory
         fun plannedTaskViewModelFactory(): PlannedTaskViewModel.Factory
     }
 

@@ -2,7 +2,6 @@ package com.san.kir.data.db.migrations
 
 import com.san.kir.data.models.base.PlannedTask
 import com.san.kir.data.models.columns.DownloadColumn
-import com.san.kir.data.models.columns.MangaStatisticColumn
 
 /*
 Таблица downloads
@@ -338,18 +337,18 @@ internal val from29to30 = migrate {
     to = 30
 
     query(
-        "CREATE TABLE IF NOT EXISTS `${MangaStatisticColumn.tableName}` (" +
-                "`${MangaStatisticColumn.id}` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                "`${MangaStatisticColumn.manga}` TEXT NOT NULL, " +
-                "`${MangaStatisticColumn.allChapters}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.lastChapters}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.allPages}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.lastPages}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.allTime}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.lastTime}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.maxSpeed}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.downloadSize}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.downloadTime}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.openedTimes}` INTEGER NOT NULL)"
+        "CREATE TABLE IF NOT EXISTS `statistic` (" +
+                "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "`manga` TEXT NOT NULL, " +
+                "`all_chapters` INTEGER NOT NULL, " +
+                "`last_chapters` INTEGER NOT NULL, " +
+                "`all_pages` INTEGER NOT NULL, " +
+                "`last_pages` INTEGER NOT NULL, " +
+                "`all_time` INTEGER NOT NULL, " +
+                "`last_time` INTEGER NOT NULL, " +
+                "`max_speed` INTEGER NOT NULL, " +
+                "`download_size` INTEGER NOT NULL, " +
+                "`download_time` INTEGER NOT NULL, " +
+                "`opened_times` INTEGER NOT NULL)"
     )
 }

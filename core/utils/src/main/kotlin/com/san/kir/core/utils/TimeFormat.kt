@@ -1,7 +1,6 @@
-package com.san.kir.manger.utils
+package com.san.kir.core.utils
 
 import android.content.Context
-import com.san.kir.manger.R
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class TimeFormat(seconds: Long) {

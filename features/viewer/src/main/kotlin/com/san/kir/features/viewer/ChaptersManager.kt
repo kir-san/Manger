@@ -25,10 +25,12 @@ internal class ChaptersManager @Inject constructor(
 
     fun updateStatisticData(downloadSize: Long, downloadTime: Long) {
         if (downloadSize > 100L) {
-            statisticItem.lastDownloadSize += downloadSize
-            statisticItem.downloadSize += downloadSize
-            statisticItem.lastDownloadTime += downloadTime
-            statisticItem.downloadTime += downloadTime
+            statisticItem = statisticItem.copy(
+                lastDownloadSize = statisticItem.lastDownloadSize + downloadSize,
+                downloadSize = statisticItem.downloadSize + downloadSize,
+                lastDownloadTime = statisticItem.lastDownloadTime + downloadTime,
+                downloadTime = statisticItem.downloadTime + downloadTime,
+            )
         }
     }
 
@@ -74,11 +76,14 @@ internal class ChaptersManager @Inject constructor(
 
         staticticPosition = currentPagePosition
 
-        statisticItem = statisticDao.getItem(manga.name)
-        statisticItem.lastChapters = 0
-        statisticItem.lastPages = 0
-        statisticItem.lastDownloadSize = 0
-        statisticItem.lastDownloadTime = 0
+        statisticItem = statisticDao.itemByMangaId(manga.id)
+
+        statisticItem = statisticItem.copy(
+            lastChapters = 0,
+            lastPages = 0,
+            lastDownloadSize = 0,
+            lastDownloadTime = 0,
+        )
         statisticDao.update(statisticItem)
     }
 
@@ -106,8 +111,10 @@ internal class ChaptersManager @Inject constructor(
                     chapterPosition = old.chapterPosition + 1
                 ).updatePages()
             }
-            statisticItem.lastChapters++
-            statisticItem.allChapters++
+            statisticItem = statisticItem.copy(
+                lastChapters = statisticItem.lastChapters + 1,
+                allChapters = statisticItem.allChapters + 1,
+            )
             statisticDao.update(statisticItem)
         }
     }
@@ -145,6 +152,7 @@ internal class ChaptersManager @Inject constructor(
                 // Сделать главу прочитанной
                 chapter.isRead = true
             }
+
             pos >= currentState.pages.size - 2 -> return // Если больше максимального значения, ничего не делать
         }
         // Обновить позицию
@@ -154,8 +162,11 @@ internal class ChaptersManager @Inject constructor(
         // сохрание статистики
         if (pos > staticticPosition) {
             val diff = pos - staticticPosition
-            statisticItem.lastPages += diff
-            statisticItem.allPages += diff
+
+            statisticItem = statisticItem.copy(
+                lastPages = statisticItem.lastPages + diff,
+                allPages = statisticItem.allPages + diff,
+            )
             staticticPosition = pos
             statisticDao.update(statisticItem)
         }

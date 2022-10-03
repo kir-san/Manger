@@ -42,24 +42,25 @@ class FirstInitAppWorker @AssistedInject constructor(
 
     // Добавление недостающей статистики
     private suspend fun insertMangaIntoStatistic() {
-        if (statisticDao.getItems().isEmpty()) {
+        if (statisticDao.items().isEmpty()) {
             // если совсем нет статистики, то добавляем для каждой манги
             mangaDao.items().forEach { manga ->
-                statisticDao.insert(Statistic(manga = manga.name))
+                statisticDao.insert(Statistic(mangaId = manga.id))
             }
         } else {
             // иначе только для отсутствующей
-            val stats = statisticDao.getItems()
+            val stats = statisticDao.items()
             val new = mangaDao.items()
-                .filter { manga -> !stats.any { it.manga == manga.name } }
+                .filter { manga -> !stats.any { it.mangaId == manga.id } }
             if (new.isNotEmpty()) {
-                new.forEach { statisticDao.insert(Statistic(manga = it.name)) }
+                new.forEach { statisticDao.insert(Statistic(mangaId = it.id)) }
             }
         }
     }
 
     private suspend fun restoreSchedule() {
-        plannedDao.loadExtItems().first().filter { it.isEnabled }.forEach { ScheduleWorker.addTask(ctx, it) }
+        plannedDao.loadExtItems().first().filter { it.isEnabled }
+            .forEach { ScheduleWorker.addTask(ctx, it) }
     }
 
     private suspend fun checkSiteCatalogs() {
@@ -104,7 +105,8 @@ class FirstInitAppWorker @AssistedInject constructor(
             return WorkManager.getInstance(ctx).enqueueUniqueWork(
                 tag + "Unique",
                 ExistingWorkPolicy.KEEP,
-                task)
+                task
+            )
         }
     }
 }

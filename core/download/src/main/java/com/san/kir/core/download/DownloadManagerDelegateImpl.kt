@@ -54,11 +54,15 @@ class DownloadManagerDelegateImpl @Inject constructor(
             chapterDao.update(item)
         }
 
-        val stat = statisticDao.getItem(item.manga)
-        stat.downloadSize = stat.downloadSize.plus(item.downloadSize)
-        stat.downloadTime = stat.downloadTime.plus(item.totalTime)
+        val stat = statisticDao.itemByMangaId(item.id)
+
         job.post {
-            statisticDao.update(stat)
+            statisticDao.update(
+                stat.copy(
+                    downloadSize = stat.downloadSize + item.downloadSize,
+                    downloadTime = stat.downloadTime + item.totalTime
+                )
+            )
         }
         listener.onCompleted(item)
     }

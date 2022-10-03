@@ -12,7 +12,6 @@ import com.san.kir.library.ui.library.LibraryScreen
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaAboutScreen
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaAddOnlineScreen
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
-import com.san.kir.manger.ui.application_navigation.statistic.StatisticNavTarget
 import com.san.kir.manger.ui.application_navigation.storage.StorageNavTarget
 import com.san.kir.manger.ui.onlyMangaViewModel
 import com.san.kir.manger.utils.compose.NavTarget

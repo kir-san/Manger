@@ -6,7 +6,6 @@ import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.ShikiDbManga
 import com.san.kir.data.models.columns.DownloadColumn
-import com.san.kir.data.models.columns.MangaStatisticColumn
 import com.san.kir.data.models.extend.SimplifiedManga
 import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
 
@@ -314,39 +313,37 @@ internal val from37to38 = migrate {
     from = 37
     to = 38
 
-    with(MangaStatisticColumn) {
-        renameTableToTmp(tableName)
+    renameTableToTmp("statistic")
 
-        query(
-            "CREATE TABLE `$tableName` (" +
-                    "$id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                    "$manga TEXT NOT NULL, " +
-                    "$allChapters INTEGER NOT NULL, " +
-                    "$lastChapters INTEGER NOT NULL, " +
-                    "$allPages INTEGER NOT NULL, " +
-                    "$lastPages INTEGER NOT NULL, " +
-                    "$allTime INTEGER NOT NULL, " +
-                    "$lastTime INTEGER NOT NULL, " +
-                    "$maxSpeed INTEGER NOT NULL, " +
-                    "$downloadSize INTEGER NOT NULL, " +
-                    "$downloadTime INTEGER NOT NULL, " +
-                    "$openedTimes INTEGER NOT NULL, " +
-                    "$lastDownloadSize INTEGER NOT NULL DEFAULT 0, " +
-                    "$lastDownloadTime INTEGER NOT NULL DEFAULT 0)"
-        )
+    query(
+        "CREATE TABLE `statistic` (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "manga TEXT NOT NULL, " +
+                "all_chapters INTEGER NOT NULL, " +
+                "last_chapters INTEGER NOT NULL, " +
+                "all_pages INTEGER NOT NULL, " +
+                "last_pages INTEGER NOT NULL, " +
+                "all_time INTEGER NOT NULL, " +
+                "last_time INTEGER NOT NULL, " +
+                "max_speed INTEGER NOT NULL, " +
+                "download_size INTEGER NOT NULL, " +
+                "download_time INTEGER NOT NULL, " +
+                "opened_times INTEGER NOT NULL, " +
+                "last_download_size INTEGER NOT NULL DEFAULT 0, " +
+                "last_download_time INTEGER NOT NULL DEFAULT 0)"
+    )
 
-        query(
-            "INSERT INTO `$tableName`(" +
-                    "$id, $manga, $allChapters, $lastChapters, $allPages, $lastPages, $allTime, " +
-                    "$lastTime, $maxSpeed, $downloadSize, $downloadTime, $openedTimes) " +
-                    "SELECT " +
-                    "$id, $manga, $allChapters, $lastChapters, $allPages, $lastPages, $allTime, " +
-                    "$lastTime, $maxSpeed, $downloadSize, $downloadTime, $openedTimes " +
-                    "FROM $tmpTable"
-        )
+    query(
+        "INSERT INTO `statistic`(" +
+                "id, manga, all_chapters, last_chapters, all_pages, last_pages, all_time, " +
+                "last_time, max_speed, download_size, download_time, opened_times) " +
+                "SELECT " +
+                "id, manga, all_chapters, last_chapters, all_pages, last_pages, all_time, " +
+                "last_time, max_speed, download_size, download_time, opened_times " +
+                "FROM $tmpTable"
+    )
 
-        removeTmpTable()
-    }
+    removeTmpTable()
 }
 
 /*

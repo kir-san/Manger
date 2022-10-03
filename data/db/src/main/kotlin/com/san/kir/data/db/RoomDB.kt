@@ -46,6 +46,7 @@ import com.san.kir.data.models.extend.MiniManga
 import com.san.kir.data.models.extend.PlannedTaskExt
 import com.san.kir.data.models.extend.SimplifiedManga
 import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
+import com.san.kir.data.models.extend.SimplifiedStatistic
 import timber.log.Timber
 
 @Database(
@@ -61,12 +62,13 @@ import timber.log.Timber
         ShikiDbManga::class,
         Settings::class
     ],
-    version = 49,
+    version = 50,
     views = [
         SimplifiedManga::class,
         SimplifiedMangaWithChapterCounts::class,
         PlannedTaskExt::class,
         MiniManga::class,
+        SimplifiedStatistic::class
     ],
     autoMigrations = [
         AutoMigration(from = 41, to = 42), // SimplifiedManga add categoryId

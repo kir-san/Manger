@@ -17,6 +17,7 @@ include(":features:shikimori")
 include(":features:chapters")
 include(":features:library")
 include(":features:categories")
+include(":features:statistic")
 
 include(":sample:testshikimori")
 include(":sample:test_compose")

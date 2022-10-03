@@ -98,7 +98,7 @@ class MangaAddViewModel @Inject constructor(
 
             manga.isAlternativeSite = manager.getSite(element.link) is SiteCatalogAlternative
             mangaDao.insert(manga)
-            statisticDao.insert(Statistic(manga = manga.name))
+            statisticDao.insert(Statistic(mangaId = manga.id))
             return@withContext path to manga
         }
     }

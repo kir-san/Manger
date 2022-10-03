@@ -51,13 +51,13 @@ fun LabelText(idRes: Int) {
 }
 
 @Composable
-fun DialogText(text: String, color: Color = Color.Unspecified, onClick: (() -> Unit) = {}) {
+fun DialogText(text: String, modifier: Modifier = Modifier, color: Color = Color.Unspecified, onClick: (() -> Unit) = {}) {
     Text(
         text = text,
         fontSize = 16.sp,
         fontWeight = FontWeight.Bold,
         color = color,
-        modifier = Modifier.clickable(onClick = onClick)
+        modifier = modifier.clickable(onClick = onClick)
     )
 }
 

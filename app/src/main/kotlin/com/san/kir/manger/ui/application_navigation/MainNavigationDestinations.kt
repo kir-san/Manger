@@ -16,7 +16,6 @@ import com.san.kir.manger.ui.application_navigation.catalog.catalogsNavGraph
 import com.san.kir.manger.ui.application_navigation.download.DownloadScreen
 import com.san.kir.manger.ui.application_navigation.schedule.scheduleNavGraph
 import com.san.kir.manger.ui.application_navigation.settings.SettingsScreen
-import com.san.kir.manger.ui.application_navigation.statistic.statisticNavGraph
 import com.san.kir.manger.ui.application_navigation.storage.storageNavGraph
 import com.san.kir.manger.utils.compose.NavTarget
 import com.san.kir.manger.utils.compose.composable

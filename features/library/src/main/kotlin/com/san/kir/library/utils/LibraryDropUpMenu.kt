@@ -1,8 +1,5 @@
 package com.san.kir.library.utils
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.san.kir.core.compose_utils.Dimensions
+import com.san.kir.core.compose_utils.animation.BottomAnimatedVisibility
 import com.san.kir.core.compose_utils.horizontalInsetsPadding
 import com.san.kir.core.compose_utils.systemBarBottomPadding
 import com.san.kir.data.models.extend.SimplifiedManga
@@ -172,10 +170,8 @@ private fun ColumnScope.ExpandedCategories(
     onItemChanged: (Long) -> Unit,
 ) {
 
-    AnimatedVisibility(
+    BottomAnimatedVisibility(
         visible = visibility,
-        enter = expandVertically(expandFrom = Alignment.Bottom),
-        exit = shrinkVertically(shrinkTowards = Alignment.Bottom),
         modifier = Modifier.background(Color(0xFF525252))
     ) {
         Column {
@@ -229,10 +225,8 @@ fun Delete(
         Text(stringResource(R.string.library_popupmenu_delete))
     }
 
-    AnimatedVisibility(
+    BottomAnimatedVisibility (
         visible = changerVisibility,
-        enter = expandVertically(expandFrom = Alignment.Bottom),
-        exit = shrinkVertically(shrinkTowards = Alignment.Bottom),
         modifier = Modifier.background(Color(0xFF525252))
     ) {
 

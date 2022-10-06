@@ -1,5 +1,6 @@
 package com.san.kir.statistic.ui.statistic
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -14,6 +15,7 @@ import com.san.kir.core.compose_utils.DialogText
 import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.LabelText
 import com.san.kir.core.compose_utils.ScreenContent
+import com.san.kir.core.compose_utils.horizontalInsetsPadding
 import com.san.kir.core.compose_utils.topBar
 import com.san.kir.core.utils.TimeFormat
 import com.san.kir.core.utils.bytesToMb
@@ -33,49 +35,50 @@ fun StatisticScreen(navigateUp: () -> Unit, itemId: Long) {
             navigationListener = navigateUp,
             title = state.mangaName,
         ),
-        enableCollapsingBars = true,
     ) {
-        LabelText(R.string.statistic_item_full_last_session)
-        DialogText(
-            timePagesData(
-                state.item.lastTime,
-                state.item.lastPages,
-                state.item.lastChapters
-            ),
-            modifier = Modifier.padding(top = Dimensions.smallest)
-        )
-        DialogText(
-            speedReading(state.item.lastPages, state.item.lastTime),
-            modifier = Modifier.padding(top = Dimensions.smallest)
-        )
+        Column(modifier = Modifier.horizontalInsetsPadding()) {
+            LabelText(R.string.statistic_item_full_last_session)
+            DialogText(
+                timePagesData(
+                    state.item.lastTime,
+                    state.item.lastPages,
+                    state.item.lastChapters
+                ),
+                modifier = Modifier.padding(top = Dimensions.smallest)
+            )
+            DialogText(
+                speedReading(state.item.lastPages, state.item.lastTime),
+                modifier = Modifier.padding(top = Dimensions.smallest)
+            )
 
-        DefaultSpacer()
+            DefaultSpacer()
 
-        LabelText(R.string.statistic_item_full_all)
-        DialogText(
-            timePagesData(state.item.allTime, state.item.allPages, state.item.allChapters),
-            modifier = Modifier.padding(top = Dimensions.smallest)
-        )
-        DialogText(
-            averageSpeedReading(state.item.allPages, state.item.allTime),
-            modifier = Modifier.padding(top = Dimensions.smallest)
-        )
-        DialogText(
-            maxSpeedReading(state.item.maxSpeed),
-            modifier = Modifier.padding(top = Dimensions.smallest)
-        )
-        DialogText(
-            downloadData(state.item.downloadSize, state.item.downloadTime),
-            modifier = Modifier.padding(top = Dimensions.smallest)
-        )
-        DialogText(
-            readTimes(state.item.openedTimes),
-            modifier = Modifier.padding(top = Dimensions.smallest)
-        )
-        DialogText(
-            averageSession(state.item),
-            modifier = Modifier.padding(top = Dimensions.smallest)
-        )
+            LabelText(R.string.statistic_item_full_all)
+            DialogText(
+                timePagesData(state.item.allTime, state.item.allPages, state.item.allChapters),
+                modifier = Modifier.padding(top = Dimensions.smallest)
+            )
+            DialogText(
+                averageSpeedReading(state.item.allPages, state.item.allTime),
+                modifier = Modifier.padding(top = Dimensions.smallest)
+            )
+            DialogText(
+                maxSpeedReading(state.item.maxSpeed),
+                modifier = Modifier.padding(top = Dimensions.smallest)
+            )
+            DialogText(
+                downloadData(state.item.downloadSize, state.item.downloadTime),
+                modifier = Modifier.padding(top = Dimensions.smallest)
+            )
+            DialogText(
+                readTimes(state.item.openedTimes),
+                modifier = Modifier.padding(top = Dimensions.smallest)
+            )
+            DialogText(
+                averageSession(state.item),
+                modifier = Modifier.padding(top = Dimensions.smallest)
+            )
+        }
     }
 }
 

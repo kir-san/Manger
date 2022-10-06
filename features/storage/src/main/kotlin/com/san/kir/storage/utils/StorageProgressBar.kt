@@ -1,4 +1,4 @@
-package com.san.kir.manger.utils.compose
+package com.san.kir.storage.utils
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -9,7 +9,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
 @Composable
-fun StorageProgressBar(modifier: Modifier = Modifier, max: Double, full: Double, read: Double) {
+internal fun StorageProgressBar(
+    max: Double,
+    full: Double,
+    read: Double,
+    modifier: Modifier = Modifier,
+) {
 
     val fullPercent = if (max == 0.0) 0F else (full / max).toFloat()
     val readPercent = if (max == 0.0) 0F else (read / max).toFloat()

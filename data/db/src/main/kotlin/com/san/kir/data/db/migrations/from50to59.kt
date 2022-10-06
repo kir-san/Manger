@@ -46,3 +46,10 @@ internal val from49to50 = migrate {
                 "FROM statistic JOIN manga ON statistic.manga_id=manga.id"
     )
 }
+
+internal val from50to51 = migrate {
+    from = 50
+    to = 51
+
+    query("UPDATE chapters SET manga_id=(SELECT id FROM manga WHERE name=chapters.manga)")
+}

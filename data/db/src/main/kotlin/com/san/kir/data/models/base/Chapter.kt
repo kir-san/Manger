@@ -11,14 +11,14 @@ import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.isEmptyDirectory
 import kotlinx.parcelize.Parcelize
 
-@Entity(tableName = Chapter.tableName)
+@Entity(tableName = "chapters")
 @Parcelize
 data class Chapter(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = Col.id)
     var id: Long = 0,
 
-    @ColumnInfo(name = Col.manga)
+    @ColumnInfo(name = "manga")
     var manga: String = "",
 
     @ColumnInfo(name = Col.mangaId, defaultValue = "0")
@@ -72,13 +72,9 @@ data class Chapter(
     @ColumnInfo(name = Col.error)
     var isError: Boolean = false
 ) : Parcelable {
-    companion object {
-        const val tableName = "chapters"
-    }
 
     object Col {
         const val id = "id"
-        const val manga = "manga"
         const val mangaId = "manga_id"
         const val name = "name"
         const val date = "date"

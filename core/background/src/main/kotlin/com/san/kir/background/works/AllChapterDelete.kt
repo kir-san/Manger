@@ -24,7 +24,7 @@ class AllChapterDelete @AssistedInject constructor(
 ) : ChapterDeleteWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
-        val mangaId = inputData.getLong(Manga.Col.id, -1)
+        val mangaId = inputData.getLong("id", -1)
 
         return kotlin.runCatching {
             val manga = mangaDao.itemById(mangaId)
@@ -48,12 +48,12 @@ class AllChapterDelete @AssistedInject constructor(
     }
 
     private suspend fun updateStorageItem(manga: Manga) {
-        val storageItem =
-            storageDao.items().first { it.path == getFullPath(manga.path).shortPath }
+        val storageItem = storageDao.items().first { it.path == getFullPath(manga.path).shortPath }
 
         val file = getFullPath(storageItem.path)
 
         storageDao.update(
-            storageItem.getSizeAndIsNew(file, manga, chapterDao.getItemsWhereManga(manga.name))        )
+            storageItem.getSizeAndIsNew(file, false, chapterDao.itemsWhereMangaId(manga.id))
+        )
     }
 }

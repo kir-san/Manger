@@ -1,5 +1,6 @@
 package com.san.kir.core.compose_utils
 
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 
 object Dimensions {
@@ -15,11 +16,15 @@ object Dimensions {
         val default = 56.dp
         val bigger = 65.dp
         val big = 126.dp
+
+        val storage = DpSize(52.dp, 30.dp)
     }
 
     object ProgressBar {
         val default = 18.dp
         val toolbar = 40.dp
+
+        val storage = 60.dp
 
         val strokeSmall = 2.dp
         val strokeDefault = 4.dp

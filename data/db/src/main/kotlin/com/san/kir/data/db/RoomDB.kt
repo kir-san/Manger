@@ -62,7 +62,7 @@ import timber.log.Timber
         ShikiDbManga::class,
         Settings::class
     ],
-    version = 50,
+    version = 51,
     views = [
         SimplifiedManga::class,
         SimplifiedMangaWithChapterCounts::class,

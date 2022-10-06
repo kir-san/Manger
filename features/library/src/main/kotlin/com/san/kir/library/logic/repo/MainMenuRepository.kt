@@ -13,6 +13,7 @@ import com.san.kir.data.models.base.MainMenuItem
 import com.san.kir.library.R
 import com.san.kir.library.ui.drawer.MenuItem
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import java.util.Collections
 import javax.inject.Inject
 
@@ -33,7 +34,7 @@ internal class MainMenuRepository @Inject constructor(
             combine(siteDao.loadItemsCount(), siteDao.loadItemsVolume()) { c, v -> "$c - $v" },
             combine(
                 mangaDao.loadItemsCount(),
-                storageDao.loadFullSize(),
+                storageDao.loadFullSize().map { it.toInt() },
                 categoryDao.loadItemsCount(),
                 chapterDao.loadDownloadCount(),
                 chapterDao.loadAllItemsCount(),

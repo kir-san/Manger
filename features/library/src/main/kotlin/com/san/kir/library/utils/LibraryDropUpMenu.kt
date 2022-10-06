@@ -39,8 +39,8 @@ import kotlinx.collections.immutable.ImmutableMap
 @Composable
 internal fun LibraryDropUpMenu(
     navigateToInfo: (String) -> Unit,
-    navigateToStorage: (String) -> Unit,
-    navigateToStats: (String) -> Unit,
+    navigateToStorage: (Long) -> Unit,
+    navigateToStats: (Long) -> Unit,
     itemsState: ItemsState,
     selectedManga: SelectedMangaState.Visible,
     sendEvent: (LibraryEvent) -> Unit
@@ -77,12 +77,12 @@ internal fun LibraryDropUpMenu(
 
         Storage {
             sendEvent(LibraryEvent.NonSelect)
-            navigateToStorage(selectedManga.item.name)
+            navigateToStorage(selectedManga.item.id)
         }
 
         Statistics {
             sendEvent(LibraryEvent.NonSelect)
-            navigateToStats(selectedManga.item.name)
+            navigateToStats(selectedManga.item.id)
         }
 
         Delete(

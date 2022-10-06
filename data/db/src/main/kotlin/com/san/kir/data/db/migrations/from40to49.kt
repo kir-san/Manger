@@ -1,8 +1,6 @@
 package com.san.kir.data.db.migrations
 
-import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.PlannedTask
-
 
 
 /*
@@ -13,14 +11,12 @@ internal val from40to41 = migrate {
     from = 40
     to = 41
 
-    with(Manga.Col) {
-        query(
-            "UPDATE ${Manga.tableName} " +
-                    "SET $categoryId = " +
-                    "(SELECT id FROM categories " +
-                    "WHERE ${Manga.tableName}.$category = name)"
-        )
-    }
+    query(
+        "UPDATE manga " +
+                "SET category_id = " +
+                "(SELECT id FROM categories " +
+                "WHERE manga.category = name)"
+    )
 }
 
 /*
@@ -32,14 +28,12 @@ internal val from42to43 = migrate {
     from = 42
     to = 43
 
-    with(Manga.Col) {
-        query(
-            "UPDATE ${Manga.tableName} " +
-                    "SET $categoryId = " +
-                    "(SELECT id FROM categories " +
-                    "WHERE ${Manga.tableName}.$category = name)"
-        )
-    }
+    query(
+        "UPDATE manga " +
+                "SET category_id = " +
+                "(SELECT id FROM categories " +
+                "WHERE manga.category = name)"
+    )
 
     with(PlannedTask.Col) {
         renameTableToTmp(PlannedTask.tableName)

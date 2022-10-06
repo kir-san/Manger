@@ -1,10 +1,12 @@
 package com.san.kir.core.compose_utils
 
-import android.content.Context
 import android.graphics.BitmapFactory
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -12,8 +14,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
@@ -46,7 +50,6 @@ fun ImageWithStatus(url: String?) {
 
     LaunchedEffect(url) {
         if (url != null && url.isNotEmpty()) {
-
             manager.downloadBitmap(url)?.let { bitmap ->
                 logo = bitmap.asImageBitmap()
                 statusLogo = StatusLogo.Complete
@@ -60,7 +63,8 @@ fun ImageWithStatus(url: String?) {
 }
 
 @Composable
-fun rememberImage(url: String?, context: Context = LocalContext.current): ImageBitmap {
+fun rememberImage(url: String?): ImageBitmap {
+    val context = LocalContext.current
     val manager = LocalConnectManager.current
     var logo by remember { mutableStateOf(ImageBitmap(60, 60)) }
 
@@ -95,4 +99,17 @@ fun rememberImage(url: String?, context: Context = LocalContext.current): ImageB
 
 enum class StatusLogo {
     Init, Complete, Error, None
+}
+
+@Composable
+fun CircleLogo(logoUrl: String) {
+    Image(
+        rememberImage(logoUrl),
+        contentDescription = "",
+        modifier = Modifier
+            .padding(Dimensions.smallest)
+            .clip(CircleShape)
+            .size(Dimensions.Image.bigger),
+        contentScale = ContentScale.Crop
+    )
 }

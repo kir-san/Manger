@@ -11,7 +11,6 @@ import androidx.compose.runtime.setValue
 import androidx.core.view.WindowCompat
 import com.san.kir.core.internet.ConnectManager
 import com.san.kir.core.internet.LocalConnectManager
-import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaStorageViewModel
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.SiteCatalogItemViewModel
 import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewModel
 import com.san.kir.manger.ui.application_navigation.schedule.PlannedTaskViewModel
@@ -31,7 +30,6 @@ class MainActivity : ComponentActivity() {
     @InstallIn(ActivityComponent::class)
     interface ViewModelFactoryProvider {
         fun catalogViewModelFactory(): CatalogViewModel.Factory
-        fun mangaStorageViewModelFactory(): MangaStorageViewModel.Factory
         fun onlyMangaViewModelFactory(): OnlyMangaViewModel.Factory
         fun siteCatalogItemViewModelFactory(): SiteCatalogItemViewModel.Factory
         fun plannedTaskViewModelFactory(): PlannedTaskViewModel.Factory

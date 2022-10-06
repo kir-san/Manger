@@ -96,7 +96,9 @@ internal fun BaseScreen(
                         )
                     )
                 else
-                    Spacer(modifier = Modifier.height(additionalPadding))
+                    Spacer(modifier = Modifier
+                        .height(additionalPadding)
+                        .bottomInsetsPadding())
             }
         }
 
@@ -108,7 +110,7 @@ internal fun BaseScreen(
                     .imePadding(),
                 contentPadding = PaddingValues(
                     top = additionalPadding,
-                    bottom = additionalPadding
+                    bottom = systemBarBottomPadding(additionalPadding).calculateBottomPadding()
                 ),
             ) {
                 listCon()

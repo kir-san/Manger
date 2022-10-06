@@ -123,8 +123,10 @@ interface ContentScope {
     fun navigate(target: NavTarget, vararg dest: Any)
     fun longElement(itemKey: String): Long?
     fun stringElement(itemKey: String): String?
+    fun booleanElement(itemKey: String): Boolean?
     val stringElement: String?
     val longElement: Long?
+    val booleanElement: Boolean?
 }
 
 fun NavHostController.navigate(target: NavTarget, vararg dest: Any = emptyArray()) {
@@ -159,6 +161,10 @@ internal class ContentScopeImpl(
         return back.stringElement(itemKey)
     }
 
+    override fun booleanElement(itemKey: String): Boolean? {
+        return back.boolElement(itemKey)
+    }
+
     override val stringElement: String?
         get() = back.stringElement()
 
@@ -166,6 +172,8 @@ internal class ContentScopeImpl(
     override val longElement: Long?
         get() = back.longElement()
 
+    override val booleanElement: Boolean?
+        get() = back.boolElement()
 }
 
 // Создание точки навигации
@@ -190,6 +198,9 @@ fun navTarget(
 fun navLongArgument(customItemKey: String = itemKey) =
     navArgument(customItemKey) { type = NavType.LongType }
 
+fun navBoolArgument(customItemKey: String = itemKey) =
+    navArgument(customItemKey) { type = NavType.BoolType }
+
 inline fun <reified T : ComponentActivity> Context.deepLinkIntent(target: NavTarget) = Intent(
     Intent.ACTION_VIEW,
     target.content.deepLink.toUri(),
@@ -205,4 +216,8 @@ fun NavBackStackEntry.stringElement(customItemKey: String = itemKey): String? {
 
 fun NavBackStackEntry.longElement(customItemKey: String = itemKey): Long? {
     return arguments?.getLong(customItemKey)
+}
+
+fun NavBackStackEntry.boolElement(customItemKey: String = itemKey): Boolean? {
+    return arguments?.getBoolean(customItemKey)
 }

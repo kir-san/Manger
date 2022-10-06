@@ -12,7 +12,6 @@ import com.san.kir.library.ui.library.LibraryScreen
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaAboutScreen
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaAddOnlineScreen
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
-import com.san.kir.manger.ui.application_navigation.storage.StorageNavTarget
 import com.san.kir.manger.ui.onlyMangaViewModel
 import com.san.kir.manger.utils.compose.NavTarget
 import com.san.kir.manger.utils.compose.navTarget
@@ -30,7 +29,7 @@ enum class LibraryNavTarget : NavTarget {
                     navigateToCategories = { navigate(MainNavTarget.Categories) },
                     navigateToCatalogs = { navigate(MainNavTarget.Catalogs) },
                     navigateToInfo = { navigate(About, it) },
-                    navigateToStorage = { navigate(StorageNavTarget.Storage, it) },
+                    navigateToStorage = { navigate(StorageNavTarget.Storage, it, true) },
                     navigateToStats = { navigate(StatisticNavTarget.Statistic, it) },
                     navigateToChapters = { navigate(Chapters, it) },
                     navigateToOnline = { navigate(AddOnline) },

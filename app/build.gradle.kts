@@ -49,6 +49,7 @@ dependencies {
     implementation(project(Modules.Features.library))
     implementation(project(Modules.Features.categories))
     implementation(project(Modules.Features.statistic))
+    implementation(project(Modules.Features.storage))
 
     implementation(project(Modules.Core.utils))
     implementation(project(Modules.Core.support))

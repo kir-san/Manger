@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -100,5 +101,14 @@ fun Modifier.endInsetsPadding(): Modifier =
                         .systemBars
                         .only(WindowInsetsSides.End)
                 )
+        )
+    }
+
+fun Modifier.bottomInsetsPadding(): Modifier =
+    composed {
+        windowInsetsPadding(
+            WindowInsets
+                .navigationBars
+                .only(WindowInsetsSides.Bottom)
         )
     }

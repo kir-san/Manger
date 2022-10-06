@@ -42,4 +42,5 @@ internal val migrations: Array<Migration> = arrayOf(
     from42to43, // For PlannedTask table (add & fill categoryId)
     from45to46, // remove LatestChapters table
     from49to50, // add manga_id field to Statistic table
+    from50to51, // update manga_id field in Chapters table
 )

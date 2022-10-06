@@ -10,7 +10,6 @@ import androidx.work.workDataOf
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.MangaDao
-import com.san.kir.data.models.base.Manga
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
@@ -24,7 +23,7 @@ class MangaDeleteWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
 
-        val mangaId = inputData.getLong(Manga.Col.id, -1)
+        val mangaId = inputData.getLong("id", -1)
         val withFiles = inputData.getBoolean(withFilesTag, false)
 
         return runCatching {
@@ -60,7 +59,7 @@ class MangaDeleteWorker @AssistedInject constructor(
         const val withFilesTag = "withFiles"
 
         fun addTask(ctx: Context, mangaId: Long, withFiles: Boolean = false) {
-            val data = workDataOf(Manga.Col.id to mangaId, withFilesTag to withFiles)
+            val data = workDataOf("id" to mangaId, withFilesTag to withFiles)
             val deleteManga = OneTimeWorkRequestBuilder<MangaDeleteWorker>()
                 .setInputData(data)
                 .addTag(tag)

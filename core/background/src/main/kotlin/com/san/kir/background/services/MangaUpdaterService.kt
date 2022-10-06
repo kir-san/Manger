@@ -59,7 +59,7 @@ class MangaUpdaterService : Service() {
         fun add(ctx: Context, manga: Manga) = add(ctx, manga.id)
 
         private fun add(ctx: Context, mangaId: Long) {
-            startService<MangaUpdaterService>(ctx, Manga.tableName to mangaId)
+            startService<MangaUpdaterService>(ctx, "manga" to mangaId)
         }
 
         private var taskCounter = listOf<Long>()
@@ -168,7 +168,7 @@ class MangaUpdaterService : Service() {
                     stopSelf()
                 }
                 else -> {
-                    intent.getLongExtra(Manga.tableName, -1).let { task ->
+                    intent.getLongExtra("manga", -1).let { task ->
                         if (task != -1L) {
                             taskCounter = taskCounter + task
 

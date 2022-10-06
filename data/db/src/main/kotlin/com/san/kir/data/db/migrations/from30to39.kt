@@ -3,10 +3,8 @@ package com.san.kir.data.db.migrations
 import com.san.kir.core.support.ChapterFilter
 import com.san.kir.core.support.DownloadState
 import com.san.kir.data.models.base.Chapter
-import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.ShikiDbManga
 import com.san.kir.data.models.columns.DownloadColumn
-import com.san.kir.data.models.extend.SimplifiedManga
 import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
 
 /*
@@ -178,47 +176,45 @@ internal val from34to35 = migrate {
     from = 34
     to = 35
 
-    with(Manga.Col) {
-        renameTableToTmp(Manga.tableName)
+    renameTableToTmp("manga")
 
-        query(
-            "CREATE TABLE ${Manga.tableName} (" +
-                    "$id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                    "unic TEXT NOT NULL, " +
-                    "$host TEXT NOT NULL, " +
-                    "$name TEXT NOT NULL, " +
-                    "$authors TEXT NOT NULL, " +
-                    "$logo TEXT NOT NULL, " +
-                    "$about TEXT NOT NULL, " +
-                    "$category TEXT NOT NULL, " +
-                    "$genres TEXT NOT NULL, " +
-                    "$path TEXT NOT NULL, " +
-                    "$status TEXT NOT NULL, " +
-                    "site TEXT NOT NULL, " +
-                    "$color INTEGER NOT NULL, " +
-                    "$populate INTEGER NOT NULL DEFAULT 0, " +
-                    "`order` INTEGER NOT NULL DEFAULT 0, " +
-                    "$alternativeSort INTEGER NOT NULL DEFAULT 1, " +
-                    "$update INTEGER NOT NULL DEFAULT 1," +
-                    "$filter TEXT NOT NULL DEFAULT ${ChapterFilter.ALL_READ_ASC.name}, " +
-                    "$alternativeSite INTEGER NOT NULL DEFAULT 0, " +
-                    "$link TEXT NOT NULL DEFAULT ``)"
-        )
+    query(
+        "CREATE TABLE manga (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "unic TEXT NOT NULL, " +
+                "host TEXT NOT NULL, " +
+                "name TEXT NOT NULL, " +
+                "authors TEXT NOT NULL, " +
+                "logo TEXT NOT NULL, " +
+                "about TEXT NOT NULL, " +
+                "category TEXT NOT NULL, " +
+                "genres TEXT NOT NULL, " +
+                "path TEXT NOT NULL, " +
+                "status TEXT NOT NULL, " +
+                "site TEXT NOT NULL, " +
+                "color INTEGER NOT NULL, " +
+                "populate INTEGER NOT NULL DEFAULT 0, " +
+                "`order` INTEGER NOT NULL DEFAULT 0, " +
+                "isAlternativeSort INTEGER NOT NULL DEFAULT 1, " +
+                "isUpdate INTEGER NOT NULL DEFAULT 1," +
+                "chapterFilter TEXT NOT NULL DEFAULT ${ChapterFilter.ALL_READ_ASC.name}, " +
+                "isAlternativeSite INTEGER NOT NULL DEFAULT 0, " +
+                "shortLink TEXT NOT NULL DEFAULT ``)"
+    )
 
-        query(
-            "INSERT INTO ${Manga.tableName} (" +
-                    "$id, unic, $host, $name, $authors, $logo, $about, $category, $genres, $path, " +
-                    "$status, site, $color, $populate, `order`, $alternativeSort, $update, " +
-                    "$filter, $alternativeSite) " +
-                    "SELECT " +
-                    "$id, unic, $host, $name, $authors, $logo, $about, $category, $genres, $path, " +
-                    "$status, site, $color, $populate, `order`, $alternativeSort, $update, " +
-                    "$filter, $alternativeSite " +
-                    "FROM $tmpTable"
-        )
+    query(
+        "INSERT INTO manga (" +
+                "id, unic, host, name, authors, logo, about, category, genres, path, " +
+                "status, site, color, populate, `order`, isAlternativeSort, isUpdate, " +
+                "chapterFilter, isAlternativeSite) " +
+                "SELECT " +
+                "id, unic, host, name, authors, logo, about, category, genres, path, " +
+                "status, site, color, populate, `order`, isAlternativeSort, isUpdate, " +
+                "chapterFilter, isAlternativeSite " +
+                "FROM $tmpTable"
+    )
 
-        removeTmpTable()
-    }
+    removeTmpTable()
 }
 
 /*
@@ -231,12 +227,12 @@ internal val from35to36 = migrate {
     to = 36
 
     with(Chapter.Col) {
-        renameTableToTmp(Chapter.tableName)
+        renameTableToTmp("chapters")
 
         query(
-            "CREATE TABLE `${Chapter.tableName}` (" +
+            "CREATE TABLE `chapters` (" +
                     "$id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                    "$manga TEXT NOT NULL, " +
+                    "manga TEXT NOT NULL, " +
                     "$name TEXT NOT NULL, " +
                     "$date TEXT NOT NULL, " +
                     "$path TEXT NOT NULL, " +
@@ -248,10 +244,10 @@ internal val from35to36 = migrate {
         )
 
         query(
-            "INSERT INTO ${Chapter.tableName} (" +
-                    "$id, $manga, $name, $date, $path, $isRead, site, $progress, $pages, $isInUpdate) " +
+            "INSERT INTO chapters (" +
+                    "$id, manga, $name, $date, $path, $isRead, site, $progress, $pages, $isInUpdate) " +
                     "SELECT " +
-                    "$id, $manga, $name, $date, $path, $isRead, site, $progress, $pages, $isInUpdate " +
+                    "$id, manga, $name, $date, $path, $isRead, site, $progress, $pages, $isInUpdate " +
                     "FROM $tmpTable"
         )
 
@@ -268,12 +264,12 @@ internal val from36to37 = migrate {
     from = 36
     to = 37
     with(Chapter.Col) {
-        renameTableToTmp(Chapter.tableName)
+        renameTableToTmp("chapters")
 
         query(
-            "CREATE TABLE `${Chapter.tableName}` (" +
+            "CREATE TABLE `chapters` (" +
                     "$id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                    "$manga TEXT NOT NULL, " +
+                    "manga TEXT NOT NULL, " +
                     "$name TEXT NOT NULL, " +
                     "$date TEXT NOT NULL, " +
                     "$path TEXT NOT NULL, " +
@@ -293,10 +289,10 @@ internal val from36to37 = migrate {
         )
 
         query(
-            "INSERT INTO ${Chapter.tableName} (" +
-                    "$id, $manga, $name, $date, $path, $isRead, site, $progress, $pages, $isInUpdate) " +
+            "INSERT INTO chapters (" +
+                    "$id, manga, $name, $date, $path, $isRead, site, $progress, $pages, $isInUpdate) " +
                     "SELECT " +
-                    "$id, $manga, $name, $date, $path, $isRead, site, $progress, $pages, $isInUpdate " +
+                    "$id, manga, $name, $date, $path, $isRead, site, $progress, $pages, $isInUpdate " +
                     "FROM $tmpTable"
         )
 
@@ -363,53 +359,51 @@ internal val from38to39 = migrate {
 
     query("DROP TABLE `downloads`")
 
-    with(Manga.Col) {
-        renameTableToTmp(Manga.tableName)
+    renameTableToTmp("manga")
 
-        query(
-            "CREATE TABLE ${Manga.tableName} (" +
-                    "$id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                    "$host TEXT NOT NULL, " +
-                    "$name TEXT NOT NULL, " +
-                    "$logo TEXT NOT NULL, " +
-                    "$about TEXT NOT NULL, " +
-                    "$category TEXT NOT NULL, " +
-                    "$categoryId INTEGER NOT NULL DEFAULT 0, " +
-                    "$path TEXT NOT NULL, " +
-                    "$status TEXT NOT NULL, " +
-                    "$color INTEGER NOT NULL, " +
-                    "$populate INTEGER NOT NULL, " +
-                    "$order INTEGER NOT NULL, " +
-                    "$alternativeSort INTEGER NOT NULL, " +
-                    "$update INTEGER NOT NULL," +
-                    "$filter TEXT NOT NULL, " +
-                    "$alternativeSite INTEGER NOT NULL, " +
-                    "$authors TEXT NOT NULL, " +
-                    "$genres TEXT NOT NULL, " +
-                    "$link TEXT NOT NULL)"
-        )
+    query(
+        "CREATE TABLE manga (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "host TEXT NOT NULL, " +
+                "name TEXT NOT NULL, " +
+                "logo TEXT NOT NULL, " +
+                "about TEXT NOT NULL, " +
+                "category TEXT NOT NULL, " +
+                "category_id INTEGER NOT NULL DEFAULT 0, " +
+                "path TEXT NOT NULL, " +
+                "status TEXT NOT NULL, " +
+                "color INTEGER NOT NULL, " +
+                "populate INTEGER NOT NULL, " +
+                "ordering INTEGER NOT NULL, " +
+                "isAlternativeSort INTEGER NOT NULL, " +
+                "isUpdate INTEGER NOT NULL," +
+                "chapterFilter TEXT NOT NULL, " +
+                "isAlternativeSite INTEGER NOT NULL, " +
+                "authors TEXT NOT NULL, " +
+                "genres TEXT NOT NULL, " +
+                "shortLink TEXT NOT NULL)"
+    )
 
-        query(
-            "INSERT INTO ${Manga.tableName} (" +
-                    "$id, $host, $name, $authors, $logo, $about, $category, $genres, $path, $status, " +
-                    "$color, $populate, $order, $alternativeSort, $update, $filter, $alternativeSite, $link) " +
-                    "SELECT " +
-                    "$id, $host, $name, $authors, $logo, $about, categories, $genres, $path, $status, " +
-                    "$color, $populate, `order`, $alternativeSort, $update, $filter, $alternativeSite, " +
-                    "shortLink " +
-                    "FROM $tmpTable"
-        )
+    query(
+        "INSERT INTO manga (" +
+                "id, host, name, authors, logo, about, category, genres, path, status, " +
+                "color, populate, ordering, isAlternativeSort, isUpdate, chapterFilter, isAlternativeSite, shortLink) " +
+                "SELECT " +
+                "id, host, name, authors, logo, about, categories, genres, path, status, " +
+                "color, populate, `order`, isAlternativeSort, isUpdate, chapterFilter, isAlternativeSite, " +
+                "shortLink " +
+                "FROM $tmpTable"
+    )
 
-        removeTmpTable()
-    }
+    removeTmpTable()
 
     with(Chapter.Col) {
-        renameTableToTmp(Chapter.tableName)
+        renameTableToTmp("chapters")
 
         query(
-            "CREATE TABLE `${Chapter.tableName}` (" +
+            "CREATE TABLE `chapters` (" +
                     "$id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                    "$manga TEXT NOT NULL, " +
+                    "manga TEXT NOT NULL, " +
                     "$mangaId INTEGER NOT NULL DEFAULT 0, " +
                     "$name TEXT NOT NULL, " +
                     "$date TEXT NOT NULL, " +
@@ -430,12 +424,12 @@ internal val from38to39 = migrate {
         )
 
         query(
-            "INSERT INTO ${Chapter.tableName} (" +
-                    "$id, $manga, $name, $date, $path, $isRead, $link, $progress, $pages, $isInUpdate, " +
+            "INSERT INTO chapters (" +
+                    "$id, manga, $name, $date, $path, $isRead, $link, $progress, $pages, $isInUpdate, " +
                     "$totalTime, $error, $totalSize, $downloadSize, $downloadPages, $totalPages, " +
                     "$status, $order) " +
                     "SELECT " +
-                    "$id, $manga, $name, $date, $path, $isRead, $link, $progress, $pages, $isInUpdate, " +
+                    "$id, manga, $name, $date, $path, $isRead, $link, $progress, $pages, $isInUpdate, " +
                     "$totalTime, $error, $totalSize, $downloadSize, $downloadPages, $totalPages, " +
                     "$status, `order` " +
                     "FROM $tmpTable"
@@ -455,36 +449,36 @@ internal val from38to39 = migrate {
     }
 
     query(
-        "CREATE VIEW `${SimplifiedManga.viewName}` " +
+        "CREATE VIEW `simple_manga` " +
                 "AS SELECT " +
-                "${Manga.Col.id}, " +
-                "${Manga.Col.name}, " +
-                "${Manga.Col.logo}, " +
-                "${Manga.Col.color}, " +
-                "${Manga.Col.populate}, " +
-                "${Manga.Col.category} " +
-                "FROM `${Manga.tableName}`"
+                "id, " +
+                "name, " +
+                "logo, " +
+                "color, " +
+                "populate, " +
+                "category " +
+                "FROM `manga`"
     )
 
     query(
         "CREATE VIEW `${SimplifiedMangaWithChapterCounts.viewName}` " +
                 "AS SELECT " +
-                "${Manga.tableName}.${Manga.Col.id}, " +
-                "${Manga.tableName}.${Manga.Col.name}, " +
-                "${Manga.tableName}.${Manga.Col.logo}, " +
-                "${Manga.tableName}.${Manga.Col.about}, " +
-                "${Manga.tableName}.${Manga.Col.alternativeSort}, " +
+                "manga.id, " +
+                "manga.name, " +
+                "manga.logo, " +
+                "manga.about, " +
+                "manga.isAlternativeSort, " +
 
-                "(SELECT COUNT(*) FROM ${Chapter.tableName} " +
-                "WHERE ${Chapter.tableName}.${Chapter.Col.manga} IS " +
-                "${Manga.tableName}.${Manga.Col.name} " +
-                "AND ${Chapter.tableName}.${Chapter.Col.isRead} IS 1) AS ${SimplifiedMangaWithChapterCounts.Col.readChapters}, " +
+                "(SELECT COUNT(*) FROM chapters " +
+                "WHERE chapters.manga IS " +
+                "manga.name " +
+                "AND chapters.${Chapter.Col.isRead} IS 1) AS ${SimplifiedMangaWithChapterCounts.Col.readChapters}, " +
 
-                "(SELECT COUNT(*) FROM ${Chapter.tableName} " +
-                "WHERE ${Chapter.tableName}.${Chapter.Col.manga} IS " +
-                "${Manga.tableName}.${Manga.Col.name}) AS ${SimplifiedMangaWithChapterCounts.Col.allChapters} " +
+                "(SELECT COUNT(*) FROM chapters " +
+                "WHERE chapters.manga IS " +
+                "manga.name) AS ${SimplifiedMangaWithChapterCounts.Col.allChapters} " +
 
-                "FROM ${Manga.tableName}"
+                "FROM manga"
     )
 }
 

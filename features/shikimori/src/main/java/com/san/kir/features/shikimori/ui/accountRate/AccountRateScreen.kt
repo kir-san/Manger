@@ -26,6 +26,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.ScreenPadding
 import com.san.kir.core.compose_utils.ToolbarProgress
+import com.san.kir.core.compose_utils.horizontalAndBottomInsetsPadding
 import com.san.kir.core.compose_utils.topBar
 import com.san.kir.features.shikimori.R
 import com.san.kir.features.shikimori.logic.useCases.SyncState
@@ -84,7 +85,8 @@ fun AccountRateScreen(
                         top = it.calculateTopPadding(),
                         start = Dimensions.default,
                         end = Dimensions.default,
-                    )
+                    ),
+                contentPadding = horizontalAndBottomInsetsPadding()
             ) {
                 when (val manga = state.manga) {
                     is MangaState.Ok -> {

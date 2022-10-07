@@ -51,7 +51,12 @@ fun LabelText(idRes: Int) {
 }
 
 @Composable
-fun DialogText(text: String, modifier: Modifier = Modifier, color: Color = Color.Unspecified, onClick: (() -> Unit) = {}) {
+fun DialogText(
+    text: String,
+    modifier: Modifier = Modifier,
+    color: Color = Color.Unspecified,
+    onClick: (() -> Unit) = {}
+) {
     Text(
         text = text,
         fontSize = 16.sp,
@@ -180,12 +185,12 @@ fun SearchTextField(
             Icon(
                 Icons.Default.Search,
                 "search",
-                modifier = Modifier.padding(systemBarStartPadding()),
+                modifier = Modifier.startInsetsPadding(),
             )
         },
         trailingIcon = {
             IconButton(
-                modifier = Modifier.padding(systemBarEndPadding()),
+                modifier = Modifier.endInsetsPadding(),
                 onClick = {
                     searchText = ""
                     onChangeValue("")

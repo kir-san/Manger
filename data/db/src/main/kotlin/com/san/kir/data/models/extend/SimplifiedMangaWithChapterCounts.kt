@@ -6,7 +6,7 @@ import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.models.base.ShikimoriMangaItem
 
 @DatabaseView(
-    viewName = SimplifiedMangaWithChapterCounts.viewName,
+    viewName = "libarary_manga",
     value = "SELECT " +
             "manga.id, " +
             "manga.name, " +
@@ -18,11 +18,11 @@ import com.san.kir.data.models.base.ShikimoriMangaItem
             "WHERE chapters.manga IS " +
             "manga.name " +
             "AND chapters.${Chapter.Col.isRead} IS 1) AS " +
-            "${SimplifiedMangaWithChapterCounts.Col.readChapters}, " +
+            "read_chapters, " +
 
             "(SELECT COUNT(*) FROM chapters " +
             "WHERE chapters.manga IS " +
-            "manga.name) AS ${SimplifiedMangaWithChapterCounts.Col.allChapters} " +
+            "manga.name) AS all_chapters " +
 
             "FROM manga"
 )
@@ -32,16 +32,6 @@ data class SimplifiedMangaWithChapterCounts(
     @ColumnInfo(name = "logo") override val logo: String = "",
     @ColumnInfo(name = "about") override val description: String = "",
     @ColumnInfo(name = "isAlternativeSort") val sort: Boolean = false,
-    @ColumnInfo(name = Col.readChapters) override val read: Long = 0,
-    @ColumnInfo(name = Col.allChapters) override val all: Long = 0,
-) : ShikimoriMangaItem {
-
-    companion object {
-        const val viewName = "libarary_manga"
-    }
-
-    object Col {
-        const val readChapters = "read_chapters"
-        const val allChapters = "all_chapters"
-    }
-}
+    @ColumnInfo(name = "read_chapters") override val read: Long = 0,
+    @ColumnInfo(name = "all_chapters") override val all: Long = 0,
+) : ShikimoriMangaItem

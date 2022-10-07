@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.displayCutout
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -51,64 +50,32 @@ fun systemBarTopPadding(additional: Dp = Dimensions.zero): PaddingValues =
         .asPaddingValues()
 
 @Composable
-fun systemAndCutoutPadding(): PaddingValues =
-    WindowInsets
-        .systemBars
-        .only(WindowInsetsSides.Bottom)
-        .add(
-            WindowInsets
-                .displayCutout
-                .only(WindowInsetsSides.Horizontal)
-        )
-        .asPaddingValues()
+private fun horizontalInsets() =
+    WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal)
+        .add(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
 
-fun Modifier.horizontalInsetsPadding(): Modifier =
-    composed {
-        windowInsetsPadding(
-            WindowInsets
-                .displayCutout
-                .only(WindowInsetsSides.Horizontal)
-                .add(
-                    WindowInsets
-                        .systemBars
-                        .only(WindowInsetsSides.Horizontal)
-                )
-        )
-    }
+@Composable
+private fun bottomInsets() =
+    WindowInsets.displayCutout.only(WindowInsetsSides.Bottom)
+        .add(WindowInsets.systemBars.only(WindowInsetsSides.Bottom))
 
-fun Modifier.startInsetsPadding(): Modifier =
-    composed {
-        windowInsetsPadding(
-            WindowInsets
-                .displayCutout
-                .only(WindowInsetsSides.Start)
-                .add(
-                    WindowInsets
-                        .systemBars
-                        .only(WindowInsetsSides.Start)
-                )
-        )
-    }
+@Composable
+private fun startInsets() =
+    WindowInsets.displayCutout.only(WindowInsetsSides.Start)
+        .add(WindowInsets.systemBars.only(WindowInsetsSides.Start))
 
-fun Modifier.endInsetsPadding(): Modifier =
-    composed {
-        windowInsetsPadding(
-            WindowInsets
-                .displayCutout
-                .only(WindowInsetsSides.End)
-                .add(
-                    WindowInsets
-                        .systemBars
-                        .only(WindowInsetsSides.End)
-                )
-        )
-    }
+@Composable
+private fun endInsets() =
+    WindowInsets.displayCutout.only(WindowInsetsSides.End)
+        .add(WindowInsets.systemBars.only(WindowInsetsSides.End))
 
-fun Modifier.bottomInsetsPadding(): Modifier =
-    composed {
-        windowInsetsPadding(
-            WindowInsets
-                .navigationBars
-                .only(WindowInsetsSides.Bottom)
-        )
-    }
+fun Modifier.horizontalInsetsPadding() = composed { windowInsetsPadding(horizontalInsets()) }
+fun Modifier.startInsetsPadding() = composed { windowInsetsPadding(startInsets()) }
+fun Modifier.bottomInsetsPadding() = composed { windowInsetsPadding(bottomInsets()) }
+fun Modifier.endInsetsPadding() = composed { windowInsetsPadding(endInsets()) }
+
+@Composable
+fun horizontalAndBottomInsetsPadding() = horizontalInsets().add(bottomInsets()).asPaddingValues()
+
+
+

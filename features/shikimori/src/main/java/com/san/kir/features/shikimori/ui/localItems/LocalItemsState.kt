@@ -10,4 +10,8 @@ import com.san.kir.features.shikimori.logic.useCases.BindStatus
 internal data class LocalItemsState(
     val action: BackgroundTasks,
     val unbind: List<BindStatus<SimplifiedMangaWithChapterCounts>>,
-) : ScreenState
+) : ScreenState {
+    override fun toString(): String {
+        return "LocalItemsState(action=$action, unBindSize=${unbind.count()})"
+    }
+}

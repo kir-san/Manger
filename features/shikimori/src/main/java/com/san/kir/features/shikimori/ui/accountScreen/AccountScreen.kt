@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -145,10 +144,6 @@ private fun CatalogContent(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize(),
-        contentPadding = WindowInsets
-            .systemBars
-            .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
-            .asPaddingValues()
     ) {
         if (state.bind.isNotEmpty()) {
             stickyHeader(

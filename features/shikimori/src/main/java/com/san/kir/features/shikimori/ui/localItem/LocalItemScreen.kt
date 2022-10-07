@@ -18,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.ScreenPadding
+import com.san.kir.core.compose_utils.horizontalAndBottomInsetsPadding
 import com.san.kir.core.compose_utils.rememberImage
 import com.san.kir.core.compose_utils.topBar
 import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
@@ -56,7 +57,8 @@ fun LocalItemScreen(
                     top = it.calculateTopPadding(),
                     start = Dimensions.default,
                     end = Dimensions.default,
-                )
+                ),
+            contentPadding = horizontalAndBottomInsetsPadding()
         ) {
             when (val manga = state.manga) {
                 is MangaState.Ok -> content(

@@ -18,6 +18,7 @@ import com.san.kir.features.shikimori.ui.accountItem.LoginState
 import com.san.kir.features.shikimori.ui.util.DialogState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -39,6 +40,7 @@ internal class AccountViewModel @Inject internal constructor(
     private val settingsRepository: SettingsRepository,
     libraryRepository: LibraryItemRepository,
 ) : BaseViewModel<AccountEvent, AccountScreenState>(), Helper<ShikiDbManga> by HelperImpl() {
+    private var updateJob: Job? = null
     private val bindingHelper = BindingUseCase(libraryRepository)
 
     private val loginState = MutableStateFlow<LoginState>(LoginState.Loading)
@@ -90,7 +92,7 @@ internal class AccountViewModel @Inject internal constructor(
         loginState,
         dialogState,
         // Манга из олайн-профиля с уже существующей привязкой
-        dbItems.mapLatest(bindingHelper.filterData()),
+        dbItems.map(bindingHelper.filterData()),
         unbindedItems,
         hasAction
     ) { login, dialog, bind, unbind, action ->
@@ -111,6 +113,7 @@ internal class AccountViewModel @Inject internal constructor(
                     DialogState.Hide -> {
                         dialogState.update { DialogState.Show }
                     }
+
                     DialogState.Show -> {
                         dialogState.update { DialogState.Hide }
                         loginState.update { LoginState.Loading }
@@ -118,6 +121,7 @@ internal class AccountViewModel @Inject internal constructor(
                     }
                 }
             }
+
             AccountEvent.CancelLogOut -> {
                 when (dialogState.value) {
                     DialogState.Hide -> {}
@@ -126,21 +130,23 @@ internal class AccountViewModel @Inject internal constructor(
                     }
                 }
             }
+
             AccountEvent.Update -> {
                 updateDataFromNetwork()
             }
         }
     }
 
-    private fun updateDataFromNetwork() = viewModelScope.defaultExcLaunch(
-        onFailure = {
+    private fun updateDataFromNetwork() {
+        if (updateJob?.isActive == true) return
+        updateJob = viewModelScope.defaultExcLaunch(
+            onFailure = { updateLoading(false) }
+        ) {
+            updateLoading(true)
+
+            profileRepository.updateRates(settingsRepository.currentAuth())
+
             updateLoading(false)
         }
-    ) {
-        updateLoading(true)
-
-        profileRepository.updateRates(settingsRepository.currentAuth())
-
-        updateLoading(false)
     }
 }

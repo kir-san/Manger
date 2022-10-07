@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.Fonts
+import com.san.kir.core.compose_utils.horizontalInsetsPadding
 import com.san.kir.core.compose_utils.rememberImage
 import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
 import com.san.kir.data.models.base.ShikimoriStatus
@@ -51,7 +52,7 @@ internal fun LazyItemScope.MangaItemContent(
             .clickable(onClick = onClick)
             .fillMaxWidth()
             .padding(vertical = Dimensions.small, horizontal = Dimensions.default)
-            .padding(systemBarsHorizontalPadding()),
+            .horizontalInsetsPadding(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(

@@ -2,26 +2,27 @@ package com.san.kir.features.shikimori.logic.di
 
 import android.content.Context
 import com.san.kir.data.models.base.Settings
-import com.san.kir.features.shikimori.ShikiAuth
-import com.san.kir.features.shikimori.bearer
 import com.san.kir.features.shikimori.logic.api.ShikimoriData
+import com.san.kir.features.shikimori.logic.plugins.ShikiAuth
+import com.san.kir.features.shikimori.logic.plugins.bearer
 import com.san.kir.features.shikimori.logic.repo.SettingsRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.engine.okhttp.*
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.auth.providers.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.plugins.resources.*
-import io.ktor.client.request.*
-import io.ktor.client.request.forms.*
-import io.ktor.http.*
-import io.ktor.serialization.gson.*
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.auth.providers.BearerTokens
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.resources.Resources
+import io.ktor.client.request.forms.submitForm
+import io.ktor.client.request.headers
+import io.ktor.http.HttpHeaders
+import io.ktor.http.URLProtocol
+import io.ktor.serialization.gson.gson
 import okhttp3.Cache
 import okhttp3.logging.HttpLoggingInterceptor
 import timber.log.Timber
@@ -55,7 +56,7 @@ internal class InternetModule {
                     retryOnConnectionFailure(true)
                     cache(cache)
                     addInterceptor(HttpLoggingInterceptor().apply {
-                        level = HttpLoggingInterceptor.Level.BODY
+                        level = HttpLoggingInterceptor.Level.BASIC
                     })
                 }
             }

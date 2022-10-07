@@ -2,19 +2,22 @@ package com.san.kir.features.shikimori.logic.repo
 
 import com.san.kir.core.utils.coroutines.withIoContext
 import com.san.kir.data.models.base.Settings
-import com.san.kir.features.shikimori.ShikiAuth
 import com.san.kir.features.shikimori.logic.api.ShikimoriApi
 import com.san.kir.features.shikimori.logic.api.ShikimoriData
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.auth.providers.*
-import io.ktor.client.plugins.resources.*
-import io.ktor.client.request.forms.*
+import com.san.kir.features.shikimori.logic.plugins.BearerAuthProvider
+import com.san.kir.features.shikimori.logic.plugins.ShikiAuth
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.plugins.plugin
+import io.ktor.client.plugins.resources.get
+import io.ktor.client.request.forms.submitForm
 import timber.log.Timber
 import javax.inject.Inject
 
-internal class TokenRepository @Inject constructor(private val client: HttpClient) {
+internal class TokenRepository @Inject constructor(
+    private val client: HttpClient,
+    private val settingsRepository: SettingsRepository,
+) {
 
     suspend fun getAccessToken(code: String): Settings.ShikimoriAuth.ShikimoriAccessToken =
         withIoContext {
@@ -22,10 +25,15 @@ internal class TokenRepository @Inject constructor(private val client: HttpClien
                 url = ShikimoriData.tokenUrl,
                 formParameters = ShikimoriData.getTokenParameters(code)
             ).body<Settings.ShikimoriAuth.ShikimoriAccessToken>().apply {
+                // Сохранение нового токена
+                settingsRepository.update(token = this)
                 // Очитстка текущего токена в плагине, для его новой инициализации
                 client.plugin(ShikiAuth).providers
                     .filterIsInstance<BearerAuthProvider>()
-                    .firstOrNull()?.clearToken()
+                    .forEach {
+                        it.clearToken()
+                        Timber.i("old Token cleared")
+                    }
             }
         }
 

@@ -27,8 +27,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.animation.FromEndToEndAnimContent
+import com.san.kir.core.compose_utils.horizontalInsetsPadding
 import com.san.kir.core.compose_utils.rememberImage
-import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
 import com.san.kir.features.shikimori.R
 import com.san.kir.features.shikimori.logic.api.ShikimoriData
 import com.san.kir.features.shikimori.ui.util.LogOutDialog
@@ -71,7 +71,7 @@ private fun LoginOrNot(
             .fillMaxWidth()
             .clickable(onClick = navigateToManager)
             .padding(vertical = Dimensions.smaller, horizontal = Dimensions.default)
-            .padding(systemBarsHorizontalPadding()),
+            .horizontalInsetsPadding(),
         verticalAlignment = Alignment.CenterVertically
     ) {
 

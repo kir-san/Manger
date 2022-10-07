@@ -146,15 +146,10 @@ fun topBar(
             if (progressAction != null) {
                 LinearProgressIndicator(
                     progress = progressAction,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalInsetsPadding()
+                    modifier = Modifier.fillMaxWidth()
                 )
             } else {
-                LinearProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             }
         }
     }

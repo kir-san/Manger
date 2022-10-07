@@ -387,7 +387,8 @@ internal val from38to39 = migrate {
     query(
         "INSERT INTO manga (" +
                 "id, host, name, authors, logo, about, category, genres, path, status, " +
-                "color, populate, ordering, isAlternativeSort, isUpdate, chapterFilter, isAlternativeSite, shortLink) " +
+                "color, populate, ordering, isAlternativeSort, isUpdate, chapterFilter, " +
+                "isAlternativeSite, shortLink) " +
                 "SELECT " +
                 "id, host, name, authors, logo, about, categories, genres, path, status, " +
                 "color, populate, `order`, isAlternativeSort, isUpdate, chapterFilter, isAlternativeSite, " +
@@ -438,15 +439,13 @@ internal val from38to39 = migrate {
         removeTmpTable()
     }
 
-    with(ShikiDbManga.Col) {
-        query(
-            "CREATE TABLE IF NOT EXISTS `${ShikiDbManga.tableName}` (" +
-                    "$targetId INTEGER PRIMARY KEY NOT NULL, " +
-                    "$libMangaId INTEGER NOT NULL, " +
-                    "$rate TEXT NOT NULL, " +
-                    "$data TEXT NOT NULL)"
-        )
-    }
+    query(
+        "CREATE TABLE IF NOT EXISTS `shikimori` (" +
+                "id INTEGER PRIMARY KEY NOT NULL, " +
+                "lid_id INTEGER NOT NULL, " +
+                "rate TEXT NOT NULL, " +
+                "data TEXT NOT NULL)"
+    )
 
     query(
         "CREATE VIEW `simple_manga` " +
@@ -461,7 +460,7 @@ internal val from38to39 = migrate {
     )
 
     query(
-        "CREATE VIEW `${SimplifiedMangaWithChapterCounts.viewName}` " +
+        "CREATE VIEW `libarary_manga` " +
                 "AS SELECT " +
                 "manga.id, " +
                 "manga.name, " +
@@ -472,11 +471,11 @@ internal val from38to39 = migrate {
                 "(SELECT COUNT(*) FROM chapters " +
                 "WHERE chapters.manga IS " +
                 "manga.name " +
-                "AND chapters.${Chapter.Col.isRead} IS 1) AS ${SimplifiedMangaWithChapterCounts.Col.readChapters}, " +
+                "AND chapters.${Chapter.Col.isRead} IS 1) AS read_chapters, " +
 
                 "(SELECT COUNT(*) FROM chapters " +
                 "WHERE chapters.manga IS " +
-                "manga.name) AS ${SimplifiedMangaWithChapterCounts.Col.allChapters} " +
+                "manga.name) AS all_chapters " +
 
                 "FROM manga"
     )

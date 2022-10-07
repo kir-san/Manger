@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
@@ -45,7 +44,7 @@ fun LocalItemsScreen(
             progressAction = state.action.progress
         ),
         additionalPadding = Dimensions.zero
-    ) {contentPadding ->
+    ) { contentPadding ->
         SwipeRefresh(
             state = rememberSwipeRefreshState(false),
             onRefresh = { viewModel.sendEvent(LocalItemsEvent.Update) },
@@ -53,7 +52,6 @@ fun LocalItemsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
                     .padding(
                         top = contentPadding.calculateTopPadding(),
                         bottom = contentPadding.calculateBottomPadding()

@@ -1,14 +1,25 @@
-package com.san.kir.features.shikimori
+package com.san.kir.features.shikimori.logic.plugins
 
-import io.ktor.client.*
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.auth.*
-import io.ktor.client.plugins.auth.providers.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import io.ktor.http.auth.*
-import io.ktor.util.*
+import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
+import io.ktor.client.plugins.HttpClientPlugin
+import io.ktor.client.plugins.HttpSend
+import io.ktor.client.plugins.auth.AuthProvider
+import io.ktor.client.plugins.auth.providers.BearerTokens
+import io.ktor.client.plugins.auth.providers.RefreshTokensParams
+import io.ktor.client.plugins.plugin
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.HttpRequestPipeline
+import io.ktor.client.request.headers
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.auth.AuthScheme
+import io.ktor.http.auth.HttpAuthHeader
+import io.ktor.http.auth.parseAuthorizationHeader
+import io.ktor.util.AttributeKey
+import io.ktor.util.InternalAPI
+import io.ktor.util.KtorDsl
 import kotlinx.coroutines.CompletableDeferred
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicReference
@@ -29,8 +40,6 @@ class ShikiAuth private constructor(
 
         @OptIn(InternalAPI::class)
         override fun install(plugin: ShikiAuth, scope: HttpClient) {
-            Timber.v("install")
-
             scope.requestPipeline.intercept(HttpRequestPipeline.State) {
                 plugin.providers.filter { it.sendWithoutRequest(context) }.forEach {
                     it.addRequestHeaders(context)
@@ -38,10 +47,9 @@ class ShikiAuth private constructor(
             }
 
             scope.plugin(HttpSend).intercept { context ->
-                Timber.v("intercept")
                 val origin = execute(context)
                 Timber.tag("ShikiAuth").i("status is ${origin.response.status}")
-                if (origin.response.status != HttpStatusCode.Forbidden) return@intercept origin
+                if (origin.response.status != HttpStatusCode.Unauthorized) return@intercept origin
                 Timber.tag("ShikiAuth").i("attributes is ${origin.request.attributes}")
                 if (origin.request.attributes.contains(AuthCircuitBreaker)) return@intercept origin
 
@@ -50,7 +58,7 @@ class ShikiAuth private constructor(
                 val candidateProviders = HashSet(plugin.providers)
                 Timber.tag("ShikiAuth").i("${candidateProviders}")
 
-                while (call.response.status == HttpStatusCode.Forbidden) {
+                while (call.response.status == HttpStatusCode.Unauthorized) {
                     val headerValue = call.response.headers[HttpHeaders.WWWAuthenticate]
 
                     val authHeader = headerValue?.let { parseAuthorizationHeader(headerValue) }

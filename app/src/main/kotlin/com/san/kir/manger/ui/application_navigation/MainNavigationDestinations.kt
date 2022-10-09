@@ -15,11 +15,11 @@ import com.san.kir.manger.ui.application_navigation.accounts.accountsNavGraph
 import com.san.kir.manger.ui.application_navigation.catalog.catalogsNavGraph
 import com.san.kir.manger.ui.application_navigation.download.DownloadScreen
 import com.san.kir.manger.ui.application_navigation.schedule.scheduleNavGraph
-import com.san.kir.manger.ui.application_navigation.settings.SettingsScreen
 import com.san.kir.manger.utils.compose.NavTarget
 import com.san.kir.manger.utils.compose.composable
 import com.san.kir.manger.utils.compose.deepLinkIntent
 import com.san.kir.manger.utils.compose.navTarget
+import com.san.kir.settings.ui.settings.SettingsScreen
 
 enum class MainNavTarget(
     val type: MainMenuType,
@@ -37,7 +37,6 @@ enum class MainNavTarget(
     },
 
     Catalogs(MainMenuType.Catalogs) {
-
         override val content = navTarget(route = "catalogs")
     },
 
@@ -65,9 +64,7 @@ enum class MainNavTarget(
     },
 
     Settings(MainMenuType.Settings) {
-        override val content = navTarget(route = "settings") {
-            SettingsScreen(::navigateUp)
-        }
+        override val content = navTarget(route = "settings") { SettingsScreen(::navigateUp) }
     },
 
     Statistic(MainMenuType.Statistic) {

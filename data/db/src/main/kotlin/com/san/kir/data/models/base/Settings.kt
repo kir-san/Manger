@@ -1,5 +1,6 @@
 package com.san.kir.data.models.base
 
+import androidx.compose.runtime.Stable
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
@@ -65,6 +66,7 @@ data class Settings(
         const val avatar = "avatar"
     }
 
+    @Stable
     data class Chapters(
         @ColumnInfo(name = Col.isIndividual)
         val isIndividual: Boolean = true,
@@ -76,6 +78,7 @@ data class Settings(
         val filterStatus: ChapterFilter = ChapterFilter.ALL_READ_ASC,
     )
 
+    @Stable
     data class Download(
         @ColumnInfo(name = Col.concurrent)
         val concurrent: Boolean = true,
@@ -87,6 +90,7 @@ data class Settings(
         val wifi: Boolean = false,
     )
 
+    @Stable
     data class Main(
         @ColumnInfo(name = Col.theme)
         val theme: Boolean = true,
@@ -98,6 +102,7 @@ data class Settings(
         val editMenu: Boolean = false,
     )
 
+    @Stable
     data class Viewer(
         @ColumnInfo(name = Col.orientation)
         val orientation: Orientation = Orientation.AUTO_LAND,
@@ -111,6 +116,11 @@ data class Settings(
         @ColumnInfo(name = Col.withoutSaveFiles)
         val withoutSaveFiles: Boolean = false,
     ) {
+        val controls: List<Boolean>
+            get() = listOf(control.taps, control.swipes, control.keys)
+
+        fun controls(items: List<Boolean>) = Control(items[0], items[1], items[2])
+
         enum class Orientation {
             PORT, PORT_REV, LAND, LAND_REV, AUTO, AUTO_PORT, AUTO_LAND,
         }

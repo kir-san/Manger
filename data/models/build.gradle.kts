@@ -3,6 +3,10 @@ plugins {
     id(Plugins.parcelize)
 }
 
+android {
+    namespace = "com.san.kir.data.models"
+}
+
 dependencies {
     implementation(project(Modules.Core.support))
     implementation(project(Modules.Core.utils))

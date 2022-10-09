@@ -14,7 +14,7 @@ object Dimensions {
     object Image {
         val small = 36.dp
         val default = 56.dp
-        val bigger = 65.dp
+        val bigger = 64.dp
         val big = 126.dp
 
         val storage = DpSize(52.dp, 30.dp)

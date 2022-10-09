@@ -8,6 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
+fun SmallestSpacer() {
+    Spacer(modifier = Modifier.height(Dimensions.smallest))
+}
+@Composable
 fun SmallSpacer() {
     Spacer(modifier = Modifier.height(Dimensions.small))
 }

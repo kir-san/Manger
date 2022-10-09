@@ -19,6 +19,7 @@ include(":features:library")
 include(":features:categories")
 include(":features:statistic")
 include(":features:storage")
+include(":features:settings")
 
 include(":sample:testshikimori")
 include(":sample:test_compose")

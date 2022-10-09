@@ -5,6 +5,7 @@ plugins {
 }
 
 android {
+    namespace = "com.san.kir.data.db"
     defaultConfig {
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")

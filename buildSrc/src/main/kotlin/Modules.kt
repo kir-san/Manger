@@ -12,6 +12,7 @@ object Modules {
         val categories = module("categories")
         val statistic = module("statistic")
         val storage = module("storage")
+        val settings = module("settings")
     }
 
     object Core : NestedModule("core") {

@@ -1,5 +1,6 @@
 package com.san.kir.core.compose_utils
 
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -20,3 +21,8 @@ fun DefaultSpacer() {
 fun RowScope.FullWeightSpacer() {
     Spacer(modifier = Modifier.weight(1f))
 }
+@Composable
+fun ColumnScope.FullWeightSpacer() {
+    Spacer(modifier = Modifier.weight(1f))
+}
+

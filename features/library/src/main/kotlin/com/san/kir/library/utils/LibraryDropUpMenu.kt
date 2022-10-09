@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.animation.BottomAnimatedVisibility
@@ -35,10 +36,11 @@ import com.san.kir.library.ui.library.ItemsState
 import com.san.kir.library.ui.library.LibraryEvent
 import com.san.kir.library.ui.library.SelectedMangaState
 import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.toPersistentMap
 
 @Composable
 internal fun LibraryDropUpMenu(
-    navigateToInfo: (String) -> Unit,
+    navigateToInfo: (Long) -> Unit,
     navigateToStorage: (Long) -> Unit,
     navigateToStats: (Long) -> Unit,
     itemsState: ItemsState,
@@ -58,7 +60,7 @@ internal fun LibraryDropUpMenu(
 
         Properties {
             sendEvent(LibraryEvent.NonSelect)
-            navigateToInfo(selectedManga.item.name)
+            navigateToInfo(selectedManga.item.id)
         }
 
         CategoryChanger(
@@ -115,7 +117,8 @@ private inline fun Title(
             stringResource(R.string.library_popupmenu_title, text),
             maxLines = 1,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colors.onPrimary
+            color = MaterialTheme.colors.onPrimary,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }
@@ -158,7 +161,7 @@ private fun ColumnScope.CategoryChanger(
     if (itemsState is ItemsState.Ok)
         ExpandedCategories(
             visibility = changerVisibility,
-            categories = itemsState.categories.remove(selectedManga.categoryId),
+            categories = itemsState.categories.toPersistentMap().remove(selectedManga.categoryId),
             onItemChanged = onItemClick
         )
 }
@@ -225,7 +228,7 @@ fun Delete(
         Text(stringResource(R.string.library_popupmenu_delete))
     }
 
-    BottomAnimatedVisibility (
+    BottomAnimatedVisibility(
         visible = changerVisibility,
         modifier = Modifier.background(Color(0xFF525252))
     ) {

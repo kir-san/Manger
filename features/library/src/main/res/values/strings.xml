@@ -61,4 +61,46 @@
     <string name="main_menu_latest_count">Обновления: %d</string>
     <string name="main_menu_search">Поиск</string>
     <string name="main_menu_item_catalogs">%1$d - %2$d</string>
+
+    <string name="add_manga_online_clipboard">Вставка из буфера обмена</string>
+
+    <string name="manga_info_dialog_title">Информация о манге</string>
+
+    <!--About Manga-->
+    <string name="about_manga_dialog_name">Название</string>
+    <string name="about_manga_dialog_category">Категория</string>
+    <string name="about_manga_dialog_authors">Авторы</string>
+    <string name="about_manga_dialog_status_edition">Статус выпуска</string>
+    <string name="about_manga_dialog_genres">Жанры</string>
+    <string name="about_manga_dialog_storage">Место хранения</string>
+    <string name="about_manga_dialog_volume">Текущий объем</string>
+    <string name="about_manga_dialog_link">Ссылка на источник</string>
+    <string name="about_manga_dialog_about">Описание</string>
+    <string name="about_manga_dialog_logo">Лого</string>
+    <string name="about_manga_dialog_calculate">Считаю…</string>
+    <string name="about_manga_dialog_close">Закрыть</string>
+    <string name="about_manga_dialog_save">Сохранить</string>
+
+    <!-- AddManga -->
+    <string name="edit_manga_title">Редактор манги</string>
+    <string name="add_manga_ready">Готово</string>
+    <string name="add_manga_name">Название</string>
+    <string name="add_manga_author">Автор</string>
+    <string name="add_manga_about">Описание</string>
+    <string name="add_manga_categories">Категории</string>
+    <string name="add_manga_genres">Жанры</string>
+    <string name="add_manga_path">Путь к папке</string>
+    <string name="add_manga_status">Статус</string>
+    <string name="add_manga_site">Ссылка</string>
+    <string name="add_manga_color">Цвет элемента</string>
+    <string name="add_manga_logo">Логотип</string>
+    <string name="add_manga_update">Обновление манги</string>
+    <string name="add_manga_update_available">Разрешить?</string>
+    <string name="add_manga_close_btn">Закрыть</string>
+
+    <!-- Manga Status -->
+    <string name="manga_status_unknown">Не выбрано</string>
+    <string name="manga_status_continue">Выпуск продолжается</string>
+    <string name="manga_status_complete">Выпуск завершен</string>
+
 </resources>

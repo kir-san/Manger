@@ -8,6 +8,7 @@ import com.san.kir.core.utils.coroutines.withIoContext
 import com.san.kir.data.db.dao.CategoryDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.models.base.Category
+import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.extend.CategoryWithMangas
 import com.san.kir.data.models.extend.SimplifiedManga
 import com.san.kir.library.ui.library.ItemsState
@@ -19,7 +20,7 @@ import javax.inject.Inject
 internal class MangaRepository @Inject constructor(
     private val context: Application,
     private val mangaDao: MangaDao,
-    categoryDao: CategoryDao,
+    private val categoryDao: CategoryDao,
 ) {
     //    Все категории
     private val _categories = categoryDao.loadItems()
@@ -37,6 +38,12 @@ internal class MangaRepository @Inject constructor(
                 categories = cats.associate { it.id to it.name }.toPersistentMap()
             )
     }
+
+    suspend fun item(mangaId: Long) = withIoContext { mangaDao.itemById(mangaId) }
+    suspend fun categoryName(categoryId: Long) =
+        withIoContext { categoryDao.itemById(categoryId).name }
+
+    suspend fun update(manga: Manga) = withIoContext { mangaDao.update(manga) }
 
     suspend fun changeCategory(mangaId: Long, newCategoryId: Long) = withIoContext {
         mangaDao.update(mangaId, newCategoryId)

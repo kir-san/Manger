@@ -6,6 +6,6 @@ import com.san.kir.data.models.base.Category
 import kotlinx.collections.immutable.ImmutableList
 
 @Stable
-data class CategoriesState(
+internal data class CategoriesState(
     val items: ImmutableList<Category>
 ) : ScreenState

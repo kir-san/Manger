@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 @HiltViewModel
-class CategoriesViewModel @Inject constructor(
+internal class CategoriesViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository,
 ) : BaseViewModel<CategoriesEvent, CategoriesState>() {
 

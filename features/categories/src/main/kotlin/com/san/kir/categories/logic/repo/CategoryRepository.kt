@@ -6,7 +6,7 @@ import com.san.kir.data.models.base.Category
 import java.util.Collections
 import javax.inject.Inject
 
-class CategoryRepository @Inject constructor(
+internal class CategoryRepository @Inject constructor(
     private val categoryDao: CategoryDao
 ) {
 

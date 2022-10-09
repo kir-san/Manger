@@ -30,7 +30,6 @@ class MainActivity : ComponentActivity() {
     @InstallIn(ActivityComponent::class)
     interface ViewModelFactoryProvider {
         fun catalogViewModelFactory(): CatalogViewModel.Factory
-        fun onlyMangaViewModelFactory(): OnlyMangaViewModel.Factory
         fun siteCatalogItemViewModelFactory(): SiteCatalogItemViewModel.Factory
         fun plannedTaskViewModelFactory(): PlannedTaskViewModel.Factory
     }

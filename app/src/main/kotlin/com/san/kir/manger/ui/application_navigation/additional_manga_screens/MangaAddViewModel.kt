@@ -13,8 +13,8 @@ import com.san.kir.data.db.dao.CategoryDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.StatisticDao
 import com.san.kir.data.models.base.Category
-import com.san.kir.data.models.base.Statistic
 import com.san.kir.data.models.base.SiteCatalogElement
+import com.san.kir.data.models.base.Statistic
 import com.san.kir.data.models.base.toManga
 import com.san.kir.data.parsing.SiteCatalogAlternative
 import com.san.kir.data.parsing.SiteCatalogsManager
@@ -96,8 +96,11 @@ class MangaAddViewModel @Inject constructor(
 
             val manga = element.toManga(categoryId = category.id, path = path)
 
-            manga.isAlternativeSite = manager.getSite(element.link) is SiteCatalogAlternative
-            mangaDao.insert(manga)
+            mangaDao.insert(
+                manga.copy(
+                    isAlternativeSite = manager.getSite(element.link) is SiteCatalogAlternative
+                )
+            )
             statisticDao.insert(Statistic(mangaId = manga.id))
             return@withContext path to manga
         }

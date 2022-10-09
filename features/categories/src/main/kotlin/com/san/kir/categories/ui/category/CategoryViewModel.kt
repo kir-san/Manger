@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
-class CategoryViewModel @Inject constructor(
+internal class CategoryViewModel @Inject constructor(
     private val context: Application,
     private val categoryRepository: CategoryRepository,
 ) : BaseViewModel<CategoryEvent, CategoryState>() {

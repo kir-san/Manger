@@ -4,6 +4,10 @@ plugins {
     id(Plugins.hilt)
 }
 
+android {
+    namespace = "com.san.kir.chapters"
+}
+
 dependencies {
     implementation(project(Modules.Core.utils))
     implementation(project(Modules.Core.composeUtils))

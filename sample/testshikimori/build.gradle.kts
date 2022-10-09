@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
-
 plugins {
     id("base.app")
     id(Plugins.kapt)
@@ -7,6 +5,7 @@ plugins {
 }
 
 android {
+    namespace = "com.san.kir.testshikimori"
     defaultConfig {
         applicationId = "com.san.kir.testshikimori"
 

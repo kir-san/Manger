@@ -111,8 +111,7 @@ class MainViewModel @Inject constructor(
         combine(oneTimeFlag, manga, settingsDao.loadItems()) { flag, manga, settings ->
             // Производится единожды, как и инкремента использования манги
             if (flag) {
-                manga.populate += 1
-                mangaDao.update(manga)
+                mangaDao.update(manga.copy(populate = manga.populate + 1))
                 oneTimeFlag.value = false
 
                 // взависимости от настройки используется общий или индивидуальный фильтр
@@ -129,10 +128,7 @@ class MainViewModel @Inject constructor(
         // Прослушивание фильтра для сохранения
         combine(settingsDao.loadItems(), filter) { settings, f ->
             if (settings.chapters.isIndividual) {
-                manga.value.apply {
-                    chapterFilter = f
-                    mangaDao.update(this)
-                }
+                mangaDao.update(manga.value.copy(chapterFilter = f))
             } else {
                 settingsDao.update(
                     settings.copy(chapters = settings.chapters.copy(filterStatus = f))

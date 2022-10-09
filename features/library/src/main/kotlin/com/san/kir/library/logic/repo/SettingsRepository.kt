@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.mapLatest
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class SettingsRepository @Inject constructor(
+internal class SettingsRepository @Inject constructor(
     settingsDao: SettingsDao
 ) : AbstractSettingsRepository(settingsDao) {
 

@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
-class StorageViewModel @Inject constructor(
+internal class StorageViewModel @Inject constructor(
     private val context: Application,
     private val storageRepository: StorageRepository,
 ) : BaseViewModel<StorageEvent, StorageState>() {

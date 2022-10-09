@@ -23,38 +23,6 @@
     <string name="main_permission_reason">Данное приложение использует доступ к памяти смартфона
     для хранения манги для возможности читать ее в любой момент. Для работы требуется ваше согласие.</string>
 
-    <!-- AddManga -->
-    <string name="edit_manga_title">Редактор манги</string>
-    <string name="add_manga_ready">Готово</string>
-    <string name="add_manga_name">Название</string>
-    <string name="add_manga_author">Автор</string>
-    <string name="add_manga_about">Описание</string>
-    <string name="add_manga_categories">Категории</string>
-    <string name="add_manga_genres">Жанры</string>
-    <string name="add_manga_path">Путь к папке</string>
-    <string name="add_manga_status">Статус</string>
-    <string name="add_manga_site">Ссылка</string>
-    <string name="add_manga_color">Цвет элемента</string>
-    <string name="add_manga_logo">Логотип</string>
-    <string name="add_manga_update">Обновление манги</string>
-    <string name="add_manga_update_available">Разрешить?</string>
-    <string name="add_manga_close_btn">Закрыть</string>
-
-    <!--About Manga Dialog-->
-    <string name="about_manga_dialog_name">Название</string>
-    <string name="about_manga_dialog_category">Категория</string>
-    <string name="about_manga_dialog_authors">Авторы</string>
-    <string name="about_manga_dialog_status_edition">Статус выпуска</string>
-    <string name="about_manga_dialog_genres">Жанры</string>
-    <string name="about_manga_dialog_storage">Место хранения</string>
-    <string name="about_manga_dialog_volume">Текущий объем</string>
-    <string name="about_manga_dialog_link">Ссылка на источник</string>
-    <string name="about_manga_dialog_about">Описание</string>
-    <string name="about_manga_dialog_logo">Лого</string>
-    <string name="about_manga_dialog_calculate">Считаю…</string>
-    <string name="about_manga_dialog_close">Закрыть</string>
-    <string name="about_manga_dialog_edit">Редактировать</string>
-
     <!-- CatalogForOneSite -->
     <string name="catalog_for_one_site_prefix_volume">Глав %d</string>
     <string name="catalog_for_one_site_search">Поиск</string>
@@ -83,8 +51,6 @@
     <string name="add_manga_screen_search_chapters">Запуск задачи по поиску глав</string>
     <string name="add_manga_screen_all_complete">Все работы завершены успешно</string>
     <string name="add_manga_screen_error">Во время работы произошла ошибка, проверьте подключение к интеренету</string>
-
-    <string name="add_manga_online_clipboard">Вставка из буфера обмена</string>
 
     <!--Manga Info Dialog-->
     <string name="manga_info_dialog_name">Название</string>
@@ -217,11 +183,6 @@
     <string name="download_activity_option_submenu_clean_error">Очистить с ошибкой</string>
     <string name="download_view_wifi_off">Вай вай! Не включен Wi-fi!</string>
     <string name="download_view_internet_off">Нет доступа в интернет</string>
-
-    <!-- Manga Status -->
-    <string name="manga_status_unknown">Не выбрано</string>
-    <string name="manga_status_continue">Выпуск продолжается</string>
-    <string name="manga_status_complete">Выпуск завершен</string>
 
     <!--AvailableUpdate-->
     <string name="available_update_name">Разрешенные к обновлению</string>

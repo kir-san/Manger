@@ -7,6 +7,8 @@ plugins {
 }
 
 android {
+    namespace = "com.san.kir.manger"
+
     defaultConfig {
         applicationId = "com.san.kir.manger"
 

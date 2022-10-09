@@ -2,7 +2,7 @@ package com.san.kir.categories.ui.category
 
 import com.san.kir.core.utils.viewModel.ScreenEvent
 
-sealed interface CategoryEvent : ScreenEvent {
+internal sealed interface CategoryEvent : ScreenEvent {
     data class Set(val categoryName: String) : CategoryEvent
     object Save : CategoryEvent
     object Delete : CategoryEvent

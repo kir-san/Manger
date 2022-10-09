@@ -3,9 +3,7 @@ package com.san.kir.data.db.migrations
 import com.san.kir.core.support.ChapterFilter
 import com.san.kir.core.support.DownloadState
 import com.san.kir.data.models.base.Chapter
-import com.san.kir.data.models.base.ShikiDbManga
 import com.san.kir.data.models.columns.DownloadColumn
-import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
 
 /*
 Таблица chapters
@@ -72,9 +70,11 @@ internal val from31to32 = migrate {
     )
     query(
         "INSERT INTO manga(" +
-                "id, unic, host, name, authors, logo, about, categories, genres, path, status, site, color, populate, `order`, isAlternativeSort, isUpdate) " +
+                "id, unic, host, name, authors, logo, about, categories, genres, path, status, " +
+                "site, color, populate, `order`, isAlternativeSort, isUpdate) " +
                 "SELECT " +
-                "id, unic, host, name, authors, logo, about, categories, genres, path, status, site, color, populate, `order`, isAlternativeSort, isUpdate " +
+                "id, unic, host, name, authors, logo, about, categories, genres, path, status, " +
+                "site, color, populate, `order`, isAlternativeSort, isUpdate " +
                 "FROM tmp_manga"
     )
     query("DROP TABLE tmp_manga")

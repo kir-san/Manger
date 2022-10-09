@@ -3,6 +3,7 @@ plugins {
 }
 
 android {
+    namespace = "com.san.kir.test_compose"
     defaultConfig {
         applicationId = "com.san.kir.test_compose"
 

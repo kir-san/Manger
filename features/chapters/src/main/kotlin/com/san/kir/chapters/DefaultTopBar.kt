@@ -6,10 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.Dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.san.kir.background.services.MangaUpdaterService
-import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.TopBarActions
 import com.san.kir.core.compose_utils.topBar
 import com.san.kir.data.models.base.Manga
@@ -19,7 +17,6 @@ fun defaultTopBar(
     navigateUp: () -> Unit,
     manga: Manga,
     changeActionState: (Boolean) -> Unit,
-    height: Dp = Dimensions.appBarHeight,
 ) = topBar(
     title = manga.name,
     navigationListener = navigateUp,
@@ -65,13 +62,13 @@ private fun defaultModeActions(
                 id = R.string.list_chapters_is_update,
                 checked = manga.isUpdate,
             ) {
-                viewModel.updateManga { it.apply { isUpdate = isUpdate.not() } }
+                viewModel.updateManga { it.copy(isUpdate = it.isUpdate.not()) }
             }
             CheckedMenuText(
                 id = R.string.list_chapters_change_sort,
                 checked = manga.isAlternativeSort
             ) {
-                viewModel.updateManga { it.apply { isAlternativeSort = isAlternativeSort.not() } }
+                viewModel.updateManga { it.copy(isAlternativeSort = it.isAlternativeSort.not()) }
             }
         }
     }

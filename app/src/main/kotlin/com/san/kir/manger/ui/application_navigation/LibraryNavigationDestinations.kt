@@ -1,19 +1,17 @@
 package com.san.kir.manger.ui.application_navigation
 
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.san.kir.chapters.ChaptersScreen
 import com.san.kir.core.support.MainMenuType
+import com.san.kir.library.ui.addOnline.AddOnlineScreen
 import com.san.kir.library.ui.library.LibraryNavigation
 import com.san.kir.library.ui.library.LibraryScreen
-import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaAboutScreen
-import com.san.kir.manger.ui.application_navigation.additional_manga_screens.MangaAddOnlineScreen
+import com.san.kir.library.ui.mangaAbout.MangaAboutScreen
 import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
-import com.san.kir.manger.ui.onlyMangaViewModel
 import com.san.kir.manger.utils.compose.NavTarget
+import com.san.kir.manger.utils.compose.navLongArgument
 import com.san.kir.manger.utils.compose.navTarget
 import com.san.kir.manger.utils.compose.navigation
 
@@ -46,11 +44,9 @@ enum class LibraryNavTarget : NavTarget {
 
     AddOnline {
         override val content = navTarget(route = "add_online") {
-            MangaAddOnlineScreen(
+            AddOnlineScreen(
                 navigateUp = ::navigateUp,
-                navigateToNext = { arg ->
-                    navigate(CatalogsNavTarget.AddLocal, arg)
-                }
+                navigateToNext = { arg -> navigate(CatalogsNavTarget.AddLocal, arg) }
             )
         }
     },
@@ -59,13 +55,9 @@ enum class LibraryNavTarget : NavTarget {
         override val content = navTarget(
             route = "about",
             hasItems = true,
+            arguments = listOf(navLongArgument())
         ) {
-            val viewModel = onlyMangaViewModel(mangaUnic = stringElement ?: "")
-
-            val manga by viewModel.manga.collectAsState()
-            val categoryName by viewModel.categoryName.collectAsState()
-
-            MangaAboutScreen(::navigateUp, manga, categoryName)
+            MangaAboutScreen(::navigateUp, longElement ?: -1)
         }
     };
 }

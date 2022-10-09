@@ -10,7 +10,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
-class StatisticViewModel @Inject constructor(
+internal class StatisticViewModel @Inject constructor(
     private val statisticRepository: StatisticRepository
 ) : BaseViewModel<StatisticEvent, StatisticState>() {
     private val statistic = MutableStateFlow(Statistic())

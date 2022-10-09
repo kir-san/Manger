@@ -47,9 +47,9 @@ class RemoveCategoryWorker @AssistedInject constructor(
                         mangaDao
                             // Получение всей манги, которая связана с удаляемой категорией
                             .itemsByCategoryId(category.id)
-                            .onEach {
+                            .map {
                                 // Замена на категорию "Все"
-                                it.categoryId = categoryAll.id
+                                it.copy(categoryId = categoryAll.id)
                             }
                     )
                     categoryDao.delete(category)

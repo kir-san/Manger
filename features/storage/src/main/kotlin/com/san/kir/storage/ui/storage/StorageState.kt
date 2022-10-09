@@ -4,7 +4,7 @@ import androidx.compose.runtime.Stable
 import com.san.kir.core.utils.viewModel.ScreenState
 import com.san.kir.data.models.base.Storage
 
-data class StorageState(
+internal data class StorageState(
     val background: BackgroundState,
     val mangaName: String,
     val item: Storage,
@@ -12,7 +12,7 @@ data class StorageState(
 ) : ScreenState
 
 @Stable
-sealed interface BackgroundState {
+internal sealed interface BackgroundState {
     object None : BackgroundState
     object Load : BackgroundState
     object Deleting : BackgroundState

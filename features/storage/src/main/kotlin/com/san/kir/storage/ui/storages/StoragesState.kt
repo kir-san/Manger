@@ -5,7 +5,7 @@ import com.san.kir.data.models.base.Storage
 import com.san.kir.data.models.extend.MangaLogo
 import kotlinx.collections.immutable.ImmutableList
 
-data class StoragesState(
+internal data class StoragesState(
     val items: ImmutableList<Storage>,
     val mangas: ImmutableList<MangaLogo?>,
     val background: BackgroundState,
@@ -13,7 +13,7 @@ data class StoragesState(
     val count: Int = items.count()
 ) : ScreenState
 
-sealed interface BackgroundState {
+internal sealed interface BackgroundState {
     object Load : BackgroundState
     object None : BackgroundState
 }

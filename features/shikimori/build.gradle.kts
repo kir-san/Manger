@@ -5,6 +5,10 @@ plugins {
     alias(libs.plugins.serialization)
 }
 
+android {
+    namespace = "com.san.kir.features.shikimori"
+}
+
 dependencies {
     implementation(project(Modules.Core.utils))
     implementation(project(Modules.Data.models))

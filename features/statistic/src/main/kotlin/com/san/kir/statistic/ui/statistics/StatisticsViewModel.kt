@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 
 @HiltViewModel
-class StatisticsViewModel @Inject constructor(
+internal class StatisticsViewModel @Inject constructor(
     private val statisticRepository: StatisticRepository
 ) : BaseViewModel<StatisticsEvent, StatisticsState>() {
 

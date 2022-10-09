@@ -30,6 +30,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.san.kir.core.compose_utils.Dimensions
 import com.san.kir.core.compose_utils.endInsetsPadding
@@ -86,7 +87,8 @@ fun LazyGridItemScope.LibraryLargeItem(
                     .background(backgroundColor)
                     .padding(bottom = 5.dp)
                     .padding(horizontal = 6.dp),
-                color = contentColorFor(backgroundColor)
+                color = contentColorFor(backgroundColor),
+                overflow = TextOverflow.Ellipsis
             )
         }
         Box(

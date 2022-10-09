@@ -7,7 +7,7 @@ import com.san.kir.core.utils.viewModel.ScreenState
 import com.san.kir.data.models.extend.CategoryWithMangas
 import com.san.kir.data.models.extend.SimplifiedManga
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.PersistentMap
+import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
 
 @Immutable
@@ -19,6 +19,7 @@ internal data class LibraryState(
     val background: BackgroundState,
 ) : ScreenState
 
+@Stable
 internal sealed interface ItemsState {
     object Empty : ItemsState
     object Load : ItemsState
@@ -27,7 +28,7 @@ internal sealed interface ItemsState {
     data class Ok(
         val items: ImmutableList<CategoryWithMangas>,
         //    Имена всех категорий и их id
-        val categories: PersistentMap<Long, String>,
+        val categories: ImmutableMap<Long, String>,
         // Имена категорий с количество содержимой манги для заголовка вкладок
         val names: ImmutableList<String> =
             items
@@ -52,7 +53,7 @@ data class LibraryNavigation(
     val navigateToScreen: (MainMenuType) -> Unit,
     val navigateToCategories: () -> Unit,
     val navigateToCatalogs: () -> Unit,
-    val navigateToInfo: (String) -> Unit,
+    val navigateToInfo: (Long) -> Unit,
     val navigateToStorage: (Long) -> Unit,
     val navigateToStats: (Long) -> Unit,
     val navigateToChapters: (String) -> Unit,

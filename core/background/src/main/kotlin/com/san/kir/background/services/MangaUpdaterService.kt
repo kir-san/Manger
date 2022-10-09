@@ -335,17 +335,10 @@ class MangaUpdaterService : Service() {
     private suspend fun checkLinkInManga(mangaDB: Manga) {
         if (mangaDB.shortLink.isEmpty()) {
             val site = manager.getSite(mangaDB.host)
-
-            mangaDB.host = site.host
-            mangaDB.shortLink = mangaDB.shortLink
-
-            mangaDao.update(mangaDB)
+            mangaDao.update(mangaDB.copy(host = site.host, shortLink = mangaDB.shortLink))
         } else {
             val site = manager.getSite(mangaDB.host)
-
-            mangaDB.host = site.host
-
-            mangaDao.update(mangaDB)
+            mangaDao.update(mangaDB.copy(host = site.host))
         }
     }
 

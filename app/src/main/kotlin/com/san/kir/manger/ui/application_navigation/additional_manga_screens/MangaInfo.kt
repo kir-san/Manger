@@ -2,9 +2,6 @@ package com.san.kir.manger.ui.application_navigation.additional_manga_screens
 
 import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -14,7 +11,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -57,7 +53,7 @@ fun MangaInfoScreen(
             hasAction = isUpdate
         ),
     ) {
-        MangaInfoContent(vm, viewModel)
+        MangaInfoContent(vm)
     }
 
     LaunchedEffect(vm.item) {
@@ -80,7 +76,6 @@ fun MangaInfoScreen(
 @Composable
 private fun MangaInfoContent(
     vm: SiteCatalogItemViewModel,
-    viewModel: SuppotMangaViewModel,
     ctx: Context = LocalContext.current,
 ) {
     LabelText(R.string.manga_info_dialog_name)

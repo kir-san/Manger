@@ -53,7 +53,7 @@ class AllChapterDelete @AssistedInject constructor(
         val file = getFullPath(storageItem.path)
 
         storageDao.update(
-            storageItem.getSizeAndIsNew(file, false, chapterDao.itemsWhereMangaId(manga.id))
+            storageItem.getSizeAndIsNew(file, false, chapterDao.itemsByMangaId(manga.id))
         )
     }
 }

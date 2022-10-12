@@ -2,7 +2,7 @@ package com.san.kir.data.db.repositories
 
 import com.san.kir.data.db.dao.SettingsDao
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.last
 
 abstract class AbstractSettingsRepository(
     val settingsDao: SettingsDao
@@ -10,6 +10,6 @@ abstract class AbstractSettingsRepository(
 
     fun settings() = settingsDao.loadItems().filterNotNull()
 
-    suspend fun currentSettings() = settings().first()
+    suspend fun currentSettings() = settings().last()
 
 }

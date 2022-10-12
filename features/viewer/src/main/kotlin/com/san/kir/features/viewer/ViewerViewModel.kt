@@ -51,8 +51,8 @@ internal class ViewerViewModel @Inject constructor(
         if (isInitManager) return@defaultLaunch // единовременная инициализация
         isInitManager = true
 
-        val mangaName = chapterDao.getMangaName(chapterId)
-        val manga = mangaDao.itemByName(mangaName)
+        val mangaId = chapterDao.mangaIdById(chapterId)
+        val manga = mangaDao.itemById(mangaId)
 
         chaptersManager.init(manga, chapterId)
     }
@@ -121,8 +121,8 @@ internal class ViewerViewModel @Inject constructor(
 
     // Обновление списка страниц для текущей главы
     fun updatePagesForChapter() = viewModelScope.launch {
-        val chapter = chaptersManager.currentState.currentChapter
-        chapter.pages = siteCatalogManager.pages(chapter)
+        var chapter = chaptersManager.currentState.currentChapter
+        chapter = chapter.copy(pages = siteCatalogManager.pages(chapter))
         chapterDao.update(chapter)
         chaptersManager.updateCurrentChapter(chapter)
     }

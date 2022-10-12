@@ -19,6 +19,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.primarySurface
@@ -33,18 +34,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
+import com.san.kir.core.compose.animation.FromStartToStartAnimContent
 import com.san.kir.core.utils.TestTags
 import kotlinx.coroutines.launch
 
 @Composable
-fun PreparedTopBar(
-    navigationListener: () -> Unit = { },
+private fun PreparedTopBar(
     title: String = "",
-    subtitleContent: @Composable (() -> Unit)? = null,
+    subtitleContent: @Composable() (() -> Unit)? = null,
     subtitle: String = "",
     height: Dp = Dimensions.appBarHeight,
-    scaffoldState: ScaffoldState? = null,
-    actions: @Composable TopBarActions.() -> Unit = {},
+    navigationButton: NavigationButton,
+    actions: @Composable() (TopBarActions.() -> Unit) = {},
     hasAction: Boolean = false,
     backgroundColor: Color = MaterialTheme.colors.primarySurface,
 ) {
@@ -70,21 +71,28 @@ fun PreparedTopBar(
             },
             navigationIcon = {
                 Box(modifier = Modifier.startInsetsPadding()) {
-                    if (scaffoldState == null) {
-                        IconButton(
-                            modifier = Modifier.testTag(TestTags.Drawer.nav_back),
-                            onClick = navigationListener
-                        ) {
-                            Icon(Icons.Default.ArrowBack, "")
-                        }
-                    } else {
-                        IconButton(
-                            modifier = Modifier.testTag(TestTags.Drawer.drawer_open),
-                            onClick = {
-                                coroutineScope.launch {
-                                    scaffoldState.drawerState.open()
+                    FromStartToStartAnimContent(targetState = navigationButton) {
+                        when (it) {
+                            is NavigationButton.Back ->
+                                IconButton(
+                                    modifier = Modifier.testTag(TestTags.Drawer.nav_back),
+                                    onClick = it.onClick
+                                ) { Icon(Icons.Default.ArrowBack, "") }
+
+                            is NavigationButton.Close ->
+                                IconButton(onClick = it.onClick) {
+                                    Icon(Icons.Default.Close, "")
                                 }
-                            }) { Icon(Icons.Default.Menu, "") }
+
+                            is NavigationButton.Scaffold ->
+                                IconButton(
+                                    modifier = Modifier.testTag(TestTags.Drawer.drawer_open),
+                                    onClick = {
+                                        coroutineScope.launch {
+                                            it.state.drawerState.open()
+                                        }
+                                    }) { Icon(Icons.Default.Menu, "") }
+                        }
                     }
                 }
             },
@@ -113,9 +121,9 @@ fun topBar(
     title: String = "",
     subtitle: String = "",
     subtitleContent: @Composable (() -> Unit)? = null,
-    scaffoldState: ScaffoldState? = null,
     actions: @Composable TopBarActions.() -> Unit = {},
     navigationListener: () -> Unit = {},
+    navigationButton: NavigationButton = NavigationButton.Back(navigationListener),
     enableSearchField: Boolean = false,
     initSearchText: String = "",
     onSearchTextChange: (String) -> Unit = {},
@@ -126,13 +134,12 @@ fun topBar(
     Column(modifier = Modifier.fillMaxWidth()) {
         PreparedTopBar(
             title = title,
-            subtitle = subtitle,
             subtitleContent = subtitleContent,
-            scaffoldState = scaffoldState,
-            actions = actions,
-            navigationListener = navigationListener,
+            subtitle = subtitle,
             height = it,
+            actions = actions,
             backgroundColor = backgroundColor,
+            navigationButton = navigationButton
         )
 
         AnimatedVisibility(visible = enableSearchField) {
@@ -188,4 +195,10 @@ class TopBarActions internal constructor() {
             actions = actions,
         )
     }
+}
+
+sealed interface NavigationButton {
+    data class Scaffold(val state: ScaffoldState) : NavigationButton
+    data class Back(val onClick: () -> Unit) : NavigationButton
+    data class Close(val onClick: () -> Unit) : NavigationButton
 }

@@ -1,4 +1,4 @@
-package com.san.kir.features.latest.work
+package com.san.kir.background.works
 
 import android.content.Context
 import androidx.work.OneTimeWorkRequestBuilder

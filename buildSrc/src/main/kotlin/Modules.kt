@@ -5,7 +5,6 @@ open class NestedModule(private val base: String) {
 object Modules {
     object Features: NestedModule("features") {
         val viewer = module("viewer")
-        val latest = module("latest")
         val shikimori = module("shikimori")
         val chapters = module("chapters")
         val library = module("library")

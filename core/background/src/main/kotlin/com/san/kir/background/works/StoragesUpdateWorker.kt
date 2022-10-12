@@ -60,7 +60,7 @@ class StoragesUpdateWorker @AssistedInject constructor(
                     storage.getSizeAndIsNew(
                         file,
                         manga == null,
-                        manga?.let { chapterDao.itemsWhereMangaId(it.id) })
+                        manga?.let { chapterDao.itemsByMangaId(it.id) })
                 )
             }
         }.fold(

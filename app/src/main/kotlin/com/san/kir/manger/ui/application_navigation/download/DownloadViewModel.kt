@@ -50,7 +50,7 @@ class DownloadViewModel @Inject constructor(
         private set
 
     init {
-        chapterDao.loadDownloadItemsWhereStatusNot()
+        chapterDao.loadItemsByNotStatus()
             .distinctUntilChanged()
             .onEach {
                 withMainContext {
@@ -121,21 +121,21 @@ class DownloadViewModel @Inject constructor(
     fun clearCompletedDownloads() = viewModelScope.defaultLaunch {
         chapterDao.update(*items
             .filter { it.status == DownloadState.COMPLETED }
-            .onEach { it.status = DownloadState.UNKNOWN }
+            .map { it.copy(status = DownloadState.UNKNOWN) }
             .toTypedArray())
     }
 
     fun clearPausedDownloads() = viewModelScope.defaultLaunch {
         chapterDao.update(*items
             .filter { it.status == DownloadState.PAUSED && !it.isError }
-            .onEach { it.status = DownloadState.UNKNOWN }
+            .map { it.copy(status = DownloadState.UNKNOWN) }
             .toTypedArray())
     }
 
     fun clearErrorDownloads() = viewModelScope.defaultLaunch {
         chapterDao.update(*items
             .filter { it.status == DownloadState.PAUSED && it.isError }
-            .onEach { it.status = DownloadState.UNKNOWN }
+            .map { it.copy(status = DownloadState.UNKNOWN) }
             .toTypedArray())
     }
 
@@ -144,17 +144,16 @@ class DownloadViewModel @Inject constructor(
             .filter {
                 it.status == DownloadState.COMPLETED || it.status == DownloadState.PAUSED
             }
-            .onEach { it.status = DownloadState.UNKNOWN }
+            .map { it.copy(status = DownloadState.UNKNOWN) }
             .toTypedArray())
     }
 
-    fun manga(item: Chapter) = mangaDao.loadItemByName(item.manga).filterNotNull()
+    fun manga(item: Chapter) = mangaDao.loadItemById(item.mangaId).filterNotNull()
 
     fun remove(item: Chapter) = viewModelScope.defaultLaunch {
-        DownloadService.pause(ctx, item)
+        DownloadService.pause(ctx, item.id)
         delay(1.seconds)
-        item.status = DownloadState.UNKNOWN
-        chapterDao.update(item)
+        chapterDao.update(item.copy(status = DownloadState.UNKNOWN))
     }
 }
 

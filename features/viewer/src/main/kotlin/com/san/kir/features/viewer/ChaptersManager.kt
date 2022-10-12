@@ -48,7 +48,7 @@ internal class ChaptersManager @Inject constructor(
         get() = state.value
 
     suspend fun init(manga: Manga, chapterId: Long) = withDefaultContext {
-        val list = chapterDao.getItemsWhereManga(manga.name)
+        val list = chapterDao.itemsByMangaId(manga.id)
 
         val chapters =
             if (manga.isAlternativeSort) {
@@ -141,7 +141,7 @@ internal class ChaptersManager @Inject constructor(
 
     private suspend fun saveProgress(pos: Int) { // Сохранение позиции текущей главы
         var p = pos // скопировать позицию
-        val chapter = currentState.currentChapter
+        var chapter = currentState.currentChapter
 
         when {
             pos < 1 -> p = 1 // если меньше единицы значение, то приравнять к еденице
@@ -150,14 +150,13 @@ internal class ChaptersManager @Inject constructor(
                 Timber.v("size is ${currentState.pages.size}")
                 p = currentState.pages.size - 2
                 // Сделать главу прочитанной
-                chapter.isRead = true
+                chapter = chapter.copy(isRead = true)
             }
 
             pos >= currentState.pages.size - 2 -> return // Если больше максимального значения, ничего не делать
         }
         // Обновить позицию
-        chapter.progress = p
-        chapterDao.update(chapter)
+        chapterDao.update(chapter.copy(progress = p))
 
         // сохрание статистики
         if (pos > staticticPosition) {

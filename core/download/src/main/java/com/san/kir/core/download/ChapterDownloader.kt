@@ -14,7 +14,7 @@ import java.util.concurrent.Executors.newFixedThreadPool
 class ChapterDownloader(
     private val connectManager: ConnectManager,
     private val manager: SiteCatalogsManager,
-    private val task: Chapter,
+    private var task: Chapter,
     concurrent: Int,
     private val delegate: Delegate?
 ) {
@@ -34,10 +34,12 @@ class ChapterDownloader(
 
     suspend fun getDownloadItem(): Chapter {
         lock.withLock {
-            task.totalPages = totalPages
-            task.downloadPages = downloadPages
-            task.downloadSize = downloadSize
-            task.totalTime = totalTime
+            task = task.copy(
+                totalPages = totalPages,
+                downloadPages = downloadPages,
+                downloadSize = downloadSize,
+                totalTime = totalTime,
+            )
         }
         return task
     }

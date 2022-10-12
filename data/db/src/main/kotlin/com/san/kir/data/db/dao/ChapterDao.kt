@@ -4,93 +4,51 @@ import androidx.room.Dao
 import androidx.room.Query
 import com.san.kir.core.support.DownloadState
 import com.san.kir.data.models.base.Chapter
+import com.san.kir.data.models.extend.SimplifiedChapter
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ChapterDao : BaseDao<Chapter> {
-    @Query("SELECT * FROM chapters")
-    suspend fun items(): List<Chapter>
+    @Query("SELECT * FROM simple_chapter")
+    fun loadSimpleItems(): Flow<List<SimplifiedChapter>>
 
-    @Query(
-        "SELECT manga FROM chapters " +
-                "WHERE ${Chapter.Col.id} IS :chapterID"
-    )
-    suspend fun getMangaName(chapterID: Long): String
+    @Query("SELECT * FROM chapters WHERE isInUpdate=1 AND isRead=0")
+    fun loadNotReadItems(): Flow<List<Chapter>>
 
-    @Query(
-        "SELECT * FROM chapters " +
-                "WHERE ${Chapter.Col.id} IS :chapterID"
-    )
-    suspend fun itemWhereId(chapterID: Long): Chapter
-
-    @Query(
-        "SELECT * FROM chapters " +
-                "WHERE manga IS :manga"
-    )
-    suspend fun getItemsWhereManga(manga: String): List<Chapter>
-
-    @Query("SELECT * FROM chapters WHERE manga_id IS :mangaId")
-    suspend fun itemsWhereMangaId(mangaId: Long): List<Chapter>
-
-    @Query(
-        "SELECT * FROM chapters " +
-                "WHERE manga IS :manga"
-    )
-    fun loadItemsWhereManga(manga: String): Flow<List<Chapter>>
-
-    @Query(
-        "SELECT COUNT(*) FROM chapters " +
-                "WHERE manga IS :manga " +
-                "AND ${Chapter.Col.isRead} IS 0"
-    )
-    fun loadCountNotReadItemsWhereManga(manga: String): Flow<Int>
-
-    @Query(
-        "SELECT * FROM chapters " +
-                "WHERE ${Chapter.Col.link} IS :link"
-    )
-    suspend fun getItemWhereLink(link: String): Chapter?
-
-    @Query(
-        "SELECT * FROM chapters " +
-                "WHERE ${Chapter.Col.status} IS :status " +
-                "ORDER BY `${Chapter.Col.order}`"
-    )
-    suspend fun getItemsWhereStatus(status: DownloadState): List<Chapter>
-
-    @Query(
-        "SELECT * FROM chapters " +
-                "WHERE ${Chapter.Col.error} IS 0 " +
-                "ORDER BY `${Chapter.Col.order}`"
-    )
-    suspend fun getErrorItems(): List<Chapter>
-
-    @Query(
-        "SELECT * FROM chapters " +
-                "WHERE manga IS :manga " +
-                "AND ${Chapter.Col.isRead} IS 0 " +
-                "ORDER BY ${Chapter.Col.id} ASC"
-    )
-    suspend fun getItemsNotReadAsc(manga: String): List<Chapter>
+    @Query("SELECT COUNT(id) FROM chapters WHERE isInUpdate=1")
+    fun loadLatestCount(): Flow<Int>
 
     @Query("SELECT COUNT(id) FROM chapters WHERE status='QUEUED' OR status='LOADING'")
     fun loadDownloadCount(): Flow<Int>
 
-    @Query("SELECT COUNT(id) FROM chapters WHERE isInUpdate=1")
-    fun loadAllItemsCount(): Flow<Int>
+    @Query("SELECT * FROM chapters WHERE manga_id IS :mangaId")
+    fun loadItemsByMangaId(mangaId: Long): Flow<List<Chapter>>
 
-    @Query(
-        "SELECT * FROM chapters " +
-                "WHERE ${Chapter.Col.isInUpdate} IS 1 " +
-                "ORDER BY ${Chapter.Col.id} DESC"
-    )
-    fun loadAllItems(): Flow<List<Chapter>>
+    @Query("SELECT * FROM chapters WHERE status IS NOT :status ORDER BY status,ordering")
+    fun loadItemsByNotStatus(status: DownloadState = DownloadState.UNKNOWN): Flow<List<Chapter>>
 
-    @Query(
-        "SELECT * FROM chapters " +
-                "WHERE `${Chapter.Col.status}` IS NOT :status " +
-                "ORDER BY ${Chapter.Col.status},`${Chapter.Col.order}`"
-    )
-    fun loadDownloadItemsWhereStatusNot(status: DownloadState = DownloadState.UNKNOWN): Flow<List<Chapter>>
+    @Query("SELECT * FROM chapters")
+    suspend fun items(): List<Chapter>
+
+    @Query("SELECT * FROM chapters WHERE error IS 0 ORDER BY ordering")
+    suspend fun itemsByError(): List<Chapter>
+
+    @Query("SELECT * FROM chapters WHERE manga IS :mangaId")
+    suspend fun itemsByMangaId(mangaId: Long): List<Chapter>
+
+    @Query("SELECT * FROM chapters WHERE status IS :status ORDER BY ordering")
+    suspend fun itemsByStatus(status: DownloadState): List<Chapter>
+
+    @Query("SELECT * FROM chapters WHERE manga IS :mangaId AND isRead IS 0 ORDER BY id ASC")
+    suspend fun itemsNotReadByMangaId(mangaId: Long): List<Chapter>
+
+    @Query("SELECT * FROM chapters WHERE id IS :id")
+    suspend fun itemById(id: Long): Chapter
+
+    @Query("SELECT manga_id FROM chapters WHERE id IS :id")
+    suspend fun mangaIdById(id: Long): Long
+
+    @Query("UPDATE chapters SET isInUpdate=:isInUpdate WHERE id IN (:ids)")
+    suspend fun update(ids: List<Long>, isInUpdate: Boolean)
 }
 

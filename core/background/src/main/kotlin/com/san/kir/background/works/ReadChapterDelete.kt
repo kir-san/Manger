@@ -41,7 +41,7 @@ class ReadChapterDelete @AssistedInject constructor(
 
     private suspend fun deleteReadChapters(manga: Manga) {
         val chapters = chapterDao
-            .getItemsWhereManga(manga.name)
+            .itemsByMangaId(manga.id)
             .filter { chapter -> chapter.isRead }
             .map { it.path }
 
@@ -55,7 +55,7 @@ class ReadChapterDelete @AssistedInject constructor(
         val file = getFullPath(storageItem.path)
 
         storageDao.update(
-            storageItem.getSizeAndIsNew(file, false, chapterDao.getItemsWhereManga(manga.name))
+            storageItem.getSizeAndIsNew(file, false, chapterDao.itemsByMangaId(manga.id))
         )
     }
 }

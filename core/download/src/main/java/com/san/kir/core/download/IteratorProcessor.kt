@@ -48,9 +48,9 @@ class IteratorProcessor @Inject constructor(
     }
 
     private suspend fun getIterator(): Iterator<Chapter> {
-        var queuedList = chapterDao.getItemsWhereStatus(DownloadState.QUEUED)
+        var queuedList = chapterDao.itemsByStatus(DownloadState.QUEUED)
         if (isRetry) {
-            queuedList = queuedList + chapterDao.getErrorItems()
+            queuedList = queuedList + chapterDao.itemsByError()
         }
         return queuedList.iterator()
     }

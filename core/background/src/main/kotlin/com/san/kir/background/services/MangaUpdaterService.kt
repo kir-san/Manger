@@ -33,7 +33,6 @@ import com.san.kir.data.models.extend.SimplifiedManga
 import com.san.kir.data.parsing.SiteCatalogsManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 import javax.inject.Inject
@@ -167,6 +166,7 @@ class MangaUpdaterService : Service() {
                     sendBroadcast(tempIntent)
                     stopSelf()
                 }
+
                 else -> {
                     intent.getLongExtra("manga", -1).let { task ->
                         if (task != -1L) {
@@ -236,7 +236,7 @@ class MangaUpdaterService : Service() {
 
             // Получаем список глав из БД
             val oldChapters = withDefaultContext {
-                chapterDao.getItemsWhereManga(mangaDB.name)
+                chapterDao.itemsByMangaId(mangaDB.id)
             }
 
             /* Обновляем страницы в главах */
@@ -257,8 +257,7 @@ class MangaUpdaterService : Service() {
                             // Иначе обновляем путь
                             val tempChapter =
                                 oldChapters.first { oldChapter -> chapter.link == oldChapter.link }
-                            tempChapter.path = chapter.path
-                            chapterDao.update(tempChapter)
+                            chapterDao.update(tempChapter.copy(path = chapter.path))
                         }
                     }
                 }
@@ -269,10 +268,11 @@ class MangaUpdaterService : Service() {
                 // Разворачиваем список
                 newChapters.reversed().forEach { chapter ->
                     // Обновляем страницы и сохраняем
-                    if (chapter.pages.isEmpty())
-                        chapter.pages = manager.pages(chapter)
-                    chapter.isInUpdate = true
-                    chapterDao.insert(chapter)
+                    chapterDao.insert(
+                        chapter.copy(
+                            isInUpdate = true,
+                            pages = chapter.pages.ifEmpty { manager.pages(chapter) })
+                    )
                 }
                 val oldSize = oldChapters.size
 
@@ -281,7 +281,7 @@ class MangaUpdaterService : Service() {
                     searchDuplicate.silentRemoveDuplicate(mangaDB)
                 }
 
-                val newSize = chapterDao.getItemsWhereManga(mangaDB.name).size
+                val newSize = chapterDao.itemsByMangaId(mangaDB.id).size
 
                 // Узнаем сколько было добавленно
                 countNew = newSize - oldSize
@@ -321,14 +321,8 @@ class MangaUpdaterService : Service() {
                             || it.pages.any { chap -> chap.isBlank() }
                 }
                     // Получаем список страниц и сохраняем
-                    .onEach {
-                        launch(default) {
-                            it.pages = manager.pages(it)
-                        }.join()
-                    }
-                    .apply {
-                        chapterDao.update(*toTypedArray())
-                    }
+                    .map { it.copy(pages = manager.pages(it)) }
+                    .apply { chapterDao.update(*toTypedArray()) }
             }.onFailure { it.printStackTrace() }
         }
 

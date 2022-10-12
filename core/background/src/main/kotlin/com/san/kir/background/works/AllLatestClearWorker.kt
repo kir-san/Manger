@@ -1,4 +1,4 @@
-package com.san.kir.features.latest.work
+package com.san.kir.background.works
 
 import android.content.Context
 import androidx.hilt.work.HiltWorker
@@ -9,18 +9,18 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
 @HiltWorker
-class ReadLatestClearWorker @AssistedInject constructor(
+class AllLatestClearWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val chapterDao: ChapterDao,
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
-        kotlin.runCatching {
+        runCatching {
             chapterDao.update(
                 *chapterDao.items()
-                    .filter { it.isInUpdate && it.isRead }
-                    .onEach { it.isInUpdate = false }
+                    .filter { it.isInUpdate }
+                    .map { it.copy(isInUpdate = false) }
                     .toTypedArray()
             )
         }.fold(
@@ -34,3 +34,4 @@ class ReadLatestClearWorker @AssistedInject constructor(
         )
     }
 }
+

@@ -44,7 +44,7 @@ class MangaDeleteWorker @AssistedInject constructor(
 
         mangaDao.delete(manga)
 
-        with(chapterDao.getItemsWhereManga(manga.name)) {
+        with(chapterDao.itemsByMangaId(manga.id)) {
             chapterDao.delete(this)
         }
 

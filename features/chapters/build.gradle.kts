@@ -20,6 +20,9 @@ dependencies {
     implementation(project(Modules.Features.viewer))
 
     implementation(libs.lifecycle.viewmodel)
+    implementation(libs.lifecycle.livedata)
+
+    implementation(libs.collections.immutable)
 
     implementation(libs.timber)
 

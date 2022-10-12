@@ -1,9 +1,8 @@
 package com.san.kir.data.models.extend
 
-import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.room.ColumnInfo
 import androidx.room.DatabaseView
-import com.san.kir.data.models.base.Chapter
 
 @DatabaseView(
     viewName = "simple_manga",
@@ -21,12 +20,12 @@ import com.san.kir.data.models.base.Chapter
 
             "(SELECT COUNT(*) FROM chapters " +
             "WHERE chapters.manga IS manga.name " +
-            "AND chapters.${Chapter.Col.isRead} IS 0) " +
+            "AND chapters.isRead IS 0) " +
             "AS ${SimplifiedManga.Col.noReadChapters} " +
 
             "FROM manga"
 )
-@Immutable
+@Stable
 data class SimplifiedManga(
     @ColumnInfo(name = "id") val id: Long = 0,
     @ColumnInfo(name = Col.mangaName) val name: String = "",

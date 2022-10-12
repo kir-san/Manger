@@ -105,7 +105,7 @@ fun CatalogScreen(
         scaffoldState = scaffoldState,
         topBar = topBar(
             title = "${viewModel.siteName}: ${items.size}",
-            scaffoldState = scaffoldState,
+            navigationButton = NavigationButton.Scaffold(scaffoldState),
             actions = {
                 MenuIcon(Icons.Default.Search) { enableSearch = !enableSearch }
             },

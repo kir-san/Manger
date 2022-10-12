@@ -2,6 +2,7 @@ package com.san.kir.categories.ui.category
 
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.AlertDialog
@@ -228,7 +229,7 @@ private fun ChangeVisibility(isVisible: Boolean, sendEvent: (CategoryEvent) -> U
 }
 
 @Composable
-private fun ChangePortraitOptions(isLarge: Boolean, span: Int, sendEvent: (CategoryEvent) -> Unit) {
+private fun ColumnScope.ChangePortraitOptions(isLarge: Boolean, span: Int, sendEvent: (CategoryEvent) -> Unit) {
     CheckBoxText(
         state = isLarge,
         onChange = { sendEvent(CategoryEvent.Update(newLargePortrait = it)) },
@@ -246,7 +247,7 @@ private fun ChangePortraitOptions(isLarge: Boolean, span: Int, sendEvent: (Categ
 }
 
 @Composable
-private fun ChangeLandscapeOptions(
+private fun ColumnScope.ChangeLandscapeOptions(
     isLarge: Boolean,
     span: Int,
     sendEvent: (CategoryEvent) -> Unit

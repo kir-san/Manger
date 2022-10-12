@@ -37,7 +37,7 @@ internal class MainMenuRepository @Inject constructor(
                 storageDao.loadFullSize().map { it.toInt() },
                 categoryDao.loadItemsCount(),
                 chapterDao.loadDownloadCount(),
-                chapterDao.loadAllItemsCount(),
+                chapterDao.loadLatestCount(),
                 plannedDao.loadItemsCount()
             ) { Transition(it) }
         ) { items, site, transition ->

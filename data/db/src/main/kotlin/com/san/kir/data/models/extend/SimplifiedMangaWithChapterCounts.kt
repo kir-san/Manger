@@ -2,7 +2,6 @@ package com.san.kir.data.models.extend
 
 import androidx.room.ColumnInfo
 import androidx.room.DatabaseView
-import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.models.base.ShikimoriMangaItem
 
 @DatabaseView(
@@ -17,7 +16,7 @@ import com.san.kir.data.models.base.ShikimoriMangaItem
             "(SELECT COUNT(*) FROM chapters " +
             "WHERE chapters.manga IS " +
             "manga.name " +
-            "AND chapters.${Chapter.Col.isRead} IS 1) AS " +
+            "AND chapters.isRead IS 1) AS " +
             "read_chapters, " +
 
             "(SELECT COUNT(*) FROM chapters " +

@@ -45,7 +45,6 @@ android {
 
 dependencies {
     implementation(project(Modules.Features.viewer))
-    implementation(project(Modules.Features.latest))
     implementation(project(Modules.Features.shikimori))
     implementation(project(Modules.Features.chapters))
     implementation(project(Modules.Features.library))

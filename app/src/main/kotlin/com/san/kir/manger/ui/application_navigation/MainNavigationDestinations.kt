@@ -3,12 +3,11 @@ package com.san.kir.manger.ui.application_navigation
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.san.kir.background.services.MangaUpdaterService
+import com.san.kir.chapters.ui.latest.LatestScreen
 import com.san.kir.core.support.MainMenuType
-import com.san.kir.features.latest.LatestScreen
 import com.san.kir.features.viewer.MangaViewer
 import com.san.kir.manger.ui.MainActivity
 import com.san.kir.manger.ui.application_navigation.accounts.accountsNavGraph
@@ -57,8 +56,7 @@ enum class MainNavTarget(
 
             LatestScreen(
                 navigateUp = ::navigateUp,
-                navigateToViewer = { MangaViewer.start(context, it.id) },
-                viewModel = hiltViewModel()
+                navigateToViewer = { MangaViewer.start(context, it) },
             )
         }
     },

@@ -1,6 +1,7 @@
 package com.san.kir.data.models.base
 
 import android.os.Parcelable
+import androidx.compose.runtime.Stable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -11,89 +12,69 @@ import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.isEmptyDirectory
 import kotlinx.parcelize.Parcelize
 
+@Stable
 @Entity(tableName = "chapters")
 @Parcelize
 data class Chapter(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = Col.id)
-    var id: Long = 0,
+    @ColumnInfo(name = "id")
+    val id: Long = 0,
 
+    @Deprecated("not use", ReplaceWith("mangaId"))
     @ColumnInfo(name = "manga")
-    var manga: String = "",
+    val manga: String = "",
 
-    @ColumnInfo(name = Col.mangaId, defaultValue = "0")
-    var mangaId: Long = 0,
+    @ColumnInfo(name = "manga_id", defaultValue = "0")
+    val mangaId: Long = 0,
 
-    @ColumnInfo(name = Col.name)
-    var name: String = "",
+    @ColumnInfo(name = "name")
+    val name: String = "",
 
-    @ColumnInfo(name = Col.date)
-    var date: String = "",
+    @ColumnInfo(name = "date")
+    val date: String = "",
 
-    @ColumnInfo(name = Col.path)
-    var path: String = "",
+    @ColumnInfo(name = "path")
+    val path: String = "",
 
-    @ColumnInfo(name = Col.isRead)
-    var isRead: Boolean = false,
+    @ColumnInfo(name = "isRead")
+    val isRead: Boolean = false,
 
-    @ColumnInfo(name = Col.link)
-    var link: String = "",
+    @ColumnInfo(name = "site")
+    val link: String = "",
 
-    @ColumnInfo(name = Col.progress)
-    var progress: Int = 0,
+    @ColumnInfo(name = "progress")
+    val progress: Int = 0,
 
-    @ColumnInfo(name = Col.pages)
-    var pages: List<String> = listOf(),
+    @ColumnInfo(name = "pages")
+    val pages: List<String> = listOf(),
 
-    @ColumnInfo(name = Col.isInUpdate)
-    var isInUpdate: Boolean = false,
+    @ColumnInfo(name = "isInUpdate")
+    val isInUpdate: Boolean = false,
 
-    @ColumnInfo(name = Col.totalPages)
-    var totalPages: Int = 0,
+    @ColumnInfo(name = "totalPages")
+    val totalPages: Int = 0,
 
-    @ColumnInfo(name = Col.downloadPages)
-    var downloadPages: Int = 0,
+    @ColumnInfo(name = "downloadPages")
+    val downloadPages: Int = 0,
 
-    @ColumnInfo(name = Col.totalSize)
-    var totalSize: Long = 0L,
+    @ColumnInfo(name = "totalSize")
+    val totalSize: Long = 0L,
 
-    @ColumnInfo(name = Col.downloadSize)
-    var downloadSize: Long = 0L,
+    @ColumnInfo(name = "downloadSize")
+    val downloadSize: Long = 0L,
 
-    @ColumnInfo(name = Col.totalTime)
-    var totalTime: Long = 0L,
+    @ColumnInfo(name = "totalTime")
+    val totalTime: Long = 0L,
 
-    @ColumnInfo(name = Col.status)
-    var status: DownloadState = DownloadState.UNKNOWN,
+    @ColumnInfo(name = "status")
+    val status: DownloadState = DownloadState.UNKNOWN,
 
-    @ColumnInfo(name = Col.order)
-    var order: Long = 0,
+    @ColumnInfo(name = "ordering")
+    val order: Long = 0,
 
-    @ColumnInfo(name = Col.error)
-    var isError: Boolean = false
-) : Parcelable {
-
-    object Col {
-        const val id = "id"
-        const val mangaId = "manga_id"
-        const val name = "name"
-        const val date = "date"
-        const val path = "path"
-        const val isRead = "isRead"
-        const val link = "site"
-        const val progress = "progress"
-        const val pages = "pages"
-        const val isInUpdate = "isInUpdate"
-        const val totalPages = "totalPages"
-        const val downloadPages = "downloadPages"
-        const val totalSize = "totalSize"
-        const val downloadSize = "downloadSize"
-        const val totalTime = "totalTime"
-        const val status = "status"
-        const val order = "ordering"
-        const val error = "error"
-    }
-}
+    @ColumnInfo(name = "error")
+    val isError: Boolean = false
+) : Parcelable
 
 val Chapter.countPages: Int get() = getCountPagesForChapterInMemory(path)
 

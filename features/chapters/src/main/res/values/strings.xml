@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="main_menu_latest_count">Обновления: %d</string>
+
     <string name="list_chapters_selection_load_error">Все было скачано раньше</string>
     <string name="list_chapters_selection_load_ok">Качаю главы. Их всего %d</string>
     <string name="list_chapters_open_is_download">Спокойствие, только спокойствие! Скоро скачается.</string>
@@ -46,7 +48,6 @@
     <string name="action_full_delete_title">Внимание!!!</string>
     <string name="action_full_delete_message">Данное действие приведет к удалению глав из базы данных. Все файлы и папки будут не тронуты, но приложение больше не будет видеть эти главы. Рекомендуется использовать это при появлении копий существующих глав.</string>
 
-
     <plurals name="chapters">
         <item quantity="zero">глав</item>
         <item quantity="one">главу</item>
@@ -59,4 +60,9 @@
         <item quantity="one">%d выбран</item>
         <item quantity="other">%d выбрано</item>
     </plurals>
+
+    <string name="latest_chapter_clean_download">Очистить скачанное</string>
+    <string name="latest_chapter_clean_read">Очистить прочитанное</string>
+    <string name="latest_chapter_clean">Очистить</string>
+    <string name="latest_chapter_download_new">Скачать новое</string>
 </resources>

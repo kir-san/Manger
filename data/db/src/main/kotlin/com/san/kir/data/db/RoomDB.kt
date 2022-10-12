@@ -44,6 +44,7 @@ import com.san.kir.data.models.base.Statistic
 import com.san.kir.data.models.base.Storage
 import com.san.kir.data.models.extend.MiniManga
 import com.san.kir.data.models.extend.PlannedTaskExt
+import com.san.kir.data.models.extend.SimplifiedChapter
 import com.san.kir.data.models.extend.SimplifiedManga
 import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
 import com.san.kir.data.models.extend.SimplifiedStatistic
@@ -62,13 +63,14 @@ import timber.log.Timber
         ShikiDbManga::class,
         Settings::class
     ],
-    version = 51,
+    version = 52,
     views = [
         SimplifiedManga::class,
         SimplifiedMangaWithChapterCounts::class,
         PlannedTaskExt::class,
         MiniManga::class,
-        SimplifiedStatistic::class
+        SimplifiedStatistic::class,
+        SimplifiedChapter::class,
     ],
     autoMigrations = [
         AutoMigration(from = 41, to = 42), // SimplifiedManga add categoryId
@@ -77,6 +79,7 @@ import timber.log.Timber
         AutoMigration(from = 46, to = 47), // add table Settings
         AutoMigration(from = 47, to = 48), // add noRead field to view SimplifiedManga
         AutoMigration(from = 48, to = 49), // rename name field in view SimplifiedManga
+        AutoMigration(from = 51, to = 52), // add view SimplifiedChapters
     ]
 )
 @TypeConverters(

@@ -11,7 +11,6 @@ include(":data:db")
 include(":data:models")
 include(":data:parsing")
 
-include(":features:latest")
 include(":features:viewer")
 include(":features:shikimori")
 include(":features:chapters")

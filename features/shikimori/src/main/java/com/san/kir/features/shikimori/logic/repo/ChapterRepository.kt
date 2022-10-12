@@ -9,8 +9,8 @@ class ChapterRepository @Inject constructor(
     private val chapterDao: ChapterDao
 ) {
 
-    suspend fun itemsByManga(name: String) = withIoContext {
-        chapterDao.getItemsWhereManga(name)
+    suspend fun itemsByMangaId(mangaId: Long) = withIoContext {
+        chapterDao.itemsByMangaId(mangaId)
     }
 
     suspend fun update(items: List<Chapter>) = withIoContext {

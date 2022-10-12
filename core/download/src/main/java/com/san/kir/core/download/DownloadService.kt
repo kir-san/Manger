@@ -21,9 +21,11 @@ import com.san.kir.core.utils.bytesToMb
 import com.san.kir.core.utils.formatDouble
 import com.san.kir.core.utils.intentFor
 import com.san.kir.core.utils.startService
+import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.models.base.Chapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -39,15 +41,17 @@ class DownloadService : LifecycleService(), DownloadListener {
 
         private const val TAG = "DownloadService"
 
+        private const val ITEM = "item"
+
         fun startAll(ctx: Context) = startService<DownloadService>(ctx, ACTION_START_ALL)
 
-        fun start(ctx: Context, item: Chapter) =
-            startService<DownloadService>(ctx, ACTION_START, "item" to item)
+        fun start(ctx: Context, itemId: Long) =
+            startService<DownloadService>(ctx, ACTION_START, ITEM to itemId)
 
         fun pauseAll(ctx: Context) = startService<DownloadService>(ctx, ACTION_PAUSE_ALL)
 
-        fun pause(ctx: Context, item: Chapter) =
-            startService<DownloadService>(ctx, ACTION_PAUSE, "item" to item)
+        fun pause(ctx: Context, itemId: Long) =
+            startService<DownloadService>(ctx, ACTION_PAUSE, ITEM to itemId)
 
         //        MainNavTarget.Downloader.deepLink.toUri(),
         var actionGoToDownloads: PendingIntent? = null
@@ -68,6 +72,9 @@ class DownloadService : LifecycleService(), DownloadListener {
 
     @Inject
     lateinit var wifiNetwork: WifiNetwork
+
+    @Inject
+    lateinit var chapterDao: ChapterDao
 
     private val notificationManager by lazy { NotificationManagerCompat.from(this) }
 
@@ -167,19 +174,24 @@ class DownloadService : LifecycleService(), DownloadListener {
         when (intent?.action) {
             ACTION_PAUSE_ALL -> downloadManager.pauseAll()
             ACTION_PAUSE -> {
-                val item = intent.getParcelableExtra<Chapter>("item")
-                item?.let {
-                    downloadManager.pause(it)
+                val id = intent.getLongExtra(ITEM, -1L)
+                if (id != -1L) {
+                    lifecycleScope.launch {
+                        downloadManager.pause(chapterDao.itemById(id))
+                    }
                 }
             }
 
             ACTION_START_ALL -> downloadManager.startAll()
             ACTION_START -> {
-                val item = intent.getParcelableExtra<Chapter>("item")
-                item?.let {
-                    downloadManager.start(it)
+                val id = intent.getLongExtra(ITEM, -1L)
+                if (id != -1L) {
+                    lifecycleScope.launch {
+                        downloadManager.start(chapterDao.itemById(id))
+                    }
                 }
             }
+
             else -> super.onStartCommand(intent, flags, startId)
         }
         return START_NOT_STICKY
@@ -269,6 +281,7 @@ class DownloadService : LifecycleService(), DownloadListener {
                     setContentText(getString(R.string.download_service_complete_text_error))
                     setContentIntent(actionGoToDownloads)
                 }.build()
+
             queueCount == 0 && totalCount > 0 -> {
                 val builder = NotificationCompat.Builder(this, channelId).apply {
                     setSmallIcon(R.drawable.ic_notification_download)
@@ -282,6 +295,7 @@ class DownloadService : LifecycleService(), DownloadListener {
                 addSizeAndTimeLine(notify)
                 notify.build()
             }
+
             queueCount == 0 && totalCount == 0 ->
                 NotificationCompat.Builder(this, channelId).apply {
                     setSmallIcon(R.drawable.ic_notification_download)
@@ -289,6 +303,7 @@ class DownloadService : LifecycleService(), DownloadListener {
                     setContentText(getString(R.string.download_service_complete_text_paused))
                     setContentIntent(actionGoToDownloads)
                 }.build()
+
             else -> null
         }
 

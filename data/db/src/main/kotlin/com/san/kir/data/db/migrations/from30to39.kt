@@ -226,33 +226,31 @@ internal val from35to36 = migrate {
     from = 35
     to = 36
 
-    with(Chapter.Col) {
-        renameTableToTmp("chapters")
+    renameTableToTmp("chapters")
 
-        query(
-            "CREATE TABLE `chapters` (" +
-                    "$id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                    "manga TEXT NOT NULL, " +
-                    "$name TEXT NOT NULL, " +
-                    "$date TEXT NOT NULL, " +
-                    "$path TEXT NOT NULL, " +
-                    "$isRead INTEGER NOT NULL, " +
-                    "site TEXT NOT NULL, " +
-                    "$progress INTEGER NOT NULL, " +
-                    "$pages TEXT NOT NULL DEFAULT ``, " +
-                    "$isInUpdate INTEGER NOT NULL DEFAULT 0)"
-        )
+    query(
+        "CREATE TABLE `chapters` (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "manga TEXT NOT NULL, " +
+                "name TEXT NOT NULL, " +
+                "date TEXT NOT NULL, " +
+                "path TEXT NOT NULL, " +
+                "isRead INTEGER NOT NULL, " +
+                "site TEXT NOT NULL, " +
+                "progress INTEGER NOT NULL, " +
+                "pages TEXT NOT NULL DEFAULT ``, " +
+                "isInUpdate INTEGER NOT NULL DEFAULT 0)"
+    )
 
-        query(
-            "INSERT INTO chapters (" +
-                    "$id, manga, $name, $date, $path, $isRead, site, $progress, $pages, $isInUpdate) " +
-                    "SELECT " +
-                    "$id, manga, $name, $date, $path, $isRead, site, $progress, $pages, $isInUpdate " +
-                    "FROM $tmpTable"
-        )
+    query(
+        "INSERT INTO chapters (" +
+                "id, manga, name, date, path, isRead, site, progress, pages, isInUpdate) " +
+                "SELECT " +
+                "id, manga, name, date, path, isRead, site, progress, pages, isInUpdate " +
+                "FROM $tmpTable"
+    )
 
-        removeTmpTable()
-    }
+    removeTmpTable()
 }
 
 /*
@@ -263,41 +261,40 @@ internal val from35to36 = migrate {
 internal val from36to37 = migrate {
     from = 36
     to = 37
-    with(Chapter.Col) {
-        renameTableToTmp("chapters")
 
-        query(
-            "CREATE TABLE `chapters` (" +
-                    "$id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                    "manga TEXT NOT NULL, " +
-                    "$name TEXT NOT NULL, " +
-                    "$date TEXT NOT NULL, " +
-                    "$path TEXT NOT NULL, " +
-                    "$isRead INTEGER NOT NULL, " +
-                    "site TEXT NOT NULL, " +
-                    "$progress INTEGER NOT NULL, " +
-                    "$pages TEXT NOT NULL DEFAULT ``, " +
-                    "$isInUpdate INTEGER NOT NULL DEFAULT 0, " +
-                    "$totalPages INTEGER NOT NULL DEFAULT 0, " +
-                    "$downloadPages INTEGER NOT NULL DEFAULT 0, " +
-                    "$totalSize INTEGER NOT NULL DEFAULT 0, " +
-                    "$downloadSize INTEGER NOT NULL DEFAULT 0, " +
-                    "$totalTime INTEGER NOT NULL DEFAULT 0, " +
-                    "$status TEXT NOT NULL DEFAULT ${DownloadState.UNKNOWN.name}, " +
-                    "`order` INTEGER NOT NULL DEFAULT 0, " +
-                    "$error INTEGER NOT NULL DEFAULT 0)"
-        )
+    renameTableToTmp("chapters")
 
-        query(
-            "INSERT INTO chapters (" +
-                    "$id, manga, $name, $date, $path, $isRead, site, $progress, $pages, $isInUpdate) " +
-                    "SELECT " +
-                    "$id, manga, $name, $date, $path, $isRead, site, $progress, $pages, $isInUpdate " +
-                    "FROM $tmpTable"
-        )
+    query(
+        "CREATE TABLE `chapters` (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "manga TEXT NOT NULL, " +
+                "name TEXT NOT NULL, " +
+                "date TEXT NOT NULL, " +
+                "path TEXT NOT NULL, " +
+                "isRead INTEGER NOT NULL, " +
+                "site TEXT NOT NULL, " +
+                "progress INTEGER NOT NULL, " +
+                "pages TEXT NOT NULL DEFAULT ``, " +
+                "isInUpdate INTEGER NOT NULL DEFAULT 0, " +
+                "totalPages INTEGER NOT NULL DEFAULT 0, " +
+                "downloadPages INTEGER NOT NULL DEFAULT 0, " +
+                "totalSize INTEGER NOT NULL DEFAULT 0, " +
+                "downloadSize INTEGER NOT NULL DEFAULT 0, " +
+                "totalTime INTEGER NOT NULL DEFAULT 0, " +
+                "status TEXT NOT NULL DEFAULT ${DownloadState.UNKNOWN.name}, " +
+                "`order` INTEGER NOT NULL DEFAULT 0, " +
+                "error INTEGER NOT NULL DEFAULT 0)"
+    )
 
-        removeTmpTable()
-    }
+    query(
+        "INSERT INTO chapters (" +
+                "id, manga, name, date, path, isRead, site, progress, pages, isInUpdate) " +
+                "SELECT " +
+                "id, manga, name, date, path, isRead, site, progress, pages, isInUpdate " +
+                "FROM $tmpTable"
+    )
+
+    removeTmpTable()
 }
 
 /*
@@ -398,46 +395,44 @@ internal val from38to39 = migrate {
 
     removeTmpTable()
 
-    with(Chapter.Col) {
-        renameTableToTmp("chapters")
+    renameTableToTmp("chapters")
 
-        query(
-            "CREATE TABLE `chapters` (" +
-                    "$id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                    "manga TEXT NOT NULL, " +
-                    "$mangaId INTEGER NOT NULL DEFAULT 0, " +
-                    "$name TEXT NOT NULL, " +
-                    "$date TEXT NOT NULL, " +
-                    "$path TEXT NOT NULL, " +
-                    "$isRead INTEGER NOT NULL, " +
-                    "$link TEXT NOT NULL, " +
-                    "$progress INTEGER NOT NULL, " +
-                    "$pages TEXT NOT NULL DEFAULT ``, " +
-                    "$isInUpdate INTEGER NOT NULL, " +
-                    "$totalPages INTEGER NOT NULL, " +
-                    "$downloadPages INTEGER NOT NULL, " +
-                    "$totalSize INTEGER NOT NULL, " +
-                    "$downloadSize INTEGER NOT NULL, " +
-                    "$totalTime INTEGER NOT NULL, " +
-                    "$status TEXT NOT NULL, " +
-                    "$order INTEGER NOT NULL, " +
-                    "$error INTEGER NOT NULL)"
-        )
+    query(
+        "CREATE TABLE `chapters` (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "manga TEXT NOT NULL, " +
+                "manga_id INTEGER NOT NULL DEFAULT 0, " +
+                "name TEXT NOT NULL, " +
+                "date TEXT NOT NULL, " +
+                "path TEXT NOT NULL, " +
+                "isRead INTEGER NOT NULL, " +
+                "site TEXT NOT NULL, " +
+                "progress INTEGER NOT NULL, " +
+                "pages TEXT NOT NULL DEFAULT ``, " +
+                "isInUpdate INTEGER NOT NULL, " +
+                "totalPages INTEGER NOT NULL, " +
+                "downloadPages INTEGER NOT NULL, " +
+                "totalSize INTEGER NOT NULL, " +
+                "downloadSize INTEGER NOT NULL, " +
+                "totalTime INTEGER NOT NULL, " +
+                "status TEXT NOT NULL, " +
+                "ordering INTEGER NOT NULL, " +
+                "error INTEGER NOT NULL)"
+    )
 
-        query(
-            "INSERT INTO chapters (" +
-                    "$id, manga, $name, $date, $path, $isRead, $link, $progress, $pages, $isInUpdate, " +
-                    "$totalTime, $error, $totalSize, $downloadSize, $downloadPages, $totalPages, " +
-                    "$status, $order) " +
-                    "SELECT " +
-                    "$id, manga, $name, $date, $path, $isRead, $link, $progress, $pages, $isInUpdate, " +
-                    "$totalTime, $error, $totalSize, $downloadSize, $downloadPages, $totalPages, " +
-                    "$status, `order` " +
-                    "FROM $tmpTable"
-        )
+    query(
+        "INSERT INTO chapters (" +
+                "id, manga, name, date, path, isRead, site, progress, pages, isInUpdate, " +
+                "totalTime, error, totalSize, downloadSize, downloadPages, totalPages, " +
+                "status, ordering) " +
+                "SELECT " +
+                "id, manga, name, date, path, isRead, site, progress, pages, isInUpdate, " +
+                "totalTime, error, totalSize, downloadSize, downloadPages, totalPages, " +
+                "status, `order` " +
+                "FROM $tmpTable"
+    )
 
-        removeTmpTable()
-    }
+    removeTmpTable()
 
     query(
         "CREATE TABLE IF NOT EXISTS `shikimori` (" +
@@ -471,7 +466,7 @@ internal val from38to39 = migrate {
                 "(SELECT COUNT(*) FROM chapters " +
                 "WHERE chapters.manga IS " +
                 "manga.name " +
-                "AND chapters.${Chapter.Col.isRead} IS 1) AS read_chapters, " +
+                "AND chapters.isRead IS 1) AS read_chapters, " +
 
                 "(SELECT COUNT(*) FROM chapters " +
                 "WHERE chapters.manga IS " +

@@ -22,16 +22,16 @@ class ChapterLoader @Inject constructor(
     fun pause(task: Chapter) {
         job.post {
 
-            task.status = DownloadState.QUEUED
+            var task = task.copy(status = DownloadState.QUEUED)
             chapterDao.update(task)
 
             if (isDownloading(task.id)) {
                 cancelDownload(task.id)
             }
             if (canPauseDownload(task)) {
-                task.status = DownloadState.PAUSED
+                task = task.copy(status = DownloadState.PAUSED)
+                chapterDao.update(task)
             }
-            chapterDao.update(task)
 
             listeners.mainListener.onPaused(task)
         }
@@ -43,9 +43,11 @@ class ChapterLoader @Inject constructor(
                 cancelDownload(task.id)
             }
 
-            task.order = System.currentTimeMillis()
-            task.status = DownloadState.QUEUED
-            task.isError = false
+            var task = task.copy(
+                order = System.currentTimeMillis(),
+                status = DownloadState.QUEUED,
+                isError = false
+            )
 
             chapterDao.update(task)
 
@@ -63,10 +65,9 @@ class ChapterLoader @Inject constructor(
         job.post {
             val loading = chapterDao.items().filter { canPauseDownload(it) }
             if (loading.isNotEmpty()) {
-                loading.forEach {
-                    it.status = DownloadState.QUEUED
-                    chapterDao.update(it)
-                }
+                chapterDao.update(
+                    loading.map { it.copy(status = DownloadState.QUEUED) }
+                )
             }
 
             downloadManager.cancelAll()
@@ -74,12 +75,12 @@ class ChapterLoader @Inject constructor(
 
             val downloads = chapterDao.items().filter { canPauseDownload(it) }
             if (downloads.isNotEmpty()) {
-                downloads.forEach {
-                    it.status = DownloadState.PAUSED
+                val temp = downloads.map {
+                    it.copy(status = DownloadState.PAUSED)
                 }
-                chapterDao.update(*downloads.toTypedArray())
+                chapterDao.update(*temp.toTypedArray())
 
-                downloads.forEach {
+                temp.forEach {
                     listeners.mainListener.onPaused(it)
                 }
             }
@@ -88,15 +89,14 @@ class ChapterLoader @Inject constructor(
 
     fun startAll() {
         job.post {
-            val downloads =
-                chapterDao.items()
-                    .filter { canResumeDownload(it) }
+            val downloads = chapterDao.items().filter { canResumeDownload(it) }
             if (downloads.isNotEmpty()) {
-                downloads.forEach {
-                    it.status = DownloadState.QUEUED
-                    it.isError = false
-                }
-                chapterDao.update(*downloads.toTypedArray())
+                chapterDao.update(*downloads.map {
+                    it.copy(
+                        status = DownloadState.QUEUED,
+                        isError = false
+                    )
+                }.toTypedArray())
             }
 
             iteratorProcessor.start()

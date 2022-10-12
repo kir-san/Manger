@@ -25,7 +25,7 @@ class DownloadManagerDelegateImpl @Inject constructor(
     }
 
     override fun onStarted(item: Chapter) {
-        item.status = DownloadState.LOADING
+        val item = item.copy(status = DownloadState.LOADING)
         job.post {
             chapterDao.update(item)
         }
@@ -40,8 +40,10 @@ class DownloadManagerDelegateImpl @Inject constructor(
     }
 
     override fun onError(item: Chapter, cause: Throwable?) {
-        item.status = DownloadState.PAUSED
-        item.isError = true
+        val item = item.copy(
+            status = DownloadState.PAUSED,
+            isError = true,
+        )
         job.post {
             chapterDao.update(item)
         }
@@ -49,7 +51,7 @@ class DownloadManagerDelegateImpl @Inject constructor(
     }
 
     override suspend fun onComplete(item: Chapter) {
-        item.status = DownloadState.COMPLETED
+        val item = item.copy(status = DownloadState.COMPLETED)
         job.post {
             chapterDao.update(item)
         }

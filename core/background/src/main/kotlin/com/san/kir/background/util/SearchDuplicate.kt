@@ -13,7 +13,7 @@ class SearchDuplicate @Inject constructor(
     }
 
     private suspend fun searchDuplicate(manga: Manga): MutableList<List<Chapter>> {
-        val basicList = chapterDao.getItemsWhereManga(manga.name)
+        val basicList = chapterDao.itemsByMangaId(manga.id)
         val list = basicList.toMutableList()
 
         val allDuplicateList: MutableList<List<Chapter>> = mutableListOf()
@@ -41,10 +41,10 @@ class SearchDuplicate @Inject constructor(
 
     private suspend fun removeDuplicates(allDuplicateList: MutableList<List<Chapter>>) =
         allDuplicateList.forEach { chapterDuplicates ->
-            val first = chapterDuplicates.first()
             val last = chapterDuplicates.last()
-            first.isRead = last.isRead
-            first.progress = last.progress
+            val first = chapterDuplicates.first().copy(
+                isRead = last.isRead, progress = last.progress
+            )
 
             val removesChapters = chapterDuplicates - first
             chapterDao.delete(*removesChapters.toTypedArray())

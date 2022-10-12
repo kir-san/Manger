@@ -65,7 +65,7 @@ fun LibraryScreen(
             topBar = topBar(
                 title = stringResource(R.string.library_title),
                 actions = libraryActions(navigation.navigateToOnline, state),
-                scaffoldState = scaffoldState,
+                navigationButton = NavigationButton.Scaffold(scaffoldState),
                 hasAction = state.background is BackgroundState.Work
             ),
             additionalPadding = Dimensions.zero,

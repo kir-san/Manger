@@ -1,17 +1,15 @@
-package com.san.kir.features.latest.work
+package com.san.kir.background.works
 
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.san.kir.core.support.ChapterStatus
 import com.san.kir.data.db.dao.ChapterDao
-import com.san.kir.data.models.base.action
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
 @HiltWorker
-class DownloadedLatestClearWorker @AssistedInject constructor(
+class ReadLatestClearWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val chapterDao: ChapterDao,
@@ -21,9 +19,8 @@ class DownloadedLatestClearWorker @AssistedInject constructor(
         kotlin.runCatching {
             chapterDao.update(
                 *chapterDao.items()
-                    .filter { it.isInUpdate }
-                    .filter { it.action == ChapterStatus.DELETE }
-                    .onEach { it.isInUpdate = false }
+                    .filter { it.isInUpdate && it.isRead }
+                    .map { it.copy(isInUpdate = false) }
                     .toTypedArray()
             )
         }.fold(

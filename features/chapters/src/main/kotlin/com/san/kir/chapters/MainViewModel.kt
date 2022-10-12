@@ -160,7 +160,7 @@ class MainViewModel @Inject constructor(
     fun downloadSelectedItems() = viewModelScope.launch {
         selection.with(prepareChapters.value).forEach { (b, chapter) ->
             if (b && chapter.action == ChapterStatus.DOWNLOADABLE)
-                DownloadService.start(context, chapter)
+                DownloadService.start(context, chapter.id)
         }
         selection.clear()
     }
@@ -179,10 +179,7 @@ class MainViewModel @Inject constructor(
         chapterDao.update(
             selection.with(prepareChapters.value)
                 .filter { it.first }
-                .map { (_, chapter) ->
-                    chapter.isRead = state
-                    chapter
-                }
+                .map { (_, chapter) -> chapter.copy(isRead = state) }
         )
 
         selection.clear()
@@ -191,10 +188,7 @@ class MainViewModel @Inject constructor(
     // Обновление страниц для выделенных глав
     fun updatePagesForSelectedItems() = viewModelScope.launch {
         selection.with(prepareChapters.value).forEachIndexed { _, (b, chapter) ->
-            if (b) {
-                chapter.pages = manager.pages(chapter)
-                chapterDao.update(chapter)
-            }
+            if (b) chapterDao.update(chapter.copy(pages = manager.pages(chapter)))
         }
         selection.clear()
     }

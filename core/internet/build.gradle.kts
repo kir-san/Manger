@@ -2,6 +2,10 @@ plugins {
     id("base.library")
 }
 
+android {
+    namespace = "com.san.kir.core.internet"
+}
+
 dependencies {
     implementation(project(Modules.Core.utils))
 

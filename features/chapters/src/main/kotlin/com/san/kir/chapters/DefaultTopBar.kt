@@ -8,8 +8,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.san.kir.background.services.MangaUpdaterService
-import com.san.kir.core.compose_utils.TopBarActions
-import com.san.kir.core.compose_utils.topBar
+import com.san.kir.core.compose.TopBarActions
+import com.san.kir.core.compose.topBar
 import com.san.kir.data.models.base.Manga
 
 @Composable

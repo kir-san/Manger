@@ -32,11 +32,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.ScreenContent
-import com.san.kir.core.compose_utils.animation.VectorConverter
-import com.san.kir.core.compose_utils.horizontalInsetsPadding
-import com.san.kir.core.compose_utils.topBar
+import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.ScreenContent
+import com.san.kir.core.compose.animation.VectorConverter
+import com.san.kir.core.compose.horizontalInsetsPadding
+import com.san.kir.core.compose.topBar
 import com.san.kir.core.utils.format
 import com.san.kir.data.models.base.Storage
 import com.san.kir.storage.R

@@ -22,9 +22,9 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.endInsetsPadding
-import com.san.kir.core.compose_utils.systemBarBottomPadding
+import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.endInsetsPadding
+import com.san.kir.core.compose.systemBarBottomPadding
 import com.san.kir.core.utils.TestTags
 import com.san.kir.data.models.extend.CategoryWithMangas
 import com.san.kir.library.R

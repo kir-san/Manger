@@ -9,9 +9,9 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.san.kir.core.compose_utils.ScrollableTabs
-import com.san.kir.core.compose_utils.ScreenContent
-import com.san.kir.core.compose_utils.topBar
+import com.san.kir.core.compose.ScrollableTabs
+import com.san.kir.core.compose.ScreenContent
+import com.san.kir.core.compose.topBar
 import com.san.kir.manger.R
 
 @OptIn(ExperimentalPagerApi::class)

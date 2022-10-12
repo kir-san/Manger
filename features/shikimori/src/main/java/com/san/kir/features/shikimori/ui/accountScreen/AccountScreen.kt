@@ -39,11 +39,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.ScreenPadding
-import com.san.kir.core.compose_utils.SmallSpacer
-import com.san.kir.core.compose_utils.ToolbarProgress
-import com.san.kir.core.compose_utils.topBar
+import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.ScreenPadding
+import com.san.kir.core.compose.ToolbarProgress
+import com.san.kir.core.compose.topBar
 import com.san.kir.features.shikimori.R
 import com.san.kir.features.shikimori.logic.BackgroundTasks
 import com.san.kir.features.shikimori.logic.useCases.CanBind

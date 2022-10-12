@@ -26,10 +26,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.animation.BottomAnimatedVisibility
-import com.san.kir.core.compose_utils.horizontalInsetsPadding
-import com.san.kir.core.compose_utils.systemBarBottomPadding
+import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.animation.BottomAnimatedVisibility
+import com.san.kir.core.compose.horizontalInsetsPadding
+import com.san.kir.core.compose.systemBarBottomPadding
 import com.san.kir.data.models.extend.SimplifiedManga
 import com.san.kir.library.R
 import com.san.kir.library.ui.library.ItemsState

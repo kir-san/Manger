@@ -11,7 +11,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.san.kir.chapters.pages.chapterPages
-import com.san.kir.core.compose_utils.Tabs
+import com.san.kir.core.compose.Tabs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @OptIn(ExperimentalPagerApi::class, ExperimentalCoroutinesApi::class)

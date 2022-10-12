@@ -18,7 +18,7 @@ object Modules {
     object Core : NestedModule("core") {
         val support = module("support")
         val utils = module("utils")
-        val composeUtils = module("compose_utils")
+        val compose = module("compose")
         val internet = module("internet")
         val download = module("download")
         val background = module("background")

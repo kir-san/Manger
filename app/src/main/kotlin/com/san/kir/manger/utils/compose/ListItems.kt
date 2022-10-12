@@ -25,8 +25,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
+import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.systemBarsHorizontalPadding
 import com.san.kir.data.models.base.SiteCatalogElement
 import com.san.kir.manger.ui.SuppotMangaViewModel
 import com.san.kir.manger.ui.application_navigation.catalog.catalog.btnSizeAddUpdate

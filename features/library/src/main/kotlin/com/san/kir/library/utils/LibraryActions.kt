@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import com.san.kir.background.services.AppUpdateService
 import com.san.kir.background.services.MangaUpdaterService
-import com.san.kir.core.compose_utils.TopBarActions
+import com.san.kir.core.compose.TopBarActions
 import com.san.kir.library.R
 import com.san.kir.library.ui.library.ItemsState
 import com.san.kir.library.ui.library.LibraryState

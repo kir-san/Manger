@@ -16,11 +16,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.ScreenPadding
-import com.san.kir.core.compose_utils.horizontalAndBottomInsetsPadding
-import com.san.kir.core.compose_utils.rememberImage
-import com.san.kir.core.compose_utils.topBar
+import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.ScreenPadding
+import com.san.kir.core.compose.horizontalAndBottomInsetsPadding
+import com.san.kir.core.compose.rememberImage
+import com.san.kir.core.compose.topBar
 import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
 import com.san.kir.features.shikimori.R
 import com.san.kir.features.shikimori.logic.useCases.SyncState

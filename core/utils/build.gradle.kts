@@ -3,6 +3,10 @@ plugins {
     id(Plugins.kotlin)
 }
 
+android {
+    namespace = "com.san.kir.core.utils"
+}
+
 dependencies {
     implementation(project(Modules.Core.support))
 

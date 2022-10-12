@@ -11,9 +11,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
 import androidx.core.app.ComponentActivity
-import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.ScreenList
-import com.san.kir.core.compose_utils.topBar
+import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.ScreenList
+import com.san.kir.core.compose.topBar
 import com.san.kir.core.internet.ConnectManager
 import com.san.kir.core.internet.LocalConnectManager
 import com.san.kir.core.support.R

@@ -17,11 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.san.kir.core.compose_utils.CircleLogo
-import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.RemoveItemMenuOnHold
-import com.san.kir.core.compose_utils.ScreenList
-import com.san.kir.core.compose_utils.topBar
+import com.san.kir.core.compose.CircleLogo
+import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.RemoveItemMenuOnHold
+import com.san.kir.core.compose.ScreenList
+import com.san.kir.core.compose.topBar
 import com.san.kir.core.utils.TimeFormat
 import com.san.kir.data.models.extend.SimplifiedStatistic
 import com.san.kir.statistic.R

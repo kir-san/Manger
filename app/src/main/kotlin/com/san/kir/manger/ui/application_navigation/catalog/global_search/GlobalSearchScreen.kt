@@ -6,9 +6,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.ScreenList
-import com.san.kir.core.compose_utils.topBar
+import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.ScreenList
+import com.san.kir.core.compose.topBar
 import com.san.kir.manger.R
 import com.san.kir.manger.utils.compose.ListItem
 

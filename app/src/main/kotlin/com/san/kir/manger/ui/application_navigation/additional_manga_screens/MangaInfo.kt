@@ -15,11 +15,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.san.kir.core.compose_utils.DialogText
-import com.san.kir.core.compose_utils.ImageWithStatus
-import com.san.kir.core.compose_utils.LabelText
-import com.san.kir.core.compose_utils.ScreenContent
-import com.san.kir.core.compose_utils.topBar
+import com.san.kir.core.compose.DialogText
+import com.san.kir.core.compose.ImageWithStatus
+import com.san.kir.core.compose.LabelText
+import com.san.kir.core.compose.ScreenContent
+import com.san.kir.core.compose.topBar
 import com.san.kir.core.utils.browse
 import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.manger.R

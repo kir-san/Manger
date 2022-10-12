@@ -46,12 +46,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.san.kir.core.compose_utils.ExpandedMenu
-import com.san.kir.core.compose_utils.FullWeightSpacer
-import com.san.kir.core.compose_utils.ScreenPadding
-import com.san.kir.core.compose_utils.rememberImage
-import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
-import com.san.kir.core.compose_utils.topBar
+import com.san.kir.core.compose.ExpandedMenu
+import com.san.kir.core.compose.FullWeightSpacer
+import com.san.kir.core.compose.ScreenPadding
+import com.san.kir.core.compose.rememberImage
+import com.san.kir.core.compose.systemBarsHorizontalPadding
+import com.san.kir.core.compose.topBar
 import com.san.kir.core.download.DownloadService
 import com.san.kir.core.internet.NetworkState
 import com.san.kir.core.support.DownloadState
@@ -248,14 +248,14 @@ private fun ItemView(
         when (item.status) {
             DownloadState.PAUSED -> {
                 IconButton(onClick = {
-                    DownloadService.start(ctx, item)
+                    DownloadService.start(ctx, item.id)
                 }) {
                     Icon(Icons.Default.Download, contentDescription = "download button")
                 }
             }
             DownloadState.QUEUED, DownloadState.LOADING -> {
                 IconButton(onClick = {
-                    DownloadService.pause(ctx, item)
+                    DownloadService.pause(ctx, item.id)
                 }) {
                     Icon(Icons.Default.Close, contentDescription = "cancel download button")
                 }

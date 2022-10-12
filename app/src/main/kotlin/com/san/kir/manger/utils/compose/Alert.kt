@@ -12,8 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.san.kir.core.compose_utils.CheckBoxText
-import com.san.kir.core.compose_utils.RadioGroup
+import com.san.kir.core.compose.CheckBoxText
+import com.san.kir.core.compose.RadioGroup
 import com.san.kir.manger.R
 
 @Composable

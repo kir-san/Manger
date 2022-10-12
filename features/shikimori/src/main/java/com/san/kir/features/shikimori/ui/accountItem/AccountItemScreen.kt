@@ -25,10 +25,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.animation.FromEndToEndAnimContent
-import com.san.kir.core.compose_utils.horizontalInsetsPadding
-import com.san.kir.core.compose_utils.rememberImage
+import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.animation.FromEndToEndAnimContent
+import com.san.kir.core.compose.horizontalInsetsPadding
+import com.san.kir.core.compose.rememberImage
 import com.san.kir.features.shikimori.R
 import com.san.kir.features.shikimori.logic.api.ShikimoriData
 import com.san.kir.features.shikimori.ui.util.LogOutDialog

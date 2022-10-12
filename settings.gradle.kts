@@ -4,7 +4,7 @@ include(":core:utils")
 include(":core:support")
 include(":core:download")
 include(":core:internet")
-include(":core:compose_utils")
+include(":core:compose")
 include(":core:background")
 
 include(":data:db")

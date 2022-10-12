@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.san.kir.background">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application>
         <service android:name="com.san.kir.background.services.MangaUpdaterService" />

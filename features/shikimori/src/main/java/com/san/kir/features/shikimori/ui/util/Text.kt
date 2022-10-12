@@ -9,10 +9,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.Fonts
-import com.san.kir.core.compose_utils.Styles
-import com.san.kir.core.compose_utils.animation.FromBottomToBottomAnimContent
+import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.Fonts
+import com.san.kir.core.compose.Styles
+import com.san.kir.core.compose.animation.FromBottomToBottomAnimContent
 import com.san.kir.data.models.base.ShikimoriStatus
 import com.san.kir.features.shikimori.R
 import com.san.kir.features.shikimori.ui.accountItem.LoginState

@@ -19,7 +19,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.san.kir.background.services.MangaUpdaterService
-import com.san.kir.core.compose_utils.ScreenPadding
+import com.san.kir.core.compose.ScreenPadding
 import com.san.kir.data.models.base.Manga
 import com.san.kir.core.utils.longToast
 

@@ -32,11 +32,11 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.endInsetsPadding
-import com.san.kir.core.compose_utils.horizontalInsetsPadding
-import com.san.kir.core.compose_utils.rememberImage
-import com.san.kir.core.compose_utils.squareMaxSize
+import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.endInsetsPadding
+import com.san.kir.core.compose.horizontalInsetsPadding
+import com.san.kir.core.compose.rememberImage
+import com.san.kir.core.compose.squareMaxSize
 import com.san.kir.core.support.CATEGORY_ALL
 import com.san.kir.core.utils.TestTags
 import com.san.kir.data.models.extend.SimplifiedManga

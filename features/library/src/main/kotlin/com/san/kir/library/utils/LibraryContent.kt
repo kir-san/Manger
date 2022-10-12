@@ -10,8 +10,8 @@ import androidx.compose.ui.Modifier
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.san.kir.core.compose_utils.ScrollableTabs
-import com.san.kir.core.compose_utils.horizontalInsetsPadding
+import com.san.kir.core.compose.ScrollableTabs
+import com.san.kir.core.compose.horizontalInsetsPadding
 import com.san.kir.library.ui.library.ItemsState
 import com.san.kir.library.ui.library.LibraryEvent
 import com.san.kir.library.ui.library.LibraryNavigation

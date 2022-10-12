@@ -16,8 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.SmallSpacer
+import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.SmallSpacer
 import com.san.kir.features.shikimori.R
 import com.san.kir.features.shikimori.logic.SyncDialogEvent
 import com.san.kir.features.shikimori.logic.SyncDialogState

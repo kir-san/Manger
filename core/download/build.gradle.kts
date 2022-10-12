@@ -4,6 +4,10 @@ plugins {
     id(Plugins.hilt)
 }
 
+android {
+    namespace = "com.san.kir.core.download"
+}
+
 dependencies {
     implementation(project(Modules.Data.models))
     implementation(project(Modules.Core.utils))

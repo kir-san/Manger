@@ -9,7 +9,7 @@ android {
 }
 
 dependencies {
-    implementation(project(Modules.Core.composeUtils))
+    implementation(project(Modules.Core.compose))
     implementation(project(Modules.Core.utils))
     implementation(project(Modules.Core.support))
     implementation(project(Modules.Data.db))

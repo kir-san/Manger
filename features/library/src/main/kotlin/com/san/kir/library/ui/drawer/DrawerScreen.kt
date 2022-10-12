@@ -33,9 +33,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.startInsetsPadding
-import com.san.kir.core.compose_utils.systemBarBottomPadding
+import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.startInsetsPadding
+import com.san.kir.core.compose.systemBarBottomPadding
 import com.san.kir.core.support.MainMenuType
 import com.san.kir.core.utils.TestTags
 import com.san.kir.library.R

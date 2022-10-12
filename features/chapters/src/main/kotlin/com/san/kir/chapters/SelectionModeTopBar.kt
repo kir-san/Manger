@@ -12,8 +12,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import com.san.kir.chapters.pages.DeleteSelectedChaptersAlertDialog
 import com.san.kir.chapters.pages.FullDeleteChaptersAlertDialog
-import com.san.kir.core.compose_utils.TopBarActions
-import com.san.kir.core.compose_utils.topBar
+import com.san.kir.core.compose.TopBarActions
+import com.san.kir.core.compose.topBar
 import com.san.kir.core.utils.quantitySimple
 
 // AppBar для режима выделения

@@ -36,9 +36,9 @@ import com.google.accompanist.flowlayout.FlowCrossAxisAlignment
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.san.kir.background.services.MangaUpdaterService
-import com.san.kir.core.compose_utils.DialogText
-import com.san.kir.core.compose_utils.ScreenContent
-import com.san.kir.core.compose_utils.topBar
+import com.san.kir.core.compose.DialogText
+import com.san.kir.core.compose.ScreenContent
+import com.san.kir.core.compose.topBar
 import com.san.kir.manger.R
 import kotlinx.coroutines.delay
 

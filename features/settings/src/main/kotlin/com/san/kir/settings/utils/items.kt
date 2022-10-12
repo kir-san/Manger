@@ -30,12 +30,12 @@ import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.san.kir.core.compose_utils.CheckBoxText
-import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.RadioGroup
-import com.san.kir.core.compose_utils.SmallestSpacer
-import com.san.kir.core.compose_utils.endInsetsPadding
-import com.san.kir.core.compose_utils.startInsetsPadding
+import com.san.kir.core.compose.CheckBoxText
+import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.RadioGroup
+import com.san.kir.core.compose.SmallestSpacer
+import com.san.kir.core.compose.endInsetsPadding
+import com.san.kir.core.compose.startInsetsPadding
 import com.san.kir.settings.R
 import kotlinx.collections.immutable.ImmutableList
 

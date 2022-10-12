@@ -19,10 +19,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.ScreenContent
-import com.san.kir.core.compose_utils.bottomInsetsPadding
-import com.san.kir.core.compose_utils.topBar
+import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.ScreenContent
+import com.san.kir.core.compose.bottomInsetsPadding
+import com.san.kir.core.compose.topBar
 import com.san.kir.data.models.base.Settings
 import com.san.kir.settings.R
 import com.san.kir.settings.utils.ListPreferenceItem

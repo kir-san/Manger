@@ -24,10 +24,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
-import com.san.kir.core.compose_utils.LabelText
-import com.san.kir.core.compose_utils.RadioGroup
-import com.san.kir.core.compose_utils.ScreenContent
-import com.san.kir.core.compose_utils.topBar
+import com.san.kir.core.compose.LabelText
+import com.san.kir.core.compose.RadioGroup
+import com.san.kir.core.compose.ScreenContent
+import com.san.kir.core.compose.topBar
 import com.san.kir.core.support.PlannedPeriod
 import com.san.kir.core.support.PlannedType
 import com.san.kir.core.support.PlannedWeek

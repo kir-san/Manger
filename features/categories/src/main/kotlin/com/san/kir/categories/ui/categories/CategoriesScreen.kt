@@ -28,10 +28,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.san.kir.categories.R
-import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.ScreenList
-import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
-import com.san.kir.core.compose_utils.topBar
+import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.ScreenList
+import com.san.kir.core.compose.systemBarsHorizontalPadding
+import com.san.kir.core.compose.topBar
 import com.san.kir.data.models.base.Category
 
 @Composable

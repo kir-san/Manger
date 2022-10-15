@@ -9,8 +9,8 @@ internal data class LatestState(
     val items: ImmutableList<SelectableItem>,
     val hasNewChapters: Boolean,
     val hasBackgroundWork: Boolean,
-    val selectionMode: Boolean,
     val selectedCount: Int = items.count { it.selected },
+    val selectionMode: Boolean = selectedCount > 0,
 ) : ScreenState {
     override fun toString(): String {
         return "LatestState(items=${items.count()}, hasNewChapters=$hasNewChapters, " +

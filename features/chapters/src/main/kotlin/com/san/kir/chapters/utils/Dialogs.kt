@@ -1,4 +1,4 @@
-package com.san.kir.chapters.pages
+package com.san.kir.chapters.utils
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -23,7 +23,7 @@ import com.san.kir.background.util.collectWorkInfoByTag
 import com.san.kir.background.works.ChapterDeleteWorker
 import com.san.kir.background.works.ReadChapterDelete
 import com.san.kir.chapters.R
-import com.san.kir.core.compose_utils.Dimensions
+import com.san.kir.core.compose.Dimensions
 import com.san.kir.data.models.base.Manga
 
 private fun dismissButton(onClick: () -> Unit) = @Composable {

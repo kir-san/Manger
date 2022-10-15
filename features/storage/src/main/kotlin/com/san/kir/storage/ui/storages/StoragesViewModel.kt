@@ -15,9 +15,9 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -53,24 +53,23 @@ internal class StoragesViewModel @Inject constructor(
     }
 
     init {
-        viewModelScope.launch {
-            StoragesUpdateWorker.runTask(context)
+        StoragesUpdateWorker.runTask(context)
 
-            WorkManager.getInstance(context)
-                .getWorkInfosByTagLiveData(StoragesUpdateWorker.tag)
-                .asFlow()
-                .collectLatest { works ->
-                    if (works.isEmpty()) {
+        WorkManager.getInstance(context)
+            .getWorkInfosByTagLiveData(StoragesUpdateWorker.tag)
+            .asFlow()
+            .onEach { works ->
+                if (works.isEmpty()) {
+                    backgroundState.update { BackgroundState.None }
+                } else {
+                    if (works.all { it.state.isFinished }) {
                         backgroundState.update { BackgroundState.None }
                     } else {
-                        if (works.all { it.state.isFinished }) {
-                            backgroundState.update { BackgroundState.None }
-                        } else {
-                            backgroundState.update { BackgroundState.Load }
-                        }
+                        backgroundState.update { BackgroundState.Load }
                     }
                 }
-        }
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun Flow<List<Storage>>.findMangaForStorage(): Flow<List<Storage>> =

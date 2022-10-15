@@ -56,7 +56,7 @@ class DownloadManagerDelegateImpl @Inject constructor(
             chapterDao.update(item)
         }
 
-        val stat = statisticDao.itemByMangaId(item.id)
+        val stat = statisticDao.itemByMangaId(item.mangaId)
 
         job.post {
             statisticDao.update(

@@ -12,6 +12,14 @@ interface ChapterDao : BaseDao<Chapter> {
     @Query("SELECT * FROM simple_chapter")
     fun loadSimpleItems(): Flow<List<SimplifiedChapter>>
 
+    @Query(
+        "SELECT id, status, " +
+                "IIF(totalPages=0, totalPages,  downloadPages * 100/ chapters.totalPages) AS download_progress, " +
+                "progress, isRead, pages, name, '' AS manga, date, path " +
+                "FROM chapters WHERE manga_id=:mangaId"
+    )
+    fun loadSimpleItemsByMangaId(mangaId: Long): Flow<List<SimplifiedChapter>>
+
     @Query("SELECT * FROM chapters WHERE isInUpdate=1 AND isRead=0")
     fun loadNotReadItems(): Flow<List<Chapter>>
 
@@ -33,13 +41,13 @@ interface ChapterDao : BaseDao<Chapter> {
     @Query("SELECT * FROM chapters WHERE error IS 0 ORDER BY ordering")
     suspend fun itemsByError(): List<Chapter>
 
-    @Query("SELECT * FROM chapters WHERE manga IS :mangaId")
+    @Query("SELECT * FROM chapters WHERE manga_id IS :mangaId")
     suspend fun itemsByMangaId(mangaId: Long): List<Chapter>
 
     @Query("SELECT * FROM chapters WHERE status IS :status ORDER BY ordering")
     suspend fun itemsByStatus(status: DownloadState): List<Chapter>
 
-    @Query("SELECT * FROM chapters WHERE manga IS :mangaId AND isRead IS 0 ORDER BY id ASC")
+    @Query("SELECT * FROM chapters WHERE manga_id IS :mangaId AND isRead IS 0 ORDER BY id ASC")
     suspend fun itemsNotReadByMangaId(mangaId: Long): List<Chapter>
 
     @Query("SELECT * FROM chapters WHERE id IS :id")
@@ -49,6 +57,12 @@ interface ChapterDao : BaseDao<Chapter> {
     suspend fun mangaIdById(id: Long): Long
 
     @Query("UPDATE chapters SET isInUpdate=:isInUpdate WHERE id IN (:ids)")
-    suspend fun update(ids: List<Long>, isInUpdate: Boolean)
+    suspend fun updateIsInUpdate(ids: List<Long>, isInUpdate: Boolean)
+
+    @Query("UPDATE chapters SET isRead=:readStatus WHERE id IN (:ids)")
+    suspend fun updateIsRead(ids: List<Long>, readStatus: Boolean)
+
+    @Query("DELETE FROM chapters WHERE id IN (:ids)")
+    suspend fun deleteByIds(ids: List<Long>)
 }
 

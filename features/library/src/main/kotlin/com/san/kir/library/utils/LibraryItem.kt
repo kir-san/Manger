@@ -44,7 +44,7 @@ import com.san.kir.data.models.extend.SimplifiedManga
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LazyGridItemScope.LibraryLargeItem(
-    onClick: (String) -> Unit,
+    onClick: (Long) -> Unit,
     onLongClick: (SimplifiedManga) -> Unit,
     manga: SimplifiedManga,
     cat: String,
@@ -68,7 +68,7 @@ fun LazyGridItemScope.LibraryLargeItem(
             .fillMaxWidth()
             .combinedClickable(
                 onLongClick = { onLongClick(manga) },
-                onClick = { onClick(manga.name) })
+                onClick = { onClick(manga.id) })
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Box(modifier = Modifier.squareMaxSize()) {
@@ -122,7 +122,7 @@ fun LazyGridItemScope.LibraryLargeItem(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LazyItemScope.LibrarySmallItem(
-    onClick: (String) -> Unit,
+    onClick: (Long) -> Unit,
     onLongClick: (SimplifiedManga) -> Unit,
     manga: SimplifiedManga,
     cat: String,
@@ -144,7 +144,7 @@ fun LazyItemScope.LibrarySmallItem(
             .fillMaxWidth()
             .combinedClickable(
                 onLongClick = { onLongClick(manga) },
-                onClick = { onClick(manga.name) })
+                onClick = { onClick(manga.id) })
     ) {
         Row(
             modifier = Modifier

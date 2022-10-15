@@ -1,8 +1,10 @@
 package com.san.kir.core.compose
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,7 +42,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 private fun PreparedTopBar(
-    title: String = "",
+    titleContent: @Composable ColumnScope.() -> Unit,
     subtitleContent: @Composable() (() -> Unit)? = null,
     subtitle: String = "",
     height: Dp = Dimensions.appBarHeight,
@@ -50,11 +52,12 @@ private fun PreparedTopBar(
     backgroundColor: Color = MaterialTheme.colors.primarySurface,
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val color by animateColorAsState(targetValue = backgroundColor)
     Column(modifier = Modifier.fillMaxWidth()) {
         TopAppBar(
             title = {
                 Column {
-                    Text(text = title, maxLines = 1)
+                    titleContent()
 
                     ProvideTextStyle(value = MaterialTheme.typography.subtitle2) {
                         if (subtitleContent != null) {
@@ -105,7 +108,7 @@ private fun PreparedTopBar(
                     TopBarActions().actions()
                 }
             },
-            backgroundColor = backgroundColor,
+            backgroundColor = color,
         )
 
         if (hasAction)
@@ -119,6 +122,7 @@ private fun PreparedTopBar(
 @Composable
 fun topBar(
     title: String = "",
+    titleContent: @Composable ColumnScope.() -> Unit = { Text(text = title, maxLines = 1) },
     subtitle: String = "",
     subtitleContent: @Composable (() -> Unit)? = null,
     actions: @Composable TopBarActions.() -> Unit = {},
@@ -133,7 +137,7 @@ fun topBar(
 ): @Composable (Dp) -> Unit = {
     Column(modifier = Modifier.fillMaxWidth()) {
         PreparedTopBar(
-            title = title,
+            titleContent = titleContent,
             subtitleContent = subtitleContent,
             subtitle = subtitle,
             height = it,

@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -38,9 +37,7 @@ internal class LatestViewModel @Inject constructor(
     private var job: Job? = null
     private val hasBackground = MutableStateFlow(true)
     private val items = MutableStateFlow<PersistentList<SelectableItem>>(persistentListOf())
-    private val selectionMode = items
-        .map { items -> items.count { it.selected } > 0 }
-        .distinctUntilChanged()
+
     private val newItems = latestRepository
         .notReadItems
         .distinctUntilChanged()
@@ -67,13 +64,11 @@ internal class LatestViewModel @Inject constructor(
         items,
         newItems.onEach { runWorkersObserver() },
         hasBackground,
-        selectionMode,
-    ) { items, newItems, background, mode ->
+    ) { items, newItems, background ->
         LatestState(
             items = items,
             hasNewChapters = newItems.isNotEmpty(),
             hasBackgroundWork = background,
-            selectionMode = mode
         )
     }
 
@@ -81,7 +76,6 @@ internal class LatestViewModel @Inject constructor(
         items = persistentListOf(),
         hasNewChapters = false,
         hasBackgroundWork = true,
-        selectionMode = false
     )
 
     override suspend fun onEvent(event: LatestEvent) {

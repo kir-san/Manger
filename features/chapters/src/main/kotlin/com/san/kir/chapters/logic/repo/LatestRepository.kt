@@ -11,5 +11,5 @@ class LatestRepository @Inject constructor(
     val notReadItems = chapterDao.loadNotReadItems()
 
     suspend fun update(items: List<Long>, isInUpdate: Boolean) =
-        withIoContext { chapterDao.update(items, isInUpdate) }
+        withIoContext { chapterDao.updateIsInUpdate(items, isInUpdate) }
 }

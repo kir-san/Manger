@@ -1,10 +1,11 @@
 package com.san.kir.manger.ui.application_navigation
 
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import com.san.kir.chapters.ChaptersScreen
+import com.san.kir.chapters.ui.chapters.ChaptersScreen
 import com.san.kir.core.support.MainMenuType
+import com.san.kir.features.viewer.MangaViewer
 import com.san.kir.library.ui.addOnline.AddOnlineScreen
 import com.san.kir.library.ui.library.LibraryNavigation
 import com.san.kir.library.ui.library.LibraryScreen
@@ -37,8 +38,17 @@ enum class LibraryNavTarget : NavTarget {
     },
 
     Chapters {
-        override val content = navTarget(route = "chapters", hasItems = true) {
-            ChaptersScreen(hiltViewModel(), stringElement ?: "", ::navigateUp)
+        override val content = navTarget(
+            route = "chapters",
+            hasItems = true,
+            arguments = listOf(navLongArgument())
+        ) {
+            val context = LocalContext.current
+            ChaptersScreen(
+                navigateUp = ::navigateUp,
+                navigateToViewer = { MangaViewer.start(context, it) },
+                mangaId = longElement ?: -1L
+            )
         }
     },
 

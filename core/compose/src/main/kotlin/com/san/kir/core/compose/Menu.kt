@@ -8,7 +8,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 
 class ExpandedMenuScope internal constructor(
     private val onCloseMenu: () -> Unit,
@@ -45,7 +44,7 @@ class ExpandedMenuScope internal constructor(
                     onClick()
                     onCloseMenu()
                 },
-                modifier = Modifier.padding(end = 16.dp)
+                modifier = Modifier.padding(end = Dimensions.smaller)
             )
             Text(stringResource(id))
         }

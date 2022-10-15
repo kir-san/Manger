@@ -63,7 +63,7 @@ import timber.log.Timber
         ShikiDbManga::class,
         Settings::class
     ],
-    version = 52,
+    version = 54,
     views = [
         SimplifiedManga::class,
         SimplifiedMangaWithChapterCounts::class,
@@ -80,6 +80,8 @@ import timber.log.Timber
         AutoMigration(from = 47, to = 48), // add noRead field to view SimplifiedManga
         AutoMigration(from = 48, to = 49), // rename name field in view SimplifiedManga
         AutoMigration(from = 51, to = 52), // add view SimplifiedChapters
+        AutoMigration(from = 52, to = 53), // add new field to view SimplifiedChapters
+        AutoMigration(from = 53, to = 54), // add new field to view SimplifiedChapters
     ]
 )
 @TypeConverters(

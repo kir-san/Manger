@@ -20,6 +20,30 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
+fun <S> FromTopToTopAnimContent(
+    targetState: S,
+    modifier: Modifier = Modifier,
+    contentAlignment: Alignment = Alignment.TopStart,
+    content: @Composable AnimatedVisibilityScope.(targetState: S) -> Unit
+) {
+    AnimatedContent(
+        targetState = targetState,
+        modifier = modifier,
+        contentAlignment = contentAlignment,
+        content = content,
+        transitionSpec = {
+            slideInVertically(
+                animationSpec = tween(400),
+                initialOffsetY = { fullHeight -> -fullHeight }
+            ) with slideOutVertically(
+                animationSpec = tween(200),
+                targetOffsetY = { fullHeight -> -fullHeight }
+            )
+        }
+    )
+}
+
+@Composable
 fun <S> FromBottomToBottomAnimContent(
     targetState: S,
     modifier: Modifier = Modifier,

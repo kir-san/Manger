@@ -56,6 +56,6 @@ data class LibraryNavigation(
     val navigateToInfo: (Long) -> Unit,
     val navigateToStorage: (Long) -> Unit,
     val navigateToStats: (Long) -> Unit,
-    val navigateToChapters: (String) -> Unit,
+    val navigateToChapters: (Long) -> Unit,
     val navigateToOnline: () -> Unit,
 )

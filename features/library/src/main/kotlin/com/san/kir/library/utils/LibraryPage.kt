@@ -80,7 +80,7 @@ private fun EmptyView(navigateToCatalogs: () -> Unit) {
 
 @Composable
 private fun PageView(
-    navigateToChapters: (String) -> Unit,
+    navigateToChapters: (Long) -> Unit,
     item: CategoryWithMangas,
     showCategory: Boolean,
     sendEvent: (LibraryEvent) -> Unit,

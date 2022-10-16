@@ -9,6 +9,7 @@ internal sealed interface LatestEvent : ScreenEvent {
     object CleanRead : LatestEvent
     object CleanDownloaded : LatestEvent
     object RemoveSelected : LatestEvent
+    object DownloadSelected : LatestEvent
     object UnselectAll : LatestEvent
     data class ChangeSelect(val index: Int) : LatestEvent
     data class StartDownload(val id: Long) : LatestEvent

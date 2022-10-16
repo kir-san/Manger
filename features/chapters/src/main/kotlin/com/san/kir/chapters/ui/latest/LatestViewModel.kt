@@ -85,6 +85,7 @@ internal class LatestViewModel @Inject constructor(
             LatestEvent.CleanRead -> LatestClearWorkers.clearReaded(context)
             LatestEvent.DownloadNew -> downloadNewChapters()
             LatestEvent.RemoveSelected -> removeSelected()
+            LatestEvent.DownloadSelected -> downloadSelected()
             LatestEvent.UnselectAll -> unselect()
             is LatestEvent.ChangeSelect -> changeSelect(event.index)
             is LatestEvent.StartDownload -> DownloadService.start(context, event.id)
@@ -102,6 +103,12 @@ internal class LatestViewModel @Inject constructor(
 
     private suspend fun removeSelected() {
         latestRepository.update(items.value.filter { it.selected }.map { it.chapter.id }, false)
+    }
+
+    private fun downloadSelected() {
+        items.value.filter { it.selected }.forEach {
+            DownloadService.start(context, it.chapter.id)
+        }
     }
 
     private fun changeSelect(index: Int) {

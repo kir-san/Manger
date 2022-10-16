@@ -76,6 +76,8 @@ fun Modifier.endInsetsPadding() = composed { windowInsetsPadding(endInsets()) }
 
 @Composable
 fun horizontalAndBottomInsetsPadding() = horizontalInsets().add(bottomInsets()).asPaddingValues()
+@Composable
+fun bottomInsetsPadding() = bottomInsets().asPaddingValues()
 
 
 

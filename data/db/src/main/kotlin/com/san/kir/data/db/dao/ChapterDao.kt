@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import com.san.kir.core.support.DownloadState
 import com.san.kir.data.models.base.Chapter
+import com.san.kir.data.models.extend.DownloadChapter
 import com.san.kir.data.models.extend.SimplifiedChapter
 import kotlinx.coroutines.flow.Flow
 
@@ -23,17 +24,21 @@ interface ChapterDao : BaseDao<Chapter> {
     @Query("SELECT * FROM chapters WHERE isInUpdate=1 AND isRead=0")
     fun loadNotReadItems(): Flow<List<Chapter>>
 
-    @Query("SELECT COUNT(id) FROM chapters WHERE isInUpdate=1")
+    @Query("SELECT COUNT(id) FROM simple_chapter")
     fun loadLatestCount(): Flow<Int>
 
     @Query("SELECT COUNT(id) FROM chapters WHERE status='QUEUED' OR status='LOADING'")
     fun loadDownloadCount(): Flow<Int>
 
-    @Query("SELECT * FROM chapters WHERE manga_id IS :mangaId")
-    fun loadItemsByMangaId(mangaId: Long): Flow<List<Chapter>>
-
-    @Query("SELECT * FROM chapters WHERE status IS NOT :status ORDER BY status,ordering")
-    fun loadItemsByNotStatus(status: DownloadState = DownloadState.UNKNOWN): Flow<List<Chapter>>
+    @Query(
+        "SELECT chapters.id, chapters.name, manga.name AS manga, manga.logo AS logo, " +
+                "chapters.status, chapters.totalTime, chapters.downloadSize, chapters.downloadPages, " +
+                "chapters.totalPages, chapters.error " +
+                "FROM chapters JOIN manga ON chapters.manga_id=manga.id " +
+                "WHERE chapters.status IS NOT :status " +
+                "ORDER BY chapters.status,chapters.ordering"
+    )
+    fun loadItemsByNotStatus(status: DownloadState = DownloadState.UNKNOWN): Flow<List<DownloadChapter>>
 
     @Query("SELECT * FROM chapters")
     suspend fun items(): List<Chapter>
@@ -61,6 +66,9 @@ interface ChapterDao : BaseDao<Chapter> {
 
     @Query("UPDATE chapters SET isRead=:readStatus WHERE id IN (:ids)")
     suspend fun updateIsRead(ids: List<Long>, readStatus: Boolean)
+
+    @Query("UPDATE chapters SET status=:status WHERE id IN (:ids)")
+    suspend fun updateStatus(ids: List<Long>, status: DownloadState = DownloadState.UNKNOWN)
 
     @Query("DELETE FROM chapters WHERE id IN (:ids)")
     suspend fun deleteByIds(ids: List<Long>)

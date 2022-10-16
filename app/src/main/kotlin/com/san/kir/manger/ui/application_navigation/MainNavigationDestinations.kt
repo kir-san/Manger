@@ -6,13 +6,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.san.kir.background.services.MangaUpdaterService
+import com.san.kir.chapters.ui.download.DownloadsScreen
 import com.san.kir.chapters.ui.latest.LatestScreen
 import com.san.kir.core.support.MainMenuType
 import com.san.kir.features.viewer.MangaViewer
 import com.san.kir.manger.ui.MainActivity
 import com.san.kir.manger.ui.application_navigation.accounts.accountsNavGraph
 import com.san.kir.manger.ui.application_navigation.catalog.catalogsNavGraph
-import com.san.kir.manger.ui.application_navigation.download.DownloadScreen
 import com.san.kir.manger.ui.application_navigation.schedule.scheduleNavGraph
 import com.san.kir.manger.utils.compose.NavTarget
 import com.san.kir.manger.utils.compose.composable
@@ -41,7 +41,7 @@ enum class MainNavTarget(
 
     Downloader(MainMenuType.Downloader) {
         override val content = navTarget(route = "downloader", hasDeepLink = true) {
-            DownloadScreen(::navigateUp)
+            DownloadsScreen(::navigateUp)
         }
     },
 

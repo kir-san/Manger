@@ -15,6 +15,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -120,8 +121,10 @@ private fun latestActions(
 ): @Composable TopBarActions.() -> Unit = {
     FromEndToEndAnimContent(targetState = selectionMode) {
         when (it) {
-            true ->
+            true -> Row {
                 MenuIcon(Icons.Default.Delete) { sendEvent(LatestEvent.RemoveSelected) }
+                MenuIcon(Icons.Default.Download) { sendEvent(LatestEvent.DownloadSelected) }
+            }
 
             false ->
                 ExpandedMenu {

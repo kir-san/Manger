@@ -33,7 +33,11 @@ abstract class TemplateNetwork(
 ) : ConnectivityManager.NetworkCallback() {
 
     private val request =
-        NetworkRequest.Builder().addTransportType(networkTransport).build()
+        NetworkRequest
+            .Builder()
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .addTransportType(networkTransport)
+            .build()
 
     private val _state = MutableStateFlow(false)
     val state = _state.asStateFlow()

@@ -12,10 +12,10 @@ class SettingsRepository @Inject constructor(
 ) : AbstractSettingsRepository(settingsDao) {
 
     suspend fun currentChapters() = currentSettings().chapters
-    private val chapters = settings().map { it.chapters }
 
-    val showTitle = chapters.map { it.isTitle }
-    val isIndividual = chapters.map { it.isIndividual }
+    val wifi = settings().map { it.download.wifi }
+    val showTitle = settings().map { it.chapters.isTitle }
+    val isIndividual = settings().map { it.chapters.isIndividual }
 
     suspend fun update(newFilter: ChapterFilter) = withIoContext {
         settingsDao.update(

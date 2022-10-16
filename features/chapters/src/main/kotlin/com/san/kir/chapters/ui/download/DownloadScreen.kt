@@ -47,6 +47,7 @@ import com.san.kir.core.compose.CircleLogo
 import com.san.kir.core.compose.Dimensions
 import com.san.kir.core.compose.ExpandedMenu
 import com.san.kir.core.compose.FullWeightSpacer
+import com.san.kir.core.compose.NavigationButton
 import com.san.kir.core.compose.ScreenContent
 import com.san.kir.core.compose.animation.FromBottomToBottomAnimContent
 import com.san.kir.core.compose.animation.FromTopToTopAnimContent
@@ -64,7 +65,7 @@ fun DownloadsScreen(navigateUp: () -> Unit) {
 
     ScreenContent(
         topBar = topBar(
-            navigationListener = navigateUp,
+            navigationButton = NavigationButton.Back(navigateUp),
             title = stringResource(R.string.main_menu_downloader_count, state.loadingCount),
             subtitle = stringResource(
                 R.string.download_activity_subtitle, state.stoppedCount, state.completedCount

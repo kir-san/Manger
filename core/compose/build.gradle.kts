@@ -12,6 +12,8 @@ dependencies {
 
     api(libs.bundles.compose)
     api(libs.bundles.accompanist)
+    api(libs.collections.immutable)
+
     implementation(libs.core)
     implementation(libs.timber)
 }

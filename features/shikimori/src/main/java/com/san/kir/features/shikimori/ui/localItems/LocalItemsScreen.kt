@@ -20,6 +20,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.NavigationButton
 import com.san.kir.core.compose.ScreenPadding
 import com.san.kir.core.compose.topBar
 import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
@@ -37,7 +38,7 @@ fun LocalItemsScreen(
 
     ScreenPadding(
         topBar = topBar(
-            navigationListener = navigateUp,
+            navigationButton = NavigationButton.Back(navigateUp),
             title = stringResource(R.string.local_items_title),
             subtitle = stringResource(R.string.local_items_subtitle, state.unbind.count()),
             hasAction = state.action.checkBind,

@@ -36,6 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.NavigationButton
 import com.san.kir.core.compose.ScreenPadding
 import com.san.kir.core.compose.ToolbarProgress
 import com.san.kir.core.compose.topBar
@@ -107,7 +108,7 @@ private fun topBar(
     state: LoginState,
     hasAction: BackgroundTasks,
 ) = topBar(
-    navigationListener = navigateUp,
+    navigationButton = NavigationButton.Back(navigateUp),
     title = stringResource(R.string.site_name),
     subtitleContent = { TextLoginOrNot(state) },
     actions = {

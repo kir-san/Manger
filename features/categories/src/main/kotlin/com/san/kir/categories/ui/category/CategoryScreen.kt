@@ -30,6 +30,7 @@ import com.san.kir.categories.R
 import com.san.kir.core.compose.CheckBoxText
 import com.san.kir.core.compose.DefaultSpacer
 import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.NavigationButton
 import com.san.kir.core.compose.RadioGroup
 import com.san.kir.core.compose.ScreenContent
 import com.san.kir.core.compose.SmallSpacer
@@ -57,7 +58,7 @@ fun CategoryScreen(
                 if (state.hasCreatedNew) R.string.category_dialog_title_create
                 else R.string.category_dialog_title_edit
             ),
-            navigationListener = navigateUp,
+            navigationButton = NavigationButton.Back(navigateUp),
             actions = {
                 if (state.hasChanges and hasError.not())
                     MenuIcon(

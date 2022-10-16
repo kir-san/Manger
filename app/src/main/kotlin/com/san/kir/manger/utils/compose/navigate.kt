@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.core.net.toUri
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
@@ -17,6 +18,7 @@ import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import com.google.accompanist.navigation.animation.composable
 import timber.log.Timber
+import kotlin.reflect.KFunction0
 
 // Ключ по которому передаются аргументы
 internal const val itemKey = "sended_item"
@@ -118,15 +120,25 @@ fun NavGraphBuilder.navigation(
 
 // Простой доступ к управлению навигацией для экранов
 interface ContentScope {
+
     fun navigateUp()
     fun navigate(target: NavTarget)
     fun navigate(target: NavTarget, vararg dest: Any)
+
+    @Composable
     fun longElement(itemKey: String): Long?
+
+    @Composable
     fun stringElement(itemKey: String): String?
+
+    @Composable
     fun booleanElement(itemKey: String): Boolean?
     val stringElement: String?
     val longElement: Long?
     val booleanElement: Boolean?
+
+    @Composable
+    fun up(): KFunction0<Unit> = remember { ::navigateUp }
 }
 
 fun NavHostController.navigate(target: NavTarget, vararg dest: Any = emptyArray()) {
@@ -153,17 +165,14 @@ internal class ContentScopeImpl(
         nav.navigate(target, *dest)
     }
 
-    override fun longElement(itemKey: String): Long? {
-        return back.longElement(itemKey)
-    }
+    @Composable
+    override fun longElement(itemKey: String): Long? = remember { back.longElement(itemKey) }
 
-    override fun stringElement(itemKey: String): String? {
-        return back.stringElement(itemKey)
-    }
+    @Composable
+    override fun stringElement(itemKey: String): String? = remember { back.stringElement(itemKey) }
 
-    override fun booleanElement(itemKey: String): Boolean? {
-        return back.boolElement(itemKey)
-    }
+    @Composable
+    override fun booleanElement(itemKey: String): Boolean? = remember { back.boolElement(itemKey) }
 
     override val stringElement: String?
         get() = back.stringElement()
@@ -186,8 +195,7 @@ fun navTarget(
 ): NavTargetContent {
     return object : NavTargetContent {
         override val route: String = route
-        override val content: @Composable ContentScope.() -> Unit =
-            content
+        override val content: @Composable ContentScope.() -> Unit = content
         override val deepLinks: List<NavDeepLink> =
             if (hasDeepLink) listOf(navDeepLink { uriPattern = deepLink }) else emptyList()
         override val arguments: List<NamedNavArgument> = arguments

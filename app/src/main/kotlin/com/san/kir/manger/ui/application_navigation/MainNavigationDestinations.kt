@@ -2,6 +2,7 @@ package com.san.kir.manger.ui.application_navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -41,7 +42,7 @@ enum class MainNavTarget(
 
     Downloader(MainMenuType.Downloader) {
         override val content = navTarget(route = "downloader", hasDeepLink = true) {
-            DownloadsScreen(::navigateUp)
+            DownloadsScreen(up())
         }
     },
 
@@ -54,15 +55,17 @@ enum class MainNavTarget(
                 context.deepLinkIntent<MainActivity>(Latest),
             )
 
+            val navigateTo: (Long) -> Unit = remember { { MangaViewer.start(context, it) } }
+
             LatestScreen(
-                navigateUp = ::navigateUp,
-                navigateToViewer = { MangaViewer.start(context, it) },
+                navigateUp = up(),
+                navigateToViewer = navigateTo,
             )
         }
     },
 
     Settings(MainMenuType.Settings) {
-        override val content = navTarget(route = "settings") { SettingsScreen(::navigateUp) }
+        override val content = navTarget(route = "settings") { SettingsScreen(up()) }
     },
 
     Statistic(MainMenuType.Statistic) {

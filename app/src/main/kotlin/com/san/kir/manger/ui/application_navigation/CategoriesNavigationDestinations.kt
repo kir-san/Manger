@@ -1,5 +1,6 @@
 package com.san.kir.manger.ui.application_navigation
 
+import androidx.compose.runtime.remember
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.san.kir.categories.ui.categories.CategoriesScreen
@@ -11,9 +12,10 @@ import com.san.kir.manger.utils.compose.navigation
 enum class CategoriesNavTarget : NavTarget {
     Main {
         override val content = navTarget(route = "main") {
+            val navigateTo: (String) -> Unit = remember { { navigate(Category, it) } }
             CategoriesScreen(
-                navigateUp = ::navigateUp,
-                navigateToItem = { navigate(Category, it) },
+                navigateUp = up(),
+                navigateToItem = navigateTo,
             )
         }
     },
@@ -21,7 +23,7 @@ enum class CategoriesNavTarget : NavTarget {
     Category {
         override val content = navTarget(route = "category_item", hasItems = true) {
             CategoryScreen(
-                navigateUp = ::navigateUp,
+                navigateUp = up(),
                 categoryName = stringElement ?: "",
             )
         }

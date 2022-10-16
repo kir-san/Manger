@@ -20,11 +20,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
-fun <S> FromTopToTopAnimContent(
+inline fun <S> FromTopToTopAnimContent(
     targetState: S,
     modifier: Modifier = Modifier,
     contentAlignment: Alignment = Alignment.TopStart,
-    content: @Composable AnimatedVisibilityScope.(targetState: S) -> Unit
+    noinline content: @Composable AnimatedVisibilityScope.(targetState: S) -> Unit
 ) {
     AnimatedContent(
         targetState = targetState,
@@ -44,11 +44,11 @@ fun <S> FromTopToTopAnimContent(
 }
 
 @Composable
-fun <S> FromBottomToBottomAnimContent(
+inline fun <S> FromBottomToBottomAnimContent(
     targetState: S,
     modifier: Modifier = Modifier,
     contentAlignment: Alignment = Alignment.TopStart,
-    content: @Composable AnimatedVisibilityScope.(targetState: S) -> Unit
+    noinline content: @Composable AnimatedVisibilityScope.(targetState: S) -> Unit
 ) {
     AnimatedContent(
         targetState = targetState,
@@ -68,11 +68,11 @@ fun <S> FromBottomToBottomAnimContent(
 }
 
 @Composable
-fun <S> FromStartToStartAnimContent(
+inline fun <S> FromStartToStartAnimContent(
     targetState: S,
     modifier: Modifier = Modifier,
     contentAlignment: Alignment = Alignment.TopStart,
-    content: @Composable AnimatedVisibilityScope.(targetState: S) -> Unit
+    noinline content: @Composable AnimatedVisibilityScope.(targetState: S) -> Unit
 ) {
     AnimatedContent(
         targetState = targetState,
@@ -92,11 +92,11 @@ fun <S> FromStartToStartAnimContent(
 }
 
 @Composable
-fun <S> FromEndToEndAnimContent(
+inline fun <S> FromEndToEndAnimContent(
     targetState: S,
     modifier: Modifier = Modifier,
     contentAlignment: Alignment = Alignment.TopStart,
-    content: @Composable AnimatedVisibilityScope.(targetState: S) -> Unit
+    noinline content: @Composable AnimatedVisibilityScope.(targetState: S) -> Unit
 ) {
     AnimatedContent(
         targetState = targetState,
@@ -142,5 +142,20 @@ inline fun ColumnScope.BottomAnimatedVisibility(
         content = content,
         enter = expandVertically(expandFrom = Alignment.Bottom),
         exit = shrinkVertically(shrinkTowards = Alignment.Bottom),
+    )
+}
+
+@Composable
+inline fun ColumnScope.TopAnimatedVisibility(
+    visible: Boolean,
+    modifier: Modifier = Modifier,
+    noinline content: @Composable AnimatedVisibilityScope.() -> Unit
+) {
+    AnimatedVisibility(
+        visible = visible,
+        modifier = modifier,
+        content = content,
+        enter = expandVertically(expandFrom = Alignment.Top),
+        exit = shrinkVertically(shrinkTowards = Alignment.Top),
     )
 }

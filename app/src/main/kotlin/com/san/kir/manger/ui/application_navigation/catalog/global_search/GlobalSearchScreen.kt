@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.NavigationButton
 import com.san.kir.core.compose.ScreenList
 import com.san.kir.core.compose.topBar
 import com.san.kir.manger.R
@@ -26,12 +27,11 @@ fun GlobalSearchScreen(
 
     ScreenList(
         topBar = topBar(
-            navigationListener = navigateUp,
+            navigationButton = NavigationButton.Back(navigateUp),
             title = "${stringResource(R.string.main_menu_search)}: ${items.size}",
             initSearchText = searchText,
             onSearchTextChange = viewModel::setSearchText,
             hasAction = action || items.isEmpty(),
-            enableSearchField = true,
         ),
         additionalPadding = Dimensions.smaller,
         enableCollapsingBars = true

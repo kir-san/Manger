@@ -21,8 +21,6 @@ dependencies {
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.lifecycle.livedata)
 
-    implementation(libs.collections.immutable)
-
     implementation(libs.timber)
 
     implementation(libs.compose.hilt.navigation)

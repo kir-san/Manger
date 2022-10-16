@@ -109,7 +109,6 @@ fun CatalogScreen(
             actions = {
                 MenuIcon(Icons.Default.Search) { enableSearch = !enableSearch }
             },
-            enableSearchField = enableSearch,
             initSearchText = viewModel.searchText,
             onSearchTextChange = { viewModel.searchText = it },
             hasAction = hasAction

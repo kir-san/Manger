@@ -9,10 +9,12 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.san.kir.core.compose.ScrollableTabs
+import com.san.kir.core.compose.NavigationButton
 import com.san.kir.core.compose.ScreenContent
+import com.san.kir.core.compose.ScrollableTabs
 import com.san.kir.core.compose.topBar
 import com.san.kir.manger.R
+import kotlinx.collections.immutable.toPersistentList
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -22,7 +24,7 @@ fun SchedulesScreen(
 ) {
     ScreenContent(
         topBar = topBar(
-            navigationListener = navigateUp,
+            navigationButton = NavigationButton.Back(navigateUp),
             title = stringResource(R.string.main_menu_schedule),
             actions = {
                 MenuIcon(
@@ -37,7 +39,7 @@ fun SchedulesScreen(
         val pages = schedulePages()
 
         ScrollableTabs(pagerState,
-            items = pages.map { stringResource(it.nameId) }
+            items = pages.map { stringResource(it.nameId) }.toPersistentList()
         )
 
         HorizontalPager(

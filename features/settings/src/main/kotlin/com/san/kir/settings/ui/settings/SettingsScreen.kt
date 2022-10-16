@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.NavigationButton
 import com.san.kir.core.compose.ScreenContent
 import com.san.kir.core.compose.bottomInsetsPadding
 import com.san.kir.core.compose.topBar
@@ -40,7 +41,7 @@ fun SettingsScreen(
 
     ScreenContent(
         topBar = topBar(
-            navigationListener = navigateUp,
+            navigationButton = NavigationButton.Back(navigateUp),
             title = stringResource(R.string.main_menu_settings),
         ),
         additionalPadding = Dimensions.zero

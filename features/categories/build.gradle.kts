@@ -17,7 +17,6 @@ dependencies {
 //
 //    implementation(libs.timber)
 //
-    implementation(libs.collections.immutable)
 
     implementation(libs.compose.hilt.navigation)
     implementation(libs.hilt.android)

@@ -106,7 +106,7 @@ private fun navigationButton(
     selectionMode: Boolean,
     navigateUp: () -> Unit,
     sendEvent: (LatestEvent) -> Unit
-): NavigationButton {
+):  NavigationButton {
     return if (selectionMode) {
         NavigationButton.Close { sendEvent(LatestEvent.UnselectAll) }
     } else {

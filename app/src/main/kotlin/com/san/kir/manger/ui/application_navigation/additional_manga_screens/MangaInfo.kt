@@ -18,6 +18,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.san.kir.core.compose.DialogText
 import com.san.kir.core.compose.ImageWithStatus
 import com.san.kir.core.compose.LabelText
+import com.san.kir.core.compose.NavigationButton
 import com.san.kir.core.compose.ScreenContent
 import com.san.kir.core.compose.topBar
 import com.san.kir.core.utils.browse
@@ -38,7 +39,7 @@ fun MangaInfoScreen(
 
     ScreenContent(
         topBar = topBar(
-            navigationListener = navigateUp,
+            navigationButton = NavigationButton.Back(navigateUp),
             title = stringResource(R.string.manga_info_dialog_title),
             actions = {
                 AnimatedVisibility(visible = isAdded) {

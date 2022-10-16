@@ -8,15 +8,10 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -51,6 +46,7 @@ import com.san.kir.core.compose.Dimensions
 import com.san.kir.core.compose.FullWeightSpacer
 import com.san.kir.core.compose.animation.BottomAnimatedVisibility
 import com.san.kir.core.compose.animation.FromBottomToBottomAnimContent
+import com.san.kir.core.compose.bottomInsetsPadding
 import com.san.kir.core.compose.horizontalInsetsPadding
 import com.san.kir.core.support.ChapterFilter
 import com.san.kir.core.support.DownloadState
@@ -104,10 +100,15 @@ private fun BottomOrderBar(
     currentFilter: ChapterFilter,
     sendEvent: (Filter) -> Unit,
 ) {
+    val allColor = animatedColor(currentFilter.isAll)
+    val readColor = animatedColor(currentFilter.isRead)
+    val notColor = animatedColor(currentFilter.isNot)
+    val reverseRotate by animateFloatAsState(if (currentFilter.isAsc) 0f else 180f)
+
     BottomAppBar(
         modifier = Modifier
             .fillMaxWidth()
-            .windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Vertical))
+            .bottomInsetsPadding()
     ) {
         FullWeightSpacer()
 
@@ -116,9 +117,7 @@ private fun BottomOrderBar(
             Icon(
                 Icons.Default.Sort,
                 contentDescription = "reverse sort",
-                modifier = Modifier.rotate(
-                    animateFloatAsState(if (currentFilter.isAsc) 0f else 180f).value
-                )
+                modifier = Modifier.rotate(reverseRotate)
             )
         }
 
@@ -132,7 +131,7 @@ private fun BottomOrderBar(
             Icon(
                 Icons.Default.SelectAll,
                 contentDescription = null,
-                tint = animatedColor(currentFilter.isAll)
+                tint = allColor
             )
         }
 
@@ -144,7 +143,7 @@ private fun BottomOrderBar(
             Icon(
                 Icons.Default.Visibility,
                 contentDescription = null,
-                tint = animatedColor(currentFilter.isRead)
+                tint = readColor
             )
         }
 
@@ -157,7 +156,7 @@ private fun BottomOrderBar(
             Icon(
                 Icons.Default.VisibilityOff,
                 contentDescription = null,
-                tint = animatedColor(currentFilter.isNot)
+                tint = notColor
             )
         }
 

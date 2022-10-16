@@ -1,5 +1,6 @@
 package com.san.kir.manger.ui.application_navigation.accounts
 
+import androidx.compose.runtime.remember
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.san.kir.features.shikimori.ui.accountRate.AccountRateScreen
@@ -13,32 +14,36 @@ import com.san.kir.manger.utils.compose.NavTarget
 import com.san.kir.manger.utils.compose.navLongArgument
 import com.san.kir.manger.utils.compose.navTarget
 import com.san.kir.manger.utils.compose.navigation
-import timber.log.Timber
 
 enum class AccountsNavTarget : NavTarget {
     Main {
         override val content = navTarget(route = "main") {
+            val navigateTo: () -> Unit = remember { { navigate(Shikimori) } }
             AccountsScreen(
-                navigateUp = ::navigateUp,
-                navigateToShiki = { navigate(Shikimori) },
+                navigateUp = up(),
+                navigateToShiki = navigateTo,
             )
         }
     },
     Shikimori {
         override val content = navTarget(route = "shikimori") {
+            val navigateToShiki: (Long) -> Unit = remember { { navigate(ProfileItem, it, -1L) } }
+            val navigateToLocal: () -> Unit = remember { { navigate(LocalItems) } }
+            val navigateToSearch: () -> Unit = remember { { navigate(Search) } }
             AccountScreen(
-                ::navigateUp,
-                navigateToShikiItem = { navigate(ProfileItem, it, -1L) },
-                navigateToLocalItems = { navigate(LocalItems) },
-                navigateToSearch = { navigate(Search) }
+                up(),
+                navigateToShikiItem = navigateToShiki,
+                navigateToLocalItems = navigateToLocal,
+                navigateToSearch = navigateToSearch
             )
         }
     },
     LocalItems {
         override val content = navTarget(route = "library_items") {
+            val navigateTo: (Long) -> Unit = remember { { navigate(LocalItem, it) } }
             LocalItemsScreen(
-                navigateUp = ::navigateUp,
-                navigateToItem = { navigate(LocalItem, it) }
+                navigateUp = up(),
+                navigateToItem = navigateTo
             )
         }
     },
@@ -48,13 +53,11 @@ enum class AccountsNavTarget : NavTarget {
             hasItems = true,
             arguments = listOf(navLongArgument()),
         ) {
+            val navigateTo: (String) -> Unit = remember { { navigate(Search, it) } }
             LocalItemScreen(
                 mangaId = longElement ?: -1L,
-                navigateUp = ::navigateUp,
-                navigateToSearch = { query ->
-                    Timber.v("query")
-                    navigate(Search, query)
-                }
+                navigateUp = up(),
+                navigateToSearch = navigateTo
             )
         }
     },
@@ -63,9 +66,10 @@ enum class AccountsNavTarget : NavTarget {
             route = "shiki_search",
             hasItems = true,
         ) {
+            val navigateTo: (Long) -> Unit = remember { { navigate(ProfileItem, it, -1L) } }
             ShikiSearchScreen(
-                navigateUp = ::navigateUp,
-                navigateToItem = { mangaId -> navigate(ProfileItem, mangaId, -1L) },
+                navigateUp = up(),
+                navigateToItem = navigateTo,
                 searchText = stringElement ?: "",
             )
         }
@@ -79,9 +83,11 @@ enum class AccountsNavTarget : NavTarget {
             hasItems = true,
             arguments = listOf(navLongArgument(mangaId), navLongArgument(rateId))
         ) {
+            val navigateTo: (String) -> Unit =
+                remember { { navigate(CatalogsNavTarget.GlobalSearch, it) } }
             AccountRateScreen(
-                navigateUp = ::navigateUp,
-                navigateToSearch = { query -> navigate(CatalogsNavTarget.GlobalSearch, query) },
+                navigateUp = up(),
+                navigateToSearch = navigateTo,
                 mangaId = longElement(mangaId) ?: -1L,
                 rateId = longElement(rateId) ?: -1L,
             )

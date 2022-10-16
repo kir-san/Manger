@@ -25,6 +25,7 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import com.san.kir.core.compose.LabelText
+import com.san.kir.core.compose.NavigationButton
 import com.san.kir.core.compose.RadioGroup
 import com.san.kir.core.compose.ScreenContent
 import com.san.kir.core.compose.topBar
@@ -44,7 +45,7 @@ fun PlannedTaskScreen(navigateUp: () -> Unit, viewModel: PlannedTaskViewModel) {
 
     ScreenContent(
         topBar = topBar(
-            navigationListener = navigateUp,
+            navigationButton = NavigationButton.Back(navigateUp),
             title = viewModel.title,
             actions = {
                 MenuIcon(Icons.Default.Save) {

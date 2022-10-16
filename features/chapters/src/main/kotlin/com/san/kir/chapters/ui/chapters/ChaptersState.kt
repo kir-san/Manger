@@ -47,7 +47,12 @@ internal data class Items(
     val readCount: Int = items.count { it.chapter.isRead }
 )
 
+@Stable
 internal sealed interface NextChapter {
+
+    @Stable
     object None : NextChapter
+
+    @Stable
     data class Ok(val id: Long, val name: String) : NextChapter
 }

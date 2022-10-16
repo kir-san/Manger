@@ -22,7 +22,7 @@ enum class CatalogsNavTarget : NavTarget {
             route = "main", hasDeepLink = true,
         ) {
             CatalogsScreen(
-                navigateUp = ::navigateUp,
+                navigateUp = up(),
                 navigateToSearch = { navigate(GlobalSearch) },
                 navigateToItem = { navigate(Catalog, it) }
             )
@@ -35,7 +35,7 @@ enum class CatalogsNavTarget : NavTarget {
             val viewModel = catalogViewModel(item)
 
             CatalogScreen(
-                navigateUp = ::navigateUp,
+                navigateUp = up(),
                 navigateToInfo = { navigate(Info, it) },
                 navigateToAdd = { navigate(AddLocal, it) },
                 viewModel
@@ -46,7 +46,7 @@ enum class CatalogsNavTarget : NavTarget {
     GlobalSearch {
         override val content = navTarget(route = "global_search", hasItems = true) {
             GlobalSearchScreen(
-                navigateUp = ::navigateUp,
+                navigateUp = up(),
                 navigateToInfo = { navigate(Info, it) },
                 navigateToAdd = { navigate(AddLocal, it) },
                 searchText = stringElement ?: "",
@@ -57,7 +57,7 @@ enum class CatalogsNavTarget : NavTarget {
     Info {
         override val content = navTarget(route = "info", hasItems = true) {
             MangaInfoScreen(
-                navigateUp = ::navigateUp,
+                navigateUp = up(),
                 navigateToAdd = { navigate(AddLocal, it) },
                 siteCatalogItemViewModel(stringElement ?: "")
             )
@@ -66,7 +66,7 @@ enum class CatalogsNavTarget : NavTarget {
 
     AddLocal {
         override val content = navTarget(route = "add", hasItems = true) {
-            MangaAddScreen(stringElement ?: "", ::navigateUp)
+            MangaAddScreen(stringElement ?: "", up())
         }
     };
 }

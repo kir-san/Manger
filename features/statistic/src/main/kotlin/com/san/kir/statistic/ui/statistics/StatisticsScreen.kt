@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.san.kir.core.compose.CircleLogo
 import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.NavigationButton
 import com.san.kir.core.compose.RemoveItemMenuOnHold
 import com.san.kir.core.compose.ScreenList
 import com.san.kir.core.compose.topBar
@@ -37,7 +38,7 @@ fun StatisticsScreen(
 
     ScreenList(
         topBar = topBar(
-            navigationListener = navigateUp,
+            navigationButton = NavigationButton.Back(navigateUp),
             title = stringResource(R.string.main_menu_statistic),
             subtitle = stringResource(
                 R.string.statistic_subtitle, TimeFormat(state.allTime).toString(ctx)
@@ -62,7 +63,7 @@ private fun LazyItemScope.ItemView(
     RemoveItemMenuOnHold(
         removeText = stringResource(R.string.statistic_delete),
         cancelText = stringResource(R.string.statistic_cancel),
-        onSuccess = {sendEvent(StatisticsEvent.Delete(item.id))},
+        onSuccess = { sendEvent(StatisticsEvent.Delete(item.id)) },
         modifier = Modifier
             .fillMaxWidth()
             .animateItemPlacement(),

@@ -1,8 +1,6 @@
 package com.san.kir.core.compose
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -26,6 +24,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.primarySurface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,102 +34,75 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import com.san.kir.core.compose.animation.FromStartToStartAnimContent
+import com.san.kir.core.compose.animation.TopAnimatedVisibility
 import com.san.kir.core.utils.TestTags
 import kotlinx.coroutines.launch
 
 @Composable
 private fun PreparedTopBar(
     titleContent: @Composable ColumnScope.() -> Unit,
-    subtitleContent: @Composable() (() -> Unit)? = null,
+    subtitleContent: @Composable (() -> Unit)? = null,
     subtitle: String = "",
     height: Dp = Dimensions.appBarHeight,
-    navigationButton: NavigationButton,
-    actions: @Composable() (TopBarActions.() -> Unit) = {},
-    hasAction: Boolean = false,
+    navigationIcon: @Composable () -> Unit,
+    actions: @Composable TopBarActions.() -> Unit = {},
     backgroundColor: Color = MaterialTheme.colors.primarySurface,
 ) {
-    val coroutineScope = rememberCoroutineScope()
+
+    val topBarActions = remember { TopBarActions() }
     val color by animateColorAsState(targetValue = backgroundColor)
-    Column(modifier = Modifier.fillMaxWidth()) {
-        TopAppBar(
-            title = {
-                Column {
-                    titleContent()
 
-                    ProvideTextStyle(value = MaterialTheme.typography.subtitle2) {
-                        if (subtitleContent != null) {
-                            subtitleContent()
-                        } else
-                            if (subtitle.isNotEmpty()) {
-                                Text(
-                                    text = subtitle,
-                                    maxLines = 1
-                                )
-                            }
-                    }
-                }
-            },
-            navigationIcon = {
-                Box(modifier = Modifier.startInsetsPadding()) {
-                    FromStartToStartAnimContent(targetState = navigationButton) {
-                        when (it) {
-                            is NavigationButton.Back ->
-                                IconButton(
-                                    modifier = Modifier.testTag(TestTags.Drawer.nav_back),
-                                    onClick = it.onClick
-                                ) { Icon(Icons.Default.ArrowBack, "") }
+    TopAppBar(
+        title = {
+            Column {
+                titleContent()
 
-                            is NavigationButton.Close ->
-                                IconButton(onClick = it.onClick) {
-                                    Icon(Icons.Default.Close, "")
-                                }
-
-                            is NavigationButton.Scaffold ->
-                                IconButton(
-                                    modifier = Modifier.testTag(TestTags.Drawer.drawer_open),
-                                    onClick = {
-                                        coroutineScope.launch {
-                                            it.state.drawerState.open()
-                                        }
-                                    }) { Icon(Icons.Default.Menu, "") }
+                ProvideTextStyle(value = MaterialTheme.typography.subtitle2) {
+                    if (subtitleContent != null) {
+                        subtitleContent()
+                    } else
+                        if (subtitle.isNotEmpty()) {
+                            Text(
+                                text = subtitle,
+                                maxLines = 1
+                            )
                         }
-                    }
                 }
-            },
-            modifier = Modifier
-                .statusBarsPadding()
-                .fillMaxWidth()
-                .height(height),
-            actions = {
-                Row(modifier = Modifier.endInsetsPadding()) {
-                    TopBarActions().actions()
-                }
-            },
-            backgroundColor = color,
-        )
-
-        if (hasAction)
-            LinearProgressIndicator(
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-    }
+            }
+        },
+        navigationIcon = navigationIcon,
+        modifier = Modifier
+            .statusBarsPadding()
+            .fillMaxWidth()
+            .height(height),
+        actions = {
+            Row(modifier = Modifier.endInsetsPadding()) {
+                topBarActions.actions()
+            }
+        },
+        backgroundColor = color,
+    )
 }
 
 @Composable
 fun topBar(
     title: String = "",
-    titleContent: @Composable ColumnScope.() -> Unit = { Text(text = title, maxLines = 1) },
+    titleContent: @Composable ColumnScope.() -> Unit = {
+        Text(
+            text = title,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    },
     subtitle: String = "",
     subtitleContent: @Composable (() -> Unit)? = null,
     actions: @Composable TopBarActions.() -> Unit = {},
-    navigationListener: () -> Unit = {},
-    navigationButton: NavigationButton = NavigationButton.Back(navigationListener),
-    enableSearchField: Boolean = false,
+    navigationButton: NavigationButton,
     initSearchText: String = "",
-    onSearchTextChange: (String) -> Unit = {},
+    onSearchTextChange: ((String) -> Unit)? = null,
     hasAction: Boolean = false,
     progressAction: Float? = null,
     backgroundColor: Color = MaterialTheme.colors.primarySurface,
@@ -143,17 +115,17 @@ fun topBar(
             height = it,
             actions = actions,
             backgroundColor = backgroundColor,
-            navigationButton = navigationButton
+            navigationIcon = { NavigationIcon(state = navigationButton) }
         )
 
-        AnimatedVisibility(visible = enableSearchField) {
+        TopAnimatedVisibility(visible = onSearchTextChange != null) {
             SearchTextField(
                 initialValue = initSearchText,
-                onChangeValue = onSearchTextChange
+                onChangeValue = onSearchTextChange ?: {}
             )
         }
 
-        if (hasAction) {
+        TopAnimatedVisibility(visible = hasAction) {
             if (progressAction != null) {
                 LinearProgressIndicator(
                     progress = progressAction,
@@ -165,6 +137,37 @@ fun topBar(
         }
     }
 }
+
+@Composable
+private fun NavigationIcon(state: NavigationButton) {
+    val coroutineScope = rememberCoroutineScope()
+
+    FromStartToStartAnimContent(
+        targetState = state,
+        modifier = Modifier.startInsetsPadding()
+    ) {
+        when (it) {
+            is NavigationButton.Back ->
+                IconButton(
+                    modifier = Modifier.testTag(TestTags.Drawer.nav_back),
+                    onClick = it.onClick
+                ) { Icon(Icons.Default.ArrowBack, "") }
+
+            is NavigationButton.Close ->
+                IconButton(onClick = it.onClick) {
+                    Icon(Icons.Default.Close, "")
+                }
+
+            is NavigationButton.Scaffold ->
+                IconButton(
+                    modifier = Modifier.testTag(TestTags.Drawer.drawer_open),
+                    onClick = {
+                        coroutineScope.launch { it.state.drawerState.open() }
+                    }) { Icon(Icons.Default.Menu, "") }
+        }
+    }
+}
+
 
 class TopBarActions internal constructor() {
 
@@ -201,8 +204,14 @@ class TopBarActions internal constructor() {
     }
 }
 
+@Stable
 sealed interface NavigationButton {
+    @Stable
     data class Scaffold(val state: ScaffoldState) : NavigationButton
+
+    @Stable
     data class Back(val onClick: () -> Unit) : NavigationButton
+
+    @Stable
     data class Close(val onClick: () -> Unit) : NavigationButton
 }

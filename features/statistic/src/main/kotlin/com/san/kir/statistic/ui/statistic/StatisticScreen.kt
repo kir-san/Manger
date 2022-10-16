@@ -14,6 +14,7 @@ import com.san.kir.core.compose.DefaultSpacer
 import com.san.kir.core.compose.DialogText
 import com.san.kir.core.compose.Dimensions
 import com.san.kir.core.compose.LabelText
+import com.san.kir.core.compose.NavigationButton
 import com.san.kir.core.compose.ScreenContent
 import com.san.kir.core.compose.horizontalInsetsPadding
 import com.san.kir.core.compose.topBar
@@ -32,7 +33,7 @@ fun StatisticScreen(navigateUp: () -> Unit, itemId: Long) {
 
     ScreenContent(
         topBar = topBar(
-            navigationListener = navigateUp,
+            navigationButton = NavigationButton.Back(navigateUp),
             title = state.mangaName,
         ),
     ) {

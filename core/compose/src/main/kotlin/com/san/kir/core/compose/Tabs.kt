@@ -15,6 +15,7 @@ import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.primarySurface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -23,6 +24,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.san.kir.core.utils.TestTags
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -38,24 +40,25 @@ private fun indicator(pagerState: PagerState): @Composable (tabPositions: List<T
 @Composable
 fun ScrollableTabs(
     pagerState: PagerState,
-    items: List<String>,
+    items: ImmutableList<String>,
     modifier: Modifier = Modifier,
-    scope: CoroutineScope = rememberCoroutineScope(),
     onTabClick: suspend (index: Int) -> Unit = { pagerState.animateScrollToPage(it) },
 ) {
+    val scope: CoroutineScope = rememberCoroutineScope()
+    val tabClicker: (Int) -> Unit = remember { { scope.launch { onTabClick(it) } } }
+
     ScrollableTabRow(
         selectedTabIndex = pagerState.currentPage,
         indicator = indicator(pagerState),
         divider = {},
-        modifier = modifier
-            .background(MaterialTheme.colors.primarySurface)
+        modifier = modifier.background(MaterialTheme.colors.primarySurface)
     ) {
         items.forEachIndexed { index, item ->
             Tab(
                 modifier = Modifier.testTag(TestTags.Library.tab),
                 selected = pagerState.currentPage == index,
                 text = { Text(text = item) },
-                onClick = { scope.launch { onTabClick(index) } }
+                onClick = { tabClicker(index) }
             )
         }
     }
@@ -65,10 +68,11 @@ fun ScrollableTabs(
 @Composable
 fun Tabs(
     pagerState: PagerState,
-    items: List<Int>,
-    scope: CoroutineScope = rememberCoroutineScope(),
+    items: ImmutableList<Int>,
     onTabClick: suspend (index: Int) -> Unit = { pagerState.animateScrollToPage(it) },
 ) {
+    val scope: CoroutineScope = rememberCoroutineScope()
+    val tabClicker: (Int) -> Unit = remember { { scope.launch { onTabClick(it) } } }
 
     TabRow(
         selectedTabIndex = pagerState.currentPage,
@@ -80,7 +84,7 @@ fun Tabs(
             Tab(
                 selected = pagerState.currentPage == index,
                 text = { Text(text = stringResource(id = item)) },
-                onClick = { scope.launch { onTabClick(index) } }
+                onClick = { tabClicker(index) }
             )
         }
     }

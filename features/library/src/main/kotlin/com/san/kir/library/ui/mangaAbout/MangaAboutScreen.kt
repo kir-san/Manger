@@ -33,6 +33,7 @@ import com.san.kir.core.compose.DialogText
 import com.san.kir.core.compose.Dimensions
 import com.san.kir.core.compose.ImageWithStatus
 import com.san.kir.core.compose.LabelText
+import com.san.kir.core.compose.NavigationButton
 import com.san.kir.core.compose.ScreenContent
 import com.san.kir.core.compose.SmallSpacer
 import com.san.kir.core.compose.animation.BottomAnimatedVisibility
@@ -56,7 +57,7 @@ fun MangaAboutScreen(
 
     ScreenContent(
         topBar = topBar(
-            navigationListener = navigateUp,
+            navigationButton = NavigationButton.Back(navigateUp),
             title = stringResource(R.string.manga_info_dialog_title),
         ),
     ) {

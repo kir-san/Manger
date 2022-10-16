@@ -15,7 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.res.pluralStringResource
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.text.style.TextOverflow
 import com.san.kir.chapters.R
 import com.san.kir.chapters.ui.chapters.ChaptersEvent
 import com.san.kir.chapters.ui.chapters.Selection
@@ -36,7 +36,7 @@ internal fun topBar(
     manga: Manga,
     navigateUp: () -> Unit,
     sendEvent: (ChaptersEvent) -> Unit,
-): @Composable (Dp) -> Unit = topBar(
+) = topBar(
     titleContent = {
         FromTopToTopAnimContent(targetState = selectionMode) {
             if (it) {
@@ -47,7 +47,7 @@ internal fun topBar(
                     maxLines = 1
                 )
             } else {
-                Text(manga.name, maxLines = 1)
+                Text(manga.name, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
         }
     },
@@ -66,7 +66,9 @@ internal fun topBar(
         FromEndToEndAnimContent(targetState = selectionMode) {
             Row {
                 if (it) {
-                    SelectionModeActions(selectedCount) { sendEvent(ChaptersEvent.WithSelected(it)) }
+                    SelectionModeActions(selectedCount) {
+                        sendEvent(ChaptersEvent.WithSelected(it))
+                    }
                 } else {
                     DefaultModeActions(manga.isUpdate, manga.isAlternativeSort, sendEvent)
                 }

@@ -17,6 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.NavigationButton
 import com.san.kir.core.compose.ScreenPadding
 import com.san.kir.core.compose.horizontalAndBottomInsetsPadding
 import com.san.kir.core.compose.rememberImage
@@ -46,7 +47,7 @@ fun LocalItemScreen(
 
     ScreenPadding(
         topBar = topBar(
-            navigationListener = navigateUp,
+            navigationButton = NavigationButton.Back(navigateUp),
             title = stringResource(R.string.profile_item_title),
             hasAction = state.manga is MangaState.Load
         ),

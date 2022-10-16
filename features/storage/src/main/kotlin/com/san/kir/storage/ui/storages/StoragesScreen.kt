@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.san.kir.core.compose.CircleLogo
 import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.NavigationButton
 import com.san.kir.core.compose.RemoveItemMenuOnHold
 import com.san.kir.core.compose.ScreenList
 import com.san.kir.core.compose.animation.VectorConverter
@@ -57,7 +58,7 @@ fun StoragesScreen(
 
     ScreenList(
         topBar = topBar(
-            navigationListener = navigateUp,
+            navigationButton = NavigationButton.Back(navigateUp),
             title = stringResource(R.string.main_menu_storage) + " " +
                     if (state.size > 0) {
                         stringResource(R.string.main_menu_storage_size_mb, size.value.format())

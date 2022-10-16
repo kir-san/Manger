@@ -37,12 +37,15 @@ internal sealed interface ItemsState {
     ) : ItemsState
 }
 
-
+@Stable
 internal sealed interface SelectedMangaState {
     object NonVisible : SelectedMangaState
+
+    @Stable
     data class Visible(val item: SimplifiedManga) : SelectedMangaState
 }
 
+@Stable
 internal sealed interface BackgroundState {
     object Work : BackgroundState
     object None : BackgroundState

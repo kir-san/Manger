@@ -1,5 +1,6 @@
 package com.san.kir.manger.ui.application_navigation
 
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -19,7 +20,7 @@ import com.san.kir.manger.utils.compose.navigation
 enum class LibraryNavTarget : NavTarget {
     Main {
         override val content = navTarget(route = "main") {
-            LibraryScreen(
+            val navigation = remember {
                 LibraryNavigation(
                     navigateToScreen = { type ->
                         if (MainMenuType.Library != type)
@@ -33,7 +34,9 @@ enum class LibraryNavTarget : NavTarget {
                     navigateToChapters = { navigate(Chapters, it) },
                     navigateToOnline = { navigate(AddOnline) },
                 )
-            )
+            }
+
+            LibraryScreen(navigation)
         }
     },
 
@@ -44,9 +47,11 @@ enum class LibraryNavTarget : NavTarget {
             arguments = listOf(navLongArgument())
         ) {
             val context = LocalContext.current
+            val navigate: (Long) -> Unit = remember { { MangaViewer.start(context, it) } }
+
             ChaptersScreen(
-                navigateUp = ::navigateUp,
-                navigateToViewer = { MangaViewer.start(context, it) },
+                navigateUp = up(),
+                navigateToViewer = navigate,
                 mangaId = longElement ?: -1L
             )
         }
@@ -54,9 +59,13 @@ enum class LibraryNavTarget : NavTarget {
 
     AddOnline {
         override val content = navTarget(route = "add_online") {
+            val navigateTo: (String) -> Unit = remember {
+                { arg -> navigate(CatalogsNavTarget.AddLocal, arg) }
+            }
+
             AddOnlineScreen(
-                navigateUp = ::navigateUp,
-                navigateToNext = { arg -> navigate(CatalogsNavTarget.AddLocal, arg) }
+                navigateUp = up(),
+                navigateToNext = navigateTo
             )
         }
     },
@@ -67,7 +76,7 @@ enum class LibraryNavTarget : NavTarget {
             hasItems = true,
             arguments = listOf(navLongArgument())
         ) {
-            MangaAboutScreen(::navigateUp, longElement ?: -1)
+            MangaAboutScreen(up(), longElement ?: -1)
         }
     };
 }

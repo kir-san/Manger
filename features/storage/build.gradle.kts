@@ -17,8 +17,6 @@ dependencies {
 
     implementation(libs.timber)
 
-    implementation(libs.collections.immutable)
-
     implementation(libs.lifecycle.livedata)
 
     implementation(libs.compose.hilt.navigation)

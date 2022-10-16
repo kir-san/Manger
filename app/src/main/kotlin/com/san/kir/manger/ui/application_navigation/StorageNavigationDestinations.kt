@@ -1,5 +1,6 @@
 package com.san.kir.manger.ui.application_navigation
 
+import androidx.compose.runtime.remember
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.san.kir.manger.utils.compose.NavTarget
@@ -13,9 +14,10 @@ import com.san.kir.storage.ui.storages.StoragesScreen
 enum class StorageNavTarget : NavTarget {
     Main {
         override val content = navTarget(route = "main") {
+            val navigateTo: (Long) -> Unit = remember { { navigate(Storage, it, false) } }
             StoragesScreen(
-                navigateUp = ::navigateUp,
-                navigateToItem = { navigate(Storage, it, false) },
+                navigateUp = up(),
+                navigateToItem = navigateTo,
             )
         }
     },
@@ -29,7 +31,7 @@ enum class StorageNavTarget : NavTarget {
             arguments = listOf(navLongArgument(), navBoolArgument(hasUpdate))
         ) {
             StorageScreen(
-                navigateUp = ::navigateUp,
+                navigateUp = up(),
                 mangaId = longElement ?: -1L,
                 hasUpdate = booleanElement(hasUpdate) ?: false
             )

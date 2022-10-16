@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
 import androidx.core.app.ComponentActivity
 import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.NavigationButton
 import com.san.kir.core.compose.ScreenList
 import com.san.kir.core.compose.topBar
 import com.san.kir.core.internet.ConnectManager
@@ -52,7 +53,7 @@ internal fun ShikimoriContent() {
             ShikiNavTarget.Start ->
                 ScreenList(
                     topBar = topBar(
-                        navigationListener = {},
+                        navigationButton = NavigationButton.Back{},
                         title = stringResource(R.string.main_menu_accounts),
                     ),
                     additionalPadding = Dimensions.zero

@@ -16,6 +16,7 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,11 +45,13 @@ fun LibraryScreen(
     val viewModel: LibraryViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
 
+    val unSelect = remember { { viewModel.sendEvent(LibraryEvent.NonSelect) } }
+
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
 
     BottomDialog(
         state = state.selectedManga,
-        onDismiss = { viewModel.sendEvent(LibraryEvent.NonSelect) },
+        onDismiss = unSelect,
         modifier = Modifier.fillMaxSize(),
         dialogContent = {
             LibraryDropUpMenu(

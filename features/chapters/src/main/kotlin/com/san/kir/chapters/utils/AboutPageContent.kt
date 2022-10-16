@@ -81,20 +81,28 @@ internal fun AboutPageContent(
                     .padding(Dimensions.default)
                     .horizontalInsetsPadding()
                     .bottomInsetsPadding(),
-                enabled = nextChapter is NextChapter.Ok,
+                enabled =  nextChapter is NextChapter.Ok ,
             ) {
-                Text(
-                    when (nextChapter) {
-                        NextChapter.None ->
-                            stringResource(R.string.list_chapters_about_not_continue)
+                when (nextChapter) {
+                    NextChapter.None ->
+                        ButtonText(stringResource(R.string.list_chapters_about_not_continue))
 
-                        is NextChapter.Ok ->
+                    is NextChapter.Ok ->
+                        ButtonText(
                             stringResource(R.string.list_chapters_about_continue, nextChapter.name)
-                    }.toUpperCase(Locale.current),
-                    modifier = Modifier.padding(Dimensions.default),
-                    textAlign = TextAlign.Center
-                )
+                        )
+                }
             }
         }
     }
+}
+
+@Composable
+private fun ButtonText(content: String) {
+    val locale = Locale.current
+    Text(
+        text = content.toUpperCase(locale),
+        modifier = Modifier.padding(Dimensions.default),
+        textAlign = TextAlign.Center
+    )
 }

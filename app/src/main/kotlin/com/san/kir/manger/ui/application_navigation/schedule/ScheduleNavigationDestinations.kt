@@ -13,7 +13,7 @@ enum class ScheduleNavTarget : NavTarget {
     Main {
         override val content = navTarget(route = "main") {
             SchedulesScreen(
-                navigateUp = ::navigateUp,
+                navigateUp = up(),
                 navigateToItem = { navigate(Schedule, it) }
             )
         }
@@ -27,7 +27,7 @@ enum class ScheduleNavTarget : NavTarget {
         ) {
             val viewModel = plannedTaskViewModel(longElement ?: -1L)
 
-            PlannedTaskScreen(navigateUp = ::navigateUp, viewModel)
+            PlannedTaskScreen(navigateUp = up(), viewModel)
         }
     };
 }

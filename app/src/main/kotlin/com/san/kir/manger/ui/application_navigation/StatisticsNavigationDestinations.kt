@@ -1,5 +1,6 @@
 package com.san.kir.manger.ui.application_navigation
 
+import androidx.compose.runtime.remember
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.san.kir.manger.utils.compose.NavTarget
@@ -12,9 +13,10 @@ import com.san.kir.statistic.ui.statistics.StatisticsScreen
 enum class StatisticNavTarget : NavTarget {
     Main {
         override val content = navTarget(route = "main") {
+            val navigateTo: (Long) -> Unit = remember { { navigate(Statistic, it) } }
             StatisticsScreen(
-                navigateUp = ::navigateUp,
-                navigateToItem = { navigate(Statistic, it) },
+                navigateUp = up(),
+                navigateToItem = navigateTo,
             )
         }
     },
@@ -26,7 +28,7 @@ enum class StatisticNavTarget : NavTarget {
             arguments = listOf(navLongArgument())
         ) {
             StatisticScreen(
-                navigateUp = ::navigateUp,
+                navigateUp = up(),
                 itemId = longElement ?: -1L
             )
         }

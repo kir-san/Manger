@@ -1,4 +1,4 @@
-package com.san.kir.manger.foreground_work.services
+package com.san.kir.background.services
 
 import android.annotation.SuppressLint
 import android.app.Notification
@@ -18,20 +18,16 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
-import androidx.core.net.toUri
+import com.san.kir.background.R
+import com.san.kir.core.utils.ID
 import com.san.kir.core.utils.coroutines.defaultDispatcher
+import com.san.kir.core.utils.intentFor
+import com.san.kir.core.utils.startService
 import com.san.kir.data.db.CatalogDb.Factory
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.SiteDao
 import com.san.kir.data.models.base.SiteCatalogElement
-import com.san.kir.manger.R
 import com.san.kir.data.parsing.SiteCatalogsManager
-import com.san.kir.manger.ui.MainActivity
-import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
-import com.san.kir.core.utils.ID
-import com.san.kir.core.utils.intentFor
-import com.san.kir.core.utils.startService
-import com.san.kir.manger.utils.compose.deepLinkIntent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.map
@@ -69,6 +65,15 @@ class CatalogForOneSiteUpdaterService : Service() {
                 add(ctx, name)
             }
         }
+
+        private var actionGoToCatalogs: PendingIntent? = null
+
+        fun setLatestDeepLink(ctx: Context, deepLinkIntent: Intent) {
+            actionGoToCatalogs = TaskStackBuilder.create(ctx).run {
+                addNextIntentWithParentStack(deepLinkIntent)
+                getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+            }
+        }
     }
 
     @Volatile
@@ -79,14 +84,8 @@ class CatalogForOneSiteUpdaterService : Service() {
 
     private var notificationId = ID.generate()
 
-    private val actionGoToCatalogs by lazy {
-        val deepLinkIntent = deepLinkIntent<MainActivity>(CatalogsNavTarget.Main)
 
-        TaskStackBuilder.create(this).run {
-            addNextIntentWithParentStack(deepLinkIntent)
-            getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
-        }
-    }
+
 
     private val actionCancelAll by lazy {
         val intent = intentFor<CatalogForOneSiteUpdaterService>(this).setAction(ACTION_CANCEL_ALL)

@@ -95,7 +95,7 @@ private fun Content(
         modifier = Modifier
             .fillMaxWidth()
             .height(Dimensions.ProgressBar.storage)
-            .padding(vertical = Dimensions.small)
+            .padding(vertical = Dimensions.half)
             .horizontalInsetsPadding(),
         max = all.value,
         full = full.value,
@@ -166,7 +166,7 @@ private fun StorageItem(color: Color, id: Int, vararg formatArgs: Any) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = Dimensions.small),
+            .padding(vertical = Dimensions.half),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
@@ -186,7 +186,7 @@ private fun DeleteItem(id: Int, onClick: () -> Unit) {
         modifier = Modifier
             .clickable(onClick = onClick)
             .fillMaxWidth()
-            .padding(vertical = Dimensions.small),
+            .padding(vertical = Dimensions.half),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(

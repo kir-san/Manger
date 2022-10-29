@@ -50,7 +50,7 @@ internal fun LazyItemScope.MangaItemContent(
             .animateItemPlacement()
             .clickable(onClick = onClick)
             .fillMaxWidth()
-            .padding(vertical = Dimensions.small, horizontal = Dimensions.default)
+            .padding(vertical = Dimensions.half, horizontal = Dimensions.default)
             .horizontalInsetsPadding(),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -59,7 +59,7 @@ internal fun LazyItemScope.MangaItemContent(
             contentDescription = "manga avatar",
             modifier = Modifier
                 .size(Dimensions.Image.default)
-                .padding(end = Dimensions.small),
+                .padding(end = Dimensions.half),
             contentScale = ContentScale.Crop,
         )
 

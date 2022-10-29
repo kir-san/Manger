@@ -44,7 +44,7 @@
 
         </activity>
 
-        <service android:name="com.san.kir.manger.foreground_work.services.CatalogForOneSiteUpdaterService" />
+        <service android:name="com.san.kir.manger.com.san.kir.background.services.CatalogForOneSiteUpdaterService" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"

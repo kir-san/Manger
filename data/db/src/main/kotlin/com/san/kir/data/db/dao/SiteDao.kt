@@ -22,4 +22,7 @@ interface SiteDao : BaseDao<Site> {
 
     @Query("SELECT * FROM sites")
     fun loadItems(): Flow<List<Site>>
+
+    @Query("SELECT name FROM sites")
+    fun loadNames(): Flow<List<String>>
 }

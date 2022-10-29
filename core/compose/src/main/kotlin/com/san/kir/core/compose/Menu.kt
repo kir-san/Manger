@@ -44,7 +44,7 @@ class ExpandedMenuScope internal constructor(
                     onClick()
                     onCloseMenu()
                 },
-                modifier = Modifier.padding(end = Dimensions.smaller)
+                modifier = Modifier.padding(end = Dimensions.quarter)
             )
             Text(stringResource(id))
         }

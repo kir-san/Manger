@@ -68,7 +68,7 @@ fun RemoveItemMenuOnHold(
                     OutlinedButton(
                         text = removeText,
                         modifier = Modifier
-                            .padding(Dimensions.small)
+                            .padding(Dimensions.half)
                             .weight(1f)
                             .holdPress(
                                 onDown = scope::startAnimation,
@@ -80,7 +80,7 @@ fun RemoveItemMenuOnHold(
                     OutlinedButton(
                         onClick = scope::hideMenu,
                         modifier = Modifier
-                            .padding(Dimensions.small)
+                            .padding(Dimensions.half)
                             .weight(1f)
                     ) {
                         Text(cancelText)

@@ -8,6 +8,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.Operation
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import com.san.kir.background.works.ScheduleWorker
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.PlannedDao
 import com.san.kir.data.db.dao.SiteDao
@@ -59,7 +60,7 @@ class FirstInitAppWorker @AssistedInject constructor(
     }
 
     private suspend fun restoreSchedule() {
-        plannedDao.loadExtItems().first().filter { it.isEnabled }
+        plannedDao.loadSimpleItems().first().filter { it.isEnabled }
             .forEach { ScheduleWorker.addTask(ctx, it) }
     }
 

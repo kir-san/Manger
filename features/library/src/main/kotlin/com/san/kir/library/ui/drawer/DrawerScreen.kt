@@ -61,7 +61,7 @@ internal fun DrawerScreen(navigateToScreen: (MainMenuType) -> Unit) {
     ) {
         Row(
             modifier = Modifier
-                .padding(Dimensions.small)
+                .padding(Dimensions.half)
                 .startInsetsPadding(),
             verticalAlignment = Alignment.CenterVertically
         ) {

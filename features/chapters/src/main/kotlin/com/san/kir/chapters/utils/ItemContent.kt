@@ -97,7 +97,7 @@ internal fun LoadingIndicator() {
     CircularProgressIndicator(
         modifier = Modifier
             .size(Dimensions.bigger)
-            .padding(end = Dimensions.smaller),
+            .padding(end = Dimensions.quarter),
         strokeWidth = ProgressIndicatorDefaults.StrokeWidth - 1.dp
     )
 }

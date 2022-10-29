@@ -52,7 +52,7 @@ internal fun ItemHeader(id: Int) {
         stringResource(id),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(Dimensions.small),
+            .padding(Dimensions.half),
         textAlign = TextAlign.Center
     )
 }

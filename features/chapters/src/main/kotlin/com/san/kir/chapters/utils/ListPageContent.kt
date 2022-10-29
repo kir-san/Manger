@@ -126,7 +126,7 @@ private fun BottomOrderBar(
         // Кнопка включения отображения всех глав
         IconButton(
             onClick = { sendEvent(Filter.All) },
-            modifier = Modifier.padding(horizontal = Dimensions.small)
+            modifier = Modifier.padding(horizontal = Dimensions.half)
         ) {
             Icon(
                 Icons.Default.SelectAll,
@@ -138,7 +138,7 @@ private fun BottomOrderBar(
         // Кнопка включения отображения только прочитанных глав
         IconButton(
             onClick = { sendEvent(Filter.Read) },
-            modifier = Modifier.padding(horizontal = Dimensions.small)
+            modifier = Modifier.padding(horizontal = Dimensions.half)
         ) {
             Icon(
                 Icons.Default.Visibility,
@@ -151,7 +151,7 @@ private fun BottomOrderBar(
         // Кнопка включения отображения только не прочитанных глав
         IconButton(
             onClick = { sendEvent(Filter.NotRead) },
-            modifier = Modifier.padding(horizontal = Dimensions.small)
+            modifier = Modifier.padding(horizontal = Dimensions.half)
         ) {
             Icon(
                 Icons.Default.VisibilityOff,
@@ -214,7 +214,7 @@ private fun LazyItemScope.ItemContent(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(Dimensions.small)
+                .padding(Dimensions.half)
         ) {
             ChapterName(item.chapter.name)
 
@@ -222,7 +222,7 @@ private fun LazyItemScope.ItemContent(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = Dimensions.smaller),
+                    .padding(top = Dimensions.quarter),
             ) {
 
                 StatusText(
@@ -292,7 +292,7 @@ private fun StatusText(
                             Icons.Default.Delete,
                             contentDescription = "indicator for available deleting",
                             modifier = Modifier
-                                .padding(end = Dimensions.smaller)
+                                .padding(end = Dimensions.quarter)
                                 .size(Dimensions.default),
                         )
                     }

@@ -15,7 +15,7 @@ fun ColumnScope.SmallestSpacer() {
 
 @Composable
 fun ColumnScope.SmallSpacer() {
-    Spacer(modifier = Modifier.height(Dimensions.small))
+    Spacer(modifier = Modifier.height(Dimensions.half))
 }
 
 @Composable
@@ -25,7 +25,7 @@ fun ColumnScope.DefaultSpacer() {
 
 @Composable
 fun RowScope.SmallerSpacer() {
-    Spacer(modifier = Modifier.width(Dimensions.smaller))
+    Spacer(modifier = Modifier.width(Dimensions.quarter))
 }
 
 @Composable

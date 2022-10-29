@@ -1,4 +1,4 @@
-package com.san.kir.manger.ui.application_navigation.schedule.main
+package com.san.kir.schedule.ui.main
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -13,12 +13,13 @@ import com.san.kir.core.compose.NavigationButton
 import com.san.kir.core.compose.ScreenContent
 import com.san.kir.core.compose.ScrollableTabs
 import com.san.kir.core.compose.topBar
-import com.san.kir.manger.R
+import com.san.kir.schedule.R
+import com.san.kir.schedule.utils.pages
 import kotlinx.collections.immutable.toPersistentList
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun SchedulesScreen(
+fun MainScreen(
     navigateUp: () -> Unit,
     navigateToItem: (Long) -> Unit,
 ) {
@@ -36,9 +37,10 @@ fun SchedulesScreen(
         additionalPadding = 0.dp
     ) {
         val pagerState = rememberPagerState()
-        val pages = schedulePages()
+        val pages = pages()
 
-        ScrollableTabs(pagerState,
+        ScrollableTabs(
+            pagerState,
             items = pages.map { stringResource(it.nameId) }.toPersistentList()
         )
 

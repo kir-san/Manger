@@ -14,7 +14,7 @@ import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.Site
 import com.san.kir.data.parsing.SiteCatalog
 import com.san.kir.data.parsing.SiteCatalogsManager
-import com.san.kir.manger.foreground_work.services.CatalogForOneSiteUpdaterService
+import com.san.kir.background.services.CatalogForOneSiteUpdaterService
 import com.san.kir.manger.repositories.SiteCatalogRepository
 import com.san.kir.manger.utils.SortLibraryUtil
 import com.san.kir.manger.utils.enums.MangaFilter

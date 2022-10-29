@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import com.san.kir.core.support.CATEGORY_ALL
 import com.san.kir.data.models.base.Category
+import com.san.kir.data.models.extend.NameAndId
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -16,6 +17,9 @@ interface CategoryDao : BaseDao<Category> {
     // Получение flow со списком всех элементов отсортированных по полю order
     @Query("SELECT * FROM categories ORDER BY ordering")
     fun loadItems(): Flow<List<Category>>
+
+    @Query("SELECT id, name FROM categories")
+    fun loadNamesAndIds(): Flow<List<NameAndId>>
 
     // Получение flow со списком имен всех элементов отсортированных по полю order
     @Query("SELECT name FROM categories ORDER BY ordering")

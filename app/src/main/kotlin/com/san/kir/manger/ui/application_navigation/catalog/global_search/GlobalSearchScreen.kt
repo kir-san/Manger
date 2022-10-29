@@ -33,7 +33,7 @@ fun GlobalSearchScreen(
             onSearchTextChange = viewModel::setSearchText,
             hasAction = action || items.isEmpty(),
         ),
-        additionalPadding = Dimensions.smaller,
+        additionalPadding = Dimensions.quarter,
         enableCollapsingBars = true
     ) {
         items(items) { item ->

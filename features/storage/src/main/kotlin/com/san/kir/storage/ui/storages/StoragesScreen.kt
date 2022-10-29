@@ -68,7 +68,7 @@ fun StoragesScreen(
             ),
             hasAction = state.background is BackgroundState.Load
         ),
-        additionalPadding = Dimensions.smaller,
+        additionalPadding = Dimensions.quarter,
         enableCollapsingBars = true,
     ) {
         items(state.items.size, key = { i -> state.items[i].id }) { index ->
@@ -107,7 +107,7 @@ private fun LazyItemScope.ItemView(
             modifier = Modifier
                 .fillMaxWidth()
                 .onClick { manga?.let { navigateToItem(it.id) } ?: run { showMenu() } }
-                .padding(vertical = Dimensions.smaller, horizontal = Dimensions.default)
+                .padding(vertical = Dimensions.quarter, horizontal = Dimensions.default)
         ) {
             // Иконка манги, если для этой папки она еще есть
             Box(
@@ -125,7 +125,7 @@ private fun LazyItemScope.ItemView(
                 modifier = Modifier
                     .weight(1f, true)
                     .align(Alignment.CenterVertically)
-                    .padding(Dimensions.smaller),
+                    .padding(Dimensions.quarter),
                 verticalArrangement = Arrangement.Center
             ) {
                 // Название папки с мангой
@@ -139,7 +139,7 @@ private fun LazyItemScope.ItemView(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = Dimensions.smallest)
-                        .height(Dimensions.small),
+                        .height(Dimensions.half),
                     max = storageSize,
                     full = item.sizeFull,
                     read = item.sizeRead,

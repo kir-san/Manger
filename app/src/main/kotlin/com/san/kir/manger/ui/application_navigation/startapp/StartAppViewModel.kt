@@ -7,10 +7,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import androidx.work.Operation
+import com.san.kir.background.services.CatalogForOneSiteUpdaterService
+import com.san.kir.background.services.MangaUpdaterService
 import com.san.kir.core.support.DIR
 import com.san.kir.core.utils.createDirs
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.manger.foreground_work.workmanager.FirstInitAppWorker
+import com.san.kir.manger.ui.MainActivity
+import com.san.kir.manger.ui.application_navigation.MainNavTarget
+import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
+import com.san.kir.manger.utils.compose.deepLinkIntent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,6 +39,14 @@ class StartAppViewModel @Inject constructor(
         viewModelScope.launch {
             createNeedFolders()
             val sp = ctx.getSharedPreferences("startup", Context.MODE_PRIVATE)
+
+            MangaUpdaterService.setLatestDeepLink(
+                ctx, ctx.deepLinkIntent<MainActivity>(MainNavTarget.Latest),
+            )
+
+            CatalogForOneSiteUpdaterService.setLatestDeepLink(
+                ctx, ctx.deepLinkIntent<MainActivity>(CatalogsNavTarget.Main)
+            )
 
             delay(0.5.seconds)
             if (sp.contains("firstLaunch")) {

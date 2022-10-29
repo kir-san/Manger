@@ -1,20 +1,23 @@
-package com.san.kir.manger.ui.application_navigation.schedule
+package com.san.kir.manger.ui.application_navigation
 
+import androidx.compose.runtime.remember
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import com.san.kir.manger.ui.application_navigation.MainNavTarget
-import com.san.kir.manger.ui.application_navigation.schedule.main.SchedulesScreen
 import com.san.kir.manger.utils.compose.NavTarget
 import com.san.kir.manger.utils.compose.navLongArgument
 import com.san.kir.manger.utils.compose.navTarget
 import com.san.kir.manger.utils.compose.navigation
+import com.san.kir.schedule.ui.main.MainScreen
+import com.san.kir.schedule.ui.task.TaskScreen
 
 enum class ScheduleNavTarget : NavTarget {
     Main {
         override val content = navTarget(route = "main") {
-            SchedulesScreen(
+            val navigateTo: (Long) -> Unit = remember { { navigate(Schedule, it) } }
+
+            MainScreen(
                 navigateUp = up(),
-                navigateToItem = { navigate(Schedule, it) }
+                navigateToItem = navigateTo
             )
         }
     },
@@ -25,9 +28,7 @@ enum class ScheduleNavTarget : NavTarget {
             hasItems = true,
             arguments = listOf(navLongArgument())
         ) {
-            val viewModel = plannedTaskViewModel(longElement ?: -1L)
-
-            PlannedTaskScreen(navigateUp = up(), viewModel)
+            TaskScreen(navigateUp = up(), longElement ?: -1L)
         }
     };
 }

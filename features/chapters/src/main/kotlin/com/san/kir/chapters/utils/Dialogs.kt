@@ -161,7 +161,7 @@ internal fun ProgressDeletingChaptersDialog(
                     if (action) CircularProgressIndicator()
                     Text(
                         stringResource(message),
-                        modifier = Modifier.padding(horizontal = Dimensions.small)
+                        modifier = Modifier.padding(horizontal = Dimensions.half)
                     )
                 }
             }

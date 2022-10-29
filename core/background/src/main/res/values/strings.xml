@@ -20,4 +20,25 @@
     <string name="main_check_app_ver_no_find">У вас установленна актуальная версия</string>
     <string name="main_check_app_ver_error">Произошла ошибка при поиске обновлений, возможно у вас интернет отключен</string>
 
+    <!-- CatalogForOneSiteService -->
+    <string name="catalog_fos_service_title">Сервис обновления каталогов</string>
+    <string name="catalog_fos_service_message">Нажмите на уведомление для перехода в каталоги</string>
+    <string name="catalog_fos_service_action_cancel_all">Отменить все</string>
+    <string name="catalog_fos_service_notify_title">Обновление каталогов: %d шт.</string>
+    <string name="catalog_fos_service_notify_text">Подготовка каталога %s к загрузке</string>
+    <string name="catalog_fos_service_notify_title_2">Обновление %d шт.</string>
+    <string name="catalog_fos_service_notify_complete">Обновление каталогов завершенно</string>
+    <string name="catalog_fos_service_notify_manual_stop_text">Вы сами это сделали</string>
+    <string name="catalog_fos_service_notify_manual_stop_title">Обновление каталогов отменено</string>
+    <string name="catalog_fos_service_notify_error_title">Обновление каталогов завершенно с ошибкой</string>
+    <string name="catalog_fos_service_notify_error_text">Проверьте подключение к интернету</string>
+
+    <!--Scheduler-->
+    <string name="schedule_manager_cancel_manga">Было отменено обновление манги %s</string>
+    <string name="schedule_manager_cancel_category">Было отменено обновление категории %s</string>
+    <string name="schedule_manager_cancel_group">Было отменено обновление группы %s</string>
+    <string name="schedule_manager_cancel_catalog">Было отменено обновление каталога %s</string>
+    <string name="schedule_manager_cancel_app">Было отменено обновление приложения</string>
+    <string name="schedule_activity_menu_add">Добавить</string>
+
 </resources>

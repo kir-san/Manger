@@ -54,7 +54,7 @@ fun CatalogsScreen(
             title = stringResource(R.string.main_menu_catalogs),
             actions = catalogsActions(navigateToSearch, viewModel)
         ),
-        additionalPadding = Dimensions.small
+        additionalPadding = Dimensions.half
     ) {
         items(items = siteList, key = { site -> site.id }) { item ->
             ItemView(item, viewModel, navigateToItem)
@@ -72,7 +72,7 @@ fun ItemView(item: Site, viewModel: CatalogsViewModel, onClick: (String) -> Unit
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick(item.name) }
-            .padding(vertical = Dimensions.smaller, horizontal = Dimensions.default)
+            .padding(vertical = Dimensions.quarter, horizontal = Dimensions.default)
             .padding(systemBarsHorizontalPadding())
     ) {
         Image(

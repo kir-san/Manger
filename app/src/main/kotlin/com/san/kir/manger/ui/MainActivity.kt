@@ -13,7 +13,6 @@ import com.san.kir.core.internet.ConnectManager
 import com.san.kir.core.internet.LocalConnectManager
 import com.san.kir.manger.ui.application_navigation.additional_manga_screens.SiteCatalogItemViewModel
 import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewModel
-import com.san.kir.manger.ui.application_navigation.schedule.PlannedTaskViewModel
 import com.san.kir.manger.ui.application_navigation.startapp.StartAppScreen
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -31,7 +30,6 @@ class MainActivity : ComponentActivity() {
     interface ViewModelFactoryProvider {
         fun catalogViewModelFactory(): CatalogViewModel.Factory
         fun siteCatalogItemViewModelFactory(): SiteCatalogItemViewModel.Factory
-        fun plannedTaskViewModelFactory(): PlannedTaskViewModel.Factory
     }
 
     @Inject

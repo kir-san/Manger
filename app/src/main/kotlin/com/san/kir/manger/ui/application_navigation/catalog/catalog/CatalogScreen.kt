@@ -76,7 +76,7 @@ import com.san.kir.core.compose.systemBarStartPadding
 import com.san.kir.core.compose.systemBarTopPadding
 import com.san.kir.core.compose.topBar
 import com.san.kir.manger.R
-import com.san.kir.manger.foreground_work.services.CatalogForOneSiteUpdaterService
+import com.san.kir.background.services.CatalogForOneSiteUpdaterService
 import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewModel.Companion.DATE
 import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewModel.Companion.NAME
 import com.san.kir.manger.ui.application_navigation.catalog.catalog.CatalogViewModel.Companion.POP
@@ -115,7 +115,7 @@ fun CatalogScreen(
         ),
         drawerContent = { DrawerContent(viewModel) },
         bottomBar = { height -> BottomBar(viewModel, height) },
-        additionalPadding = Dimensions.smaller,
+        additionalPadding = Dimensions.quarter,
 //        enableCollapsingBars = true,
     ) {
         items(items = items, key = { item -> item.id }) { item ->
@@ -394,7 +394,7 @@ private fun DrawerContent(viewModel: CatalogViewModel) {
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(systemBarStartPadding(Dimensions.smaller))
+                    .padding(systemBarStartPadding(Dimensions.quarter))
             ) {
                 Text(text = "Очистить")
             }

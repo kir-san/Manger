@@ -1,4 +1,4 @@
-package com.san.kir.manger.foreground_work.workmanager
+package com.san.kir.background.works
 
 import android.app.AlarmManager
 import android.content.Context
@@ -10,6 +10,10 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import com.san.kir.background.R
+import com.san.kir.background.services.AppUpdateService
+import com.san.kir.background.services.CatalogForOneSiteUpdaterService
+import com.san.kir.background.services.MangaUpdaterService
 import com.san.kir.core.support.PlannedPeriod
 import com.san.kir.core.support.PlannedType
 import com.san.kir.core.utils.longToast
@@ -17,17 +21,11 @@ import com.san.kir.data.db.dao.CategoryDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.PlannedDao
 import com.san.kir.data.db.dao.SiteDao
-import com.san.kir.data.models.base.PlannedTask
 import com.san.kir.data.models.base.PlannedTaskBase
-import com.san.kir.data.models.base.mangaList
-import com.san.kir.manger.R
-import com.san.kir.background.services.AppUpdateService
-import com.san.kir.manger.foreground_work.services.CatalogForOneSiteUpdaterService
-import com.san.kir.background.services.MangaUpdaterService
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import timber.log.Timber
-import java.util.*
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 @HiltWorker
@@ -41,26 +39,33 @@ class ScheduleWorker @AssistedInject constructor(
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
-        val id = inputData.getLong(PlannedTask.tableName, -1L)
+        val id = inputData.getLong("planned_task", -1L)
 
         Timber.v("doWork $id")
         if (id != -1L) {
             kotlin.runCatching {
 
-                val task = plannedDao.itemById(id)
+                val task = plannedDao.itemById(id) ?: return Result.failure()
 
                 when (task.type) {
                     PlannedType.MANGA -> {
-                        val manga = mangaDao.itemByName(task.manga)
+                        val manga = mangaDao.itemById(task.mangaId)
                         MangaUpdaterService.add(applicationContext, manga)
                     }
+
                     PlannedType.GROUP -> {
-                        task.mangaList.forEach { unic ->
-                            val manga = mangaDao.itemByName(unic)
-                            MangaUpdaterService.add(applicationContext, manga)
-                        }
+                        if (task.groupContent.isNotEmpty())
+                            task.groupContent.forEach { unic ->
+                                val manga = mangaDao.itemByName(unic)
+                                MangaUpdaterService.add(applicationContext, manga)
+                            }
+                        else if (task.mangas.isNotEmpty())
+                            mangaDao.itemsByIds(task.mangas).forEach { manga ->
+                                MangaUpdaterService.add(applicationContext, manga)
+                            }
 
                     }
+
                     PlannedType.CATEGORY -> {
                         val defaultCategory = categoryDao.defaultCategory(applicationContext)
 
@@ -71,15 +76,19 @@ class ScheduleWorker @AssistedInject constructor(
                             MangaUpdaterService.add(applicationContext, it)
                         }
                     }
+
                     PlannedType.CATALOG -> {
                         val catalog = siteDao.getItem(task.catalog)
                         if (catalog != null &&
                             !CatalogForOneSiteUpdaterService.isContain(catalog.catalogName)
                         ) {
-                            CatalogForOneSiteUpdaterService.add(applicationContext,
-                                catalog.catalogName)
+                            CatalogForOneSiteUpdaterService.add(
+                                applicationContext,
+                                catalog.catalogName
+                            )
                         }
                     }
+
                     PlannedType.APP -> {
                         AppUpdateService.start(applicationContext)
                     }
@@ -100,7 +109,6 @@ class ScheduleWorker @AssistedInject constructor(
         private const val weekPeriod = dayPeriod * 7
 
         fun addTask(ctx: Context, item: PlannedTaskBase) {
-
             val delay = getDelay(item)
             Timber.v("delay $delay ")
             val perTask = PeriodicWorkRequestBuilder<ScheduleWorker>(
@@ -108,7 +116,7 @@ class ScheduleWorker @AssistedInject constructor(
                 1L, TimeUnit.MINUTES,
             )
                 .addTag(tag + item.id)
-                .setInputData(workDataOf(PlannedTask.tableName to item.id))
+                .setInputData(workDataOf("planned_task" to item.id))
                 .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                 /*.setConstraints(
                     Constraints.Builder()
@@ -118,7 +126,7 @@ class ScheduleWorker @AssistedInject constructor(
                 .build()
             val oneTask = OneTimeWorkRequestBuilder<ScheduleWorker>()
                 .addTag(tag + item.id)
-                .setInputData(workDataOf(PlannedTask.tableName to item.id))
+                .setInputData(workDataOf("planned_task" to item.id))
                 .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                 .build()
             WorkManager.getInstance(ctx).enqueue(listOf(oneTask, perTask))
@@ -131,19 +139,35 @@ class ScheduleWorker @AssistedInject constructor(
                 .cancelAllWorkByTag(tag + item.id)
                 .result
                 .addListener({
-                    when (item.type) {
-                        PlannedType.MANGA ->
-                            ctx.longToast(R.string.schedule_manager_cancel_manga, item.manga)
-                        PlannedType.CATEGORY ->
-                            ctx.longToast(R.string.schedule_manager_cancel_category, item.category)
-                        PlannedType.GROUP ->
-                            ctx.longToast(R.string.schedule_manager_cancel_group, item.groupName)
-                        PlannedType.CATALOG ->
-                            ctx.longToast(R.string.schedule_manager_cancel_catalog, item.catalog)
-                        PlannedType.APP ->
-                            ctx.longToast(R.string.schedule_manager_cancel_app)
-                    }
-                }, exe)
+                                 when (item.type) {
+                                     PlannedType.MANGA ->
+                                         ctx.longToast(
+                                             R.string.schedule_manager_cancel_manga,
+                                             item.manga
+                                         )
+
+                                     PlannedType.CATEGORY ->
+                                         ctx.longToast(
+                                             R.string.schedule_manager_cancel_category,
+                                             item.category
+                                         )
+
+                                     PlannedType.GROUP ->
+                                         ctx.longToast(
+                                             R.string.schedule_manager_cancel_group,
+                                             item.groupName
+                                         )
+
+                                     PlannedType.CATALOG ->
+                                         ctx.longToast(
+                                             R.string.schedule_manager_cancel_catalog,
+                                             item.catalog
+                                         )
+
+                                     PlannedType.APP ->
+                                         ctx.longToast(R.string.schedule_manager_cancel_app)
+                                 }
+                             }, exe)
 
         }
 

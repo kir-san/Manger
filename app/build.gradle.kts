@@ -52,6 +52,7 @@ dependencies {
     implementation(project(Modules.Features.statistic))
     implementation(project(Modules.Features.storage))
     implementation(project(Modules.Features.settings))
+    implementation(project(Modules.Features.schedule))
 
     implementation(project(Modules.Core.utils))
     implementation(project(Modules.Core.support))
@@ -63,6 +64,8 @@ dependencies {
     implementation(project(Modules.Data.db))
     implementation(project(Modules.Data.models))
     implementation(project(Modules.Data.parsing))
+
+    implementation(platform(libs.compose.bom))
 
     implementation(libs.stdlib)
     implementation(libs.bundles.coroutines)

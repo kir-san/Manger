@@ -54,7 +54,7 @@ fun CategoriesScreen(
                     onClick = { navigateToItem("") })
             },
         ),
-        additionalPadding = Dimensions.smaller
+        additionalPadding = Dimensions.quarter
     ) {
         itemsIndexed(items = state.items, key = { _, c -> c.id }) { index, item ->
             CategoryItemView(
@@ -83,7 +83,7 @@ private fun CategoryItemView(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = Dimensions.smaller, horizontal = Dimensions.default)
+            .padding(vertical = Dimensions.quarter, horizontal = Dimensions.default)
             .padding(systemBarsHorizontalPadding()),
         verticalAlignment = Alignment.CenterVertically
     ) {

@@ -44,7 +44,7 @@ fun StatisticsScreen(
                 R.string.statistic_subtitle, TimeFormat(state.allTime).toString(ctx)
             ),
         ),
-        additionalPadding = Dimensions.smaller
+        additionalPadding = Dimensions.quarter
     ) {
         items(items = state.items, key = { stat -> stat.id }) { item ->
             ItemView(item, state.allTime, viewModel::sendEvent) { navigateToItem(item.id) }
@@ -72,7 +72,7 @@ private fun LazyItemScope.ItemView(
             modifier = Modifier
                 .fillMaxWidth()
                 .onClick(onClick = onClick)
-                .padding(vertical = Dimensions.smaller, horizontal = Dimensions.default)
+                .padding(vertical = Dimensions.quarter, horizontal = Dimensions.default)
         ) {
 
             CircleLogo(logoUrl = item.logo)
@@ -101,8 +101,8 @@ private fun ReadStatus(time: Long) {
 fun Progress(allTime: Long, itemTime: Long) {
     LinearProgressIndicator(
         modifier = Modifier
-            .padding(top = Dimensions.smaller)
-            .height(Dimensions.small)
+            .padding(top = Dimensions.quarter)
+            .height(Dimensions.half)
             .fillMaxWidth(),
         progress = if (allTime != 0L) itemTime.toFloat() / allTime.toFloat() else 0F,
     )

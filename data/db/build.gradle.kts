@@ -21,6 +21,8 @@ dependencies {
     implementation(project(Modules.Core.utils))
     implementation(project(Modules.Core.support))
 
+    implementation(platform(libs.compose.bom))
+
     implementation(libs.hilt.android)
 
     ksp(libs.room.compiler)

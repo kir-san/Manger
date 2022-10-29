@@ -192,11 +192,11 @@ private fun LazyListScope.stickyHeader(
     secondaryCount: Int = 0,
 ) {
     stickyHeader {
-        Card(elevation = Dimensions.small, modifier = Modifier.padding(Dimensions.smaller)) {
+        Card(elevation = Dimensions.half, modifier = Modifier.padding(Dimensions.quarter)) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(Dimensions.smaller),
+                    .padding(Dimensions.quarter),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -206,12 +206,12 @@ private fun LazyListScope.stickyHeader(
                     Text(
                         "-$secondaryCount",
                         modifier = Modifier
-                            .padding(horizontal = Dimensions.small)
+                            .padding(horizontal = Dimensions.half)
                             .background(
                                 color = Color.Magenta,
                                 shape = CircleShape
                             )
-                            .padding(horizontal = Dimensions.smaller),
+                            .padding(horizontal = Dimensions.quarter),
                     )
                 }
             }

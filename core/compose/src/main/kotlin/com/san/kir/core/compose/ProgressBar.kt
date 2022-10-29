@@ -14,7 +14,7 @@ fun ToolbarProgress() {
     CircularProgressIndicator(
         color = contentColorFor(MaterialTheme.colors.primarySurface),
         modifier = Modifier.size(Dimensions.ProgressBar.toolbar)
-            .padding(end = Dimensions.smaller)
+            .padding(end = Dimensions.quarter)
     )
 }
 
@@ -23,7 +23,7 @@ fun TextProgress() {
     CircularProgressIndicator(
         modifier = Modifier
             .size(Dimensions.ProgressBar.default)
-            .padding(start = Dimensions.smaller, top = Dimensions.smallest),
+            .padding(start = Dimensions.quarter, top = Dimensions.smallest),
         strokeWidth = Dimensions.ProgressBar.strokeSmall,
     )
 }

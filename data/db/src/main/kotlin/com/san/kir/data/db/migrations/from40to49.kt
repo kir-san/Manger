@@ -1,7 +1,5 @@
 package com.san.kir.data.db.migrations
 
-import com.san.kir.data.models.base.PlannedTask
-
 
 /*
 Таблица Manga
@@ -35,50 +33,48 @@ internal val from42to43 = migrate {
                 "WHERE manga.category = name)"
     )
 
-    with(PlannedTask.Col) {
-        renameTableToTmp(PlannedTask.tableName)
-        query(
-            "CREATE TABLE IF NOT EXISTS `${PlannedTask.tableName}` (" +
-                    "$id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                    "$manga TEXT NOT NULL, " +
-                    "$groupName TEXT NOT NULL, " +
-                    "$groupContent TEXT NOT NULL, " +
-                    "$category TEXT NOT NULL, " +
-                    "$categoryId INTEGER NOT NULL DEFAULT 0 , " +
-                    "$catalog TEXT NOT NULL DEFAULT ``, " +
-                    "$type INTEGER NOT NULL, " +
-                    "$isEnabled INTEGER NOT NULL, " +
-                    "$period INTEGER NOT NULL, " +
-                    "$dayOfWeek INTEGER NOT NULL, " +
-                    "$hour INTEGER NOT NULL, " +
-                    "$minute INTEGER NOT NULL, " +
-                    "$addedTime INTEGER NOT NULL, " +
-                    "$errorMessage TEXT NOT NULL)"
-        )
+    renameTableToTmp("planned_task")
+    query(
+        "CREATE TABLE IF NOT EXISTS `planned_task` (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "manga TEXT NOT NULL, " +
+                "group_name TEXT NOT NULL, " +
+                "group_content TEXT NOT NULL, " +
+                "category TEXT NOT NULL, " +
+                "category_id INTEGER NOT NULL DEFAULT 0 , " +
+                "catalog TEXT NOT NULL DEFAULT ``, " +
+                "type INTEGER NOT NULL, " +
+                "is_enabled INTEGER NOT NULL, " +
+                "period INTEGER NOT NULL, " +
+                "day_of_week INTEGER NOT NULL, " +
+                "hour INTEGER NOT NULL, " +
+                "minute INTEGER NOT NULL, " +
+                "added_time INTEGER NOT NULL, " +
+                "error_message TEXT NOT NULL)"
+    )
 
-        query(
-            "INSERT INTO ${PlannedTask.tableName}(" +
-                    "$id, $manga, $groupName, $groupContent, $category, $catalog, $type, " +
-                    "$isEnabled, $period, $dayOfWeek, $hour, $minute, $addedTime, $errorMessage) " +
-                    "SELECT " +
-                    "$id, $manga, $groupName, $groupContent, $category, $catalog, $type, " +
-                    "$isEnabled, $period, $dayOfWeek, $hour, $minute, $addedTime, $errorMessage " +
-                    "FROM $tmpTable"
-        )
+    query(
+        "INSERT INTO planned_task(" +
+                "id, manga, group_name, group_content, category, catalog, type, " +
+                "is_enabled, period, day_of_week, hour, minute, added_time, error_message) " +
+                "SELECT " +
+                "id, manga, group_name, group_content, category, catalog, type, " +
+                "is_enabled, period, day_of_week, hour, minute, added_time, error_message " +
+                "FROM $tmpTable"
+    )
 
-        removeTmpTable()
+    removeTmpTable()
 
-        query(
-            "UPDATE ${PlannedTask.tableName} " +
-                    "SET $categoryId = " +
-                    "(SELECT id FROM categories " +
-                    "WHERE ${PlannedTask.tableName}.${category} = name) " +
+    query(
+        "UPDATE planned_task " +
+                "SET category_id = " +
+                "(SELECT id FROM categories " +
+                "WHERE planned_task.category = name) " +
 
-                    "WHERE EXISTS " +
-                    "(SELECT id FROM categories " +
-                    "WHERE ${PlannedTask.tableName}.${category} = name)"
-        )
-    }
+                "WHERE EXISTS " +
+                "(SELECT id FROM categories " +
+                "WHERE planned_task.category = name)"
+    )
 }
 
 /*

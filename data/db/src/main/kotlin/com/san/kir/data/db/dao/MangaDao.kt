@@ -6,6 +6,7 @@ import com.san.kir.core.utils.getFullPath
 import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.extend.MangaLogo
 import com.san.kir.data.models.extend.MiniManga
+import com.san.kir.data.models.extend.NameAndId
 import com.san.kir.data.models.extend.SimplifiedManga
 import kotlinx.coroutines.flow.Flow
 import java.io.File
@@ -21,12 +22,19 @@ interface MangaDao : BaseDao<Manga> {
     fun loadItems(): Flow<List<Manga>>
 
     // Получение flow со списком всех элементов из view
-    @Query("SELECT * FROM mini_manga")
+    @Query(
+        "SELECT id, name, isUpdate, " +
+                "(SELECT name FROM categories WHERE manga.category_id = categories.id) AS category " +
+                " FROM manga"
+    )
     fun loadMiniItems(): Flow<List<MiniManga>>
 
     // Получение всех упрощенных элементов из View
     @Query("SELECT * FROM simple_manga")
     fun loadSimpleItems(): Flow<List<SimplifiedManga>>
+
+    @Query("SELECT id, name FROM manga WHERE isUpdate=1")
+    fun loadNamesAndIds(): Flow<List<NameAndId>>
 
     // Получение flow с элементом по его названию
     @Query("SELECT * FROM `manga` WHERE `name` IS :name")
@@ -50,6 +58,9 @@ interface MangaDao : BaseDao<Manga> {
     // Получение элемента по id
     @Query("SELECT * FROM manga WHERE id IS :id")
     suspend fun itemById(id: Long): Manga
+
+    @Query("SELECT * FROM manga WHERE id IN (:ids)")
+    suspend fun itemsByIds(ids: List<Long>): List<Manga>
 
     // Получение элементов по id категории
     @Query("SELECT * FROM manga WHERE category_id IS :id")

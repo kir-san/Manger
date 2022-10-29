@@ -38,6 +38,7 @@ import com.san.kir.core.compose.endInsetsPadding
 import com.san.kir.core.compose.startInsetsPadding
 import com.san.kir.settings.R
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 private fun TemplatePreferenceItem(
@@ -52,7 +53,7 @@ private fun TemplatePreferenceItem(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = Dimensions.small),
+            .padding(vertical = Dimensions.half),
     ) {
         Row(
             modifier = Modifier
@@ -107,7 +108,7 @@ internal fun PreferenceTitle(id: Int) {
                 .fillMaxWidth()
                 .padding(
                     start = Dimensions.Image.bigger,
-                    bottom = Dimensions.small,
+                    bottom = Dimensions.half,
                     top = Dimensions.default
                 )
         ) {
@@ -151,8 +152,7 @@ internal fun <T> ListPreferenceItem(
                         dialog = false
                     },
                     stateList = entryValues,
-                    textList = stringArrayResource(entries).toList(),
-                    verticalPadding = 8.dp,
+                    textList = stringArrayResource(entries).toList().toImmutableList(),
                 )
             },
             buttons = {
@@ -222,7 +222,7 @@ internal fun MultiSelectListPreferenceItem(
                             state = items[index],
                             onChange = { items[index] = it },
                             firstText = text,
-                            modifier = Modifier.padding(vertical = Dimensions.small)
+                            modifier = Modifier.padding(vertical = Dimensions.half)
                         )
                     }
                 }

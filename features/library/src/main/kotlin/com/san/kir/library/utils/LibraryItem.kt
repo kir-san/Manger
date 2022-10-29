@@ -58,8 +58,8 @@ fun LazyGridItemScope.LibraryLargeItem(
     }
 
     Card(
-        shape = RoundedCornerShape(Dimensions.small),
-        border = BorderStroke(Dimensions.smaller, backgroundColor),
+        shape = RoundedCornerShape(Dimensions.half),
+        border = BorderStroke(Dimensions.quarter, backgroundColor),
         elevation = 3.dp,
         modifier = Modifier
             .animateItemPlacement()
@@ -135,8 +135,8 @@ fun LazyItemScope.LibrarySmallItem(
     }
 
     Card(
-        shape = RoundedCornerShape(Dimensions.small),
-        border = BorderStroke(Dimensions.smaller, backgroundColor),
+        shape = RoundedCornerShape(Dimensions.half),
+        border = BorderStroke(Dimensions.quarter, backgroundColor),
         modifier = Modifier
             .animateItemPlacement()
             .testTag(TestTags.Library.item)
@@ -150,12 +150,12 @@ fun LazyItemScope.LibrarySmallItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .horizontalInsetsPadding()
-                .padding(Dimensions.smaller)
+                .padding(Dimensions.quarter)
         ) {
             Image(
                 rememberImage(manga.logo),
                 modifier = Modifier
-                    .padding(Dimensions.smaller)
+                    .padding(Dimensions.quarter)
                     .size(Dimensions.Image.bigger),
                 contentDescription = null,
             )
@@ -164,7 +164,7 @@ fun LazyItemScope.LibrarySmallItem(
                 maxLines = 1,
                 modifier = Modifier
                     .weight(1f, true)
-                    .padding(start = Dimensions.small)
+                    .padding(start = Dimensions.half)
                     .align(Alignment.CenterVertically),
                 fontWeight = FontWeight.Bold
             )
@@ -173,7 +173,7 @@ fun LazyItemScope.LibrarySmallItem(
                 text = "${manga.noRead}",
                 maxLines = 1,
                 modifier = Modifier
-                    .padding(horizontal = Dimensions.small)
+                    .padding(horizontal = Dimensions.half)
                     .align(Alignment.CenterVertically),
                 fontWeight = FontWeight.Bold
             )

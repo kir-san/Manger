@@ -63,9 +63,9 @@ class MangaUpdaterService : Service() {
 
         private var taskCounter = listOf<Long>()
 
-        private val actionToLatest: PendingIntent? = null
+        private var actionToLatest: PendingIntent? = null
         fun setLatestDeepLink(ctx: Context, deepLinkIntent: Intent) {
-            TaskStackBuilder.create(ctx).run {
+            actionToLatest = TaskStackBuilder.create(ctx).run {
                 addNextIntentWithParentStack(deepLinkIntent)
                 getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
             }

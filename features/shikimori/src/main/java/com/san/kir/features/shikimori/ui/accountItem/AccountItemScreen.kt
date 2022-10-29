@@ -70,7 +70,7 @@ private fun LoginOrNot(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = navigateToManager)
-            .padding(vertical = Dimensions.smaller, horizontal = Dimensions.default)
+            .padding(vertical = Dimensions.quarter, horizontal = Dimensions.default)
             .horizontalInsetsPadding(),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -79,7 +79,7 @@ private fun LoginOrNot(
             rememberImage(ShikimoriData.iconUrl),
             contentDescription = "Shikimori site icon",
             modifier = Modifier
-                .padding(vertical = Dimensions.small)
+                .padding(vertical = Dimensions.half)
                 .padding(end = Dimensions.default)
                 .size(Dimensions.Image.default)
         )

@@ -172,7 +172,7 @@ internal fun LazyItemScope.LatestItemContent(
                 ),
                 onLongClick = { sendEvent(LatestEvent.ChangeSelect(index)) }
             )
-            .padding(vertical = Dimensions.small, horizontal = Dimensions.default)
+            .padding(vertical = Dimensions.half, horizontal = Dimensions.default)
             .horizontalInsetsPadding()
             .animateItemPlacement(),
     ) {
@@ -184,7 +184,7 @@ internal fun LazyItemScope.LatestItemContent(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = Dimensions.smaller),
+                    .padding(top = Dimensions.quarter),
             ) {
                 MangaName(item.chapter.manga)
 

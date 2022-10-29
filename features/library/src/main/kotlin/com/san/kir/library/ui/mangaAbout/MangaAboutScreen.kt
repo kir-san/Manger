@@ -170,7 +170,7 @@ private fun ColumnScope.ColorPicker(initialValue: Int, onValueChange: (Int) -> U
     )
 
     BottomAnimatedVisibility(picker) {
-        Column(modifier = Modifier.padding(horizontal = Dimensions.smaller)) {
+        Column(modifier = Modifier.padding(horizontal = Dimensions.quarter)) {
 
             Slider("R", color.red) { color = color.copy(red = it) }
             Slider("G", color.green) { color = color.copy(green = it) }
@@ -199,7 +199,7 @@ private fun Slider(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(Dimensions.smaller),
+            .padding(Dimensions.quarter),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(text = text, fontWeight = FontWeight.Bold)
@@ -208,7 +208,7 @@ private fun Slider(
             onValueChange = onValueChange,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = Dimensions.small)
+                .padding(start = Dimensions.half)
         )
     }
 }

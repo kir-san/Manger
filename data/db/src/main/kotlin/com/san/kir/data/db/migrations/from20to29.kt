@@ -263,24 +263,22 @@ internal val from27to28 = migrate {
     from = 27
     to = 28
 
-    with(PlannedTask.Col) {
-        query(
-            "CREATE TABLE IF NOT EXISTS `${PlannedTask.tableName}` (" +
-                    "$id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                    "$manga TEXT NOT NULL, " +
-                    "$groupName TEXT NOT NULL, " +
-                    "$groupContent TEXT NOT NULL, " +
-                    "$category TEXT NOT NULL, " +
-                    "$type INTEGER NOT NULL, " +
-                    "$isEnabled INTEGER NOT NULL, " +
-                    "$period INTEGER NOT NULL, " +
-                    "$dayOfWeek INTEGER NOT NULL, " +
-                    "$hour INTEGER NOT NULL, " +
-                    "$minute INTEGER NOT NULL, " +
-                    "$addedTime INTEGER NOT NULL, " +
-                    "$errorMessage TEXT NOT NULL)"
-        )
-    }
+    query(
+        "CREATE TABLE IF NOT EXISTS `planned_task` (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "manga TEXT NOT NULL, " +
+                "group_name TEXT NOT NULL, " +
+                "group_content TEXT NOT NULL, " +
+                "category TEXT NOT NULL, " +
+                "type INTEGER NOT NULL, " +
+                "is_enabled INTEGER NOT NULL, " +
+                "period INTEGER NOT NULL, " +
+                "day_of_week INTEGER NOT NULL, " +
+                "hour INTEGER NOT NULL, " +
+                "minute INTEGER NOT NULL, " +
+                "added_time INTEGER NOT NULL, " +
+                "error_message TEXT NOT NULL)"
+    )
 }
 
 /*
@@ -292,39 +290,37 @@ internal val from28to29 = migrate {
     from = 28
     to = 29
 
-    with(PlannedTask.Col) {
-        renameTableToTmp(PlannedTask.tableName)
+    renameTableToTmp("planned_task")
 
-        query(
-            "CREATE TABLE IF NOT EXISTS ${PlannedTask.tableName} (" +
-                    "$id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                    "$manga TEXT NOT NULL, " +
-                    "$groupName TEXT NOT NULL, " +
-                    "$groupContent TEXT NOT NULL, " +
-                    "$category TEXT NOT NULL, " +
-                    "$catalog TEXT NOT NULL DEFAULT ``, " +
-                    "$type INTEGER NOT NULL, " +
-                    "$isEnabled INTEGER NOT NULL, " +
-                    "$period INTEGER NOT NULL, " +
-                    "$dayOfWeek INTEGER NOT NULL, " +
-                    "$hour INTEGER NOT NULL, " +
-                    "$minute INTEGER NOT NULL, " +
-                    "$addedTime INTEGER NOT NULL, " +
-                    "$errorMessage TEXT NOT NULL)"
-        )
+    query(
+        "CREATE TABLE IF NOT EXISTS planned_task (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "manga TEXT NOT NULL, " +
+                "group_name TEXT NOT NULL, " +
+                "group_content TEXT NOT NULL, " +
+                "category TEXT NOT NULL, " +
+                "catalog TEXT NOT NULL DEFAULT ``, " +
+                "type INTEGER NOT NULL, " +
+                "is_enabled INTEGER NOT NULL, " +
+                "period INTEGER NOT NULL, " +
+                "day_of_week INTEGER NOT NULL, " +
+                "hour INTEGER NOT NULL, " +
+                "minute INTEGER NOT NULL, " +
+                "added_time INTEGER NOT NULL, " +
+                "error_message TEXT NOT NULL)"
+    )
 
-        query(
-            "INSERT INTO ${PlannedTask.tableName}(" +
-                    "$id, $manga, $groupName, $groupContent, $category, $type, $isEnabled, " +
-                    "$period, $dayOfWeek, $hour, $minute, $addedTime, $errorMessage) " +
-                    "SELECT " +
-                    "$id, $manga, $groupName, $groupContent, $category, $type, $isEnabled, " +
-                    "$period, $dayOfWeek, $hour, $minute, $addedTime, $errorMessage " +
-                    "FROM $tmpTable"
-        )
+    query(
+        "INSERT INTO planned_task(" +
+                "id, manga, group_name, group_content, category, type, is_enabled, " +
+                "period, day_of_week, hour, minute, added_time, error_message) " +
+                "SELECT " +
+                "id, manga, group_name, group_content, category, type, is_enabled, " +
+                "period, day_of_week, hour, minute, added_time, error_message " +
+                "FROM $tmpTable"
+    )
 
-        removeTmpTable()
-    }
+    removeTmpTable()
 }
 
 /*

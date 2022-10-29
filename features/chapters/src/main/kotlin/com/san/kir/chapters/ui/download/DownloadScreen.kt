@@ -176,7 +176,7 @@ private fun LazyItemScope.ItemView(
             .fillMaxWidth()
             .animateItemPlacement()
             .horizontalInsetsPadding()
-            .padding(top = Dimensions.small)
+            .padding(top = Dimensions.half)
     ) {
         Box(
             contentAlignment = Alignment.Center,
@@ -201,7 +201,7 @@ private fun LazyItemScope.ItemView(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()
-                .padding(horizontal = Dimensions.small),
+                .padding(horizontal = Dimensions.half),
             verticalArrangement = Arrangement.Center
         ) {
             ProvideTextStyle(MaterialTheme.typography.subtitle2) {
@@ -237,8 +237,8 @@ private fun ProgressIndicator(state: DownloadState, progress: Float) {
             DownloadState.QUEUED -> {
                 LinearProgressIndicator(
                     modifier = Modifier
-                        .padding(top = Dimensions.smaller)
-                        .height(Dimensions.small)
+                        .padding(top = Dimensions.quarter)
+                        .height(Dimensions.half)
                         .fillMaxWidth(),
                 )
             }
@@ -247,8 +247,8 @@ private fun ProgressIndicator(state: DownloadState, progress: Float) {
                 LinearProgressIndicator(
                     progress = progress,
                     modifier = Modifier
-                        .padding(top = Dimensions.smaller)
-                        .height(Dimensions.small)
+                        .padding(top = Dimensions.quarter)
+                        .height(Dimensions.half)
                         .fillMaxWidth(),
                 )
             }

@@ -76,19 +76,6 @@
     значит в сайте произошли изменения и парсер не может с ними справится. Сообщите автору
     приложения, пусть он исправит парсер.</string>
 
-    <!-- CatalogForOneSiteService -->
-    <string name="catalog_fos_service_title">Сервис обновления каталогов</string>
-    <string name="catalog_fos_service_message">Нажмите на уведомление для перехода в каталоги</string>
-    <string name="catalog_fos_service_action_cancel_all">Отменить все</string>
-    <string name="catalog_fos_service_notify_title">Обновление каталогов: %d шт.</string>
-    <string name="catalog_fos_service_notify_text">Подготовка каталога %s к загрузке</string>
-    <string name="catalog_fos_service_notify_title_2">Обновление %d шт.</string>
-    <string name="catalog_fos_service_notify_complete">Обновление каталогов завершенно</string>
-    <string name="catalog_fos_service_notify_manual_stop_text">Вы сами это сделали</string>
-    <string name="catalog_fos_service_notify_manual_stop_title">Обновление каталогов отменено</string>
-    <string name="catalog_fos_service_notify_error_title">Обновление каталогов завершенно с ошибкой</string>
-    <string name="catalog_fos_service_notify_error_text">Проверьте подключение к интернету</string>
-
     <!-- AppUpdateService -->
     <string name="app_update_service_action_cancel_all">Отменить все</string>
     <string name="app_update_service_title">Поиск обновлений приложения</string>
@@ -170,60 +157,10 @@
     <string name="latest_chapter_clean_read">Очистить прочитанное</string>
     <string name="latest_chapter_clean_download">Очистить скачанное</string>
 
-
-
-    <!--AvailableUpdate-->
-    <string name="available_update_name">Разрешенные к обновлению</string>
-    <string name="available_update_category_name">Категория: %s</string>
-
-    <!--PlannedTask-->
-    <string name="planned_task_name">Запланированные задачи</string>
-
     <!-- MigrateLatestChapterToChapterService -->
     <string name="migrate_service_title_update">Обновление базы данных…</string>
     <string name="migrate_service_title_finish">Обновление завершено</string>
     <string name="migrate_service_title_error">Обновление прервалось с ошибкой</string>
-
-    <!--Scheduler-->
-    <string name="schedule_manager_cancel_manga">Было отменено обновление манги %s</string>
-    <string name="schedule_manager_cancel_category">Было отменено обновление категории %s</string>
-    <string name="schedule_manager_cancel_group">Было отменено обновление группы %s</string>
-    <string name="schedule_manager_cancel_catalog">Было отменено обновление каталога %s</string>
-    <string name="schedule_manager_cancel_app">Было отменено обновление приложения</string>
-    <string name="schedule_activity_menu_add">Добавить</string>
-
-    <!--Planned Task-->
-    <string name="planned_task_type_of_update">Тип обновления</string>
-    <string name="planned_task_change_manga">Выбрать мангу</string>
-    <string name="planned_task_name_of_group">Название группы</string>
-    <string name="planned_task_option_of_group">Настроить группу</string>
-    <string name="planned_task_group_unknown">Ничего не выбрано</string>
-    <string name="planned_task_manga_unknown">Ничего не выбрано</string>
-    <string name="planned_task_category_unknown">Категория не выбрана</string>
-    <string name="planned_task_catalog_unknown">Каталог не выбран</string>
-    <string name="planned_task_change_category">Выбрать категорию</string>
-    <string name="planned_task_change_catalog">Выбрать каталог</string>
-    <string name="planned_task_repeat">Период повтора</string>
-    <string name="planned_task_change_day">Выбрать день</string>
-    <string name="planned_task_change_time">Выбрать время</string>
-    <string name="planned_task_button_ready">Готово</string>
-    <string name="planned_task_change">Изменить</string>
-    <string name="planned_task_title_create">Создание задачи</string>
-    <string name="planned_task_title_change">Редактирование задачи</string>
-    <string name="planned_task_name_manga">Манга: %s</string>
-    <string name="planned_task_name_category">Категория: %s</string>
-    <string name="planned_task_name_catalog">Каталог: %s</string>
-    <string name="planned_task_name_app">Приложение</string>
-    <string name="planned_task_name_group">Группа: %s</string>
-    <string name="planned_task_update_text_template">Обновляется %1$s в %2$d:%3$s</string>
-    <string name="planned_task_update_text_day">раз в день</string>
-    <string name="planned_task_update_text_monday">каждый понедельник</string>
-    <string name="planned_task_update_text_tuesday">каждый вторник</string>
-    <string name="planned_task_update_text_wednesday">каждую среду</string>
-    <string name="planned_task_update_text_thursday">каждый четверг</string>
-    <string name="planned_task_update_text_friday">каждую пятницу</string>
-    <string name="planned_task_update_text_saturday">каждую субботу</string>
-    <string name="planned_task_update_text_sunday">каждое воскресение</string>
 
     <!-- OTHER -->
     <string name="navigation_drawer_open">Open navigation drawer</string>

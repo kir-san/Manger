@@ -6,8 +6,9 @@ import androidx.compose.ui.unit.dp
 object Dimensions {
     val zero = 0.dp
     val smallest = 2.dp
-    val smaller = 4.dp
-    val small = 8.dp
+    val quarter = 4.dp
+    val smaller = 6.dp
+    val half = 8.dp
     val default = 16.dp
     val bigger = 20.dp
     val big = 24.dp

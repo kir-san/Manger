@@ -37,6 +37,8 @@ import com.san.kir.core.compose.SmallSpacer
 import com.san.kir.core.compose.topBar
 import com.san.kir.core.support.SortLibraryUtil
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlin.math.roundToInt
 
 @Composable
@@ -198,7 +200,7 @@ private fun ChangeSortType(typeSort: String, sendEvent: (CategoryEvent) -> Unit)
     RadioGroup(
         typeSort,
         onSelected = { sendEvent(CategoryEvent.Update(newTypeSort = it)) },
-        stateList = listOf(
+        stateList = persistentListOf(
             SortLibraryUtil.add,
             SortLibraryUtil.abc,
             SortLibraryUtil.pop
@@ -208,6 +210,7 @@ private fun ChangeSortType(typeSort: String, sendEvent: (CategoryEvent) -> Unit)
             R.string.library_sort_dialog_abc,
             R.string.library_sort_dialog_pop
         ).map { stringResource(id = it) }
+            .toImmutableList()
     )
 }
 
@@ -230,7 +233,11 @@ private fun ChangeVisibility(isVisible: Boolean, sendEvent: (CategoryEvent) -> U
 }
 
 @Composable
-private fun ColumnScope.ChangePortraitOptions(isLarge: Boolean, span: Int, sendEvent: (CategoryEvent) -> Unit) {
+private fun ColumnScope.ChangePortraitOptions(
+    isLarge: Boolean,
+    span: Int,
+    sendEvent: (CategoryEvent) -> Unit
+) {
     CheckBoxText(
         state = isLarge,
         onChange = { sendEvent(CategoryEvent.Update(newLargePortrait = it)) },

@@ -37,6 +37,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -47,6 +48,7 @@ fun LabelText(idRes: Int) {
     Text(
         text = stringResource(id = idRes),
         fontSize = 15.sp,
+        fontStyle = FontStyle.Italic
     )
 }
 
@@ -219,6 +221,6 @@ fun TextWithFirstWordBold(
         ),
         textAlign = textAlign,
         maxLines = maxLines,
-        modifier = modifier.padding(vertical = Dimensions.smaller)
+        modifier = modifier.padding(vertical = Dimensions.quarter)
     )
 }

@@ -3,4 +3,6 @@
     <string name="manga_info_dialog_loading">Загрузка…</string>
     <string name="manga_info_dialog_loading_failed">Не удалось загрузить картинку</string>
     <string name="manga_info_dialog_not_image">Картинки то нет</string>
+
+    <string name="planned_task_button_ready">Готово</string>
 </resources>

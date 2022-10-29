@@ -96,9 +96,11 @@ internal fun BaseScreen(
                         )
                     )
                 else
-                    Spacer(modifier = Modifier
-                        .height(additionalPadding)
-                        .bottomInsetsPadding())
+                    Spacer(
+                        modifier = Modifier
+                            .height(additionalPadding)
+                            .bottomInsetsPadding()
+                    )
             }
         }
 

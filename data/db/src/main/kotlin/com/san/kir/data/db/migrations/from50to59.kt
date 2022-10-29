@@ -53,3 +53,56 @@ internal val from50to51 = migrate {
 
     query("UPDATE chapters SET manga_id=(SELECT id FROM manga WHERE name=chapters.manga)")
 }
+
+/*
+Таблица PlannedTask
+Переименование таблицы во временную и созданние новой таблицы (было разнесено из-за проблем с миграцией)
+*/
+internal val from54to55 = migrate {
+    from = 54
+    to = 55
+
+    renameTableToTmp("planned_task")
+    query(
+        "CREATE TABLE IF NOT EXISTS `planned_task` (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "manga_id INTEGER NOT NULL DEFAULT 0, " +
+                "group_name TEXT NOT NULL, " +
+                "group_content TEXT NOT NULL, " +
+                "category_id INTEGER NOT NULL DEFAULT 0 , " +
+                "catalog TEXT NOT NULL DEFAULT '', " +
+                "type INTEGER NOT NULL, " +
+                "is_enabled INTEGER NOT NULL, " +
+                "period INTEGER NOT NULL, " +
+                "day_of_week INTEGER NOT NULL, " +
+                "hour INTEGER NOT NULL, " +
+                "minute INTEGER NOT NULL, " +
+                "added_time INTEGER NOT NULL, " +
+                "error_message TEXT NOT NULL)"
+    )
+}
+
+/*
+Таблица PlannedTask
+Заполение таблицы данными из временной, созданной в предыдущую миграцию
+Удалению view planned_task_ext за ненадобностью
+*/
+internal val from55to56 = migrate {
+    from = 55
+    to = 56
+
+    query(
+        "INSERT INTO planned_task(" +
+                "id, group_name, group_content, category_id, catalog, type, " +
+                "is_enabled, period, day_of_week, hour, minute, added_time, error_message, manga_id) " +
+                "SELECT " +
+                "id, group_name, group_content, category_id, catalog, type, " +
+                "is_enabled, period, day_of_week, hour, minute, added_time, error_message,  " +
+                "IFNULL((SELECT id FROM manga WHERE planned_task_tmp.manga=manga.name), -1)" +
+                "FROM planned_task_tmp"
+    )
+
+    query("DROP TABLE planned_task_tmp")
+
+    query("DROP VIEW planned_task_ext")
+}

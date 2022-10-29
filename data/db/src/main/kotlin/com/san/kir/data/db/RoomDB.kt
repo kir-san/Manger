@@ -26,6 +26,7 @@ import com.san.kir.data.db.dao.StatisticDao
 import com.san.kir.data.db.dao.StorageDao
 import com.san.kir.data.db.migrations.migrations
 import com.san.kir.data.db.typeConverters.FileConverter
+import com.san.kir.data.db.typeConverters.ListLongConverter
 import com.san.kir.data.db.typeConverters.ListStringConverter
 import com.san.kir.data.db.typeConverters.PlannedPeriodTypeConverter
 import com.san.kir.data.db.typeConverters.PlannedTypeTypeConverter
@@ -42,8 +43,6 @@ import com.san.kir.data.models.base.ShikiDbManga
 import com.san.kir.data.models.base.Site
 import com.san.kir.data.models.base.Statistic
 import com.san.kir.data.models.base.Storage
-import com.san.kir.data.models.extend.MiniManga
-import com.san.kir.data.models.extend.PlannedTaskExt
 import com.san.kir.data.models.extend.SimplifiedChapter
 import com.san.kir.data.models.extend.SimplifiedManga
 import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
@@ -63,12 +62,10 @@ import timber.log.Timber
         ShikiDbManga::class,
         Settings::class
     ],
-    version = 54,
+    version = 58,
     views = [
         SimplifiedManga::class,
         SimplifiedMangaWithChapterCounts::class,
-        PlannedTaskExt::class,
-        MiniManga::class,
         SimplifiedStatistic::class,
         SimplifiedChapter::class,
     ],
@@ -82,10 +79,13 @@ import timber.log.Timber
         AutoMigration(from = 51, to = 52), // add view SimplifiedChapters
         AutoMigration(from = 52, to = 53), // add new field to view SimplifiedChapters
         AutoMigration(from = 53, to = 54), // add new field to view SimplifiedChapters
+        AutoMigration(from = 56, to = 57), // add mangas field to table planned_task
+        AutoMigration(from = 57, to = 58), // remove view MiniManga
     ]
 )
 @TypeConverters(
     FileConverter::class,
+    ListLongConverter::class,
     ListStringConverter::class,
     PlannedTypeTypeConverter::class,
     PlannedWeekTypeConverter::class,

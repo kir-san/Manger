@@ -76,7 +76,13 @@ internal class ChaptersManager @Inject constructor(
 
         staticticPosition = currentPagePosition
 
-        statisticItem = statisticDao.itemByMangaId(manga.id)
+        val statisticId = statisticDao.idByMangaId(manga.id)
+
+        statisticItem = if (statisticId == null)
+            statisticDao.itemById(
+                statisticDao.insert(Statistic(mangaId = manga.id)).first()
+            )
+        else statisticDao.itemById(statisticId)
 
         statisticItem = statisticItem.copy(
             lastChapters = 0,

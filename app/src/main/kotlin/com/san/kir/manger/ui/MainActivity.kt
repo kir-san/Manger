@@ -19,20 +19,11 @@ import com.san.kir.core.internet.ConnectManager
 import com.san.kir.core.internet.LocalConnectManager
 import com.san.kir.manger.ui.startapp.InitScreen
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.components.ActivityComponent
 import timber.log.Timber
 import javax.inject.Inject
 
-
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    @EntryPoint
-    @InstallIn(ActivityComponent::class)
-    interface ViewModelFactoryProvider {
-        fun catalogViewModelFactory(): CatalogViewModel.Factory
-        fun siteCatalogItemViewModelFactory(): SiteCatalogItemViewModel.Factory
-    }
 
     @Inject
     lateinit var connectManager: ConnectManager

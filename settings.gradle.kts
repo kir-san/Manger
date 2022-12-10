@@ -20,6 +20,7 @@ include(":features:statistic")
 include(":features:storage")
 include(":features:settings")
 include(":features:schedule")
+include(":features:catalog")
 
 include(":sample:testshikimori")
 include(":sample:test_compose")

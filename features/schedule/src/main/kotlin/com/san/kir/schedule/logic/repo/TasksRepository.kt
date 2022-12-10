@@ -4,20 +4,20 @@ import com.san.kir.core.utils.coroutines.withIoContext
 import com.san.kir.data.db.dao.CategoryDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.PlannedDao
-import com.san.kir.data.db.dao.SiteDao
 import com.san.kir.data.models.base.PlannedTask
+import com.san.kir.data.parsing.SiteCatalogsManager
 import javax.inject.Inject
 
 class TasksRepository @Inject constructor(
     private val plannedDao: PlannedDao,
-    private val categoryDao: CategoryDao,
-    private val mangaDao: MangaDao,
-    private val siteDao: SiteDao,
+    categoryDao: CategoryDao,
+    mangaDao: MangaDao,
+    manager: SiteCatalogsManager,
 ) {
     val items = plannedDao.loadSimpleItems()
     val categories = categoryDao.loadNamesAndIds()
     val mangas = mangaDao.loadNamesAndIds()
-    val catalogs = siteDao.loadNames()
+    val catalogs = manager.catalog.map { it.name }
 
     suspend fun item(itemId: Long) = withIoContext { plannedDao.itemById(itemId) }
     suspend fun update(id: Long, enable: Boolean) = withIoContext { plannedDao.update(id, enable) }

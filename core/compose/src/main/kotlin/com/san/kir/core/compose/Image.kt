@@ -49,7 +49,8 @@ fun ImageWithStatus(url: String?) {
     }
 
     LaunchedEffect(url) {
-        if (url != null && url.isNotEmpty()) {
+        if (!url.isNullOrEmpty()) {
+            statusLogo = StatusLogo.Init
             manager.downloadBitmap(url)?.let { bitmap ->
                 logo = bitmap.asImageBitmap()
                 statusLogo = StatusLogo.Complete

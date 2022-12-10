@@ -28,13 +28,6 @@ data class Manga(
     @ColumnInfo(name = "about")
     val about: String = "",
 
-    @Deprecated(
-        message = "Больше не использовать, не удообное обновление",
-        replaceWith = ReplaceWith("categoryId")
-    )
-    @ColumnInfo(name = "category")
-    val category: String = "",
-
     @ColumnInfo(name = "category_id", defaultValue = "0")
     val categoryId: Long = 0,
 

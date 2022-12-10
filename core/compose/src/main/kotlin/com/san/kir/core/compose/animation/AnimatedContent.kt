@@ -7,7 +7,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
@@ -24,7 +26,7 @@ inline fun <S> FromTopToTopAnimContent(
     targetState: S,
     modifier: Modifier = Modifier,
     contentAlignment: Alignment = Alignment.TopStart,
-    noinline content: @Composable AnimatedVisibilityScope.(targetState: S) -> Unit
+    noinline content: @Composable AnimatedVisibilityScope.(targetState: S) -> Unit,
 ) {
     AnimatedContent(
         targetState = targetState,
@@ -48,7 +50,7 @@ inline fun <S> FromBottomToBottomAnimContent(
     targetState: S,
     modifier: Modifier = Modifier,
     contentAlignment: Alignment = Alignment.TopStart,
-    noinline content: @Composable AnimatedVisibilityScope.(targetState: S) -> Unit
+    noinline content: @Composable AnimatedVisibilityScope.(targetState: S) -> Unit,
 ) {
     AnimatedContent(
         targetState = targetState,
@@ -72,7 +74,7 @@ inline fun <S> FromStartToStartAnimContent(
     targetState: S,
     modifier: Modifier = Modifier,
     contentAlignment: Alignment = Alignment.TopStart,
-    noinline content: @Composable AnimatedVisibilityScope.(targetState: S) -> Unit
+    noinline content: @Composable AnimatedVisibilityScope.(targetState: S) -> Unit,
 ) {
     AnimatedContent(
         targetState = targetState,
@@ -96,7 +98,7 @@ inline fun <S> FromEndToEndAnimContent(
     targetState: S,
     modifier: Modifier = Modifier,
     contentAlignment: Alignment = Alignment.TopStart,
-    noinline content: @Composable AnimatedVisibilityScope.(targetState: S) -> Unit
+    noinline content: @Composable AnimatedVisibilityScope.(targetState: S) -> Unit,
 ) {
     AnimatedContent(
         targetState = targetState,
@@ -119,7 +121,7 @@ inline fun <S> FromEndToEndAnimContent(
 inline fun BottomAnimatedVisibility(
     visible: Boolean,
     modifier: Modifier = Modifier,
-    noinline content: @Composable AnimatedVisibilityScope.() -> Unit
+    noinline content: @Composable AnimatedVisibilityScope.() -> Unit,
 ) {
     AnimatedVisibility(
         visible = visible,
@@ -131,10 +133,25 @@ inline fun BottomAnimatedVisibility(
 }
 
 @Composable
+inline fun EndAnimatedVisibility(
+    visible: Boolean,
+    modifier: Modifier = Modifier,
+    noinline content: @Composable AnimatedVisibilityScope.() -> Unit,
+) {
+    AnimatedVisibility(
+        visible = visible,
+        modifier = modifier,
+        content = content,
+        enter = expandHorizontally(expandFrom = Alignment.End),
+        exit = shrinkHorizontally(shrinkTowards = Alignment.End),
+    )
+}
+
+@Composable
 inline fun ColumnScope.BottomAnimatedVisibility(
     visible: Boolean,
     modifier: Modifier = Modifier,
-    noinline content: @Composable AnimatedVisibilityScope.() -> Unit
+    noinline content: @Composable AnimatedVisibilityScope.() -> Unit,
 ) {
     AnimatedVisibility(
         visible = visible,
@@ -149,7 +166,7 @@ inline fun ColumnScope.BottomAnimatedVisibility(
 inline fun ColumnScope.TopAnimatedVisibility(
     visible: Boolean,
     modifier: Modifier = Modifier,
-    noinline content: @Composable AnimatedVisibilityScope.() -> Unit
+    noinline content: @Composable AnimatedVisibilityScope.() -> Unit,
 ) {
     AnimatedVisibility(
         visible = visible,

@@ -25,9 +25,10 @@
     <string name="catalog_fos_service_message">Нажмите на уведомление для перехода в каталоги</string>
     <string name="catalog_fos_service_action_cancel_all">Отменить все</string>
     <string name="catalog_fos_service_notify_title">Обновление каталогов: %d шт.</string>
-    <string name="catalog_fos_service_notify_text">Подготовка каталога %s к загрузке</string>
-    <string name="catalog_fos_service_notify_title_2">Обновление %d шт.</string>
-    <string name="catalog_fos_service_notify_complete">Обновление каталогов завершенно</string>
+    <string name="catalog_loading_text">Подготовка каталога %s к загрузке</string>
+    <string name="catalog_paused_text">Отмена загрузки каталога %s</string>
+    <string name="catalog_saving_text">Сохранение данных каталога %s</string>
+    <string name="catalog_complete">Обновление каталогов завершенно</string>
     <string name="catalog_fos_service_notify_manual_stop_text">Вы сами это сделали</string>
     <string name="catalog_fos_service_notify_manual_stop_title">Обновление каталогов отменено</string>
     <string name="catalog_fos_service_notify_error_title">Обновление каталогов завершенно с ошибкой</string>

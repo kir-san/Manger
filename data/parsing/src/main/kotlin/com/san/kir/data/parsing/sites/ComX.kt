@@ -3,12 +3,11 @@ package com.san.kir.data.parsing.sites
 import com.google.gson.GsonBuilder
 import com.san.kir.core.internet.ConnectManager
 import com.san.kir.data.models.base.Chapter
-import com.san.kir.data.models.base.DownloadItem
 import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.SiteCatalogElement
 import com.san.kir.data.parsing.SiteCatalogClassic
 import com.san.kir.data.parsing.Translate
-import io.ktor.http.*
+import io.ktor.http.Parameters
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import org.jsoup.Jsoup
@@ -17,160 +16,136 @@ import org.jsoup.nodes.Element
 import timber.log.Timber
 
 class ComX(private val connectManager: ConnectManager) : SiteCatalogClassic() {
-    override val name: String = "COM-X.LIFE"
-    override val catalogName: String = "com-x.life"
-    override val host: String
-        get() = "https://$catalogName"
-    override val siteCatalog: String =
-        "$host/ComicList"
+    override val name = "COM-X.LIFE"
+    override val catalogName = "com-x.life"
+    override val host = "https://$catalogName"
+    override val catalog = "$host/comix-read"
     override var volume = 0
 
     override suspend fun init(): ComX {
-        if (!isInit) {
-            val lastPage = 150
-            val itemPerPage = 50
-            volume = lastPage * itemPerPage
+        var lastPage = 967
+        val itemPerPage = 10
 
-            var docLocal = getDocument("$siteCatalog/page/${lastPage + 1}")
+        volume = (lastPage - 1) * itemPerPage
 
-            suspend fun isGetNext(): Boolean {
-                val next = docLocal.select(".bnnavi > .nextprev > a")
-                val check = next.select(".pnext")
+        while (true) {
+            val size = getDocument("$catalog/page/${lastPage++}")
+                .select("#dle-content div.readed")
+                .size
 
-                // TODO пересмотреть этот момент
-                if (check.isNotEmpty())
-                    docLocal = getDocument(next.last()!!.attr("href"))
+            volume += size
 
-                return check.isNotEmpty()
-            }
-
-            do {
-                val additionalSize = docLocal
-                    .select("#dle-content")
-                    .select("div.comiclist-item")
-                    .size
-                volume += additionalSize
-            } while (isGetNext())
-
-            isInit = true
+            if (size < 10) break
         }
+
         return this
     }
 
-    override suspend fun getElementOnline(url: String): SiteCatalogElement? = runCatching {
-        val element = SiteCatalogElement()
-
-        element.host = host
-        element.catalogName = catalogName
-
-        element.shotLink = url.split(catalogName).last()
-        element.link = url
-
+    override suspend fun elementByUrl(url: String): SiteCatalogElement? = runCatching {
         val document = getDocument(url)
-        val doc = document.select("#dle-content .fullstory")
-        element.name = doc.select(".dpad h1").text()
+        val doc = document.select("#dle-content")
 
-        val link = doc.select(".fullstory__poster img").attr("src")
-        element.logo = if (link.contains(element.host)) link else element.host + link
+        val name = doc.select(".page__header h1").text()
 
-        doc.select(".fullstory__infoSection").forEach { p ->
+        val link = doc.select(".page__poster img").attr("data-src")
+        val logo = if (catalogName in link) link else host + link
+
+        var authors = listOf<String>()
+        var statusEdition = ""
+        var type = ""
+
+        doc.select(".page__list > li").forEach { p ->
+            val text = p.text()
             when {
-                p.text().contains("Издатель") -> {
-                    element.authors = listOf(p.select(".fullstory__infoSectionContent").text())
-                }
-                p.text().contains("Жанр") -> {
-                    element.genres = p.select(".fullstory__infoSectionContent a").map { it.text() }
-                }
-                p.text().contains("Статус") -> {
-                    element.statusEdition = p.select(".fullstory__infoSectionContent").text()
-                }
-                p.text().contains("Тип выпуска") -> {
-                    element.type = p.select(".fullstory__infoSectionContent").text()
-                }
+                PUBLISHER in text -> authors = listOf(text.splitAndRemoveSurround())
+                STATUS in text -> statusEdition = text.splitAndRemoveSurround()
+                TYPE in text -> type = text.splitAndRemoveSurround()
             }
         }
 
-        element.dateId = element.shotLink.split("-").first().removePrefix("/").toInt()
+        val genres = doc.select(".page__tags > a").map { it.text() }
+        val shortLink = url.split(catalogName).last()
 
-        getFullElement(element)
-    }.fold(onSuccess = { it },
-           onFailure = {
-               it.printStackTrace()
-               null
-           })
+        fullElement(
+            SiteCatalogElement(
+                host = host,
+                catalogName = catalogName,
+                shortLink = shortLink,
+                link = url,
+                name = name,
+                logo = logo,
+                authors = authors,
+                genres = genres,
+                statusEdition = statusEdition,
+                type = type,
+            )
+        )
+    }.onFailure { Timber.v(it, message = url) }.getOrNull()
 
-    override suspend fun getFullElement(element: SiteCatalogElement): SiteCatalogElement {
-        val doc = getDocument(element.link).select("#dle-content .fullstory")
+    override suspend fun fullElement(element: SiteCatalogElement): SiteCatalogElement {
+        val doc = getDocument(element.link).select("#dle-content")
 
-        element.about = doc.select(".fullstory__mainInfo > div[style~=margin]").text()
+        val about = doc.select(".page__main .tabs__block .full-text").text()
 
-        element.statusTranslate = Translate.UNKNOWN
-        if (doc.select(".fullstory__infoSection").text().contains("Комикс перевели")) {
-            element.statusTranslate = Translate.COMPLETE
-        } else {
-            element.statusTranslate = Translate.NOT_COMPLETE
-        }
+        val volume =
+            doc.select(".page__main .tabs__select-item")
+                .firstOrNull { CHAPTERS in it.text() }
+                ?.text()?.split("(")?.last()
+                ?.removeSuffix(")")?.toIntOrNull() ?: 0
 
-        element.volume =
-            doc.select("ul.comix-list > li > i").first()?.text()?.removePrefix("#")?.toInt() ?: 0
-
-        element.isFull = true
-
-        return element
+        return element.copy(
+            about = about,
+            statusTranslate = Translate.UNKNOWN,
+            volume = volume,
+            isFull = true
+        )
     }
 
     private fun simpleParseElement(elem: Element): SiteCatalogElement {
-        val element = SiteCatalogElement()
+        val name = elem.select(".readed__title > a").text()
 
-        element.host = host
-        element.catalogName = catalogName
+        val link = elem.select(".readed__title > a").attr("href")
+        val shotLink = link.split(catalogName).last()
 
-        element.name = elem.select("a.comiclist-item-title").text()
+        val authors = listOf(
+            elem.selectFirst("div.readed__meta-item")?.text() ?: ""
+        )
+        val genres = elem
+            .select("ul.readed__info > li > a")
+            .map { it.text() }
 
-        element.link = elem.select("a.comiclist-item-title").attr("href")
-        element.shotLink = element.link.split(catalogName).last()
+        val about = elem
+            .selectFirst("ul.readed__info > li > span")?.text().toString()
 
-        elem.select("div.comiclist-item-popup p").forEach { p ->
-            when {
-                p.text().contains("Издатель") -> {
-                    element.authors =
-                        listOf(p.text().split(":").last().removeSurrounding(" ", "\""))
-                }
-                p.text().contains("Жанр") -> {
-                    element.genres = p.select("a").map { it.text() }
-                }
-                p.text().contains("Статус") -> {
-                    element.statusEdition = p.text().split(":").last().removeSurrounding(" ", "\"")
-                }
-                p.text().contains("Тип выпуска") -> {
-                    element.type = p.text().split(":").last().removeSurrounding(" ", "\"")
-                }
-            }
-        }
+        val populate = elem.select("ul.unit-rating > li.current-ratting").text().toIntOrNull() ?: 0
 
-        element.dateId = element.shotLink.split("-").first().removePrefix("/").toInt()
-
-        return element
+        return SiteCatalogElement(
+            host = host,
+            link = link,
+            shortLink = shotLink,
+            catalogName = catalogName,
+            name = name,
+            authors = authors,
+            genres = genres,
+            about = about,
+            populate = populate,
+            dateId = shotLink.split("-").first().removePrefix("/").toIntOrNull() ?: 0
+        )
     }
 
-    override fun getCatalog() = flow {
-        var docLocal = getDocument(siteCatalog)
+    override fun catalog() = flow {
+        connectManager
+            .getDocument(catalog)
+            .select("#dle-content div.readed")
+            .forEach { emit(simpleParseElement(it)) }
 
-        suspend fun isGetNext(): Boolean {
-            val next = docLocal.select(".bnnavi > .nextprev > a")
-            val check = next.select(".pnext")
-
-            // TODO пересмотреть этот момент
-            if (check.isNotEmpty())
-                docLocal = getDocument(next.last()!!.attr("href"))
-
-            return check.isNotEmpty()
+        var page = 2
+        while (connectManager
+                .getDocument("$catalog/page/${page++}")
+                .select("#dle-content div.readed")
+                .onEach { emit(simpleParseElement(it)) }
+                .size == 10) {
         }
-        do {
-            docLocal.select("#dle-content").select("div.comiclist-item").forEach { element ->
-                emit(simpleParseElement(element))
-            }
-        } while (isGetNext())
     }
 
     override suspend fun chapters(manga: Manga): List<Chapter> {
@@ -191,7 +166,7 @@ class ComX(private val connectManager: ConnectManager) : SiteCatalogClassic() {
         }
     }
 
-    override suspend fun pages(item: DownloadItem): List<String> {
+    override suspend fun pages(item: Chapter): List<String> {
         return jsonData(item.link).images.map { "http://img.$catalogName/comix/$it" }
     }
 
@@ -207,6 +182,7 @@ class ComX(private val connectManager: ConnectManager) : SiteCatalogClassic() {
         return gson.fromJson(temp, ChaptersData::class.java)
     }
 
+    // Обертка над обычным вызовом, чтобы обходить проверку на работа
     private suspend fun getDocument(url: String): Document {
         delay(1000L)
         var document = connectManager.getDocument(url)
@@ -252,6 +228,15 @@ class ComX(private val connectManager: ConnectManager) : SiteCatalogClassic() {
         Timber.v("url is $url")
 
         return document
+    }
+
+    companion object {
+        private const val STATUS = "Статус"
+        private const val TYPE = "Тип выпуска"
+        private const val PUBLISHER = "Издатель"
+        private const val CHAPTERS = "Главы"
+
+        private fun String.splitAndRemoveSurround() = split(":").last().trim()
     }
 }
 

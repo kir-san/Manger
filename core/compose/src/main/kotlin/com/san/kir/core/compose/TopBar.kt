@@ -150,7 +150,7 @@ private fun NavigationIcon(state: NavigationButton) {
             is NavigationButton.Back ->
                 IconButton(
                     modifier = Modifier.testTag(TestTags.Drawer.nav_back),
-                    onClick = it.onClick
+                    onClick = { it.onClick() }
                 ) { Icon(Icons.Default.ArrowBack, "") }
 
             is NavigationButton.Close ->
@@ -210,7 +210,7 @@ sealed interface NavigationButton {
     data class Scaffold(val state: ScaffoldState) : NavigationButton
 
     @Stable
-    data class Back(val onClick: () -> Unit) : NavigationButton
+    data class Back(val onClick: () -> Boolean) : NavigationButton
 
     @Stable
     data class Close(val onClick: () -> Unit) : NavigationButton

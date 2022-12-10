@@ -21,9 +21,10 @@ import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.PlannedDao
 import com.san.kir.data.db.dao.SettingsDao
 import com.san.kir.data.db.dao.ShikimoriDao
-import com.san.kir.data.db.dao.SiteDao
 import com.san.kir.data.db.dao.StatisticDao
 import com.san.kir.data.db.dao.StorageDao
+import com.san.kir.data.db.migrations.From58to59
+import com.san.kir.data.db.migrations.From59to60
 import com.san.kir.data.db.migrations.migrations
 import com.san.kir.data.db.typeConverters.FileConverter
 import com.san.kir.data.db.typeConverters.ListLongConverter
@@ -40,7 +41,6 @@ import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.PlannedTask
 import com.san.kir.data.models.base.Settings
 import com.san.kir.data.models.base.ShikiDbManga
-import com.san.kir.data.models.base.Site
 import com.san.kir.data.models.base.Statistic
 import com.san.kir.data.models.base.Storage
 import com.san.kir.data.models.extend.SimplifiedChapter
@@ -51,7 +51,6 @@ import timber.log.Timber
 
 @Database(
     entities = [
-        Site::class,
         Manga::class,
         Chapter::class,
         Category::class,
@@ -62,7 +61,7 @@ import timber.log.Timber
         ShikiDbManga::class,
         Settings::class
     ],
-    version = 58,
+    version = 60,
     views = [
         SimplifiedManga::class,
         SimplifiedMangaWithChapterCounts::class,
@@ -81,6 +80,8 @@ import timber.log.Timber
         AutoMigration(from = 53, to = 54), // add new field to view SimplifiedChapters
         AutoMigration(from = 56, to = 57), // add mangas field to table planned_task
         AutoMigration(from = 57, to = 58), // remove view MiniManga
+        AutoMigration(from = 58, to = 59, spec = From58to59::class), // remove Site table
+        AutoMigration(from = 59, to = 60, spec = From59to60::class), // remove field from Manga
     ]
 )
 @TypeConverters(
@@ -94,7 +95,6 @@ import timber.log.Timber
     ShikimoriMangaConverter::class,
 )
 abstract class RoomDB : RoomDatabase() {
-    abstract fun siteDao(): SiteDao
     abstract fun mangaDao(): MangaDao
     abstract fun chapterDao(): ChapterDao
     abstract fun plannedDao(): PlannedDao

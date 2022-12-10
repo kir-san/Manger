@@ -17,64 +17,19 @@
     <string name="main_check_app_ver_go_to">Перейти на 4pda.ru</string>
     <string name="main_check_app_ver_error">Произошла ошибка при поиске обновлений, возможно у вас интернет отключен</string>
     <string name="main_permission_error">Данное приложение превратилось в тыкву</string>
-    <string name="main_permission_nonpermission">Вы запретили данному приложению доступ к памяти смартфона и оно превратилось в тыкву. Если оно вам все еще нужно, то в настройках можно это исправить</string>
+    <string name="storage_permission_nonpermission">Вы запретили приложению доступ к памяти смартфона и оно превратилось в тыкву. Для исправления перейдите в настройки</string>
     <string name="main_permission_request">Показать запрос</string>
+    <string name="main_permission_go_to_setting">Перейти в настройки</string>
     <string name="main_permission_no_rationale">Больше не просить</string>
-    <string name="main_permission_reason">Данное приложение использует доступ к памяти смартфона
-    для хранения манги для возможности читать ее в любой момент. Для работы требуется ваше согласие.</string>
+    <string name="storage_permission_reason">Данное приложение использует доступ к памяти смартфона
+    для хранения профиля, настроек и манги для возможности читать ее в любой момент.
+    Без получения соответстующего разрешения, приложение не сможет работать.</string>
+    <string name="notificaton_permission_reason">Данное приложение использует уведомления для
+    отображения загрузки манги, обновления каталогов и манги. Без получения соответстующего
+    разрешения, приложение не сможет работать.</string>
+    <string name="notificaton_permission_nonpermission">Вы запретили приложению доступ к уведомлениям и оно превратилось в тыкву. Для исправления перейдите в настройки</string>
 
-    <!-- CatalogForOneSite -->
-    <string name="catalog_for_one_site_prefix_volume">Глав %d</string>
-    <string name="catalog_for_one_site_search">Поиск</string>
-    <string name="catalog_for_one_site_update_all">Обновить данные сайтов</string>
-    <string name="catalog_for_one_site_update_catalog_contain">Обновить содержимое катологов</string>
-    <string name="catalog_for_one_site_global_search">Глобальный поиск</string>
-    <string name="catalog_fot_one_site_warning">Внимание</string>
-    <string name="catalog_fot_one_site_redownload_text">Нужно ваше согласие на обновление каталога</string>
-    <string name="catalog_fot_one_site_redownload_ok">Согласен</string>
-    <string name="catalog_fot_one_site_genres">Жанры</string>
-    <string name="catalog_fot_one_site_type">Тип манги</string>
-    <string name="catalog_fot_one_site_statuses">Статус манги</string>
-    <string name="catalog_fot_one_site_authors">Авторы</string>
-    <string name="catalog_fot_one_site_redownload_cancel">Не согласен</string>
 
-    <!-- Add Manga Screen -->
-    <string name="add_manga_screen_add_new">Будет созданна новая категория</string>
-    <string name="add_manga_screen_title">Добавление манги</string>
-    <string name="add_manga_screen_item">Выберете категорию</string>
-    <string name="add_manga_screen_continue">Продолжить</string>
-    <string name="add_manga_screen_created_category">Создание категории: %s</string>
-    <string name="add_manga_screen_changed_category">Категория выбрана: %s</string>
-    <string name="add_manga_screen_created_folder">Создаю папки для манги</string>
-    <string name="add_manga_screen_update_manga">Обновляю информацию и добавляю в библиотеку</string>
-    <string name="add_manga_screen_added_manga">Новая манга добавлена в библиотеку</string>
-    <string name="add_manga_screen_search_chapters">Запуск задачи по поиску глав</string>
-    <string name="add_manga_screen_all_complete">Все работы завершены успешно</string>
-    <string name="add_manga_screen_error">Во время работы произошла ошибка, проверьте подключение к интеренету</string>
-
-    <!--Manga Info Dialog-->
-    <string name="manga_info_dialog_name">Название</string>
-    <string name="manga_info_dialog_authors">Авторы</string>
-    <string name="manga_info_dialog_type">Тип</string>
-    <string name="manga_info_dialog_status_edition">Статус выпуска</string>
-    <string name="manga_info_dialog_volume">Объем</string>
-    <string name="manga_info_dialog_status_translate">Статус перевода</string>
-    <string name="manga_info_dialog_genres">Жанры</string>
-    <string name="manga_info_dialog_link">Ссылка на источник</string>
-    <string name="manga_info_dialog_about">Описание</string>
-    <string name="manga_info_dialog_logo">Лого</string>
-    <string name="manga_info_dialog_add">Добавить</string>
-    <string name="manga_info_dialog_close">Закрыть</string>
-    <string name="manga_info_dialog_title">Информация о манге</string>
-    <string name="manga_info_dialog_loading">Загрузка…</string>
-    <string name="manga_info_dialog_loading_failed">Не удалось загрузить картинку</string>
-    <string name="manga_info_dialog_not_image">Картинки то нет</string>
-    <string name="manga_error_dialog_title">Внимание</string>
-    <string name="manga_error_dialog_message">При обновлении каталога произошла ошибка.
-    Проверьте наличие интернета. Проверьте работу других каталогов. Попробуйте зайти на сайт этого
-    каталога через браузер. Если все вышеперечисленное сработало, а каталог так и необновляется,
-    значит в сайте произошли изменения и парсер не может с ними справится. Сообщите автору
-    приложения, пусть он исправит парсер.</string>
 
     <!-- AppUpdateService -->
     <string name="app_update_service_action_cancel_all">Отменить все</string>
@@ -136,11 +91,6 @@
     <string name="library_menu_add_manga">Добавить мангу</string>
     <string name="library_page_item_size">%s Мб</string>
     <string name="library_error_hide_categories">Все категории скрыты?</string>
-    <string name="library_add_manga_title">Добавление новой манги</string>
-    <string name="library_add_manga_hint">Введите ссылку на мангу</string>
-    <string name="library_add_manga_add_btn">Добавить</string>
-    <string name="library_add_manga_cancel_btn">Отменить</string>
-    <string name="library_add_manga_error">Ошибка в ссылке или нет интернета</string>
 
     <!-- ListChapters -->
 
@@ -166,8 +116,6 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nothing_founds">Ничего не найдено</string>
-
-    <string name="site_volume">Объем: %1$d + %2$d</string>
 
     <string name="name">Автор: Kir San</string>
 

@@ -16,14 +16,11 @@ class Selfmanga(private val connectManager: ConnectManager) : ReadmangaTemplate(
         get() = super.allCatalogName + "selfmanga.ru"
 
     override suspend fun init(): Selfmanga {
-        if (!isInit) {
-            val doc = connectManager.getDocument(host)
-            doc.select(".rightContent .rightBlock h5")
-                .filterNot { it.text() != "У нас сейчас" }
-                // TODO пересмотреть этот момент
-                .forEach { volume = it.parent()?.select("li b")?.first()?.text()?.toInt()!! }
-            isInit = true
-        }
+        connectManager
+            .getDocument(host)
+            .select(".rightContent .rightBlock h5")
+            .filterNot { it.text() != "У нас сейчас" }
+            .forEach { volume = it.parent()?.select("li b")?.first()?.text()?.toInt() ?: 0 }
         return this
     }
 }

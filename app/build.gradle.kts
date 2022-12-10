@@ -52,6 +52,7 @@ dependencies {
     implementation(project(Modules.Features.storage))
     implementation(project(Modules.Features.settings))
     implementation(project(Modules.Features.schedule))
+    implementation(project(Modules.Features.catalog))
 
     implementation(project(Modules.Core.utils))
     implementation(project(Modules.Core.support))

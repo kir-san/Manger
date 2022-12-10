@@ -11,8 +11,8 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.san.kir.background.R
+import com.san.kir.background.logic.UpdateCatalogManager
 import com.san.kir.background.services.AppUpdateService
-import com.san.kir.background.services.CatalogForOneSiteUpdaterService
 import com.san.kir.background.services.MangaUpdaterService
 import com.san.kir.core.support.PlannedPeriod
 import com.san.kir.core.support.PlannedType
@@ -20,8 +20,8 @@ import com.san.kir.core.utils.longToast
 import com.san.kir.data.db.dao.CategoryDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.PlannedDao
-import com.san.kir.data.db.dao.SiteDao
 import com.san.kir.data.models.base.PlannedTaskBase
+import com.san.kir.data.parsing.SiteCatalogsManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import timber.log.Timber
@@ -34,8 +34,9 @@ class ScheduleWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     private val plannedDao: PlannedDao,
     private val mangaDao: MangaDao,
-    private val siteDao: SiteDao,
     private val categoryDao: CategoryDao,
+    private val manager: SiteCatalogsManager,
+    private val updateCatalogManager: UpdateCatalogManager,
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
@@ -62,7 +63,7 @@ class ScheduleWorker @AssistedInject constructor(
                         else if (task.mangas.isNotEmpty())
                             mangaDao.itemsByIds(task.mangas).forEach { manga ->
                                 MangaUpdaterService.add(applicationContext, manga)
-                            }
+                            } else Unit
 
                     }
 
@@ -78,15 +79,7 @@ class ScheduleWorker @AssistedInject constructor(
                     }
 
                     PlannedType.CATALOG -> {
-                        val catalog = siteDao.getItem(task.catalog)
-                        if (catalog != null &&
-                            !CatalogForOneSiteUpdaterService.isContain(catalog.catalogName)
-                        ) {
-                            CatalogForOneSiteUpdaterService.add(
-                                applicationContext,
-                                catalog.catalogName
-                            )
-                        }
+                        updateCatalogManager.addTask(task.catalog)
                     }
 
                     PlannedType.APP -> {

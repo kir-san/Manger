@@ -51,6 +51,9 @@ interface MangaDao : BaseDao<Manga> {
     @Query("SELECT id, logo, path FROM manga")
     suspend fun specItems(): List<MangaLogo>
 
+    @Query("SELECT shortLink FROM manga")
+    suspend fun links(): List<String>
+
     // Получение элемента по названию
     @Query("SELECT * FROM manga WHERE name IS :name")
     suspend fun itemByName(name: String): Manga

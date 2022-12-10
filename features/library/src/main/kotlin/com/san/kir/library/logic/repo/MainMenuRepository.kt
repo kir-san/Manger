@@ -7,9 +7,9 @@ import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.MainMenuDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.PlannedDao
-import com.san.kir.data.db.dao.SiteDao
 import com.san.kir.data.db.dao.StorageDao
 import com.san.kir.data.models.base.MainMenuItem
+import com.san.kir.data.parsing.SiteCatalogsManager
 import com.san.kir.library.R
 import com.san.kir.library.ui.drawer.MenuItem
 import kotlinx.coroutines.flow.combine
@@ -23,7 +23,7 @@ internal class MainMenuRepository @Inject constructor(
     mangaDao: MangaDao,
     storageDao: StorageDao,
     categoryDao: CategoryDao,
-    siteDao: SiteDao,
+    manager: SiteCatalogsManager,
     chapterDao: ChapterDao,
     plannedDao: PlannedDao,
 ) {
@@ -31,7 +31,6 @@ internal class MainMenuRepository @Inject constructor(
     val items =
         combine(
             mainMenuDao.loadItems(),
-            combine(siteDao.loadItemsCount(), siteDao.loadItemsVolume()) { c, v -> "$c - $v" },
             combine(
                 mangaDao.loadItemsCount(),
                 storageDao.loadFullSize().map { it.toInt() },
@@ -40,8 +39,8 @@ internal class MainMenuRepository @Inject constructor(
                 chapterDao.loadLatestCount(),
                 plannedDao.loadItemsCount()
             ) { Transition(it) }
-        ) { items, site, transition ->
-            items.map(transform(site, transition))
+        ) { items, transition ->
+            items.map(transform(manager.catalog.size, transition))
         }
 
     suspend fun swap(from: Int, to: Int) {
@@ -50,18 +49,20 @@ internal class MainMenuRepository @Inject constructor(
         mainMenuDao.update(*items.mapIndexed { i, m -> m.copy(order = i) }.toTypedArray())
     }
 
-    private fun transform(site: String, transition: Transition): (MainMenuItem) -> MenuItem = {
+    private fun transform(siteCount: Int, transition: Transition): (MainMenuItem) -> MenuItem = {
         when (it.type) {
             MainMenuType.Default,
             MainMenuType.Library -> MenuItem(it, transition.libraryCount)
+
             MainMenuType.Category -> MenuItem(it, transition.categoryCount)
-            MainMenuType.Catalogs -> MenuItem(it, site)
+            MainMenuType.Catalogs -> MenuItem(it, "$siteCount")
             MainMenuType.Downloader -> MenuItem(it, transition.downloadCount)
             MainMenuType.Latest -> MenuItem(it, transition.latestCount)
             MainMenuType.Schedule -> MenuItem(it, transition.plannedCount)
             MainMenuType.Settings,
             MainMenuType.Statistic,
             MainMenuType.Accounts -> MenuItem(it, "")
+
             MainMenuType.Storage -> {
                 MenuItem(
                     it,

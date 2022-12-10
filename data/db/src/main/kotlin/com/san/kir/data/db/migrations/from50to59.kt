@@ -1,5 +1,9 @@
 package com.san.kir.data.db.migrations
 
+import androidx.room.DeleteColumn
+import androidx.room.DeleteTable
+import androidx.room.migration.AutoMigrationSpec
+
 /*
 Таблица Statistic
 Замена поля manga с названием манги на поле manga_id с id манги
@@ -106,3 +110,18 @@ internal val from55to56 = migrate {
 
     query("DROP VIEW planned_task_ext")
 }
+
+/*
+Таблица Site - Удаление
+*/
+
+@DeleteColumn(tableName = "manga", columnName = "category")
+@DeleteTable.Entries(DeleteTable(tableName = "sites"))
+internal class From58to59 : AutoMigrationSpec
+
+/*
+Таблица Manga
+Удаление поля category
+*/
+@DeleteColumn(tableName = "manga", columnName = "category")
+internal class From59to60 : AutoMigrationSpec

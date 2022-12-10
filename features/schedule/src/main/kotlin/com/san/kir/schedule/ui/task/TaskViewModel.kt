@@ -30,9 +30,8 @@ internal class TaskViewModel @Inject constructor(
         item,
         tasksRepository.categories,
         tasksRepository.mangas,
-        tasksRepository.catalogs,
         hasChanges
-    ) { item, categories, mangas, catalogs, changes ->
+    ) { item, categories, mangas, changes ->
 
         val newItem = item.copy(
             mangas = item.mangas.ifEmpty { item.groupContent.mapNotNull { name -> mangas.firstOrNull { it.name == name }?.id } }
@@ -46,7 +45,7 @@ internal class TaskViewModel @Inject constructor(
             categoryNames = categories.map { it.name }.toImmutableList(),
             mangaIds = mangas.map { it.id }.toImmutableList(),
             mangaNames = mangas.map { it.name }.toImmutableList(),
-            catalogNames = catalogs.toImmutableList(),
+            catalogNames = tasksRepository.catalogs.toImmutableList(),
             groupNames = newItem.mangas.map { id -> mangas.first { it.id == id }.name }
                 .toImmutableList(),
             hasChanges = changes,

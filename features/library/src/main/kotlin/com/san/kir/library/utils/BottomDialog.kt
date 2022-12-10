@@ -71,9 +71,7 @@ internal fun BottomDialog(
         transition.AnimatedContent(
             transitionSpec = {
                 slideInVertically(
-                    spring(
-                        dampingRatio = Spring.DampingRatioLowBouncy,
-                    )
+                    spring(dampingRatio = Spring.DampingRatioLowBouncy)
                 ) { it } with slideOutVertically { it } using
                         SizeTransform { _, targetSize ->
                             when (targetState) {

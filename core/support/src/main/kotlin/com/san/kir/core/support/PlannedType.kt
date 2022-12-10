@@ -1,7 +1,6 @@
 package com.san.kir.core.support
 
-import com.san.kir.core.support.R
-import java.util.*
+import java.util.Calendar
 
 enum class PlannedType(
     val order: Int,

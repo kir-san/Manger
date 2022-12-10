@@ -3,7 +3,7 @@ import org.gradle.api.JavaVersion
 object Versions {
     object App {
         const val MIN_SDK = 21
-        const val TARGET_SDK = 30
+        const val TARGET_SDK = 33
         const val COMPILE_SDK = 33
     }
 

@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     id("com.android.library")
     kotlin("android")
@@ -41,4 +43,9 @@ android {
             "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" + project.buildDir.absolutePath + "/compose_metrics"
         )
     }
+
+    tasks.withType<KotlinCompile>().configureEach {
+        kotlinOptions.languageVersion = "1.8"
+    }
+
 }

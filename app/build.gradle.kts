@@ -2,7 +2,6 @@ plugins {
     id("compose.app")
     id(Plugins.hilt)
     id(Plugins.kapt)
-    alias(libs.plugins.kotlin.ksp)
     id(Plugins.parcelize)
 }
 
@@ -56,44 +55,25 @@ dependencies {
 
     implementation(project(Modules.Core.utils))
     implementation(project(Modules.Core.support))
-    implementation(project(Modules.Core.download))
     implementation(project(Modules.Core.internet))
     implementation(project(Modules.Core.compose))
     implementation(project(Modules.Core.background))
 
     implementation(project(Modules.Data.db))
-    implementation(project(Modules.Data.models))
-    implementation(project(Modules.Data.parsing))
 
-    implementation(platform(libs.compose.bom))
-
-    implementation(libs.stdlib)
-    implementation(libs.bundles.coroutines)
-
-    implementation(libs.core)
     implementation(libs.splash)
     implementation(libs.activity)
     implementation(libs.appcompat)
     implementation(libs.vectordrawable)
 
-    implementation(libs.material)
-
     implementation(libs.bundles.hilt)
     kapt(libs.bundles.hiltCompilers)
 
-    implementation(libs.compose.constraint.layout)
     implementation(libs.compose.hilt.navigation)
-    implementation(libs.compose.paging)
 
     implementation(libs.lifecycle.viewmodel)
-    implementation(libs.lifecycle.runtime)
-    implementation(libs.lifecycle.livedata)
-    implementation(libs.lifecycle.common)
-    implementation(libs.lifecycle.service)
 
-    implementation(libs.bundles.work)
-
-    debugImplementation(libs.bundles.hyper)
+//    debugImplementation(libs.bundles.hyper)
 
     implementation(libs.timber)
 

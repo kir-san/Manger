@@ -44,7 +44,7 @@ import kotlin.math.roundToInt
 
 @Composable
 fun StoragesScreen(
-    navigateUp: () -> Unit,
+    navigateUp: () -> Boolean,
     navigateToItem: (Long) -> Unit,
 ) {
     val viewModel: StoragesViewModel = hiltViewModel()

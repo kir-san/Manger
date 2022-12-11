@@ -29,6 +29,9 @@ interface StatisticDao : BaseDao<Statistic> {
     @Query("SELECT * FROM statistic WHERE manga_id IS :mangaId")
     suspend fun itemByMangaId(mangaId: Long): Statistic
 
+    @Query("SELECT id FROM statistic WHERE manga_id IS :mangaId")
+    suspend fun idByMangaId(mangaId: Long): Long?
+
     @Query("DELETE FROM statistic WHERE id=:itemId")
     suspend fun delete(itemId: Long)
 }

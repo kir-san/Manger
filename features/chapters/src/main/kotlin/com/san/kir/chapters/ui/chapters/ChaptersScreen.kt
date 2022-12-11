@@ -27,7 +27,7 @@ import kotlinx.collections.immutable.persistentListOf
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ChaptersScreen(
-    navigateUp: () -> Unit,
+    navigateUp: () -> Boolean,
     navigateToViewer: (Long) -> Unit,
     mangaId: Long,
 ) {

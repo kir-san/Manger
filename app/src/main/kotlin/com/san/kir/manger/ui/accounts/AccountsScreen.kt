@@ -1,4 +1,4 @@
-package com.san.kir.manger.ui.application_navigation.accounts
+package com.san.kir.manger.ui.accounts
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
@@ -11,7 +11,7 @@ import com.san.kir.features.shikimori.ui.accountItem.AccountItem
 
 @Composable
 fun AccountsScreen(
-    navigateUp: () -> Unit,
+    navigateUp: () -> Boolean,
     navigateToShiki: () -> Unit,
 ) {
     ScreenList(

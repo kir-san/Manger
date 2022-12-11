@@ -34,7 +34,7 @@ import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 fun SettingsScreen(
-    navigateUp: () -> Unit,
+    navigateUp: () -> Boolean,
 ) {
     val viewModel: SettingsViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()

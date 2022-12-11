@@ -1,30 +1,31 @@
-package com.san.kir.manger.ui.application_navigation
+package com.san.kir.manger.navigation
 
-import androidx.compose.runtime.remember
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.san.kir.categories.ui.categories.CategoriesScreen
 import com.san.kir.categories.ui.category.CategoryScreen
-import com.san.kir.manger.utils.compose.NavTarget
-import com.san.kir.manger.utils.compose.navTarget
-import com.san.kir.manger.utils.compose.navigation
+import com.san.kir.manger.navigation.utils.NavTarget
+import com.san.kir.manger.navigation.utils.navTarget
+import com.san.kir.manger.navigation.utils.navigation
 
 enum class CategoriesNavTarget : NavTarget {
     Main {
-        override val content = navTarget(route = "main") {
-            val navigateTo: (String) -> Unit = remember { { navigate(Category, it) } }
+        override val content = navTarget(route = GraphTree.Categories.main) {
             CategoriesScreen(
-                navigateUp = up(),
-                navigateToItem = navigateTo,
+                navigateUp = navigateUp(),
+                navigateToItem = rememberNavigateString(Category),
             )
         }
     },
 
     Category {
-        override val content = navTarget(route = "category_item", hasItems = true) {
+        override val content = navTarget(
+            route = GraphTree.Categories.item,
+            hasItems = true
+        ) {
             CategoryScreen(
-                navigateUp = up(),
-                categoryName = stringElement ?: "",
+                navigateUp = navigateUp(),
+                categoryName = stringElement() ?: "",
             )
         }
     }

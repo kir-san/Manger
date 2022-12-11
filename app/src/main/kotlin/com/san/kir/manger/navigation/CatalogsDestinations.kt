@@ -14,7 +14,10 @@ import com.san.kir.manger.navigation.utils.navigation
 enum class CatalogsNavTarget : NavTarget {
 
     Main {
-        override val content = navTarget(route = "main", hasDeepLink = true) {
+        override val content = navTarget(
+            route = GraphTree.Catalogs.main,
+            hasDeepLink = true
+        ) {
             CatalogsScreen(
                 navigateUp = navigateUp(),
                 navigateToSearch = rememberNavigate(GlobalSearch),
@@ -24,7 +27,10 @@ enum class CatalogsNavTarget : NavTarget {
     },
 
     Catalog {
-        override val content = navTarget(route = "catalog", hasItems = true) {
+        override val content = navTarget(
+            route = GraphTree.Catalogs.item,
+            hasItems = true
+        ) {
             CatalogScreen(
                 navigateUp = navigateUp(),
                 navigateToInfo = rememberNavigateString(Info),
@@ -35,7 +41,10 @@ enum class CatalogsNavTarget : NavTarget {
     },
 
     GlobalSearch {
-        override val content = navTarget(route = "global_search", hasItems = true) {
+        override val content = navTarget(
+            route = GraphTree.Catalogs.search,
+            hasItems = true
+        ) {
             SearchScreen(
                 navigateUp = navigateUp(),
                 navigateToInfo = rememberNavigateString(Info),
@@ -46,7 +55,10 @@ enum class CatalogsNavTarget : NavTarget {
     },
 
     Info {
-        override val content = navTarget(route = "info", hasItems = true) {
+        override val content = navTarget(
+            route = GraphTree.Catalogs.itemInfo,
+            hasItems = true
+        ) {
             CatalogItemScreen(
                 navigateUp = navigateUp(),
                 navigateToAdd = rememberNavigateString(AddLocal),
@@ -56,7 +68,10 @@ enum class CatalogsNavTarget : NavTarget {
     },
 
     AddLocal {
-        override val content = navTarget(route = "add", hasItems = true) {
+        override val content = navTarget(
+            route = GraphTree.Catalogs.itemAdd,
+            hasItems = true
+        ) {
             AddStandartScreen(
                 navigateUp = navigateUp(),
                 url = stringElement() ?: ""

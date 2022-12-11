@@ -1,25 +1,24 @@
-package com.san.kir.manger.ui.application_navigation
+package com.san.kir.manger.navigation
 
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import com.san.kir.catalog.ui.addOnline.AddOnlineScreen
 import com.san.kir.chapters.ui.chapters.ChaptersScreen
 import com.san.kir.core.support.MainMenuType
 import com.san.kir.features.viewer.MangaViewer
-import com.san.kir.library.ui.addOnline.AddOnlineScreen
 import com.san.kir.library.ui.library.LibraryNavigation
 import com.san.kir.library.ui.library.LibraryScreen
 import com.san.kir.library.ui.mangaAbout.MangaAboutScreen
-import com.san.kir.manger.ui.application_navigation.catalog.CatalogsNavTarget
-import com.san.kir.manger.utils.compose.NavTarget
-import com.san.kir.manger.utils.compose.navLongArgument
-import com.san.kir.manger.utils.compose.navTarget
-import com.san.kir.manger.utils.compose.navigation
+import com.san.kir.manger.navigation.utils.NavTarget
+import com.san.kir.manger.navigation.utils.navLongArgument
+import com.san.kir.manger.navigation.utils.navTarget
+import com.san.kir.manger.navigation.utils.navigation
 
 enum class LibraryNavTarget : NavTarget {
     Main {
-        override val content = navTarget(route = "main") {
+        override val content = navTarget(route = GraphTree.Library.main) {
             val navigation = remember {
                 LibraryNavigation(
                     navigateToScreen = { type ->
@@ -42,7 +41,7 @@ enum class LibraryNavTarget : NavTarget {
 
     Chapters {
         override val content = navTarget(
-            route = "chapters",
+            route = GraphTree.Library.item,
             hasItems = true,
             arguments = listOf(navLongArgument())
         ) {
@@ -50,33 +49,29 @@ enum class LibraryNavTarget : NavTarget {
             val navigate: (Long) -> Unit = remember { { MangaViewer.start(context, it) } }
 
             ChaptersScreen(
-                navigateUp = up(),
+                navigateUp = navigateUp(),
                 navigateToViewer = navigate,
-                mangaId = longElement ?: -1L
+                mangaId = longElement() ?: -1L
             )
         }
     },
 
     AddOnline {
-        override val content = navTarget(route = "add_online") {
-            val navigateTo: (String) -> Unit = remember {
-                { arg -> navigate(CatalogsNavTarget.AddLocal, arg) }
-            }
-
+        override val content = navTarget(route = GraphTree.Library.addOnline) {
             AddOnlineScreen(
-                navigateUp = up(),
-                navigateToNext = navigateTo
+                navigateUp = navigateUp(),
+                navigateToNext = rememberNavigateString(CatalogsNavTarget.AddLocal)
             )
         }
     },
 
     About {
         override val content = navTarget(
-            route = "about",
+            route = GraphTree.Library.about,
             hasItems = true,
             arguments = listOf(navLongArgument())
         ) {
-            MangaAboutScreen(up(), longElement ?: -1)
+            MangaAboutScreen(navigateUp(), longElement() ?: -1)
         }
     };
 }

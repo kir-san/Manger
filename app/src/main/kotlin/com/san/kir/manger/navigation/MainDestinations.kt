@@ -1,4 +1,4 @@
-package com.san.kir.manger.ui.application_navigation
+package com.san.kir.manger.navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
@@ -10,65 +10,71 @@ import com.san.kir.chapters.ui.download.DownloadsScreen
 import com.san.kir.chapters.ui.latest.LatestScreen
 import com.san.kir.core.support.MainMenuType
 import com.san.kir.features.viewer.MangaViewer
-import com.san.kir.manger.ui.application_navigation.accounts.accountsNavGraph
-import com.san.kir.manger.ui.application_navigation.catalog.catalogsNavGraph
-import com.san.kir.manger.utils.compose.NavTarget
-import com.san.kir.manger.utils.compose.composable
-import com.san.kir.manger.utils.compose.navTarget
+import com.san.kir.manger.navigation.utils.NavTarget
+import com.san.kir.manger.navigation.utils.composable
+import com.san.kir.manger.navigation.utils.navTarget
 import com.san.kir.settings.ui.settings.SettingsScreen
 
 enum class MainNavTarget(
     val type: MainMenuType,
 ) : NavTarget {
     Library(MainMenuType.Library) {
-        override val content = navTarget(route = "library")
+        override val content = navTarget(route = GraphTree.Library())
     },
 
     Storage(MainMenuType.Storage) {
-        override val content = navTarget(route = "storage")
+        override val content = navTarget(route = GraphTree.Storage())
     },
 
     Categories(MainMenuType.Category) {
-        override val content = navTarget(route = "categories")
+        override val content = navTarget(route = GraphTree.Categories())
     },
 
     Catalogs(MainMenuType.Catalogs) {
-        override val content = navTarget(route = "catalogs")
+        override val content = navTarget(route = GraphTree.Catalogs())
     },
 
     Downloader(MainMenuType.Downloader) {
-        override val content = navTarget(route = "downloader", hasDeepLink = true) {
-            DownloadsScreen(up())
+        override val content = navTarget(
+            route = GraphTree.downloader,
+            hasDeepLink = true
+        ) {
+            DownloadsScreen(navigateUp())
         }
     },
 
     Latest(MainMenuType.Latest) {
-        override val content = navTarget(route = "latest", hasDeepLink = true) {
+        override val content = navTarget(
+            route = GraphTree.latest,
+            hasDeepLink = true
+        ) {
             val context = LocalContext.current
 
             val navigateTo: (Long) -> Unit = remember { { MangaViewer.start(context, it) } }
 
             LatestScreen(
-                navigateUp = up(),
+                navigateUp = navigateUp(),
                 navigateToViewer = navigateTo,
             )
         }
     },
 
     Settings(MainMenuType.Settings) {
-        override val content = navTarget(route = "settings") { SettingsScreen(up()) }
+        override val content = navTarget(route = GraphTree.settings) {
+            SettingsScreen(navigateUp())
+        }
     },
 
     Statistic(MainMenuType.Statistic) {
-        override val content = navTarget(route = "statistic")
+        override val content = navTarget(route = GraphTree.Statistic())
     },
 
     Schedule(MainMenuType.Schedule) {
-        override val content = navTarget(route = "schedule")
+        override val content = navTarget(route = GraphTree.Schedule())
     },
 
     Accounts(MainMenuType.Accounts) {
-        override val content = navTarget(route = "accounts")
+        override val content = navTarget(route = GraphTree.Accounts())
     },
 }
 

@@ -34,7 +34,7 @@ internal fun topBar(
     selectionMode: Boolean,
     backgroundAction: Boolean,
     manga: Manga,
-    navigateUp: () -> Unit,
+    navigateUp: () -> Boolean,
     sendEvent: (ChaptersEvent) -> Unit,
 ) = topBar(
     titleContent = {

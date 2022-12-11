@@ -20,7 +20,7 @@ import kotlinx.collections.immutable.toPersistentList
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun MainScreen(
-    navigateUp: () -> Unit,
+    navigateUp: () -> Boolean,
     navigateToItem: (Long) -> Unit,
 ) {
     ScreenContent(

@@ -1,4 +1,4 @@
-package com.san.kir.manger.ui.startapp
+package com.san.kir.manger.ui.init
 
 import android.Manifest
 import android.content.Intent

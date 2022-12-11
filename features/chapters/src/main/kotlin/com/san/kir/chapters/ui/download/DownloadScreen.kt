@@ -59,7 +59,7 @@ import com.san.kir.core.support.DownloadState
 import com.san.kir.data.models.extend.DownloadChapter
 
 @Composable
-fun DownloadsScreen(navigateUp: () -> Unit) {
+fun DownloadsScreen(navigateUp: () -> Boolean) {
     val viewModel: DownloadsViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
 

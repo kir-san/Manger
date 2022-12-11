@@ -1,4 +1,4 @@
-package com.san.kir.manger.ui
+package com.san.kir.manger.ui.main
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.MaterialTheme
@@ -12,13 +12,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.san.kir.manger.ui.application_navigation.MainNavGraph
+import com.san.kir.manger.navigation.MainNavGraph
 
 @OptIn(
     ExperimentalAnimationApi::class
 )
 @Composable
-fun MangerApp() {
+fun MainScreen() {
     val mainViewModel: MainViewModel = hiltViewModel()
     val darkTheme by mainViewModel.darkTheme.collectAsState()
 

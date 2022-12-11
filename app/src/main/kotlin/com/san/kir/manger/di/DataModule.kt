@@ -9,7 +9,6 @@ import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.PlannedDao
 import com.san.kir.data.db.dao.SettingsDao
 import com.san.kir.data.db.dao.ShikimoriDao
-import com.san.kir.data.db.dao.SiteDao
 import com.san.kir.data.db.dao.StatisticDao
 import com.san.kir.data.db.dao.StorageDao
 import dagger.Module
@@ -46,11 +45,6 @@ object DataModule {
     @Provides
     fun provideCategoryDao(database: RoomDB): CategoryDao {
         return database.categoryDao()
-    }
-
-    @Provides
-    fun provideSiteDao(database: RoomDB): SiteDao {
-        return database.siteDao()
     }
 
     @Provides

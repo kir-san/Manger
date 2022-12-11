@@ -53,7 +53,7 @@ internal fun ShikimoriContent() {
             ShikiNavTarget.Start ->
                 ScreenList(
                     topBar = topBar(
-                        navigationButton = NavigationButton.Back{},
+                        navigationButton = NavigationButton.Back { true },
                         title = stringResource(R.string.main_menu_accounts),
                     ),
                     additionalPadding = Dimensions.zero
@@ -63,9 +63,13 @@ internal fun ShikimoriContent() {
                     }
 
                 }
+
             ShikiNavTarget.Catalog ->
                 AccountScreen(
-                    navigateUp = { nav = ShikiNavTarget.Start },
+                    navigateUp = {
+                        nav = ShikiNavTarget.Start
+                        true
+                    },
                     navigateToShikiItem = {
                         Timber.v(it.toString())
                         nav = ShikiNavTarget.AccountRate(it)
@@ -73,31 +77,47 @@ internal fun ShikimoriContent() {
                     navigateToLocalItems = { nav = ShikiNavTarget.LocalItems },
                     navigateToSearch = { /*nav = ShikiNavTarget.Search*/ }
                 )
+
             is ShikiNavTarget.AccountRate -> {
                 AccountRateScreen(
-                    navigateUp = { nav = ShikiNavTarget.Search },
+                    navigateUp = {
+                        nav = ShikiNavTarget.Search
+                        true
+                    },
                     navigateToSearch = {},
                     mangaId = target.id,
                     rateId = -1L,
                 )
             }
+
             ShikiNavTarget.Search -> {
                 ShikiSearchScreen(
-                    navigateUp = { nav = ShikiNavTarget.Start },
+                    navigateUp = {
+                        nav = ShikiNavTarget.Start
+                        true
+                    },
                     navigateToItem = { nav = ShikiNavTarget.AccountRate(it) },
                     searchText = "Fetish na Yuu",
                 )
             }
+
             ShikiNavTarget.LocalItems -> {
                 LocalItemsScreen(
-                    navigateUp = { nav = ShikiNavTarget.Catalog },
+                    navigateUp = {
+                        nav = ShikiNavTarget.Catalog
+                        true
+                    },
                     navigateToItem = { nav = ShikiNavTarget.LocalItem(it) }
                 )
             }
+
             is ShikiNavTarget.LocalItem -> {
                 LocalItemScreen(
                     mangaId = target.id,
-                    navigateUp = { nav = ShikiNavTarget.LocalItems },
+                    navigateUp = {
+                        nav = ShikiNavTarget.LocalItems
+                        true
+                    },
                     navigateToSearch = {})
             }
         }

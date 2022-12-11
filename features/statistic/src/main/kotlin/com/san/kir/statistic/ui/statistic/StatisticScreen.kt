@@ -25,7 +25,7 @@ import com.san.kir.data.models.base.Statistic
 import com.san.kir.statistic.R
 
 @Composable
-fun StatisticScreen(navigateUp: () -> Unit, itemId: Long) {
+fun StatisticScreen(navigateUp: () -> Boolean, itemId: Long) {
     val viewModel: StatisticViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
 

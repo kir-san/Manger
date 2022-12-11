@@ -29,7 +29,7 @@ import com.san.kir.statistic.R
 
 @Composable
 fun StatisticsScreen(
-    navigateUp: () -> Unit,
+    navigateUp: () -> Boolean,
     navigateToItem: (Long) -> Unit,
 ) {
     val viewModel: StatisticsViewModel = hiltViewModel()

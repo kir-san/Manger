@@ -1,23 +1,21 @@
-package com.san.kir.manger.ui.application_navigation
+package com.san.kir.manger.navigation
 
-import androidx.compose.runtime.remember
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import com.san.kir.manger.utils.compose.NavTarget
-import com.san.kir.manger.utils.compose.navBoolArgument
-import com.san.kir.manger.utils.compose.navLongArgument
-import com.san.kir.manger.utils.compose.navTarget
-import com.san.kir.manger.utils.compose.navigation
+import com.san.kir.manger.navigation.utils.NavTarget
+import com.san.kir.manger.navigation.utils.navBoolArgument
+import com.san.kir.manger.navigation.utils.navLongArgument
+import com.san.kir.manger.navigation.utils.navTarget
+import com.san.kir.manger.navigation.utils.navigation
 import com.san.kir.storage.ui.storage.StorageScreen
 import com.san.kir.storage.ui.storages.StoragesScreen
 
 enum class StorageNavTarget : NavTarget {
     Main {
-        override val content = navTarget(route = "main") {
-            val navigateTo: (Long) -> Unit = remember { { navigate(Storage, it, false) } }
+        override val content = navTarget(route = GraphTree.Storage.main) {
             StoragesScreen(
-                navigateUp = up(),
-                navigateToItem = navigateTo,
+                navigateUp = navigateUp(),
+                navigateToItem = rememberNavigateLong(Storage),
             )
         }
     },
@@ -26,13 +24,13 @@ enum class StorageNavTarget : NavTarget {
         private val hasUpdate = "hasUpdate"
 
         override val content = navTarget(
-            route = "storage_item",
+            route = GraphTree.Storage.item,
             hasItems = true,
             arguments = listOf(navLongArgument(), navBoolArgument(hasUpdate))
         ) {
             StorageScreen(
-                navigateUp = up(),
-                mangaId = longElement ?: -1L,
+                navigateUp = navigateUp(),
+                mangaId = longElement() ?: -1L,
                 hasUpdate = booleanElement(hasUpdate) ?: false
             )
         }

@@ -50,7 +50,7 @@ import com.san.kir.features.shikimori.ui.util.TextLoginOrNot
 
 @Composable
 fun AccountScreen(
-    navigateUp: () -> Unit,
+    navigateUp: () -> Boolean,
     navigateToShikiItem: (id: Long) -> Unit,
     navigateToLocalItems: () -> Unit,
     navigateToSearch: () -> Unit,
@@ -103,7 +103,7 @@ fun AccountScreen(
 @Composable
 private fun topBar(
     onSendEvent: (AccountEvent) -> Unit,
-    navigateUp: () -> Unit,
+    navigateUp: () -> Boolean,
     navigateToSearch: () -> Unit,
     state: LoginState,
     hasAction: BackgroundTasks,

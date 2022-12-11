@@ -34,7 +34,7 @@ import com.san.kir.features.shikimori.ui.util.body
 @Composable
 fun LocalItemScreen(
     mangaId: Long,
-    navigateUp: () -> Unit,
+    navigateUp: () -> Boolean,
     navigateToSearch: (String) -> Unit,
 ) {
     val viewModel: LocalItemViewModel = hiltViewModel()

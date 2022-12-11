@@ -47,7 +47,7 @@ import com.san.kir.library.R
 
 @Composable
 fun MangaAboutScreen(
-    navigateUp: () -> Unit,
+    navigateUp: () -> Boolean,
     itemId: Long,
 ) {
     val viewModel: MangaAboutViewModel = hiltViewModel()

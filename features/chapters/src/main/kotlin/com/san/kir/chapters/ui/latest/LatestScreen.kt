@@ -52,7 +52,7 @@ import com.san.kir.core.support.DownloadState
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun LatestScreen(
-    navigateUp: () -> Unit,
+    navigateUp: () -> Boolean,
     navigateToViewer: (Long) -> Unit,
 ) {
     val viewModel: LatestViewModel = hiltViewModel()
@@ -104,7 +104,7 @@ fun LatestScreen(
 @Composable
 private fun navigationButton(
     selectionMode: Boolean,
-    navigateUp: () -> Unit,
+    navigateUp: () -> Boolean,
     sendEvent: (LatestEvent) -> Unit
 ):  NavigationButton {
     return if (selectionMode) {

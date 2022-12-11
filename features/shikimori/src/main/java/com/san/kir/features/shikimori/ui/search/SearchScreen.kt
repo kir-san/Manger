@@ -25,7 +25,7 @@ import com.san.kir.features.shikimori.ui.util.MangaItemContent
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ShikiSearchScreen(
-    navigateUp: () -> Unit,
+    navigateUp: () -> Boolean,
     navigateToItem: (Long) -> Unit,
     searchText: String,
 ) {

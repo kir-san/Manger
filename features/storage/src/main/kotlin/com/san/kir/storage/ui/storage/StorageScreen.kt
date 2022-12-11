@@ -46,7 +46,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun StorageScreen(
-    navigateUp: () -> Unit,
+    navigateUp: () -> Boolean,
     mangaId: Long,
     hasUpdate: Boolean
 ) {

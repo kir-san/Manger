@@ -37,7 +37,7 @@ import com.san.kir.data.models.base.Category
 
 @Composable
 fun CategoriesScreen(
-    navigateUp: () -> Unit,
+    navigateUp: () -> Boolean,
     navigateToItem: (String) -> Unit,
 ) {
 

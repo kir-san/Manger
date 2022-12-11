@@ -43,7 +43,7 @@ import kotlin.math.roundToInt
 
 @Composable
 fun CategoryScreen(
-    navigateUp: () -> Unit,
+    navigateUp: () -> Boolean,
     categoryName: String,
 ) {
     val viewModel: CategoryViewModel = hiltViewModel()

@@ -1,8 +1,7 @@
-package com.san.kir.manger.ui
+package com.san.kir.manger.ui.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.san.kir.manger.ui.application_navigation.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted

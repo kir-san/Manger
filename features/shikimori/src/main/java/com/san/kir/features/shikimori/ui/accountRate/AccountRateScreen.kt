@@ -39,7 +39,7 @@ import com.san.kir.features.shikimori.ui.util.body
 
 @Composable
 fun AccountRateScreen(
-    navigateUp: () -> Unit,
+    navigateUp: () -> Boolean,
     navigateToSearch: (String) -> Unit,
     mangaId: Long,
     rateId: Long,

@@ -49,7 +49,7 @@ import java.util.Locale
 
 @Composable
 fun TaskScreen(
-    navigateUp: () -> Unit,
+    navigateUp: () -> Boolean,
     itemId: Long,
 ) {
     val viewModel: TaskViewModel = hiltViewModel()

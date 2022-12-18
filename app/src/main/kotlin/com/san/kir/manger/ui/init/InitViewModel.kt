@@ -2,8 +2,8 @@ package com.san.kir.manger.ui.init
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
-import com.san.kir.background.services.MangaUpdaterService
 import com.san.kir.background.works.UpdateCatalogWorker
+import com.san.kir.background.works.UpdateMangaWorker
 import com.san.kir.core.support.DIR
 import com.san.kir.core.utils.coroutines.withIoContext
 import com.san.kir.core.utils.createDirs
@@ -26,7 +26,7 @@ class InitViewModel @Inject constructor(
     suspend fun startApp() {
         createNeedFolders()
 
-        MangaUpdaterService.setLatestDeepLink(
+        UpdateMangaWorker.setLatestDeepLink(
             ctx, ctx.deepLinkIntent<MainActivity>(MainNavTarget.Latest),
         )
 

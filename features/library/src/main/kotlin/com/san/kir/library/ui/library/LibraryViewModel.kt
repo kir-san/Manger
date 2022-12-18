@@ -4,11 +4,13 @@ import android.app.Application
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
+import com.san.kir.background.logic.UpdateMangaManager
+import com.san.kir.background.services.AppUpdateService
 import com.san.kir.background.works.MangaDeleteWorker
 import com.san.kir.core.utils.viewModel.BaseViewModel
 import com.san.kir.data.models.extend.CategoryWithMangas
-import com.san.kir.library.logic.repo.SettingsRepository
 import com.san.kir.library.logic.repo.MangaRepository
+import com.san.kir.library.logic.repo.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,6 +27,7 @@ import javax.inject.Inject
 internal class LibraryViewModel @Inject internal constructor(
     private val context: Application,
     private val mangaRepository: MangaRepository,
+    private val updateManager: UpdateMangaManager,
     settingsRepository: SettingsRepository,
 ) : BaseViewModel<LibraryEvent, LibraryState>() {
 
@@ -37,7 +40,6 @@ internal class LibraryViewModel @Inject internal constructor(
         viewModelScope.launch { checkWorks() }
     }
 
-    @Suppress("UNCHECKED_CAST")
     override val tempState = combine(
         selectedMangaState,
         currentCategory,
@@ -75,6 +77,19 @@ internal class LibraryViewModel @Inject internal constructor(
             is LibraryEvent.DeleteManga -> {
                 deSelectManga()
                 MangaDeleteWorker.addTask(context, event.mangaId, event.withFiles)
+            }
+
+            LibraryEvent.UpdateApp -> AppUpdateService.start(context)
+            LibraryEvent.UpdateAll -> {
+                state.value.apply {
+                    if (items is ItemsState.Ok) updateManager.addTasks(
+                        items.items.flatMap { it.mangas.map { m -> m.id } }
+                    )
+                }
+            }
+
+            LibraryEvent.UpdateCurrentCategory -> {
+                updateManager.addTasks(currentCategory.value.mangas.map { it.id })
             }
         }
     }

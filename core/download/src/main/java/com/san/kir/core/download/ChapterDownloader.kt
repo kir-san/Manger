@@ -8,6 +8,7 @@ import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.parsing.SiteCatalogsManager
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import timber.log.Timber
 import java.io.File
 import java.util.concurrent.Executors.newFixedThreadPool
 
@@ -16,7 +17,7 @@ class ChapterDownloader(
     private val manager: SiteCatalogsManager,
     private var task: Chapter,
     concurrent: Int,
-    private val delegate: Delegate?
+    private val delegate: Delegate?,
 ) {
     private var totalPages = 0
     private var downloadPages = 0
@@ -172,11 +173,9 @@ class ChapterDownloader(
 
                 if (link.isEmpty()) return
 
-                kotlin.runCatching {
-                    contentLength = connectManager.downloadFile(file, link)
-                }.onFailure { exception ->
-                    exception.printStackTrace()
-                }
+                connectManager.downloadFile(file, link)
+                    .onSuccess { contentLength = it.size }
+                    .onFailure(Timber::e)
 
                 // Если размер исходного и загруженного одинаков, то страница загружена
                 if (file.exists() && file.length() == contentLength) {

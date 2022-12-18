@@ -16,7 +16,7 @@ internal fun Context.cancelAction(id: UUID): NotificationCompat.Action {
         .Action
         .Builder(
             R.drawable.ic_notification_cancel,
-            getString(R.string.catalog_fos_service_action_cancel_all),
+            getString(R.string.cancel_all),
             WorkManager
                 .getInstance(this)
                 .createCancelPendingIntent(id)

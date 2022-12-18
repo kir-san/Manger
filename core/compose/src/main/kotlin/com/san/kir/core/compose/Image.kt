@@ -51,12 +51,12 @@ fun ImageWithStatus(url: String?) {
     LaunchedEffect(url) {
         if (!url.isNullOrEmpty()) {
             statusLogo = StatusLogo.Init
-            manager.downloadBitmap(url)?.let { bitmap ->
-                logo = bitmap.asImageBitmap()
-                statusLogo = StatusLogo.Complete
-            } ?: kotlin.run {
-                statusLogo = StatusLogo.Error
-            }
+            manager.downloadBitmap(url)
+                .onSuccess { (bitmap, _, _) ->
+                    logo = bitmap.asImageBitmap()
+                    statusLogo = StatusLogo.Complete
+                }
+                .onFailure { statusLogo = StatusLogo.Error }
         } else {
             statusLogo = StatusLogo.None
         }
@@ -84,15 +84,15 @@ fun rememberImage(url: String?): ImageBitmap {
                 return@LaunchedEffect
             }
 
-            kotlin.runCatching {
-                manager.downloadFile(icon, url, onFinish = { _, _ ->
+            manager.downloadFile(icon, url)
+                .onSuccess {
                     logo = BitmapFactory.decodeFile(icon.path).asImageBitmap()
-                })
-            }.onFailure {
-                ContextCompat.getDrawable(context, R.drawable.unknown)?.let { draw ->
-                    logo = draw.toBitmap().asImageBitmap()
                 }
-            }
+                .onFailure {
+                    ContextCompat.getDrawable(context, R.drawable.unknown)?.let { draw ->
+                        logo = draw.toBitmap().asImageBitmap()
+                    }
+                }
         }
     }
     return logo

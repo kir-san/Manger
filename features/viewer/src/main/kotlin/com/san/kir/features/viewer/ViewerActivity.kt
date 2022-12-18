@@ -7,10 +7,10 @@ import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.KeyEvent
-import android.view.View
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -61,7 +61,7 @@ internal class ViewerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-
+        autoHideSystemUI()
         /*
         Используется ViewPager первой версии
         из-за невозможности использовать вторую версию,
@@ -91,7 +91,7 @@ internal class ViewerActivity : AppCompatActivity() {
             lifecycleScope.launch { viewModel.chaptersManager.prevChapter() }
         }
         binding.back.setOnClickListener {
-            onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
         }
     }
 
@@ -112,9 +112,11 @@ internal class ViewerActivity : AppCompatActivity() {
                 }
 
                 if (Build.VERSION.SDK_INT >= 28) {
-                    window.attributes.layoutInDisplayCutoutMode =
+                    val attrs = window.attributes
+                    attrs.layoutInDisplayCutoutMode =
                         if (data.cutOut) WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
                         else WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
+                    window.attributes = attrs
                 }
 
                 // переключение управления свайпами
@@ -124,8 +126,6 @@ internal class ViewerActivity : AppCompatActivity() {
 
         viewModel.initReadTime()
         viewModel.setScreenWidth(getScreenWidth())
-
-        autoHideSystemUI()
 
         runStateChangeListener()
 
@@ -215,7 +215,7 @@ internal class ViewerActivity : AppCompatActivity() {
                     visibleJob = lifecycleScope.launch {
                         showUI()
                         delay(4000L)
-                        viewModel.toogleVisibilityUI(false)
+                        viewModel.toggleVisibilityUI(false)
                     }
                 } else {
                     visibleJob?.cancel()
@@ -239,19 +239,15 @@ internal class ViewerActivity : AppCompatActivity() {
             .launchIn(lifecycleScope)
     }
 
-    @Suppress("DEPRECATION")
     private fun autoHideSystemUI() {
-        /*
-        Если использовать ViewCompat.setOnApplyWindowInsetsListener(window.decorView),
-        то остаются видны иконки от системных баров
-
-        */
-        window.decorView.setOnSystemUiVisibilityChangeListener { visibility ->
-            // Note that system bars will only be "visible" if none of the
-            // LOW_PROFILE, HIDE_NAVIGATION, or FULLSCREEN flags are set.
-            if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
+        ViewCompat.setOnApplyWindowInsetsListener(window.decorView) { _, insets ->
+            if (insets.isVisible(WindowInsetsCompat.Type.navigationBars())
+                || insets.isVisible(WindowInsetsCompat.Type.statusBars())) {
+                Timber.i("autoHideSystemUI")
                 hideSystemUI()
             }
+
+            insets
         }
     }
 

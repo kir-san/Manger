@@ -8,12 +8,14 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import com.san.kir.data.db.dao.CatalogTaskDao
+import com.san.kir.data.db.dao.MangaTaskDao
 import com.san.kir.data.db.typeConverters.ListStringConverter
 import com.san.kir.data.models.base.CatalogTask
+import com.san.kir.data.models.base.MangaTask
 import javax.inject.Inject
 
 @Database(
-    entities = [CatalogTask::class],
+    entities = [CatalogTask::class, MangaTask::class],
     version = 1,
     autoMigrations = []
 )
@@ -41,6 +43,7 @@ abstract class WorkersDb : RoomDatabase() {
     }
 
     abstract val catalogDao: CatalogTaskDao
+    abstract val mangasDao: MangaTaskDao
 
     object Migrate {
         val migrations: Array<Migration> = arrayOf()
@@ -49,5 +52,6 @@ abstract class WorkersDb : RoomDatabase() {
     class Instance @Inject constructor(context: Application) {
         val db = getDatabase(context)
         val catalog = db.catalogDao
+        val mangas = db.mangasDao
     }
 }

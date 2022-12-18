@@ -12,8 +12,8 @@ import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.san.kir.background.R
 import com.san.kir.background.logic.UpdateCatalogManager
+import com.san.kir.background.logic.UpdateMangaManager
 import com.san.kir.background.services.AppUpdateService
-import com.san.kir.background.services.MangaUpdaterService
 import com.san.kir.core.support.PlannedPeriod
 import com.san.kir.core.support.PlannedType
 import com.san.kir.core.utils.longToast
@@ -37,63 +37,56 @@ class ScheduleWorker @AssistedInject constructor(
     private val categoryDao: CategoryDao,
     private val manager: SiteCatalogsManager,
     private val updateCatalogManager: UpdateCatalogManager,
+    private val updateMangaManager: UpdateMangaManager,
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
         val id = inputData.getLong("planned_task", -1L)
 
         Timber.v("doWork $id")
-        if (id != -1L) {
-            kotlin.runCatching {
+        if (id == -1L) return Result.retry()
 
-                val task = plannedDao.itemById(id) ?: return Result.failure()
+        kotlin.runCatching {
+            val task = plannedDao.itemById(id) ?: return Result.failure()
 
-                when (task.type) {
-                    PlannedType.MANGA -> {
-                        val manga = mangaDao.itemById(task.mangaId)
-                        MangaUpdaterService.add(applicationContext, manga)
-                    }
-
-                    PlannedType.GROUP -> {
-                        if (task.groupContent.isNotEmpty())
-                            task.groupContent.forEach { unic ->
-                                val manga = mangaDao.itemByName(unic)
-                                MangaUpdaterService.add(applicationContext, manga)
-                            }
-                        else if (task.mangas.isNotEmpty())
-                            mangaDao.itemsByIds(task.mangas).forEach { manga ->
-                                MangaUpdaterService.add(applicationContext, manga)
-                            } else Unit
-
-                    }
-
-                    PlannedType.CATEGORY -> {
-                        val defaultCategory = categoryDao.defaultCategory(applicationContext)
-
-                        val mangas =
-                            if (defaultCategory.id == task.categoryId) mangaDao.items()
-                            else mangaDao.itemsByCategoryId(task.categoryId)
-                        mangas.forEach {
-                            MangaUpdaterService.add(applicationContext, it)
-                        }
-                    }
-
-                    PlannedType.CATALOG -> {
-                        updateCatalogManager.addTask(task.catalog)
-                    }
-
-                    PlannedType.APP -> {
-                        AppUpdateService.start(applicationContext)
-                    }
+            when (task.type) {
+                PlannedType.MANGA -> {
+                    val manga = mangaDao.itemById(task.mangaId)
+                    updateMangaManager.addTask(manga.id)
                 }
-            }.fold(
-                onSuccess = { return Result.success() },
-                onFailure = {
-                    it.printStackTrace()
-                    return Result.failure()
+
+                PlannedType.GROUP -> {
+                    if (task.groupContent.isNotEmpty())
+                        updateMangaManager.addTasks(mangaDao.itemIdsByNames(task.groupContent))
+                    else if (task.mangas.isNotEmpty())
+                        updateMangaManager.addTasks(task.mangas)
+                    else Unit
                 }
-            )
-        } else return Result.retry()
+
+                PlannedType.CATEGORY -> {
+                    val defaultCategory = categoryDao.defaultCategory(applicationContext)
+
+                    val mangas =
+                        if (defaultCategory.id == task.categoryId) mangaDao.itemIds()
+                        else mangaDao.itemIdsByCategoryId(task.categoryId)
+                    updateMangaManager.addTasks(mangas)
+                }
+
+                PlannedType.CATALOG -> {
+                    updateCatalogManager.addTask(task.catalog)
+                }
+
+                PlannedType.APP -> {
+                    AppUpdateService.start(applicationContext)
+                }
+            }
+        }.fold(
+            onSuccess = { return Result.success() },
+            onFailure = {
+                it.printStackTrace()
+                return Result.failure()
+            }
+        )
     }
 
     companion object {
@@ -131,36 +124,38 @@ class ScheduleWorker @AssistedInject constructor(
             WorkManager.getInstance(ctx)
                 .cancelAllWorkByTag(tag + item.id)
                 .result
-                .addListener({
-                                 when (item.type) {
-                                     PlannedType.MANGA ->
-                                         ctx.longToast(
-                                             R.string.schedule_manager_cancel_manga,
-                                             item.manga
-                                         )
+                .addListener(
+                    {
+                        when (item.type) {
+                            PlannedType.MANGA ->
+                                ctx.longToast(
+                                    R.string.manga_updating_was_canceled_format,
+                                    item.manga
+                                )
 
-                                     PlannedType.CATEGORY ->
-                                         ctx.longToast(
-                                             R.string.schedule_manager_cancel_category,
-                                             item.category
-                                         )
+                            PlannedType.CATEGORY ->
+                                ctx.longToast(
+                                    R.string.category_updating_was_canceled_format,
+                                    item.category
+                                )
 
-                                     PlannedType.GROUP ->
-                                         ctx.longToast(
-                                             R.string.schedule_manager_cancel_group,
-                                             item.groupName
-                                         )
+                            PlannedType.GROUP ->
+                                ctx.longToast(
+                                    R.string.group_updating_was_canceled_format,
+                                    item.groupName
+                                )
 
-                                     PlannedType.CATALOG ->
-                                         ctx.longToast(
-                                             R.string.schedule_manager_cancel_catalog,
-                                             item.catalog
-                                         )
+                            PlannedType.CATALOG ->
+                                ctx.longToast(
+                                    R.string.catalog_updating_was_canceled_format,
+                                    item.catalog
+                                )
 
-                                     PlannedType.APP ->
-                                         ctx.longToast(R.string.schedule_manager_cancel_app)
-                                 }
-                             }, exe)
+                            PlannedType.APP ->
+                                ctx.longToast(R.string.app_updating_was_canceled)
+                        }
+                    }, exe
+                )
 
         }
 

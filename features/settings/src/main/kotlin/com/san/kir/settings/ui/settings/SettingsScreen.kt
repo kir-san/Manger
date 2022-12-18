@@ -1,5 +1,6 @@
 package com.san.kir.settings.ui.settings
 
+import android.os.Build
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
@@ -137,13 +138,14 @@ private fun Viewer(viewer: Settings.Viewer, sendEvent: (SettingsEvent.SaveViewer
         }
     )
 
-    TogglePreferenceItem(
-        title = R.string.settings_viewer_cutout_title,
-        subtitle = R.string.settings_viewer_cutout_summary,
-        icon = Icons.Default.ContentCut,
-        initialValue = viewer.cutOut,
-        onCheckedChange = { sendEvent(SettingsEvent.SaveViewer(viewer.copy(cutOut = it))) }
-    )
+    if (Build.VERSION.SDK_INT >= 28)
+        TogglePreferenceItem(
+            title = R.string.settings_viewer_cutout_title,
+            subtitle = R.string.settings_viewer_cutout_summary,
+            icon = Icons.Default.ContentCut,
+            initialValue = viewer.cutOut,
+            onCheckedChange = { sendEvent(SettingsEvent.SaveViewer(viewer.copy(cutOut = it))) }
+        )
 
     TogglePreferenceItem(
         title = R.string.settings_viewer_without_title,

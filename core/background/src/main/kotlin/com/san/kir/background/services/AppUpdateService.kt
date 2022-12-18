@@ -53,7 +53,7 @@ class AppUpdateService : Service(), CoroutineScope {
             .Action
             .Builder(
                 R.drawable.ic_notification_cancel,
-                getString(R.string.app_update_service_action_cancel_all),
+                getString(R.string.cancel_all),
                 cancelAll
             )
             .build()
@@ -66,7 +66,7 @@ class AppUpdateService : Service(), CoroutineScope {
             .Action
             .Builder(
                 R.drawable.ic_action_search,
-                getString(R.string.main_check_app_ver_go_to),
+                getString(R.string.go_to_4pda),
                 cancelAll
             )
             .build()
@@ -116,7 +116,7 @@ class AppUpdateService : Service(), CoroutineScope {
                 try {
                     with(NotificationCompat.Builder(this@AppUpdateService, channelId)) {
                         setSmallIcon(R.drawable.ic_notification_update)
-                        setContentTitle(getString(R.string.app_update_service_title))
+                        setContentTitle(getString(R.string.finding_app_updates))
                         setProgress(0, 0, true)
                         addAction(actionCancelAll)
                         startForeground(notificationId, build())
@@ -132,17 +132,17 @@ class AppUpdateService : Service(), CoroutineScope {
                         Timber.v("version = $version")
                         val message = if (version != appVersion)
                             getString(
-                                R.string.main_check_app_ver_find,
+                                R.string.new_version_current_version_format,
                                 version,
                                 appVersion
                             )
                         else
-                            getString(R.string.main_check_app_ver_no_find)
+                            getString(R.string.you_have_installed_actual_version)
                         stopForeground(false)
                         notificationManager.cancel(notificationId)
                         with(NotificationCompat.Builder(this@AppUpdateService, channelId)) {
                             setSmallIcon(R.drawable.ic_notification_update)
-                            setContentTitle(getString(R.string.app_update_service_title))
+                            setContentTitle(getString(R.string.finding_app_updates))
                             setContentText(message)
                             addAction(actionGoToSite)
                             notificationManager.notify(notificationId, build())
@@ -157,8 +157,8 @@ class AppUpdateService : Service(), CoroutineScope {
                     notificationManager.cancel(notificationId)
                     with(NotificationCompat.Builder(this@AppUpdateService, channelId)) {
                         setSmallIcon(R.drawable.ic_notification_update)
-                        setContentTitle(getString(R.string.app_update_service_title))
-                        setContentText(getString(R.string.main_check_app_ver_error))
+                        setContentTitle(getString(R.string.finding_app_updates))
+                        setContentText(getString(R.string.error_during_update_finding))
                         notificationManager.notify(notificationId, build())
                     }
                     notificationId = ID.generate()

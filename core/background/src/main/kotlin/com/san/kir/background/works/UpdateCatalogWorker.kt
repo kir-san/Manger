@@ -4,178 +4,38 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.hilt.work.HiltWorker
-import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.san.kir.background.R
+import com.san.kir.background.logic.WorkComplete
 import com.san.kir.background.logic.repo.CatalogRepository
-import com.san.kir.background.logic.repo.WorkersRepository
+import com.san.kir.background.logic.repo.CatalogWorkerRepository
 import com.san.kir.background.util.cancelAction
-import com.san.kir.background.util.tryCreateNotificationChannel
 import com.san.kir.core.support.DownloadState
 import com.san.kir.core.utils.ID
-import com.san.kir.core.utils.coroutines.withIoContext
 import com.san.kir.data.models.base.CatalogTask
 import com.san.kir.data.models.base.SiteCatalogElement
 import com.san.kir.data.parsing.SiteCatalogsManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collectIndexed
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import timber.log.Timber
-import java.util.concurrent.CancellationException
 
 @HiltWorker
 class UpdateCatalogWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted params: WorkerParameters,
     private val manager: SiteCatalogsManager,
-    private val workersRepository: WorkersRepository,
+    private val workerRepository: CatalogWorkerRepository,
     private val catalogRepository: CatalogRepository,
-) : CoroutineWorker(context, params) {
-    private val notificationManager = NotificationManagerCompat.from(applicationContext)
-    private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private var mainJob: Job? = null
+) : BaseUpdateWorker<CatalogTask>(context, params, workerRepository) {
 
-    private var queue = listOf<CatalogTask>()
-    private var errored = listOf<CatalogTask>()
-    private val lock = Mutex()
+    override val TAG = "Catalogs Updater"
 
-    private var currentJob: Job? = null
-    private var currentTask: CatalogTask? = null
-
-    override suspend fun doWork(): Result {
-        applicationContext.tryCreateNotificationChannel(channelId, TAG)
-        notify()
-
-        coroutineScope {
-            mainJob = launch {
-                workersRepository.catalog.collect(::control)
-            }
-
-            mainJob?.invokeOnCompletion { ex ->
-                scope.launch {
-                    removeTask()
-                    finishedNotify(ex)
-                    scope.cancel()
-                }
-            }
-
-            mainJob?.join()
-        }
-
-        return Result.success()
-    }
-
-    /* Возможные состояния
-    * hasRunningTask = false and new.isEmpty -> DESTROY
-    * hasRunningTask = false and new.isNotEmpty -> START
-    * hasRunningTask = true and new.isEmpty -> STOP
-    * hasRunningTask = true and new.isNotEmpty and currentTask in new -> NONE
-    * hasRunningTask = true and new.isNotEmpty and currentTask in new and new.size != queue.size -> UPDATE
-    * hasRunningTask = true and new.isNotEmpty and currentTask not in new -> STOP
-    * */
-    private suspend fun findNewCommand(new: List<CatalogTask>): Command {
-        val newIds = new.map { it.id }
-
-        return lock.withLock {
-            val task = currentTask
-
-            when {
-                hasRunningTask() -> when {
-                    new.isEmpty() || task == null || !newIds.contains(task.id) -> Command.Stop
-                    queue.size != new.size -> Command.Update
-                    else -> Command.None
-                }
-
-                new.isNotEmpty() -> Command.Start
-                else -> Command.Destroy
-            }
-        }.apply { queue = new }
-    }
-
-    private suspend fun control(new: List<CatalogTask> = queue) {
-        val command = findNewCommand(new)
-        Timber.v("control -> $command -> $new")
-
-        when (command) {
-            Command.Destroy -> mainJob?.cancel(WorkComplete)
-            Command.Stop -> {
-                stopTask()
-                control()
-            }
-
-            Command.Start -> start()
-            Command.Update -> notify()
-            else -> {}
-        }
-    }
-
-    private suspend fun start() {
-        Timber.i("start")
-        lock.withLock {
-            if (currentJob != null && currentTask != null && currentJob?.isActive == true) return
-
-            currentJob = scope.launch {
-                updateCatalog(queue.first())
-                removeTask()
-                control()
-            }
-        }
-    }
-
-    private suspend fun stopTask() {
-        Timber.i("stop -> $currentTask")
-
-        lock.withLock {
-            currentTask?.let {
-                currentTask = it.copy(state = DownloadState.PAUSED)
-            }
-        }
-
-        notify()
-
-        if (currentJob == null) return
-
-        currentJob?.cancelAndJoin()
-
-        removeTask()
-
-        Timber.i("stopped -> $currentTask")
-    }
-
-    private suspend fun removeTask() {
-        Timber.i("removeTask -> $currentTask")
-        lock.withLock {
-            val task = currentTask ?: return
-            queue.firstOrNull { it.id == task.id }?.let { queue = queue - it }
-            workersRepository.remove(task)
-
-            currentJob = null
-            currentTask = null
-        }
-    }
-
-    private fun hasRunningTask() = currentJob != null && currentJob?.isActive == true
-
-    private suspend fun updateCatalog(task: CatalogTask) {
-        Timber.i("createJob -> $task")
-
-        lock.withLock {
-            currentTask = task.copy(progress = 0f, state = DownloadState.QUEUED)
-        }
+    override suspend fun work(task: CatalogTask) {
+        updateCurrentTask { copy(progress = 0f, state = DownloadState.QUEUED) }
         notify()
 
         val site = manager.catalog.first { it.name == task.name }
@@ -189,20 +49,16 @@ class UpdateCatalogWorker @AssistedInject constructor(
 
                 tempList.clear()
 
-                lock.withLock {
-                    currentTask = task.copy(progress = 0f, state = DownloadState.LOADING)
-                }
+                updateCurrentTask { copy(progress = 0f, state = DownloadState.LOADING) }
                 notify()
 
                 site.catalog()
                     .collectIndexed { index, value ->
                         val new = index / site.volume.toFloat()
 
-                        currentTask?.let { t ->
+                        withCurrentTask { t ->
                             if ((new * 100).toInt() > (t.progress * 100).toInt()) {
-                                lock.withLock {
-                                    currentTask = t.copy(progress = new)
-                                }
+                                updateCurrentTask { copy(progress = new) }
                                 notify()
                                 Timber.v("task -> ${task.name} / $index / ${site.volume}")
                             }
@@ -215,10 +71,8 @@ class UpdateCatalogWorker @AssistedInject constructor(
 
             Timber.v("update finish. elements getting ${tempList.size}")
 
-            currentTask?.let { t ->
-                lock.withLock {
-                    currentTask = t.copy(state = DownloadState.COMPLETED)
-                }
+            withCurrentTask { t ->
+                updateCurrentTask { copy(state = DownloadState.COMPLETED) }
                 notify()
             }
 
@@ -231,17 +85,15 @@ class UpdateCatalogWorker @AssistedInject constructor(
         }
     }
 
-    private suspend fun notify() {
-        Timber.i("notify")
-
+    override suspend fun onNotify(task: CatalogTask?) {
         with(NotificationCompat.Builder(applicationContext, channelId)) {
             setSmallIcon(R.drawable.ic_notification_update)
 
             setContentTitle(
-                applicationContext.getString(R.string.catalog_fos_service_notify_title, queue.size)
+                applicationContext.getString(R.string.catalogs_updating_format, queue.size)
             )
 
-            currentTask?.let { task ->
+            task?.let { task ->
                 when (task.state) {
                     DownloadState.LOADING -> {
                         val percent = (task.progress * 100).toInt()
@@ -252,7 +104,7 @@ class UpdateCatalogWorker @AssistedInject constructor(
                     DownloadState.QUEUED -> {
                         setContentText(
                             applicationContext.getString(
-                                R.string.catalog_loading_text, task.name
+                                R.string.prepare_catalog_for_loading_format, task.name
                             )
                         )
                         setProgress(0, 0, true)
@@ -261,7 +113,7 @@ class UpdateCatalogWorker @AssistedInject constructor(
                     DownloadState.PAUSED -> {
                         setContentText(
                             applicationContext.getString(
-                                R.string.catalog_paused_text, task.name
+                                R.string.cancel_loading_catalog_format, task.name
                             )
                         )
                         setProgress(0, 0, true)
@@ -270,7 +122,7 @@ class UpdateCatalogWorker @AssistedInject constructor(
                     DownloadState.COMPLETED -> {
                         setContentText(
                             applicationContext.getString(
-                                R.string.catalog_saving_text, task.name
+                                R.string.saving_catalog_format, task.name
                             )
                         )
                         setProgress(0, 0, true)
@@ -279,9 +131,7 @@ class UpdateCatalogWorker @AssistedInject constructor(
                     DownloadState.UNKNOWN -> {}
                 }
 
-                withIoContext {
-                    workersRepository.update(task)
-                }
+                workerRepository.update(task)
 
                 setSubText(messageToGo)
             } ?: kotlin.run {
@@ -302,22 +152,21 @@ class UpdateCatalogWorker @AssistedInject constructor(
         }
     }
 
-    private fun finishedNotify(ex: Throwable?) {
-        Timber.i("finishedNotify -> $ex")
+    override fun finishedNotify(ex: Throwable?) {
         with(NotificationCompat.Builder(applicationContext, channelId)) {
             setSmallIcon(R.drawable.ic_notification_update)
 
             if (ex is WorkComplete) {
                 if (errored.isEmpty()) {
-                    setContentTitle(applicationContext.getString(R.string.catalog_complete))
+                    setContentTitle(applicationContext.getString(R.string.complete_catalog_update))
                 } else {
-                    setContentTitle(applicationContext.getString(R.string.catalog_fos_service_notify_error_title))
+                    setContentTitle(applicationContext.getString(R.string.updating_catalogs_completed_with_error))
                     setStyle(
                         NotificationCompat.BigTextStyle().bigText(errored.joinToString { it.name })
                     )
                 }
             } else {
-                setContentTitle(applicationContext.getString(R.string.catalog_fos_service_notify_manual_stop_title))
+                setContentTitle(applicationContext.getString(R.string.updating_catalogs_canceled))
             }
 
             actionGoToCatalogs?.let {
@@ -330,13 +179,10 @@ class UpdateCatalogWorker @AssistedInject constructor(
     }
 
     private val messageToGo by lazy {
-        applicationContext.getString(R.string.catalog_fos_service_message)
+        applicationContext.getString(R.string.press_notify_for_go_to_catalogs)
     }
 
     companion object {
-        private val channelId = "${UpdateCatalogWorker::class.simpleName}Id"
-        private val TAG = "${UpdateCatalogWorker::class.simpleName}Tag"
-
         private val notifyId = ID.generate()
 
         private var actionGoToCatalogs: PendingIntent? = null
@@ -351,14 +197,4 @@ class UpdateCatalogWorker @AssistedInject constructor(
             }
         }
     }
-}
-
-private data object WorkComplete : CancellationException()
-
-private sealed interface Command {
-    data object None : Command
-    data object Stop : Command
-    data object Start : Command
-    data object Destroy : Command
-    data object Update : Command
 }

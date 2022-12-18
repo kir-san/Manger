@@ -67,7 +67,7 @@ fun LibraryScreen(
         ScreenContent(
             topBar = topBar(
                 title = stringResource(R.string.library_title),
-                actions = libraryActions(navigation.navigateToOnline, state),
+                actions = libraryActions(navigation.navigateToOnline, viewModel::sendEvent),
                 navigationButton = NavigationButton.Scaffold(scaffoldState),
                 hasAction = state.background is BackgroundState.Work
             ),

@@ -37,7 +37,7 @@ internal class ViewerViewModel @Inject constructor(
     private val _visibleUI = MutableStateFlow(false)
     val visibleUI = _visibleUI.asStateFlow()
 
-    fun toogleVisibilityUI(state: Boolean = _visibleUI.value.not()) {
+    fun toggleVisibilityUI(state: Boolean = _visibleUI.value.not()) {
         _visibleUI.update { state }
     }
 
@@ -110,7 +110,7 @@ internal class ViewerViewModel @Inject constructor(
         // Если нажатие по центральной части
         // Переключение видимости баров
         if (xPosition.toInt() in (leftPart + 1) until rightPart) {
-            toogleVisibilityUI()
+            toggleVisibilityUI()
         }
     }
 

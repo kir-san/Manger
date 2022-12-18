@@ -1,8 +1,7 @@
 package com.san.kir.catalog.ui.addStandart
 
-import android.app.Application
 import androidx.lifecycle.viewModelScope
-import com.san.kir.background.services.MangaUpdaterService
+import com.san.kir.background.logic.UpdateMangaManager
 import com.san.kir.catalog.logic.repo.CatalogRepository
 import com.san.kir.core.support.DIR
 import com.san.kir.core.utils.coroutines.defaultLaunch
@@ -27,9 +26,9 @@ import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 internal class AddStandartViewModel @Inject constructor(
-    private val context: Application,
     private val catalogRepository: CatalogRepository,
     private val manager: SiteCatalogsManager,
+    private val updateManager: UpdateMangaManager,
 ) : BaseViewModel<AddStandartEvent, AddStandartState>() {
     private var url = ""
     private val categoryName = MutableStateFlow("")
@@ -99,7 +98,8 @@ internal class AddStandartViewModel @Inject constructor(
             delay(1.seconds)
 
             progress.update { ProcessStatus.prevAndSearchChapters }
-            MangaUpdaterService.add(context, mangaId)
+
+            updateManager.addTask(mangaId)
             delay(1.seconds)
 
             progress.update { ProcessStatus.allComplete }

@@ -8,13 +8,14 @@ import com.san.kir.core.support.DownloadState
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-@Entity(tableName = "catalog_task")
-data class CatalogTask(
-    @ColumnInfo(name = "id")
-    @PrimaryKey(autoGenerate = true) override val id: Long = 0L,
-    @ColumnInfo(name = "name") val name: String = "",
+@Entity(tableName = "manga_task")
+data class MangaTask(
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id") override val id: Long = 0L,
+    @ColumnInfo(name = "manga_id") val mangaId: Long = 0L,
+    @ColumnInfo(name = "manga_name") val mangaName: String = "",
+    @ColumnInfo(name = "new_chapters") val newChapters: Int = 0,
     @ColumnInfo(name = "state") override val state: DownloadState = DownloadState.QUEUED,
-    @ColumnInfo(name = "progress") val progress: Float = 0f,
-) : Parcelable, BaseTask<CatalogTask> {
+) : Parcelable, BaseTask<MangaTask> {
     override fun setPaused() = copy(state = DownloadState.PAUSED)
 }

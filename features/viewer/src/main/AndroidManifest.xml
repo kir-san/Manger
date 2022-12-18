@@ -4,6 +4,7 @@
     <application>
         <activity
             android:name="com.san.kir.features.viewer.ViewerActivity"
-            android:theme="@style/AppTheme.Viewer" />
+            android:exported="true"
+            android:theme="@style/Viewer" />
     </application>
 </manifest>

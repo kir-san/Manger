@@ -5,24 +5,33 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
-import com.san.kir.background.logic.repo.CatalogWorkerRepository
-import com.san.kir.background.works.UpdateCatalogWorker
+import com.san.kir.background.logic.repo.MangaWorkerRepository
+import com.san.kir.background.works.UpdateMangaWorker
 import com.san.kir.core.utils.coroutines.withIoContext
-import com.san.kir.data.models.base.CatalogTask
+import com.san.kir.data.models.base.MangaTask
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class UpdateCatalogManager @Inject constructor(
+class UpdateMangaManager @Inject constructor(
     private val context: Application,
-    private val workerRepository: CatalogWorkerRepository,
+    private val workerRepository: MangaWorkerRepository,
 ) {
     private val manager by lazy { WorkManager.getInstance(context) }
 
-    suspend fun addTask(name: String) = withIoContext {
-        if (workerRepository.task(name) == null)
-            workerRepository.add(CatalogTask(name = name))
+    suspend fun addTask(mangaId: Long) = withIoContext {
+        if (workerRepository.task(mangaId) == null)
+            workerRepository.add(MangaTask(mangaId = mangaId))
+
+        startWorker()
+    }
+
+    suspend fun addTasks(mangaIds: List<Long>) = withIoContext {
+        mangaIds.forEach {
+            if (workerRepository.task(it) == null)
+                workerRepository.add(MangaTask(mangaId = it))
+        }
 
         startWorker()
     }
@@ -30,20 +39,20 @@ class UpdateCatalogManager @Inject constructor(
     private fun startWorker() =
         manager.enqueueUniqueWork(unique, ExistingWorkPolicy.KEEP, task)
 
-    suspend fun removeTask(name: String) = withIoContext {
-        workerRepository.task(name)?.let {
+    suspend fun removeTask(mangaId: Long) = withIoContext {
+        workerRepository.task(mangaId)?.let {
             workerRepository.remove(it)
         }
     }
 
     fun loadTasks() = workerRepository.catalog
-    fun loadTask(name: String) = workerRepository.loadTask(name)
+    fun loadTask(mangaId: Long) = workerRepository.loadTask(mangaId)
 
     companion object {
         private val taskId by lazy { UUID.randomUUID() }
-        private val unique = "${UpdateCatalogWorker::class.simpleName}UniqueName"
+        private val unique = "${UpdateMangaWorker::class.simpleName}UniqueName"
         private val task by lazy {
-            OneTimeWorkRequestBuilder<UpdateCatalogWorker>()
+            OneTimeWorkRequestBuilder<UpdateMangaWorker>()
                 .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .setId(taskId)
                 .build()

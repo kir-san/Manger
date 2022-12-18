@@ -2,44 +2,44 @@
 <resources>
     <color name="ic_launcher_background">#FFFFFF</color>
     <!--MangaUpdateService-->
-    <string name="manga_update_action_download_new">Скачать новое</string>
-    <string name="manga_update_action_cancel_all">Отменить все</string>
-    <string name="manga_update_notify_update_ready">Обновление завершено</string>
-    <string name="manga_update_notify_checked_manga">Проверенно манг: %d</string>
-    <string name="manga_update_notify_checked_one_manga">Проверенна манга: %s</string>
-    <string name="manga_update_notify_new_founded">Новых глав: %d</string>
-    <string name="manga_update_notify_founded_with_error">С ошибкой: %d</string>
-    <string name="manga_update_notify_searching">Поиск новых глав</string>
-    <string name="manga_update_notify_remained">Осталось: %d</string>
+    <string name="cancel_all">Отменить все</string>
+    <string name="chapter_search_completed">Поиск глав завершен</string>
+    <string name="checked_format">Проверено %d</string>
+    <string name="checked_for_format">Проверено для %s</string>
+    <string name="new_chapters_format">Новых глав: %d</string>
+    <string name="new_chapters_no_find">Новые глав не найдены</string>
+    <string name="with_error_format">Не удалось проверить: </string>
+    <string name="cancel_cancel_finding_for_format">Отмена поиска для %s</string>
+    <string name="finding_for_format">Поиск для %s</string>
+    <string name="finding_new_chapters">Поиск новых глав</string>
+    <string name="left_check_format">Осталось проверить %d</string>
+    <string name="new_chapter_search_canceled">Поиск новых глав отменен</string>
+    <string name="press_notify_for_go_to_latest">Нажмите на уведомление для перехода в Обновления</string>
 
     <!-- AppUpdateService -->
-    <string name="app_update_service_action_cancel_all">Отменить все</string>
-    <string name="app_update_service_title">Поиск обновлений приложения</string>
-    <string name="main_check_app_ver_go_to">Перейти на 4pda.ru</string>
-    <string name="main_check_app_ver_find">Найденная версия: %1$s.\nТекущая версия: %2$s</string>
-    <string name="main_check_app_ver_no_find">У вас установленна актуальная версия</string>
-    <string name="main_check_app_ver_error">Произошла ошибка при поиске обновлений, возможно у вас интернет отключен</string>
+    <string name="finding_app_updates">Поиск обновлений приложения</string>
+    <string name="go_to_4pda">Перейти на 4pda.ru</string>
+    <string name="new_version_current_version_format">Найденная версия: %1$s.\nТекущая версия: %2$s</string>
+    <string name="you_have_installed_actual_version">У вас установленна актуальная версия</string>
+    <string name="error_during_update_finding">Произошла ошибка при поиске обновлений, возможно у вас интернет отключен</string>
 
     <!-- CatalogForOneSiteService -->
-    <string name="catalog_fos_service_title">Сервис обновления каталогов</string>
-    <string name="catalog_fos_service_message">Нажмите на уведомление для перехода в каталоги</string>
-    <string name="catalog_fos_service_action_cancel_all">Отменить все</string>
-    <string name="catalog_fos_service_notify_title">Обновление каталогов: %d шт.</string>
-    <string name="catalog_loading_text">Подготовка каталога %s к загрузке</string>
-    <string name="catalog_paused_text">Отмена загрузки каталога %s</string>
-    <string name="catalog_saving_text">Сохранение данных каталога %s</string>
-    <string name="catalog_complete">Обновление каталогов завершенно</string>
-    <string name="catalog_fos_service_notify_manual_stop_text">Вы сами это сделали</string>
-    <string name="catalog_fos_service_notify_manual_stop_title">Обновление каталогов отменено</string>
-    <string name="catalog_fos_service_notify_error_title">Обновление каталогов завершенно с ошибкой</string>
-    <string name="catalog_fos_service_notify_error_text">Проверьте подключение к интернету</string>
+    <string name="press_notify_for_go_to_catalogs">Нажмите на уведомление для перехода в каталоги</string>
+    <string name="catalogs_updating_format">Обновление каталогов: %d шт.</string>
+    <string name="prepare_catalog_for_loading_format">Подготовка каталога %s к загрузке</string>
+    <string name="cancel_loading_catalog_format">Отмена загрузки каталога %s</string>
+    <string name="saving_catalog_format">Сохранение данных каталога %s</string>
+    <string name="complete_catalog_update">Обновление каталогов завершенно</string>
+    <string name="updating_catalogs_canceled">Обновление каталогов отменено</string>
+    <string name="updating_catalogs_completed_with_error">Обновление каталогов завершенно с ошибкой</string>
+    <string name="check_internet">Проверьте подключение к интернету</string>
 
     <!--Scheduler-->
-    <string name="schedule_manager_cancel_manga">Было отменено обновление манги %s</string>
-    <string name="schedule_manager_cancel_category">Было отменено обновление категории %s</string>
-    <string name="schedule_manager_cancel_group">Было отменено обновление группы %s</string>
-    <string name="schedule_manager_cancel_catalog">Было отменено обновление каталога %s</string>
-    <string name="schedule_manager_cancel_app">Было отменено обновление приложения</string>
-    <string name="schedule_activity_menu_add">Добавить</string>
+    <string name="manga_updating_was_canceled_format">Было отменено обновление манги %s</string>
+    <string name="category_updating_was_canceled_format">Было отменено обновление категории %s</string>
+    <string name="group_updating_was_canceled_format">Было отменено обновление группы %s</string>
+    <string name="catalog_updating_was_canceled_format">Было отменено обновление каталога %s</string>
+    <string name="app_updating_was_canceled">Было отменено обновление приложения</string>
+    <string name="add">Добавить</string>
 
 </resources>

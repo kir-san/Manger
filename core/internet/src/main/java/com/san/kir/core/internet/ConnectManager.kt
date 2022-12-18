@@ -1,7 +1,6 @@
 package com.san.kir.core.internet
 
 import android.app.Application
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.san.kir.core.utils.coroutines.withIoContext
 import com.san.kir.core.utils.createDirs
@@ -57,7 +56,7 @@ class ConnectManager @Inject constructor(context: Application) {
                     readTimeout(20_0000L, TimeUnit.MILLISECONDS)
                     writeTimeout(20_0000L, TimeUnit.MILLISECONDS)
                     addInterceptor(HttpLoggingInterceptor().apply {
-                        level = HttpLoggingInterceptor.Level.BODY
+                        level = HttpLoggingInterceptor.Level.BASIC
                     })
                 }
             }
@@ -96,6 +95,7 @@ class ConnectManager @Inject constructor(context: Application) {
                         delay(10.seconds)
                     }
                 }
+
                 else -> {
                     return@withIoContext Jsoup.parse(response.bodyAsText(), url)
                 }
@@ -118,31 +118,16 @@ class ConnectManager @Inject constructor(context: Application) {
 
     suspend fun downloadBitmap(
         url: String,
-        onFinish: (bm: Bitmap?, size: Long, time: Long) -> Unit = { _, _, _ -> },
         onProgress: (percent: Float) -> Unit = {},
-    ): Bitmap? =
+    ): Result<BitmapResult> = kotlin.runCatching {
         withIoContext {
             val buffer = Buffer()
-            var size: Long = 0
-            var time: Long = 0
-
-            download(buffer, url, onProgress) { s, t ->
-                size = s
-                time = t
-            }
-
-            val bm = tryGetBitmap(buffer)
-
-            onFinish(bm, size, time)
-
-            bm
-        }
-
-    private fun tryGetBitmap(buffer: Buffer): Bitmap? {
-        return try {
-            BitmapFactory.decodeStream(buffer.inputStream())
-        } catch (ex: Throwable) {
-            null
+            val (size, time) = download(buffer, url, onProgress)
+            BitmapResult(
+                bitmap = BitmapFactory.decodeStream(buffer.inputStream()),
+                size = size,
+                time = time
+            )
         }
     }
 
@@ -150,18 +135,18 @@ class ConnectManager @Inject constructor(context: Application) {
     suspend fun downloadFile(
         file: File,
         url: String,
-        onFinish: (size: Long, time: Long) -> Unit = { _, _ -> },
         onProgress: ((percent: Float) -> Unit) = {},
-    ): Long =
+    ): Result<DownloadResult> = runCatching {
         withIoContext {
             file.delete()
             file.parentFile?.createDirs()
             file.createNewFile()
 
-            download(file.sink().buffer(), url, onProgress, onFinish)
-
-            file.length()
+            kotlin.runCatching {
+                download(file.sink().buffer(), url, onProgress)
+            }.onFailure { file.delete() }.getOrThrow()
         }
+    }
 
     fun prepareUrl(url: String) = url.removeSurrounding("\"", "\"")
 
@@ -179,44 +164,41 @@ class ConnectManager @Inject constructor(context: Application) {
         buffer: BufferedSink,
         url: String,
         onProgress: ((percent: Float) -> Unit) = {},
-        onFinish: (size: Long, time: Long) -> Unit = { _, _ -> },
-    ) {
-        kotlin.runCatching {
-            val startTime = System.currentTimeMillis()
+    ): DownloadResult {
+        val startTime = System.currentTimeMillis()
 
-            val response = defaultClient.get(url.prepare())
-            val source = response.bodyAsChannel()
-            val contentLength = response.contentLength() ?: 1
+        val response = defaultClient.get(url.prepare())
+        val source = response.bodyAsChannel()
+        val contentLength = response.contentLength() ?: 1
 
-            var total = 0
-            var read: Int
+        var total = 0
+        var read: Int
 
-            val tempBuffer = Buffer()
-            tempBuffer.use {
-                val byteBuffer = ByteArray(SEGMENT_SIZE)
-                do {
-                    read = source.readAvailable(byteBuffer, 0, SEGMENT_SIZE)
+        val tempBuffer = Buffer()
+        tempBuffer.use {
+            val byteBuffer = ByteArray(SEGMENT_SIZE)
+            do {
+                read = source.readAvailable(byteBuffer, 0, SEGMENT_SIZE)
 
-                    if (read > 0) {
-                        it.write(
-                            if (read < SEGMENT_SIZE) {
-                                byteBuffer.sliceArray(0 until read)
-                            } else {
-                                byteBuffer
-                            }
-                        )
-                        total += read
-                        onProgress(total.toFloat() / contentLength)
-                    }
-                } while (read >= 0)
-            }
+                if (read > 0) {
+                    it.write(
+                        if (read < SEGMENT_SIZE) {
+                            byteBuffer.sliceArray(0 until read)
+                        } else {
+                            byteBuffer
+                        }
+                    )
+                    total += read
+                    onProgress(total.toFloat() / contentLength)
+                }
+            } while (read >= 0)
+        }
 
-            buffer.use {
-                it.writeAll(tempBuffer)
-            }
+        buffer.use {
+            it.writeAll(tempBuffer)
+        }
 
-            onFinish(contentLength, System.currentTimeMillis() - startTime)
-        }.onFailure(Timber::e)
+        return DownloadResult(contentLength, System.currentTimeMillis() - startTime)
     }
 
     companion object {

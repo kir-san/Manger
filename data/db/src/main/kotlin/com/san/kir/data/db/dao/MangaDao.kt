@@ -48,6 +48,10 @@ interface MangaDao : BaseDao<Manga> {
     @Query("SELECT * FROM manga")
     suspend fun items(): List<Manga>
 
+    // Получение id всех элементов
+    @Query("SELECT id FROM manga")
+    suspend fun itemIds(): List<Long>
+
     @Query("SELECT id, logo, path FROM manga")
     suspend fun specItems(): List<MangaLogo>
 
@@ -55,19 +59,20 @@ interface MangaDao : BaseDao<Manga> {
     suspend fun links(): List<String>
 
     // Получение элемента по названию
-    @Query("SELECT * FROM manga WHERE name IS :name")
-    suspend fun itemByName(name: String): Manga
+    @Query("SELECT id FROM manga WHERE name IN (:names)")
+    suspend fun itemIdsByNames(names: List<String>): List<Long>
 
     // Получение элемента по id
     @Query("SELECT * FROM manga WHERE id IS :id")
     suspend fun itemById(id: Long): Manga
 
-    @Query("SELECT * FROM manga WHERE id IN (:ids)")
-    suspend fun itemsByIds(ids: List<Long>): List<Manga>
-
     // Получение элементов по id категории
     @Query("SELECT * FROM manga WHERE category_id IS :id")
     suspend fun itemsByCategoryId(id: Long): List<Manga>
+
+    // Получение id элементов по id категории
+    @Query("SELECT id FROM manga WHERE category_id IS :id")
+    suspend fun itemIdsByCategoryId(id: Long): List<Long>
 
     // Обновление поля isUpdate
     @Query("UPDATE manga SET isUpdate = :isUpdate WHERE id = :id")

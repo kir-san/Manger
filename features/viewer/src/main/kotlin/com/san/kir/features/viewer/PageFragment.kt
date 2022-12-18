@@ -20,6 +20,8 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView.SCALE_TYPE_CUSTOM
 import com.san.kir.features.viewer.databinding.PageBinding
 import dagger.hilt.android.AndroidEntryPoint
+import io.ktor.client.plugins.ClientRequestException
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
@@ -85,10 +87,12 @@ internal class PageFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View {
-        _binding = PageBinding.inflate(inflater, container, false)
+    ) = PageBinding.inflate(inflater, container, false)
+        .apply { _binding = this }
+        .root
 
-        images.load(page)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         val gesture = createGesture { x -> viewModel.clickOnScreen(x) }
 
@@ -103,6 +107,10 @@ internal class PageFragment : Fragment() {
                 images.load(page, true)
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
 
         // Реакция на загрузку изображения
         images.state
@@ -110,39 +118,43 @@ internal class PageFragment : Fragment() {
             .onEach { state ->
                 when (state) {
                     is LoadState.Error -> {
-                        when (state.exception) {
-                            is IllegalArgumentException -> {
-                                binding.errorText.text = getString(
+                        binding.errorText.text = when (state.exception) {
+                            is UnknownHostException -> getString(
+                                R.string.error_host, state.exception.localizedMessage
+                            )
+
+                            is SocketTimeoutException, is SocketException -> getString(
+                                R.string.error_socket_timeout, state.exception.localizedMessage
+                            )
+
+                            is ClientRequestException -> when (state.exception.response.status) {
+                                HttpStatusCode.NotFound -> getString(R.string.error_not_found)
+
+                                else -> getString(
                                     R.string.error_argument,
-                                    state.exception.localizedMessage
+                                    state.exception.response.status.toString()
                                 )
                             }
-                            is UnknownHostException -> {
-                                binding.errorText.text = getString(
-                                    R.string.error_host,
-                                    state.exception.localizedMessage
-                                )
-                            }
-                            is SocketTimeoutException, is SocketException -> {
-                                binding.errorText.text = getString(
-                                    R.string.error_socket_timeout,
-                                    state.exception.localizedMessage
-                                )
-                            }
+
+                            else ->
+                                getString(R.string.error_argument, state.exception.localizedMessage)
                         }
                         binding.errorText.isVisible = true
                         binding.progress.isVisible = false
                         binding.progressText.isVisible = false
                     }
+
                     LoadState.Init -> {
                         binding.progress.isVisible = true
                         binding.progressText.isVisible = false
                         binding.errorText.isVisible = false
                     }
+
                     is LoadState.Load -> {
                         binding.progressText.isVisible = true
                         binding.progressText.text = "${(state.percent * 100).toInt()}%"
                     }
+
                     is LoadState.Ready -> {
                         binding.progressText.isVisible = false
                         binding.viewer.setImage(state.image)
@@ -159,7 +171,7 @@ internal class PageFragment : Fragment() {
             .onEach { showUI(binding.update, it) }
             .launchIn(lifecycleScope)
 
-        return binding.root
+        images.load(page)
     }
 
     override fun onDestroyView() {

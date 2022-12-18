@@ -1,5 +1,7 @@
 package com.san.kir.background.util
 
+import com.san.kir.core.utils.coroutines.withDefaultContext
+import com.san.kir.core.utils.coroutines.withIoContext
 import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.models.base.Manga
@@ -8,12 +10,12 @@ import javax.inject.Inject
 class SearchDuplicate @Inject constructor(
     private val chapterDao: ChapterDao,
 ) {
-    suspend fun silentRemoveDuplicate(manga: Manga) {
+    suspend fun silentRemoveDuplicate(manga: Manga) = withDefaultContext {
         removeDuplicates(searchDuplicate(manga))
     }
 
     private suspend fun searchDuplicate(manga: Manga): MutableList<List<Chapter>> {
-        val basicList = chapterDao.itemsByMangaId(manga.id)
+        val basicList = withIoContext { chapterDao.itemsByMangaId(manga.id) }
         val list = basicList.toMutableList()
 
         val allDuplicateList: MutableList<List<Chapter>> = mutableListOf()
@@ -47,7 +49,10 @@ class SearchDuplicate @Inject constructor(
             )
 
             val removesChapters = chapterDuplicates - first
-            chapterDao.delete(*removesChapters.toTypedArray())
-            chapterDao.update(first)
+
+            withIoContext {
+                chapterDao.delete(*removesChapters.toTypedArray())
+                chapterDao.update(first)
+            }
         }
 }

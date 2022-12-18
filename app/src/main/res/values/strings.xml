@@ -12,10 +12,6 @@
     <!-- Main Activity -->
     <string name="app_name" translatable="false">Manger</string>
     <string name="app_name_version" translatable="false">Manger: %s</string>
-    <string name="main_check_app_ver_find">Найденная версия: %1$s.\nТекущая версия: %2$s</string>
-    <string name="main_check_app_ver_no_find">У вас установленна актуальная версия</string>
-    <string name="main_check_app_ver_go_to">Перейти на 4pda.ru</string>
-    <string name="main_check_app_ver_error">Произошла ошибка при поиске обновлений, возможно у вас интернет отключен</string>
     <string name="main_permission_error">Данное приложение превратилось в тыкву</string>
     <string name="storage_permission_nonpermission">Вы запретили приложению доступ к памяти смартфона и оно превратилось в тыкву. Для исправления перейдите в настройки</string>
     <string name="main_permission_request">Показать запрос</string>
@@ -28,12 +24,6 @@
     отображения загрузки манги, обновления каталогов и манги. Без получения соответстующего
     разрешения, приложение не сможет работать.</string>
     <string name="notificaton_permission_nonpermission">Вы запретили приложению доступ к уведомлениям и оно превратилось в тыкву. Для исправления перейдите в настройки</string>
-
-
-
-    <!-- AppUpdateService -->
-    <string name="app_update_service_action_cancel_all">Отменить все</string>
-    <string name="app_update_service_title">Поиск обновлений приложения</string>
 
     <!-- FirstRun -->
     <string name="first_run_exit_text">Двойное нажатие закроет приложение</string>

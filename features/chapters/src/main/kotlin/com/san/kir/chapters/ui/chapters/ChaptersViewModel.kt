@@ -1,18 +1,15 @@
 package com.san.kir.chapters.ui.chapters
 
 import android.app.Application
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import androidx.lifecycle.viewModelScope
-import com.san.kir.background.services.MangaUpdaterService
+import com.san.kir.background.logic.UpdateMangaManager
 import com.san.kir.chapters.R
 import com.san.kir.chapters.logic.repo.ChaptersRepository
 import com.san.kir.chapters.logic.repo.SettingsRepository
 import com.san.kir.chapters.logic.utils.SelectionHelper
 import com.san.kir.core.download.DownloadService
 import com.san.kir.core.support.ChapterFilter
+import com.san.kir.core.support.DownloadState
 import com.san.kir.core.utils.coroutines.withMainContext
 import com.san.kir.core.utils.delChapters
 import com.san.kir.core.utils.longToast
@@ -43,9 +40,9 @@ internal class ChaptersViewModel @Inject constructor(
     private val chaptersRepository: ChaptersRepository,
     private val settingsRepository: SettingsRepository,
     private val manager: SiteCatalogsManager,
+    private val updateManager: UpdateMangaManager,
 ) : BaseViewModel<ChaptersEvent, ChaptersState>() {
     private var job: Job? = null
-    private var broadcastReceiver: BroadcastReceiver? = null
     private val selectableItemComparator by lazy { ChapterComparator() }
     private var oneTimeFlag = true
 
@@ -97,12 +94,7 @@ internal class ChaptersViewModel @Inject constructor(
             ChaptersEvent.DownloadAll -> downloadAll()
             ChaptersEvent.DownloadNext -> downloadNext()
             ChaptersEvent.DownloadNotRead -> downloadNotReads()
-
-            ChaptersEvent.UpdateManga -> {
-                backgroundAction.update { it.copy(updateManga = true) }
-                MangaUpdaterService.add(context, manga.value)
-            }
-
+            ChaptersEvent.UpdateManga -> updateManager.addTask(manga.value.id)
         }
     }
 
@@ -135,39 +127,28 @@ internal class ChaptersViewModel @Inject constructor(
 
 
         }
-        registerReceiver()
+        registerReceiver(mangaId)
     }
 
-    private fun registerReceiver() {
-        if (MangaUpdaterService.contains(manga.value))
-            backgroundAction.update { it.copy(updateManga = true) }
+    // Подписка на сообщения UpdateMangaWorker
+    private fun registerReceiver(mangaId: Long) {
+        updateManager.loadTask(mangaId).onEach { task ->
+            backgroundAction.update { it.copy(updateManga = task != null) }
 
-        broadcastReceiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
-
-                val mangaName = intent.getStringExtra(MangaUpdaterService.ITEM_NAME)
-
-                if (intent.action == MangaUpdaterService.actionGet) {
-                    // Реагирование только если текущее название соотвествует полученному
-                    if (mangaName != null && mangaName == manga.value.name) {
-                        // Отображение сообщения в зависимости от результата
-                        when (
-                            val countNew = intent.getIntExtra(MangaUpdaterService.COUNT_NEW, 0)
-                        ) {
-                            -1 -> context.longToast(R.string.list_chapters_message_error)
-                            0 -> context.longToast(R.string.list_chapters_message_no_found)
-                            else -> context.longToast(
-                                R.string.list_chapters_message_count_new, countNew
-                            )
-                        }
-                    }
-                    backgroundAction.update { it.copy(updateManga = false) }
+            when (task?.state) {
+                DownloadState.UNKNOWN -> context.longToast(R.string.list_chapters_message_error)
+                DownloadState.COMPLETED -> {
+                    if (task.newChapters > 0)
+                        context.longToast(
+                            R.string.list_chapters_message_count_new, task.newChapters
+                        )
+                    else
+                        context.longToast(R.string.list_chapters_message_no_found)
                 }
-            }
-        }
 
-        // Подписка на сообщения от сервиса MangaUpdateService
-        context.registerReceiver(broadcastReceiver, IntentFilter(MangaUpdaterService.actionGet))
+                else -> {}
+            }
+        }.launchIn(viewModelScope)
     }
 
     private suspend fun changeIsUpdate() {
@@ -293,11 +274,6 @@ internal class ChaptersViewModel @Inject constructor(
             NextChapter.Ok(result.id, result.name)
         else
             NextChapter.None
-    }
-
-
-    override fun onCleared() {
-        context.unregisterReceiver(broadcastReceiver)
     }
 }
 

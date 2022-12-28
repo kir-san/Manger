@@ -61,7 +61,7 @@ import timber.log.Timber
         ShikiDbManga::class,
         Settings::class
     ],
-    version = 61,
+    version = 62,
     views = [
         SimplifiedManga::class,
         SimplifiedMangaWithChapterCounts::class,
@@ -195,40 +195,41 @@ class Callback(private val context: Context) : RoomDatabase.Callback() {
     override fun onOpen(db: SupportSQLiteDatabase) {
         super.onOpen(db)
 
-        val result = db.query("SELECT id from ${Settings.tableName}")
+        val result = db.query("SELECT id from settings")
         if (result.count == 0) {
-            db.insert(Settings.tableName, OnConflictStrategy.REPLACE, defaultSettings())
+            db.insert("settings", OnConflictStrategy.REPLACE, defaultSettings())
         }
     }
 
     private fun defaultSettings() = ContentValues().apply {
-        put(Settings.Col.id, 1)
-        put(Settings.Col.isIndividual, true)
-        put(Settings.Col.isTitle, true)
-        put(Settings.Col.filterStatus, ChapterFilter.ALL_READ_ASC.name)
-        put(Settings.Col.concurrent, true)
-        put(Settings.Col.retry, false)
-        put(Settings.Col.wifi, false)
-        put(Settings.Col.isFirstLaunch, true)
-        put(Settings.Col.theme, true)
-        put(Settings.Col.isShowCategory, true)
-        put(Settings.Col.editMenu, false)
-        put(Settings.Col.orientation, Settings.Viewer.Orientation.AUTO_LAND.name)
-        put(Settings.Col.cutOut, true)
-        put(Settings.Col.withoutSaveFiles, false)
-        put(Settings.Col.isLogin, false)
-        put(Settings.Col.taps, false)
-        put(Settings.Col.swipes, true)
-        put(Settings.Col.keys, false)
-        put(Settings.Col.accessToken, "")
-        put(Settings.Col.tokenType, "")
-        put(Settings.Col.expiresIn, 0L)
-        put(Settings.Col.refreshToken, "")
-        put(Settings.Col.scope, "")
-        put(Settings.Col.createdAt, 0L)
-        put(Settings.Col.shikimoriWhoamiId, 0)
-        put(Settings.Col.nickname, "")
-        put(Settings.Col.avatar, "")
+        put("id", 1)
+        put("isIndividual", true)
+        put("isTitle", true)
+        put("filterStatus", ChapterFilter.ALL_READ_ASC.name)
+        put("concurrent", true)
+        put("retry", false)
+        put("wifi", false)
+        put("isFirstLaunch", true)
+        put("theme", true)
+        put("isShowCategory", true)
+        put("editMenu", false)
+        put("orientation", Settings.Viewer.Orientation.AUTO_LAND.name)
+        put("cutOut", true)
+        put("withoutSaveFiles", false)
+        put("isLogin", false)
+        put("taps", false)
+        put("swipes", true)
+        put("keys", false)
+        put("access_token", "")
+        put("token_type", "")
+        put("expires_in", 0L)
+        put("refresh_token", "")
+        put("scope", "")
+        put("created_at", 0L)
+        put("shikimori_whoami_id", 0)
+        put("nickname", "")
+        put("avatar", "")
+        put("scrollbars", 1)
     }
 
 }

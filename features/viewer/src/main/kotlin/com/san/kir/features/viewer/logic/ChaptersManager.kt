@@ -1,4 +1,4 @@
-package com.san.kir.features.viewer
+package com.san.kir.features.viewer.logic
 
 import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.data.db.dao.ChapterDao
@@ -7,6 +7,7 @@ import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.Statistic
 import com.san.kir.data.models.utils.ChapterComparator
+import com.san.kir.features.viewer.utils.Page
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

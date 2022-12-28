@@ -21,6 +21,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.ViewPager
 import com.san.kir.data.models.base.Settings
 import com.san.kir.features.viewer.databinding.MainBinding
+import com.san.kir.features.viewer.utils.Page
+import com.san.kir.features.viewer.utils.animate
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

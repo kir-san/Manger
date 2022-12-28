@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface SettingsDao {
 
-    @Query("SELECT * FROM ${Settings.tableName}")
+    @Query("SELECT * FROM settings")
     fun loadItems(): Flow<Settings>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

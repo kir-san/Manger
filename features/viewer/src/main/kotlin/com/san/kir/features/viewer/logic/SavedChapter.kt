@@ -1,4 +1,4 @@
-package com.san.kir.features.viewer
+package com.san.kir.features.viewer.logic
 
 import androidx.lifecycle.SavedStateHandle
 import com.san.kir.data.models.base.Chapter

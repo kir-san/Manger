@@ -1,4 +1,4 @@
-package com.san.kir.features.viewer
+package com.san.kir.features.viewer.utils
 
 import android.animation.Animator
 import android.animation.ValueAnimator

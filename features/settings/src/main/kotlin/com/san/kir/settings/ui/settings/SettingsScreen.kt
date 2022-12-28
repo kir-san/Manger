@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.CropLandscape
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.FitScreen
 import androidx.compose.material.icons.filled.Title
 import androidx.compose.material.icons.filled.VideogameAsset
 import androidx.compose.material.icons.filled.Wifi
@@ -153,6 +154,14 @@ private fun Viewer(viewer: Settings.Viewer, sendEvent: (SettingsEvent.SaveViewer
 //            icon = Icons.Default.ContentCut,
         initialValue = viewer.withoutSaveFiles,
         onCheckedChange = { sendEvent(SettingsEvent.SaveViewer(viewer.copy(withoutSaveFiles = it))) }
+    )
+
+    TogglePreferenceItem(
+        title = R.string.settings_viewer_scrollbars_title,
+        subtitle = R.string.settings_viewer_scrollbars_summary,
+        icon = Icons.Default.FitScreen,
+        initialValue = viewer.useScrollbars,
+        onCheckedChange = { sendEvent(SettingsEvent.SaveViewer(viewer.copy(useScrollbars = it))) }
     )
 
 }

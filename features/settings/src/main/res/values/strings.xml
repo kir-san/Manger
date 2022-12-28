@@ -42,6 +42,9 @@
     <string name="settings_viewer_without_summary">Если этот пункт активирован, то при чтении не будут сохранятся главы в памяти. Все главы загруженные самостоятельно останутся без изменений</string>
     <string name="settings_viewer_without_title">Без сохранения</string>
 
+    <string name="settings_viewer_scrollbars_summary">Если этот пункт активирован, то при чтении будут отображаться скроллбары снизу и справа экрана, если изображение будет больше экрана</string>
+    <string name="settings_viewer_scrollbars_title">Скроллбары</string>
+
     <string name="settings_downloader_title">Настройки загрузчика</string>
 
     <string name="settings_downloader_parallel_summary">Загрузка нескольких странниц одновременно. Ускорение загрузки</string>

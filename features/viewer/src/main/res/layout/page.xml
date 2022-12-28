@@ -2,10 +2,11 @@
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+    <com.san.kir.features.viewer.view.ImageViewWithScrollbars
         android:id="@+id/viewer"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
@@ -20,9 +21,19 @@
         android:clickable="true"
         android:contentDescription="@string/reload_image_button"
         android:focusable="true"
-        android:visibility="gone"
         android:padding="16dp"
+        android:visibility="visible"
         app:srcCompat="@drawable/ic_update" />
+
+    <ProgressBar
+        android:id="@+id/progress"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_gravity="center"
+        android:background="@drawable/bgr_progress"
+        android:indeterminate="true"
+        tools:visibility="gone" />
 
     <TextView
         android:id="@+id/progress_text"
@@ -31,24 +42,24 @@
         android:layout_gravity="center"
         android:fontFamily="sans-serif-black"
         android:textAlignment="center"
-        android:textStyle="bold" />
-
-    <ProgressBar
-        android:id="@+id/progress"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:layout_gravity="center"
-        android:indeterminate="true" />
+        android:textColor="@color/text_for_transparent_dark"
+        android:textStyle="bold"
+        tools:text="100"
+        tools:visibility="gone" />
 
     <TextView
         android:id="@+id/error_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_margin="24dp"
+        android:background="@drawable/bgr_error"
         android:fontFamily="sans-serif-black"
+        android:padding="16dp"
         android:textAlignment="center"
+        android:textColor="@color/text_for_transparent_dark"
         android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        tools:text="@string/error_argument" />
 
 </FrameLayout>

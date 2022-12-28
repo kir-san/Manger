@@ -2,4 +2,6 @@
 <resources>
     <color name="transparent_dark">#4D000000</color>
     <color name="text_for_transparent_dark">#FFFFFF</color>
+    <color name="primary">#806200EE</color>
+    <color name="error">#9AF86767</color>
 </resources>

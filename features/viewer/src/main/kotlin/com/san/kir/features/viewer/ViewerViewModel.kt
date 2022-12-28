@@ -8,21 +8,22 @@ import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.StatisticDao
 import com.san.kir.data.models.base.Settings
 import com.san.kir.data.parsing.SiteCatalogsManager
+import com.san.kir.features.viewer.logic.ChaptersManager
+import com.san.kir.features.viewer.logic.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.concurrent.timer
 import kotlin.math.max
+import kotlin.math.roundToInt
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 internal class ViewerViewModel @Inject constructor(
     val settingsRepository: SettingsRepository,
@@ -42,8 +43,11 @@ internal class ViewerViewModel @Inject constructor(
     }
 
     // Хранение способов листания глав
-    val control = settingsRepository.viewer().mapLatest { it.control }
+    val control = settingsRepository.viewer().map { it.control }
         .stateIn(viewModelScope, SharingStarted.Lazily, Settings.Viewer.Control())
+
+    val hasScrollbars = settingsRepository.viewer().map { it.useScrollbars }
+        .stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     // инициализация данных
     private var isInitManager = false
@@ -115,8 +119,8 @@ internal class ViewerViewModel @Inject constructor(
     }
 
     fun setScreenWidth(width: Int) {
-        leftPart = width * 2 / 5
-        rightPart = width * 3 / 5
+        leftPart = (width * leftScreenPart).roundToInt()
+        rightPart = (width * rightScreenPart).roundToInt()
     }
 
     // Обновление списка страниц для текущей главы
@@ -125,6 +129,11 @@ internal class ViewerViewModel @Inject constructor(
         chapter = chapter.copy(pages = siteCatalogManager.pages(chapter))
         chapterDao.update(chapter)
         chaptersManager.updateCurrentChapter(chapter)
+    }
+
+    companion object {
+        private const val leftScreenPart = 2 / 5f
+        private const val rightScreenPart = 3 / 5f
     }
 }
 

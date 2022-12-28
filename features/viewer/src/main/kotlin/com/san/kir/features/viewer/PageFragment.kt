@@ -1,5 +1,6 @@
 package com.san.kir.features.viewer
 
+import android.annotation.SuppressLint
 import android.graphics.PointF
 import android.os.Bundle
 import android.view.GestureDetector
@@ -18,7 +19,11 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView.SCALE_TYPE_CUSTOM
+import com.davemorrissey.labs.subscaleview.decoder.SkiaPooledImageRegionDecoder
 import com.san.kir.features.viewer.databinding.PageBinding
+import com.san.kir.features.viewer.utils.LoadState
+import com.san.kir.features.viewer.utils.Page
+import com.san.kir.features.viewer.utils.animate
 import dagger.hilt.android.AndroidEntryPoint
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.http.HttpStatusCode
@@ -28,7 +33,9 @@ import timber.log.Timber
 import java.net.SocketException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import java.util.concurrent.Executors
 
+@SuppressLint("ClickableViewAccessibility")
 @AndroidEntryPoint
 internal class PageFragment : Fragment() {
     companion object {
@@ -99,6 +106,8 @@ internal class PageFragment : Fragment() {
         // Настройка просмоторщика
         binding.viewer.setOnTouchListener { _, event -> gesture.onTouchEvent(event) }
         binding.viewer.setOnImageEventListener(eventListener)
+        binding.viewer.setRegionDecoderFactory { SkiaPooledImageRegionDecoder() }
+        binding.viewer.setExecutor(Executors.newCachedThreadPool())
 
         // Настройка кнопки обновления
         binding.update.setOnClickListener {
@@ -114,7 +123,7 @@ internal class PageFragment : Fragment() {
 
         // Реакция на загрузку изображения
         images.state
-            .flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
+            .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.RESUMED)
             .onEach { state ->
                 when (state) {
                     is LoadState.Error -> {
@@ -167,8 +176,14 @@ internal class PageFragment : Fragment() {
         // Изменение видимости кнопки
         viewModel
             .visibleUI
-            .flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
+            .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.RESUMED)
             .onEach { showUI(binding.update, it) }
+            .launchIn(lifecycleScope)
+
+        viewModel
+            .hasScrollbars
+            .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.RESUMED)
+            .onEach(binding.viewer::setScrollbarsVisible)
             .launchIn(lifecycleScope)
 
         images.load(page)
@@ -185,21 +200,13 @@ internal class PageFragment : Fragment() {
     private fun showUI(view: View, state: Boolean) {
         if (state) {
             animate(
-                onUpdate = { anim ->
-                    view.translationY = 200f - anim
-                },
-                onStart = {
-                    view.isVisible = true
-                }
+                onUpdate = { anim -> view.translationY = 200f - anim },
+                onStart = { view.isVisible = true }
             )
         } else {
             animate(
-                onUpdate = { anim ->
-                    view.translationY = anim
-                },
-                onEnd = {
-                    view.isVisible = false
-                }
+                onUpdate = { anim -> view.translationY = anim },
+                onEnd = { view.isVisible = false }
             )
         }
     }

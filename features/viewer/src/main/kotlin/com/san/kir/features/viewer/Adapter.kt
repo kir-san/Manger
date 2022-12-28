@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.PagerAdapter
+import com.san.kir.features.viewer.utils.Page
 
 class Adapter(fragmentActivity: FragmentActivity) :
     FragmentStatePagerAdapter(fragmentActivity.supportFragmentManager) {

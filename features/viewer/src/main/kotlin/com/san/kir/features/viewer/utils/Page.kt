@@ -1,4 +1,4 @@
-package com.san.kir.features.viewer
+package com.san.kir.features.viewer.utils
 
 import android.os.Parcelable
 import com.san.kir.data.models.base.Chapter

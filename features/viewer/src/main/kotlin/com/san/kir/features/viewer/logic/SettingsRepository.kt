@@ -1,4 +1,4 @@
-package com.san.kir.features.viewer
+package com.san.kir.features.viewer.logic
 
 import com.san.kir.data.db.dao.SettingsDao
 import com.san.kir.data.db.repositories.AbstractSettingsRepository

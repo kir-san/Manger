@@ -1,4 +1,4 @@
-package com.san.kir.features.viewer
+package com.san.kir.features.viewer.logic
 
 import android.app.Application
 import com.san.kir.data.db.RoomDB

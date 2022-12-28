@@ -1,4 +1,4 @@
-package com.san.kir.features.viewer
+package com.san.kir.features.viewer.view
 
 import android.content.Context
 import android.util.AttributeSet

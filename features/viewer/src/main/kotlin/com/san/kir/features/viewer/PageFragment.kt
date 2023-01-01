@@ -23,7 +23,7 @@ import com.davemorrissey.labs.subscaleview.decoder.SkiaPooledImageRegionDecoder
 import com.san.kir.features.viewer.databinding.PageBinding
 import com.san.kir.features.viewer.utils.LoadState
 import com.san.kir.features.viewer.utils.Page
-import com.san.kir.features.viewer.utils.animate
+import com.san.kir.features.viewer.utils.VIEW_OFFSET
 import dagger.hilt.android.AndroidEntryPoint
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.http.HttpStatusCode
@@ -112,10 +112,10 @@ internal class PageFragment : Fragment() {
 
         // Настройка кнопки обновления
         binding.update.setOnClickListener {
+            showUI(binding.update, false)
             images.setInitState()
-            viewModel.updatePagesForChapter().invokeOnCompletion {
-                images.load(page, true)
-            }
+            viewModel.updatePagesForChapter()
+                .invokeOnCompletion { images.load(page, true) }
         }
     }
 
@@ -150,7 +150,9 @@ internal class PageFragment : Fragment() {
                                 }
 
                                 else ->
-                                    getString(R.string.error_argument, state.exception.localizedMessage)
+                                    getString(
+                                        R.string.error_argument, state.exception.localizedMessage
+                                    )
                             }
                             binding.progress.isVisible = false
                             binding.progressText.isVisible = false
@@ -204,17 +206,7 @@ internal class PageFragment : Fragment() {
     }
 
     private fun showUI(view: View, state: Boolean) {
-        if (state) {
-            animate(
-                onUpdate = { anim -> view.translationY = 200f - anim },
-                onStart = { view.isVisible = true }
-            )
-        } else {
-            animate(
-                onUpdate = { anim -> view.translationY = anim },
-                onEnd = { view.isVisible = false }
-            )
-        }
+        view.animate().translationY(if (state) 0f else VIEW_OFFSET).start()
     }
 
     private fun createGesture(onTapListener: (x: Float) -> Unit): GestureDetectorCompat {

@@ -1,5 +1,7 @@
 package com.san.kir.features.viewer
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -7,9 +9,12 @@ import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.KeyEvent
+import android.view.View
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.animation.doOnEnd
+import androidx.core.animation.doOnStart
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -22,7 +27,7 @@ import androidx.viewpager.widget.ViewPager
 import com.san.kir.data.models.base.Settings
 import com.san.kir.features.viewer.databinding.MainBinding
 import com.san.kir.features.viewer.utils.Page
-import com.san.kir.features.viewer.utils.animate
+import com.san.kir.features.viewer.utils.VIEW_OFFSET
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -30,6 +35,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import kotlin.time.Duration.Companion.seconds
 
 object MangaViewer {
     fun start(
@@ -216,7 +222,7 @@ internal class ViewerActivity : AppCompatActivity() {
                     visibleJob?.cancel()
                     visibleJob = lifecycleScope.launch {
                         showUI()
-                        delay(4000L)
+                        delay(4.seconds)
                         viewModel.toggleVisibilityUI(false)
                     }
                 } else {
@@ -270,39 +276,33 @@ internal class ViewerActivity : AppCompatActivity() {
     }
 
     private fun showUI() {
-        animate(
-            onUpdate = { anim ->
-                binding.appbar.translationY = -200f + anim
-                binding.prev.translationY = 200f - anim
-                binding.next.translationY = 200f - anim
-                binding.prev.translationX = -200f + anim
-                binding.next.translationX = 200f - anim
-            },
-            onStart = {
-                binding.progressBar.isVisible = false
-                binding.appbar.isVisible = true
-                if (binding.prev.isEnabled) binding.prev.isVisible = true
-                if (binding.next.isEnabled) binding.next.isVisible = true
-            }
-        )
+        AnimatorSet().apply {
+            playTogether(
+                ObjectAnimator.ofFloat(binding.appbar, View.TRANSLATION_Y, -VIEW_OFFSET, 0f).apply {
+                    doOnStart { binding.progressBar.isVisible = false }
+                },
+                ObjectAnimator.ofFloat(binding.prev, View.TRANSLATION_Y, VIEW_OFFSET, 0f),
+                ObjectAnimator.ofFloat(binding.prev, View.TRANSLATION_X, -VIEW_OFFSET, 0f),
+                ObjectAnimator.ofFloat(binding.next, View.TRANSLATION_Y, VIEW_OFFSET, 0f),
+                ObjectAnimator.ofFloat(binding.next, View.TRANSLATION_X, VIEW_OFFSET, 0f),
+            )
+            start()
+        }
     }
 
     private fun hideUI() {
-        animate(
-            onUpdate = { anim ->
-                binding.appbar.translationY = -1f * anim
-                binding.prev.translationY = anim
-                binding.next.translationY = anim
-                binding.next.translationX = anim
-                binding.prev.translationX = -1f * anim
-            },
-            onEnd = {
-                binding.appbar.isVisible = false
-                binding.prev.isVisible = false
-                binding.next.isVisible = false
-                binding.progressBar.isVisible = true
-            }
-        )
+        AnimatorSet().apply {
+            playTogether(
+                ObjectAnimator.ofFloat(binding.appbar, View.TRANSLATION_Y, 0f, -VIEW_OFFSET).apply {
+                    doOnEnd { binding.progressBar.isVisible = true }
+                },
+                ObjectAnimator.ofFloat(binding.prev, View.TRANSLATION_Y, 0f, VIEW_OFFSET),
+                ObjectAnimator.ofFloat(binding.prev, View.TRANSLATION_X, 0f, -VIEW_OFFSET),
+                ObjectAnimator.ofFloat(binding.next, View.TRANSLATION_Y, 0f, VIEW_OFFSET),
+                ObjectAnimator.ofFloat(binding.next, View.TRANSLATION_X, 0f, VIEW_OFFSET),
+            )
+            start()
+        }
     }
 
     @Suppress("DEPRECATION")

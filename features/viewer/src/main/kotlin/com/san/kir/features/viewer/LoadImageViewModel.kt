@@ -8,7 +8,11 @@ import com.san.kir.core.internet.ConnectManager
 import com.san.kir.core.utils.convertImagesToPng
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.isOkPng
+import com.san.kir.features.viewer.logic.SettingsRepository
+import com.san.kir.features.viewer.utils.LoadState
+import com.san.kir.features.viewer.utils.Page
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -92,7 +96,7 @@ internal class LoadImageViewModel @Inject constructor(
                             }
                         ).onSuccess { (bm, size, time) ->
                             _state.update {
-                                LoadState.Ready(ImageSource.cachedBitmap(bm), size, time)
+                                LoadState.Ready(ImageSource.cachedBitmap(bm), size.toLong(), time)
                             }
                         }.onFailure { ex ->
                             Timber.e(ex)
@@ -103,29 +107,26 @@ internal class LoadImageViewModel @Inject constructor(
             }
 
             // Загрузка файла с сохранением в памяти смартфона
-
             file.delete()
             file = File(fullPath, name)
-
             connectManager.downloadFile(
                 file, connectManager.prepareUrl(page.pagelink),
                 onProgress = { progress ->
                     _state.update { LoadState.Load(progress) }
                 }
-            ).onSuccess { (size, time) ->
+            ).onSuccess { (_, length, time) ->
                 val imageSource = ImageSource.uri(
                     Uri.fromFile(
-                        if (file.extension in arrayOf("gif", "webp", "jpg", "jpeg")) {
+                        if (file.extension in arrayOf("gif", "webp", "jpg", "jpeg"))
                             convertImagesToPng(file)
-                        } else {
-                            file
-                        }
+                        else file
                     )
                 )
-                _state.update { LoadState.Ready(imageSource, size, time) }
+                _state.update { LoadState.Ready(imageSource, length, time) }
             }.onFailure { ex ->
                 Timber.e(ex)
-                _state.update { LoadState.Error(ex) }
+                if (ex !is CancellationException)
+                    _state.update { LoadState.Error(ex) }
             }
         }
     }

@@ -174,7 +174,7 @@ class ChapterDownloader(
                 if (link.isEmpty()) return
 
                 connectManager.downloadFile(file, link)
-                    .onSuccess { contentLength = it.size }
+                    .onSuccess { contentLength = it.contentLength }
                     .onFailure(Timber::e)
 
                 // Если размер исходного и загруженного одинаков, то страница загружена

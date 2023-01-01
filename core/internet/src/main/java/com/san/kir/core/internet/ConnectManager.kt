@@ -4,23 +4,25 @@ import android.app.Application
 import android.graphics.BitmapFactory
 import com.san.kir.core.utils.coroutines.withIoContext
 import com.san.kir.core.utils.createDirs
-import io.ktor.client.*
-import io.ktor.client.engine.okhttp.*
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.logging.*
-import io.ktor.client.request.*
-import io.ktor.client.request.forms.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import io.ktor.util.*
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.BrowserUserAgent
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.onDownload
+import io.ktor.client.request.forms.submitForm
+import io.ktor.client.request.get
+import io.ktor.client.request.headers
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.Parameters
+import io.ktor.http.contentLength
+import io.ktor.util.StringValuesBuilderImpl
 import kotlinx.coroutines.delay
 import okhttp3.Cache
 import okhttp3.CacheControl
 import okhttp3.logging.HttpLoggingInterceptor
-import okio.Buffer
-import okio.BufferedSink
-import okio.buffer
-import okio.sink
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import timber.log.Timber
@@ -121,30 +123,29 @@ class ConnectManager @Inject constructor(context: Application) {
         onProgress: (percent: Float) -> Unit = {},
     ): Result<BitmapResult> = kotlin.runCatching {
         withIoContext {
-            val buffer = Buffer()
-            val (size, time) = download(buffer, url, onProgress)
+            val (source, length, time) = download(url, onProgress)
             BitmapResult(
-                bitmap = BitmapFactory.decodeStream(buffer.inputStream()),
-                size = size,
+                bitmap = BitmapFactory.decodeByteArray(source, 0, source.size),
+                size = length,
                 time = time
             )
         }
     }
 
-    @Suppress("BlockingMethodInNonBlockingContext")
     suspend fun downloadFile(
         file: File,
         url: String,
-        onProgress: ((percent: Float) -> Unit) = {},
+        onProgress: suspend ((percent: Float) -> Unit) = {},
     ): Result<DownloadResult> = runCatching {
         withIoContext {
-            file.delete()
-            file.parentFile?.createDirs()
-            file.createNewFile()
-
-            kotlin.runCatching {
-                download(file.sink().buffer(), url, onProgress)
-            }.onFailure { file.delete() }.getOrThrow()
+            runCatching { download(url, onProgress) }
+                .onSuccess { result ->
+                    file.delete()
+                    file.parentFile?.createDirs()
+                    file.createNewFile()
+                    file.writeBytes(result.source)
+                }
+                .onFailure { file.delete() }.getOrThrow()
         }
     }
 
@@ -161,49 +162,27 @@ class ConnectManager @Inject constructor(context: Application) {
     }
 
     private suspend fun download(
-        buffer: BufferedSink,
         url: String,
-        onProgress: ((percent: Float) -> Unit) = {},
+        onProgress: suspend ((percent: Float) -> Unit) = {},
     ): DownloadResult {
         val startTime = System.currentTimeMillis()
+        val contentLength: Long
 
-        val response = defaultClient.get(url.prepare())
-        val source = response.bodyAsChannel()
-        val contentLength = response.contentLength() ?: 1
-
-        var total = 0
-        var read: Int
-
-        val tempBuffer = Buffer()
-        tempBuffer.use {
-            val byteBuffer = ByteArray(SEGMENT_SIZE)
-            do {
-                read = source.readAvailable(byteBuffer, 0, SEGMENT_SIZE)
-
-                if (read > 0) {
-                    it.write(
-                        if (read < SEGMENT_SIZE) {
-                            byteBuffer.sliceArray(0 until read)
-                        } else {
-                            byteBuffer
-                        }
-                    )
-                    total += read
-                    onProgress(total.toFloat() / contentLength)
+        val source: ByteArray =
+            defaultClient.get(url.prepare()) {
+                onDownload { bytesSentTotal, contentLength ->
+                    onProgress(bytesSentTotal.toFloat() / contentLength)
                 }
-            } while (read >= 0)
-        }
+            }.apply { contentLength = contentLength() ?: 1 }.body()
 
-        buffer.use {
-            it.writeAll(tempBuffer)
-        }
-
-        return DownloadResult(contentLength, System.currentTimeMillis() - startTime)
+        return DownloadResult(
+            source,
+            contentLength,
+            time = System.currentTimeMillis() - startTime
+        )
     }
 
     companion object {
-        private val SEGMENT_SIZE = 2048 // okio.Segment.SIZE
-
         val defaultHeaders = StringValuesBuilderImpl(true, 4).apply {
             append(
                 HttpHeaders.Accept,
@@ -218,3 +197,4 @@ class ConnectManager @Inject constructor(context: Application) {
         val noCacheControl = CacheControl.Builder().noCache().noStore().build()
     }
 }
+

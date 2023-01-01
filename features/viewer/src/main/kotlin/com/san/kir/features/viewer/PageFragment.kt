@@ -29,6 +29,7 @@ import io.ktor.client.plugins.ClientRequestException
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.net.SocketException
 import java.net.SocketTimeoutException
@@ -120,73 +121,78 @@ internal class PageFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-
-        // Реакция на загрузку изображения
-        images.state
-            .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.RESUMED)
-            .onEach { state ->
-                when (state) {
-                    is LoadState.Error -> {
-                        binding.errorText.text = when (state.exception) {
-                            is UnknownHostException -> getString(
-                                R.string.error_host, state.exception.localizedMessage
-                            )
-
-                            is SocketTimeoutException, is SocketException -> getString(
-                                R.string.error_socket_timeout, state.exception.localizedMessage
-                            )
-
-                            is ClientRequestException -> when (state.exception.response.status) {
-                                HttpStatusCode.NotFound -> getString(R.string.error_not_found)
-
-                                else -> getString(
-                                    R.string.error_argument,
-                                    state.exception.response.status.toString()
-                                )
-                            }
-
-                            else ->
-                                getString(R.string.error_argument, state.exception.localizedMessage)
-                        }
-                        binding.errorText.isVisible = true
-                        binding.progress.isVisible = false
-                        binding.progressText.isVisible = false
-                    }
-
-                    LoadState.Init -> {
-                        binding.progress.isVisible = true
-                        binding.progressText.isVisible = false
-                        binding.errorText.isVisible = false
-                    }
-
-                    is LoadState.Load -> {
-                        binding.progressText.isVisible = true
-                        binding.progressText.text = "${(state.percent * 100).toInt()}%"
-                    }
-
-                    is LoadState.Ready -> {
-                        binding.progressText.isVisible = false
-                        binding.viewer.setImage(state.image)
-                        viewModel.chaptersManager
-                            .updateStatisticData(state.imageSize, state.downloadTime)
-                    }
-                }
-            }.launchIn(lifecycleScope)
-
-        // Изменение видимости кнопки
-        viewModel
-            .visibleUI
-            .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.RESUMED)
-            .onEach { showUI(binding.update, it) }
-            .launchIn(lifecycleScope)
-
-        viewModel
-            .hasScrollbars
-            .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.RESUMED)
-            .onEach(binding.viewer::setScrollbarsVisible)
-            .launchIn(lifecycleScope)
-
         images.load(page)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            // Реакция на загрузку изображения
+            images.state
+                .flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
+                .onEach { state ->
+                    Timber.i("state -> $state")
+                    when (state) {
+                        is LoadState.Error -> {
+                            binding.errorText.text = when (state.exception) {
+                                is UnknownHostException -> getString(
+                                    R.string.error_host, state.exception.localizedMessage
+                                )
+
+                                is SocketTimeoutException, is SocketException -> getString(
+                                    R.string.error_socket_timeout, state.exception.localizedMessage
+                                )
+
+                                is ClientRequestException -> when (state.exception.response.status) {
+                                    HttpStatusCode.NotFound -> getString(R.string.error_not_found)
+
+                                    else -> getString(
+                                        R.string.error_argument,
+                                        state.exception.response.status.toString()
+                                    )
+                                }
+
+                                else ->
+                                    getString(R.string.error_argument, state.exception.localizedMessage)
+                            }
+                            binding.progress.isVisible = false
+                            binding.progressText.isVisible = false
+                            binding.errorText.isVisible = true
+                        }
+
+                        LoadState.Init -> {
+                            binding.progress.isVisible = true
+                            binding.progressText.isVisible = false
+                            binding.errorText.isVisible = false
+                        }
+
+                        is LoadState.Load -> {
+                            binding.progress.isVisible = true
+                            binding.progressText.isVisible = true
+                            binding.errorText.isVisible = false
+                            binding.progressText.text = "${(state.percent * 100).toInt()}%"
+                        }
+
+                        is LoadState.Ready -> {
+                            binding.errorText.isVisible = false
+                            binding.progressText.isVisible = false
+                            binding.viewer.setImage(state.image)
+                            viewModel.chaptersManager
+                                .updateStatisticData(state.imageSize, state.downloadTime)
+                        }
+                    }
+                }.launchIn(this)
+
+            // Изменение видимости кнопки
+            viewModel
+                .visibleUI
+                .flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
+                .onEach { showUI(binding.update, it) }
+                .launchIn(this)
+
+            viewModel
+                .hasScrollbars
+                .flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
+                .onEach(binding.viewer::setScrollbarsVisible)
+                .launchIn(this)
+        }
     }
 
     override fun onDestroyView() {

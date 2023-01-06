@@ -116,13 +116,28 @@ internal fun DownloadButton(state: DownloadState, sendEvent: (Download) -> Unit)
                     Icon(Icons.Default.Close, contentDescription = "cancel download button")
                 }
 
+            DownloadState.ERROR,
             DownloadState.PAUSED,
             DownloadState.COMPLETED,
-            DownloadState.UNKNOWN ->
+            DownloadState.UNKNOWN,
+            -> Box {
                 // download button
                 IconButton(onClick = { sendEvent(Download.START) }) {
                     Icon(Icons.Default.Download, contentDescription = "download button")
                 }
+
+                if (it == DownloadState.ERROR)
+                    Icon(
+                        painterResource(com.san.kir.core.compose.R.drawable.unknown),
+                        contentDescription = "last downloading error",
+                        modifier = Modifier
+                            .padding(Dimensions.half)
+                            .size(Dimensions.default)
+                            .align(Alignment.TopEnd),
+                        tint = Color.Red
+                    )
+            }
+
         }
     }
 }

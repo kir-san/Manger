@@ -14,9 +14,7 @@ interface ChapterDao : BaseDao<Chapter> {
     fun loadSimpleItems(): Flow<List<SimplifiedChapter>>
 
     @Query(
-        "SELECT id, status, " +
-                "IIF(totalPages=0, totalPages,  downloadPages * 100/ chapters.totalPages) AS download_progress, " +
-                "progress, isRead, pages, name, '' AS manga, date, path " +
+        "SELECT id, status, progress, isRead, downloadPages, pages, name, '' AS manga, date, path " +
                 "FROM chapters WHERE manga_id=:mangaId"
     )
     fun loadSimpleItemsByMangaId(mangaId: Long): Flow<List<SimplifiedChapter>>
@@ -27,13 +25,16 @@ interface ChapterDao : BaseDao<Chapter> {
     @Query("SELECT COUNT(id) FROM simple_chapter")
     fun loadLatestCount(): Flow<Int>
 
-    @Query("SELECT COUNT(id) FROM chapters WHERE status='QUEUED' OR status='LOADING'")
-    fun loadDownloadCount(): Flow<Int>
+    @Query("SELECT COUNT(id) FROM chapters WHERE status=:queued OR status=:loading")
+    fun loadDownloadCount(
+        queued: DownloadState = DownloadState.QUEUED,
+        loading: DownloadState = DownloadState.LOADING,
+    ): Flow<Int>
 
     @Query(
         "SELECT chapters.id, chapters.name, manga.name AS manga, manga.logo AS logo, " +
                 "chapters.status, chapters.totalTime, chapters.downloadSize, chapters.downloadPages, " +
-                "chapters.pages, chapters.error " +
+                "chapters.pages " +
                 "FROM chapters JOIN manga ON chapters.manga_id=manga.id " +
                 "WHERE chapters.status IS NOT :status " +
                 "ORDER BY chapters.status,chapters.ordering"
@@ -42,9 +43,6 @@ interface ChapterDao : BaseDao<Chapter> {
 
     @Query("SELECT * FROM chapters")
     suspend fun items(): List<Chapter>
-
-    @Query("SELECT * FROM chapters WHERE error IS 0 ORDER BY ordering")
-    suspend fun itemsByError(): List<Chapter>
 
     @Query("SELECT * FROM chapters WHERE manga_id IS :mangaId")
     suspend fun itemsByMangaId(mangaId: Long): List<Chapter>

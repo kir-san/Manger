@@ -13,6 +13,7 @@ import com.san.kir.data.parsing.SiteCatalogsManager
 import com.san.kir.library.R
 import com.san.kir.library.ui.drawer.MenuItem
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import java.util.Collections
 import javax.inject.Inject
@@ -41,7 +42,7 @@ internal class MainMenuRepository @Inject constructor(
             ) { Transition(it) }
         ) { items, transition ->
             items.map(transform(manager.catalog.size, transition))
-        }
+        }.distinctUntilChanged()
 
     suspend fun swap(from: Int, to: Int) {
         val items = mainMenuDao.getItems().toMutableList()

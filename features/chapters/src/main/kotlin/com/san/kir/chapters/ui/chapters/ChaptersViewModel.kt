@@ -248,7 +248,7 @@ internal class ChaptersViewModel @Inject constructor(
         if (oneTimeFlag) {
             oneTimeFlag = false
 
-            chaptersRepository.update(manga.copy(populate = manga.populate))
+            chaptersRepository.update(manga.copy(populate = manga.populate + 1))
             filter.update {
                 if (settingsRepository.currentChapters().isIndividual) {
                     manga.chapterFilter

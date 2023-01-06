@@ -171,6 +171,7 @@ private fun LazyItemScope.ItemView(
     sendEvent: (DownloadsEvent) -> Unit,
 ) {
     val ctx: Context = LocalContext.current
+    val totalPages by remember { derivedStateOf { item.pages.size } }
 
     Row(
         modifier = Modifier
@@ -185,7 +186,7 @@ private fun LazyItemScope.ItemView(
         ) {
             CircleLogo(logoUrl = item.logo)
 
-            if (item.isError)
+            if (item.status == DownloadState.ERROR)
                 Box(
                     contentAlignment = Alignment.TopEnd,
                     modifier = Modifier.size(Dimensions.Image.small)
@@ -214,7 +215,7 @@ private fun LazyItemScope.ItemView(
                     size = item.size,
                     time = item.time(ctx),
                     downloadPages = item.downloadPages,
-                    totalPages = item.totalPages
+                    totalPages = totalPages
                 )
             }
 

@@ -12,17 +12,8 @@ import com.san.kir.data.models.base.ShikimoriMangaItem
             "manga.logo, " +
             "manga.about, " +
             "manga.isAlternativeSort, " +
-
-            "(SELECT COUNT(*) FROM chapters " +
-            "WHERE chapters.manga IS " +
-            "manga.name " +
-            "AND chapters.isRead IS 1) AS " +
-            "read_chapters, " +
-
-            "(SELECT COUNT(*) FROM chapters " +
-            "WHERE chapters.manga IS " +
-            "manga.name) AS all_chapters " +
-
+            "(SELECT COUNT(*) FROM chapters WHERE chapters.manga_id IS manga.id AND chapters.isRead IS 1) AS read_chapters, " +
+            "(SELECT COUNT(*) FROM chapters WHERE chapters.manga_id IS manga.id) AS all_chapters " +
             "FROM manga"
 )
 data class SimplifiedMangaWithChapterCounts(

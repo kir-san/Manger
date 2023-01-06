@@ -194,7 +194,7 @@ abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
                 if (pat.find())
                     name = pat.group()
                 Chapter(
-                    manga = manga.name,
+                    mangaId = manga.id,
                     name = name,
                     date = it.select("td").last()?.text() ?: "",
                     link = host + it.select("a").attr("href"),

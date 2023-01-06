@@ -105,8 +105,8 @@ fun LatestScreen(
 private fun navigationButton(
     selectionMode: Boolean,
     navigateUp: () -> Boolean,
-    sendEvent: (LatestEvent) -> Unit
-):  NavigationButton {
+    sendEvent: (LatestEvent) -> Unit,
+): NavigationButton {
     return if (selectionMode) {
         NavigationButton.Close { sendEvent(LatestEvent.UnselectAll) }
     } else {
@@ -117,11 +117,11 @@ private fun navigationButton(
 private fun latestActions(
     selectionMode: Boolean,
     hasNewChapters: Boolean,
-    sendEvent: (LatestEvent) -> Unit
+    sendEvent: (LatestEvent) -> Unit,
 ): @Composable TopBarActions.() -> Unit = {
     FromEndToEndAnimContent(targetState = selectionMode) {
         when (it) {
-            true -> Row {
+            true  -> Row {
                 MenuIcon(Icons.Default.Delete) { sendEvent(LatestEvent.RemoveSelected) }
                 MenuIcon(Icons.Default.Download) { sendEvent(LatestEvent.DownloadSelected) }
             }
@@ -200,7 +200,7 @@ internal fun LazyItemScope.LatestItemContent(
         DownloadButton(item.chapter.status) {
             when (it) {
                 Download.START -> sendEvent(LatestEvent.StartDownload(item.chapter.id))
-                Download.STOP -> sendEvent(LatestEvent.StopDownload(item.chapter.id))
+                Download.STOP  -> sendEvent(LatestEvent.StopDownload(item.chapter.id))
             }
         }
     }
@@ -228,7 +228,7 @@ private fun StatusText(state: DownloadState, progress: Int, date: String) {
                     LoadingText(progress)
                 }
 
-                DownloadState.QUEUED -> {
+                DownloadState.QUEUED  -> {
                     LoadingIndicator()
                     WaitingText()
                     SmallerSpacer()
@@ -236,9 +236,12 @@ private fun StatusText(state: DownloadState, progress: Int, date: String) {
 
                 DownloadState.PAUSED,
                 DownloadState.COMPLETED,
-                DownloadState.UNKNOWN -> {
+                DownloadState.UNKNOWN,
+                -> {
                     ChapterDate(date)
                 }
+
+                DownloadState.ERROR   -> {}
             }
         }
     }

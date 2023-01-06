@@ -158,7 +158,7 @@ class ComX(private val connectManager: ConnectManager) : SiteCatalogClassic() {
         val jsonData = jsonData(host + lastChapterLink)
         return jsonData.chapters.map { chapter ->
             Chapter(
-                manga = manga.name,
+                mangaId = manga.id,
                 name = chapter.title,
                 link = "$host/readcomix/${jsonData.news_id}/${chapter.id}.html",
                 path = "${manga.path}/${chapter.title}",

@@ -98,7 +98,7 @@ class Unicomics(private val connectManager: ConnectManager) : SiteCatalogClassic
                 val link = it.select("table > tbody .online > a").attr("href")
                 val name = it.select("a.list_title").text()
                 Chapter(
-                    manga = manga.name,
+                    mangaId = manga.id,
                     name = name,
                     link = if (host in link) link else host + link,
                     path = "${manga.path}/${name}"

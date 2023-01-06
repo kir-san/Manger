@@ -1,5 +1,8 @@
 package com.san.kir.data.db.migrations
 
+import androidx.room.DeleteColumn
+import androidx.room.migration.AutoMigrationSpec
+
 /*
 Таблица Settings
 Добавлено поле scrollbars, которое переключает видимость скроллов во Viewwer
@@ -55,3 +58,18 @@ internal val from61to62 = migrate {
     )
     removeTmpTable()
 }
+
+/*
+Таблица Chpaters
+Удаление полей error, totalSize, totalPages, manga
+*/
+
+@DeleteColumn.Entries(
+    value = [
+        DeleteColumn(tableName = "chapters", columnName = "error"),
+        DeleteColumn(tableName = "chapters", columnName = "totalSize"),
+        DeleteColumn(tableName = "chapters", columnName = "totalPages"),
+        DeleteColumn(tableName = "chapters", columnName = "manga"),
+    ]
+)
+internal class From62to63 : AutoMigrationSpec

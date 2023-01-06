@@ -14,4 +14,12 @@ data class CategoryWithMangas(
     val isLargePortrait: Boolean = true,
     val isLargeLandscape: Boolean = true,
     val mangas: List<SimplifiedManga> = emptyList(),
-)
+) {
+    override fun toString() = buildString {
+        append("CategoryWithMangas(name=$name, mangas=[")
+        mangas.forEach {
+            append("(name=${it.name}, noRead=${it.noRead}), ")
+        }
+        append(")")
+    }
+}

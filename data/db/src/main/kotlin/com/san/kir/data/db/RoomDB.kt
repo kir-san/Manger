@@ -25,6 +25,7 @@ import com.san.kir.data.db.dao.StatisticDao
 import com.san.kir.data.db.dao.StorageDao
 import com.san.kir.data.db.migrations.From58to59
 import com.san.kir.data.db.migrations.From59to60
+import com.san.kir.data.db.migrations.From62to63
 import com.san.kir.data.db.migrations.migrations
 import com.san.kir.data.db.typeConverters.FileConverter
 import com.san.kir.data.db.typeConverters.ListLongConverter
@@ -61,7 +62,7 @@ import timber.log.Timber
         ShikiDbManga::class,
         Settings::class
     ],
-    version = 62,
+    version = 63,
     views = [
         SimplifiedManga::class,
         SimplifiedMangaWithChapterCounts::class,
@@ -83,6 +84,7 @@ import timber.log.Timber
         AutoMigration(from = 58, to = 59, spec = From58to59::class), // remove Site table
         AutoMigration(from = 59, to = 60, spec = From59to60::class), // remove field from Manga
         AutoMigration(from = 60, to = 61), // update SimplifiedManga view
+        AutoMigration(from = 62, to = 63, spec = From62to63::class), // remove unused fields from Chapters
     ]
 )
 @TypeConverters(

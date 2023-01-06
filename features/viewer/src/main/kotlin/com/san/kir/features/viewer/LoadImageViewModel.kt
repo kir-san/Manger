@@ -8,6 +8,7 @@ import com.san.kir.core.internet.ConnectManager
 import com.san.kir.core.utils.convertImagesToPng
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.isOkPng
+import com.san.kir.data.models.base.preparedPath
 import com.san.kir.features.viewer.logic.SettingsRepository
 import com.san.kir.features.viewer.utils.LoadState
 import com.san.kir.features.viewer.utils.Page
@@ -61,7 +62,7 @@ internal class LoadImageViewModel @Inject constructor(
         } else {
             // получаем файл страницы
             val name = connectManager.nameFromUrl(page.pagelink)
-            val fullPath = getFullPath(page.chapter.path).absolutePath
+            val fullPath = getFullPath(page.chapter.preparedPath).absolutePath
             var file = File(fullPath, name)
             file = File(file.parentFile, "${file.nameWithoutExtension}.png")
 

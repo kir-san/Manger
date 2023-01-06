@@ -20,7 +20,6 @@ data class DownloadChapter(
     @ColumnInfo(name = "downloadSize") private val downloadSize: Long,
     @ColumnInfo(name = "downloadPages") val downloadPages: Int,
     @ColumnInfo(name = "pages") val pages: List<String>,
-    @ColumnInfo(name = "error") val isError: Boolean,
 ) {
     @Ignore
     val progress =

@@ -162,7 +162,7 @@ abstract class MangachanTemplate(private val connectManager: ConnectManager) :
                 if (pat.find()) name = pat.group()
 
                 Chapter(
-                    manga = manga.name,
+                    mangaId = manga.id,
                     name = name,
                     date = element.select(".date").text(),
                     link = host + element.select("a").attr("href"),

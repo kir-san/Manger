@@ -47,14 +47,14 @@ internal class DownloadsViewModel @Inject constructor(
 
     override suspend fun onEvent(event: DownloadsEvent) {
         when (event) {
-            DownloadsEvent.ClearAll -> clearAll()
-            DownloadsEvent.CompletedClear -> clearCompleted()
-            DownloadsEvent.ErrorClear -> clearError()
-            DownloadsEvent.PausedClear -> clearPaused()
-            DownloadsEvent.StartAll -> manager.addPausedTasks()
-            DownloadsEvent.StopAll -> manager.removeAllTasks()
+            DownloadsEvent.ClearAll         -> clearAll()
+            DownloadsEvent.CompletedClear   -> clearCompleted()
+            DownloadsEvent.ErrorClear       -> clearError()
+            DownloadsEvent.PausedClear      -> clearPaused()
+            DownloadsEvent.StartAll         -> manager.addPausedTasks()
+            DownloadsEvent.StopAll          -> manager.removeAllTasks()
             is DownloadsEvent.StartDownload -> manager.addTask(event.itemId)
-            is DownloadsEvent.StopDownload -> manager.removeTask(event.itemId)
+            is DownloadsEvent.StopDownload  -> manager.removeTask(event.itemId)
         }
     }
 
@@ -71,7 +71,7 @@ internal class DownloadsViewModel @Inject constructor(
         chaptersRepository.clear(
             state.value
                 .items
-                .filter { it.status == DownloadState.PAUSED && it.isError }
+                .filter { it.status == DownloadState.ERROR }
                 .map { it.id }
         )
     }
@@ -80,7 +80,7 @@ internal class DownloadsViewModel @Inject constructor(
         chaptersRepository.clear(
             state.value
                 .items
-                .filter { it.status == DownloadState.PAUSED && it.isError.not() }
+                .filter { it.status == DownloadState.PAUSED }
                 .map { it.id }
         )
     }

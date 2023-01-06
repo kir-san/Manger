@@ -12,13 +12,9 @@ import com.san.kir.data.models.utils.compareChapterNames
     value = "SELECT " +
             "chapters.id, " +
             "chapters.status, " +
-
-            "IIF(chapters.totalPages=0, " +
-            "chapters.totalPages,  " +
-            "chapters.downloadPages * 100/ chapters.totalPages) AS download_progress, " +
-
             "chapters.progress, " +
             "chapters.isRead, " +
+            "chapters.downloadPages, " +
             "chapters.pages, " +
             "chapters.name, " +
             "manga.name AS manga, " +
@@ -35,14 +31,14 @@ data class SimplifiedChapter(
     @ColumnInfo(name = "status")
     val status: DownloadState,
 
-    @ColumnInfo(name = "download_progress")
-    val downloadProgress: Int,
-
     @ColumnInfo(name = "progress")
     val progress: Int,
 
     @ColumnInfo(name = "isRead")
     val isRead: Boolean,
+
+    @ColumnInfo(name = "downloadPages")
+    val downloadPages: Int,
 
     @ColumnInfo(name = "pages")
     val pages: List<String>,
@@ -57,8 +53,11 @@ data class SimplifiedChapter(
     val date: String,
 
     @ColumnInfo(name = "path")
-    val path: String
-)
+    val path: String,
+) {
+    val downloadProgress: Int
+        get() = if (pages.isEmpty()) 0 else downloadPages * 100 / pages.size
+}
 
 val SimplifiedChapter.countPages: Int get() = getCountPagesForChapterInMemory(path)
 

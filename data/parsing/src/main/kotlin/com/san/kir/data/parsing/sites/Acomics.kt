@@ -140,7 +140,7 @@ class Acomics(private val connectManager: ConnectManager) : SiteCatalogAlternati
     override suspend fun chapters(manga: Manga): List<Chapter> {
         return listOf(
             Chapter(
-                manga = manga.name,
+                mangaId = manga.id,
                 name = manga.name,
                 link = host + manga.shortLink,
                 path = manga.path + "/" + manga.name

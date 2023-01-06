@@ -274,6 +274,7 @@ private fun StatusText(
                     WaitingText()
                 }
 
+                DownloadState.ERROR,
                 DownloadState.PAUSED,
                 DownloadState.COMPLETED,
                 DownloadState.UNKNOWN,

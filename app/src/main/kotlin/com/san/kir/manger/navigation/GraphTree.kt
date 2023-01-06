@@ -1,5 +1,10 @@
 package com.san.kir.manger.navigation
 
+open class Nested(private val base: String) {
+    operator fun invoke() = base
+    fun screen(name: String) = "$base/$name"
+}
+
 /*
 * Обозначения в дереве навигации
 * const - конечный экран
@@ -7,62 +12,55 @@ package com.san.kir.manger.navigation
 * */
 object GraphTree {
 
-    object Library {
-        operator fun invoke() = "library"
-
-        const val main = "main"
-        const val item = "chapters"
-        const val addOnline = "add_online"
-        const val about = "about"
+    object Library : Nested("library") {
+        val main = screen("main")
+        val item = screen("chapters")
+        val addOnline = screen("add_online")
+        val about = screen("about")
     }
 
-    object Storage {
-        operator fun invoke(): String = "storage"
-
-        const val main = "main"
-        const val item = "storage_item"
+    object Storage : Nested("storage") {
+        val main = screen("main")
+        val item = screen("storage_item")
     }
 
-    object Categories {
-        operator fun invoke(): String = "categories"
-
-        const val main = "main"
-        const val item = "category_item"
+    object Categories : Nested("categories") {
+        val main = screen("main")
+        val item = screen("category_item")
     }
 
-    object Statistic {
-        operator fun invoke(): String = "statistic"
-
-        const val main = "main"
-        const val item = "statistic_item"
+    object Statistic : Nested("statistic") {
+        val main = screen("main")
+        val item = screen("statistic_item")
     }
 
-    object Schedule {
-        operator fun invoke(): String = "schedule"
-
-        const val main = "main"
-        const val item = "schedule_item"
+    object Schedule : Nested("schedule") {
+        val main = screen("main")
+        val item = screen("schedule_item")
     }
 
-    object Catalogs {
-        operator fun invoke(): String = "catalogs"
-
-        const val main = "main"
-        const val item = "catalog"
-        const val itemInfo = "info"
-        const val itemAdd = "add"
-        const val search = "global_search"
+    object Catalogs : Nested("catalogs") {
+        val main = screen("main")
+        val item = screen("catalog")
+        val itemInfo = screen("info")
+        val itemAdd = screen("add")
+        val search = screen("global_search")
     }
 
-    object Accounts {
-        operator fun invoke(): String = "accounts"
+    object Accounts : Nested("accounts") {
+        val main = screen("main")
 
-        const val main = "main"
-        const val shikimori = "shikimori"
-        const val localItems = "local_items"
-        const val localItem = "local_item"
-        const val search = "shiki_search"
-        const val shikiItem = "shiki_search_item"
+        object Catalogs : Nested("accounts/catalogs") {
+            val allhen = screen("allhen")
+        }
+
+        object Shikimori : Nested("accounts/shikimori") {
+            val main = screen("main")
+            val localItems = screen("local_items")
+            val localItem = screen("local_item")
+            val search = screen("shiki_search")
+            val shikiItem = screen("shiki_search_item")
+        }
     }
 
     const val downloader = "downloader"

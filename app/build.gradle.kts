@@ -19,27 +19,27 @@ android {
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments += mapOf(
-//                    "room.schemaLocation" to "$projectDir/schemas",
+                    //                    "room.schemaLocation" to "$projectDir/schemas",
                     "room.incremental" to "true",
-//                    "room.expandProjection" to "true"
+                    //                    "room.expandProjection" to "true"
                 )
             }
         }
     }
 
-//    flavorDimensions += "version"
-//    productFlavors {
-//        create("r") {
-//            dimension = "version"
-//            applicationIdSuffix = ""
-//            versionNameSuffix = ""
-//        }
-//        create("alpha") {
-//            dimension = "version"
-//            applicationIdSuffix = ".alpha"
-//            versionNameSuffix = "-alpha"
-//        }
-//    }
+    //    flavorDimensions += "version"
+    //    productFlavors {
+    //        create("r") {
+    //            dimension = "version"
+    //            applicationIdSuffix = ""
+    //            versionNameSuffix = ""
+    //        }
+    //        create("alpha") {
+    //            dimension = "version"
+    //            applicationIdSuffix = ".alpha"
+    //            versionNameSuffix = "-alpha"
+    //        }
+    //    }
 }
 
 dependencies {
@@ -53,6 +53,8 @@ dependencies {
     implementation(project(Modules.Features.settings))
     implementation(project(Modules.Features.schedule))
     implementation(project(Modules.Features.catalog))
+
+    implementation(project(Modules.Features.Catalogs.allhen))
 
     implementation(project(Modules.Core.utils))
     implementation(project(Modules.Core.support))
@@ -74,7 +76,7 @@ dependencies {
 
     implementation(libs.lifecycle.viewmodel)
 
-//    debugImplementation(libs.bundles.hyper)
+    //    debugImplementation(libs.bundles.hyper)
 
     implementation(libs.timber)
 
@@ -82,10 +84,10 @@ dependencies {
     androidTestImplementation(libs.bundles.tests)
     debugImplementation(libs.compose.manifest)
 
-//        androidTestImplementation(TRUTH)
-//        androidTestImplementation(BENCHMARK_JUNIT)
-//        androidTestImplementation(NAVIGATION)
-//    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.7")
+    //        androidTestImplementation(TRUTH)
+    //        androidTestImplementation(BENCHMARK_JUNIT)
+    //        androidTestImplementation(NAVIGATION)
+    //    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.7")
 
     // Use the most recent version of Compose available.
     // debugImplementation 'org.jetbrains.kotlin:kotlin-reflect:1.5.20'

@@ -34,7 +34,7 @@ compose_paging = "1.0.0-alpha15"
 material = "1.3.0"
 protobuf = "3.18.0"
 protobuf_plugin = "0.8.17"
-accompanist = "0.27.0"
+accompanist = "0.28.0"
 google_hilt = "2.44"
 
 # Test
@@ -127,6 +127,7 @@ permissions = { module = "com.google.accompanist:accompanist-permissions", versi
 systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 navigation_animation = { module = "com.google.accompanist:accompanist-navigation-animation", version.ref = "accompanist" }
 swipe_refresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
+webview = { module = "com.google.accompanist:accompanist-webview", version.ref = "accompanist" }
 
 datastore = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
@@ -181,7 +182,7 @@ navigation = { module = "androidx.navigation:navigation-testing", version.ref = 
 coroutines = ["coroutines_core", "coroutines_android"]
 room = ["room_ktx", "room_paging"]
 compose = ["compose_ui", "compose_ui_tooling", "compose_ui_tooling_preview", "compose_runtime", "compose_animation", "compose_foundation", "compose_foundation_layout", "compose_material", "compose_material_icons", "compose_material_icons_ext"]
-accompanist = ["flowlayout", "pager", "pager_indicators", "permissions", "systemuicontroller", "navigation_animation", "swipe_refresh"]
+accompanist = ["flowlayout", "pager", "pager_indicators", "permissions", "systemuicontroller", "navigation_animation", "swipe_refresh", "webview"]
 hiltCompilers = ["hilt-compiler-android", "hilt-compiler-google"]
 hilt = ["hilt-work", "hilt-android"]
 work = ["work_runtime", "work_gcm", "work_multiprocess"]

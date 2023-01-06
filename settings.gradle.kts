@@ -21,6 +21,7 @@ include(":features:storage")
 include(":features:settings")
 include(":features:schedule")
 include(":features:catalog")
+include(":features:catalogs:allhen")
 
 include(":sample:testshikimori")
 include(":sample:test_compose")

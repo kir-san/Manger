@@ -41,12 +41,14 @@ fun NavGraphBuilder.navigation(
     startDestination: NavTarget,
     route: NavTarget,
     targets: List<NavTarget>,
+    builder: NavGraphBuilder.() -> Unit = {},
 ) {
     navigation(
         startDestination = startDestination.content.route(),
         route = route.content.route(),
         builder = {
             targets.forEach { target -> composable(nav, target) }
+            builder()
         }
     )
 }

@@ -13,7 +13,6 @@ import androidx.work.workDataOf
 import com.san.kir.background.R
 import com.san.kir.background.logic.UpdateCatalogManager
 import com.san.kir.background.logic.UpdateMangaManager
-import com.san.kir.background.services.AppUpdateService
 import com.san.kir.core.support.PlannedPeriod
 import com.san.kir.core.support.PlannedType
 import com.san.kir.core.utils.longToast
@@ -77,7 +76,7 @@ class ScheduleWorker @AssistedInject constructor(
                 }
 
                 PlannedType.APP -> {
-                    AppUpdateService.start(applicationContext)
+                    AppUpdateWorker.addTask(applicationContext)
                 }
             }
         }.fold(

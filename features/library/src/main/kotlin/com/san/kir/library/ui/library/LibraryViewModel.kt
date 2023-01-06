@@ -5,7 +5,7 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
 import com.san.kir.background.logic.UpdateMangaManager
-import com.san.kir.background.services.AppUpdateService
+import com.san.kir.background.works.AppUpdateWorker
 import com.san.kir.background.works.MangaDeleteWorker
 import com.san.kir.core.utils.viewModel.BaseViewModel
 import com.san.kir.data.models.extend.CategoryWithMangas
@@ -59,14 +59,14 @@ internal class LibraryViewModel @Inject internal constructor(
 
     override suspend fun onEvent(event: LibraryEvent) {
         when (event) {
-            LibraryEvent.NonSelect -> deSelectManga()
+            LibraryEvent.NonSelect             -> deSelectManga()
 
-            is LibraryEvent.SelectManga ->
+            is LibraryEvent.SelectManga        ->
                 selectedMangaState.update { SelectedMangaState.Visible(event.item) }
 
             is LibraryEvent.SetCurrentCategory -> currentCategory.update { event.item }
 
-            is LibraryEvent.ChangeCategory -> {
+            is LibraryEvent.ChangeCategory     -> {
                 deSelectManga()
 
                 val selectedManga =
@@ -74,13 +74,13 @@ internal class LibraryViewModel @Inject internal constructor(
                 mangaRepository.changeCategory(selectedManga.item.id, event.categoryId)
             }
 
-            is LibraryEvent.DeleteManga -> {
+            is LibraryEvent.DeleteManga        -> {
                 deSelectManga()
                 MangaDeleteWorker.addTask(context, event.mangaId, event.withFiles)
             }
 
-            LibraryEvent.UpdateApp -> AppUpdateService.start(context)
-            LibraryEvent.UpdateAll -> {
+            LibraryEvent.UpdateApp             -> AppUpdateWorker.addTask(context)
+            LibraryEvent.UpdateAll             -> {
                 state.value.apply {
                     if (items is ItemsState.Ok) updateManager.addTasks(
                         items.items.flatMap { it.mangas.map { m -> m.id } }

@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -90,13 +91,13 @@ fun DownloadsScreen(navigateUp: () -> Boolean) {
 private fun BottomScreenPart(state: NetworkState, sendEvent: (DownloadsEvent) -> Unit) {
     FromBottomToBottomAnimContent(targetState = state) {
         when (it) {
-            NetworkState.NOT_WIFI -> {
+            NetworkState.NOT_WIFI     -> {
                 Snackbar(
                     modifier = Modifier
                         .fillMaxWidth()
                         .bottomInsetsPadding()
                 ) {
-                    Text(stringResource(R.string.download_view_wifi_off))
+                    Text(stringResource(com.san.kir.background.R.string.wifi_off))
                 }
             }
 
@@ -106,11 +107,11 @@ private fun BottomScreenPart(state: NetworkState, sendEvent: (DownloadsEvent) ->
                         .fillMaxWidth()
                         .bottomInsetsPadding()
                 ) {
-                    Text(stringResource(R.string.download_view_internet_off))
+                    Text(stringResource(com.san.kir.background.R.string.internet_off))
                 }
             }
 
-            NetworkState.OK -> {
+            NetworkState.OK           -> {
                 var showMenu by remember { mutableStateOf(false) }
 
                 // Массовое управление загрузками
@@ -224,7 +225,7 @@ private fun LazyItemScope.ItemView(
         DownloadButton(state = item.status) {
             when (it) {
                 Download.START -> sendEvent(DownloadsEvent.StartDownload(item.id))
-                Download.STOP -> sendEvent(DownloadsEvent.StopDownload(item.id))
+                Download.STOP  -> sendEvent(DownloadsEvent.StopDownload(item.id))
             }
         }
     }
@@ -234,7 +235,7 @@ private fun LazyItemScope.ItemView(
 private fun ProgressIndicator(state: DownloadState, progress: Float) {
     FromTopToTopAnimContent(targetState = state) {
         when (it) {
-            DownloadState.QUEUED -> {
+            DownloadState.QUEUED  -> {
                 LinearProgressIndicator(
                     modifier = Modifier
                         .padding(top = Dimensions.quarter)
@@ -253,7 +254,7 @@ private fun ProgressIndicator(state: DownloadState, progress: Float) {
                 )
             }
 
-            else -> {
+            else                  -> {
             }
         }
     }
@@ -265,7 +266,7 @@ private fun StatusText(
     size: String,
     time: String,
     downloadPages: Int,
-    totalPages: Int
+    totalPages: Int,
 ) {
     FromTopToTopAnimContent(targetState = state) {
         when (it) {
@@ -273,7 +274,7 @@ private fun StatusText(
                 Text(stringResource(R.string.download_item_final_size_with_time, size, time))
             }
 
-            else -> {
+            else                    -> {
                 val pages = stringResource(
                     R.string.download_item_progress_text, downloadPages, totalPages
                 )

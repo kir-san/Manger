@@ -1,8 +1,6 @@
 package com.san.kir.data.parsing.sites
 
 import com.san.kir.core.internet.ConnectManager
-import com.san.kir.core.utils.createDirs
-import com.san.kir.core.utils.getFullPath
 import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.SiteCatalogElement
@@ -59,13 +57,14 @@ abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
         val status = doc.select("#mangaBox .leftContent .expandable .subject-meta p")
 
         val statusEdition = when {
-            status.first()?.text()?.contains(Status.SINGLE, true) == true ->
+            status.first()?.text()?.contains(Status.SINGLE, true) == true       ->
                 Status.SINGLE
 
             status.first()?.text()?.contains(Status.NOT_COMPLETE, true) == true ->
                 Status.NOT_COMPLETE
 
-            else -> Status.COMPLETE
+            else                                                                ->
+                Status.COMPLETE
         }
 
         val statusTranslate =
@@ -127,8 +126,8 @@ abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
 
         var statusEdition = when {
             elem.select("span.mangaCompleted").text().isNotEmpty() -> Status.COMPLETE
-            elem.select("span.mangaSingle").text().isNotEmpty() -> Status.SINGLE
-            else -> Status.NOT_COMPLETE
+            elem.select("span.mangaSingle").text().isNotEmpty()    -> Status.SINGLE
+            else                                                   -> Status.NOT_COMPLETE
         }
 
         val statusTranslate =
@@ -205,9 +204,6 @@ abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
 
     override suspend fun pages(item: Chapter): List<String> {
         val list = mutableListOf<String>()
-
-        getFullPath(item.path).createDirs()
-
         val shortLink = getShortLink(item.link)
 
         delay(1.seconds)

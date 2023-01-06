@@ -13,20 +13,16 @@ import timber.log.Timber
 abstract class BaseViewModel<in E : ScreenEvent, out S : ScreenState>
     : ViewModel(), StateHolder<E, S> {
 
-    abstract val tempState: Flow<S>
-    abstract val defaultState: S
+    protected abstract val tempState: Flow<S>
+    protected abstract val defaultState: S
 
     override val state by lazy {
         tempState
             .onEach { Timber.i("NEW STATE $it") }
-            .stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(),
-                defaultState
-            )
+            .stateIn(viewModelScope, SharingStarted.Lazily, defaultState)
     }
 
-    abstract suspend fun onEvent(event: E)
+    protected abstract suspend fun onEvent(event: E)
 
     override fun sendEvent(event: E) {
         viewModelScope.launch {

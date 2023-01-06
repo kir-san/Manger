@@ -2,11 +2,11 @@ package com.san.kir.manger.ui.init
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
+import com.san.kir.background.works.DownloadChaptersWorker
 import com.san.kir.background.works.UpdateCatalogWorker
 import com.san.kir.background.works.UpdateMangaWorker
 import com.san.kir.core.support.DIR
 import com.san.kir.core.utils.coroutines.withIoContext
-import com.san.kir.core.utils.createDirs
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.manger.navigation.CatalogsNavTarget
 import com.san.kir.manger.navigation.MainNavTarget
@@ -34,12 +34,16 @@ class InitViewModel @Inject constructor(
             ctx, ctx.deepLinkIntent<MainActivity>(CatalogsNavTarget.Main)
         )
 
+        DownloadChaptersWorker.setDownloadDeepLink(
+            ctx, ctx.deepLinkIntent<MainActivity>(MainNavTarget.Downloader)
+        )
+
         delay(0.5.seconds)
 
         if (repository.isFirstLaunch()) repository.restoreSchedule()
     }
 
     private suspend fun createNeedFolders() = withIoContext {
-        DIR.ALL.forEach { dir -> getFullPath(dir).createDirs() }
+        DIR.ALL.forEach { dir -> getFullPath(dir).mkdirs() }
     }
 }

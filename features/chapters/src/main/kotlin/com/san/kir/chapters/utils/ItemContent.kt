@@ -1,6 +1,7 @@
 package com.san.kir.chapters.utils
 
 import android.content.Context
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -14,7 +15,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -38,7 +42,8 @@ internal fun onClickItem(
         if (selectionMode.not()) {
             when (chapter.status) {
                 DownloadState.QUEUED,
-                DownloadState.LOADING ->
+                DownloadState.LOADING,
+                     ->
                     context.toast(R.string.list_chapters_open_is_download)
 
                 else ->
@@ -84,10 +89,7 @@ internal fun WaitingText() {
 @Composable
 internal fun LoadingText(progress: Int) {
     Text(
-        stringResource(
-            R.string.list_chapters_download_progress,
-            progress
-        ),
+        stringResource(R.string.list_chapters_download_progress, progress),
         style = MaterialTheme.typography.body2,
     )
 }
@@ -107,7 +109,8 @@ internal fun DownloadButton(state: DownloadState, sendEvent: (Download) -> Unit)
     FromEndToEndAnimContent(targetState = state) {
         when (it) {
             DownloadState.LOADING,
-            DownloadState.QUEUED ->
+            DownloadState.QUEUED,
+            ->
                 // cancel button
                 IconButton(onClick = { sendEvent(Download.STOP) }) {
                     Icon(Icons.Default.Close, contentDescription = "cancel download button")

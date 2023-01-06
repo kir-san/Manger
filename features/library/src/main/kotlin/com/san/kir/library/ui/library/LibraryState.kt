@@ -21,8 +21,8 @@ internal data class LibraryState(
 
 @Stable
 internal sealed interface ItemsState {
-    object Empty : ItemsState
-    object Load : ItemsState
+    data object Empty : ItemsState
+    data object Load : ItemsState
 
     @Stable
     data class Ok(
@@ -33,22 +33,25 @@ internal sealed interface ItemsState {
         val names: ImmutableList<String> =
             items
                 .map { cat -> "${cat.name}: ${cat.mangas.count()}" }
-                .toImmutableList()
+                .toImmutableList(),
     ) : ItemsState
 }
 
 @Stable
 internal sealed interface SelectedMangaState {
-    object NonVisible : SelectedMangaState
+    data object NonVisible : SelectedMangaState
 
     @Stable
-    data class Visible(val item: SimplifiedManga) : SelectedMangaState
+    data class Visible(val item: SimplifiedManga) : SelectedMangaState {
+        override fun toString() =
+            "Visible(name=${item.name}, category=${item.category}, noRead=${item.noRead})"
+    }
 }
 
 @Stable
 internal sealed interface BackgroundState {
-    object Work : BackgroundState
-    object None : BackgroundState
+    data object Work : BackgroundState
+    data object None : BackgroundState
 }
 
 //@Immutable

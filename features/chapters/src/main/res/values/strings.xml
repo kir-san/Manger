@@ -78,6 +78,4 @@
     <string name="download_activity_option_submenu_clean_completed">Очистить завершенные</string>
     <string name="download_activity_option_submenu_clean_paused">Очистить приостановленные</string>
     <string name="download_activity_option_submenu_clean_error">Очистить с ошибкой</string>
-    <string name="download_view_wifi_off">Вай вай! Не включен Wi-fi!</string>
-    <string name="download_view_internet_off">Нет доступа в интернет</string>
 </resources>

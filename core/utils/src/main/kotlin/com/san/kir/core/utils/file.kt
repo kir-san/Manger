@@ -78,13 +78,6 @@ fun delFiles(filesPath: List<String>): ResultDeleting {
     return ResultDeleting(current = acc, max = filesPath.size)
 }
 
-fun File.createDirs(): Boolean {
-    mkdirs()
-    if (!isDirectory)
-        Timber.v("Error $path")
-    return exists()
-}
-
 // Проверка, что файл является корректным изображением формата PNG
 fun File.isOkPng(): Boolean {
     kotlin.runCatching {

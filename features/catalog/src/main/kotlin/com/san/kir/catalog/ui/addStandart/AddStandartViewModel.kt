@@ -5,8 +5,6 @@ import com.san.kir.background.logic.UpdateMangaManager
 import com.san.kir.catalog.logic.repo.CatalogRepository
 import com.san.kir.core.support.DIR
 import com.san.kir.core.utils.coroutines.defaultLaunch
-import com.san.kir.core.utils.createDirs
-import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.viewModel.BaseViewModel
 import com.san.kir.data.models.base.Category
 import com.san.kir.data.models.base.Statistic
@@ -94,7 +92,6 @@ internal class AddStandartViewModel @Inject constructor(
 
             progress.update { ProcessStatus.prevAndCreatedFolder }
 
-            getFullPath(path).createDirs()
             delay(1.seconds)
 
             progress.update { ProcessStatus.prevAndSearchChapters }

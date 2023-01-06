@@ -128,7 +128,7 @@ class UpdateCatalogWorker @AssistedInject constructor(
                         setProgress(0, 0, true)
                     }
 
-                    DownloadState.UNKNOWN -> {}
+                    else -> {}
                 }
 
                 workerRepository.update(task)

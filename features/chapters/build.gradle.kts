@@ -12,7 +12,6 @@ dependencies {
     implementation(project(Modules.Core.utils))
     implementation(project(Modules.Core.compose))
     implementation(project(Modules.Core.support))
-    implementation(project(Modules.Core.download))
     implementation(project(Modules.Core.background))
     implementation(project(Modules.Core.internet))
     implementation(project(Modules.Data.db))

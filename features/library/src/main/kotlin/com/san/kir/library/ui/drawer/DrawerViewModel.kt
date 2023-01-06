@@ -20,6 +20,7 @@ internal class DrawerViewModel @Inject constructor(
     settingsRepository: SettingsRepository,
     private val mainMenuRepository: MainMenuRepository,
 ) : BaseViewModel<DrawerEvent, DrawerState>() {
+
     override val tempState = combine(
         settingsRepository.main().mapLatest { it.editMenu },
         mainMenuRepository.items.onStart { UpdateMainMenuWorker.addTask(context) }

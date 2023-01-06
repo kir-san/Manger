@@ -3,7 +3,6 @@ package com.san.kir.core.internet
 import android.app.Application
 import android.graphics.BitmapFactory
 import com.san.kir.core.utils.coroutines.withIoContext
-import com.san.kir.core.utils.createDirs
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
@@ -58,7 +57,7 @@ class ConnectManager @Inject constructor(context: Application) {
                     readTimeout(20_0000L, TimeUnit.MILLISECONDS)
                     writeTimeout(20_0000L, TimeUnit.MILLISECONDS)
                     addInterceptor(HttpLoggingInterceptor().apply {
-                        level = HttpLoggingInterceptor.Level.BASIC
+                        level = HttpLoggingInterceptor.Level.HEADERS
                     })
                 }
             }
@@ -98,7 +97,7 @@ class ConnectManager @Inject constructor(context: Application) {
                     }
                 }
 
-                else -> {
+                else                           -> {
                     return@withIoContext Jsoup.parse(response.bodyAsText(), url)
                 }
             }
@@ -136,17 +135,16 @@ class ConnectManager @Inject constructor(context: Application) {
         file: File,
         url: String,
         onProgress: suspend ((percent: Float) -> Unit) = {},
-    ): Result<DownloadResult> = runCatching {
-        withIoContext {
-            runCatching { download(url, onProgress) }
-                .onSuccess { result ->
-                    file.delete()
-                    file.parentFile?.createDirs()
-                    file.createNewFile()
-                    file.writeBytes(result.source)
-                }
-                .onFailure { file.delete() }.getOrThrow()
-        }
+    ): Result<DownloadResult> = withIoContext {
+        runCatching {
+            val result = download(url, onProgress)
+            file.delete()
+            file.parentFile?.mkdirs()
+            file.createNewFile()
+            file.writeBytes(result.source)
+
+            result
+        }.onFailure { file.delete() }
     }
 
     fun prepareUrl(url: String) = url.removeSurrounding("\"", "\"")

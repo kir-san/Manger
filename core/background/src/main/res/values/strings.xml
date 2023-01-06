@@ -42,4 +42,31 @@
     <string name="app_updating_was_canceled">Было отменено обновление приложения</string>
     <string name="add">Добавить</string>
 
+    <!--DownloadChapters-->
+    <string name="press_notify_for_go_to_downloads">Нажмите на уведомление для перехода в Загрузки</string>
+    <string name="chapters_downloading">Скачивание глав</string>
+    <string name="queue_downloading">Очередь загрузки: %d</string>
+    <string name="chapters_downloading_canceled">Загрузка глав отменена</string>
+    <string name="download_failed">Загрузка не удалась</string>
+    <string name="all_chapters_downloaded_with_an_error">Все главы скачались с ошибками</string>
+    <string name="download_complete_with_error">Загрузка завершилась с ошибками</string>
+    <string name="download_complete">Загрузка завершилась</string>
+    <string name="enjoy_reading">Приятного чтения</string>
+    <string name="download_mb_by_min">Скачано %1$s Мб за %2$d мин</string>
+    <string name="download_mb">Скачано %1$s Мб</string>
+    <string name="wifi_off">Вай вай! Не включен Wi-fi!</string>
+    <string name="internet_off">Нет доступа в интернет</string>
+
+    <plurals name="chapters_download_complete_without_errors">
+        <item quantity="one">%d глава скачалась без ошибок</item>
+        <item quantity="few">%d главы скачались без ошибок</item>
+        <item quantity="many">%d глав скачалось без ошибок</item>
+        <item quantity="other">%d глав скачалось без ошибок</item>
+    </plurals>
+    <plurals name="chapters_with_errors">
+        <item quantity="one">%d глава с ошибкой</item>
+        <item quantity="few">%d главы с ошибками</item>
+        <item quantity="many">%d глав с ошибками</item>
+        <item quantity="other">%d глав с ошибками</item>
+    </plurals>
 </resources>

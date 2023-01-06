@@ -25,7 +25,6 @@ object Modules {
         val utils = module("utils")
         val compose = module("compose")
         val internet = module("internet")
-        val download = module("download")
         val background = module("background")
     }
 

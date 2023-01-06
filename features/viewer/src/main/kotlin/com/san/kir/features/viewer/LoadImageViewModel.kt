@@ -107,7 +107,6 @@ internal class LoadImageViewModel @Inject constructor(
             }
 
             // Загрузка файла с сохранением в памяти смартфона
-            file.delete()
             file = File(fullPath, name)
             connectManager.downloadFile(
                 file, connectManager.prepareUrl(page.pagelink),

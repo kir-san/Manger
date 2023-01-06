@@ -1,9 +1,8 @@
 package com.san.kir.chapters.ui.download
 
-import android.app.Application
+import com.san.kir.background.logic.DownloadChaptersManager
 import com.san.kir.chapters.logic.repo.ChaptersRepository
 import com.san.kir.chapters.logic.repo.SettingsRepository
-import com.san.kir.core.download.DownloadService
 import com.san.kir.core.internet.CellularNetwork
 import com.san.kir.core.internet.NetworkState
 import com.san.kir.core.internet.WifiNetwork
@@ -17,10 +16,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class DownloadsViewModel @Inject constructor(
-    private val context: Application,
     private val chaptersRepository: ChaptersRepository,
     private val cellularNetwork: CellularNetwork,
     private val wifiNetwork: WifiNetwork,
+    private val manager: DownloadChaptersManager,
     settingsRepository: SettingsRepository,
 ) : BaseViewModel<DownloadsEvent, DownloadsState>() {
 
@@ -52,10 +51,10 @@ internal class DownloadsViewModel @Inject constructor(
             DownloadsEvent.CompletedClear -> clearCompleted()
             DownloadsEvent.ErrorClear -> clearError()
             DownloadsEvent.PausedClear -> clearPaused()
-            DownloadsEvent.StartAll -> DownloadService.startAll(context)
-            DownloadsEvent.StopAll -> DownloadService.pauseAll(context)
-            is DownloadsEvent.StartDownload -> DownloadService.start(context, event.itemId)
-            is DownloadsEvent.StopDownload -> DownloadService.pause(context, event.itemId)
+            DownloadsEvent.StartAll -> manager.addPausedTasks()
+            DownloadsEvent.StopAll -> manager.removeAllTasks()
+            is DownloadsEvent.StartDownload -> manager.addTask(event.itemId)
+            is DownloadsEvent.StopDownload -> manager.removeTask(event.itemId)
         }
     }
 

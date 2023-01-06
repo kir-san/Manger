@@ -33,7 +33,7 @@ interface ChapterDao : BaseDao<Chapter> {
     @Query(
         "SELECT chapters.id, chapters.name, manga.name AS manga, manga.logo AS logo, " +
                 "chapters.status, chapters.totalTime, chapters.downloadSize, chapters.downloadPages, " +
-                "chapters.totalPages, chapters.error " +
+                "chapters.pages, chapters.error " +
                 "FROM chapters JOIN manga ON chapters.manga_id=manga.id " +
                 "WHERE chapters.status IS NOT :status " +
                 "ORDER BY chapters.status,chapters.ordering"
@@ -69,6 +69,13 @@ interface ChapterDao : BaseDao<Chapter> {
 
     @Query("UPDATE chapters SET status=:status WHERE id IN (:ids)")
     suspend fun updateStatus(ids: List<Long>, status: DownloadState = DownloadState.UNKNOWN)
+
+    @Query("UPDATE chapters SET status=:status, ordering=:time WHERE id IS :id")
+    suspend fun setQueueStatus(
+        id: Long,
+        status: DownloadState = DownloadState.QUEUED,
+        time: Long = System.currentTimeMillis(),
+    )
 
     @Query("DELETE FROM chapters WHERE id IN (:ids)")
     suspend fun deleteByIds(ids: List<Long>)

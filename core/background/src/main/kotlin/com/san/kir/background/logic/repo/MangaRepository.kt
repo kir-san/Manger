@@ -1,7 +1,6 @@
 package com.san.kir.background.logic.repo
 
 import com.san.kir.core.utils.coroutines.withIoContext
-import com.san.kir.data.db.CatalogDb
 import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.models.base.Chapter
@@ -10,7 +9,6 @@ import com.san.kir.data.parsing.SiteCatalogsManager
 import javax.inject.Inject
 
 class MangaRepository @Inject constructor(
-    private val db: CatalogDb.Factory,
     private val manager: SiteCatalogsManager,
     private val mangaDao: MangaDao,
     private val chapterDao: ChapterDao,
@@ -20,11 +18,10 @@ class MangaRepository @Inject constructor(
     suspend fun update(chapter: Chapter) = withIoContext { chapterDao.update(chapter) }
     suspend fun update(chapters: List<Chapter>) = withIoContext { chapterDao.update(chapters) }
     suspend fun add(chapter: Chapter) = withIoContext { chapterDao.insert(chapter) }
-    suspend fun chapters(manga: Manga) =
-        withIoContext {
-            chapterDao.itemsByMangaId(manga.id)
-                .apply { updatePages(manga) }
-        }
+    suspend fun chapters(manga: Manga) = withIoContext {
+        chapterDao.itemsByMangaId(manga.id)
+            .apply { updatePages(manga) }
+    }
 
     /* Обновление страниц в главах */
     private suspend fun List<Chapter>.updatePages(manga: Manga) {

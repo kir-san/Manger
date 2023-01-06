@@ -11,18 +11,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
-import javax.inject.Singleton
 
 enum class NetworkState {
     NOT_WIFI, NOT_CELLURAR, OK
 }
 
-@Singleton
 class CellularNetwork @Inject constructor(context: Application) : TemplateNetwork(
     context, NetworkCapabilities.TRANSPORT_CELLULAR
 )
 
-@Singleton
 class WifiNetwork @Inject constructor(context: Application) : TemplateNetwork(
     context, NetworkCapabilities.TRANSPORT_WIFI,
 )

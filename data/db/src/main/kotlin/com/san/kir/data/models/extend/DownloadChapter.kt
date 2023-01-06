@@ -19,12 +19,12 @@ data class DownloadChapter(
     @ColumnInfo(name = "totalTime") private val totalTime: Long,
     @ColumnInfo(name = "downloadSize") private val downloadSize: Long,
     @ColumnInfo(name = "downloadPages") val downloadPages: Int,
-    @ColumnInfo(name = "totalPages") val totalPages: Int,
-    @ColumnInfo(name = "error") val isError: Boolean
+    @ColumnInfo(name = "pages") val pages: List<String>,
+    @ColumnInfo(name = "error") val isError: Boolean,
 ) {
     @Ignore
     val progress =
-        if (totalPages != 0) downloadPages.toFloat() / totalPages.toFloat() else 0F
+        if (pages.isNotEmpty()) downloadPages.toFloat() / pages.size.toFloat() else 0F
 
     @Ignore
     val size = bytesToMb(downloadSize).format()

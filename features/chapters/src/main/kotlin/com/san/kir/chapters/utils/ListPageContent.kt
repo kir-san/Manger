@@ -276,7 +276,8 @@ private fun StatusText(
 
                 DownloadState.PAUSED,
                 DownloadState.COMPLETED,
-                DownloadState.UNKNOWN -> {
+                DownloadState.UNKNOWN,
+                -> {
                     Text(
                         stringResource(
                             R.string.list_chapters_read,

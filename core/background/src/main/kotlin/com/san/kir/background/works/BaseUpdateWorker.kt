@@ -132,7 +132,6 @@ open class BaseUpdateWorker<T : BaseTask<T>>(
         notify()
 
         if (currentJob == null) return
-
         currentJob?.cancelAndJoin()
 
         removeTask()

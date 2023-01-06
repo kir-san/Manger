@@ -11,12 +11,12 @@ internal data class DrawerState(
 ) : ScreenState
 
 internal sealed interface MainMenuItemsState {
-    object Load : MainMenuItemsState
+    data object Load : MainMenuItemsState
     data class Ok(val items: ImmutableList<MenuItem>) : MainMenuItemsState
 }
 
 @Stable
 internal data class MenuItem(
     val item: MainMenuItem,
-    val status: String
+    val status: String,
 )

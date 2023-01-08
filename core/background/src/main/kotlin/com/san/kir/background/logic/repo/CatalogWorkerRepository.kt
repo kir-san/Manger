@@ -15,6 +15,8 @@ class CatalogWorkerRepository @Inject constructor(
         withIoContext { db.catalog.removeById(item.id) }
     }
 
+    override suspend fun clear() = withIoContext { db.catalog.clear() }
+
     fun loadTask(name: String) = db.catalog.loadItemByName(name)
     suspend fun task(name: String) = withIoContext { db.catalog.itemByName(name) }
     suspend fun add(item: CatalogTask) = withIoContext { db.catalog.insert(item) }

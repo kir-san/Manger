@@ -16,6 +16,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -53,7 +54,7 @@ open class BaseUpdateWorker<T : BaseTask<T>>(
 
             mainJob?.invokeOnCompletion { ex ->
                 scope.launch {
-                    removeTask()
+                    removeTasks()
                     Timber.i("finishedNotify -> $ex")
                     finishedNotify(ex)
                     scope.cancel()
@@ -72,14 +73,14 @@ open class BaseUpdateWorker<T : BaseTask<T>>(
 
         when (command) {
             Command.Destroy -> mainJob?.cancel(WorkComplete)
-            Command.Stop -> {
+            Command.Stop    -> {
                 stopTask()
                 control()
             }
 
-            Command.Start -> start()
-            Command.Update -> notify()
-            else -> {}
+            Command.Start   -> start()
+            Command.Update  -> notify()
+            else            -> {}
         }
     }
 
@@ -100,12 +101,12 @@ open class BaseUpdateWorker<T : BaseTask<T>>(
             when {
                 hasRunningTask() -> when {
                     new.isEmpty() || task == null || !newIds.contains(task.id) -> Command.Stop
-                    queue.size != new.size -> Command.Update
-                    else -> Command.None
+                    queue.size != new.size                                     -> Command.Update
+                    else                                                       -> Command.None
                 }
 
                 new.isNotEmpty() -> Command.Start
-                else -> Command.Destroy
+                else             -> Command.Destroy
             }
         }.apply { queue = new }
     }
@@ -150,6 +151,16 @@ open class BaseUpdateWorker<T : BaseTask<T>>(
         currentTask = null
     }
 
+    private suspend fun removeTasks() {
+        Timber.i("removeTasks")
+        val tasks = workerRepository.catalog.first()
+        workerRepository.clear()
+        currentJob = null
+        currentTask = null
+
+        onRemoveAllTasks(tasks)
+    }
+
     private fun hasRunningTask() = currentJob != null && currentJob?.isActive == true
 
     protected fun updateCurrentTask(task: T.() -> T) {
@@ -168,5 +179,6 @@ open class BaseUpdateWorker<T : BaseTask<T>>(
     protected open suspend fun onNotify(task: T?) {}
     protected open fun finishedNotify(ex: Throwable?) {}
     protected open suspend fun work(task: T) {}
+    protected open suspend fun onRemoveAllTasks(tasks: List<T>) {}
 
 }

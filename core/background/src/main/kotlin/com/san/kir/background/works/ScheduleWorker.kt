@@ -20,7 +20,6 @@ import com.san.kir.data.db.dao.CategoryDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.PlannedDao
 import com.san.kir.data.models.base.PlannedTaskBase
-import com.san.kir.data.parsing.SiteCatalogsManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import timber.log.Timber
@@ -34,27 +33,25 @@ class ScheduleWorker @AssistedInject constructor(
     private val plannedDao: PlannedDao,
     private val mangaDao: MangaDao,
     private val categoryDao: CategoryDao,
-    private val manager: SiteCatalogsManager,
     private val updateCatalogManager: UpdateCatalogManager,
     private val updateMangaManager: UpdateMangaManager,
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
         val id = inputData.getLong("planned_task", -1L)
-
-        Timber.v("doWork $id")
         if (id == -1L) return Result.retry()
 
         kotlin.runCatching {
             val task = plannedDao.itemById(id) ?: return Result.failure()
+            Timber.v("task $task")
 
             when (task.type) {
-                PlannedType.MANGA -> {
+                PlannedType.MANGA    -> {
                     val manga = mangaDao.itemById(task.mangaId)
                     updateMangaManager.addTask(manga.id)
                 }
 
-                PlannedType.GROUP -> {
+                PlannedType.GROUP    -> {
                     if (task.groupContent.isNotEmpty())
                         updateMangaManager.addTasks(mangaDao.itemIdsByNames(task.groupContent))
                     else if (task.mangas.isNotEmpty())
@@ -71,11 +68,11 @@ class ScheduleWorker @AssistedInject constructor(
                     updateMangaManager.addTasks(mangas)
                 }
 
-                PlannedType.CATALOG -> {
+                PlannedType.CATALOG  -> {
                     updateCatalogManager.addTask(task.catalog)
                 }
 
-                PlannedType.APP -> {
+                PlannedType.APP      -> {
                     AppUpdateWorker.addTask(applicationContext)
                 }
             }
@@ -93,6 +90,14 @@ class ScheduleWorker @AssistedInject constructor(
         private const val dayPeriod = AlarmManager.INTERVAL_DAY
         private const val weekPeriod = dayPeriod * 7
 
+        fun addTaskNow(context: Context, item: PlannedTaskBase) {
+            val oneTask = OneTimeWorkRequestBuilder<ScheduleWorker>()
+                .addTag(tag + item.id)
+                .setInputData(workDataOf("planned_task" to item.id))
+                .build()
+            WorkManager.getInstance(context).enqueue(oneTask)
+        }
+
         fun addTask(ctx: Context, item: PlannedTaskBase) {
             val delay = getDelay(item)
             Timber.v("delay $delay ")
@@ -103,11 +108,6 @@ class ScheduleWorker @AssistedInject constructor(
                 .addTag(tag + item.id)
                 .setInputData(workDataOf("planned_task" to item.id))
                 .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                /*.setConstraints(
-                    Constraints.Builder()
-                        .setRequiredNetworkType(NetworkType.CONNECTED)
-                        .build()
-                )*/
                 .build()
             val oneTask = OneTimeWorkRequestBuilder<ScheduleWorker>()
                 .addTag(tag + item.id)
@@ -126,7 +126,7 @@ class ScheduleWorker @AssistedInject constructor(
                 .addListener(
                     {
                         when (item.type) {
-                            PlannedType.MANGA ->
+                            PlannedType.MANGA    ->
                                 ctx.longToast(
                                     R.string.manga_updating_was_canceled_format,
                                     item.manga
@@ -138,19 +138,19 @@ class ScheduleWorker @AssistedInject constructor(
                                     item.category
                                 )
 
-                            PlannedType.GROUP ->
+                            PlannedType.GROUP    ->
                                 ctx.longToast(
                                     R.string.group_updating_was_canceled_format,
                                     item.groupName
                                 )
 
-                            PlannedType.CATALOG ->
+                            PlannedType.CATALOG  ->
                                 ctx.longToast(
                                     R.string.catalog_updating_was_canceled_format,
                                     item.catalog
                                 )
 
-                            PlannedType.APP ->
+                            PlannedType.APP      ->
                                 ctx.longToast(R.string.app_updating_was_canceled)
                         }
                     }, exe

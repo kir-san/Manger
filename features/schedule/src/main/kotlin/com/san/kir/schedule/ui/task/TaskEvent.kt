@@ -8,7 +8,8 @@ import com.san.kir.core.utils.viewModel.ScreenEvent
 internal sealed interface TaskEvent : ScreenEvent {
     data class Set(val itemId: Long) : TaskEvent
     data class Change(val type: ChangeType) : TaskEvent
-    object Save : TaskEvent
+    data object Save : TaskEvent
+    data object Start : TaskEvent
 }
 
 internal sealed interface ChangeType {

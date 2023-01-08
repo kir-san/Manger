@@ -22,4 +22,7 @@ interface ChapterTaskDao : BaseDao<ChapterTask> {
 
     @Query("DELETE FROM chapter_task WHERE id IN (:ids)")
     fun removeByIds(ids: List<Long>)
+
+    @Query("DELETE FROM chapter_task")
+    fun clear()
 }

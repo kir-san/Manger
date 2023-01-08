@@ -19,4 +19,7 @@ interface MangaTaskDao : BaseDao<MangaTask> {
 
     @Query("DELETE FROM manga_task WHERE id=:id")
     fun removeById(id: Long)
+
+    @Query("DELETE FROM manga_task")
+    fun clear()
 }

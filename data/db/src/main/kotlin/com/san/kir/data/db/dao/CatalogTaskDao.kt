@@ -19,4 +19,7 @@ interface CatalogTaskDao : BaseDao<CatalogTask> {
 
     @Query("DELETE FROM catalog_task WHERE id=:id")
     fun removeById(id: Long)
+
+    @Query("DELETE FROM catalog_task")
+    fun clear()
 }

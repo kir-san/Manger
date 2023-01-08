@@ -1,13 +1,12 @@
 package com.san.kir.schedule.ui.task
 
 import android.app.Application
+import androidx.work.WorkInfo
+import com.san.kir.background.util.collectWorkInfoByTag
 import com.san.kir.background.works.ScheduleWorker
-import com.san.kir.core.support.PlannedPeriod
-import com.san.kir.core.support.PlannedType
-import com.san.kir.core.support.PlannedWeek
 import com.san.kir.core.utils.viewModel.BaseViewModel
 import com.san.kir.data.models.base.PlannedTask
-import com.san.kir.data.models.base.PlannedTaskBase
+import com.san.kir.data.models.base.toBase
 import com.san.kir.schedule.logic.repo.TasksRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
@@ -23,22 +22,30 @@ internal class TaskViewModel @Inject constructor(
 ) : BaseViewModel<TaskEvent, TaskState>() {
     private val item = MutableStateFlow(PlannedTask())
     private val hasChanges = MutableStateFlow(false)
+    private val hasWork = MutableStateFlow(false)
     private var isNew = false
 
     override val tempState = combine(
         item,
         tasksRepository.categories,
         tasksRepository.mangas,
-        hasChanges
-    ) { item, categories, mangas, changes ->
+        hasChanges,
+        hasWork
+    ) { item, categories, mangas, changes, work ->
 
         val newItem = item.copy(
             mangas = item.mangas.ifEmpty { item.groupContent.mapNotNull { name -> mangas.firstOrNull { it.name == name }?.id } }
         )
 
+        val action =
+            if (changes) AvailableAction.Save
+            else if (work.not()) AvailableAction.Start
+            else AvailableAction.None
+
         TaskState(
             item = newItem,
-            categoryName = categories.firstOrNull { it.id == newItem.categoryId }?.name ?: "",
+            categoryName = categories.firstOrNull { it.id == newItem.categoryId }?.name
+                ?: "",
             mangaName = mangas.firstOrNull { it.id == newItem.mangaId }?.name ?: "",
             categoryIds = categories.map { it.id }.toImmutableList(),
             categoryNames = categories.map { it.name }.toImmutableList(),
@@ -47,7 +54,7 @@ internal class TaskViewModel @Inject constructor(
             catalogNames = tasksRepository.catalogs.toImmutableList(),
             groupNames = newItem.mangas.map { id -> mangas.first { it.id == id }.name }
                 .toImmutableList(),
-            hasChanges = changes,
+            availableAction = action,
         )
     }
 
@@ -58,12 +65,18 @@ internal class TaskViewModel @Inject constructor(
             is TaskEvent.Set    -> set(event.itemId)
             is TaskEvent.Change -> change(event.type)
             TaskEvent.Save      -> save()
+            TaskEvent.Start     -> ScheduleWorker.addTaskNow(
+                context, item.value.toBase(state.value.mangaName, state.value.categoryName)
+            )
         }
     }
 
     private suspend fun set(taskId: Long) {
         item.update { tasksRepository.item(taskId) ?: it }
         isNew = taskId == -1L
+        context.collectWorkInfoByTag(ScheduleWorker.tag + taskId) { works ->
+            hasWork.value = works.any { it.state == WorkInfo.State.RUNNING }
+        }
     }
 
     private suspend fun save() {
@@ -71,18 +84,9 @@ internal class TaskViewModel @Inject constructor(
             tasksRepository.save(item.value.copy(addedTime = System.currentTimeMillis()), true)
         } else {
             tasksRepository.save(item.value.copy(isEnabled = false), false)
-            ScheduleWorker.cancelTask(context, object : PlannedTaskBase {
-                override val id: Long = item.value.id
-                override val manga: String = state.value.mangaName
-                override val groupName: String = item.value.groupName
-                override val category: String = state.value.categoryName
-                override val catalog: String = item.value.catalog
-                override val type: PlannedType = item.value.type
-                override val period: PlannedPeriod = item.value.period
-                override val dayOfWeek: PlannedWeek = item.value.dayOfWeek
-                override val hour: Int = item.value.hour
-                override val minute: Int = item.value.minute
-            })
+            ScheduleWorker.cancelTask(
+                context, item.value.toBase(state.value.mangaName, state.value.categoryName)
+            )
         }
         hasChanges.value = false
     }

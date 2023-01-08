@@ -32,3 +32,18 @@ data class PlannedTask(
     @ColumnInfo(name = "added_time") val addedTime: Long = 0L,
     @ColumnInfo(name = "error_message") val errorMessage: String = "",
 ) : Parcelable
+
+fun PlannedTask.toBase(mangaName: String, categoryName: String): PlannedTaskBase {
+    return object : PlannedTaskBase {
+        override val id: Long = this@toBase.id
+        override val manga: String = mangaName
+        override val groupName: String = this@toBase.groupName
+        override val category: String = categoryName
+        override val catalog: String = this@toBase.catalog
+        override val type: PlannedType = this@toBase.type
+        override val period: PlannedPeriod = this@toBase.period
+        override val dayOfWeek: PlannedWeek = this@toBase.dayOfWeek
+        override val hour: Int = this@toBase.hour
+        override val minute: Int = this@toBase.minute
+    }
+}

@@ -15,6 +15,8 @@ class ChapterWorkerRepository @Inject constructor(
         withIoContext { db.chapters.removeById(item.id) }
     }
 
+    override suspend fun clear() = withIoContext { db.chapters.clear() }
+
     fun loadTask(chapterId: Long) = db.chapters.loadItemByChapterId(chapterId)
     suspend fun task(chapterId: Long) = withIoContext { db.chapters.itemByChapterId(chapterId) }
     suspend fun add(item: ChapterTask) = withIoContext { db.chapters.insert(item) }

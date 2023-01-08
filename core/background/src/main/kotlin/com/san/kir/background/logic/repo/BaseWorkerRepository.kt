@@ -8,4 +8,6 @@ interface BaseWorkerRepository<T : BaseTask<T>> {
     val catalog: Flow<List<T>>
 
     suspend fun remove(item: T)
+
+    suspend fun clear()
 }

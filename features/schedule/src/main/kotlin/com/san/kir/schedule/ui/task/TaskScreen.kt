@@ -13,6 +13,7 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -67,9 +68,12 @@ fun TaskScreen(
             else
                 stringResource(R.string.planned_task_title_change),
             actions = {
-                FromEndToEndAnimContent(targetState = state.hasChanges) {
-                    if (it)
-                        MenuIcon(Icons.Default.Save) { sendEvent(TaskEvent.Save) }
+                FromEndToEndAnimContent(targetState = state.availableAction) {
+                    when (it) {
+                        AvailableAction.None  -> {}
+                        AvailableAction.Save  -> MenuIcon(Icons.Default.Save) { sendEvent(TaskEvent.Save) }
+                        AvailableAction.Start -> MenuIcon(Icons.Default.PlayArrow) { sendEvent(TaskEvent.Start) }
+                    }
                 }
             }
         )
@@ -121,7 +125,7 @@ private fun TypeChanger(type: PlannedType, sendEvent: (ChangeType) -> Unit) {
 private fun TypeConfig(state: TaskState, sendEvent: (ChangeType) -> Unit) {
     FromTopToTopAnimContent(targetState = state.item.type) { currentState ->
         when (currentState) {
-            PlannedType.MANGA ->
+            PlannedType.MANGA    ->
                 TypedItem(
                     label = R.string.planned_task_change_manga,
                     value = state.mangaName,
@@ -135,7 +139,7 @@ private fun TypeConfig(state: TaskState, sendEvent: (ChangeType) -> Unit) {
                     ) { sendEvent(ChangeType.Manga(it)) }
                 }
 
-            PlannedType.GROUP ->
+            PlannedType.GROUP    ->
                 TypedItemList(
                     label = R.string.planned_task_name_of_group,
                     value = state.item.groupName,
@@ -165,7 +169,7 @@ private fun TypeConfig(state: TaskState, sendEvent: (ChangeType) -> Unit) {
                     ) { sendEvent(ChangeType.Category(it)) }
                 }
 
-            PlannedType.CATALOG ->
+            PlannedType.CATALOG  ->
                 TypedItem(
                     label = R.string.planned_task_change_catalog,
                     value = state.item.catalog,
@@ -180,7 +184,7 @@ private fun TypeConfig(state: TaskState, sendEvent: (ChangeType) -> Unit) {
                     )
                 }
 
-            else -> {}
+            else                 -> {}
         }
     }
 }

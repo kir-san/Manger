@@ -201,6 +201,10 @@ class DownloadChaptersWorker @AssistedInject constructor(
         notificationManager.notify(notifyId + 1, builder.build())
     }
 
+    override suspend fun onRemoveAllTasks(tasks: List<ChapterTask>) {
+        chapterRepository.pauseChapters(tasks.map { it.chapterId })
+    }
+
     private fun sizeAndTime(): String {
         val minutes = successfuled.sumOf { it.time } / 1.minutes.inWholeMilliseconds
         return if (minutes < 1)

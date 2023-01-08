@@ -20,12 +20,18 @@ internal data class TaskState(
     val catalogNames: ImmutableList<String> = persistentListOf(),
     val mangaIds: ImmutableList<Long> = persistentListOf(),
     val mangaNames: ImmutableList<String> = persistentListOf(),
-    val hasChanges: Boolean = false,
+    val availableAction: AvailableAction = AvailableAction.None,
 ) : ScreenState {
     companion object {
         val weeks = persistentListOf(*PlannedWeek.values())
         val periods = persistentListOf(*PlannedPeriod.values())
         val types = persistentListOf(*PlannedType.values())
     }
+}
+
+internal sealed interface AvailableAction {
+    data object Save : AvailableAction
+    data object Start : AvailableAction
+    data object None : AvailableAction
 }
 

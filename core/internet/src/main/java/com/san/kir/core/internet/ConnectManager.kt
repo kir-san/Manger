@@ -57,7 +57,7 @@ class ConnectManager @Inject constructor(context: Application) {
                     readTimeout(20_0000L, TimeUnit.MILLISECONDS)
                     writeTimeout(20_0000L, TimeUnit.MILLISECONDS)
                     addInterceptor(HttpLoggingInterceptor().apply {
-                        level = HttpLoggingInterceptor.Level.HEADERS
+                        level = HttpLoggingInterceptor.Level.BASIC
                     })
                 }
             }

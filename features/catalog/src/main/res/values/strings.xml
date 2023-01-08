@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="main_menu_catalogs">Каталоги</string>
+    <string name="catalogs">Каталоги</string>
     <string name="site_volume_load">Объем: загрузка…</string>
     <string name="site_volume_error">Объем: Ошибка</string>
     <string name="site_volume_with_number">Объем: %d</string>

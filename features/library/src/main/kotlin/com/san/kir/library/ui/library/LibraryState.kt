@@ -12,11 +12,11 @@ import kotlinx.collections.immutable.toImmutableList
 
 @Immutable
 internal data class LibraryState(
-    val selectedManga: SelectedMangaState,
-    val currentCategory: CategoryWithMangas,
-    val items: ItemsState,
-    val showCategory: Boolean,
-    val background: BackgroundState,
+    val selectedManga: SelectedMangaState = SelectedMangaState.NonVisible,
+    val currentCategory: CategoryWithMangas = CategoryWithMangas(),
+    val items: ItemsState = ItemsState.Load,
+    val showCategory: Boolean = false,
+    val background: BackgroundState = BackgroundState.None,
 ) : ScreenState
 
 @Stable

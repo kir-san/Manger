@@ -22,14 +22,8 @@ internal class SearchViewModel @Inject internal constructor(
     private var job: Job? = null
     private val searchingState = MutableStateFlow<SearchingState>(SearchingState.None)
 
-    override val tempState = searchingState
-        .map { search ->
-            SearchState(search)
-        }
-
-    override val defaultState = SearchState(
-        SearchingState.None
-    )
+    override val tempState = searchingState.map { search -> SearchState(search) }
+    override val defaultState = SearchState()
 
     override suspend fun onEvent(event: SearchEvent) {
         when (event) {

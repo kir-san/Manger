@@ -35,13 +35,16 @@ internal fun TextLoginOrNot(state: LoginState) {
             is LoginState.LogIn -> {
                 Text(stringResource(R.string.login_text, targetState.nickName))
             }
-            LoginState.LogOut -> {
+
+            LoginState.LogOut                                                         -> {
                 Text(stringResource(R.string.no_login_text), style = Styles.secondaryText)
             }
-            LoginState.Error -> {
+
+            LoginState.Error                                                          -> {
                 Text(stringResource(R.string.error_try_again), style = Styles.secondaryText)
             }
-            else -> {}
+
+            else                                                                      -> {}
         }
     }
 }
@@ -65,9 +68,11 @@ internal fun MangaNames(
 ) {
     ProvideTextStyle(Fonts.Style.bigBoldCenter) {
         name?.let { name ->
-            Text(name, modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = Dimensions.default))
+            Text(
+                name, modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = Dimensions.default)
+            )
         }
 
         russianName?.let { name ->

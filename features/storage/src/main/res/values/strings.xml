@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="main_menu_storage">Хранилище</string>
+    <string name="storage">Хранилище</string>
     <string name="main_menu_storage_size_mb">%s Мб</string>
 
     <plurals name="storage_subtitle">

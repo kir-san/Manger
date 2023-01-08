@@ -22,17 +22,13 @@ internal class MangaAboutViewModel @Inject constructor(
 
     override val tempState = combine(manga, categoryName, size, ::MangaAboutState)
 
-    override val defaultState = MangaAboutState(
-        manga = Manga(),
-        categoryName = "",
-        size = 0.0
-    )
+    override val defaultState = MangaAboutState()
 
     override suspend fun onEvent(event: MangaAboutEvent) {
         when (event) {
-            is MangaAboutEvent.Set -> set(event.id)
+            is MangaAboutEvent.Set          -> set(event.id)
             is MangaAboutEvent.ChangeUpdate -> change(event.newState)
-            is MangaAboutEvent.ChangeColor -> change(event.newState)
+            is MangaAboutEvent.ChangeColor  -> change(event.newState)
         }
     }
 

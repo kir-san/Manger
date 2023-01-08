@@ -3,6 +3,7 @@ package com.san.kir.catalog.ui.catalogs
 import androidx.lifecycle.viewModelScope
 import com.san.kir.background.logic.UpdateCatalogManager
 import com.san.kir.catalog.logic.repo.CatalogRepository
+import com.san.kir.core.utils.coroutines.defaultLaunch
 import com.san.kir.core.utils.viewModel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.persistentListOf
@@ -11,7 +12,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -57,7 +57,7 @@ internal class CatalogsViewModel @Inject constructor(
         setUpdateCatalogsListener()
 
         temp.forEachIndexed { index, (catalog, site) ->
-            viewModelScope.launch {
+            viewModelScope.defaultLaunch {
                 val volume = kotlin.runCatching { catalog.init() }.getOrNull()?.volume
                 items.update { list ->
                     val result =
@@ -84,7 +84,7 @@ internal class CatalogsViewModel @Inject constructor(
 
     private fun setUpdateCatalogsListener() {
         job?.cancel()
-        job = viewModelScope.launch {
+        job = viewModelScope.defaultLaunch {
             manager.loadTasks()
                 .collect { tasks ->
                     background.update { tasks.isNotEmpty() }

@@ -15,57 +15,57 @@ import androidx.compose.ui.graphics.vector.ImageVector
 
 enum class MainMenuType {
     Library {
-        override fun stringId() = R.string.main_menu_library
+        override fun stringId() = R.string.library
         override val icon: ImageVector
             get() = Icons.Default.LocalLibrary
     },
     Storage {
-        override fun stringId() = R.string.main_menu_storage
+        override fun stringId() = R.string.storage
         override val icon: ImageVector
             get() = Icons.Default.Source
     },
     Category {
-        override fun stringId() = R.string.main_menu_category
+        override fun stringId() = R.string.categories
         override val icon: ImageVector
             get() = Icons.Default.Category
     },
     Catalogs {
-        override fun stringId() = R.string.main_menu_catalogs
+        override fun stringId() = R.string.catalogs
         override val icon: ImageVector
             get() = Icons.Default.FormatListBulleted
     },
     Downloader {
-        override fun stringId() = R.string.main_menu_downloader
+        override fun stringId() = R.string.downloader
         override val icon: ImageVector
             get() = Icons.Default.Download
     },
     Latest {
-        override fun stringId() = R.string.main_menu_latest
+        override fun stringId() = R.string.latest
         override val icon: ImageVector
             get() = Icons.Default.History
     },
     Settings {
-        override fun stringId() = R.string.main_menu_settings
+        override fun stringId() = R.string.settings
         override val icon: ImageVector
             get() = Icons.Default.Settings
     },
     Schedule {
-        override fun stringId() = R.string.main_menu_schedule
+        override fun stringId() = R.string.schedule
         override val icon: ImageVector
             get() = Icons.Default.Schedule
     },
     Statistic {
-        override fun stringId() = R.string.main_menu_statistic
+        override fun stringId() = R.string.statistic
         override val icon: ImageVector
             get() = Icons.Default.QueryStats
     },
     Accounts {
-        override fun stringId() = R.string.main_menu_accounts
+        override fun stringId() = R.string.accounts
         override val icon: ImageVector
             get() = Icons.Default.People
     },
     Default {
-        override fun stringId() = R.string.main_menu_storage
+        override fun stringId() = R.string.storage
         override val icon: ImageVector
             get() = Icons.Default.Schedule
         override val added = false

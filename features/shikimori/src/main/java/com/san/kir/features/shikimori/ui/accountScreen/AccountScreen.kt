@@ -33,8 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.san.kir.core.compose.Dimensions
 import com.san.kir.core.compose.NavigationButton
 import com.san.kir.core.compose.ScreenPadding
@@ -72,24 +70,20 @@ fun AccountScreen(
                 FloatingActionButton(onClick = navigateToLocalItems) {
                     Icon(Icons.Default.LocalLibrary, contentDescription = "local library")
                 }
-        }
+        },
+        onRefresh = { viewModel.sendEvent(AccountEvent.Update) }
     ) { contentPadding ->
-        SwipeRefresh(
-            state = rememberSwipeRefreshState(false),
-            onRefresh = { viewModel.sendEvent(AccountEvent.Update) },
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
+                .padding(
+                    top = contentPadding.calculateTopPadding(),
+                    bottom = contentPadding.calculateBottomPadding()
+                )
+                .imePadding()
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
-                    .padding(
-                        top = contentPadding.calculateTopPadding(),
-                        bottom = contentPadding.calculateBottomPadding()
-                    )
-                    .imePadding()
-            ) {
-                CatalogContent(state.items, navigateToShikiItem)
-            }
+            CatalogContent(state.items, navigateToShikiItem)
         }
     }
 
@@ -117,14 +111,13 @@ private fun topBar(
                 MenuIcon(icon = Icons.Default.Search, onClick = navigateToSearch)
 
                 ExpandedMenu {
-                    MenuText(
-                        R.string.update_data,
-                        onClick = { onSendEvent(AccountEvent.Update) })
+                    MenuText(R.string.update_data, onClick = { onSendEvent(AccountEvent.Update) })
                     MenuText(R.string.logout, onClick = { onSendEvent(AccountEvent.LogOut) })
                 }
             }
-            LoginState.Loading -> ToolbarProgress()
-            else -> {}
+
+            LoginState.Loading    -> ToolbarProgress()
+            else                  -> {}
         }
 
     },

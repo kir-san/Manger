@@ -5,6 +5,7 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
 import com.san.kir.background.works.StoragesUpdateWorker
+import com.san.kir.core.utils.coroutines.defaultLaunch
 import com.san.kir.core.utils.viewModel.BaseViewModel
 import com.san.kir.data.models.base.Storage
 import com.san.kir.data.models.extend.MangaLogo
@@ -20,13 +21,12 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 internal class StoragesViewModel @Inject constructor(
     private val context: Application,
-    private val storageRepository: StorageRepository
+    private val storageRepository: StorageRepository,
 ) : BaseViewModel<StoragesEvent, StoragesState>() {
     private var job: Job? = null
     private val mangas = MutableStateFlow(persistentListOf<MangaLogo?>())
@@ -40,11 +40,7 @@ internal class StoragesViewModel @Inject constructor(
         StoragesState(items.toPersistentList(), mangas, background)
     }
 
-    override val defaultState = StoragesState(
-        items = persistentListOf(),
-        mangas = persistentListOf(),
-        background = BackgroundState.Load
-    )
+    override val defaultState = StoragesState()
 
     override suspend fun onEvent(event: StoragesEvent) {
         when (event) {
@@ -76,7 +72,7 @@ internal class StoragesViewModel @Inject constructor(
         distinctUntilChanged()
             .onEach { items ->
                 job?.cancel()
-                job = viewModelScope.launch {
+                job = viewModelScope.defaultLaunch {
                     items.forEachIndexed { index, storage ->
                         mangas.update { items ->
                             if (items.getOrNull(index) == null)

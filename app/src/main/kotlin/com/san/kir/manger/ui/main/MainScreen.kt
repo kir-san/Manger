@@ -14,9 +14,7 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.san.kir.manger.navigation.MainNavGraph
 
-@OptIn(
-    ExperimentalAnimationApi::class
-)
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MainScreen() {
     val mainViewModel: MainViewModel = hiltViewModel()

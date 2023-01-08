@@ -8,6 +8,7 @@ import com.san.kir.background.logic.DownloadChaptersManager
 import com.san.kir.background.works.LatestClearWorkers
 import com.san.kir.chapters.logic.repo.LatestRepository
 import com.san.kir.core.support.ChapterStatus
+import com.san.kir.core.utils.coroutines.defaultDispatcher
 import com.san.kir.core.utils.viewModel.BaseViewModel
 import com.san.kir.data.models.base.action
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,11 +21,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -42,6 +43,7 @@ internal class LatestViewModel @Inject constructor(
     private val newItems = latestRepository
         .notReadItems
         .distinctUntilChanged()
+        .flowOn(defaultDispatcher)
         .mapLatest { list -> list.filter { it.action == ChapterStatus.DOWNLOADABLE } }
 
     init {
@@ -58,7 +60,9 @@ internal class LatestViewModel @Inject constructor(
                             .toPersistentList()
                     }
                 }
-            }.launchIn(viewModelScope)
+            }
+            .flowOn(defaultDispatcher)
+            .launchIn(viewModelScope)
     }
 
     override val tempState = combine(
@@ -73,28 +77,24 @@ internal class LatestViewModel @Inject constructor(
         )
     }
 
-    override val defaultState = LatestState(
-        items = persistentListOf(),
-        hasNewChapters = false,
-        hasBackgroundWork = true,
-    )
+    override val defaultState = LatestState()
 
     override suspend fun onEvent(event: LatestEvent) {
         when (event) {
-            LatestEvent.CleanAll -> LatestClearWorkers.clearAll(context)
-            LatestEvent.CleanDownloaded -> LatestClearWorkers.clearDownloaded(context)
-            LatestEvent.CleanRead -> LatestClearWorkers.clearReaded(context)
-            LatestEvent.DownloadNew -> downloadNewChapters()
-            LatestEvent.RemoveSelected -> removeSelected()
+            LatestEvent.CleanAll         -> LatestClearWorkers.clearAll(context)
+            LatestEvent.CleanDownloaded  -> LatestClearWorkers.clearDownloaded(context)
+            LatestEvent.CleanRead        -> LatestClearWorkers.clearReaded(context)
+            LatestEvent.DownloadNew      -> downloadNewChapters()
+            LatestEvent.RemoveSelected   -> removeSelected()
             LatestEvent.DownloadSelected -> downloadSelected()
-            LatestEvent.UnselectAll -> unselect()
-            is LatestEvent.ChangeSelect -> changeSelect(event.index)
+            LatestEvent.UnselectAll      -> unselect()
+            is LatestEvent.ChangeSelect  -> changeSelect(event.index)
             is LatestEvent.StartDownload -> downloadManager.addTask(event.id)
-            is LatestEvent.StopDownload -> downloadManager.removeTask(event.id)
+            is LatestEvent.StopDownload  -> downloadManager.removeTask(event.id)
         }
     }
 
-    private suspend fun downloadNewChapters() = viewModelScope.launch {
+    private suspend fun downloadNewChapters()  {
         downloadManager.addTasks(newItems.first().map { it.id })
     }
 
@@ -102,7 +102,7 @@ internal class LatestViewModel @Inject constructor(
         latestRepository.update(items.value.filter { it.selected }.map { it.chapter.id }, false)
     }
 
-    private fun downloadSelected() = viewModelScope.launch {
+    private suspend fun downloadSelected()  {
         downloadManager.addTasks(items.value.filter { it.selected }.map { it.chapter.id })
     }
 
@@ -125,7 +125,7 @@ internal class LatestViewModel @Inject constructor(
             .getWorkInfosByTagLiveData(LatestClearWorkers.tag)
             .asFlow()
             .onEach { works ->
-                hasBackground.value = works.isNotEmpty() && works.none { it.state.isFinished }
+                hasBackground.value = works.any { it.state.isFinished.not() }
             }
             .launchIn(viewModelScope)
     }

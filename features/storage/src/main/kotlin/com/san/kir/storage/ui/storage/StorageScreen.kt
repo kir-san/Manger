@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,7 +49,7 @@ import kotlinx.coroutines.launch
 fun StorageScreen(
     navigateUp: () -> Boolean,
     mangaId: Long,
-    hasUpdate: Boolean
+    hasUpdate: Boolean,
 ) {
     val viewModel: StorageViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
@@ -90,6 +91,8 @@ private fun Content(
         launch { read.animateTo(storage.sizeRead, TweenSpec(2500, 600, LinearEasing)) }
     }
 
+    val hasReads by remember(storage) { derivedStateOf { storage.sizeRead > 0 } }
+    val hasAny by remember(storage) { derivedStateOf { storage.sizeFull > 0 } }
 
     StorageProgressBar(
         modifier = Modifier
@@ -111,18 +114,18 @@ private fun Content(
 
     // Кнопки очистки от манги появляющиеся только если есть, что удалять
     when (background) {
-        BackgroundState.Load -> {}
-        BackgroundState.None -> {
+        BackgroundState.Load     -> {}
+        BackgroundState.None     -> {
             // Удаление прочитанных глав
-            AnimatedVisibility(storage.sizeRead > 0.0) {
+            AnimatedVisibility(hasReads) {
                 DeleteItem(R.string.library_popupmenu_delete_read_chapters) {
-                    dialog = DeleteStatus.All
+                    dialog = DeleteStatus.Read
                 }
             }
             // Удаление содержимого папки
-            AnimatedVisibility(storage.sizeFull > 0.0) {
+            AnimatedVisibility(hasAny) {
                 DeleteItem(R.string.library_popupmenu_delete_all) {
-                    dialog = DeleteStatus.Read
+                    dialog = DeleteStatus.All
                 }
             }
         }
@@ -146,9 +149,9 @@ private fun Content(
             confirmButton = {
                 DialogBtn(R.string.library_popupmenu_delete_read_chapters_ok) {
                     when (dialog) {
-                        DeleteStatus.All -> sendEvent(StorageEvent.DeleteAll)
+                        DeleteStatus.All  -> sendEvent(StorageEvent.DeleteAll)
                         DeleteStatus.Read -> sendEvent(StorageEvent.DeleteRead)
-                        else -> {}
+                        else              -> {}
                     }
                     dialog = DeleteStatus.None
                 }
@@ -174,7 +177,7 @@ private fun StorageItem(color: Color, id: Int, vararg formatArgs: Any) {
                 .padding(end = Dimensions.default)
                 .horizontalInsetsPadding()
                 .size(Dimensions.Image.storage)
-                .background(color = color, shape = RoundedCornerShape(3))
+                .background(color = color, shape = RoundedCornerShape(Dimensions.smaller))
         )
         Text(stringResource(id, *formatArgs))
     }

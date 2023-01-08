@@ -1,5 +1,6 @@
 package com.san.kir.manger.navigation
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.san.kir.features.catalogs.allhen.ui.accountScreen.AccountScreen
@@ -32,6 +33,7 @@ enum class AccountsNavTarget : NavTarget {
 
 private val targets = AccountsNavTarget.values().toList()
 
+@OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.accountsNavGraph(nav: NavHostController) {
     navigation(
         nav = nav,

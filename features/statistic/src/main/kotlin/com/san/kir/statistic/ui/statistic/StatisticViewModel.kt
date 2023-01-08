@@ -17,8 +17,7 @@ internal class StatisticViewModel @Inject constructor(
     private val mangaName = MutableStateFlow("")
 
     override val tempState = combine(statistic, mangaName, ::StatisticState)
-
-    override val defaultState = StatisticState(Statistic(), "")
+    override val defaultState = StatisticState()
 
     override suspend fun onEvent(event: StatisticEvent) {
         when (event) {

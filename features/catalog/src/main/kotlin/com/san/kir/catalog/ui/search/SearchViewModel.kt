@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.viewModelScope
 import com.san.kir.catalog.logic.repo.CatalogRepository
 import com.san.kir.core.utils.coroutines.defaultLaunch
+import com.san.kir.core.utils.coroutines.withMainContext
 import com.san.kir.core.utils.longToast
 import com.san.kir.core.utils.viewModel.BaseViewModel
 import com.san.kir.data.models.extend.MiniCatalogItem
@@ -43,7 +44,7 @@ internal class SearchViewModel @Inject constructor(
 
     override suspend fun onEvent(event: SearchEvent) {
         when (event) {
-            is SearchEvent.Search -> updateFilter(event.query)
+            is SearchEvent.Search      -> updateFilter(event.query)
             is SearchEvent.UpdateManga -> updateManga(event.item)
         }
     }
@@ -70,7 +71,9 @@ internal class SearchViewModel @Inject constructor(
 
     private suspend fun updateManga(item: MiniCatalogItem) {
         catalogRepository.updateMangaBy(item)
-        context.longToast("Информация о манге ${item.name} обновлена")
+        withMainContext {
+            context.longToast("Информация о манге ${item.name} обновлена")
+        }
     }
 
     private fun PersistentList<MiniCatalogItem>.applyFilters(query: String): PersistentList<MiniCatalogItem> {

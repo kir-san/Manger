@@ -6,8 +6,8 @@ import com.san.kir.data.models.base.MainMenuItem
 import kotlinx.collections.immutable.ImmutableList
 
 internal data class DrawerState(
-    val hasEditMenu: Boolean,
-    val menu: MainMenuItemsState,
+    val hasEditMenu: Boolean = false,
+    val menu: MainMenuItemsState = MainMenuItemsState.Load,
 ) : ScreenState
 
 internal sealed interface MainMenuItemsState {

@@ -1,6 +1,7 @@
 package com.san.kir.catalog.ui.addOnline
 
 import androidx.lifecycle.viewModelScope
+import com.san.kir.core.utils.coroutines.defaultLaunch
 import com.san.kir.core.utils.viewModel.BaseViewModel
 import com.san.kir.data.parsing.SiteCatalogsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -10,7 +11,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
@@ -36,10 +36,7 @@ internal class AddOnlineViewModel @Inject constructor(
     }
 
     override val defaultState = AddOnlineState(
-        isCheckingUrl = false,
         validatesCatalogs = siteNames.toPersistentList(),
-        isErrorAvailable = false,
-        isEnableAdding = false
     )
 
     override suspend fun onEvent(event: AddOnlineEvent) {
@@ -54,7 +51,7 @@ internal class AddOnlineViewModel @Inject constructor(
     private fun checkUrl(text: String) {
         job?.cancel()
         isCheckingUrlState.value = false
-        job = viewModelScope.launch {
+        job = viewModelScope.defaultLaunch {
 
             if (text.isNotBlank()) {
                 // список сайтов подходящий под введеный адрес

@@ -4,7 +4,6 @@ import android.app.Application
 import com.san.kir.background.works.ScheduleWorker
 import com.san.kir.core.support.PlannedPeriod
 import com.san.kir.core.support.PlannedType
-import com.san.kir.core.support.PlannedWeek
 import com.san.kir.core.utils.viewModel.BaseViewModel
 import com.san.kir.data.models.extend.SimplifiedTask
 import com.san.kir.schedule.R
@@ -48,29 +47,21 @@ internal class TasksViewModel @Inject constructor(
         }
 
     private fun itemName(item: SimplifiedTask) = when (item.type) {
-        PlannedType.MANGA -> context.getString(R.string.planned_task_name_manga, item.manga)
-        PlannedType.GROUP -> context.getString(R.string.planned_task_name_group, item.groupName)
-        PlannedType.CATALOG -> context.getString(R.string.planned_task_name_catalog, item.catalog)
-        PlannedType.APP -> context.getString(R.string.planned_task_name_app)
-        PlannedType.CATEGORY ->
-            context.getString(R.string.planned_task_name_category, item.category)
+        PlannedType.MANGA    -> context.getString(R.string.planned_task_name_manga, item.manga)
+        PlannedType.GROUP    -> context.getString(R.string.planned_task_name_group, item.groupName)
+        PlannedType.CATALOG  -> context.getString(R.string.planned_task_name_catalog, item.catalog)
+        PlannedType.APP      -> context.getString(R.string.planned_task_name_app)
+        PlannedType.CATEGORY -> context.getString(
+            R.string.planned_task_name_category,
+            item.category
+        )
     }
 
     private fun itemInfo(item: SimplifiedTask): String {
-        val dayText: String =
-            if (item.period == PlannedPeriod.DAY) {
-                context.getString(R.string.planned_task_update_text_day)
-            } else {
-                when (item.dayOfWeek) {
-                    PlannedWeek.MONDAY -> context.getString(R.string.planned_task_update_text_monday)
-                    PlannedWeek.TUESDAY -> context.getString(R.string.planned_task_update_text_tuesday)
-                    PlannedWeek.WEDNESDAY -> context.getString(R.string.planned_task_update_text_wednesday)
-                    PlannedWeek.THURSDAY -> context.getString(R.string.planned_task_update_text_thursday)
-                    PlannedWeek.FRIDAY -> context.getString(R.string.planned_task_update_text_friday)
-                    PlannedWeek.SATURDAY -> context.getString(R.string.planned_task_update_text_saturday)
-                    PlannedWeek.SUNDAY -> context.getString(R.string.planned_task_update_text_sunday)
-                }
-            }
+        val dayText = context.getString(
+            if (item.period == PlannedPeriod.DAY) item.period.dayText
+            else item.dayOfWeek.dayText
+        )
         return context.getString(
             R.string.planned_task_update_text_template,
             dayText,

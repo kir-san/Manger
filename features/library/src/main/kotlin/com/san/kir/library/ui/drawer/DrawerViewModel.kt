@@ -28,10 +28,7 @@ internal class DrawerViewModel @Inject constructor(
         DrawerState(edit, MainMenuItemsState.Ok(menu.toPersistentList()))
     }
 
-    override val defaultState = DrawerState(
-        hasEditMenu = false,
-        menu = MainMenuItemsState.Load
-    )
+    override val defaultState = DrawerState()
 
     override suspend fun onEvent(event: DrawerEvent) {
         when (event) {

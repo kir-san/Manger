@@ -7,6 +7,7 @@ import androidx.work.WorkManager
 import com.san.kir.background.logic.UpdateMangaManager
 import com.san.kir.background.works.AppUpdateWorker
 import com.san.kir.background.works.MangaDeleteWorker
+import com.san.kir.core.utils.coroutines.defaultLaunch
 import com.san.kir.core.utils.viewModel.BaseViewModel
 import com.san.kir.data.models.extend.CategoryWithMangas
 import com.san.kir.library.logic.repo.MangaRepository
@@ -17,9 +18,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -37,25 +38,19 @@ internal class LibraryViewModel @Inject internal constructor(
     private val backgroundState = MutableStateFlow<BackgroundState>(BackgroundState.None)
 
     init {
-        viewModelScope.launch { checkWorks() }
+        viewModelScope.defaultLaunch { checkWorks() }
     }
 
     override val tempState = combine(
         selectedMangaState,
         currentCategory,
         mangaRepository.itemsState,
-        settingsRepository.main().mapLatest { it.isShowCategory },
+        settingsRepository.main().map { it.isShowCategory },
         backgroundState,
         ::LibraryState
     )
 
-    override val defaultState = LibraryState(
-        selectedManga = SelectedMangaState.NonVisible,
-        currentCategory = CategoryWithMangas(),
-        items = ItemsState.Load,
-        showCategory = false,
-        background = BackgroundState.None
-    )
+    override val defaultState = LibraryState()
 
     override suspend fun onEvent(event: LibraryEvent) {
         when (event) {

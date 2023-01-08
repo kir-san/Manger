@@ -25,35 +25,16 @@ import com.san.kir.data.models.utils.compareChapterNames
 )
 @Stable
 data class SimplifiedChapter(
-    @ColumnInfo(name = "id")
-    val id: Long = 0,
-
-    @ColumnInfo(name = "status")
-    val status: DownloadState,
-
-    @ColumnInfo(name = "progress")
-    val progress: Int,
-
-    @ColumnInfo(name = "isRead")
-    val isRead: Boolean,
-
-    @ColumnInfo(name = "downloadPages")
-    val downloadPages: Int,
-
-    @ColumnInfo(name = "pages")
-    val pages: List<String>,
-
-    @ColumnInfo(name = "name")
-    val name: String,
-
-    @ColumnInfo(name = "manga")
-    val manga: String,
-
-    @ColumnInfo(name = "date")
-    val date: String,
-
-    @ColumnInfo(name = "path")
-    val path: String,
+    @ColumnInfo(name = "id") val id: Long = 0,
+    @ColumnInfo(name = "status") val status: DownloadState,
+    @ColumnInfo(name = "progress") val progress: Int,
+    @ColumnInfo(name = "isRead") val isRead: Boolean,
+    @ColumnInfo(name = "downloadPages") val downloadPages: Int,
+    @ColumnInfo(name = "pages") val pages: List<String>,
+    @ColumnInfo(name = "name") val name: String,
+    @ColumnInfo(name = "manga") val manga: String,
+    @ColumnInfo(name = "date") val date: String,
+    @ColumnInfo(name = "path") val path: String,
 ) {
     val downloadProgress: Int
         get() = if (pages.isEmpty()) 0 else downloadPages * 100 / pages.size

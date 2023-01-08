@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -81,16 +82,17 @@ internal fun AboutPageContent(
                     .padding(Dimensions.default)
                     .horizontalInsetsPadding()
                     .bottomInsetsPadding(),
-                enabled =  nextChapter is NextChapter.Ok ,
+                enabled = nextChapter is NextChapter.Ok,
             ) {
                 when (nextChapter) {
-                    NextChapter.None ->
+                    NextChapter.None    ->
                         ButtonText(stringResource(R.string.list_chapters_about_not_continue))
 
-                    is NextChapter.Ok ->
+                    is NextChapter.Ok   ->
                         ButtonText(
                             stringResource(R.string.list_chapters_about_continue, nextChapter.name)
                         )
+                    NextChapter.Loading -> CircularProgressIndicator()
                 }
             }
         }

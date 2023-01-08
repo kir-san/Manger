@@ -1,12 +1,12 @@
 package com.san.kir.features.shikimori.ui.accountScreen
 
 import androidx.lifecycle.viewModelScope
+import com.san.kir.core.utils.coroutines.defaultDispatcher
 import com.san.kir.core.utils.coroutines.defaultExcLaunch
 import com.san.kir.core.utils.flow.Result
 import com.san.kir.core.utils.flow.asResult
 import com.san.kir.core.utils.viewModel.BaseViewModel
 import com.san.kir.data.models.base.ShikiDbManga
-import com.san.kir.features.shikimori.logic.BackgroundTasks
 import com.san.kir.features.shikimori.logic.Helper
 import com.san.kir.features.shikimori.logic.HelperImpl
 import com.san.kir.features.shikimori.logic.repo.LibraryItemRepository
@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
@@ -57,6 +58,7 @@ internal class AccountViewModel @Inject internal constructor(
         }
         .distinctUntilChanged()
         .onStart { emit(emptyList()) }
+        .flowOn(defaultDispatcher)
 
     init {
         dbItems
@@ -66,14 +68,15 @@ internal class AccountViewModel @Inject internal constructor(
             // Проверка каждого элемента на возможность привязки
             .flatMapLatest(bindingHelper.checkBinding())
             .onEach(send())
+            .flowOn(defaultDispatcher)
             .launchIn(viewModelScope)
 
         // Данные об авторизации
         authUseCase.authData.asResult()
             .map { auth ->
                 when (auth) {
-                    is Result.Error -> LoginState.Error
-                    Result.Loading -> LoginState.Loading
+                    is Result.Error   -> LoginState.Error
+                    Result.Loading    -> LoginState.Loading
                     is Result.Success -> {
                         if (auth.data.isLogin) {
                             LoginState.LogIn(auth.data.nickName)
@@ -99,41 +102,30 @@ internal class AccountViewModel @Inject internal constructor(
         AccountScreenState(login, dialog, action, ScreenItems(bind, unbind))
     }
 
-    override val defaultState = AccountScreenState(
-        login = LoginState.Loading,
-        dialog = DialogState.Hide,
-        action = BackgroundTasks(),
-        items = ScreenItems(emptyList(), emptyList())
-    )
+    override val defaultState = AccountScreenState()
 
     override suspend fun onEvent(event: AccountEvent) {
         when (event) {
-            AccountEvent.LogOut -> {
-                when (dialogState.value) {
-                    DialogState.Hide -> {
-                        dialogState.update { DialogState.Show }
-                    }
+            AccountEvent.LogOut       -> when (dialogState.value) {
+                DialogState.Hide -> {
+                    dialogState.update { DialogState.Show }
+                }
 
-                    DialogState.Show -> {
-                        dialogState.update { DialogState.Hide }
-                        loginState.update { LoginState.Loading }
-                        authUseCase.logout()
-                    }
+                DialogState.Show -> {
+                    dialogState.update { DialogState.Hide }
+                    loginState.update { LoginState.Loading }
+                    authUseCase.logout()
                 }
             }
 
-            AccountEvent.CancelLogOut -> {
-                when (dialogState.value) {
-                    DialogState.Hide -> {}
-                    DialogState.Show -> {
-                        dialogState.update { DialogState.Hide }
-                    }
+            AccountEvent.CancelLogOut -> when (dialogState.value) {
+                DialogState.Hide -> {}
+                DialogState.Show -> {
+                    dialogState.update { DialogState.Hide }
                 }
             }
 
-            AccountEvent.Update -> {
-                updateDataFromNetwork()
-            }
+            AccountEvent.Update       -> updateDataFromNetwork()
         }
     }
 

@@ -6,6 +6,7 @@ import com.san.kir.background.works.DownloadChaptersWorker
 import com.san.kir.background.works.UpdateCatalogWorker
 import com.san.kir.background.works.UpdateMangaWorker
 import com.san.kir.core.support.DIR
+import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.core.utils.coroutines.withIoContext
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.manger.navigation.CatalogsNavTarget
@@ -23,7 +24,7 @@ class InitViewModel @Inject constructor(
     private val repository: InitRepository,
 ) : ViewModel() {
 
-    suspend fun startApp() {
+    suspend fun startApp() = withDefaultContext {
         createNeedFolders()
 
         UpdateMangaWorker.setLatestDeepLink(

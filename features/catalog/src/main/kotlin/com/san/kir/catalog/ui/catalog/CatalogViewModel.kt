@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.san.kir.background.logic.UpdateCatalogManager
 import com.san.kir.catalog.logic.repo.CatalogRepository
 import com.san.kir.core.support.DownloadState
+import com.san.kir.core.utils.coroutines.defaultDispatcher
+import com.san.kir.core.utils.coroutines.withMainContext
 import com.san.kir.core.utils.longToast
 import com.san.kir.core.utils.mapP
 import com.san.kir.core.utils.viewModel.BaseViewModel
@@ -19,6 +21,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -58,14 +61,14 @@ internal class CatalogViewModel @Inject constructor(
 
     override suspend fun onEvent(event: CatalogEvent) {
         when (event) {
-            is CatalogEvent.Set -> set(event.catalogName)
-            is CatalogEvent.UpdateManga -> updateManga(event.item)
-            is CatalogEvent.ChangeFilter -> changeFilter(event.type, event.index)
-            is CatalogEvent.Search -> filter.update { it.copy(search = event.query) }
-            is CatalogEvent.ChangeSort -> sort.update { it.copy(type = event.sort) }
-            CatalogEvent.Reverse -> sort.update { it.copy(reverse = it.reverse.not()) }
-            CatalogEvent.ClearFilters -> clearFilters()
-            CatalogEvent.UpdateContent -> manager.addTask(state.value.title)
+            is CatalogEvent.Set              -> set(event.catalogName)
+            is CatalogEvent.UpdateManga      -> updateManga(event.item)
+            is CatalogEvent.ChangeFilter     -> changeFilter(event.type, event.index)
+            is CatalogEvent.Search           -> filter.update { it.copy(search = event.query) }
+            is CatalogEvent.ChangeSort       -> sort.update { it.copy(type = event.sort) }
+            CatalogEvent.Reverse             -> sort.update { it.copy(reverse = it.reverse.not()) }
+            CatalogEvent.ClearFilters        -> clearFilters()
+            CatalogEvent.UpdateContent       -> manager.addTask(state.value.title)
             CatalogEvent.CancelUpdateContent -> manager.removeTask(state.value.title)
         }
     }
@@ -87,14 +90,15 @@ internal class CatalogViewModel @Inject constructor(
 
                         DownloadState.QUEUED,
                         DownloadState.PAUSED,
-                        -> old.copy(updateCatalogs = true, progress = null)
+                                              -> old.copy(updateCatalogs = true, progress = null)
 
-                        else -> old
+                        else                  -> old
                     }
                 }
                 background.update { old }
                 if (task == null) updateData(catalogName)
             }
+            .flowOn(defaultDispatcher)
             .launchIn(viewModelScope)
     }
 
@@ -121,10 +125,10 @@ internal class CatalogViewModel @Inject constructor(
 
         filter.selectedFilters.forEach { entry ->
             prepare = when (entry.key) {
-                FilterType.Authors -> prepare.filter { it.authors.containsAll(entry.value) }
-                FilterType.Genres -> prepare.filter { it.genres.containsAll(entry.value) }
+                FilterType.Authors  -> prepare.filter { it.authors.containsAll(entry.value) }
+                FilterType.Genres   -> prepare.filter { it.genres.containsAll(entry.value) }
                 FilterType.Statuses -> prepare.filter { entry.value.contains(it.statusEdition) }
-                FilterType.Types -> prepare.filter { entry.value.contains(it.type) }
+                FilterType.Types    -> prepare.filter { entry.value.contains(it.type) }
             }
         }
 
@@ -135,7 +139,7 @@ internal class CatalogViewModel @Inject constructor(
         val sorted = when (sort.type) {
             SortType.Date -> sortedBy { it.dateId }
             SortType.Name -> sortedBy { it.name }
-            SortType.Pop -> sortedBy { it.populate }
+            SortType.Pop  -> sortedBy { it.populate }
         }
 
         return (if (sort.reverse) sorted.reversed() else sorted).toPersistentList()
@@ -184,10 +188,15 @@ internal class CatalogViewModel @Inject constructor(
 
     private suspend fun updateManga(item: MiniCatalogItem) {
         catalogRepository.updateMangaBy(item)
-        context.longToast("Информация о манге ${item.name} обновлена")
+        withMainContext {
+            context.longToast("Информация о манге ${item.name} обновлена")
+        }
     }
 
     private fun List<String>.toSetSortedList() =
-        map(String::trim).toHashSet().sorted()
-            .filter(String::isNotEmpty).mapP { SelectableItem(it, false) }
+        map(String::trim)
+            .toHashSet()
+            .sorted()
+            .filter(String::isNotEmpty)
+            .mapP { SelectableItem(it, false) }
 }

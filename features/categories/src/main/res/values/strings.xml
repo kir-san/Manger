@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="main_menu_category">Категории</string>
+    <string name="categories">Категории</string>
 
     <!--Category-->
     <string name="category_item_question_delete">Вы действительно хотите удалить?</string>

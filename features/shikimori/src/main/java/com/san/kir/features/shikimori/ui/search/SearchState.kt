@@ -4,7 +4,7 @@ import com.san.kir.core.utils.viewModel.ScreenState
 import com.san.kir.data.models.base.ShikimoriManga
 
 internal data class SearchState(
-    val search: SearchingState
+    val search: SearchingState = SearchingState.None,
 ) : ScreenState
 
 internal sealed interface SearchingState {

@@ -17,8 +17,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.san.kir.core.compose.Dimensions
 import com.san.kir.core.compose.NavigationButton
 import com.san.kir.core.compose.ScreenPadding
@@ -44,23 +42,19 @@ fun LocalItemsScreen(
             hasAction = state.action.checkBind,
             progressAction = state.action.progress
         ),
-        additionalPadding = Dimensions.zero
+        additionalPadding = Dimensions.zero,
+        onRefresh = { viewModel.sendEvent(LocalItemsEvent.Update) }
     ) { contentPadding ->
-        SwipeRefresh(
-            state = rememberSwipeRefreshState(false),
-            onRefresh = { viewModel.sendEvent(LocalItemsEvent.Update) },
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    top = contentPadding.calculateTopPadding(),
+                    bottom = contentPadding.calculateBottomPadding()
+                )
+                .imePadding()
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(
-                        top = contentPadding.calculateTopPadding(),
-                        bottom = contentPadding.calculateBottomPadding()
-                    )
-                    .imePadding()
-            ) {
-                CatalogContent(state = state.unbind, navigateToItem = navigateToItem)
-            }
+            CatalogContent(state = state.unbind, navigateToItem = navigateToItem)
         }
     }
 }

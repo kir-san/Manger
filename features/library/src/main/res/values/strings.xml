@@ -49,12 +49,12 @@
     <string name="library_add_manga_error">Ошибка в ссылке или нет интернета</string>
 
     <!-- MainMenu -->
-    <string name="main_menu_storage">Хранилище</string>
-    <string name="main_menu_statistic">Статистика</string>
-    <string name="main_menu_settings">Настройки</string>
-    <string name="main_menu_schedule">Расписание</string>
-    <string name="main_menu_category">Категории</string>
-    <string name="main_menu_catalogs">Каталоги</string>
+    <string name="storage">Хранилище</string>
+    <string name="statistic">Статистика</string>
+    <string name="settings">Настройки</string>
+    <string name="schedule">Расписание</string>
+    <string name="categories">Категории</string>
+    <string name="catalogs">Каталоги</string>
     <string name="main_menu_library_count">Библиотека: %d</string>
     <string name="main_menu_storage_size_mb">%s Мб</string>
     <string name="main_menu_downloader_count">Загрузчик: %d</string>

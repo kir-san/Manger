@@ -8,6 +8,7 @@ import com.san.kir.background.works.AllChapterDelete
 import com.san.kir.background.works.ChapterDeleteWorker
 import com.san.kir.background.works.ReadChapterDelete
 import com.san.kir.background.works.StoragesUpdateWorker
+import com.san.kir.core.utils.coroutines.defaultDispatcher
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.shortPath
 import com.san.kir.core.utils.viewModel.BaseViewModel
@@ -15,11 +16,13 @@ import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.Storage
 import com.san.kir.storage.logic.repo.StorageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -48,18 +51,13 @@ internal class StorageViewModel @Inject constructor(
             size = size,
         )
     }
-    override val defaultState = StorageState(
-        background = BackgroundState.None,
-        mangaName = "",
-        item = Storage(),
-        size = 0.0
-    )
+    override val defaultState = StorageState()
 
     override suspend fun onEvent(event: StorageEvent) {
         when (event) {
-            is StorageEvent.Set -> set(event.mangaId, event.hasUpdate)
+            is StorageEvent.Set     -> set(event.mangaId, event.hasUpdate)
 
-            StorageEvent.DeleteAll ->
+            StorageEvent.DeleteAll  ->
                 ChapterDeleteWorker.addTask<AllChapterDelete>(context, manga.value)
 
             StorageEvent.DeleteRead ->
@@ -67,6 +65,7 @@ internal class StorageViewModel @Inject constructor(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun set(mangaId: Long, hasUpdate: Boolean) {
         if (hasUpdate) StoragesUpdateWorker.runTask(context)
 
@@ -76,8 +75,10 @@ internal class StorageViewModel @Inject constructor(
             .onEach { manga.value = it }
             .flatMapLatest { manga ->
                 storageRepository.storageFromFile(getFullPath(manga.path).shortPath)
-            }.filterNotNull()
+            }
+            .filterNotNull()
             .onEach { storage.value = it }
+            .flowOn(defaultDispatcher)
             .launchIn(viewModelScope)
 
         combine(
@@ -88,9 +89,9 @@ internal class StorageViewModel @Inject constructor(
                 .getWorkInfosByTagLiveData(ChapterDeleteWorker.tag)
                 .asFlow(),
         ) { stors, chaps ->
-            if (chaps.isNotEmpty() && chaps.none { it.state.isFinished }) {
+            if (chaps.any { it.state.isFinished.not() }) {
                 backgroundState.update { BackgroundState.Deleting }
-            } else if (stors.isNotEmpty() && stors.none { it.state.isFinished }) {
+            } else if (stors.any { it.state.isFinished.not() }) {
                 backgroundState.update { BackgroundState.Load }
             } else {
                 backgroundState.update { BackgroundState.None }

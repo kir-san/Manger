@@ -48,7 +48,7 @@ fun CatalogsScreen(
     ScreenList(
         topBar = topBar(
             navigationButton = NavigationButton.Back(navigateUp),
-            title = stringResource(R.string.main_menu_catalogs),
+            title = stringResource(R.string.catalogs),
             actions = {
                 MenuIcon(
                     icon = Icons.Default.Search,

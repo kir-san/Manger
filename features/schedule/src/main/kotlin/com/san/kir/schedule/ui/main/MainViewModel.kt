@@ -13,6 +13,5 @@ internal class MainViewModel @Inject constructor(
 
     override val defaultState = MainState()
 
-    override suspend fun onEvent(event: MainEvent) {
-    }
+    override suspend fun onEvent(event: MainEvent) {}
 }

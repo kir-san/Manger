@@ -47,7 +47,7 @@ fun CategoriesScreen(
     ScreenList(
         topBar = topBar(
             navigationButton = NavigationButton.Back(navigateUp),
-            title = stringResource(R.string.main_menu_category),
+            title = stringResource(R.string.categories),
             actions = {
                 MenuIcon(
                     icon = Icons.Default.Add,

@@ -9,7 +9,6 @@ import com.san.kir.core.internet.WifiNetwork
 import com.san.kir.core.support.DownloadState
 import com.san.kir.core.utils.viewModel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
@@ -40,10 +39,7 @@ internal class DownloadsViewModel @Inject constructor(
         )
     }
 
-    override val defaultState = DownloadsState(
-        network = NetworkState.OK,
-        items = persistentListOf()
-    )
+    override val defaultState = DownloadsState()
 
     override suspend fun onEvent(event: DownloadsEvent) {
         when (event) {

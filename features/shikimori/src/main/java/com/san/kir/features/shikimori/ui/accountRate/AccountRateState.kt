@@ -7,10 +7,10 @@ import com.san.kir.features.shikimori.logic.SyncDialogState
 import com.san.kir.features.shikimori.logic.useCases.SyncState
 
 internal data class AccountRateState(
-    val sync: SyncState,
-    val dialog: SyncDialogState,
-    val profile: ProfileState,
-    val manga: MangaState,
+    val sync: SyncState = SyncState.None,
+    val dialog: SyncDialogState = SyncDialogState.None,
+    val profile: ProfileState = ProfileState.Load,
+    val manga: MangaState = MangaState.Load,
 ) : ScreenState
 
 internal sealed interface ProfileState {

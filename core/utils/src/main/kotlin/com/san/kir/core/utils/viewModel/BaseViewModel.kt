@@ -2,12 +2,14 @@ package com.san.kir.core.utils.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.san.kir.core.utils.coroutines.defaultDispatcher
+import com.san.kir.core.utils.coroutines.defaultLaunch
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 abstract class BaseViewModel<in E : ScreenEvent, out S : ScreenState>
@@ -19,13 +21,14 @@ abstract class BaseViewModel<in E : ScreenEvent, out S : ScreenState>
     override val state by lazy {
         tempState
             .onEach { Timber.i("NEW STATE $it") }
+            .flowOn(defaultDispatcher)
             .stateIn(viewModelScope, SharingStarted.Lazily, defaultState)
     }
 
     protected abstract suspend fun onEvent(event: E)
 
     override fun sendEvent(event: E) {
-        viewModelScope.launch {
+        viewModelScope.defaultLaunch {
             Timber.i("ON_EVENT $event")
             onEvent(event)
         }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="main_menu_schedule">Расписание</string>
+    <string name="schedule">Расписание</string>
 
     <!--PlannedTask-->
     <string name="planned_task_name">Запланированные задачи</string>
@@ -32,12 +32,4 @@
     <string name="planned_task_name_app">Приложение</string>
     <string name="planned_task_name_group">Группа: %s</string>
     <string name="planned_task_update_text_template">Обновляется %1$s в %2$d:%3$s</string>
-    <string name="planned_task_update_text_day">раз в день</string>
-    <string name="planned_task_update_text_monday">каждый понедельник</string>
-    <string name="planned_task_update_text_tuesday">каждый вторник</string>
-    <string name="planned_task_update_text_wednesday">каждую среду</string>
-    <string name="planned_task_update_text_thursday">каждый четверг</string>
-    <string name="planned_task_update_text_friday">каждую пятницу</string>
-    <string name="planned_task_update_text_saturday">каждую субботу</string>
-    <string name="planned_task_update_text_sunday">каждое воскресение</string>
 </resources>

@@ -1,10 +1,8 @@
 package com.san.kir.catalog.ui.addStandart
 
-import androidx.lifecycle.viewModelScope
 import com.san.kir.background.logic.UpdateMangaManager
 import com.san.kir.catalog.logic.repo.CatalogRepository
 import com.san.kir.core.support.DIR
-import com.san.kir.core.utils.coroutines.defaultLaunch
 import com.san.kir.core.utils.viewModel.BaseViewModel
 import com.san.kir.data.models.base.Category
 import com.san.kir.data.models.base.Statistic
@@ -59,7 +57,7 @@ internal class AddStandartViewModel @Inject constructor(
         }
     }
 
-    private fun startProcess() = viewModelScope.defaultLaunch {
+    private suspend fun startProcess()  {
         kotlin.runCatching {
             processState.update { ProcessState.Load }
 

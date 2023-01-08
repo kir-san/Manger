@@ -44,7 +44,7 @@ fun SettingsScreen(
     ScreenContent(
         topBar = topBar(
             navigationButton = NavigationButton.Back(navigateUp),
-            title = stringResource(R.string.main_menu_settings),
+            title = stringResource(R.string.settings),
         ),
         additionalPadding = Dimensions.zero
     ) {

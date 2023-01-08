@@ -10,7 +10,6 @@ import com.san.kir.data.models.base.PlannedTask
 import com.san.kir.data.models.base.PlannedTaskBase
 import com.san.kir.schedule.logic.repo.TasksRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -52,24 +51,13 @@ internal class TaskViewModel @Inject constructor(
         )
     }
 
-    override val defaultState = TaskState(
-        item = PlannedTask(),
-        categoryName = "",
-        mangaName = "",
-        categoryIds = persistentListOf(),
-        categoryNames = persistentListOf(),
-        catalogNames = persistentListOf(),
-        mangaIds = persistentListOf(),
-        mangaNames = persistentListOf(),
-        groupNames = persistentListOf(),
-        hasChanges = false,
-    )
+    override val defaultState = TaskState()
 
     override suspend fun onEvent(event: TaskEvent) {
         when (event) {
-            is TaskEvent.Set -> set(event.itemId)
+            is TaskEvent.Set    -> set(event.itemId)
             is TaskEvent.Change -> change(event.type)
-            TaskEvent.Save -> save()
+            TaskEvent.Save      -> save()
         }
     }
 
@@ -102,15 +90,15 @@ internal class TaskViewModel @Inject constructor(
     private fun change(type: ChangeType) {
         item.update {
             when (type) {
-                is ChangeType.Catalog -> it.copy(catalog = type.name)
+                is ChangeType.Catalog  -> it.copy(catalog = type.name)
                 is ChangeType.Category -> it.copy(categoryId = type.categoryId)
-                is ChangeType.Day -> it.copy(dayOfWeek = type.day)
-                is ChangeType.Group -> it.copy(groupName = type.name)
-                is ChangeType.Manga -> it.copy(mangaId = type.mangaId)
-                is ChangeType.Mangas -> it.copy(mangas = type.mangaIds)
-                is ChangeType.Period -> it.copy(period = type.period)
-                is ChangeType.Time -> it.copy(hour = type.hour, minute = type.minute)
-                is ChangeType.Type -> it.copy(type = type.type)
+                is ChangeType.Day      -> it.copy(dayOfWeek = type.day)
+                is ChangeType.Group    -> it.copy(groupName = type.name)
+                is ChangeType.Manga    -> it.copy(mangaId = type.mangaId)
+                is ChangeType.Mangas   -> it.copy(mangas = type.mangaIds)
+                is ChangeType.Period   -> it.copy(period = type.period)
+                is ChangeType.Time     -> it.copy(hour = type.hour, minute = type.minute)
+                is ChangeType.Type     -> it.copy(type = type.type)
             }
         }
         hasChanges.value = true

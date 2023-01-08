@@ -7,7 +7,6 @@ import com.san.kir.core.support.CATEGORY_ALL
 import com.san.kir.core.utils.viewModel.BaseViewModel
 import com.san.kir.data.models.base.Category
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -42,20 +41,13 @@ internal class CategoryViewModel @Inject constructor(
         )
     }
 
-    override val defaultState = CategoryState(
-        category = Category(),
-        categoryNames = persistentListOf(),
-        hasCreatedNew = false,
-        oldCategoryName = "",
-        hasAll = false,
-        hasChanges = false,
-    )
+    override val defaultState = CategoryState()
 
     override suspend fun onEvent(event: CategoryEvent) {
         when (event) {
-            CategoryEvent.Save -> save()
-            is CategoryEvent.Set -> setCategory(event.categoryName)
-            CategoryEvent.Delete -> RemoveCategoryWorker.addTask(context, currentCategory.value)
+            CategoryEvent.Save      -> save()
+            is CategoryEvent.Set    -> setCategory(event.categoryName)
+            CategoryEvent.Delete    -> RemoveCategoryWorker.addTask(context, currentCategory.value)
             is CategoryEvent.Update -> change(event)
         }
     }

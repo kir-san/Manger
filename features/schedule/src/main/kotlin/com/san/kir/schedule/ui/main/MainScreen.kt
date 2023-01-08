@@ -26,7 +26,7 @@ fun MainScreen(
     ScreenContent(
         topBar = topBar(
             navigationButton = NavigationButton.Back(navigateUp),
-            title = stringResource(R.string.main_menu_schedule),
+            title = stringResource(R.string.schedule),
             actions = {
                 MenuIcon(
                     icon = Icons.Default.Add,

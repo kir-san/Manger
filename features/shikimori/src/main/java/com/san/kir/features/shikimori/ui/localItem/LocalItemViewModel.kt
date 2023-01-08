@@ -1,6 +1,7 @@
 package com.san.kir.features.shikimori.ui.localItem
 
 import androidx.lifecycle.viewModelScope
+import com.san.kir.core.utils.coroutines.defaultDispatcher
 import com.san.kir.core.utils.flow.Result
 import com.san.kir.core.utils.flow.asResult
 import com.san.kir.core.utils.viewModel.BaseViewModel
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -45,6 +47,7 @@ internal class LocalItemViewModel @Inject internal constructor(
             .filterIsInstance<MangaState.Ok>()
             .distinctUntilChanged()
             .onEach { syncCheck.launchSyncCheck(it.item) }
+            .flowOn(defaultDispatcher)
             .launchIn(viewModelScope)
 
         syncManager.beforeBindChange { syncCheck.findingSyncCheck() }
@@ -59,17 +62,12 @@ internal class LocalItemViewModel @Inject internal constructor(
         ::LocalItemState
     )
 
-    override val defaultState = LocalItemState(
-        manga = MangaState.Load,
-        sync = SyncState.None,
-        dialog = SyncDialogState.None,
-        profile = ProfileState.Load
-    )
+    override val defaultState = LocalItemState()
 
     override suspend fun onEvent(event: LocalItemEvent) {
         when (event) {
             is LocalItemEvent.Update -> setId(event.mangaId)
-            is LocalItemEvent.Sync -> onSyncEvent(event.event)
+            is LocalItemEvent.Sync   -> onSyncEvent(event.event)
         }
     }
 
@@ -80,15 +78,15 @@ internal class LocalItemViewModel @Inject internal constructor(
             is SyncDialogEvent.SyncToggle ->
                 when (state.value.sync) {
                     is SyncState.Founds -> syncManager.initSync(event.item)
-                    is SyncState.Ok -> {
+                    is SyncState.Ok     -> {
                         val onlineManga = event.item as ShikiDbManga
                         syncManager.askCancelSync(onlineManga.rate)
                     }
-                    else -> {}
+                    else                -> {}
                 }
-            is SyncDialogEvent.SyncNext -> {
+            is SyncDialogEvent.SyncNext   -> {
                 when (val currentState = state.value.dialog) {
-                    is SyncDialogState.Init -> {
+                    is SyncDialogState.Init                  -> {
                         val manga = state.value.manga
                         if (manga !is MangaState.Ok) return
 
@@ -98,12 +96,12 @@ internal class LocalItemViewModel @Inject internal constructor(
                     }
                     is SyncDialogState.DifferentChapterCount ->
                         syncManager.checkReadChapters(currentState.profileRate, currentState.manga)
-                    is SyncDialogState.DifferentReadCount -> {
+                    is SyncDialogState.DifferentReadCount    -> {
                         syncManager.launchSync(
                             currentState.profileRate, currentState.manga, event.onlineIsTruth
                         )
                     }
-                    else -> {}
+                    else                                     -> {}
                 }
             }
         }
@@ -119,8 +117,8 @@ internal class LocalItemViewModel @Inject internal constructor(
                 .asResult()
                 .mapLatest { result ->
                     when (result) {
-                        is Result.Error -> MangaState.Error
-                        Result.Loading -> MangaState.Load
+                        is Result.Error   -> MangaState.Error
+                        Result.Loading    -> MangaState.Load
                         is Result.Success -> MangaState.Ok(result.data)
                     }
                 }

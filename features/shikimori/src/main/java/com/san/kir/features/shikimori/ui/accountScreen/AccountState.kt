@@ -10,10 +10,10 @@ import com.san.kir.features.shikimori.ui.util.DialogState
 
 @Stable
 internal data class AccountScreenState(
-    val login: LoginState,
-    val dialog: DialogState,
-    val action: BackgroundTasks,
-    val items: ScreenItems
+    val login: LoginState = LoginState.Loading,
+    val dialog: DialogState = DialogState.Hide,
+    val action: BackgroundTasks = BackgroundTasks(),
+    val items: ScreenItems = ScreenItems(emptyList(), emptyList()),
 ) : ScreenState {
     override fun toString(): String {
         return "AccountScreenState(login=$login, dialog=$dialog, action=$action, items=ScreenItems(bindSize=${items.bind.count()}, unBindSize=${items.unBind.count()}))"
@@ -23,5 +23,5 @@ internal data class AccountScreenState(
 @Stable
 internal data class ScreenItems(
     val bind: List<ShikiDbManga>,
-    val unBind: List<BindStatus<ShikiDbManga>>
+    val unBind: List<BindStatus<ShikiDbManga>>,
 )

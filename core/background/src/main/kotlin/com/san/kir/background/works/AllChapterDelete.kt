@@ -3,7 +3,6 @@ package com.san.kir.background.works
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.WorkerParameters
-import com.san.kir.core.utils.delFiles
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.shortPath
 import com.san.kir.data.db.dao.ChapterDao
@@ -42,9 +41,7 @@ class AllChapterDelete @AssistedInject constructor(
     }
 
     private fun deleteAllChapters(manga: Manga) {
-        val files = getFullPath(manga.path).listFiles()!!.map { it.shortPath }
-
-        delFiles(files.toList())
+        getFullPath(manga.path).deleteRecursively()
     }
 
     private suspend fun updateStorageItem(manga: Manga) {

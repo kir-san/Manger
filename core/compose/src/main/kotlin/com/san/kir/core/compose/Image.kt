@@ -17,12 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.san.kir.core.internet.LocalConnectManager
+import com.san.kir.core.utils.coroutines.withDefaultContext
 import timber.log.Timber
 import java.io.File
 
@@ -36,9 +38,9 @@ fun ImageWithStatus(url: String?) {
         DialogText(
             text = stringResource(
                 id = when (statusLogo) {
-                    StatusLogo.Init -> R.string.manga_info_dialog_loading
-                    StatusLogo.Error -> R.string.manga_info_dialog_loading_failed
-                    StatusLogo.None -> R.string.manga_info_dialog_not_image
+                    StatusLogo.Init     -> R.string.manga_info_dialog_loading
+                    StatusLogo.Error    -> R.string.manga_info_dialog_loading_failed
+                    StatusLogo.None     -> R.string.manga_info_dialog_not_image
                     StatusLogo.Complete -> R.string.manga_info_dialog_loading
                 }
             )
@@ -64,35 +66,36 @@ fun ImageWithStatus(url: String?) {
 }
 
 @Composable
-fun rememberImage(url: String?): ImageBitmap {
+fun rememberImage(url: String?): BitmapPainter {
     val context = LocalContext.current
     val manager = LocalConnectManager.current
-    var logo by remember { mutableStateOf(ImageBitmap(60, 60)) }
+    var logo by remember { mutableStateOf(BitmapPainter(ImageBitmap(2, 2))) }
 
     LaunchedEffect(url) {
-        if (url != null && url.isNotEmpty()) {
-            val name = manager.nameFromUrl2(url)
+        withDefaultContext {
+            if (url != null && url.isNotEmpty()) {
+                val name = manager.nameFromUrl2(url)
+                val imageCacheDirectory = File(context.cacheDir, "image_cache")
+                val icon = File(imageCacheDirectory, name)
 
-            val imageCacheDirectory = File(context.cacheDir, "image_cache")
+                Timber.v("remember image with path ${icon.path}")
 
-            val icon = File(imageCacheDirectory, name)
-
-            Timber.v("remember image with path ${icon.path}")
-
-            kotlin.runCatching {
-                logo = BitmapFactory.decodeFile(icon.path).asImageBitmap()
-                return@LaunchedEffect
-            }
-
-            manager.downloadFile(icon, url)
-                .onSuccess {
-                    logo = BitmapFactory.decodeFile(icon.path).asImageBitmap()
+                kotlin.runCatching {
+                    logo =
+                        BitmapPainter(BitmapFactory.decodeFile(icon.path).asImageBitmap())
+                    return@withDefaultContext
                 }
-                .onFailure {
-                    ContextCompat.getDrawable(context, R.drawable.unknown)?.let { draw ->
-                        logo = draw.toBitmap().asImageBitmap()
+
+                manager.downloadFile(icon, url)
+                    .mapCatching {
+                        logo = BitmapPainter(BitmapFactory.decodeFile(icon.path).asImageBitmap())
                     }
-                }
+                    .onFailure {
+                        ContextCompat.getDrawable(context, R.drawable.unknown)?.let { draw ->
+                            logo = BitmapPainter(draw.toBitmap().asImageBitmap())
+                        }
+                    }
+            }
         }
     }
     return logo

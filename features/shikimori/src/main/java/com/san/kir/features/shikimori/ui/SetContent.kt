@@ -54,7 +54,7 @@ internal fun ShikimoriContent() {
                 ScreenList(
                     topBar = topBar(
                         navigationButton = NavigationButton.Back { true },
-                        title = stringResource(R.string.main_menu_accounts),
+                        title = stringResource(R.string.accounts),
                     ),
                     additionalPadding = Dimensions.zero
                 ) {
@@ -86,7 +86,7 @@ internal fun ShikimoriContent() {
                     },
                     navigateToSearch = {},
                     mangaId = target.id,
-                    rateId = -1L,
+//                    rateId = -1L,
                 )
             }
 

@@ -27,6 +27,7 @@
     <string name="desc_hide">свернуть</string>
     <string name="desc_show">развернуть</string>
     <string name="change">Изменить</string>
+    <string name="whoami_error">Не удалось получить доступ к вашему аккаунту. Попробуйте позже или перезайдите.</string>
 
     <string name="local_items_title">Библиотека</string>
     <string name="local_items_subtitle">Непривязанной манги: %d</string>

@@ -151,6 +151,7 @@ fun ScreenPadding(
     modifier: Modifier = Modifier,
     additionalPadding: Dp = Dimensions.default,
     enableCollapsingBars: Boolean = false,
+    onRefresh: (() -> Unit)? = null,
     topBar: @Composable (Dp) -> Unit,
     drawerContent: @Composable (ColumnScope.() -> Unit)? = null,
     fab: @Composable (() -> Unit)? = null,
@@ -164,6 +165,7 @@ fun ScreenPadding(
         additionalPadding = additionalPadding,
         enableCollapsingBars = enableCollapsingBars,
         fab = fab,
+        onRefresh = onRefresh
     )
 }
 

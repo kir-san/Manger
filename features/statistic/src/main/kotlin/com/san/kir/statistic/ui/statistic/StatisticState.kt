@@ -4,6 +4,6 @@ import com.san.kir.core.utils.viewModel.ScreenState
 import com.san.kir.data.models.base.Statistic
 
 internal data class StatisticState(
-    val item: Statistic,
-    val mangaName: String
+    val item: Statistic = Statistic(),
+    val mangaName: String = "",
 ) : ScreenState

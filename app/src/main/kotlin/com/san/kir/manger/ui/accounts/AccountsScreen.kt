@@ -18,7 +18,7 @@ fun AccountsScreen(
 ) {
     ScreenList(
         topBar = topBar(
-            title = stringResource(R.string.main_menu_accounts),
+            title = stringResource(R.string.accounts),
             navigationButton = NavigationButton.Back(navigateUp)
         ),
         additionalPadding = Dimensions.zero

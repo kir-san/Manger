@@ -59,7 +59,7 @@ fun StoragesScreen(
     ScreenList(
         topBar = topBar(
             navigationButton = NavigationButton.Back(navigateUp),
-            title = stringResource(R.string.main_menu_storage) + " " +
+            title = stringResource(R.string.storage) + " " +
                     if (state.size > 0) {
                         stringResource(R.string.main_menu_storage_size_mb, size.value.format())
                     } else "",

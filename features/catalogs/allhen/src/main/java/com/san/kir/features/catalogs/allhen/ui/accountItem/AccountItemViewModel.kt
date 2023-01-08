@@ -1,13 +1,11 @@
 package com.san.kir.features.catalogs.allhen.ui.accountItem
 
-import androidx.lifecycle.viewModelScope
 import com.san.kir.core.internet.ConnectManager
 import com.san.kir.core.utils.viewModel.BaseViewModel
 import com.san.kir.data.parsing.sites.Allhentai
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,7 +23,7 @@ internal class AccountItemViewModel @Inject internal constructor(
         }
     }
 
-    private fun update() = viewModelScope.launch {
+    private suspend fun update() {
         loginState.value = LoginState.Loading
         runCatching {
             val document = manager.getDocument(Allhentai.HOST_NAME).select(".account-menu")

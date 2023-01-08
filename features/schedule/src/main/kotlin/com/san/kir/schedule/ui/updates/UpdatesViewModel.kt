@@ -13,7 +13,6 @@ internal class UpdatesViewModel @Inject constructor(
     private val updatesRepository: UpdatesRepository,
 ) : BaseViewModel<UpdatesEvent, UpdatesState>() {
     override val tempState = updatesRepository.items.map { UpdatesState(it.toPersistentList()) }
-
     override val defaultState = UpdatesState(persistentListOf())
 
     override suspend fun onEvent(event: UpdatesEvent) {

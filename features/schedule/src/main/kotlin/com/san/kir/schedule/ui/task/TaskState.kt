@@ -11,16 +11,16 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Stable
 internal data class TaskState(
-    val item: PlannedTask,
-    val categoryName: String,
-    val mangaName: String,
-    val groupNames: ImmutableList<String>,
-    val categoryIds: ImmutableList<Long>,
-    val categoryNames: ImmutableList<String>,
-    val catalogNames: ImmutableList<String>,
-    val mangaIds: ImmutableList<Long>,
-    val mangaNames: ImmutableList<String>,
-    val hasChanges: Boolean
+    val item: PlannedTask = PlannedTask(),
+    val categoryName: String = "",
+    val mangaName: String = "",
+    val groupNames: ImmutableList<String> = persistentListOf(),
+    val categoryIds: ImmutableList<Long> = persistentListOf(),
+    val categoryNames: ImmutableList<String> = persistentListOf(),
+    val catalogNames: ImmutableList<String> = persistentListOf(),
+    val mangaIds: ImmutableList<Long> = persistentListOf(),
+    val mangaNames: ImmutableList<String> = persistentListOf(),
+    val hasChanges: Boolean = false,
 ) : ScreenState {
     companion object {
         val weeks = persistentListOf(*PlannedWeek.values())

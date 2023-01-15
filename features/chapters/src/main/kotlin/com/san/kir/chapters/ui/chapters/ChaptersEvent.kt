@@ -21,7 +21,6 @@ internal sealed interface Selection {
     object Download : Selection
     object All : Selection
     object Clear : Selection
-    object UpdatePages : Selection
     object Above : Selection
     object Below : Selection
     object DeleteFromDB : Selection

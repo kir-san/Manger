@@ -112,4 +112,10 @@
         android:layout_gravity="top"
         android:progressDrawable="@drawable/viewer_progressbar" />
 
+    <ProgressBar
+        android:id="@+id/loader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
 </FrameLayout>

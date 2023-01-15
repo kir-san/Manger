@@ -212,16 +212,6 @@ internal class ChaptersViewModel @Inject constructor(
                 items.update { SelectionHelper.clear(it) }
             }
 
-            Selection.UpdatePages  -> {
-                backgroundAction.update { it.copy(updatePages = true) }
-                items.update { SelectionHelper.clear(it) }
-                selectedItems.onEach {
-                    val item = chaptersRepository.item(it.chapter.id)
-                    chaptersRepository.update(item.copy(pages = manager.pages(item)))
-                }
-                backgroundAction.update { it.copy(updatePages = false) }
-            }
-
             is Selection.SetRead   -> {
                 chaptersRepository.update(selectedItems.map { it.chapter.id }, mode.newState)
                 items.update { SelectionHelper.clear(it) }
@@ -261,7 +251,7 @@ internal class ChaptersViewModel @Inject constructor(
             else list.sortedWith(selectableItemComparator)
         }.getOrNull() ?: list
 
-        val result = newList.firstOrNull { item -> item.chapter.isRead.not() }
+        val result = newList.asReversed().firstOrNull { item -> item.chapter.isRead.not() }
         return if (result != null)
             NextChapter.Ok(result.chapter.id, result.chapter.name)
         else

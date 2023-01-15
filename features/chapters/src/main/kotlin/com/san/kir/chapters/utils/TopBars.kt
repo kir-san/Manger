@@ -124,9 +124,6 @@ private fun TopBarActions.SelectionModeActions(
         MenuText(R.string.action_set_read) { sendEvent(Selection.SetRead(true)) }
         MenuText(R.string.action_set_not_read) { sendEvent(Selection.SetRead(false)) }
 
-        // Обновление страниц у выделеных глав
-        MenuText(R.string.action_update_pages) { sendEvent(Selection.UpdatePages) }
-
         // Расширенное выделение элементов: выше и ниже единственно выделеного
         if (selectedCount == 1) {
             MenuText(R.string.action_select_above) { sendEvent(Selection.Above) }

@@ -87,7 +87,7 @@ internal class ChaptersManager @Inject constructor(
                 chapterPosition = currentChapterPosition,
                 chapters = chapters.toMutableList().apply {
                     // Если страницы пустые, то обновляем их
-                    if (currentChapter.pages.isEmpty())
+                    if (currentChapter.pages.all { it.isBlank() })
                         set(currentChapterPosition, currentChapter.withUpdatedPages())
                 }
             ).preparePages()

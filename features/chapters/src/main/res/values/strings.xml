@@ -6,7 +6,6 @@
     <string name="list_chapters_selection_load_error">Все было скачано раньше</string>
     <string name="list_chapters_selection_load_ok">Качаю главы. Их всего %d</string>
     <string name="list_chapters_open_is_download">Спокойствие, только спокойствие! Скоро скачается.</string>
-    <string name="list_chapters_open_not_exists">Обновите эту мангу перед тем как продолжить чтение</string>
     <string name="list_chapters_read">Прочитано %1$d из %2$d (%3$d)</string>
     <string name="list_chapters_download_progress">Загрузка %d%%</string>
     <string name="list_chapters_queue">Ожидание…</string>

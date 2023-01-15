@@ -27,7 +27,6 @@ import com.san.kir.chapters.R
 import com.san.kir.core.compose.Dimensions
 import com.san.kir.core.compose.animation.FromEndToEndAnimContent
 import com.san.kir.core.support.DownloadState
-import com.san.kir.core.utils.longToast
 import com.san.kir.core.utils.toast
 import com.san.kir.data.models.extend.SimplifiedChapter
 
@@ -46,12 +45,7 @@ internal fun onClickItem(
                      ->
                     context.toast(R.string.list_chapters_open_is_download)
 
-                else ->
-                    if (chapter.pages.isEmpty() || chapter.pages.any { it.isBlank() }) {
-                        context.longToast(R.string.list_chapters_open_not_exists)
-                    } else {
-                        navigateToViewer(chapter.id)
-                    }
+                else -> navigateToViewer(chapter.id)
             }
         } else {
             sendEvent()

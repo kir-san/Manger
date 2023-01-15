@@ -86,7 +86,7 @@ internal class ViewerActivity : AppCompatActivity() {
         binding.pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
                 lifecycleScope.defaultLaunch {
-                    Timber.v("onPageSelected with $position")
+//                    Timber.v("onPageSelected with $position")
                     viewModel.chaptersManager.updatePagePosition(position)
                 }
             }
@@ -174,14 +174,17 @@ internal class ViewerActivity : AppCompatActivity() {
         viewModel.chaptersManager.state
             .flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
             .onEach { state ->
-               // Timber.i("state -> $state")
+//                Timber.i("state -> $state")
+
+                binding.loader.isVisible = state.pages.isEmpty()
+
                 if (state.pages.isNotEmpty()) {
                     // Обновление адаптера
                     adapter.setList(state.pages)
 
                     // установка страницы ViewPager
                     if (binding.pager.currentItem != state.pagePosition) {
-                        Timber.v("pagePosition is ${state.pagePosition}")
+//                        Timber.v("pagePosition is ${state.pagePosition}")
                         binding.pager.currentItem = maxOf(0, state.pagePosition)
                     }
 
@@ -253,7 +256,6 @@ internal class ViewerActivity : AppCompatActivity() {
         ViewCompat.setOnApplyWindowInsetsListener(window.decorView) { _, insets ->
             if (insets.isVisible(WindowInsetsCompat.Type.navigationBars())
                 || insets.isVisible(WindowInsetsCompat.Type.statusBars())) {
-                Timber.i("autoHideSystemUI")
                 hideSystemUI()
             }
 

@@ -49,7 +49,7 @@ internal class AccountViewModel @Inject internal constructor(
 
     // Список элементов из БД
     private val dbItems = loginState
-        .filterIsInstance<LoginState.LogIn>()
+        .filterIsInstance<LoginState.LogInOk>()
         .distinctUntilChanged { old, new -> old.nickName == new.nickName }
         .flatMapLatest {
             profileRepository.loadItems()
@@ -79,7 +79,7 @@ internal class AccountViewModel @Inject internal constructor(
                     Result.Loading    -> LoginState.Loading
                     is Result.Success -> {
                         if (auth.data.isLogin) {
-                            LoginState.LogIn(auth.data.nickName)
+                            LoginState.LogInOk(auth.data.nickName)
                         } else {
                             LoginState.LogOut
                         }

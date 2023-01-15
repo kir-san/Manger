@@ -34,13 +34,13 @@ abstract class SiteCatalogAlternative : SiteCatalog()
 
 fun SiteCatalog.getShortLink(fullLink: String): String {
     val foundedCatalogs = allCatalogName.filter { catalog -> fullLink.contains(catalog, true) }
-
     val shortLink: String
 
-    if (foundedCatalogs.size == 1) {
+    if (foundedCatalogs.size == 1 || fullLink.contains(catalogName, true)) {
         shortLink = fullLink.split(foundedCatalogs.first()).last()
     } else {
         Timber.v("fullLink = $fullLink")
+        Timber.v("foundedCatalogs = $foundedCatalogs")
         throw Throwable("Каталогов найдено больше одного или не найдено совсем")
     }
 

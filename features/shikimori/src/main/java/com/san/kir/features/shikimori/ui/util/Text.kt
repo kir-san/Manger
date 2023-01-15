@@ -32,7 +32,7 @@ fun StatusText(currentStatus: ShikimoriStatus?) {
 internal fun TextLoginOrNot(state: LoginState) {
     FromBottomToBottomAnimContent(targetState = state) { targetState ->
         when (targetState) {
-            is LoginState.LogIn -> {
+            is LoginState.LogInOk, is LoginState.LogInError, is LoginState.LogInCheck -> {
                 Text(stringResource(R.string.login_text, targetState.nickName))
             }
 

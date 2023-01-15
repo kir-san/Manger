@@ -7,7 +7,6 @@ import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.StatisticDao
 import com.san.kir.data.models.base.Settings
-import com.san.kir.data.parsing.SiteCatalogsManager
 import com.san.kir.features.viewer.logic.ChaptersManager
 import com.san.kir.features.viewer.logic.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +17,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.concurrent.timer
 import kotlin.math.max
@@ -28,7 +26,6 @@ import kotlin.math.roundToInt
 internal class ViewerViewModel @Inject constructor(
     val settingsRepository: SettingsRepository,
     val chaptersManager: ChaptersManager,
-    private val siteCatalogManager: SiteCatalogsManager,
     private val chapterDao: ChapterDao,
     private val statisticDao: StatisticDao,
     private val mangaDao: MangaDao,
@@ -100,11 +97,11 @@ internal class ViewerViewModel @Inject constructor(
     private var leftPart = 0
     private var rightPart = 0
 
-    fun clickOnScreen(xPosition: Float) = viewModelScope.launch {
+    fun clickOnScreen(xPosition: Float) = viewModelScope.defaultLaunch {
         // Включен ли режим управления нажатиями на экран
         if (control.value.taps) {
             when {
-                xPosition < leftPart -> // Нажатие на левую часть экрана
+                xPosition < leftPart  -> // Нажатие на левую часть экрана
                     chaptersManager.prevPage() // Предыдущая страница
                 xPosition > rightPart -> // Нажатие на правую часть
                     chaptersManager.nextPage() // Следущая страница
@@ -124,11 +121,8 @@ internal class ViewerViewModel @Inject constructor(
     }
 
     // Обновление списка страниц для текущей главы
-    fun updatePagesForChapter() = viewModelScope.launch {
-        var chapter = chaptersManager.currentState.currentChapter
-        chapter = chapter.copy(pages = siteCatalogManager.pages(chapter))
-        chapterDao.update(chapter)
-        chaptersManager.updateCurrentChapter(chapter)
+    fun updatePagesForChapter() = viewModelScope.defaultLaunch {
+        chaptersManager.updatePagesForCurrentChapter()
     }
 
     companion object {

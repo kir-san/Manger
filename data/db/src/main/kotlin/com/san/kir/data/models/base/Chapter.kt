@@ -27,7 +27,7 @@ data class Chapter(
     @ColumnInfo(name = "site") val link: String = "",
     @ColumnInfo(name = "progress") val progress: Int = 0,
     @ColumnInfo(name = "pages") val pages: List<String> = listOf(),
-    @ColumnInfo(name = "isInUpdate") val isInUpdate: Boolean = false,
+    @ColumnInfo(name = "isInUpdate") val isInUpdate: Boolean = false, // Пометка что глав отображается в обновлениях
     @ColumnInfo(name = "downloadPages") val downloadPages: Int = 0,
     @ColumnInfo(name = "downloadSize") val downloadSize: Long = 0L,
     @ColumnInfo(name = "totalTime") val downloadTime: Long = 0L,

@@ -128,7 +128,7 @@ internal class PageFragment : Fragment() {
             images.state
                 .flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
                 .onEach { state ->
-                    Timber.i("state -> $state")
+//                    Timber.i("state -> $state")
                     when (state) {
                         is LoadState.Error -> {
                             binding.errorText.text = when (state.exception) {

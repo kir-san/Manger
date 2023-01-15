@@ -20,7 +20,7 @@ abstract class BaseViewModel<in E : ScreenEvent, out S : ScreenState>
 
     override val state by lazy {
         tempState
-            .onEach { Timber.i("NEW STATE $it") }
+            .onEach { Timber.tag("ViewModel").i("NEW STATE $it") }
             .flowOn(defaultDispatcher)
             .stateIn(viewModelScope, SharingStarted.Lazily, defaultState)
     }
@@ -29,7 +29,7 @@ abstract class BaseViewModel<in E : ScreenEvent, out S : ScreenState>
 
     override fun sendEvent(event: E) {
         viewModelScope.defaultLaunch {
-            Timber.i("ON_EVENT $event")
+            Timber.tag("ViewModel").w("ON_EVENT $event")
             onEvent(event)
         }
     }

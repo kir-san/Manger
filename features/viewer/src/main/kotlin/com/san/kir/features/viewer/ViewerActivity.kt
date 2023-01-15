@@ -24,6 +24,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.ViewPager
+import com.san.kir.core.utils.coroutines.defaultLaunch
 import com.san.kir.data.models.base.Settings
 import com.san.kir.features.viewer.databinding.MainBinding
 import com.san.kir.features.viewer.utils.Page
@@ -84,19 +85,20 @@ internal class ViewerActivity : AppCompatActivity() {
         binding.pager.adapter = adapter
         binding.pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
-                lifecycleScope.launch {
+                lifecycleScope.defaultLaunch {
                     Timber.v("onPageSelected with $position")
                     viewModel.chaptersManager.updatePagePosition(position)
                 }
             }
         })
+
         binding.pager.offscreenPageLimit = 2
 
         binding.next.setOnClickListener { // Следующая глава
-            lifecycleScope.launch { viewModel.chaptersManager.nextChapter() }
+            lifecycleScope.defaultLaunch { viewModel.chaptersManager.nextChapter() }
         }
         binding.prev.setOnClickListener { // Предыдущая глава
-            lifecycleScope.launch { viewModel.chaptersManager.prevChapter() }
+            lifecycleScope.defaultLaunch { viewModel.chaptersManager.prevChapter() }
         }
         binding.back.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
@@ -109,14 +111,14 @@ internal class ViewerActivity : AppCompatActivity() {
         lifecycleScope.launchWhenResumed {
             viewModel.settingsRepository.viewer().collect { data: Settings.Viewer ->
                 requestedOrientation = when (data.orientation) {
-                    Settings.Viewer.Orientation.PORT -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                    Settings.Viewer.Orientation.LAND -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                    Settings.Viewer.Orientation.AUTO -> ActivityInfo.SCREEN_ORIENTATION_SENSOR
-                    Settings.Viewer.Orientation.PORT_REV -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
-                    Settings.Viewer.Orientation.LAND_REV -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
+                    Settings.Viewer.Orientation.PORT      -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                    Settings.Viewer.Orientation.LAND      -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                    Settings.Viewer.Orientation.AUTO      -> ActivityInfo.SCREEN_ORIENTATION_SENSOR
+                    Settings.Viewer.Orientation.PORT_REV  -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
+                    Settings.Viewer.Orientation.LAND_REV  -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
                     Settings.Viewer.Orientation.AUTO_PORT -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
                     Settings.Viewer.Orientation.AUTO_LAND -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-                    else -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+                    else                                  -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
                 }
 
                 if (Build.VERSION.SDK_INT >= 28) {
@@ -161,7 +163,7 @@ internal class ViewerActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 when (keyCode) {
                     KeyEvent.KEYCODE_VOLUME_DOWN -> viewModel.chaptersManager.nextPage()
-                    KeyEvent.KEYCODE_VOLUME_UP -> viewModel.chaptersManager.prevPage()
+                    KeyEvent.KEYCODE_VOLUME_UP   -> viewModel.chaptersManager.prevPage()
                 }
             }
         }
@@ -172,6 +174,7 @@ internal class ViewerActivity : AppCompatActivity() {
         viewModel.chaptersManager.state
             .flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
             .onEach { state ->
+               // Timber.i("state -> $state")
                 if (state.pages.isNotEmpty()) {
                     // Обновление адаптера
                     adapter.setList(state.pages)
@@ -179,8 +182,7 @@ internal class ViewerActivity : AppCompatActivity() {
                     // установка страницы ViewPager
                     if (binding.pager.currentItem != state.pagePosition) {
                         Timber.v("pagePosition is ${state.pagePosition}")
-                        binding.pager.currentItem =
-                            if (state.pagePosition < 0) 0 else state.pagePosition
+                        binding.pager.currentItem = maxOf(0, state.pagePosition)
                     }
 
                     // обновление прогрессбара

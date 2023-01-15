@@ -131,7 +131,7 @@ internal class ChaptersViewModel @Inject constructor(
             backgroundAction.update { it.copy(updateManga = task != null) }
 
             when (task?.state) {
-                DownloadState.UNKNOWN   -> context.longToast(R.string.list_chapters_message_error)
+                DownloadState.UNKNOWN   -> withMainContext { context.longToast(R.string.list_chapters_message_error) }
                 DownloadState.COMPLETED -> {
                     if (task.newChapters > 0)
                         context.longToast(

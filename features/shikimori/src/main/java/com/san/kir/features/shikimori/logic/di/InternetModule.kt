@@ -1,10 +1,8 @@
 package com.san.kir.features.shikimori.logic.di
 
 import android.content.Context
-import com.san.kir.data.models.base.Settings
+import com.san.kir.data.models.base.Settings.ShikimoriAuth.ShikimoriAccessToken
 import com.san.kir.features.shikimori.logic.api.ShikimoriData
-import com.san.kir.features.shikimori.logic.plugins.ShikiAuth
-import com.san.kir.features.shikimori.logic.plugins.bearer
 import com.san.kir.features.shikimori.logic.repo.SettingsRepository
 import dagger.Module
 import dagger.Provides
@@ -14,18 +12,23 @@ import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.plugins.auth.providers.BearerTokens
+import io.ktor.client.plugins.HttpSend
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.plugin
 import io.ktor.client.plugins.resources.Resources
-import io.ktor.client.request.forms.submitForm
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.headers
+import io.ktor.client.request.setBody
+import io.ktor.client.request.url
 import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLProtocol
 import io.ktor.serialization.gson.gson
 import okhttp3.Cache
 import okhttp3.logging.HttpLoggingInterceptor
-import timber.log.Timber
 import java.io.File
 import javax.inject.Singleton
 
@@ -73,34 +76,6 @@ internal class InternetModule {
                 }
             }
 
-            ShikiAuth {
-                bearer {
-                    var token: BearerTokens? = null
-                    loadTokens {
-                        val t = settingsRepository.currentToken()
-                        Timber.v("local Tokens $t")
-                        if (t.accessToken.isNotEmpty() && t.refreshToken.isNotEmpty())
-                            token = BearerTokens(t.accessToken, t.refreshToken)
-
-                        Timber.v("loadedToken $token")
-                        token
-                    }
-
-                    refreshTokens {
-                        Timber.v("refresh token $token")
-                        val newToken: Settings.ShikimoriAuth.ShikimoriAccessToken =
-                            client.submitForm(
-                                url = ShikimoriData.tokenUrl,
-                                formParameters = ShikimoriData.refreshTokenParameters(token!!.refreshToken)
-                            ) { markAsRefreshTokenRequest() }.body()
-
-                        settingsRepository.update(newToken)
-                        token = BearerTokens(newToken.accessToken, newToken.refreshToken)
-                        token
-                    }
-                }
-            }
-
             install(ContentNegotiation) {
                 gson {
                     setPrettyPrinting()
@@ -109,6 +84,50 @@ internal class InternetModule {
             }
 
             install(Resources)
+        }
+
+        var dbToken: ShikimoriAccessToken? = null
+        suspend fun getToken(): ShikimoriAccessToken {
+            if (dbToken == null)
+                dbToken = settingsRepository.currentToken()
+            return requireNotNull(dbToken)
+        }
+
+        fun HttpRequestBuilder.addHeader(token: String) {
+            headers {
+                val tokenValue = "Bearer $token"
+                if (contains(HttpHeaders.Authorization)) {
+                    remove(HttpHeaders.Authorization)
+                }
+                append(HttpHeaders.Authorization, tokenValue)
+            }
+        }
+
+        client.plugin(HttpSend).intercept { request ->
+            var token = getToken()
+
+            request.addHeader(token.accessToken)
+            val originalCall = execute(request)
+
+            if (originalCall.response.status != HttpStatusCode.Unauthorized)
+                return@intercept originalCall
+
+            val tokenCall = execute(HttpRequestBuilder().apply {
+                url(ShikimoriData.tokenUrl)
+                method = HttpMethod.Post
+                setBody(FormDataContent(ShikimoriData.refreshTokenParameters(token.refreshToken)))
+            })
+
+            if (tokenCall.response.status != HttpStatusCode.Unauthorized) {
+                val newToken: ShikimoriAccessToken = tokenCall.body()
+                settingsRepository.update(newToken)
+                dbToken = newToken
+            }
+
+            token = getToken()
+
+            request.addHeader(token.accessToken)
+            execute(request)
         }
 
         return client

@@ -66,7 +66,7 @@ fun AccountScreen(
         ),
         additionalPadding = Dimensions.zero,
         fab = {
-            if (state.login is LoginState.LogIn)
+            if (state.login is LoginState.LogInOk)
                 FloatingActionButton(onClick = navigateToLocalItems) {
                     Icon(Icons.Default.LocalLibrary, contentDescription = "local library")
                 }
@@ -107,7 +107,7 @@ private fun topBar(
     subtitleContent = { TextLoginOrNot(state) },
     actions = {
         when (state) {
-            is LoginState.LogIn -> {
+            is LoginState.LogInOk -> {
                 MenuIcon(icon = Icons.Default.Search, onClick = navigateToSearch)
 
                 ExpandedMenu {
@@ -121,7 +121,7 @@ private fun topBar(
         }
 
     },
-    hasAction = if (state is LoginState.LogIn) hasAction.loading || hasAction.checkBind else false,
+    hasAction = if (state is LoginState.LogInOk) hasAction.loading || hasAction.checkBind else false,
     progressAction = hasAction.progress
 )
 

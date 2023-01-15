@@ -12,10 +12,10 @@ import com.san.kir.background.R
 import com.san.kir.background.logic.WorkComplete
 import com.san.kir.background.logic.repo.MangaRepository
 import com.san.kir.background.logic.repo.MangaWorkerRepository
-import com.san.kir.background.util.SearchDuplicate
 import com.san.kir.background.util.cancelAction
 import com.san.kir.core.support.DownloadState
 import com.san.kir.core.utils.ID
+import com.san.kir.core.utils.fuzzy
 import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.models.base.MangaTask
 import com.san.kir.data.parsing.SiteCatalogsManager
@@ -23,6 +23,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CancellationException
 import timber.log.Timber
+import java.util.regex.Pattern
 
 @HiltWorker
 class UpdateMangaWorker @AssistedInject constructor(
@@ -31,11 +32,11 @@ class UpdateMangaWorker @AssistedInject constructor(
     private val workerRepository: MangaWorkerRepository,
     private val mangaRepository: MangaRepository,
     private val manager: SiteCatalogsManager,
-    private val searchDuplicate: SearchDuplicate,
 ) : BaseUpdateWorker<MangaTask>(context, params, workerRepository) {
 
     override val TAG = "Chapter Finder"
 
+    private val reg = Pattern.compile("\\d+")
     private var successfuled = listOf<MangaTask>()
 
     override suspend fun work(task: MangaTask) {
@@ -47,52 +48,34 @@ class UpdateMangaWorker @AssistedInject constructor(
             updateCurrentTask { copy(state = DownloadState.LOADING, mangaName = mangaDb.name) }
             notify()
 
-            // Получаем список глав из БД
-            // Обновление страниц для не прочитанных глав
-            val oldChapters = mangaRepository.chapters(mangaDb)
-            var newChapters = listOf<Chapter>()
+            val dbChapters = mangaRepository.chapters(mangaDb)
+            val siteChapters = manager.chapters(mangaDb)
 
-            // Получаем список глав из сети
-            val new = manager.chapters(mangaDb)
-            if (oldChapters.isEmpty()) { // Если глав не было до обновления
-                newChapters = new
+            val result = compare(dbChapters, siteChapters.asReversed())
+            /** Все главы из списка оставшихся удаляем из БД */
+            if (result.remains.isNotEmpty()) mangaRepository.delete(result.remains)
+
+            /** Находим первую главу из новых */
+            val firstNew = result.prepared.indexOfFirst { it.isNew }
+
+            /** Все главы до первой новой, обновляем в БД */
+            if (firstNew == -1) {
+                mangaRepository.update(result.prepared.map { it.ch })
             } else {
-                new.forEach { chapter ->
-                    // Если глава отсутствует в базе данных то добавить
-                    if (oldChapters.none { oldChapter -> chapter.link == oldChapter.link }) {
-                        newChapters = newChapters + chapter
-                    } else {
-                        // Иначе обновляем путь
-                        val tempChapter =
-                            oldChapters.first { oldChapter -> chapter.link == oldChapter.link }
-                        mangaRepository.update(tempChapter.copy(path = chapter.path))
-                    }
-                }
-            }
+                val take = result.prepared.take(firstNew)
+                mangaRepository.update(take.map { it.ch })
 
-            Timber.i("load network chapters -> ${new.size} -> ${new.last()}")
+                /** Все главы, что остались */
+                val new = result.prepared.subList(firstNew, result.prepared.size)
 
-            // Если новые главы есть
-            if (newChapters.isNotEmpty()) {
-                // Разворачиваем список
-                newChapters.reversed().forEach { chapter ->
-                    // Обновляем страницы и сохраняем
-                    mangaRepository.add(
-                        chapter.copy(
-                            isInUpdate = true,
-                            pages = chapter.pages.ifEmpty { manager.pages(chapter) })
-                    )
-                }
+                /** Находим и удаляем главы, которые были в БД, чтобы не нарушать порядок добавления */
+                val oldInNew = new.filter { it.isNew.not() }
+                if (oldInNew.isNotEmpty()) mangaRepository.deleteByIds(oldInNew.map { it.ch.id })
 
-                // Производим поиск дублирующихся глав и очищаем от лишних
-                searchDuplicate.silentRemoveDuplicate(mangaDb)
+                /** Сохраняем все оставшиеся главы в БД */
+                mangaRepository.add(new.map { it.ch.copy(id = 0) })
 
-                val newSize = mangaRepository.chapters(mangaDb).size
-
-                // Узнаем сколько было добавленно
-                updateCurrentTask { copy(newChapters = newSize - oldChapters.size) }
-            } else {
-                searchDuplicate.silentRemoveDuplicate(mangaDb)
+                updateCurrentTask { copy(newChapters = new.size - oldInNew.size) }
             }
         }.onFailure { ex ->
             if (ex is CancellationException) return
@@ -129,7 +112,7 @@ class UpdateMangaWorker @AssistedInject constructor(
                         )
                     )
 
-                    else -> setContentText(
+                    else                 -> setContentText(
                         applicationContext.getString(
                             R.string.finding_for_format, task.mangaName
                         )
@@ -212,6 +195,58 @@ class UpdateMangaWorker @AssistedInject constructor(
         applicationContext.getString(R.string.press_notify_for_go_to_latest)
     }
 
+    /**
+     * Слияние двух списков глав, в один
+     * Новый список считается приоритетным
+     *
+     * @return Результат слияния
+     * */
+    private fun compare(old: List<Chapter>, new: List<Chapter>): ChaptersContainer {
+        val oldRemovable = old.toMutableList()
+
+        val prepared = new.map { newChapter ->
+            /**
+             * Поиск главы в старом списке
+             * Правильной главой считается первая найденная глава в которой
+             *      Совпадают ссылки на страницу главы
+             *  или Совпадают все найденные цифры в названии глав
+             *  или Нечеткое сравнение названий двух строк выше 75%
+             * */
+            val oldChapter = oldRemovable.firstOrNull { oldChapter ->
+                newChapter.link.equals(oldChapter.link, true)
+                        || findNumbers(newChapter.name) == findNumbers(oldChapter.name)
+                        || (newChapter.name fuzzy oldChapter.name).first > 0.75
+            }
+
+            /** Если глава была найдена, то удаляем ее из старого списка для уменьшения количества итераций */
+            if (oldChapter != null) oldRemovable -= oldChapter
+
+            /** Если глова была найдена, то обновляем ее значениями из новой главы, иначе используем новую */
+            val chapter = oldChapter?.copy(
+                link = newChapter.link,
+                path = newChapter.path,
+                name = newChapter.name,
+                date = newChapter.date,
+            ) ?: newChapter
+            /** Объединение главы и ее статуса наличия в старой главе */
+            ChapterContainer(chapter, oldChapter == null)
+        }
+
+        /** Возвращаем весь подготовленный список и все значения из старого списка которые остались */
+        return ChaptersContainer(prepared, oldRemovable)
+    }
+
+    private fun findNumbers(name: String): Long {
+        val matcher1 = reg.matcher(name)
+        var numbers1 = listOf<String>()
+
+        while (matcher1.find()) {
+            numbers1 = numbers1 + matcher1.group()
+        }
+
+        return numbers1.ifEmpty { listOf("0") }.joinToString(separator = "").toLong()
+    }
+
     companion object {
         private val notifyId = ID.generate()
 
@@ -228,3 +263,10 @@ class UpdateMangaWorker @AssistedInject constructor(
         }
     }
 }
+
+private data class ChaptersContainer(
+    val prepared: List<ChapterContainer>,
+    val remains: List<Chapter>,
+)
+
+private data class ChapterContainer(val ch: Chapter, val isNew: Boolean)

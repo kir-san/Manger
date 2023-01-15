@@ -76,6 +76,6 @@ interface ChapterDao : BaseDao<Chapter> {
     )
 
     @Query("DELETE FROM chapters WHERE id IN (:ids)")
-    suspend fun deleteByIds(ids: List<Long>)
+    suspend fun deleteByIds(ids: List<Long>): Int
 }
 

@@ -2,46 +2,26 @@ package com.san.kir.data.models.extend
 
 import androidx.room.ColumnInfo
 import androidx.room.DatabaseView
-import com.san.kir.data.models.base.Chapter
-import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.ShikimoriMangaItem
 
 @DatabaseView(
-    viewName = SimplifiedMangaWithChapterCounts.viewName,
+    viewName = "libarary_manga",
     value = "SELECT " +
-            "${Manga.tableName}.${Manga.Col.id}, " +
-            "${Manga.tableName}.${Manga.Col.name}, " +
-            "${Manga.tableName}.${Manga.Col.logo}, " +
-            "${Manga.tableName}.${Manga.Col.about}, " +
-            "${Manga.tableName}.${Manga.Col.alternativeSort}, " +
-
-            "(SELECT COUNT(*) FROM ${Chapter.tableName} " +
-            "WHERE ${Chapter.tableName}.${Chapter.Col.manga} IS " +
-            "${Manga.tableName}.${Manga.Col.name} " +
-            "AND ${Chapter.tableName}.${Chapter.Col.isRead} IS 1) AS ${SimplifiedMangaWithChapterCounts.Col.readChapters}, " +
-
-            "(SELECT COUNT(*) FROM ${Chapter.tableName} " +
-            "WHERE ${Chapter.tableName}.${Chapter.Col.manga} IS " +
-            "${Manga.tableName}.${Manga.Col.name}) AS ${SimplifiedMangaWithChapterCounts.Col.allChapters} " +
-
-            "FROM ${Manga.tableName}"
+            "manga.id, " +
+            "manga.name, " +
+            "manga.logo, " +
+            "manga.about, " +
+            "manga.isAlternativeSort, " +
+            "(SELECT COUNT(*) FROM chapters WHERE chapters.manga_id IS manga.id AND chapters.isRead IS 1) AS read_chapters, " +
+            "(SELECT COUNT(*) FROM chapters WHERE chapters.manga_id IS manga.id) AS all_chapters " +
+            "FROM manga"
 )
 data class SimplifiedMangaWithChapterCounts(
-    @ColumnInfo(name = Manga.Col.id) override val id: Long = 0,
-    @ColumnInfo(name = Manga.Col.name) override val name: String = "",
-    @ColumnInfo(name = Manga.Col.logo) override val logo: String = "",
-    @ColumnInfo(name = Manga.Col.about) override val description: String = "",
-    @ColumnInfo(name = Manga.Col.alternativeSort) val sort: Boolean = false,
-    @ColumnInfo(name = Col.readChapters) override val read: Long = 0,
-    @ColumnInfo(name = Col.allChapters) override val all: Long = 0,
-) : ShikimoriMangaItem {
-
-    companion object {
-        const val viewName = "libarary_manga"
-    }
-
-    object Col {
-        const val readChapters = "read_chapters"
-        const val allChapters = "all_chapters"
-    }
-}
+    @ColumnInfo(name = "id") override val id: Long = 0,
+    @ColumnInfo(name = "name") override val name: String = "",
+    @ColumnInfo(name = "logo") override val logo: String = "",
+    @ColumnInfo(name = "about") override val description: String = "",
+    @ColumnInfo(name = "isAlternativeSort") val sort: Boolean = false,
+    @ColumnInfo(name = "read_chapters") override val read: Long = 0,
+    @ColumnInfo(name = "all_chapters") override val all: Long = 0,
+) : ShikimoriMangaItem

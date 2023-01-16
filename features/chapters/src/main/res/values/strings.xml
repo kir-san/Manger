@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="main_menu_latest_count">Обновления: %d</string>
+    <string name="main_menu_downloader_count">Загрузчик: %d</string>
+
     <string name="list_chapters_selection_load_error">Все было скачано раньше</string>
     <string name="list_chapters_selection_load_ok">Качаю главы. Их всего %d</string>
     <string name="list_chapters_open_is_download">Спокойствие, только спокойствие! Скоро скачается.</string>
-    <string name="list_chapters_open_not_exists">Обновите эту мангу перед тем как продолжить чтение</string>
     <string name="list_chapters_read">Прочитано %1$d из %2$d (%3$d)</string>
     <string name="list_chapters_download_progress">Загрузка %d%%</string>
     <string name="list_chapters_queue">Ожидание…</string>
     <string name="list_chapters_selection_del_error">Нельзя удалить то чего нет</string>
     <string name="list_chapters_selection_del_ok">У вас нет больше этих глав</string>
     <string name="list_chapters_message_error">Произошла ошибка при обновлении</string>
-    <string name="list_chapters_message_no_found">Новых глав найти не удалось</string>
-    <string name="list_chapters_message_count_new">Новые главы есть, их а ж %d</string>
+    <string name="new_chapters_no_found">Новых глав найти не удалось</string>
+    <string name="have_new_chapters_count">Новые главы есть, их а ж %d</string>
     <string name="list_chapters_download_next">Скачать следующую</string>
     <string name="list_chapters_download_not_read">Скачать непрочитанное</string>
     <string name="list_chapters_download_all">Скачать все</string>
@@ -46,7 +48,6 @@
     <string name="action_full_delete_title">Внимание!!!</string>
     <string name="action_full_delete_message">Данное действие приведет к удалению глав из базы данных. Все файлы и папки будут не тронуты, но приложение больше не будет видеть эти главы. Рекомендуется использовать это при появлении копий существующих глав.</string>
 
-
     <plurals name="chapters">
         <item quantity="zero">глав</item>
         <item quantity="one">главу</item>
@@ -59,4 +60,21 @@
         <item quantity="one">%d выбран</item>
         <item quantity="other">%d выбрано</item>
     </plurals>
+
+    <string name="latest_chapter_clean_download">Очистить скачанное</string>
+    <string name="latest_chapter_clean_read">Очистить прочитанное</string>
+    <string name="latest_chapter_clean">Очистить</string>
+    <string name="latest_chapter_download_new">Скачать новое</string>
+
+    <!--DownloadManager-->
+    <string name="download_item_progress_text">Загруженно %1$d из %2$d</string>
+    <string name="download_item_progress_size">%s Мб</string>
+    <string name="download_item_final_size_with_time">%1$s Мб за %2$s</string>
+    <string name="download_item_name">%1$s %2$s</string>
+    <string name="download_item_progress">%1$s  %2$s</string>
+    <string name="download_activity_subtitle">Останов.: %1$d  Заверш.: %2$d</string>
+    <string name="download_activity_option_submenu_clean_all">Очистить все</string>
+    <string name="download_activity_option_submenu_clean_completed">Очистить завершенные</string>
+    <string name="download_activity_option_submenu_clean_paused">Очистить приостановленные</string>
+    <string name="download_activity_option_submenu_clean_error">Очистить с ошибкой</string>
 </resources>

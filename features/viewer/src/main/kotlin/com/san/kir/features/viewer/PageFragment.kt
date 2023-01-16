@@ -1,5 +1,6 @@
 package com.san.kir.features.viewer
 
+import android.annotation.SuppressLint
 import android.graphics.PointF
 import android.os.Bundle
 import android.view.GestureDetector
@@ -18,15 +19,24 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView.SCALE_TYPE_CUSTOM
+import com.davemorrissey.labs.subscaleview.decoder.SkiaPooledImageRegionDecoder
 import com.san.kir.features.viewer.databinding.PageBinding
+import com.san.kir.features.viewer.utils.LoadState
+import com.san.kir.features.viewer.utils.Page
+import com.san.kir.features.viewer.utils.VIEW_OFFSET
 import dagger.hilt.android.AndroidEntryPoint
+import io.ktor.client.plugins.ClientRequestException
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.net.SocketException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import java.util.concurrent.Executors
 
+@SuppressLint("ClickableViewAccessibility")
 @AndroidEntryPoint
 internal class PageFragment : Fragment() {
     companion object {
@@ -85,81 +95,106 @@ internal class PageFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View {
-        _binding = PageBinding.inflate(inflater, container, false)
+    ) = PageBinding.inflate(inflater, container, false)
+        .apply { _binding = this }
+        .root
 
-        images.load(page)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         val gesture = createGesture { x -> viewModel.clickOnScreen(x) }
 
         // Настройка просмоторщика
         binding.viewer.setOnTouchListener { _, event -> gesture.onTouchEvent(event) }
         binding.viewer.setOnImageEventListener(eventListener)
+        binding.viewer.setRegionDecoderFactory { SkiaPooledImageRegionDecoder() }
+        binding.viewer.setExecutor(Executors.newCachedThreadPool())
 
         // Настройка кнопки обновления
         binding.update.setOnClickListener {
+            showUI(binding.update, false)
             images.setInitState()
-            viewModel.updatePagesForChapter().invokeOnCompletion {
-                images.load(page, true)
-            }
+            viewModel.updatePagesForChapter()
+                .invokeOnCompletion { images.load(page, true) }
         }
+    }
 
-        // Реакция на загрузку изображения
-        images.state
-            .flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
-            .onEach { state ->
-                when (state) {
-                    is LoadState.Error -> {
-                        when (state.exception) {
-                            is IllegalArgumentException -> {
-                                binding.errorText.text = getString(
-                                    R.string.error_argument,
-                                    state.exception.localizedMessage
+    override fun onResume() {
+        super.onResume()
+        images.load(page)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            // Реакция на загрузку изображения
+            images.state
+                .flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
+                .onEach { state ->
+//                    Timber.i("state -> $state")
+                    when (state) {
+                        is LoadState.Error -> {
+                            binding.errorText.text = when (state.exception) {
+                                is UnknownHostException -> getString(
+                                    R.string.error_host, state.exception.localizedMessage
                                 )
-                            }
-                            is UnknownHostException -> {
-                                binding.errorText.text = getString(
-                                    R.string.error_host,
-                                    state.exception.localizedMessage
+
+                                is SocketTimeoutException, is SocketException -> getString(
+                                    R.string.error_socket_timeout, state.exception.localizedMessage
                                 )
+
+                                is ClientRequestException -> when (state.exception.response.status) {
+                                    HttpStatusCode.NotFound -> getString(R.string.error_not_found)
+
+                                    else -> getString(
+                                        R.string.error_argument,
+                                        state.exception.response.status.toString()
+                                    )
+                                }
+
+                                else ->
+                                    getString(
+                                        R.string.error_argument, state.exception.localizedMessage
+                                    )
                             }
-                            is SocketTimeoutException, is SocketException -> {
-                                binding.errorText.text = getString(
-                                    R.string.error_socket_timeout,
-                                    state.exception.localizedMessage
-                                )
-                            }
+                            binding.progress.isVisible = false
+                            binding.progressText.isVisible = false
+                            binding.errorText.isVisible = true
                         }
-                        binding.errorText.isVisible = true
-                        binding.progress.isVisible = false
-                        binding.progressText.isVisible = false
-                    }
-                    LoadState.Init -> {
-                        binding.progress.isVisible = true
-                        binding.progressText.isVisible = false
-                        binding.errorText.isVisible = false
-                    }
-                    is LoadState.Load -> {
-                        binding.progressText.isVisible = true
-                        binding.progressText.text = "${(state.percent * 100).toInt()}%"
-                    }
-                    is LoadState.Ready -> {
-                        binding.progressText.isVisible = false
-                        binding.viewer.setImage(state.image)
-                        viewModel.chaptersManager
-                            .updateStatisticData(state.imageSize, state.downloadTime)
-                    }
-                }
-            }.launchIn(lifecycleScope)
 
-        // Изменение видимости кнопки
-        viewModel
-            .visibleUI
-            .flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
-            .onEach { showUI(binding.update, it) }
-            .launchIn(lifecycleScope)
+                        LoadState.Init -> {
+                            binding.progress.isVisible = true
+                            binding.progressText.isVisible = false
+                            binding.errorText.isVisible = false
+                        }
 
-        return binding.root
+                        is LoadState.Load -> {
+                            binding.progress.isVisible = true
+                            binding.progressText.isVisible = true
+                            binding.errorText.isVisible = false
+                            binding.progressText.text = "${(state.percent * 100).toInt()}%"
+                        }
+
+                        is LoadState.Ready -> {
+                            binding.errorText.isVisible = false
+                            binding.progressText.isVisible = false
+                            binding.viewer.setImage(state.image)
+                            viewModel.chaptersManager
+                                .updateStatisticData(state.imageSize, state.downloadTime)
+                        }
+                    }
+                }.launchIn(this)
+
+            // Изменение видимости кнопки
+            viewModel
+                .visibleUI
+                .flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
+                .onEach { showUI(binding.update, it) }
+                .launchIn(this)
+
+            viewModel
+                .hasScrollbars
+                .flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
+                .onEach(binding.viewer::setScrollbarsVisible)
+                .launchIn(this)
+        }
     }
 
     override fun onDestroyView() {
@@ -171,25 +206,7 @@ internal class PageFragment : Fragment() {
     }
 
     private fun showUI(view: View, state: Boolean) {
-        if (state) {
-            animate(
-                onUpdate = { anim ->
-                    view.translationY = 200f - anim
-                },
-                onStart = {
-                    view.isVisible = true
-                }
-            )
-        } else {
-            animate(
-                onUpdate = { anim ->
-                    view.translationY = anim
-                },
-                onEnd = {
-                    view.isVisible = false
-                }
-            )
-        }
+        view.animate().translationY(if (state) 0f else VIEW_OFFSET).start()
     }
 
     private fun createGesture(onTapListener: (x: Float) -> Unit): GestureDetectorCompat {

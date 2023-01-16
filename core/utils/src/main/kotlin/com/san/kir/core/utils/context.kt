@@ -2,9 +2,11 @@ package com.san.kir.core.utils
 
 import android.app.Service
 import android.content.ActivityNotFoundException
+import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
@@ -117,6 +119,7 @@ fun Intent.addArgument(param: Pair<String, Any?>) {
             value.isArrayOf<Parcelable>() -> putExtra(param.first, value)
             else -> throw Exception("Intent extra ${param.first} has wrong type ${value.javaClass.name}")
         }
+
         is IntArray -> putExtra(param.first, value)
         is LongArray -> putExtra(param.first, value)
         is FloatArray -> putExtra(param.first, value)
@@ -141,4 +144,15 @@ fun Context.browse(url: String, newTask: Boolean = false): Boolean {
         e.printStackTrace()
         false
     }
+}
+
+fun Context.registerReceiver(filter: IntentFilter, onReceive: (Intent) -> Unit): BroadcastReceiver {
+    val receiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            intent?.let(onReceive)
+        }
+    }
+    kotlin.runCatching { unregisterReceiver(receiver) }
+    registerReceiver(receiver, filter)
+    return receiver
 }

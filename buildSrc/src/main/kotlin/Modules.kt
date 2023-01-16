@@ -3,19 +3,28 @@ open class NestedModule(private val base: String) {
 }
 
 object Modules {
-    object Features: NestedModule("features") {
+    object Features : NestedModule("features") {
         val viewer = module("viewer")
-        val latest = module("latest")
         val shikimori = module("shikimori")
         val chapters = module("chapters")
+        val library = module("library")
+        val categories = module("categories")
+        val statistic = module("statistic")
+        val storage = module("storage")
+        val settings = module("settings")
+        val schedule = module("schedule")
+        val catalog = module("catalog")
+
+        object Catalogs : NestedModule("features:catalogs") {
+            val allhen = module("allhen")
+        }
     }
 
     object Core : NestedModule("core") {
         val support = module("support")
         val utils = module("utils")
-        val composeUtils = module("compose_utils")
+        val compose = module("compose")
         val internet = module("internet")
-        val download = module("download")
         val background = module("background")
     }
 

@@ -1,31 +1,12 @@
 package com.san.kir.data.models.extend
 
+import androidx.compose.runtime.Stable
 import androidx.room.ColumnInfo
-import androidx.room.DatabaseView
-import com.san.kir.data.models.base.Category
-import com.san.kir.data.models.base.Manga
 
-@DatabaseView(
-    viewName = MiniManga.viewName,
-    value = "SELECT " +
-            "${Manga.tableName}.${Manga.Col.id}, " +
-            "${Manga.tableName}.${Manga.Col.name}, " +
-
-            "(SELECT ${Category.Col.name} FROM ${Category.tableName} " +
-            "WHERE ${Manga.tableName}.${Manga.Col.categoryId} = ${Category.tableName}.${Category.Col.id}) " +
-            "AS ${Manga.Col.category}, " +
-
-            "${Manga.tableName}.${Manga.Col.update} " +
-
-            "FROM ${Manga.tableName}"
-)
+@Stable
 data class MiniManga(
-    @ColumnInfo(name = Manga.Col.id) val id: Long = 0,
-    @ColumnInfo(name = Manga.Col.name) val name: String = "",
-    @ColumnInfo(name = Manga.Col.category) val category: String = "",
-    @ColumnInfo(name = Manga.Col.update) val update: Boolean = false,
-) {
-    companion object {
-        const val viewName = "mini_manga"
-    }
-}
+    @ColumnInfo(name = "id") val id: Long = 0,
+    @ColumnInfo(name = "name") val name: String = "",
+    @ColumnInfo(name = "isUpdate") val update: Boolean = false,
+    @ColumnInfo(name = "category") val category: String = "",
+)

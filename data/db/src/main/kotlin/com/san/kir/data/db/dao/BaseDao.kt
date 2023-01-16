@@ -6,7 +6,10 @@ import androidx.room.Update
 
 interface BaseDao<in T> {
     @Insert
-    suspend fun insert(vararg item: T)
+    suspend fun insert(vararg item: T): List<Long>
+
+    @Insert
+    suspend fun insert(items: List<T>): List<Long>
 
     @Update
     suspend fun update(vararg item: T?): Int

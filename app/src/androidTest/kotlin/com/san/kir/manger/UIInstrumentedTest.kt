@@ -58,7 +58,7 @@ class UIInstrumentedTest {
     @Test
     fun toggle_category_visible_and_return() {
         Thread.sleep(2000L)
-        val categoryName = composeTestRule.activity.getString(R.string.main_menu_category)
+        val categoryName = composeTestRule.activity.getString(R.string.categories)
 
         composeTestRule.apply {
             onNodeWithTag(TestTags.Drawer.drawer_open).performClick()

@@ -4,9 +4,15 @@ plugins {
     id(Plugins.hilt)
 }
 
+android {
+    namespace = "com.san.kir.background"
+}
+
 dependencies {
     implementation(project(Modules.Data.models))
     implementation(project(Modules.Core.utils))
+    implementation(project(Modules.Core.support))
+    implementation(project(Modules.Core.internet))
     implementation(project(Modules.Data.db))
     implementation(project(Modules.Data.parsing))
 

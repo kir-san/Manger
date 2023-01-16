@@ -1,7 +1,6 @@
 package com.san.kir.features.shikimori.ui.accountRate
 
 import androidx.lifecycle.viewModelScope
-import com.san.kir.core.utils.coroutines.defaultExcLaunch
 import com.san.kir.core.utils.viewModel.BaseViewModel
 import com.san.kir.data.models.base.ShikiDbManga
 import com.san.kir.data.models.base.ShikimoriRate
@@ -57,26 +56,17 @@ internal class AccountRateViewModel @Inject internal constructor(
     }
 
     override val tempState = combine(
-        syncCheck.syncState,
-        syncManager.dialogState,
-        profileState,
-        mangaState,
-        ::AccountRateState
+        syncCheck.syncState, syncManager.dialogState, profileState, mangaState, ::AccountRateState
     )
 
-    override val defaultState = AccountRateState(
-        sync = SyncState.None,
-        dialog = SyncDialogState.None,
-        profile = ProfileState.Load,
-        manga = MangaState.Load
-    )
+    override val defaultState = AccountRateState()
 
     override suspend fun onEvent(event: AccountRateEvent) {
         when (event) {
             AccountRateEvent.ExistToggle -> {
                 when (val profile = state.value.profile) {
-                    ProfileState.Load -> {}
-                    ProfileState.None -> updateStateInProfile { mangaId ->
+                    ProfileState.Load  -> {}
+                    ProfileState.None  -> updateStateInProfile { mangaId ->
                         Timber.v("add rate to profile")
                         profileItemRepository.add(
                             ShikimoriRate(
@@ -91,15 +81,15 @@ internal class AccountRateViewModel @Inject internal constructor(
                     }
                 }
             }
-            is AccountRateEvent.Update -> {
+            is AccountRateEvent.Update   -> {
                 when {
-                    event.id != null -> setId(event.id)
+                    event.id != null   -> setId(event.id)
                     event.item != null ->
                         updateStateInProfile { profileItemRepository.update(event.item) }
-                    else -> updateStateInProfile { }
+                    else               -> updateStateInProfile { }
                 }
             }
-            is AccountRateEvent.Sync -> onSyncEvent(event.event)
+            is AccountRateEvent.Sync     -> onSyncEvent(event.event)
         }
     }
 
@@ -110,16 +100,16 @@ internal class AccountRateViewModel @Inject internal constructor(
             is SyncDialogEvent.SyncToggle ->
                 when (state.value.sync) {
                     is SyncState.Founds -> syncManager.initSync(event.item)
-                    is SyncState.Ok -> {
+                    is SyncState.Ok     -> {
                         val profile = state.value.profile
                         if (profile is ProfileState.Ok)
                             syncManager.askCancelSync(profile.rate)
                     }
-                    else -> {}
+                    else                -> {}
                 }
-            is SyncDialogEvent.SyncNext -> {
+            is SyncDialogEvent.SyncNext   -> {
                 when (val currentState = state.value.dialog) {
-                    is SyncDialogState.Init -> {
+                    is SyncDialogState.Init                  -> {
                         val manga = state.value.manga
                         if (manga !is MangaState.Ok) return
 
@@ -132,19 +122,19 @@ internal class AccountRateViewModel @Inject internal constructor(
                     }
                     is SyncDialogState.DifferentChapterCount ->
                         syncManager.checkReadChapters(currentState.profileRate, currentState.manga)
-                    is SyncDialogState.DifferentReadCount -> {
+                    is SyncDialogState.DifferentReadCount    -> {
                         syncManager.launchSync(
                             currentState.profileRate, currentState.manga, event.onlineIsTruth
                         )
                     }
-                    else -> {}
+                    else                                     -> {}
                 }
             }
         }
     }
 
     // Установка id текущего элемента и загрузка информации
-    private fun setId(mangaId: Long) {
+    private suspend fun setId(mangaId: Long) {
         if (mangaId != -1L) {
             updateStateInProfile(mangaId) { id ->
                 profileItemRepository
@@ -158,17 +148,17 @@ internal class AccountRateViewModel @Inject internal constructor(
         }
     }
 
-    private fun updateStateInProfile(
+    private suspend fun updateStateInProfile(
         id: Long? = null,
         action: suspend (Long) -> Unit,
-    ) = viewModelScope.defaultExcLaunch {
+    ) {
         profileState.update { ProfileState.Load }
 
         val manga = state.value.manga
         var rate: ShikimoriRate? = null
 
         when {
-            id != null -> {
+            id != null             -> {
                 action(id)
                 profileItemRepository.rates(settingsRepository.currentAuth(), id)
                     .onSuccess { items -> rate = items.firstOrNull() }

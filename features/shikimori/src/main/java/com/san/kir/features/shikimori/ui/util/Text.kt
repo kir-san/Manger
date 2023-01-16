@@ -9,10 +9,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.Fonts
-import com.san.kir.core.compose_utils.Styles
-import com.san.kir.core.compose_utils.animation.FromBottomToBottomAnimContent
+import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.Fonts
+import com.san.kir.core.compose.Styles
+import com.san.kir.core.compose.animation.FromBottomToBottomAnimContent
 import com.san.kir.data.models.base.ShikimoriStatus
 import com.san.kir.features.shikimori.R
 import com.san.kir.features.shikimori.ui.accountItem.LoginState
@@ -32,16 +32,19 @@ fun StatusText(currentStatus: ShikimoriStatus?) {
 internal fun TextLoginOrNot(state: LoginState) {
     FromBottomToBottomAnimContent(targetState = state) { targetState ->
         when (targetState) {
-            is LoginState.LogIn -> {
+            is LoginState.LogInOk, is LoginState.LogInError, is LoginState.LogInCheck -> {
                 Text(stringResource(R.string.login_text, targetState.nickName))
             }
-            LoginState.LogOut -> {
+
+            LoginState.LogOut                                                         -> {
                 Text(stringResource(R.string.no_login_text), style = Styles.secondaryText)
             }
-            LoginState.Error -> {
+
+            LoginState.Error                                                          -> {
                 Text(stringResource(R.string.error_try_again), style = Styles.secondaryText)
             }
-            else -> {}
+
+            else                                                                      -> {}
         }
     }
 }
@@ -52,7 +55,7 @@ internal fun ItemHeader(id: Int) {
         stringResource(id),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(Dimensions.small),
+            .padding(Dimensions.half),
         textAlign = TextAlign.Center
     )
 }
@@ -65,9 +68,11 @@ internal fun MangaNames(
 ) {
     ProvideTextStyle(Fonts.Style.bigBoldCenter) {
         name?.let { name ->
-            Text(name, modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = Dimensions.default))
+            Text(
+                name, modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = Dimensions.default)
+            )
         }
 
         russianName?.let { name ->

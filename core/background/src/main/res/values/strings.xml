@@ -2,14 +2,71 @@
 <resources>
     <color name="ic_launcher_background">#FFFFFF</color>
     <!--MangaUpdateService-->
-    <string name="manga_update_action_download_new">Скачать новое</string>
-    <string name="manga_update_action_cancel_all">Отменить все</string>
-    <string name="manga_update_notify_update_ready">Обновление завершено</string>
-    <string name="manga_update_notify_checked_manga">Проверенно манг: %d</string>
-    <string name="manga_update_notify_checked_one_manga">Проверенна манга: %s</string>
-    <string name="manga_update_notify_new_founded">Новых глав: %d</string>
-    <string name="manga_update_notify_founded_with_error">С ошибкой: %d</string>
-    <string name="manga_update_notify_searching">Поиск новых глав</string>
-    <string name="manga_update_notify_remained">Осталось: %d</string>
+    <string name="cancel_all">Отменить все</string>
+    <string name="chapter_search_completed">Поиск глав завершен</string>
+    <string name="checked_format">Проверено %d</string>
+    <string name="checked_for_format">Проверено для %s</string>
+    <string name="new_chapters_format">Новых глав: %d</string>
+    <string name="new_chapters_no_find">Новые глав не найдены</string>
+    <string name="with_error_format">Не удалось проверить: </string>
+    <string name="cancel_cancel_finding_for_format">Отмена поиска для %s</string>
+    <string name="finding_for_format">Поиск для %s</string>
+    <string name="finding_new_chapters">Поиск новых глав</string>
+    <string name="left_check_format">Осталось проверить %d</string>
+    <string name="new_chapter_search_canceled">Поиск новых глав отменен</string>
+    <string name="press_notify_for_go_to_latest">Нажмите на уведомление для перехода в Обновления</string>
 
+    <!-- AppUpdateService -->
+    <string name="finding_app_updates">Поиск обновлений приложения</string>
+    <string name="go_to_4pda">Перейти на 4pda.ru</string>
+    <string name="new_version_current_version_format">Найденная версия: %1$s.\nТекущая версия: %2$s</string>
+    <string name="you_have_installed_actual_version">У вас установленна актуальная версия</string>
+    <string name="error_during_update_finding">Произошла ошибка при поиске обновлений, возможно у вас интернет отключен</string>
+
+    <!-- CatalogForOneSiteService -->
+    <string name="press_notify_for_go_to_catalogs">Нажмите на уведомление для перехода в каталоги</string>
+    <string name="catalogs_updating_format">Обновление каталогов: %d шт.</string>
+    <string name="prepare_catalog_for_loading_format">Подготовка каталога %s к загрузке</string>
+    <string name="cancel_loading_catalog_format">Отмена загрузки каталога %s</string>
+    <string name="saving_catalog_format">Сохранение данных каталога %s</string>
+    <string name="complete_catalog_update">Обновление каталогов завершенно</string>
+    <string name="updating_catalogs_canceled">Обновление каталогов отменено</string>
+    <string name="updating_catalogs_completed_with_error">Обновление каталогов завершенно с ошибкой</string>
+    <string name="check_internet">Проверьте подключение к интернету</string>
+
+    <!--Scheduler-->
+    <string name="manga_updating_was_canceled_format">Было отменено обновление манги %s</string>
+    <string name="category_updating_was_canceled_format">Было отменено обновление категории %s</string>
+    <string name="group_updating_was_canceled_format">Было отменено обновление группы %s</string>
+    <string name="catalog_updating_was_canceled_format">Было отменено обновление каталога %s</string>
+    <string name="app_updating_was_canceled">Было отменено обновление приложения</string>
+    <string name="add">Добавить</string>
+
+    <!--DownloadChapters-->
+    <string name="press_notify_for_go_to_downloads">Нажмите на уведомление для перехода в Загрузки</string>
+    <string name="chapters_downloading">Скачивание глав</string>
+    <string name="queue_downloading">Очередь загрузки: %d</string>
+    <string name="chapters_downloading_canceled">Загрузка глав отменена</string>
+    <string name="download_failed">Загрузка не удалась</string>
+    <string name="all_chapters_downloaded_with_an_error">Все главы скачались с ошибками</string>
+    <string name="download_complete_with_error">Загрузка завершилась с ошибками</string>
+    <string name="download_complete">Загрузка завершилась</string>
+    <string name="enjoy_reading">Приятного чтения</string>
+    <string name="download_mb_by_min">Скачано %1$s Мб за %2$d мин</string>
+    <string name="download_mb">Скачано %1$s Мб</string>
+    <string name="wifi_off">Вай вай! Не включен Wi-fi!</string>
+    <string name="internet_off">Нет доступа в интернет</string>
+
+    <plurals name="chapters_download_complete_without_errors">
+        <item quantity="one">%d глава скачалась без ошибок</item>
+        <item quantity="few">%d главы скачались без ошибок</item>
+        <item quantity="many">%d глав скачалось без ошибок</item>
+        <item quantity="other">%d глав скачалось без ошибок</item>
+    </plurals>
+    <plurals name="chapters_with_errors">
+        <item quantity="one">%d глава с ошибкой</item>
+        <item quantity="few">%d главы с ошибками</item>
+        <item quantity="many">%d глав с ошибками</item>
+        <item quantity="other">%d глав с ошибками</item>
+    </plurals>
 </resources>

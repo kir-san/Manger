@@ -41,4 +41,10 @@ internal val migrations: Array<Migration> = arrayOf(
     from40to41, // For Manga table (fill categoryId)
     from42to43, // For PlannedTask table (add & fill categoryId)
     from45to46, // remove LatestChapters table
+    from49to50, // add manga_id field to Statistic table
+    from50to51, // update manga_id field in Chapters table
+    from54to55, // Update PlannedTask table (add & fill mangaId, remove category), remove PlannedTaskExt view
+    from55to56, // Update PlannedTask table (add & fill mangaId, remove category), remove PlannedTaskExt view
+
+    from61to62, // Update Settings table (add scrollbars field)
 )

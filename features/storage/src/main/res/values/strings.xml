@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="storage">Хранилище</string>
+    <string name="main_menu_storage_size_mb">%s Мб</string>
+
+    <plurals name="storage_subtitle">
+        <item quantity="one">В %d папке</item>
+        <item quantity="few">В %d папках</item>
+        <item quantity="many">В %d папках</item>
+        <item quantity="other">В %d папках</item>
+    </plurals>
+
+    <string name="storage_title_size">Хранилище: %s Мб</string>
+    <string name="storage_not_in_bd">Нет в базе</string>
+    <string name="storage_item_all_s">Всего занято: вычисление…</string>
+    <string name="storage_item_all_size">Всего занято: %s Мб</string>
+    <string name="storage_item_manga_size">Занято этой мангой: %s Мб</string>
+    <string name="storage_item_read_size">Прочитанное в этой манге: %s Мб</string>
+    <string name="storage_item_menu_full_delete">Очистить</string>
+    <string name="storage_item_menu_cancel">Оставить</string>
+    <string name="storage_item_alert_message">Вы действительно хотите удалить?</string>
+    <string name="storage_item_alert_positive">Да, конечно</string>
+    <string name="storage_item_alert_negative">Нет</string>
+    <string name="storage_manga_item_size_text">Использовано: %1$s Мб или %2$d %%</string>
+    <string name="storage_dialog_close">Закрыть</string>
+
+    <string name="library_popupmenu_delete_read_chapters">Удалить прочитанное</string>
+    <string name="library_popupmenu_delete_all">Очистить папку</string>
+    <string name="library_popupmenu_delete_read_chapters_delete">Удаляю…</string>
+    <string name="library_popupmenu_delete_read_chapters_message">Своими действиями вы хотите лишить себя такой кучи манги?</string>
+    <string name="library_popupmenu_delete_read_chapters_ok">Да</string>
+    <string name="library_popupmenu_delete_read_chapters_no">Не, не</string>
+
+
+</resources>

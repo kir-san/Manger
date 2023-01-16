@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Time Format -->
+    <string name="time_format_seconds">%d сек</string>
+    <string name="time_format_minutes">%d мин </string>
+    <string name="time_format_hours">%d ч </string>
+    <string name="time_format_days">%d д </string>
+</resources>

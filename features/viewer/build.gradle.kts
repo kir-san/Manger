@@ -6,6 +6,8 @@ plugins {
 }
 
 android {
+    namespace = "com.san.kir.features.viewer"
+
     buildFeatures {
         viewBinding = true
     }

@@ -11,9 +11,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
 import androidx.core.app.ComponentActivity
-import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.ScreenList
-import com.san.kir.core.compose_utils.topBar
+import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.NavigationButton
+import com.san.kir.core.compose.ScreenList
+import com.san.kir.core.compose.topBar
 import com.san.kir.core.internet.ConnectManager
 import com.san.kir.core.internet.LocalConnectManager
 import com.san.kir.core.support.R
@@ -52,8 +53,8 @@ internal fun ShikimoriContent() {
             ShikiNavTarget.Start ->
                 ScreenList(
                     topBar = topBar(
-                        navigationListener = {},
-                        title = stringResource(R.string.main_menu_accounts),
+                        navigationButton = NavigationButton.Back { true },
+                        title = stringResource(R.string.accounts),
                     ),
                     additionalPadding = Dimensions.zero
                 ) {
@@ -62,9 +63,13 @@ internal fun ShikimoriContent() {
                     }
 
                 }
+
             ShikiNavTarget.Catalog ->
                 AccountScreen(
-                    navigateUp = { nav = ShikiNavTarget.Start },
+                    navigateUp = {
+                        nav = ShikiNavTarget.Start
+                        true
+                    },
                     navigateToShikiItem = {
                         Timber.v(it.toString())
                         nav = ShikiNavTarget.AccountRate(it)
@@ -72,31 +77,47 @@ internal fun ShikimoriContent() {
                     navigateToLocalItems = { nav = ShikiNavTarget.LocalItems },
                     navigateToSearch = { /*nav = ShikiNavTarget.Search*/ }
                 )
+
             is ShikiNavTarget.AccountRate -> {
                 AccountRateScreen(
-                    navigateUp = { nav = ShikiNavTarget.Search },
+                    navigateUp = {
+                        nav = ShikiNavTarget.Search
+                        true
+                    },
                     navigateToSearch = {},
                     mangaId = target.id,
-                    rateId = -1L,
+//                    rateId = -1L,
                 )
             }
+
             ShikiNavTarget.Search -> {
                 ShikiSearchScreen(
-                    navigateUp = { nav = ShikiNavTarget.Start },
+                    navigateUp = {
+                        nav = ShikiNavTarget.Start
+                        true
+                    },
                     navigateToItem = { nav = ShikiNavTarget.AccountRate(it) },
                     searchText = "Fetish na Yuu",
                 )
             }
+
             ShikiNavTarget.LocalItems -> {
                 LocalItemsScreen(
-                    navigateUp = { nav = ShikiNavTarget.Catalog },
+                    navigateUp = {
+                        nav = ShikiNavTarget.Catalog
+                        true
+                    },
                     navigateToItem = { nav = ShikiNavTarget.LocalItem(it) }
                 )
             }
+
             is ShikiNavTarget.LocalItem -> {
                 LocalItemScreen(
                     mangaId = target.id,
-                    navigateUp = { nav = ShikiNavTarget.LocalItems },
+                    navigateUp = {
+                        nav = ShikiNavTarget.LocalItems
+                        true
+                    },
                     navigateToSearch = {})
             }
         }

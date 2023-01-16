@@ -10,9 +10,4 @@
         <item name="windowSplashScreenIconBackgroundColor">@color/transparent_dark2</item>
     </style>
 
-    <style name="MyTheme.Viewer.ActionBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="elevation" >0dp</item>
-        <item name="background">@color/transparent_dark</item>
-    </style>
-
 </resources>

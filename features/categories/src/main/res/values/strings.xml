@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="categories">Категории</string>
+
+    <!--Category-->
+    <string name="category_item_question_delete">Вы действительно хотите удалить?</string>
+    <string name="category_item_question_delete_yes">Да</string>
+    <string name="category_item_question_delete_no">Нет</string>
+
+    <!--CategoryDialog-->
+    <string name="category_dialog_span_text">Количество столбцов: %d</string>
+    <string name="category_dialog_large_cells">Крупные ячейки</string>
+    <string name="category_dialog_small_cells">Мелкие ячейки</string>
+    <string name="category_dialog_title_create">Создание категории</string>
+    <string name="category_dialog_title_edit">Настройка категории</string>
+    <string name="category_dialog_hint">Введите название</string>
+    <string name="category_dialog_validate_length">Слишком коротко</string>
+    <string name="category_dialog_validate_equal">Старое имя</string>
+    <string name="category_dialog_validate_contain">Название занято</string>
+    <string name="category_dialog_portrait">Портретная ориентация</string>
+    <string name="category_dialog_landscape">Ландшафтная ориентация</string>
+    <string name="category_dialog_sort">Сортировка</string>
+    <string name="category_dialog_visible">Видимость вкладки</string>
+    <string name="category_dialog_create">Создать</string>
+    <string name="category_dialog_edit">Сохранить</string>
+    <string name="category_dialog_not_create">Категория не была создана</string>
+    <string name="category_dialog_save_old_name">Имя не прошло проверку, сохранено старое</string>
+    <string name="category_dialog_cancel">Я передумал</string>
+    <string name="category_dialog_delete">Удалить!</string>
+
+    <string name="library_sort_dialog_add">По дате добавления</string>
+    <string name="library_sort_dialog_abc">В алфавитном порядке</string>
+    <string name="library_sort_dialog_pop">По частоте использования</string>
+    <string name="library_sort_dialog_reverse">Изменить порядок?</string>
+    <string name="library_sort_dialog_visible">Скрыть ?</string>
+</resources>

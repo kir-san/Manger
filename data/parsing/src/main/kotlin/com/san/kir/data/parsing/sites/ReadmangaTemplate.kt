@@ -1,10 +1,7 @@
 package com.san.kir.data.parsing.sites
 
 import com.san.kir.core.internet.ConnectManager
-import com.san.kir.core.utils.createDirs
-import com.san.kir.core.utils.getFullPath
 import com.san.kir.data.models.base.Chapter
-import com.san.kir.data.models.base.DownloadItem
 import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.SiteCatalogElement
 import com.san.kir.data.parsing.SiteCatalogClassic
@@ -16,15 +13,14 @@ import kotlinx.coroutines.flow.flow
 import org.json.JSONArray
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
+import timber.log.Timber
 import java.util.regex.Pattern
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.ExperimentalTime
 
 abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
     SiteCatalogClassic() {
 
-    override val siteCatalog
+    override val catalog
         get() = "$host/list?sortType=created"
 
     open val categories = listOf(
@@ -38,171 +34,152 @@ abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
     )
 
     override suspend fun init(): ReadmangaTemplate {
-        if (!isInit) {
-            val doc = connectManager.getDocument(siteCatalog)
-            volume = doc.select("#mangaBox .leftContent .pagination a.step")
-                .last {
-                    val text = it.attr("href")
-                    text.contains("offset", true)
-                }
-                .attr("href")
-                .split("&")
-                .first { it.contains("offset", true) }
-                .split("=")
-                .last().toInt()
-            isInit = true
-        }
+        val doc = connectManager.getDocument(catalog)
+        volume = doc.select("#mangaBox .leftContent .pagination a.step")
+            .last { it.attr("href").contains("offset", true) }
+            .attr("href")
+            .split("&")
+            .first { it.contains("offset", true) }
+            .split("=")
+            .last().toInt()
         return this
     }
 
-    override suspend fun getElementOnline(url: String): SiteCatalogElement? {
-        return kotlin.runCatching {
-            val element = SiteCatalogElement()
+    override suspend fun elementByUrl(url: String) = kotlin.runCatching {
+        val doc = connectManager.getDocument(url)
 
-            val doc = connectManager.getDocument(url)
+        val name = doc.select("#mangaBox .leftContent span.name").text()
+        val shortLink = allCatalogName
+            .map { url.split(it) }
+            .last { it.size > 1 }
+            .last()
 
-            element.host = host
-            element.catalogName = catalogName
+        val status = doc.select("#mangaBox .leftContent .expandable .subject-meta p")
 
-            element.name = doc.select("#mangaBox .leftContent span.name").text()
+        val statusEdition = when {
+            status.first()?.text()?.contains(Status.SINGLE, true) == true       ->
+                Status.SINGLE
 
-            allCatalogName.forEach { name ->
-                url.split(name).apply {
-                    if (size > 1) element.shotLink = last()
-                }
-            }
-            element.shotLink =
-                allCatalogName
-                    .map { name -> url.split(name) }
-                    .last { it.size > 1 }
-                    .last()
+            status.first()?.text()?.contains(Status.NOT_COMPLETE, true) == true ->
+                Status.NOT_COMPLETE
 
-            element.link = url
-
-            val status = doc.select("#mangaBox .leftContent .expandable .subject-meta p")
-
-            // Статус выпуска
-            // TODO пересмотреть этот момент
-            element.statusEdition = Status.COMPLETE
-            if (status.first()?.text()?.contains(Status.SINGLE, true) == true)
-                element.statusEdition = Status.SINGLE
-            else if (status.first()?.text()?.contains(Status.NOT_COMPLETE, true) == true)
-                element.statusEdition = Status.NOT_COMPLETE
-
-            // Статус перевода
-            element.statusTranslate = Translate.COMPLETE
-            if (status[1].text().contains("продолжается", true)) {
-                element.statusTranslate = Translate.NOT_COMPLETE
-            }
-
-            getFullElement(element)
-        }.fold(onSuccess = { it },
-               onFailure = { null })
-    }
-
-    override suspend fun getFullElement(element: SiteCatalogElement): SiteCatalogElement {
-
-        val doc = connectManager.getDocument(element.link).select("div.leftContent")
-
-        element.type = "Манга"
-        doc.select(".flex-row .subject-meta .elem_category").forEach {
-            if (categories.contains(it.select("a").text()))
-                element.type = it.select("a").text()
+            else                                                                ->
+                Status.COMPLETE
         }
 
-        // Список авторов
-        element.authors = emptyList()
-        val authorsTemp = doc.select(".flex-row .elementList .elem_author")
-        element.authors = authorsTemp.map { it.select(".person-link").text() }
+        val statusTranslate =
+            if (status[1].text().contains("продолжается", true))
+                Translate.NOT_COMPLETE
+            else Translate.COMPLETE
 
-        // Количество глав
-        val volume = doc.select(".chapters-link tr").size - 1
-        element.volume = if (volume < 0) 0 else volume
+        fullElement(
+            SiteCatalogElement(
+                host = host,
+                catalogName = catalogName,
+                link = url,
+                name = name,
+                shortLink = shortLink,
+                statusEdition = statusEdition,
+                statusTranslate = statusTranslate
+            )
+        )
+    }.onFailure { Timber.v(it, message = url) }.getOrNull()
 
-        // Жанры
-        element.genres =
-            doc.select("span.elem_genre").map { it.select("a.element-link").text() }
+    override suspend fun fullElement(element: SiteCatalogElement): SiteCatalogElement {
+        val doc = connectManager.getDocument(element.link).select("div.leftContent")
 
-        // Краткое описание
-        element.about = doc.select("meta[itemprop=description]").attr("content")
+        var type = "Манга"
+        doc.select(".flex-row .subject-meta .elem_category").forEach {
+            if (categories.contains(it.select("a").text()))
+                type = it.select("a").text()
+        }
 
-        // Ссылка на лого
-        element.logo = doc.select(".expandable .subject-cover img").attr("src")
+        val volume = maxOf(doc.select(".chapters-link tr").size - 1, 0)
+        val about = doc.select("meta[itemprop=description]").attr("content")
+        val logo = doc.select(".expandable .subject-cover img").attr("src")
 
-        element.isFull = true
+        val authors = doc
+            .select(".flex-row .elementList .elem_author")
+            .map { it.select(".person-link").text() }.ifEmpty {
+                doc.select(".flex-row .elementList .elem_publisher span").map { it.text() }
+            }
 
-        return element
+        val genres = doc
+            .select("span.elem_genre")
+            .map { it.select("a.element-link").text() }
+
+        return element.copy(
+            type = type,
+            volume = volume,
+            about = about,
+            logo = logo,
+            authors = authors,
+            genres = genres,
+            isFull = true
+        )
     }
 
     private fun simpleParseElement(elem: Element): SiteCatalogElement {
-        val element = SiteCatalogElement()
 
-        // Сохраняю в каждом елементе host и catalogName
-        element.host = host
-        element.catalogName = catalogName
+        val name = elem.select(".img a").select("img").attr("title")
+        val shotLink = elem.select(".img a").attr("href")
 
-        // название манги
-        element.name = elem.select(".img a").select("img").attr("title")
-
-        // ссылка в интернете
-        element.shotLink = elem.select(".img a").attr("href")
-        element.link = host + element.shotLink
-
-        // Статус выпуска
-        element.statusEdition = "Выпуск продолжается"
-        if (elem.select("span.mangaCompleted").text().isNotEmpty())
-            element.statusEdition = "Выпуск завершен"
-        else if (elem.select("span.mangaSingle").text().isNotEmpty() and (element.volume > 0))
-            element.statusEdition = "Сингл"
-
-        // Статус перевода
-        element.statusTranslate = "Перевод продолжается"
-        if (elem.select("span.mangaTranslationCompleted").text().isNotEmpty()) {
-            element.statusTranslate = "Перевод завершен"
-            element.statusEdition = "Выпуск завершен"
+        var statusEdition = when {
+            elem.select("span.mangaCompleted").text().isNotEmpty() -> Status.COMPLETE
+            elem.select("span.mangaSingle").text().isNotEmpty()    -> Status.SINGLE
+            else                                                   -> Status.NOT_COMPLETE
         }
 
-        // Ссылка на лого
-        element.logo = elem.select(".img a").select("img").attr("data-original")
+        val statusTranslate =
+            if (elem.select("span.mangaTranslationCompleted").text().isNotEmpty()) {
+                statusEdition = Status.COMPLETE
+                Translate.COMPLETE
+            } else
+                Translate.NOT_COMPLETE
 
-        // Порядок в базе данных
-        element.dateId = elem.select("span.bookmark-menu").attr("data-id").toInt()
+        val logo = elem.select(".img a").select("img").attr("data-original")
+        val dateId = elem.select("span.bookmark-menu").attr("data-id").toIntOrNull() ?: 0
 
-        kotlin.runCatching {
-            element.populate =
-                (elem.select(".desc .star-rate .rating")
-                    .attr("title")
-                    .split(" ")
-                    .first()
-                    .toFloat() * 10_000)
-                    .toInt()
-        }.onFailure {
-            element.populate = 0
-        }
+        val populate = kotlin.runCatching {
+            (elem.select(".desc .star-rate .rating")
+                .attr("title")
+                .split(" ")
+                .first()
+                .toFloat() * 10_000)
+                .toInt()
+        }.getOrNull() ?: 0
 
-        // Тип манги(Манга, Манхва или еще что
-        element.type = "Манга"
+        val genres = elem.select(".desc .tile-info a.element-link").map { it.text() }
 
-        // Жанры
-        element.genres = elem.select(".desc .tile-info a.element-link").map { it.text() }
-
-        return element
+        return SiteCatalogElement(
+            host = this.host,
+            catalogName = this.catalogName,
+            name = name,
+            shortLink = shotLink,
+            link = host + shotLink,
+            statusEdition = statusEdition,
+            statusTranslate = statusTranslate,
+            logo = logo,
+            dateId = dateId,
+            populate = populate,
+            type = "Манга",
+            genres = genres
+        )
     }
 
-    override fun getCatalog() = flow {
-        var docLocal: Document = connectManager.getDocument(siteCatalog)
+    override fun catalog() = flow {
+        var docLocal: Document = connectManager.getDocument(catalog)
 
         suspend fun isGetNext(): Boolean {
             val next = docLocal.select(".pagination > a.nextLink").attr("href")
-            if (next.isNotEmpty())
-                docLocal = connectManager.getDocument(host + next)
+            if (next.isNotEmpty()) docLocal = connectManager.getDocument(host + next)
             return next.isNotEmpty()
         }
 
         do {
-            docLocal.select("div.tile").forEach { element ->
-                emit(simpleParseElement(element))
-            }
+            docLocal
+                .select("div.tile")
+                .forEach { element -> emit(simpleParseElement(element)) }
         } while (isGetNext())
     }
 
@@ -217,7 +194,7 @@ abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
                 if (pat.find())
                     name = pat.group()
                 Chapter(
-                    manga = manga.name,
+                    mangaId = manga.id,
                     name = name,
                     date = it.select("td").last()?.text() ?: "",
                     link = host + it.select("a").attr("href"),
@@ -225,35 +202,24 @@ abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
                 )
             }
 
-    @OptIn(ExperimentalTime::class)
-    override suspend fun pages(item: DownloadItem): List<String> {
+    override suspend fun pages(item: Chapter): List<String> {
         val list = mutableListOf<String>()
-        // Создаю папку/папки по указанному пути
-        (getFullPath(item.path)).createDirs()
-
         val shortLink = getShortLink(item.link)
 
         delay(1.seconds)
+
         val doc = connectManager.getDocument("$host$shortLink?mtr=1")
-        // с помощью регулярных выражений ищу нужные данные
-        val pat = Pattern.compile("rm_h.init.+").matcher(doc.body().html())
-        // если данные найдены то продолжаю
+        val pat = Pattern.compile("rm_h.initReader\\(.+").matcher(doc.body().html())
         if (pat.find()) {
             // избавляюсь от ненужного и разделяю строку в список и отправляю
             val data = "[" + pat.group()
                 .removeSuffix(");")
                 .removePrefix("rm_h.initReader( ") + "]"
-
-//            log("data = $data")
-
-            val json = JSONArray(data).getJSONArray(1)
+            val json = JSONArray(data).getJSONArray(0)
 
             repeat(json.length()) { index ->
                 val jsonArray = json.getJSONArray(index)
-                val url =
-//                    jsonArray.getString(1) +
-                    jsonArray.getString(0) +
-                            jsonArray.getString(2)
+                val url = jsonArray.getString(0) + jsonArray.getString(2)
                 list += url
             }
         }

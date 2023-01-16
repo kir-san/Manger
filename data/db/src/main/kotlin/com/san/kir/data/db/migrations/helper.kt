@@ -2,6 +2,7 @@ package com.san.kir.data.db.migrations
 
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import org.intellij.lang.annotations.Language
 
 internal fun migrate(action: MigrateForm.() -> Unit): Migration {
     val form = MigrateForm()
@@ -24,7 +25,8 @@ internal class MigrateForm {
     var tmpTable: String = ""
         private set
 
-    fun query(sql: String) {
+
+    fun query(@Language("RoomSql") sql: String) {
         queries = queries.plus(sql)
     }
 
@@ -35,5 +37,6 @@ internal class MigrateForm {
 
     fun removeTmpTable() {
         query("DROP TABLE $tmpTable")
+        tmpTable = ""
     }
 }

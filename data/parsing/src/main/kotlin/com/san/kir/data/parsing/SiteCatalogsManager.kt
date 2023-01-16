@@ -1,17 +1,15 @@
 package com.san.kir.data.parsing
 
+import android.app.Application
 import com.san.kir.core.internet.ConnectManager
 import com.san.kir.core.support.DIR
 import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.data.models.base.Chapter
-import com.san.kir.data.models.base.DownloadItem
 import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.SiteCatalogElement
-import com.san.kir.data.models.base.toDownloadItem
 import com.san.kir.data.parsing.sites.Acomics
 import com.san.kir.data.parsing.sites.Allhentai
-import com.san.kir.data.parsing.sites.ComX
 import com.san.kir.data.parsing.sites.Mangachan
 import com.san.kir.data.parsing.sites.Mintmanga
 import com.san.kir.data.parsing.sites.Readmanga
@@ -23,8 +21,14 @@ import javax.inject.Singleton
 
 @Singleton
 class SiteCatalogsManager @Inject constructor(
+    context: Application,
     connectManager: ConnectManager,
 ) {
+
+    init {
+        Status.init(context)
+        Translate.init(context)
+    }
 
     val catalog by lazy {
         listOf(
@@ -36,7 +40,7 @@ class SiteCatalogsManager @Inject constructor(
             Yaoichan(connectManager),
             Unicomics(connectManager),
             Acomics(connectManager),
-            ComX(connectManager),
+//            ComX(connectManager),
         )
     }
 
@@ -57,19 +61,17 @@ class SiteCatalogsManager @Inject constructor(
     suspend fun getFullElement(simpleElement: SiteCatalogElement) =
         withDefaultContext {
             catalog.first { it.allCatalogName.any { s -> s == simpleElement.catalogName } }
-                .getFullElement(simpleElement)
+                .fullElement(simpleElement)
         }
 
 
     // Получение страниц
-    suspend fun pages(item: DownloadItem): List<String> {
+    suspend fun pages(item: Chapter): List<String> {
         val site = getSite(item.link)
         return site.pages(item)
     }
 
-    suspend fun pages(chapter: Chapter) = pages(chapter.toDownloadItem())
-
-    suspend fun getElementOnline(url: String): SiteCatalogElement? =
+    suspend fun elementByUrl(url: String): SiteCatalogElement? =
         withDefaultContext {
             var lUrl = url
 
@@ -77,17 +79,19 @@ class SiteCatalogsManager @Inject constructor(
                 lUrl = "http://$lUrl"
             }
 
-            return@withDefaultContext getSite(lUrl).getElementOnline(lUrl)
+            return@withDefaultContext getSite(lUrl).elementByUrl(lUrl)
         }
 
     fun catalogName(siteName: String): String {
-        val first = catalog.first { it.name == siteName }
+        val first = catalog.firstOrNull { it.name == siteName }
+            ?: catalog.first { it.catalogName == siteName }
+
         var catName = first.catalogName
 
         first.allCatalogName
             .firstOrNull { getFullPath(DIR.catalogName(catName)).exists() }
             ?.also { catName = it }
 
-        return first.catalogName
+        return catName
     }
 }

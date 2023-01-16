@@ -25,10 +25,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.Fonts
-import com.san.kir.core.compose_utils.rememberImage
-import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
+import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.Fonts
+import com.san.kir.core.compose.horizontalInsetsPadding
+import com.san.kir.core.compose.rememberImage
 import com.san.kir.data.models.base.ShikimoriStatus
 import com.san.kir.features.shikimori.R
 import com.san.kir.features.shikimori.logic.useCases.CanBind
@@ -50,8 +50,8 @@ internal fun LazyItemScope.MangaItemContent(
             .animateItemPlacement()
             .clickable(onClick = onClick)
             .fillMaxWidth()
-            .padding(vertical = Dimensions.small, horizontal = Dimensions.default)
-            .padding(systemBarsHorizontalPadding()),
+            .padding(vertical = Dimensions.half, horizontal = Dimensions.default)
+            .horizontalInsetsPadding(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
@@ -59,7 +59,7 @@ internal fun LazyItemScope.MangaItemContent(
             contentDescription = "manga avatar",
             modifier = Modifier
                 .size(Dimensions.Image.default)
-                .padding(end = Dimensions.small),
+                .padding(end = Dimensions.half),
             contentScale = ContentScale.Crop,
         )
 

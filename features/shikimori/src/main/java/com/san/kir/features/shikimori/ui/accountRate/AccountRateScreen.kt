@@ -21,12 +21,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.ScreenPadding
-import com.san.kir.core.compose_utils.ToolbarProgress
-import com.san.kir.core.compose_utils.topBar
+import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.NavigationButton
+import com.san.kir.core.compose.ScreenPadding
+import com.san.kir.core.compose.ToolbarProgress
+import com.san.kir.core.compose.horizontalAndBottomInsetsPadding
+import com.san.kir.core.compose.topBar
 import com.san.kir.features.shikimori.R
 import com.san.kir.features.shikimori.logic.useCases.SyncState
 import com.san.kir.features.shikimori.ui.util.AdditionalInfo
@@ -37,10 +37,10 @@ import com.san.kir.features.shikimori.ui.util.body
 
 @Composable
 fun AccountRateScreen(
-    navigateUp: () -> Unit,
+    navigateUp: () -> Boolean,
     navigateToSearch: (String) -> Unit,
     mangaId: Long,
-    rateId: Long,
+    //    rateId: Long,
 ) {
     val viewModel: AccountRateViewModel = hiltViewModel()
 
@@ -52,7 +52,7 @@ fun AccountRateScreen(
 
     ScreenPadding(
         topBar = topBar(
-            navigationListener = navigateUp,
+            navigationButton = NavigationButton.Back(navigateUp),
             title = stringResource(R.string.profile_item_title),
             actions = {
                 if (state.manga is MangaState.Ok)
@@ -64,77 +64,74 @@ fun AccountRateScreen(
                                 icon = Icons.Default.Delete,
                                 onClick = { viewModel.sendEvent(AccountRateEvent.ExistToggle) }
                             )
-                        ProfileState.None ->
+                        ProfileState.None  ->
                             MenuIcon(
                                 icon = Icons.Default.Add,
                                 onClick = { viewModel.sendEvent(AccountRateEvent.ExistToggle) }
                             )
-                        ProfileState.Load -> ToolbarProgress()
+                        ProfileState.Load  -> ToolbarProgress()
                     }
             }
         ),
+        onRefresh = { viewModel.sendEvent(AccountRateEvent.Update()) }
     ) {
-        SwipeRefresh(
-            state = rememberSwipeRefreshState(false),
-            onRefresh = { viewModel.sendEvent(AccountRateEvent.Update()) },
+        LazyColumn(
+            modifier = Modifier
+                .padding(
+                    top = it.calculateTopPadding(),
+                    start = Dimensions.default,
+                    end = Dimensions.default,
+                ),
+            contentPadding = horizontalAndBottomInsetsPadding()
         ) {
-            LazyColumn(
-                modifier = Modifier
-                    .padding(
-                        top = it.calculateTopPadding(),
-                        start = Dimensions.default,
-                        end = Dimensions.default,
+            when (val manga = state.manga) {
+                is MangaState.Ok -> {
+                    content(
+                        manga = manga,
+                        profile = state.profile,
+                        sync = state.sync,
+                        sendEvent = viewModel::sendEvent,
+                        navigateToSearch = navigateToSearch
                     )
-            ) {
-                when (val manga = state.manga) {
-                    is MangaState.Ok -> {
-                        content(
-                            manga = manga,
-                            profile = state.profile,
-                            sync = state.sync,
-                            sendEvent = viewModel::sendEvent,
-                            navigateToSearch = navigateToSearch
-                        )
-                    }
-                    MangaState.Load -> {
-                        item {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier
-                                    .padding(Dimensions.default)
-                                    .fillMaxWidth()
-                            ) {
-                                CircularProgressIndicator()
-                            }
+                }
+                MangaState.Load  -> {
+                    item {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .padding(Dimensions.default)
+                                .fillMaxWidth()
+                        ) {
+                            CircularProgressIndicator()
                         }
                     }
-                    MangaState.Error -> {
-                        item {
-                            Column(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    stringResource(R.string.error),
-                                    style = MaterialTheme.typography.h6,
-                                    modifier = Modifier.padding(Dimensions.default)
-                                )
-                                Button(
-                                    onClick = {
-                                        viewModel.sendEvent(AccountRateEvent.Update(id = mangaId))
-                                    }
-                                ) {
-                                    Text(stringResource(R.string.try_again))
+                }
+                MangaState.Error -> {
+                    item {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                stringResource(R.string.error),
+                                style = MaterialTheme.typography.h6,
+                                modifier = Modifier.padding(Dimensions.default)
+                            )
+                            Button(
+                                onClick = {
+                                    viewModel.sendEvent(AccountRateEvent.Update(id = mangaId))
                                 }
+                            ) {
+                                Text(stringResource(R.string.try_again))
                             }
                         }
                     }
                 }
             }
         }
-
-        DialogsSyncState(state.dialog) { viewModel.sendEvent(AccountRateEvent.Sync(it)) }
     }
+
+    DialogsSyncState(state.dialog) { viewModel.sendEvent(AccountRateEvent.Sync(it)) }
 }
 
 private fun LazyListScope.content(
@@ -142,7 +139,7 @@ private fun LazyListScope.content(
     profile: ProfileState,
     sync: SyncState,
     sendEvent: (AccountRateEvent) -> Unit,
-    navigateToSearch: (String) -> Unit
+    navigateToSearch: (String) -> Unit,
 ) {
     item {
         MangaNames(

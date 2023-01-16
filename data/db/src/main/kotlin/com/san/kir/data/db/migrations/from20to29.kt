@@ -1,9 +1,7 @@
 package com.san.kir.data.db.migrations
 
-import com.san.kir.data.models.base.Category
 import com.san.kir.data.models.base.PlannedTask
 import com.san.kir.data.models.columns.DownloadColumn
-import com.san.kir.data.models.columns.MangaStatisticColumn
 
 /*
 Таблица downloads
@@ -65,17 +63,17 @@ internal val from22to23 = migrate {
 
     query("ALTER TABLE categories RENAME TO tmp_categories")
     query(
-        "CREATE TABLE ${Category.tableName} (" +
-                "${Category.Col.id} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                "${Category.Col.name} TEXT NOT NULL, " +
+        "CREATE TABLE categories (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "name TEXT NOT NULL, " +
                 "`order` INTEGER NOT NULL, " +
-                "${Category.Col.isVisible} INTEGER NOT NULL, " +
-                "${Category.Col.typeSort} TEXT NOT NULL, " +
-                "${Category.Col.isReverseSort} INTEGER NOT NULL, " +
-                "${Category.Col.spanPortrait} INTEGER NOT NULL DEFAULT 2, " +
-                "${Category.Col.spanLandscape} INTEGER NOT NULL DEFAULT 3, " +
-                "${Category.Col.isLargePortrait} INTEGER NOT NULL DEFAULT 1, " +
-                "${Category.Col.isLargeLandscape} INTEGER NOT NULL DEFAULT 1)"
+                "isVisible INTEGER NOT NULL, " +
+                "typeSort TEXT NOT NULL, " +
+                "isReverseSort INTEGER NOT NULL, " +
+                "spanPortrait INTEGER NOT NULL DEFAULT 2, " +
+                "spanLandscape INTEGER NOT NULL DEFAULT 3, " +
+                "isListPortrait INTEGER NOT NULL DEFAULT 1, " +
+                "isListLandscape INTEGER NOT NULL DEFAULT 1)"
     )
     query(
         "INSERT INTO `categories`(" +
@@ -265,24 +263,22 @@ internal val from27to28 = migrate {
     from = 27
     to = 28
 
-    with(PlannedTask.Col) {
-        query(
-            "CREATE TABLE IF NOT EXISTS `${PlannedTask.tableName}` (" +
-                    "$id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                    "$manga TEXT NOT NULL, " +
-                    "$groupName TEXT NOT NULL, " +
-                    "$groupContent TEXT NOT NULL, " +
-                    "$category TEXT NOT NULL, " +
-                    "$type INTEGER NOT NULL, " +
-                    "$isEnabled INTEGER NOT NULL, " +
-                    "$period INTEGER NOT NULL, " +
-                    "$dayOfWeek INTEGER NOT NULL, " +
-                    "$hour INTEGER NOT NULL, " +
-                    "$minute INTEGER NOT NULL, " +
-                    "$addedTime INTEGER NOT NULL, " +
-                    "$errorMessage TEXT NOT NULL)"
-        )
-    }
+    query(
+        "CREATE TABLE IF NOT EXISTS `planned_task` (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "manga TEXT NOT NULL, " +
+                "group_name TEXT NOT NULL, " +
+                "group_content TEXT NOT NULL, " +
+                "category TEXT NOT NULL, " +
+                "type INTEGER NOT NULL, " +
+                "is_enabled INTEGER NOT NULL, " +
+                "period INTEGER NOT NULL, " +
+                "day_of_week INTEGER NOT NULL, " +
+                "hour INTEGER NOT NULL, " +
+                "minute INTEGER NOT NULL, " +
+                "added_time INTEGER NOT NULL, " +
+                "error_message TEXT NOT NULL)"
+    )
 }
 
 /*
@@ -294,39 +290,37 @@ internal val from28to29 = migrate {
     from = 28
     to = 29
 
-    with(PlannedTask.Col) {
-        renameTableToTmp(PlannedTask.tableName)
+    renameTableToTmp("planned_task")
 
-        query(
-            "CREATE TABLE IF NOT EXISTS ${PlannedTask.tableName} (" +
-                    "$id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                    "$manga TEXT NOT NULL, " +
-                    "$groupName TEXT NOT NULL, " +
-                    "$groupContent TEXT NOT NULL, " +
-                    "$category TEXT NOT NULL, " +
-                    "$catalog TEXT NOT NULL DEFAULT ``, " +
-                    "$type INTEGER NOT NULL, " +
-                    "$isEnabled INTEGER NOT NULL, " +
-                    "$period INTEGER NOT NULL, " +
-                    "$dayOfWeek INTEGER NOT NULL, " +
-                    "$hour INTEGER NOT NULL, " +
-                    "$minute INTEGER NOT NULL, " +
-                    "$addedTime INTEGER NOT NULL, " +
-                    "$errorMessage TEXT NOT NULL)"
-        )
+    query(
+        "CREATE TABLE IF NOT EXISTS planned_task (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "manga TEXT NOT NULL, " +
+                "group_name TEXT NOT NULL, " +
+                "group_content TEXT NOT NULL, " +
+                "category TEXT NOT NULL, " +
+                "catalog TEXT NOT NULL DEFAULT ``, " +
+                "type INTEGER NOT NULL, " +
+                "is_enabled INTEGER NOT NULL, " +
+                "period INTEGER NOT NULL, " +
+                "day_of_week INTEGER NOT NULL, " +
+                "hour INTEGER NOT NULL, " +
+                "minute INTEGER NOT NULL, " +
+                "added_time INTEGER NOT NULL, " +
+                "error_message TEXT NOT NULL)"
+    )
 
-        query(
-            "INSERT INTO ${PlannedTask.tableName}(" +
-                    "$id, $manga, $groupName, $groupContent, $category, $type, $isEnabled, " +
-                    "$period, $dayOfWeek, $hour, $minute, $addedTime, $errorMessage) " +
-                    "SELECT " +
-                    "$id, $manga, $groupName, $groupContent, $category, $type, $isEnabled, " +
-                    "$period, $dayOfWeek, $hour, $minute, $addedTime, $errorMessage " +
-                    "FROM $tmpTable"
-        )
+    query(
+        "INSERT INTO planned_task(" +
+                "id, manga, group_name, group_content, category, type, is_enabled, " +
+                "period, day_of_week, hour, minute, added_time, error_message) " +
+                "SELECT " +
+                "id, manga, group_name, group_content, category, type, is_enabled, " +
+                "period, day_of_week, hour, minute, added_time, error_message " +
+                "FROM $tmpTable"
+    )
 
-        removeTmpTable()
-    }
+    removeTmpTable()
 }
 
 /*
@@ -339,18 +333,18 @@ internal val from29to30 = migrate {
     to = 30
 
     query(
-        "CREATE TABLE IF NOT EXISTS `${MangaStatisticColumn.tableName}` (" +
-                "`${MangaStatisticColumn.id}` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                "`${MangaStatisticColumn.manga}` TEXT NOT NULL, " +
-                "`${MangaStatisticColumn.allChapters}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.lastChapters}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.allPages}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.lastPages}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.allTime}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.lastTime}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.maxSpeed}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.downloadSize}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.downloadTime}` INTEGER NOT NULL, " +
-                "`${MangaStatisticColumn.openedTimes}` INTEGER NOT NULL)"
+        "CREATE TABLE IF NOT EXISTS `statistic` (" +
+                "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "`manga` TEXT NOT NULL, " +
+                "`all_chapters` INTEGER NOT NULL, " +
+                "`last_chapters` INTEGER NOT NULL, " +
+                "`all_pages` INTEGER NOT NULL, " +
+                "`last_pages` INTEGER NOT NULL, " +
+                "`all_time` INTEGER NOT NULL, " +
+                "`last_time` INTEGER NOT NULL, " +
+                "`max_speed` INTEGER NOT NULL, " +
+                "`download_size` INTEGER NOT NULL, " +
+                "`download_time` INTEGER NOT NULL, " +
+                "`opened_times` INTEGER NOT NULL)"
     )
 }

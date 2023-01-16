@@ -3,7 +3,6 @@ package com.san.kir.background.works
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.WorkerParameters
-import com.san.kir.core.utils.delFiles
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.shortPath
 import com.san.kir.data.db.dao.ChapterDao
@@ -24,7 +23,7 @@ class AllChapterDelete @AssistedInject constructor(
 ) : ChapterDeleteWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
-        val mangaId = inputData.getLong(Manga.Col.id, -1)
+        val mangaId = inputData.getLong("id", -1)
 
         return kotlin.runCatching {
             val manga = mangaDao.itemById(mangaId)
@@ -42,18 +41,16 @@ class AllChapterDelete @AssistedInject constructor(
     }
 
     private fun deleteAllChapters(manga: Manga) {
-        val files = getFullPath(manga.path).listFiles()!!.map { it.shortPath }
-
-        delFiles(files.toList())
+        getFullPath(manga.path).deleteRecursively()
     }
 
     private suspend fun updateStorageItem(manga: Manga) {
-        val storageItem =
-            storageDao.items().first { it.path == getFullPath(manga.path).shortPath }
+        val storageItem = storageDao.items().first { it.path == getFullPath(manga.path).shortPath }
 
         val file = getFullPath(storageItem.path)
 
         storageDao.update(
-            storageItem.getSizeAndIsNew(file, manga, chapterDao.getItemsWhereManga(manga.name))        )
+            storageItem.getSizeAndIsNew(file, false, chapterDao.itemsByMangaId(manga.id))
+        )
     }
 }

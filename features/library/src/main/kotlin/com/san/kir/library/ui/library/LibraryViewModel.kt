@@ -99,11 +99,8 @@ internal class LibraryViewModel @Inject internal constructor(
             .filter { it.isNotEmpty() }
             .mapLatest { works -> works.all { it.state.isFinished } }
             .collectLatest { noWork ->
-                if (noWork) {
-                    backgroundState.update { BackgroundState.None }
-                } else {
-                    backgroundState.update { BackgroundState.Work }
-                }
+                if (noWork) backgroundState.update { BackgroundState.None }
+                else backgroundState.update { BackgroundState.Work }
             }
     }
 }

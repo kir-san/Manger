@@ -18,7 +18,6 @@ import com.san.kir.core.utils.longToast
 import com.san.kir.core.utils.toast
 import com.san.kir.core.utils.viewModel.BaseViewModel
 import com.san.kir.data.models.base.Manga
-import com.san.kir.data.parsing.SiteCatalogsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.coroutines.CoroutineScope
@@ -27,7 +26,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -41,7 +39,6 @@ internal class ChaptersViewModel @Inject constructor(
     private val context: Application,
     private val chaptersRepository: ChaptersRepository,
     private val settingsRepository: SettingsRepository,
-    private val manager: SiteCatalogsManager,
     private val updateManager: UpdateMangaManager,
     private val downloadManager: DownloadChaptersManager,
 ) : BaseViewModel<ChaptersEvent, ChaptersState>() {
@@ -99,27 +96,24 @@ internal class ChaptersViewModel @Inject constructor(
         if (job?.isActive == true) return
 
         job = viewModelScope.defaultLaunch {
+            chaptersRepository
+                .loadManga(mangaId)
+                .filterNotNull()
+                .onEach { item ->
+                    manga.update { item }
+                    initFilterAndIncreasePopulate(item)
+                }.launchIn(this)
+
             combine(
-                chaptersRepository
-                    .loadManga(mangaId)
-                    .filterNotNull()
-                    .onEach { item ->
-                        manga.update { item }
-                        initFilterAndIncreasePopulate(item)
-                    }
-                    .flatMapConcat { chaptersRepository.items(it.id) },
-                filter, manga
+                chaptersRepository.items(mangaId), filter, manga
             ) { list, filter, manga ->
                 items.update { old -> SelectionHelper.update(old, list, filter, manga) }
             }.flowOn(defaultDispatcher).launchIn(this)
 
             combine(settingsRepository.isIndividual, filter) { individual, filter ->
-                if (individual) {
-                    chaptersRepository.update(manga.value.copy(chapterFilter = filter))
-                } else {
-                    settingsRepository.update(filter)
-                }
-            }.launchIn(this)
+                if (individual.not()) settingsRepository.update(filter)
+                else chaptersRepository.update(manga.value.copy(chapterFilter = filter))
+            }.flowOn(defaultDispatcher).launchIn(this)
 
             registerReceiver(mangaId)
         }
@@ -130,20 +124,16 @@ internal class ChaptersViewModel @Inject constructor(
         updateManager.loadTask(mangaId).onEach { task ->
             backgroundAction.update { it.copy(updateManga = task != null) }
 
-            withMainContext {
-                when (task?.state) {
-                    DownloadState.UNKNOWN   -> context.longToast(R.string.list_chapters_message_error)
-                    DownloadState.COMPLETED -> {
-                        if (task.newChapters > 0)
-                            context.longToast(
-                                R.string.list_chapters_message_count_new, task.newChapters
-                            )
-                        else
-                            context.longToast(R.string.list_chapters_message_no_found)
-                    }
-
-                    else                    -> {}
+            when (task?.state) {
+                DownloadState.UNKNOWN   -> withMainContext {
+                    context.longToast(R.string.list_chapters_message_error)
                 }
+                DownloadState.COMPLETED -> withMainContext {
+                    if (task.newChapters <= 0) context.longToast(R.string.new_chapters_no_found)
+                    else context.longToast(R.string.have_new_chapters_count, task.newChapters)
+                }
+
+                else                    -> {}
             }
         }.launchIn(this)
     }
@@ -249,14 +239,12 @@ internal class ChaptersViewModel @Inject constructor(
         val newList = kotlin.runCatching {
             if (manga.value.isAlternativeSort.not()) null
             else list.sortedWith(selectableItemComparator)
-        }.getOrNull() ?: list
+        }.getOrNull() ?: list.sortedBy { it.chapter.id }
 
-        val result = newList.asReversed().firstOrNull { item -> item.chapter.isRead.not() }
+        val result = newList.firstOrNull { item -> item.chapter.isRead.not() }
         return if (result != null)
             NextChapter.Ok(result.chapter.id, result.chapter.name)
         else
             NextChapter.None
     }
 }
-
-

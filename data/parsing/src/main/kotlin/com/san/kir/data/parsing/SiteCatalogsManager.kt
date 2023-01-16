@@ -10,7 +10,6 @@ import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.SiteCatalogElement
 import com.san.kir.data.parsing.sites.Acomics
 import com.san.kir.data.parsing.sites.Allhentai
-import com.san.kir.data.parsing.sites.ComX
 import com.san.kir.data.parsing.sites.Mangachan
 import com.san.kir.data.parsing.sites.Mintmanga
 import com.san.kir.data.parsing.sites.Readmanga
@@ -41,7 +40,7 @@ class SiteCatalogsManager @Inject constructor(
             Yaoichan(connectManager),
             Unicomics(connectManager),
             Acomics(connectManager),
-            ComX(connectManager),
+//            ComX(connectManager),
         )
     }
 

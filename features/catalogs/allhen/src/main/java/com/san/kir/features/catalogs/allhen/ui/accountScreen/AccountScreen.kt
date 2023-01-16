@@ -16,6 +16,7 @@ import com.san.kir.data.parsing.sites.Allhentai
 @Composable
 fun AccountScreen(
     navigateUp: () -> Boolean,
+    url: String?,
 ) {
     val viewModel: AccountScreenViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
@@ -27,7 +28,7 @@ fun AccountScreen(
         )
     ) {
         WebView(
-            state = rememberWebViewState(Allhentai.AUTH_URL),
+            state = rememberWebViewState(url ?: ""),
             modifier = Modifier.fillMaxSize(),
             onCreated = { view ->
                 view.settings.javaScriptEnabled = true

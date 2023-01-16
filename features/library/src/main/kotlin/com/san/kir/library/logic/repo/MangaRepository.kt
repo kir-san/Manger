@@ -5,6 +5,7 @@ import android.content.Context
 import com.san.kir.core.support.CATEGORY_ALL
 import com.san.kir.core.support.SortLibraryUtil
 import com.san.kir.core.utils.coroutines.withIoContext
+import com.san.kir.core.utils.mapP
 import com.san.kir.data.db.dao.CategoryDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.models.base.Category
@@ -12,9 +13,9 @@ import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.extend.CategoryWithMangas
 import com.san.kir.data.models.extend.SimplifiedManga
 import com.san.kir.library.ui.library.ItemsState
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 
 internal class MangaRepository @Inject constructor(
@@ -24,7 +25,7 @@ internal class MangaRepository @Inject constructor(
 ) {
     //    Все категории
     private val _categories = categoryDao.loadItems()
-    private val _mangas = mangaDao.loadSimpleItems()
+    private val _mangas = mangaDao.loadSimpleItems().distinctUntilChanged()
 
     val itemsState = combine(_categories, _mangas) { cats, mangas ->
         if (cats.isEmpty())
@@ -33,8 +34,7 @@ internal class MangaRepository @Inject constructor(
             ItemsState.Ok(
                 items = cats
                     .filter { it.isVisible }
-                    .map { context.transform(it, mangas) }
-                    .toImmutableList(),
+                    .mapP { context.transform(it, mangas) },
                 categories = cats.associate { it.id to it.name }.toPersistentMap()
             )
     }
@@ -51,7 +51,7 @@ internal class MangaRepository @Inject constructor(
 
     private fun Context.transform(
         cat: Category,
-        mangas: List<SimplifiedManga>
+        mangas: List<SimplifiedManga>,
     ): CategoryWithMangas {
         var prepareMangas = mangas
             .filter { cat.name == CATEGORY_ALL || it.categoryId == cat.id }

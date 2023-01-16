@@ -16,14 +16,14 @@ import org.jsoup.nodes.Element
 import timber.log.Timber
 
 class ComX(private val connectManager: ConnectManager) : SiteCatalogClassic() {
-    override val name = "COM-X.LIFE"
-    override val catalogName = "com-x.life"
+    override val name = SITE_NAME
+    override val catalogName = HOST_NAME
     override val host = "https://$catalogName"
     override val catalog = "$host/comix-read"
     override var volume = 0
 
     override suspend fun init(): ComX {
-        var lastPage = 967
+        var lastPage = 1009
         val itemPerPage = 10
 
         volume = (lastPage - 1) * itemPerPage
@@ -235,6 +235,9 @@ class ComX(private val connectManager: ConnectManager) : SiteCatalogClassic() {
         private const val TYPE = "Тип выпуска"
         private const val PUBLISHER = "Издатель"
         private const val CHAPTERS = "Главы"
+
+        const val SITE_NAME = "COM-X.LIFE"
+        const val HOST_NAME = "com-x.life"
 
         private fun String.splitAndRemoveSurround() = split(":").last().trim()
     }

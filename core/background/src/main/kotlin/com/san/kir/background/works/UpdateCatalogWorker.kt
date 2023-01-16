@@ -38,11 +38,11 @@ class UpdateCatalogWorker @AssistedInject constructor(
         updateCurrentTask { copy(progress = 0f, state = DownloadState.QUEUED) }
         notify()
 
-        val site = manager.catalog.first { it.name == task.name }
-        site.init()
-
         val tempList = mutableListOf<SiteCatalogElement>()
         kotlin.runCatching {
+            val site = manager.catalog.first { it.name == task.name }
+            site.init()
+
             var retry = 3
             while (retry != 0) {
                 retry--

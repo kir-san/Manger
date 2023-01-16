@@ -7,14 +7,14 @@ import com.san.kir.core.compose.NavigationButton
 import com.san.kir.core.compose.ScreenList
 import com.san.kir.core.compose.topBar
 import com.san.kir.core.support.R
-import com.san.kir.features.catalogs.allhen.ui.accountItem.AccountItem as AllHenItem
+import com.san.kir.features.catalogs.allhen.ui.allhen.AllhenItemScreen as AllHenItem
 import com.san.kir.features.shikimori.ui.accountItem.AccountItem as ShikiItem
 
 @Composable
 fun AccountsScreen(
     navigateUp: () -> Boolean,
     navigateToShiki: () -> Unit,
-    navigateToAllHen: () -> Unit,
+    navigateToBrowser: (String) -> Unit,
 ) {
     ScreenList(
         topBar = topBar(
@@ -24,6 +24,7 @@ fun AccountsScreen(
         additionalPadding = Dimensions.zero
     ) {
         item(key = "Shiki") { ShikiItem(navigateToShiki) }
-        item(key = "allhen") { AllHenItem(navigateToAllHen) }
+        item(key = "allhen") { AllHenItem(navigateToBrowser) }
+//        item(key = "comx") { ComXItem(navigateToBrowser) }
     }
 }

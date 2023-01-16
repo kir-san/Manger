@@ -15,7 +15,7 @@ enum class AccountsNavTarget : NavTarget {
             AccountsScreen(
                 navigateUp = navigateUp(),
                 navigateToShiki = rememberNavigate(Shikimori),
-                navigateToAllHen = rememberNavigate(Allhen)
+                navigateToBrowser = rememberNavigateString(Allhen)
             )
         }
     },
@@ -23,11 +23,13 @@ enum class AccountsNavTarget : NavTarget {
         override val content = navTarget(route = GraphTree.Accounts.Shikimori())
     },
     Allhen {
-        override val content = navTarget(route = GraphTree.Accounts.Catalogs.allhen) {
-            AccountScreen(
-                navigateUp = navigateUp(),
-            )
-        }
+        override val content =
+            navTarget(route = GraphTree.Accounts.Catalogs.allhen, hasItems = true) {
+                AccountScreen(
+                    navigateUp = navigateUp(),
+                    url = stringElement(),
+                )
+            }
     };
 }
 

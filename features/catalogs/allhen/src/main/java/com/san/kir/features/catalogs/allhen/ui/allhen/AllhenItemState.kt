@@ -1,10 +1,10 @@
-package com.san.kir.features.catalogs.allhen.ui.accountItem
+package com.san.kir.features.catalogs.allhen.ui.allhen
 
 import androidx.compose.runtime.Stable
 import com.san.kir.core.utils.viewModel.ScreenState
 
 @Stable
-internal data class AccountItemState(
+internal data class AllhenItemState(
     val login: LoginState = LoginState.Loading,
 ) : ScreenState
 

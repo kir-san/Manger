@@ -12,8 +12,8 @@
     <string name="list_chapters_selection_del_error">Нельзя удалить то чего нет</string>
     <string name="list_chapters_selection_del_ok">У вас нет больше этих глав</string>
     <string name="list_chapters_message_error">Произошла ошибка при обновлении</string>
-    <string name="list_chapters_message_no_found">Новых глав найти не удалось</string>
-    <string name="list_chapters_message_count_new">Новые главы есть, их а ж %d</string>
+    <string name="new_chapters_no_found">Новых глав найти не удалось</string>
+    <string name="have_new_chapters_count">Новые главы есть, их а ж %d</string>
     <string name="list_chapters_download_next">Скачать следующую</string>
     <string name="list_chapters_download_not_read">Скачать непрочитанное</string>
     <string name="list_chapters_download_all">Скачать все</string>

@@ -1,4 +1,4 @@
-package com.san.kir.features.catalogs.allhen.ui.accountItem
+package com.san.kir.features.catalogs.allhen.ui.allhen
 
 import com.san.kir.core.internet.ConnectManager
 import com.san.kir.core.utils.viewModel.BaseViewModel
@@ -9,17 +9,17 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 @HiltViewModel
-internal class AccountItemViewModel @Inject internal constructor(
+internal class AllhenItemViewModel @Inject internal constructor(
     private val manager: ConnectManager,
-) : BaseViewModel<AccountItemEvent, AccountItemState>() {
+) : BaseViewModel<AllhenItemEvent, AllhenItemState>() {
     private val loginState = MutableStateFlow<LoginState>(LoginState.Loading)
 
-    override val tempState = loginState.map { AccountItemState(it) }
-    override val defaultState = AccountItemState()
+    override val tempState = loginState.map { AllhenItemState(it) }
+    override val defaultState = AllhenItemState()
 
-    override suspend fun onEvent(event: AccountItemEvent) {
+    override suspend fun onEvent(event: AllhenItemEvent) {
         when (event) {
-            AccountItemEvent.Update -> update()
+            AllhenItemEvent.Update -> update()
         }
     }
 

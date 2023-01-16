@@ -209,14 +209,13 @@ abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
         delay(1.seconds)
 
         val doc = connectManager.getDocument("$host$shortLink?mtr=1")
-        val pat = Pattern.compile("rm_h.init.+").matcher(doc.body().html())
+        val pat = Pattern.compile("rm_h.initReader\\(.+").matcher(doc.body().html())
         if (pat.find()) {
             // избавляюсь от ненужного и разделяю строку в список и отправляю
             val data = "[" + pat.group()
                 .removeSuffix(");")
                 .removePrefix("rm_h.initReader( ") + "]"
-
-            val json = JSONArray(data).getJSONArray(1)
+            val json = JSONArray(data).getJSONArray(0)
 
             repeat(json.length()) { index ->
                 val jsonArray = json.getJSONArray(index)

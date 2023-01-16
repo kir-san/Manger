@@ -1,4 +1,4 @@
-package com.san.kir.features.catalogs.allhen.ui.accountItem
+package com.san.kir.features.catalogs.allhen.ui.comx
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -23,26 +23,27 @@ import com.san.kir.core.compose.animation.EndAnimatedVisibility
 import com.san.kir.core.compose.animation.FromBottomToBottomAnimContent
 import com.san.kir.core.compose.rememberImage
 import com.san.kir.core.utils.findInGoogle
-import com.san.kir.data.parsing.sites.Allhentai
+import com.san.kir.data.parsing.sites.ComX
 import com.san.kir.features.catalogs.allhen.R
+import com.san.kir.features.catalogs.allhen.ui.allhen.LoginState
 
 @Composable
-fun AccountItem(navigateToScreen: () -> Unit) {
-    val viewModel: AccountItemViewModel = hiltViewModel()
+fun ComxItemScreen(navigateToScreen: (String) -> Unit) {
+    val viewModel: ComxItemViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.sendEvent(AccountItemEvent.Update)
+        viewModel.sendEvent(ComxItemEvent.Update)
     }
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = navigateToScreen),
+            .clickable { navigateToScreen(ComX.HOST_NAME) },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
-            rememberImage(findInGoogle(Allhentai.HOST_NAME)),
+            rememberImage(findInGoogle(ComX.HOST_NAME)),
             contentDescription = "allhentai site icon",
             modifier = Modifier
                 .padding(vertical = Dimensions.half, horizontal = Dimensions.default)
@@ -50,7 +51,7 @@ fun AccountItem(navigateToScreen: () -> Unit) {
         )
 
         Column(modifier = Modifier.weight(1f)) {
-            Text(Allhentai.SITE_NAME)
+            Text(ComX.SITE_NAME)
 
             FromBottomToBottomAnimContent(targetState = state.login) {
                 when (it) {

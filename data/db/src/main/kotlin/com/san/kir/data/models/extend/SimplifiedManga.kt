@@ -1,36 +1,38 @@
 package com.san.kir.data.models.extend
 
+import androidx.compose.runtime.Stable
 import androidx.room.ColumnInfo
 import androidx.room.DatabaseView
-import com.san.kir.data.models.base.Category
-import com.san.kir.data.models.base.Manga
 
 @DatabaseView(
-    viewName = SimplifiedManga.viewName,
+    viewName = "simple_manga",
     value = "SELECT " +
-            "${Manga.tableName}.${Manga.Col.id}, " +
-            "${Manga.tableName}.${Manga.Col.name}, " +
-            "${Manga.tableName}.${Manga.Col.logo}, " +
-            "${Manga.tableName}.${Manga.Col.color}, " +
-            "${Manga.tableName}.${Manga.Col.populate}, " +
-            "${Manga.tableName}.${Manga.Col.categoryId}, " +
+            "manga.id, " +
+            "manga.name AS manga_name, " +
+            "manga.logo, " +
+            "manga.color, " +
+            "manga.populate, " +
+            "manga.category_id, " +
 
-            "(SELECT ${Category.Col.name} FROM ${Category.tableName} " +
-            "WHERE ${Manga.tableName}.${Manga.Col.categoryId} = ${Category.tableName}.${Category.Col.id}) " +
-            "AS ${Manga.Col.category} " +
+            "(SELECT name FROM categories " +
+            "WHERE manga.category_id = categories.id) " +
+            "AS category, " +
 
-            "FROM ${Manga.tableName}"
+            "(SELECT COUNT(*) FROM chapters " +
+            "WHERE chapters.manga_id IS manga.id " +
+            "AND chapters.isRead IS 0) " +
+            "AS no_read_chapters " +
+
+            "FROM manga"
 )
+@Stable
 data class SimplifiedManga(
-    @ColumnInfo(name = Manga.Col.id) var id: Long = 0,
-    @ColumnInfo(name = Manga.Col.name) var name: String = "",
-    @ColumnInfo(name = Manga.Col.logo) var logo: String = "",
-    @ColumnInfo(name = Manga.Col.color) var color: Int = 0,
-    @ColumnInfo(name = Manga.Col.populate) var populate: Int = 0,
-    @ColumnInfo(name = Manga.Col.categoryId) var categoryId: Long = 0,
-    @ColumnInfo(name = Manga.Col.category) var category: String = "",
-) {
-    companion object {
-        const val viewName = "simple_manga"
-    }
-}
+    @ColumnInfo(name = "id") val id: Long = 0,
+    @ColumnInfo(name = "manga_name") val name: String = "",
+    @ColumnInfo(name = "logo") val logo: String = "",
+    @ColumnInfo(name = "color") val color: Int = 0,
+    @ColumnInfo(name = "populate") val populate: Int = 0,
+    @ColumnInfo(name = "category_id") val categoryId: Long = 0,
+    @ColumnInfo(name = "category") val category: String = "",
+    @ColumnInfo(name = "no_read_chapters") val noRead: Int = 0,
+)

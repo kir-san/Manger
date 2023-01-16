@@ -14,9 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.ScreenList
-import com.san.kir.core.compose_utils.topBar
+import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.NavigationButton
+import com.san.kir.core.compose.ScreenList
+import com.san.kir.core.compose.topBar
 import com.san.kir.features.shikimori.R
 import com.san.kir.features.shikimori.logic.useCases.CanBind
 import com.san.kir.features.shikimori.ui.util.MangaItemContent
@@ -24,7 +25,7 @@ import com.san.kir.features.shikimori.ui.util.MangaItemContent
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ShikiSearchScreen(
-    navigateUp: () -> Unit,
+    navigateUp: () -> Boolean,
     navigateToItem: (Long) -> Unit,
     searchText: String,
 ) {
@@ -33,11 +34,10 @@ fun ShikiSearchScreen(
 
     ScreenList(
         topBar = topBar(
-            navigationListener = navigateUp,
+            navigationButton = NavigationButton.Back(navigateUp),
             title = stringResource(R.string.online_search_title),
             initSearchText = searchText,
             onSearchTextChange = { viewModel.sendEvent(SearchEvent.Search(it)) },
-            enableSearchField = true,
             hasAction = state.search is SearchingState.Load,
         ),
         enableCollapsingBars = true

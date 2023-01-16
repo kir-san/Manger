@@ -1,0 +1,5 @@
+<resources>
+    <string name="login_text">Вы вошли, как %s</string>
+    <string name="no_auth_text">Вы не авторизованы</string>
+    <string name="error">Произошла ошибка!</string>
+</resources>

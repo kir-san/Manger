@@ -16,10 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.ScreenPadding
-import com.san.kir.core.compose_utils.rememberImage
-import com.san.kir.core.compose_utils.topBar
+import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.NavigationButton
+import com.san.kir.core.compose.ScreenPadding
+import com.san.kir.core.compose.horizontalAndBottomInsetsPadding
+import com.san.kir.core.compose.rememberImage
+import com.san.kir.core.compose.topBar
 import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
 import com.san.kir.features.shikimori.R
 import com.san.kir.features.shikimori.logic.useCases.SyncState
@@ -32,7 +34,7 @@ import com.san.kir.features.shikimori.ui.util.body
 @Composable
 fun LocalItemScreen(
     mangaId: Long,
-    navigateUp: () -> Unit,
+    navigateUp: () -> Boolean,
     navigateToSearch: (String) -> Unit,
 ) {
     val viewModel: LocalItemViewModel = hiltViewModel()
@@ -45,7 +47,7 @@ fun LocalItemScreen(
 
     ScreenPadding(
         topBar = topBar(
-            navigationListener = navigateUp,
+            navigationButton = NavigationButton.Back(navigateUp),
             title = stringResource(R.string.profile_item_title),
             hasAction = state.manga is MangaState.Load
         ),
@@ -56,7 +58,8 @@ fun LocalItemScreen(
                     top = it.calculateTopPadding(),
                     start = Dimensions.default,
                     end = Dimensions.default,
-                )
+                ),
+            contentPadding = horizontalAndBottomInsetsPadding()
         ) {
             when (val manga = state.manga) {
                 is MangaState.Ok -> content(

@@ -21,11 +21,14 @@ import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.PlannedDao
 import com.san.kir.data.db.dao.SettingsDao
 import com.san.kir.data.db.dao.ShikimoriDao
-import com.san.kir.data.db.dao.SiteDao
 import com.san.kir.data.db.dao.StatisticDao
 import com.san.kir.data.db.dao.StorageDao
+import com.san.kir.data.db.migrations.From58to59
+import com.san.kir.data.db.migrations.From59to60
+import com.san.kir.data.db.migrations.From62to63
 import com.san.kir.data.db.migrations.migrations
 import com.san.kir.data.db.typeConverters.FileConverter
+import com.san.kir.data.db.typeConverters.ListLongConverter
 import com.san.kir.data.db.typeConverters.ListStringConverter
 import com.san.kir.data.db.typeConverters.PlannedPeriodTypeConverter
 import com.san.kir.data.db.typeConverters.PlannedTypeTypeConverter
@@ -39,18 +42,16 @@ import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.PlannedTask
 import com.san.kir.data.models.base.Settings
 import com.san.kir.data.models.base.ShikiDbManga
-import com.san.kir.data.models.base.Site
 import com.san.kir.data.models.base.Statistic
 import com.san.kir.data.models.base.Storage
-import com.san.kir.data.models.extend.MiniManga
-import com.san.kir.data.models.extend.PlannedTaskExt
+import com.san.kir.data.models.extend.SimplifiedChapter
 import com.san.kir.data.models.extend.SimplifiedManga
 import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
+import com.san.kir.data.models.extend.SimplifiedStatistic
 import timber.log.Timber
 
 @Database(
     entities = [
-        Site::class,
         Manga::class,
         Chapter::class,
         Category::class,
@@ -61,22 +62,34 @@ import timber.log.Timber
         ShikiDbManga::class,
         Settings::class
     ],
-    version = RoomDB.VERSION,
+    version = 63,
     views = [
         SimplifiedManga::class,
         SimplifiedMangaWithChapterCounts::class,
-        PlannedTaskExt::class,
-        MiniManga::class,
+        SimplifiedStatistic::class,
+        SimplifiedChapter::class,
     ],
     autoMigrations = [
         AutoMigration(from = 41, to = 42), // SimplifiedManga add categoryId
         AutoMigration(from = 43, to = 44), // add view PlannedTaskExt
         AutoMigration(from = 44, to = 45), // add view MiniManga
         AutoMigration(from = 46, to = 47), // add table Settings
+        AutoMigration(from = 47, to = 48), // add noRead field to view SimplifiedManga
+        AutoMigration(from = 48, to = 49), // rename name field in view SimplifiedManga
+        AutoMigration(from = 51, to = 52), // add view SimplifiedChapters
+        AutoMigration(from = 52, to = 53), // add new field to view SimplifiedChapters
+        AutoMigration(from = 53, to = 54), // add new field to view SimplifiedChapters
+        AutoMigration(from = 56, to = 57), // add mangas field to table planned_task
+        AutoMigration(from = 57, to = 58), // remove view MiniManga
+        AutoMigration(from = 58, to = 59, spec = From58to59::class), // remove Site table
+        AutoMigration(from = 59, to = 60, spec = From59to60::class), // remove field from Manga
+        AutoMigration(from = 60, to = 61), // update SimplifiedManga view
+        AutoMigration(from = 62, to = 63, spec = From62to63::class), // remove unused fields from Chapters
     ]
 )
 @TypeConverters(
     FileConverter::class,
+    ListLongConverter::class,
     ListStringConverter::class,
     PlannedTypeTypeConverter::class,
     PlannedWeekTypeConverter::class,
@@ -85,7 +98,6 @@ import timber.log.Timber
     ShikimoriMangaConverter::class,
 )
 abstract class RoomDB : RoomDatabase() {
-    abstract fun siteDao(): SiteDao
     abstract fun mangaDao(): MangaDao
     abstract fun chapterDao(): ChapterDao
     abstract fun plannedDao(): PlannedDao
@@ -98,7 +110,6 @@ abstract class RoomDB : RoomDatabase() {
 
     companion object {
         private const val NAME = "${DIR.PROFILE}/profile.db"
-        const val VERSION = 47
 
         private lateinit var sDb: RoomDB
 
@@ -155,17 +166,17 @@ class Callback(private val context: Context) : RoomDatabase.Callback() {
 
     private fun SupportSQLiteDatabase.addCategoryAll() {
         val cat = ContentValues()
-        cat.put(Category.Col.name, context.CATEGORY_ALL)
-        cat.put(Category.Col.order, 0)
-        cat.put(Category.Col.isVisible, true)
-        cat.put(Category.Col.typeSort, "")
-        cat.put(Category.Col.isReverseSort, true)
-        cat.put(Category.Col.spanPortrait, 2)
-        cat.put(Category.Col.spanLandscape, 3)
-        cat.put(Category.Col.isLargePortrait, true)
-        cat.put(Category.Col.isLargeLandscape, true)
+        cat.put("name", context.CATEGORY_ALL)
+        cat.put("ordering", 0)
+        cat.put("isVisible", true)
+        cat.put("typeSort", "")
+        cat.put("isReverseSort", true)
+        cat.put("spanPortrait", 2)
+        cat.put("spanLandscape", 3)
+        cat.put("isListPortrait", true)
+        cat.put("isListLandscape", true)
 
-        insert(Category.tableName, OnConflictStrategy.IGNORE, cat)
+        insert("categories", OnConflictStrategy.IGNORE, cat)
     }
 
     private fun SupportSQLiteDatabase.addMenuItems(ctx: Context) {
@@ -186,40 +197,41 @@ class Callback(private val context: Context) : RoomDatabase.Callback() {
     override fun onOpen(db: SupportSQLiteDatabase) {
         super.onOpen(db)
 
-        val result = db.query("SELECT id from ${Settings.tableName}")
+        val result = db.query("SELECT id from settings")
         if (result.count == 0) {
-            db.insert(Settings.tableName, OnConflictStrategy.REPLACE, defaultSettings())
+            db.insert("settings", OnConflictStrategy.REPLACE, defaultSettings())
         }
     }
 
     private fun defaultSettings() = ContentValues().apply {
-        put(Settings.Col.id, 1)
-        put(Settings.Col.isIndividual, true)
-        put(Settings.Col.isTitle, true)
-        put(Settings.Col.filterStatus, ChapterFilter.ALL_READ_ASC.name)
-        put(Settings.Col.concurrent, true)
-        put(Settings.Col.retry, false)
-        put(Settings.Col.wifi, false)
-        put(Settings.Col.isFirstLaunch, true)
-        put(Settings.Col.theme, true)
-        put(Settings.Col.isShowCategory, true)
-        put(Settings.Col.editMenu, false)
-        put(Settings.Col.orientation, Settings.Viewer.Orientation.AUTO_LAND.name)
-        put(Settings.Col.cutOut, true)
-        put(Settings.Col.withoutSaveFiles, false)
-        put(Settings.Col.isLogin, false)
-        put(Settings.Col.taps, false)
-        put(Settings.Col.swipes, true)
-        put(Settings.Col.keys, false)
-        put(Settings.Col.accessToken, "")
-        put(Settings.Col.tokenType, "")
-        put(Settings.Col.expiresIn, 0L)
-        put(Settings.Col.refreshToken, "")
-        put(Settings.Col.scope, "")
-        put(Settings.Col.createdAt, 0L)
-        put(Settings.Col.shikimoriWhoamiId, 0)
-        put(Settings.Col.nickname, "")
-        put(Settings.Col.avatar, "")
+        put("id", 1)
+        put("isIndividual", true)
+        put("isTitle", true)
+        put("filterStatus", ChapterFilter.ALL_READ_ASC.name)
+        put("concurrent", true)
+        put("retry", false)
+        put("wifi", false)
+        put("isFirstLaunch", true)
+        put("theme", true)
+        put("isShowCategory", true)
+        put("editMenu", false)
+        put("orientation", Settings.Viewer.Orientation.AUTO_LAND.name)
+        put("cutOut", true)
+        put("withoutSaveFiles", false)
+        put("isLogin", false)
+        put("taps", false)
+        put("swipes", true)
+        put("keys", false)
+        put("access_token", "")
+        put("token_type", "")
+        put("expires_in", 0L)
+        put("refresh_token", "")
+        put("scope", "")
+        put("created_at", 0L)
+        put("shikimori_whoami_id", 0)
+        put("nickname", "")
+        put("avatar", "")
+        put("scrollbars", 1)
     }
 
 }

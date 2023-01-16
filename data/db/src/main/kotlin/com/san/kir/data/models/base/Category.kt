@@ -6,57 +6,40 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.san.kir.core.support.SortLibraryUtil
 import kotlinx.parcelize.Parcelize
+import javax.annotation.concurrent.Immutable
 
+@Immutable
 @Parcelize
-@Entity(tableName = Category.tableName)
+@Entity(tableName = "categories")
 data class Category(
-    @ColumnInfo(name = Col.id)
+    @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = true)
-    var id: Long = 0L,
+    val id: Long = 0L,
 
-    @ColumnInfo(name = Col.name)
-    var name: String = "",
+    @ColumnInfo(name = "name")
+    val name: String = "",
 
-    @ColumnInfo(name = Col.order)
-    var order: Int = 0,
+    @ColumnInfo(name = "ordering")
+    val order: Int = 0,
 
-    @ColumnInfo(name = Col.isVisible)
-    var isVisible: Boolean = true,
+    @ColumnInfo(name = "isVisible")
+    val isVisible: Boolean = true,
 
-    @ColumnInfo(name = Col.typeSort)
-    var typeSort: String = SortLibraryUtil.abc,
+    @ColumnInfo(name = "typeSort")
+    val typeSort: String = SortLibraryUtil.abc,
 
-    @ColumnInfo(name = Col.isReverseSort)
-    var isReverseSort: Boolean = false,
+    @ColumnInfo(name = "isReverseSort")
+    val isReverseSort: Boolean = false,
 
-    @ColumnInfo(name = Col.spanPortrait)
-    var spanPortrait: Int = 2,
+    @ColumnInfo(name = "spanPortrait")
+    val spanPortrait: Int = 2,
 
-    @ColumnInfo(name = Col.spanLandscape)
-    var spanLandscape: Int = 3,
+    @ColumnInfo(name = "spanLandscape")
+    val spanLandscape: Int = 3,
 
-    @ColumnInfo(name = Col.isLargePortrait)
-    var isLargePortrait: Boolean = true,
+    @ColumnInfo(name = "isListPortrait")
+    val isLargePortrait: Boolean = true,
 
-    @ColumnInfo(name = Col.isLargeLandscape)
-    var isLargeLandscape: Boolean = true,
-) : Parcelable {
-    companion object {
-        const val tableName = "categories"
-    }
-
-    object Col {
-        const val id = "id"
-        const val name = "name"
-        const val order = "ordering"
-        const val isVisible = "isVisible"
-        const val typeSort = "typeSort"
-        const val isReverseSort = "isReverseSort"
-        const val spanPortrait = "spanPortrait"
-        const val spanLandscape = "spanLandscape"
-        const val isLargePortrait = "isListPortrait"
-        const val isLargeLandscape = "isListLandscape"
-    }
-}
-
-
+    @ColumnInfo(name = "isListLandscape")
+    val isLargeLandscape: Boolean = true,
+) : Parcelable

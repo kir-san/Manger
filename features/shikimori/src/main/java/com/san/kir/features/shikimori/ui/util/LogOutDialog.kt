@@ -8,8 +8,8 @@ import androidx.compose.ui.res.stringResource
 import com.san.kir.features.shikimori.R
 
 internal sealed interface DialogState {
-    object Show : DialogState
-    object Hide : DialogState
+   data object Show : DialogState
+   data object Hide : DialogState
 }
 
 @Composable

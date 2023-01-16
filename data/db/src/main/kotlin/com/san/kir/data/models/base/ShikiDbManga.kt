@@ -4,22 +4,22 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = ShikiDbManga.tableName)
+@Entity(tableName = "shikimori")
 data class ShikiDbManga(
 
     // ID манги, которые указан на сайте
     @PrimaryKey
-    @ColumnInfo(name = Col.targetId)
+    @ColumnInfo(name = "id")
     val targetId: Long = -1,
 
     // ID манги из локальной библиотеки, с которой связана эта манга
-    @ColumnInfo(name = Col.libMangaId)
+    @ColumnInfo(name = "lid_id")
     val libMangaId: Long = -1,
 
-    @ColumnInfo(name = Col.rate)
+    @ColumnInfo(name = "rate")
     val rate: ShikimoriRate = ShikimoriRate(),
 
-    @ColumnInfo(name = Col.data)
+    @ColumnInfo(name = "data")
     val manga: ShikimoriManga = ShikimoriManga(),
 
     ) : ShikimoriMangaItem {
@@ -45,14 +45,4 @@ data class ShikiDbManga(
     override val status: ShikimoriStatus
         get() = rate.status
 
-    companion object {
-        const val tableName = "shikimori"
-    }
-
-    object Col {
-        const val targetId = "id"
-        const val libMangaId = "lid_id"
-        const val rate = "rate"
-        const val data = "data"
-    }
 }

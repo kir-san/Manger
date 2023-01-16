@@ -3,10 +3,11 @@ package com.san.kir.core.utils
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.san.kir.core.support.DIR
+import com.san.kir.core.utils.coroutines.withIoContext
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
-import java.util.*
+import java.util.Locale
 
 val externalDir: File = android.os.Environment.getExternalStorageDirectory()
 
@@ -77,13 +78,6 @@ fun delFiles(filesPath: List<String>): ResultDeleting {
     return ResultDeleting(current = acc, max = filesPath.size)
 }
 
-fun File.createDirs(): Boolean {
-    mkdirs()
-    if (!isDirectory)
-        Timber.v("Error $path")
-    return exists()
-}
-
 // Проверка, что файл является корректным изображением формата PNG
 fun File.isOkPng(): Boolean {
     kotlin.runCatching {
@@ -100,7 +94,9 @@ fun File.isOkPng(): Boolean {
 }
 
 private const val DEFAULT_COMPRESS_QUALITY = 90
-fun convertImagesToPng(image: File): File {
+
+@Suppress("BlockingMethodInNonBlockingContext")
+suspend fun convertImagesToPng(image: File): File = withIoContext {
     val b = BitmapFactory.decodeFile(image.path)
 
     val png = File(
@@ -118,5 +114,5 @@ fun convertImagesToPng(image: File): File {
         stream.close()
     }
 
-    return png
+    png
 }

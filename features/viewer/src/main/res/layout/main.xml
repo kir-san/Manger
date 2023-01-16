@@ -3,9 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/transparent_dark">
 
-    <com.san.kir.features.viewer.SpecialViewPager
+    <com.san.kir.features.viewer.view.SpecialViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -44,7 +45,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
-        android:background="@color/transparent_dark">
+        android:background="@color/primary">
 
         <ImageView
             android:id="@+id/back"
@@ -110,5 +111,11 @@
         android:layout_height="2dp"
         android:layout_gravity="top"
         android:progressDrawable="@drawable/viewer_progressbar" />
+
+    <ProgressBar
+        android:id="@+id/loader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
 
 </FrameLayout>

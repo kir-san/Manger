@@ -4,11 +4,10 @@ import com.san.kir.core.utils.coroutines.withIoContext
 import com.san.kir.features.shikimori.logic.repo.SettingsRepository
 import com.san.kir.features.shikimori.logic.repo.TokenRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.mapLatest
+import timber.log.Timber
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class AuthUseCase @Inject constructor(
@@ -26,21 +25,22 @@ internal class AuthUseCase @Inject constructor(
                         && settings.auth.token.refreshToken.isNotEmpty()
             )
         }
-        .distinctUntilChanged { old, new -> old.isLogin == new.isLogin }
+        .distinctUntilChanged()
 
     // Получение токена и данных пользователя
     suspend fun login(code: String) = withIoContext {
         val newToken = tokenRepository.getAccessToken(code)
-        settingsRepository.update(token = newToken)
+        val whoami = whoami()
 
-        delay(4.seconds)
+        if (whoami == null) settingsRepository.update(isLogin = false)
+        else settingsRepository.update(newToken)
+    }
 
-        tokenRepository.getWhoami()?.let { new ->
-            settingsRepository.update(isLogin = true, token = newToken, whoami = new)
-        } ?: let {
-            settingsRepository.update(isLogin = false)
-        }
-
+    suspend fun whoami() = withIoContext {
+        val whoami = tokenRepository.getWhoami() ?: return@withIoContext null
+        Timber.i("whoami -> $whoami")
+        settingsRepository.update(whoami)
+        whoami
     }
 
     suspend fun logout() = withIoContext {

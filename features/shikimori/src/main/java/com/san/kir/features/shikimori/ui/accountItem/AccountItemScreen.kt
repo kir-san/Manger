@@ -1,5 +1,3 @@
-@file:Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
-
 package com.san.kir.features.shikimori.ui.accountItem
 
 import androidx.compose.foundation.Image
@@ -13,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
@@ -25,10 +24,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.san.kir.core.compose_utils.Dimensions
-import com.san.kir.core.compose_utils.animation.FromEndToEndAnimContent
-import com.san.kir.core.compose_utils.rememberImage
-import com.san.kir.core.compose_utils.systemBarsHorizontalPadding
+import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.animation.BottomAnimatedVisibility
+import com.san.kir.core.compose.animation.FromEndToEndAnimContent
+import com.san.kir.core.compose.horizontalInsetsPadding
+import com.san.kir.core.compose.rememberImage
 import com.san.kir.features.shikimori.R
 import com.san.kir.features.shikimori.logic.api.ShikimoriData
 import com.san.kir.features.shikimori.ui.util.LogOutDialog
@@ -44,8 +44,8 @@ fun AccountItem(navigateToManager: () -> Unit) {
         navigateToManager = {
             when (state.login) {
                 LoginState.LogOut, LoginState.Error -> viewModel.sendEvent(AccountItemEvent.LogIn)
-                is LoginState.LogIn -> navigateToManager()
-                else -> {}
+                is LoginState.LogInOk               -> navigateToManager()
+                else                                -> {}
             }
         },
         login = { viewModel.sendEvent(AccountItemEvent.LogIn) },
@@ -70,8 +70,8 @@ private fun LoginOrNot(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = navigateToManager)
-            .padding(vertical = Dimensions.smaller, horizontal = Dimensions.default)
-            .padding(systemBarsHorizontalPadding()),
+            .padding(vertical = Dimensions.quarter, horizontal = Dimensions.default)
+            .horizontalInsetsPadding(),
         verticalAlignment = Alignment.CenterVertically
     ) {
 
@@ -79,24 +79,23 @@ private fun LoginOrNot(
             rememberImage(ShikimoriData.iconUrl),
             contentDescription = "Shikimori site icon",
             modifier = Modifier
-                .padding(vertical = Dimensions.small)
+                .padding(vertical = Dimensions.half)
                 .padding(end = Dimensions.default)
                 .size(Dimensions.Image.default)
         )
 
-
-        Column(
-            modifier = Modifier
-                .weight(1f, true)
-        ) {
+        Column(modifier = Modifier.weight(1f, true)) {
             Text(stringResource(R.string.site_name))
             TextLoginOrNot(state)
+            BottomAnimatedVisibility(visible = state is LoginState.LogInError) {
+                Text(stringResource(R.string.whoami_error), color = MaterialTheme.colors.error)
+            }
         }
 
         Row(modifier = Modifier.fillMaxHeight(), verticalAlignment = Alignment.CenterVertically) {
             FromEndToEndAnimContent(targetState = state) { targetState ->
                 when (targetState) {
-                    is LoginState.LogIn -> {
+                    is LoginState.LogInError, is LoginState.LogInOk -> {
                         IconButton(onClick = logout) {
                             Icon(
                                 Icons.Default.Logout, "",
@@ -104,7 +103,8 @@ private fun LoginOrNot(
                             )
                         }
                     }
-                    LoginState.LogOut -> {
+
+                    LoginState.LogOut                               -> {
                         IconButton(onClick = login) {
                             Icon(
                                 Icons.Default.Login, "",
@@ -112,12 +112,10 @@ private fun LoginOrNot(
                             )
                         }
                     }
-                    LoginState.Error -> {
-                        Icon(Icons.Default.Error, "")
-                    }
-                    LoginState.Loading -> {
-                        CircularProgressIndicator()
-                    }
+
+                    LoginState.Error                                -> Icon(Icons.Default.Error, "")
+
+                    is LoginState.LogInCheck, LoginState.Loading    -> CircularProgressIndicator()
                 }
             }
         }

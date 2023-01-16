@@ -4,30 +4,39 @@
     <string name="category_all">Все</string>
 
     <!--Planned-->
-    <string name="planned_type_manga">Манга</string>
-    <string name="planned_period_day">День</string>
-    <string name="planned_period_week">Неделя</string>
-    <string name="planned_type_group">Группа</string>
-    <string name="planned_type_category">Категория</string>
-    <string name="planned_type_catalog">Каталог</string>
-    <string name="planned_type_app">Приложение</string>
-    <string name="planned_week_monday">пн</string>
-    <string name="planned_week_tuesday">вт</string>
-    <string name="planned_week_wednesday">ср</string>
-    <string name="planned_week_thursday">чт</string>
-    <string name="planned_week_friday">пт</string>
-    <string name="planned_week_saturday">сб</string>
-    <string name="planned_week_sunday">вс</string>
+    <string name="manga">Манга</string>
+    <string name="day">День</string>
+    <string name="week">Неделя</string>
+    <string name="group">Группа</string>
+    <string name="category">Категория</string>
+    <string name="catalog">Каталог</string>
+    <string name="app">Приложение</string>
+    <string name="mon">пн</string>
+    <string name="tue">вт</string>
+    <string name="wed">ср</string>
+    <string name="thu">чт</string>
+    <string name="fri">пт</string>
+    <string name="sat">сб</string>
+    <string name="sun">вс</string>
+
+    <string name="once_by_day">раз в день</string>
+    <string name="every_monday">каждый понедельник</string>
+    <string name="every_tuesday">каждый вторник</string>
+    <string name="every_wednesday">каждую среду</string>
+    <string name="every_thursday">каждый четверг</string>
+    <string name="every_friday">каждую пятницу</string>
+    <string name="every_saturday">каждую субботу</string>
+    <string name="every_sunday">каждое воскресение</string>
 
     <!-- MainMenu -->
-    <string name="main_menu_library">Библиотека</string>
-    <string name="main_menu_storage">Хранилище</string>
-    <string name="main_menu_category">Категории</string>
-    <string name="main_menu_catalogs">Каталоги</string>
-    <string name="main_menu_downloader">Загрузчик</string>
-    <string name="main_menu_latest">Обновления</string>
-    <string name="main_menu_settings">Настройки</string>
-    <string name="main_menu_schedule">Расписание</string>
-    <string name="main_menu_statistic">Статистика</string>
-    <string name="main_menu_accounts">Аккаунты</string>
+    <string name="library">Библиотека</string>
+    <string name="storage">Хранилище</string>
+    <string name="categories">Категории</string>
+    <string name="catalogs">Каталоги</string>
+    <string name="downloader">Загрузчик</string>
+    <string name="latest">Обновления</string>
+    <string name="settings">Настройки</string>
+    <string name="schedule">Расписание</string>
+    <string name="statistic">Статистика</string>
+    <string name="accounts">Аккаунты</string>
 </resources>

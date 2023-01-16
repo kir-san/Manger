@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="manga_info_dialog_loading">Загрузка…</string>
-    <string name="manga_info_dialog_loading_failed">Не удалось загрузить картинку</string>
-    <string name="manga_info_dialog_not_image">Картинки то нет</string>
-</resources>

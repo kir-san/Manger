@@ -7,7 +7,7 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.printToLog
 //import androidx.navigation.testing.TestNavHostController
 //import androidx.test.core.app.ApplicationProvider
-//import com.san.kir.manger.ui.application_navigation.library.main.LibraryScreen
+//import com.san.kir.library.LibraryScreen
 import org.junit.Rule
 import org.junit.Test
 

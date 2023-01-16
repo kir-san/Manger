@@ -8,11 +8,15 @@ import com.san.kir.core.internet.ConnectManager
 import com.san.kir.core.utils.convertImagesToPng
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.isOkPng
+import com.san.kir.data.models.base.preparedPath
+import com.san.kir.features.viewer.logic.SettingsRepository
+import com.san.kir.features.viewer.utils.LoadState
+import com.san.kir.features.viewer.utils.Page
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -58,21 +62,19 @@ internal class LoadImageViewModel @Inject constructor(
         } else {
             // получаем файл страницы
             val name = connectManager.nameFromUrl(page.pagelink)
-            Timber.v("name is $name")
-            val fullPath = getFullPath(page.chapter.path).absolutePath
-            Timber.v("fullpath is $fullPath")
+            val fullPath = getFullPath(page.chapter.preparedPath).absolutePath
             var file = File(fullPath, name)
             file = File(file.parentFile, "${file.nameWithoutExtension}.png")
-            Timber.v("file is $file")
 
-            // Если файл нужного формата в памяти
-            if (file.exists() && file.isOkPng() && !force) {
-                _state.update { LoadState.Ready(ImageSource.uri(Uri.fromFile(file))) }
-                return@launch
-            }
-
-            // Если файл есть, но формат неверный, то конвертировать
             if (file.exists() && !force) {
+
+                // Если файл нужного формата в памяти
+                if (file.isOkPng()) {
+                    _state.update { LoadState.Ready(ImageSource.uri(Uri.fromFile(file))) }
+                    return@launch
+                }
+
+                // Если файл есть, но формат неверный, то конвертировать
                 val png = convertImagesToPng(file)
                 if (png.isOkPng()) {
                     _state.update { LoadState.Ready(ImageSource.uri(Uri.fromFile(png))) }
@@ -84,63 +86,48 @@ internal class LoadImageViewModel @Inject constructor(
 
             // Загрузка файла без сохранения в памяти смартфона
             if (isOnline) {
-                kotlin.runCatching {
-                    if (page.chapter.link.isEmpty()) {
-                        _state.update { LoadState.Error(Throwable("No link")) }
-                    } else {
-                        connectManager
-                            .downloadBitmap(
-                                connectManager.prepareUrl(page.pagelink),
-                                onFinish = { bm, size, time ->
-                                    if (bm != null) {
-                                        _state.update {
-                                            LoadState.Ready(
-                                                ImageSource.cachedBitmap(bm), size, time
-                                            )
-                                        }
-                                    }
-                                },
-                                onProgress = { progress ->
-                                    _state.update { LoadState.Load(progress) }
-                                }
-                            )
-                    }
-                }.onFailure { ex ->
-                    ex.printStackTrace()
-                    _state.update { LoadState.Error(ex) }
+                if (page.chapter.link.isEmpty()) {
+                    _state.update { LoadState.Error(Throwable("No link")) }
+                } else {
+                    connectManager
+                        .downloadBitmap(
+                            connectManager.prepareUrl(page.pagelink),
+                            onProgress = { progress ->
+                                _state.update { LoadState.Load(progress) }
+                            }
+                        ).onSuccess { (bm, size, time) ->
+                            _state.update {
+                                LoadState.Ready(ImageSource.cachedBitmap(bm), size.toLong(), time)
+                            }
+                        }.onFailure { ex ->
+                            Timber.e(ex)
+                            _state.update { LoadState.Error(ex) }
+                        }
                 }
                 return@launch
             }
 
             // Загрузка файла с сохранением в памяти смартфона
-
-            file.delete()
             file = File(fullPath, name)
-
-            kotlin.runCatching {
-                connectManager.downloadFile(
-                    file, connectManager.prepareUrl(page.pagelink),
-                    onProgress = { progress ->
-                        _state.update { LoadState.Load(progress) }
-                    },
-                    onFinish = { size, time ->
-                        val imageSource = ImageSource.uri(
-                            Uri.fromFile(
-                                if (file.extension in arrayOf("gif", "webp", "jpg", "jpeg")) {
-                                    convertImagesToPng(file)
-                                } else {
-                                    file
-                                }
-                            )
-                        )
-
-                        _state.update { LoadState.Ready(imageSource, size, time) }
-                    })
+            connectManager.downloadFile(
+                file, connectManager.prepareUrl(page.pagelink),
+                onProgress = { progress ->
+                    _state.update { LoadState.Load(progress) }
+                }
+            ).onSuccess { (_, length, time) ->
+                val imageSource = ImageSource.uri(
+                    Uri.fromFile(
+                        if (file.extension in arrayOf("gif", "webp", "jpg", "jpeg"))
+                            convertImagesToPng(file)
+                        else file
+                    )
+                )
+                _state.update { LoadState.Ready(imageSource, length, time) }
             }.onFailure { ex ->
-                ex.printStackTrace()
-                _state.update { LoadState.Error(ex) }
+                Timber.e(ex)
+                if (ex !is CancellationException)
+                    _state.update { LoadState.Error(ex) }
             }
-
         }
     }
 }

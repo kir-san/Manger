@@ -9,12 +9,17 @@ import com.san.kir.data.models.base.ShikimoriManga
 import com.san.kir.data.models.base.ShikimoriRate
 import com.san.kir.features.shikimori.logic.api.ShikimoriApi
 import com.san.kir.features.shikimori.logic.api.ShikimoriData
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.plugins.resources.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.plugins.resources.delete
+import io.ktor.client.plugins.resources.get
+import io.ktor.client.plugins.resources.post
+import io.ktor.client.plugins.resources.put
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import timber.log.Timber
 import javax.inject.Inject
@@ -34,29 +39,27 @@ internal class ProfileItemRepository @Inject constructor(
         withIoContext { shikimoriDao.itemByLibId(libId) }
 
     private suspend fun addOrUpdate(rate: ShikimoriRate): ShikiDbManga {
-        var dbItem = shikimoriDao.itemByTargetId(rate.targetId)
+        val dbItem = shikimoriDao.itemByTargetId(rate.targetId)
 
-        if (dbItem != null) {
+        var item =
             // Существующие обновляем
-            dbItem = dbItem.copy(rate = rate)
-            shikimoriDao.update(dbItem)
-        } else {
+            dbItem?.copy(rate = rate) ?:
             // Отсутствующие элементы сразу добавляются
-            dbItem = ShikiDbManga(targetId = rate.targetId, rate = rate)
-            shikimoriDao.insert(dbItem)
-        }
+            ShikiDbManga(targetId = rate.targetId, rate = rate)
 
         // Информация о манге обновляется только если ее нет
-        if (dbItem.manga.isEmpty) {
-            manga(rate)
-                .onSuccess { newManga ->
-                    shikimoriDao.update(
-                        dbItem.copy(manga = newManga)
-                    )
-                }
+        if (item.manga.isEmpty) {
+            manga(rate).onSuccess { newManga ->
+                item = item.copy(manga = newManga)
+            }
         }
 
-        return dbItem
+        if (dbItem == null)
+            shikimoriDao.insert(item)
+        else
+            shikimoriDao.update(item)
+
+        return item
     }
 
     private suspend fun removeByRate(rate: ShikimoriRate) =
@@ -88,7 +91,7 @@ internal class ProfileItemRepository @Inject constructor(
                         target_type = "Manga"
                     )
                 )
-                .apply { Timber.v("result ${bodyAsText()}") }
+                .apply { Timber.v("result ${bodyAsText().count()}") }
                 .body()
         }
     }
@@ -100,8 +103,8 @@ internal class ProfileItemRepository @Inject constructor(
     ) = withIoContext {
         rates(auth, targetId).onSuccess { newRates ->
             newRates.forEach { rate ->
-                Timber.i("new rate is $rate")
                 addOrUpdate(rate)
+                delay(150L)
             }
         }
     }

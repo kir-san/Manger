@@ -1,5 +1,7 @@
 package com.san.kir.features.viewer
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -11,6 +13,9 @@ import android.view.View
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.animation.doOnEnd
+import androidx.core.animation.doOnStart
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -19,8 +24,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.ViewPager
+import com.san.kir.core.utils.coroutines.defaultLaunch
 import com.san.kir.data.models.base.Settings
 import com.san.kir.features.viewer.databinding.MainBinding
+import com.san.kir.features.viewer.utils.Page
+import com.san.kir.features.viewer.utils.VIEW_OFFSET
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -28,6 +36,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import kotlin.time.Duration.Companion.seconds
 
 object MangaViewer {
     fun start(
@@ -61,7 +70,7 @@ internal class ViewerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-
+        autoHideSystemUI()
         /*
         Используется ViewPager первой версии
         из-за невозможности использовать вторую версию,
@@ -76,22 +85,23 @@ internal class ViewerActivity : AppCompatActivity() {
         binding.pager.adapter = adapter
         binding.pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
-                lifecycleScope.launch {
-                    Timber.v("onPageSelected with $position")
+                lifecycleScope.defaultLaunch {
+//                    Timber.v("onPageSelected with $position")
                     viewModel.chaptersManager.updatePagePosition(position)
                 }
             }
         })
+
         binding.pager.offscreenPageLimit = 2
 
         binding.next.setOnClickListener { // Следующая глава
-            lifecycleScope.launch { viewModel.chaptersManager.nextChapter() }
+            lifecycleScope.defaultLaunch { viewModel.chaptersManager.nextChapter() }
         }
         binding.prev.setOnClickListener { // Предыдущая глава
-            lifecycleScope.launch { viewModel.chaptersManager.prevChapter() }
+            lifecycleScope.defaultLaunch { viewModel.chaptersManager.prevChapter() }
         }
         binding.back.setOnClickListener {
-            onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
         }
     }
 
@@ -101,20 +111,22 @@ internal class ViewerActivity : AppCompatActivity() {
         lifecycleScope.launchWhenResumed {
             viewModel.settingsRepository.viewer().collect { data: Settings.Viewer ->
                 requestedOrientation = when (data.orientation) {
-                    Settings.Viewer.Orientation.PORT -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                    Settings.Viewer.Orientation.LAND -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                    Settings.Viewer.Orientation.AUTO -> ActivityInfo.SCREEN_ORIENTATION_SENSOR
-                    Settings.Viewer.Orientation.PORT_REV -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
-                    Settings.Viewer.Orientation.LAND_REV -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
+                    Settings.Viewer.Orientation.PORT      -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                    Settings.Viewer.Orientation.LAND      -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                    Settings.Viewer.Orientation.AUTO      -> ActivityInfo.SCREEN_ORIENTATION_SENSOR
+                    Settings.Viewer.Orientation.PORT_REV  -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
+                    Settings.Viewer.Orientation.LAND_REV  -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
                     Settings.Viewer.Orientation.AUTO_PORT -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
                     Settings.Viewer.Orientation.AUTO_LAND -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-                    else -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+                    else                                  -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
                 }
 
                 if (Build.VERSION.SDK_INT >= 28) {
-                    window.attributes.layoutInDisplayCutoutMode =
+                    val attrs = window.attributes
+                    attrs.layoutInDisplayCutoutMode =
                         if (data.cutOut) WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
                         else WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
+                    window.attributes = attrs
                 }
 
                 // переключение управления свайпами
@@ -124,8 +136,6 @@ internal class ViewerActivity : AppCompatActivity() {
 
         viewModel.initReadTime()
         viewModel.setScreenWidth(getScreenWidth())
-
-        autoHideSystemUI()
 
         runStateChangeListener()
 
@@ -153,7 +163,7 @@ internal class ViewerActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 when (keyCode) {
                     KeyEvent.KEYCODE_VOLUME_DOWN -> viewModel.chaptersManager.nextPage()
-                    KeyEvent.KEYCODE_VOLUME_UP -> viewModel.chaptersManager.prevPage()
+                    KeyEvent.KEYCODE_VOLUME_UP   -> viewModel.chaptersManager.prevPage()
                 }
             }
         }
@@ -164,15 +174,18 @@ internal class ViewerActivity : AppCompatActivity() {
         viewModel.chaptersManager.state
             .flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
             .onEach { state ->
+//                Timber.i("state -> $state")
+
+                binding.loader.isVisible = state.pages.isEmpty()
+
                 if (state.pages.isNotEmpty()) {
                     // Обновление адаптера
                     adapter.setList(state.pages)
 
                     // установка страницы ViewPager
                     if (binding.pager.currentItem != state.pagePosition) {
-                        Timber.v("pagePosition is ${state.pagePosition}")
-                        binding.pager.currentItem =
-                            if (state.pagePosition < 0) 0 else state.pagePosition
+//                        Timber.v("pagePosition is ${state.pagePosition}")
+                        binding.pager.currentItem = maxOf(0, state.pagePosition)
                     }
 
                     // обновление прогрессбара
@@ -214,8 +227,8 @@ internal class ViewerActivity : AppCompatActivity() {
                     visibleJob?.cancel()
                     visibleJob = lifecycleScope.launch {
                         showUI()
-                        delay(4000L)
-                        viewModel.toogleVisibilityUI(false)
+                        delay(4.seconds)
+                        viewModel.toggleVisibilityUI(false)
                     }
                 } else {
                     visibleJob?.cancel()
@@ -239,19 +252,14 @@ internal class ViewerActivity : AppCompatActivity() {
             .launchIn(lifecycleScope)
     }
 
-    @Suppress("DEPRECATION")
     private fun autoHideSystemUI() {
-        /*
-        Если использовать ViewCompat.setOnApplyWindowInsetsListener(window.decorView),
-        то остаются видны иконки от системных баров
-
-        */
-        window.decorView.setOnSystemUiVisibilityChangeListener { visibility ->
-            // Note that system bars will only be "visible" if none of the
-            // LOW_PROFILE, HIDE_NAVIGATION, or FULLSCREEN flags are set.
-            if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
+        ViewCompat.setOnApplyWindowInsetsListener(window.decorView) { _, insets ->
+            if (insets.isVisible(WindowInsetsCompat.Type.navigationBars())
+                || insets.isVisible(WindowInsetsCompat.Type.statusBars())) {
                 hideSystemUI()
             }
+
+            insets
         }
     }
 
@@ -272,39 +280,33 @@ internal class ViewerActivity : AppCompatActivity() {
     }
 
     private fun showUI() {
-        animate(
-            onUpdate = { anim ->
-                binding.appbar.translationY = -200f + anim
-                binding.prev.translationY = 200f - anim
-                binding.next.translationY = 200f - anim
-                binding.prev.translationX = -200f + anim
-                binding.next.translationX = 200f - anim
-            },
-            onStart = {
-                binding.progressBar.isVisible = false
-                binding.appbar.isVisible = true
-                if (binding.prev.isEnabled) binding.prev.isVisible = true
-                if (binding.next.isEnabled) binding.next.isVisible = true
-            }
-        )
+        AnimatorSet().apply {
+            playTogether(
+                ObjectAnimator.ofFloat(binding.appbar, View.TRANSLATION_Y, -VIEW_OFFSET, 0f).apply {
+                    doOnStart { binding.progressBar.isVisible = false }
+                },
+                ObjectAnimator.ofFloat(binding.prev, View.TRANSLATION_Y, VIEW_OFFSET, 0f),
+                ObjectAnimator.ofFloat(binding.prev, View.TRANSLATION_X, -VIEW_OFFSET, 0f),
+                ObjectAnimator.ofFloat(binding.next, View.TRANSLATION_Y, VIEW_OFFSET, 0f),
+                ObjectAnimator.ofFloat(binding.next, View.TRANSLATION_X, VIEW_OFFSET, 0f),
+            )
+            start()
+        }
     }
 
     private fun hideUI() {
-        animate(
-            onUpdate = { anim ->
-                binding.appbar.translationY = -1f * anim
-                binding.prev.translationY = anim
-                binding.next.translationY = anim
-                binding.next.translationX = anim
-                binding.prev.translationX = -1f * anim
-            },
-            onEnd = {
-                binding.appbar.isVisible = false
-                binding.prev.isVisible = false
-                binding.next.isVisible = false
-                binding.progressBar.isVisible = true
-            }
-        )
+        AnimatorSet().apply {
+            playTogether(
+                ObjectAnimator.ofFloat(binding.appbar, View.TRANSLATION_Y, 0f, -VIEW_OFFSET).apply {
+                    doOnEnd { binding.progressBar.isVisible = true }
+                },
+                ObjectAnimator.ofFloat(binding.prev, View.TRANSLATION_Y, 0f, VIEW_OFFSET),
+                ObjectAnimator.ofFloat(binding.prev, View.TRANSLATION_X, 0f, -VIEW_OFFSET),
+                ObjectAnimator.ofFloat(binding.next, View.TRANSLATION_Y, 0f, VIEW_OFFSET),
+                ObjectAnimator.ofFloat(binding.next, View.TRANSLATION_X, 0f, VIEW_OFFSET),
+            )
+            start()
+        }
     }
 
     @Suppress("DEPRECATION")

@@ -1,5 +1,6 @@
 package com.san.kir.data.models.base
 
+import androidx.compose.runtime.Stable
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
@@ -7,9 +8,9 @@ import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import com.san.kir.core.support.ChapterFilter
 
-@Entity(tableName = Settings.tableName)
+@Entity(tableName = "settings")
 data class Settings(
-    @ColumnInfo(name = Col.id)
+    @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = false)
     val id: Long = 1,
 
@@ -19,7 +20,7 @@ data class Settings(
     @Embedded
     val download: Download = Download(),
 
-    @ColumnInfo(name = Col.isFirstLaunch)
+    @ColumnInfo(name = "isFirstLaunch")
     val isFirstLaunch: Boolean = true,
 
     @Embedded
@@ -29,106 +30,85 @@ data class Settings(
     val viewer: Viewer = Viewer(),
 
     @Embedded
-    val auth: ShikimoriAuth = ShikimoriAuth()
+    val auth: ShikimoriAuth = ShikimoriAuth(),
 ) {
-    companion object {
-        const val tableName = "settings"
-    }
 
-    object Col {
-        const val id = "id"
-        const val isIndividual = "isIndividual"
-        const val isTitle = "isTitle"
-        const val filterStatus = "filterStatus"
-        const val concurrent = "concurrent"
-        const val retry = "retry"
-        const val wifi = "wifi"
-        const val isFirstLaunch = "isFirstLaunch"
-        const val theme = "theme"
-        const val isShowCategory = "isShowCategory"
-        const val editMenu = "editMenu"
-        const val orientation = "orientation"
-        const val cutOut = "cutOut"
-        const val withoutSaveFiles = "withoutSaveFiles"
-        const val isLogin = "isLogin"
-        const val taps = "taps"
-        const val swipes = "swipes"
-        const val keys = "keys"
-        const val accessToken = "access_token"
-        const val tokenType = "token_type"
-        const val expiresIn = "expires_in"
-        const val refreshToken = "refresh_token"
-        const val scope = "scope"
-        const val createdAt = "created_at"
-        const val shikimoriWhoamiId = "shikimori_whoami_id"
-        const val nickname = "nickname"
-        const val avatar = "avatar"
-    }
-
+    @Stable
     data class Chapters(
-        @ColumnInfo(name = Col.isIndividual)
+        @ColumnInfo(name = "isIndividual")
         val isIndividual: Boolean = true,
 
-        @ColumnInfo(name = Col.isTitle)
+        @ColumnInfo(name = "isTitle")
         val isTitle: Boolean = true,
 
-        @ColumnInfo(name = Col.filterStatus)
+        @ColumnInfo(name = "filterStatus")
         val filterStatus: ChapterFilter = ChapterFilter.ALL_READ_ASC,
     )
 
+    @Stable
     data class Download(
-        @ColumnInfo(name = Col.concurrent)
+        @ColumnInfo(name = "concurrent")
         val concurrent: Boolean = true,
 
-        @ColumnInfo(name = Col.retry)
+        @ColumnInfo(name = "retry")
         val retry: Boolean = false,
 
-        @ColumnInfo(name = Col.wifi)
+        @ColumnInfo(name = "wifi")
         val wifi: Boolean = false,
     )
 
+    @Stable
     data class Main(
-        @ColumnInfo(name = Col.theme)
+        @ColumnInfo(name = "theme")
         val theme: Boolean = true,
 
-        @ColumnInfo(name = Col.isShowCategory)
+        @ColumnInfo(name = "isShowCategory")
         val isShowCategory: Boolean = true,
 
-        @ColumnInfo(name = Col.editMenu)
+        @ColumnInfo(name = "editMenu")
         val editMenu: Boolean = false,
     )
 
+    @Stable
     data class Viewer(
-        @ColumnInfo(name = Col.orientation)
+        @ColumnInfo(name = "orientation")
         val orientation: Orientation = Orientation.AUTO_LAND,
 
-        @ColumnInfo(name = Col.cutOut)
+        @ColumnInfo(name = "cutOut")
         val cutOut: Boolean = true,
 
         @Embedded
         val control: Control = Control(),
 
-        @ColumnInfo(name = Col.withoutSaveFiles)
+        @ColumnInfo(name = "withoutSaveFiles")
         val withoutSaveFiles: Boolean = false,
+
+        @ColumnInfo(name = "scrollbars")
+        val useScrollbars: Boolean = true,
     ) {
+        val controls: List<Boolean>
+            get() = listOf(control.taps, control.swipes, control.keys)
+
+        fun controls(items: List<Boolean>) = Control(items[0], items[1], items[2])
+
         enum class Orientation {
             PORT, PORT_REV, LAND, LAND_REV, AUTO, AUTO_PORT, AUTO_LAND,
         }
 
         data class Control(
-            @ColumnInfo(name = Col.taps)
+            @ColumnInfo(name = "taps")
             val taps: Boolean = false,
 
-            @ColumnInfo(name = Col.swipes)
+            @ColumnInfo(name = "swipes")
             val swipes: Boolean = true,
 
-            @ColumnInfo(name = Col.keys)
+            @ColumnInfo(name = "keys")
             val keys: Boolean = false,
         )
     }
 
     data class ShikimoriAuth(
-        @ColumnInfo(name = Col.isLogin)
+        @ColumnInfo(name = "isLogin")
         val isLogin: Boolean = false,
 
         @Embedded
@@ -138,28 +118,28 @@ data class Settings(
         val whoami: ShikimoriWhoami = ShikimoriWhoami(),
     ) {
         data class ShikimoriAccessToken(
-            @ColumnInfo(name = Col.accessToken)
-            @SerializedName(Col.accessToken)
+            @ColumnInfo(name = "access_token")
+            @SerializedName("access_token")
             val accessToken: String = "",
 
-            @ColumnInfo(name = Col.tokenType)
-            @SerializedName(Col.tokenType)
+            @ColumnInfo(name = "token_type")
+            @SerializedName("token_type")
             val tokenType: String = "",
 
-            @ColumnInfo(name = Col.expiresIn)
-            @SerializedName(Col.expiresIn)
+            @ColumnInfo(name = "expires_in")
+            @SerializedName("expires_in")
             val expiresIn: Long = 0,
 
-            @ColumnInfo(name = Col.refreshToken)
-            @SerializedName(Col.refreshToken)
+            @ColumnInfo(name = "refresh_token")
+            @SerializedName("refresh_token")
             val refreshToken: String = "",
 
-            @ColumnInfo(name = Col.scope)
-            @SerializedName(Col.scope)
+            @ColumnInfo(name = "scope")
+            @SerializedName("scope")
             val scope: String = "",
 
-            @ColumnInfo(name = Col.createdAt)
-            @SerializedName(Col.createdAt)
+            @ColumnInfo(name = "created_at")
+            @SerializedName("created_at")
             val createdAt: Long = 0,
         ) {
             val isExpired: Boolean
@@ -167,16 +147,16 @@ data class Settings(
         }
 
         data class ShikimoriWhoami(
-            @ColumnInfo(name = Col.shikimoriWhoamiId)
-            @SerializedName(Col.id)
+            @ColumnInfo(name = "shikimori_whoami_id")
+            @SerializedName("id")
             val id: Long = 0,
 
-            @ColumnInfo(name = Col.nickname)
-            @SerializedName(Col.nickname)
+            @ColumnInfo(name = "nickname")
+            @SerializedName("nickname")
             val nickname: String = "",
 
-            @ColumnInfo(name = Col.avatar)
-            @SerializedName(Col.avatar)
+            @ColumnInfo(name = "avatar")
+            @SerializedName("avatar")
             val avatar: String = "",
         )
     }

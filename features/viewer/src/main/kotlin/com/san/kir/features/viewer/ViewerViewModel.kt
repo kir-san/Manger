@@ -7,27 +7,25 @@ import com.san.kir.data.db.dao.ChapterDao
 import com.san.kir.data.db.dao.MangaDao
 import com.san.kir.data.db.dao.StatisticDao
 import com.san.kir.data.models.base.Settings
-import com.san.kir.data.parsing.SiteCatalogsManager
+import com.san.kir.features.viewer.logic.ChaptersManager
+import com.san.kir.features.viewer.logic.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.concurrent.timer
 import kotlin.math.max
+import kotlin.math.roundToInt
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 internal class ViewerViewModel @Inject constructor(
     val settingsRepository: SettingsRepository,
     val chaptersManager: ChaptersManager,
-    private val siteCatalogManager: SiteCatalogsManager,
     private val chapterDao: ChapterDao,
     private val statisticDao: StatisticDao,
     private val mangaDao: MangaDao,
@@ -37,13 +35,16 @@ internal class ViewerViewModel @Inject constructor(
     private val _visibleUI = MutableStateFlow(false)
     val visibleUI = _visibleUI.asStateFlow()
 
-    fun toogleVisibilityUI(state: Boolean = _visibleUI.value.not()) {
+    fun toggleVisibilityUI(state: Boolean = _visibleUI.value.not()) {
         _visibleUI.update { state }
     }
 
     // Хранение способов листания глав
-    val control = settingsRepository.viewer().mapLatest { it.control }
+    val control = settingsRepository.viewer().map { it.control }
         .stateIn(viewModelScope, SharingStarted.Lazily, Settings.Viewer.Control())
+
+    val hasScrollbars = settingsRepository.viewer().map { it.useScrollbars }
+        .stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     // инициализация данных
     private var isInitManager = false
@@ -51,8 +52,8 @@ internal class ViewerViewModel @Inject constructor(
         if (isInitManager) return@defaultLaunch // единовременная инициализация
         isInitManager = true
 
-        val mangaName = chapterDao.getMangaName(chapterId)
-        val manga = mangaDao.itemByName(mangaName)
+        val mangaId = chapterDao.mangaIdById(chapterId)
+        val manga = mangaDao.itemById(mangaId)
 
         chaptersManager.init(manga, chapterId)
     }
@@ -67,13 +68,17 @@ internal class ViewerViewModel @Inject constructor(
     fun setReadTime() = viewModelScope.defaultLaunch {
         val time = (System.currentTimeMillis() - _startReadTime) / 1000
         if (time > 0) {
-            val stats = chaptersManager.statisticItem
-            stats.lastTime = time
-            stats.allTime = stats.allTime + time
-            stats.maxSpeed =
-                max(stats.maxSpeed, (stats.lastPages / (time.toFloat() / 60)).toInt())
-            stats.openedTimes = stats.openedTimes + 1
-            statisticDao.update(stats)
+            statisticDao.update(
+                chaptersManager.statisticItem.copy(
+                    lastTime = time,
+                    allTime = chaptersManager.statisticItem.allTime + time,
+                    maxSpeed = max(
+                        a = chaptersManager.statisticItem.maxSpeed,
+                        b = (chaptersManager.statisticItem.lastPages / (time.toFloat() / 60)).toInt()
+                    ),
+                    openedTimes = chaptersManager.statisticItem.openedTimes + 1
+                )
+            )
         }
     }
 
@@ -92,11 +97,11 @@ internal class ViewerViewModel @Inject constructor(
     private var leftPart = 0
     private var rightPart = 0
 
-    fun clickOnScreen(xPosition: Float) = viewModelScope.launch {
+    fun clickOnScreen(xPosition: Float) = viewModelScope.defaultLaunch {
         // Включен ли режим управления нажатиями на экран
         if (control.value.taps) {
             when {
-                xPosition < leftPart -> // Нажатие на левую часть экрана
+                xPosition < leftPart  -> // Нажатие на левую часть экрана
                     chaptersManager.prevPage() // Предыдущая страница
                 xPosition > rightPart -> // Нажатие на правую часть
                     chaptersManager.nextPage() // Следущая страница
@@ -106,21 +111,23 @@ internal class ViewerViewModel @Inject constructor(
         // Если нажатие по центральной части
         // Переключение видимости баров
         if (xPosition.toInt() in (leftPart + 1) until rightPart) {
-            toogleVisibilityUI()
+            toggleVisibilityUI()
         }
     }
 
     fun setScreenWidth(width: Int) {
-        leftPart = width * 2 / 5
-        rightPart = width * 3 / 5
+        leftPart = (width * leftScreenPart).roundToInt()
+        rightPart = (width * rightScreenPart).roundToInt()
     }
 
     // Обновление списка страниц для текущей главы
-    fun updatePagesForChapter() = viewModelScope.launch {
-        val chapter = chaptersManager.currentState.currentChapter
-        chapter.pages = siteCatalogManager.pages(chapter)
-        chapterDao.update(chapter)
-        chaptersManager.updateCurrentChapter(chapter)
+    fun updatePagesForChapter() = viewModelScope.defaultLaunch {
+        chaptersManager.updatePagesForCurrentChapter()
+    }
+
+    companion object {
+        private const val leftScreenPart = 2 / 5f
+        private const val rightScreenPart = 3 / 5f
     }
 }
 

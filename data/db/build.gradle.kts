@@ -5,6 +5,7 @@ plugins {
 }
 
 android {
+    namespace = "com.san.kir.data.db"
     defaultConfig {
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
@@ -20,6 +21,8 @@ dependencies {
     implementation(project(Modules.Core.utils))
     implementation(project(Modules.Core.support))
 
+    implementation(platform(libs.compose.bom))
+
     implementation(libs.hilt.android)
 
     ksp(libs.room.compiler)
@@ -27,6 +30,7 @@ dependencies {
     implementation(libs.bundles.room)
 
     implementation(libs.paging)
+    implementation(libs.compose.runtime)
 
     implementation(libs.gson)
     implementation(libs.timber)

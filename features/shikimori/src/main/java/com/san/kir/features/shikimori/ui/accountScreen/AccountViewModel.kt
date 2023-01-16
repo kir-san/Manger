@@ -1,12 +1,12 @@
 package com.san.kir.features.shikimori.ui.accountScreen
 
 import androidx.lifecycle.viewModelScope
+import com.san.kir.core.utils.coroutines.defaultDispatcher
 import com.san.kir.core.utils.coroutines.defaultExcLaunch
 import com.san.kir.core.utils.flow.Result
 import com.san.kir.core.utils.flow.asResult
 import com.san.kir.core.utils.viewModel.BaseViewModel
 import com.san.kir.data.models.base.ShikiDbManga
-import com.san.kir.features.shikimori.logic.BackgroundTasks
 import com.san.kir.features.shikimori.logic.Helper
 import com.san.kir.features.shikimori.logic.HelperImpl
 import com.san.kir.features.shikimori.logic.repo.LibraryItemRepository
@@ -18,11 +18,13 @@ import com.san.kir.features.shikimori.ui.accountItem.LoginState
 import com.san.kir.features.shikimori.ui.util.DialogState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
@@ -39,6 +41,7 @@ internal class AccountViewModel @Inject internal constructor(
     private val settingsRepository: SettingsRepository,
     libraryRepository: LibraryItemRepository,
 ) : BaseViewModel<AccountEvent, AccountScreenState>(), Helper<ShikiDbManga> by HelperImpl() {
+    private var updateJob: Job? = null
     private val bindingHelper = BindingUseCase(libraryRepository)
 
     private val loginState = MutableStateFlow<LoginState>(LoginState.Loading)
@@ -46,7 +49,7 @@ internal class AccountViewModel @Inject internal constructor(
 
     // Список элементов из БД
     private val dbItems = loginState
-        .filterIsInstance<LoginState.LogIn>()
+        .filterIsInstance<LoginState.LogInOk>()
         .distinctUntilChanged { old, new -> old.nickName == new.nickName }
         .flatMapLatest {
             profileRepository.loadItems()
@@ -55,6 +58,7 @@ internal class AccountViewModel @Inject internal constructor(
         }
         .distinctUntilChanged()
         .onStart { emit(emptyList()) }
+        .flowOn(defaultDispatcher)
 
     init {
         dbItems
@@ -64,17 +68,18 @@ internal class AccountViewModel @Inject internal constructor(
             // Проверка каждого элемента на возможность привязки
             .flatMapLatest(bindingHelper.checkBinding())
             .onEach(send())
+            .flowOn(defaultDispatcher)
             .launchIn(viewModelScope)
 
         // Данные об авторизации
         authUseCase.authData.asResult()
             .map { auth ->
                 when (auth) {
-                    is Result.Error -> LoginState.Error
-                    Result.Loading -> LoginState.Loading
+                    is Result.Error   -> LoginState.Error
+                    Result.Loading    -> LoginState.Loading
                     is Result.Success -> {
                         if (auth.data.isLogin) {
-                            LoginState.LogIn(auth.data.nickName)
+                            LoginState.LogInOk(auth.data.nickName)
                         } else {
                             LoginState.LogOut
                         }
@@ -90,57 +95,50 @@ internal class AccountViewModel @Inject internal constructor(
         loginState,
         dialogState,
         // Манга из олайн-профиля с уже существующей привязкой
-        dbItems.mapLatest(bindingHelper.filterData()),
+        dbItems.map(bindingHelper.filterData()),
         unbindedItems,
         hasAction
     ) { login, dialog, bind, unbind, action ->
         AccountScreenState(login, dialog, action, ScreenItems(bind, unbind))
     }
 
-    override val defaultState = AccountScreenState(
-        login = LoginState.Loading,
-        dialog = DialogState.Hide,
-        action = BackgroundTasks(),
-        items = ScreenItems(emptyList(), emptyList())
-    )
+    override val defaultState = AccountScreenState()
 
     override suspend fun onEvent(event: AccountEvent) {
         when (event) {
-            AccountEvent.LogOut -> {
-                when (dialogState.value) {
-                    DialogState.Hide -> {
-                        dialogState.update { DialogState.Show }
-                    }
-                    DialogState.Show -> {
-                        dialogState.update { DialogState.Hide }
-                        loginState.update { LoginState.Loading }
-                        authUseCase.logout()
-                    }
+            AccountEvent.LogOut       -> when (dialogState.value) {
+                DialogState.Hide -> {
+                    dialogState.update { DialogState.Show }
+                }
+
+                DialogState.Show -> {
+                    dialogState.update { DialogState.Hide }
+                    loginState.update { LoginState.Loading }
+                    authUseCase.logout()
                 }
             }
-            AccountEvent.CancelLogOut -> {
-                when (dialogState.value) {
-                    DialogState.Hide -> {}
-                    DialogState.Show -> {
-                        dialogState.update { DialogState.Hide }
-                    }
+
+            AccountEvent.CancelLogOut -> when (dialogState.value) {
+                DialogState.Hide -> {}
+                DialogState.Show -> {
+                    dialogState.update { DialogState.Hide }
                 }
             }
-            AccountEvent.Update -> {
-                updateDataFromNetwork()
-            }
+
+            AccountEvent.Update       -> updateDataFromNetwork()
         }
     }
 
-    private fun updateDataFromNetwork() = viewModelScope.defaultExcLaunch(
-        onFailure = {
+    private fun updateDataFromNetwork() {
+        if (updateJob?.isActive == true) return
+        updateJob = viewModelScope.defaultExcLaunch(
+            onFailure = { updateLoading(false) }
+        ) {
+            updateLoading(true)
+
+            profileRepository.updateRates(settingsRepository.currentAuth())
+
             updateLoading(false)
         }
-    ) {
-        updateLoading(true)
-
-        profileRepository.updateRates(settingsRepository.currentAuth())
-
-        updateLoading(false)
     }
 }

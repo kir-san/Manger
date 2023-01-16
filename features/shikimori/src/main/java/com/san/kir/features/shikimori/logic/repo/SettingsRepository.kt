@@ -28,25 +28,15 @@ internal class SettingsRepository @Inject constructor(
         )
     }
 
-    suspend fun update(
-        isLogin: Boolean,
-        token: Settings.ShikimoriAuth.ShikimoriAccessToken,
-        whoami: Settings.ShikimoriAuth.ShikimoriWhoami
-    ) = withIoContext {
+    suspend fun update(whoami: Settings.ShikimoriAuth.ShikimoriWhoami) = withIoContext {
         settingsDao.update(
             currentSettings().copy(
-                auth = currentAuth().copy(
-                    isLogin = isLogin,
-                    token = token,
-                    whoami = whoami
-                )
+                auth = currentAuth().copy(isLogin = true, whoami = whoami)
             )
         )
     }
 
-    suspend fun update(
-        isLogin: Boolean,
-    ) = withIoContext {
+    suspend fun update(isLogin: Boolean) = withIoContext {
         settingsDao.update(
             currentSettings().copy(
                 auth = currentAuth().copy(isLogin = isLogin)

@@ -6,15 +6,15 @@ import com.san.kir.features.shikimori.ui.util.DialogState
 
 @Stable
 internal data class AccountItemState(
-    val login: LoginState,
-    val dialog: DialogState,
+    val login: LoginState = LoginState.Loading,
+    val dialog: DialogState = DialogState.Hide,
 ) : ScreenState
 
-internal sealed interface LoginState {
-    object Loading : LoginState
-    data class LogIn(val nickName: String) : LoginState
-    object LogOut : LoginState
-    object Error : LoginState
+internal sealed class LoginState(val nickName: String) {
+    data object Loading : LoginState("")
+    class LogInOk(nickName: String) : LoginState(nickName)
+    class LogInCheck(nickName: String) : LoginState(nickName)
+    class LogInError(nickName: String) : LoginState(nickName)
+    data object LogOut : LoginState("")
+    data object Error : LoginState("")
 }
-
-

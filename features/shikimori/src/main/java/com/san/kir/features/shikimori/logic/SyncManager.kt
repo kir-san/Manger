@@ -70,12 +70,12 @@ internal class SyncManager @Inject internal constructor(
             profileItemRepository.update(newRate)
         } else {
             // Если выбрана манга с сайта, то меняем у глав статус на прочитанный
-            var list = chapterRepository.itemsByManga(libraryManga.name)
+            var list = chapterRepository.itemsByMangaId(libraryManga.id)
             if (libraryManga is SimplifiedMangaWithChapterCounts && libraryManga.sort) {
                 list = list.sortedWith(ChapterComparator())
             }
             list = list.take(profileRate.chapters.toInt())
-                .onEach { chapter -> chapter.isRead = true }
+                .map { chapter -> chapter.copy(isRead = true) }
 
             chapterRepository.update(list)
         }

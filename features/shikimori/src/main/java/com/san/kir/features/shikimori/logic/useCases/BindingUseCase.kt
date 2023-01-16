@@ -1,5 +1,6 @@
 package com.san.kir.features.shikimori.logic.useCases
 
+import com.san.kir.core.utils.coroutines.withIoContext
 import com.san.kir.data.models.base.ShikiDbManga
 import com.san.kir.data.models.base.ShikimoriMangaItem
 import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
@@ -15,7 +16,8 @@ internal class BindingUseCase(private val itemsRepository: ItemsRepository) {
 
     fun <T : ShikimoriMangaItem> prepareData(): suspend (List<T>) -> List<BindStatus<T>> =
         { list ->
-            repositoryItems = itemsRepository.items()
+            initRepositoryItems()
+
             list.filter { checkNoBind(it) }
                 .sortedBy { item -> item.name }
                 .map { item -> BindStatus(item, CanBind.Check) }
@@ -24,7 +26,7 @@ internal class BindingUseCase(private val itemsRepository: ItemsRepository) {
     fun <T : ShikimoriMangaItem> checkBinding(): suspend (List<BindStatus<T>>) -> Flow<CheckingStatus<T>> =
         { list ->
             flow {
-                repositoryItems = itemsRepository.items()
+                initRepositoryItems()
 
                 val mutList = list.toMutableList()
 
@@ -54,11 +56,20 @@ internal class BindingUseCase(private val itemsRepository: ItemsRepository) {
 
     fun <T : ShikimoriMangaItem> filterData(): suspend (List<T>) -> List<T> =
         { list ->
-            repositoryItems = itemsRepository.items()
+            if (list.isEmpty()) {
+                list
+            } else {
+                initRepositoryItems()
 
-            list.filterNot { checkNoBind(it) }
-                .sortedBy { item -> item.name }
+                list.filterNot { checkNoBind(it) }
+                    .sortedBy { item -> item.name }
+            }
         }
+
+    private suspend fun initRepositoryItems() = withIoContext {
+        if (repositoryItems.isEmpty())
+            repositoryItems = itemsRepository.items()
+    }
 
     private fun checkNoBind(item: ShikimoriMangaItem): Boolean {
         return when (item) {

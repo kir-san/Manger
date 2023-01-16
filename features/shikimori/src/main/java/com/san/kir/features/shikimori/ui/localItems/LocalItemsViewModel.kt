@@ -1,9 +1,9 @@
 package com.san.kir.features.shikimori.ui.localItems
 
 import androidx.lifecycle.viewModelScope
+import com.san.kir.core.utils.coroutines.defaultDispatcher
 import com.san.kir.core.utils.viewModel.BaseViewModel
 import com.san.kir.data.models.extend.SimplifiedMangaWithChapterCounts
-import com.san.kir.features.shikimori.logic.BackgroundTasks
 import com.san.kir.features.shikimori.logic.Helper
 import com.san.kir.features.shikimori.logic.HelperImpl
 import com.san.kir.features.shikimori.logic.repo.LibraryItemRepository
@@ -14,6 +14,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -34,16 +35,8 @@ internal class LocalItemsViewModel @Inject internal constructor(
         sendEvent(LocalItemsEvent.Update)
     }
 
-    override val tempState = combine(
-        unbindedItems, hasAction
-    ) { unbind, action ->
-        LocalItemsState(action, unbind)
-    }
-
-    override val defaultState = LocalItemsState(
-        action = BackgroundTasks(),
-        unbind = emptyList()
-    )
+    override val tempState = combine(hasAction, unbindedItems, ::LocalItemsState)
+    override val defaultState = LocalItemsState()
 
     override suspend fun onEvent(event: LocalItemsEvent) {
         when (event) {
@@ -59,6 +52,7 @@ internal class LocalItemsViewModel @Inject internal constructor(
             .onEach(send(true))
             .flatMapLatest(bindingHelper.checkBinding())
             .onEach(send())
+            .flowOn(defaultDispatcher)
             .launchIn(viewModelScope)
     }
 }

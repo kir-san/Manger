@@ -140,7 +140,7 @@ internal class CatalogViewModel @Inject constructor(
             SortType.Date -> sortedBy { it.dateId }
             SortType.Name -> sortedBy { it.name }
             SortType.Pop  -> sortedBy { it.populate }
-        }
+        }.sortedByDescending { it.state is MiniCatalogItem.State.Update }
 
         return (if (sort.reverse) sorted.reversed() else sorted).toPersistentList()
     }

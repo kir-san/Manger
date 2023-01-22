@@ -227,7 +227,7 @@ class UpdateMangaWorker @AssistedInject constructor(
                 path = newChapter.path,
                 name = newChapter.name,
                 date = newChapter.date,
-            ) ?: newChapter
+            ) ?: newChapter.copy(isInUpdate = true)
             /** Объединение главы и ее статуса наличия в старой главе */
             ChapterContainer(chapter, oldChapter == null)
         }

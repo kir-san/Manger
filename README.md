@@ -138,8 +138,9 @@ Manger (MANGa readER)
 * Internet & Parsing
     * [Jsoup](https://jsoup.org)
     * [OKHttp](https://square.github.io/okhttp/)
-    * [Okio](https://square.github.io/okio/)
+    * [ktor](https://ktor.io/docs/welcome.html)
     * [Gson](https://github.com/google/gson)
+    * [serialization](https://github.com/Kotlin/kotlinx.serialization)
 * Room
     * [Paging](https://developer.android.com/training/data-storage/room)
     * [Runtime](https://developer.android.com/training/data-storage/room)
@@ -150,14 +151,10 @@ Manger (MANGa readER)
     * [Coroutine Core](https://github.com/Kotlin/kotlinx.coroutines)
     * [Coroutine Android](https://github.com/Kotlin/kotlinx.coroutines/blob/master/ui/kotlinx-coroutines-android/README.md)
     * [KSP](https://github.com/google/ksp)
-    * [Anko DSL as module](https://github.com/Kotlin/anko)
-* Data Store
-    * [Datastore Typed](https://developer.android.com/topic/libraries/architecture/datastore)
-    * [ProtoBuf javelite](https://mvnrepository.com/artifact/com.google.protobuf/protobuf-javalite)
+    * [Immutable Collections](https://github.com/Kotlin/kotlinx.collections.immutable)
 * Lifecycle
     * [Common](https://developer.android.com/topic/libraries/architecture/lifecycle)
     * [Runtime KTX Extensions](https://developer.android.com/topic/libraries/architecture/lifecycle)
-    * [Service](https://developer.android.com/reference/android/arch/lifecycle/LifecycleService)
     * [LiveData KTX Extensions](https://developer.android.com/topic/libraries/architecture/livedata)
     * [ViewModel KTX Extensions](https://developer.android.com/topic/libraries/architecture/viewmodel)
 * Work Manager
@@ -173,6 +170,9 @@ Manger (MANGa readER)
 * Other Google
     * [Material Components For Android](https://mvnrepository.com/artifact/com.google.android.material/material)
     * [Play Services GCM](https://mvnrepository.com/artifact/com.google.android.gms/play-services-gcm?repo=google)
+* Other
+    * [Subsampling Scale Image View](https://github.com/davemorrissey/subsampling-scale-image-view)
+    * [Timber](https://github.com/JakeWharton/timber)
 * Debug on Phone
     * [Hyperion core](https://github.com/willowtreeapps/Hyperion-Android)
     * [Hyperion crash](https://github.com/willowtreeapps/Hyperion-Android/tree/develop/hyperion-crash)

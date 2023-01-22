@@ -223,6 +223,9 @@ abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
                 list += url
             }
         }
-        return list
+        return list.map {
+            if (it.contains("?t=")) it.split("?t=").first()
+            else it
+        }
     }
 }

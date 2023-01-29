@@ -1,9 +1,9 @@
 [versions]
 # Kotlin
-kotlin = "1.7.20"
+kotlin = "1.8.0"
 coroutines = "1.6.4"
-ksp = "1.7.20-1.0.6"
-serialization = "1.4.0"
+ksp = "1.8.0-1.0.8"
+serialization = "1.4.1"
 collections_immutable = "0.3.5"
 
 # AndroidX
@@ -23,19 +23,16 @@ vectordrawable = "1.2.0-beta01"
 workmanager = "2.8.0-alpha04"
 
 # Compose
-compose_bom = "2022.12.00"
+compose_bom = "2023.01.00"
 compose = "1.2.1"
-compose_compiler = "1.3.2" # Don`t forget change field in Version.kt in buildSrc
-constraint_layout = "1.0.1"
+compose_compiler = "1.4.0" # Don`t forget change field in Version.kt in buildSrc
 hilt_navigation_compose = "1.0.0"
 compose_paging = "1.0.0-alpha15"
 
 # Google
 material = "1.3.0"
-protobuf = "3.18.0"
-protobuf_plugin = "0.8.17"
 accompanist = "0.28.0"
-google_hilt = "2.44"
+google_hilt = "2.44.2"
 
 # Test
 junit = "4.13.2"
@@ -49,7 +46,7 @@ kakaocup = "0.0.2"
 espresso = "3.4.0"
 
 #
-gradle = "7.3.1" # Don`t forget update in buildSrc
+gradle = "7.4.0" # Don`t forget update in buildSrc
 
 hyperion = "0.9.31"
 subsampling = "3.10.0"
@@ -156,7 +153,6 @@ compose_foundation_layout = { group = "androidx.compose.foundation", name = "fou
 compose_material = { group = "androidx.compose.material", name = "material" }
 compose_material_icons = { group = "androidx.compose.material", name = "material-icons-core" }
 compose_material_icons_ext = { group = "androidx.compose.material", name = "material-icons-extended" }
-compose_constraint_layout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraint_layout" }
 compose_hilt_navigation = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt_navigation_compose" }
 compose_paging = { module = "androidx.paging:paging-compose", version.ref = "compose_paging" }
 
@@ -194,7 +190,6 @@ kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 hilt = { id = "dagger.hilt.android.plugin" }
 parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize" }
-protobuf = { id = "com.google.protobuf", version.ref = "protobuf_plugin" }
 
 graphfity = { id = "com.github.ivancarras.graphfity", version.ref = "graphfity" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

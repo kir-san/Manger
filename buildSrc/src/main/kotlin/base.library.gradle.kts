@@ -1,3 +1,4 @@
+import gradle.kotlin.dsl.accessors._8685cfe1ed5e7bee92d5b3252376894e.kotlin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -10,7 +11,6 @@ android {
 
     defaultConfig {
         minSdk = Versions.App.MIN_SDK
-        targetSdk = Versions.App.TARGET_SDK
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -20,7 +20,7 @@ android {
         release {
             isMinifyEnabled = true
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
+                getDefaultProguardFile("proguard-android.txt"),
                 "proguard-rules.pro"
             )
         }
@@ -32,7 +32,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = Versions.JAVA.toString()
+        jvmTarget = "${Versions.JAVA}"
         freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
         freeCompilerArgs += listOf(
             "-P",
@@ -42,6 +42,10 @@ android {
             "-P",
             "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" + project.buildDir.absolutePath + "/compose_metrics"
         )
+    }
+
+    kotlin.sourceSets.configureEach {
+        languageSettings.enableLanguageFeature("DataObjects")
     }
 
     tasks.withType<KotlinCompile>().configureEach {

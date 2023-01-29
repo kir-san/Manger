@@ -11,7 +11,7 @@ android {
     defaultConfig {
         applicationId = "com.san.kir.manger"
 
-        versionCode = 2715
+        versionCode = 280
         versionName = "2.8"
 
         setProperty("archivesBaseName", "Manger $versionName")
@@ -25,6 +25,10 @@ android {
                 )
             }
         }
+    }
+
+    kapt {
+        correctErrorTypes = true
     }
 
     //    flavorDimensions += "version"

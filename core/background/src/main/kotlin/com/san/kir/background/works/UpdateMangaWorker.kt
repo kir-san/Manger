@@ -39,6 +39,16 @@ class UpdateMangaWorker @AssistedInject constructor(
     private val reg = Pattern.compile("\\d+")
     private var successfuled = listOf<MangaTask>()
 
+    override suspend fun prepareTasks(new: List<MangaTask>): List<Long> {
+        val unicsTasks = new.fold(listOf<MangaTask>()) { list, item ->
+            if (item.mangaId in list.map { it.mangaId }) list else list + item
+        }
+
+        workerRepository.remove((new - unicsTasks.toSet()).map { it.id })
+
+        return super.prepareTasks(unicsTasks)
+    }
+
     override suspend fun work(task: MangaTask) {
 
         kotlin.runCatching {

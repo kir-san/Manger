@@ -8,14 +8,13 @@ import com.san.kir.data.parsing.SiteCatalogClassic
 import com.san.kir.data.parsing.Status
 import com.san.kir.data.parsing.Translate
 import com.san.kir.data.parsing.getShortLink
-import kotlinx.coroutines.delay
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.flow
 import org.json.JSONArray
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import timber.log.Timber
 import java.util.regex.Pattern
-import kotlin.time.Duration.Companion.seconds
 
 abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
     SiteCatalogClassic() {
@@ -206,26 +205,34 @@ abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
         val list = mutableListOf<String>()
         val shortLink = getShortLink(item.link)
 
-        delay(1.seconds)
+        //        delay(1.seconds)
 
-        val doc = connectManager.getDocument("$host$shortLink?mtr=1")
-        val pat = Pattern.compile("rm_h.initReader\\(.+").matcher(doc.body().html())
-        if (pat.find()) {
-            // избавляюсь от ненужного и разделяю строку в список и отправляю
-            val data = "[" + pat.group()
-                .removeSuffix(");")
-                .removePrefix("rm_h.initReader( ") + "]"
-            val json = JSONArray(data).getJSONArray(0)
+        kotlin.runCatching {
+            val doc = connectManager.getDocument("$host$shortLink?mtr=1")
+            val pat = Pattern.compile("rm_h.readerInit\\(.+").matcher(doc.body().html())
+            if (pat.find()) {
+                val data = /*"[" +*/ pat.group()
+                    .replace("rm_h.readerInit(", "[")
+                    .replace(");", "]")
+                // избавляюсь от ненужного и разделяю строку в список и отправляю
+                val json = JSONArray(data).getJSONArray(1)
 
-            repeat(json.length()) { index ->
-                val jsonArray = json.getJSONArray(index)
-                val url = jsonArray.getString(0) + jsonArray.getString(2)
-                list += url
+                repeat(json.length()) { index ->
+                    val jsonArray = json.getJSONArray(index)
+                    val url = jsonArray.getString(0) + jsonArray.getString(2)
+                    list += url
+                }
             }
-        }
-        return list.map {
-            if (it.contains("?t=")) it.split("?t=").first()
-            else it
-        }
+
+            val clearUrls = if (list.isNotEmpty()) {
+                connectManager.url(list.first()).status == HttpStatusCode.Forbidden
+            } else false
+
+            return list.map {
+                if (it.contains("?t=") && clearUrls) it.split("?t=").first()
+                else it
+            }
+        }.onFailure(Timber.Forest::e)
+        return emptyList()
     }
 }

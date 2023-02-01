@@ -15,6 +15,8 @@ class MangaWorkerRepository @Inject constructor(
         withIoContext { db.mangas.removeById(item.id) }
     }
 
+    suspend fun remove(ids: List<Long>) = withIoContext { db.mangas.removeByIds(ids) }
+
     override suspend fun clear() = withIoContext { db.mangas.clear() }
 
     fun loadTask(mangaId: Long) = db.mangas.loadItemByMangaId(mangaId)

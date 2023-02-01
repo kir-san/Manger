@@ -63,10 +63,7 @@ internal class LibraryViewModel @Inject internal constructor(
 
             is LibraryEvent.ChangeCategory     -> {
                 deSelectManga()
-
-                val selectedManga =
-                    (selectedMangaState.value as? SelectedMangaState.Visible) ?: return
-                mangaRepository.changeCategory(selectedManga.item.id, event.categoryId)
+                mangaRepository.changeCategory(event.mangaId, event.categoryId)
             }
 
             is LibraryEvent.DeleteManga        -> {

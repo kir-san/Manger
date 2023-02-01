@@ -8,10 +8,10 @@ object Versions {
     }
 
     object Compose {
-        const val COMPOSE_COMPILER = "1.3.2"
+        const val COMPOSE_COMPILER = "1.4.0"
     }
 
     object Google
 
-    val JAVA = JavaVersion.VERSION_1_8
+    val JAVA = JavaVersion.VERSION_11
 }

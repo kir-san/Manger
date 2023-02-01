@@ -57,7 +57,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = Versions.JAVA.toString()
+        jvmTarget = "${Versions.JAVA}"
         freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
         freeCompilerArgs += listOf(
             "-P",
@@ -67,6 +67,10 @@ android {
             "-P",
             "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" + project.buildDir.absolutePath + "/compose_metrics"
         )
+    }
+
+    kotlin.sourceSets.configureEach {
+        languageSettings.enableLanguageFeature("DataObjects")
     }
 
     tasks.withType<KotlinCompile>().configureEach {

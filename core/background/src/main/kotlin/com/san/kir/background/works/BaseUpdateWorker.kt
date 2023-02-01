@@ -93,7 +93,7 @@ open class BaseUpdateWorker<T : BaseTask<T>>(
     * hasRunningTask = true and new.isNotEmpty and currentTask not in new -> STOP
     * */
     private suspend fun findNewCommand(new: List<T>): Command {
-        val newIds = new.map { it.id }
+        val newIds = prepareTasks(new)
 
         return lock.withLock {
             val task = currentTask
@@ -162,6 +162,8 @@ open class BaseUpdateWorker<T : BaseTask<T>>(
     }
 
     private fun hasRunningTask() = currentJob != null && currentJob?.isActive == true
+
+    protected open suspend fun prepareTasks(new: List<T>): List<Long> = new.map { it.id }
 
     protected fun updateCurrentTask(task: T.() -> T) {
         currentTask = currentTask?.task()

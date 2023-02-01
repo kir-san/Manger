@@ -75,6 +75,8 @@ class ConnectManager @Inject constructor(context: Application) {
 
     suspend fun getText(url: String = ""): String = getDocument(url = url).body().wholeText()
 
+    suspend fun url(url: String) = defaultClient.get(url.prepare())
+
     suspend fun getDocument(
         url: String = "",
         formParams: Parameters? = null,

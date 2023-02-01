@@ -11,8 +11,8 @@ android {
     defaultConfig {
         applicationId = "com.san.kir.manger"
 
-        versionCode = 280
-        versionName = "2.8"
+        versionCode = 281
+        versionName = "2.8.1"
 
         setProperty("archivesBaseName", "Manger $versionName")
 

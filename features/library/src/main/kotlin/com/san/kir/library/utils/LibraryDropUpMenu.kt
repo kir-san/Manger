@@ -45,7 +45,7 @@ internal fun LibraryDropUpMenu(
     navigateToStats: (Long) -> Unit,
     itemsState: ItemsState,
     selectedManga: SelectedMangaState.Visible,
-    sendEvent: (LibraryEvent) -> Unit
+    sendEvent: (LibraryEvent) -> Unit,
 ) {
     var deleteDialog by remember { mutableStateOf(false) }
     var expandedCategory by remember { mutableStateOf(false) }
@@ -73,7 +73,7 @@ internal fun LibraryDropUpMenu(
             },
             onItemClick = { categoryId ->
                 expandedCategory = false
-                sendEvent(LibraryEvent.ChangeCategory(categoryId))
+                sendEvent(LibraryEvent.ChangeCategory(selectedManga.item.id, categoryId))
             }
         )
 

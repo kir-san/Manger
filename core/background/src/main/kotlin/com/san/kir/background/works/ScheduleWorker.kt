@@ -101,25 +101,33 @@ class ScheduleWorker @AssistedInject constructor(
         fun addTask(ctx: Context, item: PlannedTaskBase) {
             val delay = getDelay(item)
             Timber.v("delay $delay ")
-            val perTask = PeriodicWorkRequestBuilder<ScheduleWorker>(
-                if (item.period == PlannedPeriod.DAY) 1L else 7L, TimeUnit.DAYS,
-                1L, TimeUnit.MINUTES,
-            )
-                .addTag(tag + item.id)
-                .setInputData(workDataOf("planned_task" to item.id))
-                .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                .build()
-            val oneTask = OneTimeWorkRequestBuilder<ScheduleWorker>()
-                .addTag(tag + item.id)
-                .setInputData(workDataOf("planned_task" to item.id))
-                .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                .build()
-            WorkManager.getInstance(ctx).enqueue(listOf(oneTask, perTask))
+
+            WorkManager.getInstance(ctx)
+                .cancelAllWorkByTag(tag + item.id)
+                .result
+                .addListener(
+                    {
+                        val perTask = PeriodicWorkRequestBuilder<ScheduleWorker>(
+                            if (item.period == PlannedPeriod.DAY) 1L else 7L, TimeUnit.DAYS,
+                            1L, TimeUnit.MINUTES,
+                        )
+                            .addTag(tag + item.id)
+                            .setInputData(workDataOf("planned_task" to item.id))
+                            .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                            .build()
+
+                        val oneTask = OneTimeWorkRequestBuilder<ScheduleWorker>()
+                            .addTag(tag + item.id)
+                            .setInputData(workDataOf("planned_task" to item.id))
+                            .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                            .build()
+
+                        WorkManager.getInstance(ctx).enqueue(listOf(oneTask, perTask))
+                    }, ContextCompat.getMainExecutor(ctx)
+                )
         }
 
         fun cancelTask(ctx: Context, item: PlannedTaskBase) {
-            val exe = ContextCompat.getMainExecutor(ctx)
-
             WorkManager.getInstance(ctx)
                 .cancelAllWorkByTag(tag + item.id)
                 .result
@@ -153,7 +161,7 @@ class ScheduleWorker @AssistedInject constructor(
                             PlannedType.APP      ->
                                 ctx.longToast(R.string.app_updating_was_canceled)
                         }
-                    }, exe
+                    }, ContextCompat.getMainExecutor(ctx)
                 )
 
         }

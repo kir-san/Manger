@@ -85,11 +85,7 @@ internal class ChaptersManager @Inject constructor(
             old.copy(
                 pagePosition = currentPagePosition,
                 chapterPosition = currentChapterPosition,
-                chapters = chapters.toMutableList().apply {
-                    // Если страницы пустые, то обновляем их
-                    if (currentChapter.pages.all { it.isBlank() })
-                        set(currentChapterPosition, currentChapter.withUpdatedPages())
-                }
+                chapters = chapters.updatePages(currentChapterPosition)
             ).preparePages()
         }
     }
@@ -107,19 +103,23 @@ internal class ChaptersManager @Inject constructor(
     }
 
     suspend fun nextChapter() { // переключение на следующую главу
-        if (currentState.hasNextChapter()) {
-            _state.update { old ->
-                old.copy(
-                    pagePosition = 1,
-                    chapterPosition = old.chapterPosition + 1
-                ).preparePages()
-            }
-            statisticItem = statisticItem.copy(
-                lastChapters = statisticItem.lastChapters + 1,
-                allChapters = statisticItem.allChapters + 1,
+        if (currentState.hasNextChapter().not()) return
+        _state.update { old ->
+            old.copy(
+                pagePosition = 1,
+                chapterPosition = old.chapterPosition + 1,
+                pages = emptyList()
             )
-            statisticDao.update(statisticItem)
         }
+
+        _state.update { old ->
+            old.copy(chapters = old.chapters.updatePages(old.chapterPosition)).preparePages()
+        }
+        statisticItem = statisticItem.copy(
+            lastChapters = statisticItem.lastChapters + 1,
+            allChapters = statisticItem.allChapters + 1,
+        )
+        statisticDao.update(statisticItem)
     }
 
     fun prevChapter() { // переключение на предыдущию главу
@@ -127,7 +127,7 @@ internal class ChaptersManager @Inject constructor(
             _state.update { old ->
                 old.copy(
                     pagePosition = 1,
-                    chapterPosition = old.chapterPosition - 1
+                    chapterPosition = old.chapterPosition - 1,
                 ).preparePages()
             }
         }
@@ -184,10 +184,17 @@ internal class ChaptersManager @Inject constructor(
         }
     }
 
+    // Если страницы пустые, то обновляем их
     private suspend fun Chapter.withUpdatedPages(): Chapter {
         val chapter = copy(pages = siteCatalogManager.pages(this))
         chapterDao.update(chapter)
         return chapter
+    }
+
+    private suspend fun List<Chapter>.updatePages(chapterPosition: Int): List<Chapter> {
+        val chapter = get(chapterPosition)
+        return if (chapter.pages.all { it.isBlank() }.not()) this
+        else toMutableList().apply { set(chapterPosition, get(chapterPosition).withUpdatedPages()) }
     }
 }
 

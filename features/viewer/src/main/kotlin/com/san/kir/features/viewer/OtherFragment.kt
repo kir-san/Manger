@@ -32,7 +32,7 @@ internal abstract class TemplateFragment : Fragment() {
 
         binding.button.isVisible = buttonVisibility
         binding.button.setOnClickListener {
-            activity?.onBackPressed()
+            activity?.onBackPressedDispatcher?.onBackPressed()
         }
 
         binding.layout.setOnClickListener(onClickListener)
@@ -51,7 +51,7 @@ internal class NonePrevFragment : TemplateFragment() {
     override val textRes = R.string.viewer_page_none_prev_text
     override val buttonVisibility = false
     override val onClickListener = View.OnClickListener {
-        activity?.onBackPressed()
+        activity?.onBackPressedDispatcher?.onBackPressed()
     }
 }
 
@@ -79,6 +79,6 @@ internal class NoneNextFragment : TemplateFragment() {
     override val textRes = R.string.viewer_page_none_next_text
     override val buttonVisibility = false
     override val onClickListener = View.OnClickListener {
-        activity?.onBackPressed()
+        activity?.onBackPressedDispatcher?.onBackPressed()
     }
 }

@@ -225,7 +225,12 @@ abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
             }
 
             val clearUrls = if (list.isNotEmpty()) {
-                connectManager.url(list.first()).status == HttpStatusCode.Forbidden
+                val response = runCatching { connectManager.url(list.first()) }.getOrNull()
+                if (response == null) true
+                else response.status in listOf(
+                    HttpStatusCode.Forbidden,
+                    HttpStatusCode.MultipleChoices
+                )
             } else false
 
             return list.map {

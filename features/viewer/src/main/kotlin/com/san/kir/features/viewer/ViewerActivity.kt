@@ -19,6 +19,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
@@ -35,7 +36,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import kotlin.time.Duration.Companion.seconds
 
 object MangaViewer {
@@ -86,7 +86,7 @@ internal class ViewerActivity : AppCompatActivity() {
         binding.pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
                 lifecycleScope.defaultLaunch {
-//                    Timber.v("onPageSelected with $position")
+                    //                    Timber.v("onPageSelected with $position")
                     viewModel.chaptersManager.updatePagePosition(position)
                 }
             }
@@ -174,9 +174,14 @@ internal class ViewerActivity : AppCompatActivity() {
         viewModel.chaptersManager.state
             .flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
             .onEach { state ->
-//                Timber.i("state -> $state")
+                //                Timber.i("state -> $state")
 
                 binding.loader.isVisible = state.pages.isEmpty()
+                binding.pager.isInvisible = state.pages.isEmpty()
+
+                // обновление прогрессбара
+                binding.progressBar.max = state.pages.size - 1
+                binding.progressBar.progress = state.pagePosition
 
                 if (state.pages.isNotEmpty()) {
                     // Обновление адаптера
@@ -184,13 +189,9 @@ internal class ViewerActivity : AppCompatActivity() {
 
                     // установка страницы ViewPager
                     if (binding.pager.currentItem != state.pagePosition) {
-//                        Timber.v("pagePosition is ${state.pagePosition}")
+                        //                        Timber.v("pagePosition is ${state.pagePosition}")
                         binding.pager.currentItem = maxOf(0, state.pagePosition)
                     }
-
-                    // обновление прогрессбара
-                    binding.progressBar.max = state.pages.size - 1
-                    binding.progressBar.progress = state.pagePosition
 
                     // Проверка видимости кнопок переключения глав
                     binding.prev.isEnabled = state.pages.first() is Page.Prev

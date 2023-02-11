@@ -97,7 +97,7 @@ internal class LoadImageViewModel @Inject constructor(
                             }
                         ).onSuccess { (bm, size, time) ->
                             _state.update {
-                                LoadState.Ready(ImageSource.cachedBitmap(bm), size.toLong(), time)
+                                LoadState.Ready(ImageSource.cachedBitmap(bm), size, time)
                             }
                         }.onFailure { ex ->
                             Timber.e(ex)

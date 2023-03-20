@@ -10,6 +10,7 @@ import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.isOkPng
 import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.models.base.preparedPath
+import com.san.kir.data.parsing.SiteCatalogsManager
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.sync.Mutex
@@ -24,6 +25,7 @@ class ChapterDownloader(
     private var chapter: Chapter,
     private val chapterRepository: ChapterRepository,
     private val connectManager: ConnectManager,
+    private val siteCatalogsManager: SiteCatalogsManager,
     concurrent: Int,
     private val checkNetwork: suspend () -> Boolean,
     private val onProgress: suspend (Chapter) -> Unit,
@@ -100,7 +102,7 @@ class ChapterDownloader(
                 downloadSize += file.length()
             }
 
-            file.exists()                   -> {
+            file.exists() -> {
                 val png = convertImagesToPng(file)
 
                 if (png.isOkPng())
@@ -114,7 +116,7 @@ class ChapterDownloader(
                 }
             }
 
-            else                            -> tryDownloadPage(link, file)
+            else -> tryDownloadPage(link, file)
         }
 
         updateChapter()
@@ -131,7 +133,13 @@ class ChapterDownloader(
 
 
             val result = connectManager
-                .downloadFile(downloadFile, link)
+                .downloadFile(
+                    downloadFile,
+                    connectManager.prepareUrl(link),
+                    runCatching { siteCatalogsManager.getSite(link) }
+                        .onFailure(Timber.Forest::e)
+                        .getOrNull()?.headers,
+                )
 
             // Если произошла ошибка из-за отстутсвия интернета,
             // то перезапуск загрузки после его появления

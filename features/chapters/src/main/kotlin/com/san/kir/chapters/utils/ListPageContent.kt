@@ -169,8 +169,10 @@ private fun BottomOrderBar(
 private fun animatedColor(state: Boolean): Color {
     val defaultIconColor = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
     val selectedIconColor = Color(0xff36a0da)
-    return animateColorAsState(targetValue = if (state) selectedIconColor else defaultIconColor)
-        .value
+    return animateColorAsState(
+        targetValue = if (state) selectedIconColor else defaultIconColor,
+        label = ""
+    ).value
 }
 
 @OptIn(ExperimentalFoundationApi::class)

@@ -6,6 +6,7 @@ import androidx.room.DatabaseView
 import com.san.kir.core.support.DownloadState
 import com.san.kir.core.utils.getCountPagesForChapterInMemory
 import com.san.kir.data.models.utils.compareChapterNames
+import com.san.kir.data.models.utils.preparePath
 
 @DatabaseView(
     viewName = "simple_chapter",
@@ -40,7 +41,7 @@ data class SimplifiedChapter(
         get() = if (pages.isEmpty()) 0 else downloadPages * 100 / pages.size
 }
 
-val SimplifiedChapter.countPages: Int get() = getCountPagesForChapterInMemory(path)
+val SimplifiedChapter.countPages: Int get() = getCountPagesForChapterInMemory(path.preparePath())
 
 class SimplifiedChapterComparator : Comparator<SimplifiedChapter> {
     override fun compare(o1: SimplifiedChapter, o2: SimplifiedChapter) =

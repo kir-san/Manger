@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 63,
-    "identityHash": "0ca893b773a36a8fa25e32158a45ac82",
+    "identityHash": "b45d02d69277eb602cb42fb5137b03ae",
     "entities": [
       {
         "tableName": "manga",
@@ -119,10 +119,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": true,
           "columnNames": [
             "id"
-          ],
-          "autoGenerate": true
+          ]
         },
         "indices": [],
         "foreignKeys": []
@@ -224,10 +224,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": true,
           "columnNames": [
             "id"
-          ],
-          "autoGenerate": true
+          ]
         },
         "indices": [],
         "foreignKeys": []
@@ -298,10 +298,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": true,
           "columnNames": [
             "id"
-          ],
-          "autoGenerate": true
+          ]
         },
         "indices": [],
         "foreignKeys": []
@@ -354,10 +354,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": true,
           "columnNames": [
             "id"
-          ],
-          "autoGenerate": true
+          ]
         },
         "indices": [],
         "foreignKeys": []
@@ -398,10 +398,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": true,
           "columnNames": [
             "id"
-          ],
-          "autoGenerate": true
+          ]
         },
         "indices": [],
         "foreignKeys": []
@@ -503,10 +503,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": true,
           "columnNames": [
             "id"
-          ],
-          "autoGenerate": true
+          ]
         },
         "indices": [],
         "foreignKeys": []
@@ -601,10 +601,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": true,
           "columnNames": [
             "id"
-          ],
-          "autoGenerate": true
+          ]
         },
         "indices": [],
         "foreignKeys": []
@@ -639,10 +639,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "id"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [],
         "foreignKeys": []
@@ -821,10 +821,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "id"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [],
         "foreignKeys": []
@@ -837,7 +837,7 @@
       },
       {
         "viewName": "libarary_manga",
-        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT manga.id, manga.name, manga.logo, manga.about, manga.isAlternativeSort, (SELECT COUNT(*) FROM chapters WHERE chapters.manga IS manga.name AND chapters.isRead IS 1) AS read_chapters, (SELECT COUNT(*) FROM chapters WHERE chapters.manga IS manga.name) AS all_chapters FROM manga"
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT manga.id, manga.name, manga.logo, manga.about, manga.isAlternativeSort, (SELECT COUNT(*) FROM chapters WHERE chapters.manga_id IS manga.id AND chapters.isRead IS 1) AS read_chapters, (SELECT COUNT(*) FROM chapters WHERE chapters.manga_id IS manga.id) AS all_chapters FROM manga"
       },
       {
         "viewName": "simple_statistic",
@@ -850,7 +850,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0ca893b773a36a8fa25e32158a45ac82')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b45d02d69277eb602cb42fb5137b03ae')"
     ]
   }
 }

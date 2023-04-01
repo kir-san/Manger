@@ -11,8 +11,8 @@ android {
     defaultConfig {
         applicationId = "com.san.kir.manger"
 
-        versionCode = 282
-        versionName = "2.8.2"
+        versionCode = 283
+        versionName = "2.8.3"
 
         setProperty("archivesBaseName", "Manger $versionName")
 
@@ -68,13 +68,14 @@ dependencies {
 
     implementation(project(Modules.Data.db))
 
-    implementation(libs.splash)
     implementation(libs.activity)
     implementation(libs.appcompat)
     implementation(libs.vectordrawable)
 
     implementation(libs.bundles.hilt)
     kapt(libs.bundles.hiltCompilers)
+
+    implementation(libs.bundles.decompose)
 
     implementation(libs.compose.hilt.navigation)
 

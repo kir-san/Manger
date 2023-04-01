@@ -1,4 +1,3 @@
-import gradle.kotlin.dsl.accessors._8685cfe1ed5e7bee92d5b3252376894e.kotlin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -52,4 +51,7 @@ android {
         kotlinOptions.languageVersion = "1.8"
     }
 
+    kotlin {
+        jvmToolchain(17)
+    }
 }

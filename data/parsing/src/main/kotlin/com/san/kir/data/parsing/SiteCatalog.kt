@@ -3,6 +3,7 @@ package com.san.kir.data.parsing
 import com.san.kir.data.models.base.Chapter
 import com.san.kir.data.models.base.Manga
 import com.san.kir.data.models.base.SiteCatalogElement
+import io.ktor.util.StringValues
 import kotlinx.coroutines.flow.Flow
 import timber.log.Timber
 
@@ -14,6 +15,8 @@ abstract class SiteCatalog {
         get() = "http://$catalogName"
     open val allCatalogName: List<String>
         get() = listOf(catalogName)
+
+    open val headers: StringValues? = null
 
     abstract val catalog: String
 

@@ -17,8 +17,8 @@ import androidx.compose.runtime.setValue
 import androidx.core.view.WindowCompat
 import com.san.kir.core.internet.ConnectManager
 import com.san.kir.core.internet.LocalConnectManager
-import com.san.kir.manger.ui.main.MainScreen
 import com.san.kir.manger.ui.init.InitScreen
+import com.san.kir.manger.ui.main.MainScreen
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import javax.inject.Inject

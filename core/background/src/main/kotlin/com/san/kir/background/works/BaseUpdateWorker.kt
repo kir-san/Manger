@@ -73,14 +73,14 @@ open class BaseUpdateWorker<T : BaseTask<T>>(
 
         when (command) {
             Command.Destroy -> mainJob?.cancel(WorkComplete)
-            Command.Stop    -> {
+            Command.Stop -> {
                 stopTask()
                 control()
             }
 
-            Command.Start   -> start()
-            Command.Update  -> notify()
-            else            -> {}
+            Command.Start -> start()
+            Command.Update -> notify()
+            else -> {}
         }
     }
 
@@ -101,12 +101,12 @@ open class BaseUpdateWorker<T : BaseTask<T>>(
             when {
                 hasRunningTask() -> when {
                     new.isEmpty() || task == null || !newIds.contains(task.id) -> Command.Stop
-                    queue.size != new.size                                     -> Command.Update
-                    else                                                       -> Command.None
+                    queue.size != new.size -> Command.Update
+                    else -> Command.None
                 }
 
                 new.isNotEmpty() -> Command.Start
-                else             -> Command.Destroy
+                else -> Command.Destroy
             }
         }.apply { queue = new }
     }
@@ -114,7 +114,10 @@ open class BaseUpdateWorker<T : BaseTask<T>>(
     private suspend fun start() {
         Timber.i("start")
 
-        if (currentJob != null && currentTask != null && currentJob?.isActive == true) return
+        if (currentJob != null
+            && currentTask != null
+            && currentJob?.isActive == true
+            && queue.isNotEmpty()) return
 
         currentJob = scope.launch {
             currentTask = queue.first()

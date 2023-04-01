@@ -80,4 +80,8 @@ android {
     packagingOptions {
         resources.excludes.addAll(resourceExcludes)
     }
+
+    kotlin {
+        jvmToolchain(17)
+    }
 }

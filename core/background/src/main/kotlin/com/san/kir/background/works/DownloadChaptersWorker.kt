@@ -24,6 +24,7 @@ import com.san.kir.core.utils.ID
 import com.san.kir.core.utils.bytesToMb
 import com.san.kir.core.utils.formatDouble
 import com.san.kir.data.models.base.ChapterTask
+import com.san.kir.data.parsing.SiteCatalogsManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.delay
@@ -43,6 +44,7 @@ class DownloadChaptersWorker @AssistedInject constructor(
     private val connectManager: ConnectManager,
     private val cellularNetwork: CellularNetwork,
     private val wifiNetwork: WifiNetwork,
+    private val siteCatalogsManager: SiteCatalogsManager,
 ) : BaseUpdateWorker<ChapterTask>(context, params, workerRepository) {
 
     override val TAG = "Chapter Downloader"
@@ -55,8 +57,9 @@ class DownloadChaptersWorker @AssistedInject constructor(
             chapterRepository.chapter(task.chapterId),
             chapterRepository,
             connectManager,
+            siteCatalogsManager,
             if (settingsRepository.currentDownload().concurrent) 4 else 1,
-            checkNetwork = ::awaitNetwork
+            checkNetwork = ::awaitNetwork,
         ) { chapter ->
             updateCurrentTask {
                 copy(

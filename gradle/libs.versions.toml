@@ -6,44 +6,48 @@ ksp = "1.8.0-1.0.8"
 serialization = "1.4.1"
 collections_immutable = "0.3.5"
 
+# decompose
+decompose = "1.0.0"
+
 # AndroidX
 activity = "1.6.1"
-appcompat = "1.5.1"
+appcompat = "1.6.1"
 constraintlayout = "2.1.4"
 core = "1.9.0"
 datastore = "1.0.0"
-fragment = "1.5.2"
+fragment = "1.5.5"
 hilt = "1.0.0"
 lifecycle = "2.5.1"
 navigation = "2.5.3"
 paging = "3.1.1"
-room = "2.4.3"
-splash = "1.0.0"
+room = "2.5.0"
 vectordrawable = "1.2.0-beta01"
-workmanager = "2.8.0-alpha04"
+workmanager = "2.8.0"
 
 # Compose
 compose_bom = "2023.01.00"
 compose = "1.2.1"
+material3 = "1.1.0-alpha06"
 compose_compiler = "1.4.0" # Don`t forget change field in Version.kt in buildSrc
 hilt_navigation_compose = "1.0.0"
-compose_paging = "1.0.0-alpha15"
+compose_paging = "1.0.0-alpha18"
 
 # Google
 material = "1.3.0"
 accompanist = "0.28.0"
 google_hilt = "2.44.2"
+dagger = "2.45"
 
 # Test
 junit = "4.13.2"
-test_core = "1.4.0"
-test_rules = "1.4.0"
-test_junit = "1.1.3"
-test_runner = "1.4.0"
+test_core = "1.5.0"
+test_rules = "1.5.0"
+test_junit = "1.1.5"
+test_runner = "1.5.2"
 truth = "1.0.1"
-benchmark_junit = "1.0.0"
+benchmark_junit = "1.1.1"
 kakaocup = "0.0.2"
-espresso = "3.4.0"
+espresso = "3.5.1"
 
 #
 gradle = "7.4.0" # Don`t forget update in buildSrc
@@ -54,7 +58,7 @@ timber = "5.0.1"
 
 # For Internet
 jsoup = "1.15.2"
-gson = "2.9.0"
+gson = "2.10"
 okio = "3.2.0"
 okhttp = "4.10.0"
 ktor = "2.1.1"
@@ -76,6 +80,10 @@ coroutines_android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-androi
 serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 collections_immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "collections_immutable" }
 
+# decompose
+decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
+decompose-extensions = { module = "com.arkivanov.decompose:extensions-compose-jetpack", version.ref = "decompose" }
+
 # Room
 room_runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room_compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
@@ -94,19 +102,17 @@ work_runtime = { module = "androidx.work:work-runtime-ktx", version.ref = "workm
 work_gcm = { module = "androidx.work:work-gcm", version.ref = "workmanager" }
 work_multiprocess = { module = "androidx.work:work-multiprocess", version.ref = "workmanager" }
 
-# Hilt
+# DI
 hilt-compiler-android = { module = "androidx.hilt:hilt-compiler", version.ref = "hilt" }
 hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hilt" }
 hilt-inject = { module = "javax.inject:javax.inject", version = "1" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "google_hilt" }
 hilt-compiler-google = { module = "com.google.dagger:hilt-compiler", version.ref = "google_hilt" }
 
-
 # Main Android
 core = { module = "androidx.core:core-ktx", version.ref = "core" }
 activity = { module = "androidx.activity:activity-compose", version.ref = "activity" }
 fragment = { module = "androidx.fragment:fragment-ktx", version.ref = "fragment" }
-splash = { module = "androidx.core:core-splashscreen", version.ref = "splash" }
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 vectordrawable = { module = "androidx.vectordrawable:vectordrawable", version.ref = "vectordrawable" }
 constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
@@ -155,6 +161,7 @@ compose_material_icons = { group = "androidx.compose.material", name = "material
 compose_material_icons_ext = { group = "androidx.compose.material", name = "material-icons-extended" }
 compose_hilt_navigation = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt_navigation_compose" }
 compose_paging = { module = "androidx.paging:paging-compose", version.ref = "compose_paging" }
+compose_material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 
 hyperion-core = { module = "com.willowtreeapps.hyperion:hyperion-core", version.ref = "hyperion" }
 hyperion-crash = { module = "com.willowtreeapps.hyperion:hyperion-crash", version.ref = "hyperion" }
@@ -176,7 +183,7 @@ navigation = { module = "androidx.navigation:navigation-testing", version.ref = 
 [bundles]
 coroutines = ["coroutines_core", "coroutines_android"]
 room = ["room_ktx", "room_paging"]
-compose = ["compose_ui", "compose_ui_tooling", "compose_ui_tooling_preview", "compose_runtime", "compose_animation", "compose_foundation", "compose_foundation_layout", "compose_material", "compose_material_icons", "compose_material_icons_ext"]
+compose = ["compose_ui", "compose_ui_tooling", "compose_ui_tooling_preview", "compose_runtime", "compose_animation", "compose_foundation", "compose_foundation_layout", "compose_material", "compose_material_icons", "compose_material_icons_ext", "compose_material3"]
 accompanist = ["flowlayout", "pager", "pager_indicators", "permissions", "systemuicontroller", "navigation_animation", "webview"]
 hiltCompilers = ["hilt-compiler-android", "hilt-compiler-google"]
 hilt = ["hilt-work", "hilt-android"]
@@ -184,6 +191,7 @@ work = ["work_runtime", "work_gcm", "work_multiprocess"]
 hyper = ["hyperion-core", "hyperion-crash"]
 tests = ["test_core", "test_rules", "test_junit", "test_runner", "compose_junit", "kakaocup", "espresso"]
 ktor = ["ktor_core", "ktor_okhttp", "ktor_logging", "ktor_res", "ktor_auth", "ktor_content", "ktor_json"]
+decompose = ["decompose", "decompose-extensions"]
 
 [plugins]
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

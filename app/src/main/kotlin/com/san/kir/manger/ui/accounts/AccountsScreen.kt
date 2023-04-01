@@ -25,6 +25,6 @@ fun AccountsScreen(
     ) {
         item(key = "Shiki") { ShikiItem(navigateToShiki) }
         item(key = "allhen") { AllHenItem(navigateToBrowser) }
-//        item(key = "comx") { ComXItem(navigateToBrowser) }
+        //        item(key = "comx") { ComXItem(navigateToBrowser) }
     }
 }

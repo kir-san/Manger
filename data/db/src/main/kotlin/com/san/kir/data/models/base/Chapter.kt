@@ -10,6 +10,7 @@ import com.san.kir.core.support.DownloadState
 import com.san.kir.core.utils.getCountPagesForChapterInMemory
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.isEmptyDirectory
+import com.san.kir.data.models.utils.preparePath
 import kotlinx.parcelize.Parcelize
 
 @Stable
@@ -27,7 +28,7 @@ data class Chapter(
     @ColumnInfo(name = "site") val link: String = "",
     @ColumnInfo(name = "progress") val progress: Int = 0,
     @ColumnInfo(name = "pages") val pages: List<String> = listOf(),
-    @ColumnInfo(name = "isInUpdate") val isInUpdate: Boolean = false, // Пометка что глав отображается в обновлениях
+    @ColumnInfo(name = "isInUpdate") val isInUpdate: Boolean = false, // Пометка, что глав отображается в обновлениях
     @ColumnInfo(name = "downloadPages") val downloadPages: Int = 0,
     @ColumnInfo(name = "downloadSize") val downloadSize: Long = 0L,
     @ColumnInfo(name = "totalTime") val downloadTime: Long = 0L,
@@ -35,21 +36,7 @@ data class Chapter(
     @ColumnInfo(name = "ordering") val order: Long = 0,
 ) : Parcelable
 
-val Chapter.preparedPath: String
-    get() {
-        var path = path
-        if ("://" in path) {
-            val parts = path.split("://")
-            if (parts.size == 2) {
-                val start = parts.first().substring(0, parts.first().lastIndexOf("/"))
-                val end =
-                    parts.last().substring(parts.last().indexOf("/"), parts.last().length - 1)
-                path = start + end
-            }
-        }
-        return path.replace("?", "")
-            .replace(" ", "_")
-    }
+val Chapter.preparedPath get() = path.preparePath()
 
 
 val Chapter.countPages: Int get() = getCountPagesForChapterInMemory(path)
@@ -61,9 +48,9 @@ val Chapter.action: Int
                 // если ссылка есть и если папка пуста или папки нет, то можно скачать
                 link.isNotEmpty() && (isEmptyDirectory || !exists()) -> return ChapterStatus.DOWNLOADABLE
                 // если папка непустая, то статус соответствует удалению
-                !isEmptyDirectory                                    -> return ChapterStatus.DELETE
+                !isEmptyDirectory -> return ChapterStatus.DELETE
                 // папка не существет и ссылки на загрузку нет, то больше ничего не сделаешь
-                !exists() and link.isEmpty()                         -> return ChapterStatus.NOT_LOADED
+                !exists() and link.isEmpty() -> return ChapterStatus.NOT_LOADED
             }
         }
         return ChapterStatus.UNKNOWN // такого быть не должно, но если случится дайте знать

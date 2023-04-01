@@ -13,5 +13,5 @@ object Versions {
 
     object Google
 
-    val JAVA = JavaVersion.VERSION_11
+    val JAVA = JavaVersion.VERSION_17
 }

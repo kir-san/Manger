@@ -17,6 +17,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
 import io.ktor.http.contentLength
+import io.ktor.util.StringValues
 import io.ktor.util.StringValuesBuilderImpl
 import kotlinx.coroutines.delay
 import okhttp3.Cache
@@ -99,7 +100,7 @@ class ConnectManager @Inject constructor(context: Application) {
                     }
                 }
 
-                else                           -> {
+                else -> {
                     return@withIoContext Jsoup.parse(response.bodyAsText(), url)
                 }
             }
@@ -121,10 +122,11 @@ class ConnectManager @Inject constructor(context: Application) {
 
     suspend fun downloadBitmap(
         url: String,
+        headers: StringValues? = null,
         onProgress: (percent: Float) -> Unit = {},
     ): Result<BitmapResult> = kotlin.runCatching {
         withIoContext {
-            val (source, length, time) = download(url, onProgress)
+            val (source, length, time) = download(url, headers, onProgress)
             BitmapResult(
                 bitmap = BitmapFactory.decodeByteArray(source, 0, source.size),
                 size = length,
@@ -136,10 +138,11 @@ class ConnectManager @Inject constructor(context: Application) {
     suspend fun downloadFile(
         file: File,
         url: String,
+        headers: StringValues? = null,
         onProgress: suspend ((percent: Float) -> Unit) = {},
     ): Result<DownloadResult> = withIoContext {
         runCatching {
-            val result = download(url, onProgress)
+            val result = download(url, headers, onProgress)
             file.delete()
             file.parentFile?.mkdirs()
             file.createNewFile()
@@ -163,6 +166,7 @@ class ConnectManager @Inject constructor(context: Application) {
 
     private suspend fun download(
         url: String,
+        headers: StringValues? = null,
         onProgress: suspend ((percent: Float) -> Unit) = {},
     ): DownloadResult {
         val startTime = System.currentTimeMillis()
@@ -170,6 +174,7 @@ class ConnectManager @Inject constructor(context: Application) {
 
         val source: ByteArray =
             defaultClient.get(url.prepare()) {
+                headers { headers?.let(::appendAll) }
                 onDownload { bytesSentTotal, contentLength ->
                     onProgress(bytesSentTotal.toFloat() / contentLength)
                 }

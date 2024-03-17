@@ -1,7 +1,5 @@
 plugins {
     id("base.library")
-    id(Plugins.hilt)
-    id(Plugins.kapt)
     id(Plugins.parcelize)
 }
 
@@ -10,10 +8,6 @@ android {
 
     buildFeatures {
         viewBinding = true
-    }
-
-    kapt {
-        useBuildCache = true
     }
 }
 
@@ -39,7 +33,4 @@ dependencies {
     implementation(libs.material)
 
     implementation(libs.timber)
-
-    implementation(libs.hilt.android)
-    kapt(libs.bundles.hiltCompilers)
 }

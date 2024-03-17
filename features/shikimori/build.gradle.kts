@@ -1,7 +1,5 @@
 plugins {
     id("compose.library")
-    id(Plugins.kapt)
-    id(Plugins.hilt)
     alias(libs.plugins.serialization)
 }
 
@@ -29,11 +27,6 @@ dependencies {
     implementation(libs.lifecycle.common)
     implementation(libs.lifecycle.viewmodel)
 
-    implementation(libs.compose.hilt.navigation)
-    implementation(libs.hilt.android)
-    kapt(libs.bundles.hiltCompilers)
-
     implementation(libs.timber)
-    implementation(libs.gson)
     implementation(libs.datastore)
 }

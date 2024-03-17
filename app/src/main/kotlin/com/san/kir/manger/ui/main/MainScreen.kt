@@ -1,5 +1,6 @@
 package com.san.kir.manger.ui.main
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
@@ -32,6 +33,10 @@ fun MainScreen() {
                 color = Color.Transparent,
                 darkIcons = useDarkIcons
             )
+        }
+
+        BackHandler {
+
         }
 
         MainNavGraph(rememberAnimatedNavController())

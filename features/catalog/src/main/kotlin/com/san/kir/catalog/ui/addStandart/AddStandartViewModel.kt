@@ -2,7 +2,7 @@ package com.san.kir.catalog.ui.addStandart
 
 import com.san.kir.background.logic.UpdateMangaManager
 import com.san.kir.catalog.logic.repo.CatalogRepository
-import com.san.kir.core.support.DIR
+import com.san.kir.core.utils.DIR
 import com.san.kir.core.utils.viewModel.BaseViewModel
 import com.san.kir.data.models.base.Category
 import com.san.kir.data.models.base.Statistic

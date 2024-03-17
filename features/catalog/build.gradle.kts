@@ -1,7 +1,5 @@
 plugins {
     id("compose.library")
-    id(Plugins.kapt)
-    id(Plugins.hilt)
 }
 
 android {
@@ -17,9 +15,4 @@ dependencies {
     implementation(project(Modules.Data.parsing))
 
     implementation(libs.timber)
-
-    implementation(libs.compose.hilt.navigation)
-    implementation(libs.hilt.android)
-    kapt(libs.bundles.hiltCompilers)
-
 }

@@ -1,7 +1,6 @@
 plugins {
     id("base.library")
     id(Plugins.kapt)
-    id(Plugins.hilt)
 }
 
 android {
@@ -19,8 +18,6 @@ dependencies {
     implementation(libs.lifecycle.livedata)
 
     implementation(libs.bundles.coroutines)
-    implementation(libs.bundles.hilt)
-    kapt(libs.bundles.hiltCompilers)
 
     api(libs.work.runtime)
     implementation(libs.work.gcm)

@@ -13,5 +13,4 @@ dependencies {
 
     implementation(libs.compose.runtime)
     implementation(libs.room.ktx)
-    implementation(libs.gson)
 }

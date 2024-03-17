@@ -13,7 +13,6 @@ android {
 }
 
 dependencies {
-    implementation(platform(libs.compose.bom))
     api(libs.bundles.compose)
     api(libs.bundles.accompanist)
 }

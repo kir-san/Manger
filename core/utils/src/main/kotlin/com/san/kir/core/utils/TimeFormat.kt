@@ -2,6 +2,10 @@ package com.san.kir.core.utils
 
 import android.content.Context
 
+fun Long.formatTime(context: Context): String {
+    return TimeFormat(this).toString(context)
+}
+
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class TimeFormat(seconds: Long) {
     var days: Long = 0

@@ -2,7 +2,7 @@ package com.san.kir.data.parsing
 
 import android.app.Application
 import com.san.kir.core.internet.ConnectManager
-import com.san.kir.core.support.DIR
+import com.san.kir.core.utils.DIR
 import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.data.models.base.Chapter

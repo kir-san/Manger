@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.san.kir.background.works.DownloadChaptersWorker
 import com.san.kir.background.works.UpdateCatalogWorker
 import com.san.kir.background.works.UpdateMangaWorker
-import com.san.kir.core.support.DIR
+import com.san.kir.core.utils.DIR
 import com.san.kir.core.utils.coroutines.withDefaultContext
 import com.san.kir.core.utils.coroutines.withIoContext
 import com.san.kir.core.utils.getFullPath

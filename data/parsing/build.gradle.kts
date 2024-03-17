@@ -12,9 +12,6 @@ dependencies {
     implementation(project(Modules.Core.support))
     implementation(project(Modules.Data.db))
 
-    implementation(libs.hilt.inject)
-
-    implementation(libs.gson)
     implementation(libs.coroutines.core)
     implementation(libs.timber)
 }

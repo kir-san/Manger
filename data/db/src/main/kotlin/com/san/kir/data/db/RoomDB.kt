@@ -11,7 +11,7 @@ import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.san.kir.core.support.CATEGORY_ALL
 import com.san.kir.core.support.ChapterFilter
-import com.san.kir.core.support.DIR
+import com.san.kir.core.utils.DIR
 import com.san.kir.core.support.MainMenuType
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.data.db.dao.CategoryDao

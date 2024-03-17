@@ -1,11 +1,9 @@
 plugins {
     id("compose.library")
-    id(Plugins.kapt)
-    id(Plugins.hilt)
 }
 
 android {
-    namespace="com.san.kir.statistic"
+    namespace = "com.san.kir.statistic"
 }
 
 dependencies {
@@ -14,9 +12,4 @@ dependencies {
     implementation(project(Modules.Data.db))
 
     implementation(libs.timber)
-
-    implementation(libs.compose.hilt.navigation)
-    implementation(libs.hilt.android)
-    kapt(libs.bundles.hiltCompilers)
-
 }

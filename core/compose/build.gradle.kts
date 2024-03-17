@@ -10,8 +10,6 @@ dependencies {
     implementation(project(Modules.Core.utils))
     implementation(project(Modules.Core.internet))
 
-    implementation(platform(libs.compose.bom))
-
     api(libs.bundles.compose)
     api(libs.bundles.accompanist)
     api(libs.collections.immutable)

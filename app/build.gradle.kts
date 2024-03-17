@@ -1,6 +1,5 @@
 plugins {
     id("compose.app")
-    id(Plugins.hilt)
     id(Plugins.kapt)
     id(Plugins.parcelize)
 }
@@ -72,13 +71,7 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.vectordrawable)
 
-    implementation(libs.bundles.hilt)
-    kapt(libs.bundles.hiltCompilers)
-
     implementation(libs.bundles.decompose)
-
-    implementation(libs.compose.hilt.navigation)
-
     implementation(libs.lifecycle.viewmodel)
 
     //    debugImplementation(libs.bundles.hyper)

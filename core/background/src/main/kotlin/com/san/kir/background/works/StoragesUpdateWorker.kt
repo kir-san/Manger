@@ -6,7 +6,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import com.san.kir.core.support.DIR
+import com.san.kir.core.utils.DIR
 import com.san.kir.core.utils.getFullPath
 import com.san.kir.core.utils.shortPath
 import com.san.kir.data.db.dao.ChapterDao

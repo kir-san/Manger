@@ -1,4 +1,4 @@
-package com.san.kir.core.support
+package com.san.kir.core.utils
 
 // Названия папок
 object DIR {

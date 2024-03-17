@@ -10,7 +10,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
-import com.san.kir.core.support.DIR
+import com.san.kir.core.utils.DIR
 import com.san.kir.core.utils.externalDir
 import com.san.kir.data.db.dao.SiteCatalogDao
 import com.san.kir.data.db.typeConverters.ListStringConverter

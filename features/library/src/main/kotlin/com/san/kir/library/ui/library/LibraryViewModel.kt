@@ -34,7 +34,10 @@ internal class LibraryViewModel(
     private val backgroundState = MutableStateFlow(BackgroundState.None)
     private val itemsState = combine(categoryRepository.items, mangaRepository.simplifiedItems) { cats, mangas ->
         if (cats.isEmpty()) return@combine ItemsState.Empty
-        ItemsState.Ok(cats.filter { it.isVisible }.map { transform(it, mangas) })
+        ItemsState.Ok(
+            items = cats.filter { it.isVisible }.map { transform(it, mangas) },
+            categories = cats.associate { it.id to it.name }
+        )
     }
 
 

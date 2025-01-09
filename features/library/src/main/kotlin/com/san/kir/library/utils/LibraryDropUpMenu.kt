@@ -49,6 +49,7 @@ import com.san.kir.core.compose.bottomInsetsPadding
 import com.san.kir.core.compose.endInsetsPadding
 import com.san.kir.core.compose.horizontalInsetsPadding
 import com.san.kir.core.compose.rememberColorPickerState
+import com.san.kir.core.utils.remove
 import com.san.kir.core.utils.viewModel.Action
 import com.san.kir.core.utils.viewModel.returned
 import com.san.kir.data.models.main.SimplifiedManga
@@ -187,7 +188,7 @@ private fun SubTitle(
     ) {
         LogoImage(
             logo = logo,
-             Modifier
+            Modifier
                 .padding(Dimensions.default)
                 .size(Dimensions.Image.bigger)
         )
@@ -237,8 +238,7 @@ private fun ColumnScope.CategoryChanger(
     DropdownMenuItem(
         text = { Text(text = stringResource(R.string.change_category)) },
         onClick = onClick,
-        modifier = Modifier
-            .horizontalInsetsPadding(),
+        modifier = Modifier.horizontalInsetsPadding(),
         trailingIcon = {
             Text(
                 text = selectedManga.category,
@@ -254,8 +254,7 @@ private fun ColumnScope.CategoryChanger(
     if (itemsState is ItemsState.Ok)
         ExpandedCategories(
             visibility = changerVisibility,
-            categories = itemsState.categories.toMutableMap()
-                .apply { remove(selectedManga.categoryId) },
+            categories = itemsState.categories.remove(selectedManga.categoryId),
             onItemChanged = onItemClick
         )
 }

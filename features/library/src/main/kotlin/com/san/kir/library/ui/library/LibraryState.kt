@@ -25,10 +25,9 @@ internal sealed interface ItemsState {
     data class Ok(
         val items: List<CategoryWithMangas>,
         //    Имена всех категорий и их id
-        val categories: Map<Long, String> = items.associate { it.id to it.name },
+        val categories: Map<Long, String> = emptyMap(),
         // Имена категорий с количество содержимой манги для заголовка вкладок
-        val names: List<String> =
-            items.map { cat -> "${cat.name}: ${cat.mangas.count()}" }
+        val names: List<String> = items.map { cat -> "${cat.name}: ${cat.mangas.count()}" }
     ) : ItemsState
 }
 

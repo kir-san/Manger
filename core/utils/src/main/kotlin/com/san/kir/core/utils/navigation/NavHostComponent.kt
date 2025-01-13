@@ -38,7 +38,8 @@ internal class NavHostComponent(
         serializer = NavConfig.serializer(serializerModule),
         initialConfiguration = startConfig,
         handleBackButton = true,
-        childFactory = ::createChild
+        childFactory = ::createChild,
+        // key = "DefaultChildStack" + Random.nextInt(),
     )
 
     private fun createChild(config: NavConfig, componentContext: ComponentContext): NavContainer {

@@ -1,5 +1,7 @@
 plugins {
     id("compose.library")
+//    alias(libs.plugins.vkompose)
+//    id("com.github.takahirom.decomposer")
 }
 
 android {
@@ -25,3 +27,19 @@ dependencies {
     api(projects.ksp)
     ksp(projects.ksp)
 }
+
+//vkompose {
+//    skippabilityCheck {
+//        stabilityConfigurationPath = "${project.rootDir}/compose_stability_config.conf"
+//        strongSkippingEnabled = true
+//    }
+//    recompose {
+//        isHighlighterEnabled = true
+//        isLoggerEnabled = true
+//    }
+//    testTag {
+//        isApplierEnabled = true
+//        isDrawerEnabled = true
+//        isCleanerEnabled = false
+//    }
+//}

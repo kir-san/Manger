@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.compose) apply false
     alias(libs.plugins.serialization) apply false
     alias(libs.plugins.kotlin.ksp) apply false
+    alias(libs.plugins.vkompose) apply false
     alias(libs.plugins.graphfity)
 }
 
@@ -13,6 +14,9 @@ buildscript {
         maven {
             url = uri("https://plugins.gradle.org/m2/")
         }
+        maven {
+            url = uri("https://jitpack.io")
+        }
     }
 
     dependencies {
@@ -21,6 +25,7 @@ buildscript {
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
         classpath(libs.gradlePlugin.graphfity)
+        classpath(libs.gradlePlugin.decomposer)
     }
 }
 

@@ -1,6 +1,7 @@
 plugins {
     id("compose.library")
     `kotlin-parcelize`
+//    alias(libs.plugins.vkompose)
 }
 
 android {
@@ -16,3 +17,19 @@ dependencies {
     api(projects.ksp)
     ksp(projects.ksp)
 }
+
+//vkompose {
+//    skippabilityCheck {
+//        stabilityConfigurationPath = "${project.rootDir}/compose_stability_config.conf"
+//        strongSkippingEnabled = true
+//    }
+//    recompose {
+//        isHighlighterEnabled = true
+//        isLoggerEnabled = true
+//    }
+//    testTag {
+//        isApplierEnabled = true
+//        isDrawerEnabled = true
+//        isCleanerEnabled = false
+//    }
+//}

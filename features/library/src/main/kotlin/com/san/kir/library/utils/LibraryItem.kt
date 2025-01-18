@@ -183,7 +183,7 @@ internal fun LazyItemScope.LibrarySmallItem(
                     text = manga.name,
                     maxLines = 1,
                     modifier = Modifier
-                        .weight(1f, true)
+                        .weight(1f)
                         .padding(start = Dimensions.half)
                         .align(Alignment.CenterVertically),
                     fontWeight = FontWeight.Bold
@@ -233,11 +233,7 @@ internal fun LogoImage(logo: String, modifier: Modifier) {
 }
 
 @Composable
-internal fun CategoryName(
-    category: String,
-    contentColor: Color,
-    modifier: Modifier = Modifier
-) {
+internal fun CategoryName(category: String, contentColor: Color, modifier: Modifier = Modifier) {
     Text(
         text = category,
         modifier = modifier

@@ -87,17 +87,15 @@ private fun PageView(
     if (span > 1) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(span),
-            modifier = Modifier.fillMaxSize().horizontalInsetsPadding(),
+            modifier = Modifier
+                .fillMaxSize()
+                .horizontalInsetsPadding(),
             contentPadding = bottomInsetsPadding(ContentPadding),
         ) {
             items(item.mangas, key = { it.id }) { manga ->
                 LibraryLargeItem(
-                    onClick = { id, params ->
-                        sendAction(LibraryEvent.ToChapters(id, params).returned())
-                    },
-                    onLongClick = {
-                        sendAction(LibraryEvent.ShowSelectedMangaDialog(it).returned())
-                    },
+                    onClick = { id, params -> sendAction(LibraryEvent.ToChapters(id, params).returned()) },
+                    onLongClick = { sendAction(LibraryEvent.ShowSelectedMangaDialog(it).returned()) },
                     manga = manga,
                     cat = item.name,
                     showCategory = showCategory,
@@ -111,12 +109,8 @@ private fun PageView(
         ) {
             items(items = item.mangas, key = { it.id }) { manga ->
                 LibrarySmallItem(
-                    onClick = { id, params ->
-                        sendAction(LibraryEvent.ToChapters(id, params).returned())
-                    },
-                    onLongClick = {
-                        sendAction(LibraryEvent.ShowSelectedMangaDialog(it).returned())
-                    },
+                    onClick = { id, params -> sendAction(LibraryEvent.ToChapters(id, params).returned()) },
+                    onLongClick = { sendAction(LibraryEvent.ShowSelectedMangaDialog(it).returned()) },
                     manga = manga,
                     cat = item.name,
                     showCategory = showCategory,

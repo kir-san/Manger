@@ -98,7 +98,7 @@ private fun LazyItemScope.CategoryItemView(
             .clickable(onClick = { onClick(params) })
             .padding(vertical = Dimensions.quarter, horizontal = Dimensions.default)
             .horizontalInsetsPadding()
-            .animateItemPlacement()
+            .animateItem(fadeInSpec = null, fadeOutSpec = null)
             .saveParams(params),
         verticalAlignment = Alignment.CenterVertically
     ) {

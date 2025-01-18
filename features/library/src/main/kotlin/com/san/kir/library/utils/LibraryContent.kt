@@ -1,6 +1,5 @@
 package com.san.kir.library.utils
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.pager.HorizontalPager
@@ -13,7 +12,6 @@ import com.san.kir.library.ui.library.ItemsState
 import com.san.kir.library.ui.library.LibraryAction
 import com.san.kir.library.ui.library.LibraryState
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun ColumnScope.LibraryContent(
     pagerState: PagerState,

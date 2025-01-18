@@ -2,6 +2,7 @@ package com.san.kir.core.compose
 
 import android.graphics.ComposeShader
 import android.graphics.PorterDuff
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -19,6 +20,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.util.lerp
 
+@Stable
 public class ColorPickerState internal constructor(private val initialColor: Color) {
     public val currentColor: Color by derivedStateOf { Color.hsv(hValue, sValue, vValue) }
 

@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.serialization.Serializable
 
 @Serializable
+@Stable
 public data class SharedParams(
     private var boundsContainer: RectContainer = RectContainer.Zero,
     var cornerRadius: Float = 0F,

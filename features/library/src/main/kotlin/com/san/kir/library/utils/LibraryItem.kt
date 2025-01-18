@@ -69,7 +69,7 @@ internal fun LazyGridItemScope.LibraryLargeItem(
         shape = RoundedCornerShape(CornerRadius),
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
         modifier = Modifier
-            .animateItem()
+            .animateItem(fadeInSpec = null, fadeOutSpec = null)
             .testTag(TestTags.Library.item)
             .padding(BetweenItemPadding)
             .fillMaxWidth()
@@ -150,7 +150,7 @@ internal fun LazyItemScope.LibrarySmallItem(
         shape = RoundedCornerShape(CornerRadius),
         border = BorderStroke(Dimensions.quarter, backgroundColor),
         modifier = Modifier
-            .animateItem()
+            .animateItem(fadeInSpec = null, fadeOutSpec = null)
             .testTag(TestTags.Library.item)
             .padding(BetweenItemPadding)
             .fillMaxWidth()

@@ -40,6 +40,7 @@ import com.san.kir.core.compose.endInsetsPadding
 
 private const val DateType = "Date"
 internal const val MangaType = "Manga"
+internal const val ItemType = "Item"
 
 private val DateBarHeight = 40.dp
 private val DateBarShape = RoundedCornerShape(bottomStartPercent = 40)
@@ -72,9 +73,9 @@ internal class DateState(private val height: Float) {
     val maxWidth: Dp
         get() = _maxWidth.value
 
-    fun update(offset: Float, date: String, prevDate: String?) {
+    fun update(offset: Int, date: String, prevDate: String?) {
         _alpha.floatValue = offset / height
-        _offset.floatValue = offset
+        _offset.floatValue = offset.toFloat()
         _current.value = date
         if (prevDate != null) {
             _hidden.value = prevDate
@@ -141,36 +142,32 @@ internal fun DateHeader(
     val items by itemsState
 
     LaunchedEffect(items) {
-        val datesWithIndex = mutableMapOf<Int, String>()
-        var index = 0
         if (items.isEmpty()) return@LaunchedEffect
+        fun Any.toDate() = this.toString().split('|').firstOrNull() ?: ""
 
-        for (container in items) {
-            datesWithIndex[index] = container.date
-            index += container.chaptersCount + container.mangas.size + 1
+        var maxWidth = 0
+        for ((index, item) in items.withIndex()) {
+            if (index == 0) dateState.reset(item.date)
+            maxWidth = maxOf(
+                maxWidth,
+                textMeasurer.measure(text = item.date, style = textStyle, density = density).size.width
+            )
         }
-
-        val hidedDates = items.map { it.date }
-        val maxWidth = hidedDates.maxOf {
-            textMeasurer.measure(text = it, style = textStyle, density = density).size.width
-        }
-        dateState.updateWidth(with(density) { maxWidth.toDp() });
-        dateState.reset(hidedDates.firstOrNull())
-
-        fun findPreviousDate(list: List<String>, date: String): String = list.getOrNull(list.indexOf(date) - 1) ?: ""
+        dateState.updateWidth(with(density) { maxWidth.toDp() })
 
         snapshotFlow { lazyListState.layoutInfo.visibleItemsInfo }.collect { infos ->
-            val currentInfo = infos.firstOrNull { it.contentType == DateType && it.offset >= 0 }
-            if (currentInfo == null) {
-                dateState.reset(hidedDates.lastOrNull())
-            } else {
-                val date = currentInfo.key.toString()
-                val offset = currentInfo.offset.toFloat()
-                if (offset in 0.0f..dateHeight) {
-                    dateState.update(offset, date, findPreviousDate(hidedDates, date))
-                } else {
-                    dateState.reset(findPreviousDate(hidedDates, date))
+            var prevKey: Any = ""
+            for (info in infos) {
+                if (info.offset <= dateHeight) {
+                    if (info.contentType != DateType || info.offset <= 0) {
+                        prevKey = info.key
+                        continue
+                    }
+                    dateState.update(offset = info.offset, date = info.key.toString(), prevDate = prevKey.toDate())
+                    break
                 }
+                dateState.reset(date = prevKey.toDate())
+                break
             }
         }
     }
@@ -184,9 +181,7 @@ internal fun DateHeader(
                 .combinedClickable(
                     interactionSource = interactionSource,
                     indication = null,
-                    onClick = {
-                        items.firstOrNull { it.date == dateState.current }?.let { onClick(it.chaptersIds) }
-                    },
+                    onClick = { items.firstOrNull { it.date == dateState.current }?.let { onClick(it.chaptersIds) } },
                     onLongClick = {
                         items.firstOrNull { it.date == dateState.current }?.let { onLongClick(it.chaptersIds) }
                     }

@@ -114,10 +114,7 @@ private val ItemSize = 48.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun LatestScreen(
-    navigateUp: () -> Unit,
-    navigateToViewer: (Long) -> Unit,
-) {
+internal fun LatestScreen(navigateUp: () -> Unit, navigateToViewer: (Long) -> Unit) {
     val holder: LatestStateHolder = stateHolder { LatestViewModel() }
     val state by holder.state.collectAsStateWithLifecycle()
     val selection = holder.selection.collectAsStateWithLifecycle()
@@ -261,14 +258,14 @@ private fun Content(
             dateContainer.mangas.forEach { mangaContainer ->
                 manga(
                     name = mangaContainer.manga,
-                    date = mangaContainer.date,
+                    date = dateContainer.date,
                     onClick = {
                         if (selection.value.enabled) sendAction(LatestAction.ChangeSelect(mangaContainer.chaptersIds))
                     },
                     onLongClick = { sendAction(LatestAction.ChangeSelect(mangaContainer.chaptersIds)) }
                 )
 
-                items(mangaContainer.chapters, key = { it.id }) { chapter ->
+                items(mangaContainer.chapters, key = { "${dateContainer.date}|${it.id}" }) { chapter ->
                     ItemContent(
                         item = chapter,
                         itemSelected = selection.value.hasItem(chapter.id),
@@ -289,7 +286,7 @@ private fun LazyListScope.manga(
     onClick: () -> Unit,
     onLongClick: () -> Unit
 ) {
-    stickyHeader(key = "$name$date", contentType = MangaType) {
+    stickyHeader(key = "$date|$name", contentType = MangaType) {
         Text(
             text = name,
             modifier = Modifier
@@ -445,7 +442,7 @@ private fun LazyItemScope.ItemContent(
             )
             .padding(vertical = Dimensions.half)
             .padding(start = Dimensions.default, end = Dimensions.half)
-            .animateItem(),
+            .animateItem(fadeInSpec = null, fadeOutSpec = null),
     ) {
         Column(
             modifier = Modifier

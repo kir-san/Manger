@@ -26,7 +26,6 @@ internal data class SelectionState(
 
 internal data class MangaContainer(
     val manga: String,
-    val date: String,
     val chapters: List<SimplifiedChapter>
 ) {
     val itemsCount: Int = chapters.size

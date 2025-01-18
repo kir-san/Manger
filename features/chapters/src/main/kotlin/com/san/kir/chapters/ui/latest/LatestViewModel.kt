@@ -33,6 +33,7 @@ import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.char
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.toLocalDateTime
+import timber.log.Timber
 import java.util.Locale
 import kotlin.math.min
 
@@ -43,12 +44,8 @@ internal class LatestViewModel(
     private val downloadManager: DownloadChaptersManager = ManualDI.downloadChaptersManager(),
 ) : ViewModel<LatestState>(), LatestStateHolder {
 
-    private val monthFormat = LocalDate.Format {
-        monthName(MonthNames.ENGLISH_FULL)
-    }
-    private val monthYearFormat = LocalDate.Format {
-        monthName(MonthNames.ENGLISH_FULL); char(' '); year()
-    }
+    private val monthFormat = LocalDate.Format { monthName(MonthNames.ENGLISH_FULL) }
+    private val monthYearFormat = LocalDate.Format { monthName(MonthNames.ENGLISH_FULL); char(' '); year() }
 
     private val hasBackground = MutableStateFlow(true)
     private val newItems = chaptersRepository.simplifiedItems.mapLatest { list -> list.filter { it.isRead.not() } }
@@ -79,9 +76,7 @@ internal class LatestViewModel(
 
     init {
         val currentDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-
         val nearestWeekDay = 7 - (currentDate.dayOfWeek.isoDayNumber - 1)
-
         val nearestMonthDay = currentDate.daysUntil(
             LocalDate(
                 year = currentDate.year,
@@ -113,10 +108,11 @@ internal class LatestViewModel(
                         date.replaceFirstChar { char -> char.titlecase(Locale.getDefault()) },
                         chapters
                             .groupBy(SimplifiedChapter::manga)
-                            .map { (manga, chapters) -> MangaContainer(manga, date, chapters) }
+                            .map { (manga, chapters) -> MangaContainer(manga, chapters) }
                     )
                 }
                 items.value = groupedItems
+                Timber.tag("LatestViewModel").i("NEW ITEMS ${it.size}")
             }
             .flowOn(Dispatchers.Default)
             .launch()
@@ -161,14 +157,17 @@ internal class LatestViewModel(
                 old.copy(selections = old.selections + ids)
             }
         }
+        Timber.tag("LatestViewModel").i("NEW SELECTION ${selection.value}")
     }
 
     private fun select() {
         selection.value = SelectionState(items.value.flatMap { it.chaptersIds }.toSet())
+        Timber.tag("LatestViewModel").i("NEW ITEMS ${selection.value}")
     }
 
     private fun unselect() {
         selection.value = SelectionState()
+        Timber.tag("LatestViewModel").i("NEW ITEMS ${selection.value}")
     }
 
     private fun runWorkersObserver() {

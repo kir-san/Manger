@@ -65,7 +65,7 @@ import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 
-private val DurationDismissConfirmation = 1400
+private const val DurationDismissConfirmation = 1100
 private val ImageSize = Dimensions.Image.bigger
 private val ImageStartPadding = Dimensions.quarter
 private val HorizontalItemPadding = Dimensions.default - ImageStartPadding

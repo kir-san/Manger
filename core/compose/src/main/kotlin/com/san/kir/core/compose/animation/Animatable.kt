@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 
 
 private const val FastValueAnimationDuration = 500
-private const val ValueAnimationDuration = 1500
+private const val ValueAnimationDuration = 1200
 
 private val DoubleToVector: TwoWayConverter<Double, AnimationVector1D> = TwoWayConverter(
     convertToVector = { AnimationVector1D(it.toFloat()) },

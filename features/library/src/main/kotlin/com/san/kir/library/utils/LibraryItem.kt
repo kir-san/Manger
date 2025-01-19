@@ -2,7 +2,6 @@ package com.san.kir.library.utils
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
@@ -18,12 +17,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,20 +28,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImagePainter
-import coil3.compose.SubcomposeAsyncImage
-import coil3.compose.SubcomposeAsyncImageContent
-import coil3.request.ImageRequest
-import coil3.request.crossfade
 import com.san.kir.core.compose.Dimensions
-import com.san.kir.core.compose.R
+import com.san.kir.core.compose.MangaLogo
 import com.san.kir.core.compose.animation.SharedParams
 import com.san.kir.core.compose.animation.rememberSharedParams
 import com.san.kir.core.compose.animation.saveParams
@@ -239,34 +229,7 @@ internal fun LogoImage(
     progressColor: Color = MaterialTheme.colorScheme.primary,
     modifier: Modifier = Modifier
 ) {
-    SubcomposeAsyncImage(
-        model = ImageRequest.Builder(LocalContext.current).data(logo).crossfade(true).build(),
-        contentDescription = null,
-        contentScale = ContentScale.Crop,
-        alignment = Alignment.Center,
-        modifier = modifier.clip(CornerRoundedShape)
-    ) {
-        val state by painter.state.collectAsState()
-        when (state) {
-            AsyncImagePainter.State.Empty -> Unit
-            is AsyncImagePainter.State.Error -> Image(
-                painterResource(R.drawable.unknown), null,
-                alignment = Alignment.Center,
-                contentScale = ContentScale.Inside
-            )
-
-            is AsyncImagePainter.State.Success -> SubcomposeAsyncImageContent()
-
-            is AsyncImagePainter.State.Loading ->
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .padding(Dimensions.default)
-                ) {
-                    CircularProgressIndicator(color = progressColor, modifier = Modifier.align(Alignment.Center))
-                }
-        }
-    }
+    MangaLogo(logo, progressColor, modifier.clip(CornerRoundedShape))
 }
 
 @Composable

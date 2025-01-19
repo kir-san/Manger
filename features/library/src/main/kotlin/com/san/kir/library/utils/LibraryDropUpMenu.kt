@@ -188,7 +188,7 @@ private fun SubTitle(
     ) {
         LogoImage(
             logo = logo,
-            Modifier
+            modifier = Modifier
                 .padding(Dimensions.default)
                 .size(Dimensions.Image.bigger)
         )

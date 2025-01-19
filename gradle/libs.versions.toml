@@ -32,6 +32,7 @@ compose = "1.7.6"
 material3 = "1.3.1"
 vkompose = "0.6.2-k2"
 decomposer = "main-SNAPSHOT"
+coil = "3.0.4"
 
 # Google
 material = "1.12.0"
@@ -142,6 +143,8 @@ compose_foundation_layout = { group = "androidx.compose.foundation", name = "fou
 compose_material_icons = { group = "androidx.compose.material", name = "material-icons-core", version.ref = "compose" }
 compose_material_icons_ext = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "compose" }
 compose_material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
+compose_coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+compose_coil_network = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 
 hyperion-core = { module = "com.willowtreeapps.hyperion:hyperion-core", version.ref = "hyperion" }
 hyperion-crash = { module = "com.willowtreeapps.hyperion:hyperion-crash", version.ref = "hyperion" }
@@ -162,7 +165,9 @@ espresso = { module = "androidx.test.espresso:espresso-core", version.ref = "esp
 [bundles]
 coroutines = ["coroutines_core", "coroutines_android"]
 room = ["room_ktx", "room_paging", "room_runtime"]
-compose = ["compose_ui", "compose_ui_tooling", "compose_ui_tooling_preview", "compose_runtime", "compose_animation", "compose_foundation", "compose_foundation_layout", "compose_material_icons", "compose_material_icons_ext", "compose_material3"]
+compose = ["compose_ui", "compose_ui_tooling", "compose_ui_tooling_preview", "compose_runtime", "compose_animation",
+    "compose_foundation", "compose_foundation_layout", "compose_material_icons", "compose_material_icons_ext",
+    "compose_material3", "compose_coil", "compose_coil_network"]
 accompanist = ["permissions", "webview"]
 hyper = ["hyperion-core", "hyperion-crash"]
 tests = ["test_core", "test_rules", "test_junit", "test_runner", "compose_junit", "kakaocup", "espresso"]

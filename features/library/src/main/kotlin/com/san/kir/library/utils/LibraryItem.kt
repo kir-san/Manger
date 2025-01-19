@@ -14,13 +14,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,19 +32,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImagePainter
+import coil3.compose.SubcomposeAsyncImage
+import coil3.compose.SubcomposeAsyncImageContent
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.R
 import com.san.kir.core.compose.animation.SharedParams
 import com.san.kir.core.compose.animation.rememberSharedParams
 import com.san.kir.core.compose.animation.saveParams
 import com.san.kir.core.compose.contentColorBy
 import com.san.kir.core.compose.endInsetsPadding
 import com.san.kir.core.compose.horizontalInsetsPadding
-import com.san.kir.core.compose.rememberImage
 import com.san.kir.core.compose.squareMaxSize
 import com.san.kir.core.utils.ManualDI
 import com.san.kir.core.utils.TestTags
@@ -49,6 +58,7 @@ import com.san.kir.core.utils.categoryAll
 import com.san.kir.data.models.main.SimplifiedManga
 
 private val CornerRadius = Dimensions.half
+private val CornerRoundedShape = RoundedCornerShape(CornerRadius)
 private val BetweenItemPadding = Dimensions.quarter
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -60,7 +70,7 @@ internal fun LazyGridItemScope.LibraryLargeItem(
     cat: String,
     showCategory: Boolean,
 ) {
-    val defaultColor = MaterialTheme.colorScheme.primary
+    val defaultColor = MaterialTheme.colorScheme.secondary
     val backgroundColor by remember(manga.color) { mutableStateOf(manga.composeColor(defaultColor)) }
     val textColor = contentColorBy(backgroundColor)
     val buttonParams = rememberSharedParams(cornerRadius = Dimensions.half)
@@ -84,9 +94,10 @@ internal fun LazyGridItemScope.LibraryLargeItem(
                 Box(modifier = Modifier.squareMaxSize()) {
                     LogoImage(
                         manga.logo,
+                        textColor,
                         Modifier
                             .padding(Dimensions.smallest)
-                            .fillMaxSize()
+                            .fillMaxSize(),
                     )
                     if (manga.hasError) {
                         Icon(
@@ -142,7 +153,7 @@ internal fun LazyItemScope.LibrarySmallItem(
     cat: String,
     showCategory: Boolean,
 ) {
-    val defaultColor = MaterialTheme.colorScheme.primary
+    val defaultColor = MaterialTheme.colorScheme.secondary
     val backgroundColor by remember(manga.color) { mutableStateOf(manga.composeColor()) }
     val buttonParams = rememberSharedParams(cornerRadius = Dimensions.half)
 
@@ -173,7 +184,7 @@ internal fun LazyItemScope.LibrarySmallItem(
                     .padding(Dimensions.quarter)
             ) {
                 LogoImage(
-                    manga.logo,
+                    logo = manga.logo,
                     modifier = Modifier
                         .padding(Dimensions.quarter)
                         .size(Dimensions.Image.bigger),
@@ -223,13 +234,39 @@ internal fun LazyItemScope.LibrarySmallItem(
 }
 
 @Composable
-internal fun LogoImage(logo: String, modifier: Modifier) {
-    Image(
-        painter = rememberImage(logo),
+internal fun LogoImage(
+    logo: String,
+    progressColor: Color = MaterialTheme.colorScheme.primary,
+    modifier: Modifier = Modifier
+) {
+    SubcomposeAsyncImage(
+        model = ImageRequest.Builder(LocalContext.current).data(logo).crossfade(true).build(),
         contentDescription = null,
-        modifier = modifier.clip(RoundedCornerShape(CornerRadius)),
-        contentScale = ContentScale.Crop
-    )
+        contentScale = ContentScale.Crop,
+        alignment = Alignment.Center,
+        modifier = modifier.clip(CornerRoundedShape)
+    ) {
+        val state by painter.state.collectAsState()
+        when (state) {
+            AsyncImagePainter.State.Empty -> Unit
+            is AsyncImagePainter.State.Error -> Image(
+                painterResource(R.drawable.unknown), null,
+                alignment = Alignment.Center,
+                contentScale = ContentScale.Inside
+            )
+
+            is AsyncImagePainter.State.Success -> SubcomposeAsyncImageContent()
+
+            is AsyncImagePainter.State.Loading ->
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .padding(Dimensions.default)
+                ) {
+                    CircularProgressIndicator(color = progressColor, modifier = Modifier.align(Alignment.Center))
+                }
+        }
+    }
 }
 
 @Composable
@@ -237,7 +274,7 @@ internal fun CategoryName(category: String, contentColor: Color, modifier: Modif
     Text(
         text = category,
         modifier = modifier
-            .background(color = contentColorBy(contentColor), shape = RoundedCornerShape(50))
+            .background(color = contentColorBy(contentColor), shape = CircleShape)
             .padding(horizontal = Dimensions.half, vertical = Dimensions.quarter),
         color = contentColor,
         style = MaterialTheme.typography.labelMedium

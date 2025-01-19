@@ -94,6 +94,7 @@ internal fun StatisticsScreen(
                 allReadingItems = state.allReadingItems,
                 allTime = state.allTime
             ),
+            subtitleMaxLines = 1,
         ),
         additionalPadding = Dimensions.quarter
     ) {

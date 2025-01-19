@@ -123,6 +123,7 @@ public fun topBar(
 public fun topBar(
     title: AnnotatedString? = null,
     subtitle: AnnotatedString? = null,
+    subtitleMaxLines: Int = Int.MAX_VALUE,
     actions: @Composable TopBarActions.() -> Unit = {},
     additionalContent: @Composable (ColumnScope.() -> Unit)? = null,
     onSearchTextChange: ((String) -> Unit)? = null,
@@ -142,6 +143,7 @@ public fun topBar(
             .startInsetsPadding(),
         title = title,
         subtitle = subtitle,
+        subtitleMaxLines = subtitleMaxLines,
         expandedTitleStyle = titleTextStyle,
         navigationIcon = { NavigationIcon(navigationButton) },
         actions = {

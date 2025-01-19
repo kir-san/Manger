@@ -64,6 +64,7 @@ internal fun TopBarLayout(
     modifier: Modifier,
     title: AnnotatedString? = null,
     subtitle: AnnotatedString? = null,
+    subtitleMaxLines: Int = Int.MAX_VALUE,
     expandedTitleStyle: TextStyle = MaterialTheme.typography.headlineLarge,
     expandedSubTitleStyle: TextStyle = MaterialTheme.typography.titleLarge,
     navigationIcon: (@Composable () -> Unit)? = null,
@@ -145,6 +146,7 @@ internal fun TopBarLayout(
                                 .padding(start = HorizontalPadding, end = ExpandedHorizontalPadding),
                             color = contentColor.copy(alpha = 0.8f),
                             style = expandedSubTitleStyle,
+                            maxLines = subtitleMaxLines
                         )
 
                         Text(

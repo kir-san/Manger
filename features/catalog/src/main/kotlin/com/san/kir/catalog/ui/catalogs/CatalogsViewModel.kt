@@ -48,7 +48,7 @@ internal class CatalogsViewModel(
             .map {
                 it to CheckableSite(
                     name = it.name,
-                    host = it.host,
+                    host = it.catalogName,
                     volume = VolumeState.Load,
                     state = SiteState.Load
                 )

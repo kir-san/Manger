@@ -124,7 +124,7 @@ private fun SyncContent(
                 HorizontalDivider()
                 SyncItem(
                     item,
-                    modifier = Modifier.animateItem(),
+                    modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null),
                     canHide = true,
                     canApply = false,
                     sendAction = sendAction,

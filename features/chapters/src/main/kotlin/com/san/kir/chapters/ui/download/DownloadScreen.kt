@@ -251,7 +251,7 @@ private fun LazyItemScope.ItemView(item: DownloadItem, sendAction: (DownloadsAct
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .animateItem()
+            .animateItem(fadeInSpec = null, fadeOutSpec = null)
             .horizontalInsetsPadding(horizontal = Dimensions.default)
             .padding(top = Dimensions.half),
         verticalAlignment = Alignment.CenterVertically

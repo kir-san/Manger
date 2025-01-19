@@ -69,7 +69,7 @@ internal fun ShikiSearchScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(Dimensions.default)
-                            .animateItem(),
+                            .animateItem(fadeInSpec = null, fadeOutSpec = null),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(

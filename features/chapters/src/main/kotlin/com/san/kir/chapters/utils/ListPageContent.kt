@@ -324,7 +324,7 @@ private fun LazyItemScope.ItemContent(
             }
             .fillMaxWidth()
             .horizontalInsetsPadding()
-            .animateItem(),
+            .animateItem(fadeInSpec = null, fadeOutSpec = null),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         val indication = LocalIndication.current

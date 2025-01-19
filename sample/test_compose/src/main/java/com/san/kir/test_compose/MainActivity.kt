@@ -76,7 +76,7 @@ fun LazyScrollView() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(colors.random())
-                    .animateItem()
+                    .animateItem(fadeInSpec = null, fadeOutSpec = null)
                     .padding(15.dp)
             )
         }

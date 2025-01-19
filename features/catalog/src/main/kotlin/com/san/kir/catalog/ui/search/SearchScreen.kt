@@ -123,7 +123,7 @@ private fun CatalogSelector(
                 vertical = Dimensions.default
             )
         ) {
-            LazyColumn(modifier = Modifier.weight(1f)) {
+            LazyColumn(modifier = Modifier.weight(1f, false)) {
                 items(list.size, key = { it }) { index ->
                     val catalog = list[index]
 

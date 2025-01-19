@@ -52,7 +52,6 @@ internal class ChaptersManager(
     private val currentState: ManagerState get() = state.value
 
     suspend fun init(manga: Manga, chapterId: Long) = withDefaultContext {
-        _state.update { old -> old.copy(color = manga.color) }
 
         val list = chapterRepository.allItems(manga.id)
 
@@ -63,6 +62,15 @@ internal class ChaptersManager(
         val currentPagePosition = maxOf(1, currentChapter.progress)
 
         staticticPosition = currentPagePosition
+
+        _state.update { old ->
+            old.copy(
+                color = manga.color,
+                pagePosition = currentPagePosition,
+                chapterPosition = currentChapterPosition,
+                chapters = chapters,
+            )
+        }
 
         val statisticId = statisticsRepository.idByMangaId(manga.id)
 
@@ -82,8 +90,6 @@ internal class ChaptersManager(
 
         _state.update { old ->
             old.copy(
-                pagePosition = currentPagePosition,
-                chapterPosition = currentChapterPosition,
                 chapters = chapters.updatePages(currentChapterPosition),
             ).preparePages()
         }

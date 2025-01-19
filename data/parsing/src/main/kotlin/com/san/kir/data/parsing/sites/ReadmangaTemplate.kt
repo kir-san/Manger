@@ -230,7 +230,6 @@ internal abstract class ReadmangaTemplate(private val connectManager: ConnectMan
 
             if (checkAuthorization(doc)) throw AuthorizationException()
             val html = doc.body().html()
-            Timber.v(html)
 
             var list = tryReaderDoInit(html)
             if (list.isEmpty()) {
@@ -267,6 +266,7 @@ internal abstract class ReadmangaTemplate(private val connectManager: ConnectMan
         if (pat.find()) {
             val group = pat.group()
             val data = group.replace("rm_h.readerDoInit(", "")
+            Timber.v("data: $data")
             val json = JSONArray(data)
             Timber.v("json: $json")
             repeat(json.length()) { index ->
@@ -284,7 +284,10 @@ internal abstract class ReadmangaTemplate(private val connectManager: ConnectMan
         if (pat.find()) {
             val group = pat.group()
             val data = group.replace("rm_h.readerInit(", "[").replace(");", "]")
-            val json = JSONArray(data).getJSONArray(1)
+            Timber.v("data: $data")
+            var json = JSONArray(data).optJSONArray(1)
+            if (json == null) json = JSONArray(data).optJSONArray(0)
+            if (json == null) return emptyList()
             Timber.v("json: $json")
             repeat(json.length()) { index ->
                 val jsonArray = json.getJSONArray(index)

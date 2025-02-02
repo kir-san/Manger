@@ -2,13 +2,17 @@ package com.san.kir.core.internet
 
 import android.app.Application
 import android.graphics.BitmapFactory
+import com.san.kir.core.utils.asHttps
 import com.san.kir.core.utils.coroutines.withIoContext
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.BrowserUserAgent
+import io.ktor.client.plugins.HttpSend
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.onDownload
+import io.ktor.client.plugins.plugin
+import io.ktor.client.request.cookie
 import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.get
 import io.ktor.client.request.headers
@@ -23,6 +27,7 @@ import io.ktor.util.StringValuesBuilderImpl
 import kotlinx.coroutines.delay
 import okhttp3.Cache
 import okhttp3.CacheControl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.logging.HttpLoggingInterceptor
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -43,9 +48,9 @@ public class ConnectManager(context: Application) {
     private val cookieJar = AndroidCookieJar()
 
     private val defaultClient by lazy {
-        HttpClient(OkHttp) {
+        val client = HttpClient(OkHttp) {
 
-            expectSuccess = true
+            expectSuccess = false
 
             engine {
                 config {
@@ -67,6 +72,15 @@ public class ConnectManager(context: Application) {
 
             BrowserUserAgent()
         }
+
+        client.plugin(HttpSend).intercept { request ->
+            val url = request.url.buildString()
+            val cookies = cookieJar.get(url.toHttpUrl())
+            cookies.forEach { request.cookie(it.name, it.value) }
+            execute(request)
+        }
+
+        client
     }
 
     private val retryKey = "Retry-After"
@@ -78,13 +92,16 @@ public class ConnectManager(context: Application) {
     public suspend fun getDocument(
         url: String = "",
         formParams: Parameters? = null,
+        ignoreNotFound: Boolean = false,
     ): Document = withIoContext {
-        val response =
-            formParams
+        val response = formParams
                 ?.let { defaultClient.submitForm(url.prepare(), it) }
                 ?: defaultClient.get(url.prepare())
 
         Timber.d("url $url\nresponce -> ${response.status}")
+
+        val successResult = suspend { Jsoup.parse(response.bodyAsText(), url) }
+
         when (response.status) {
             HttpStatusCode.TooManyRequests -> {
                 val toMultimap = response.headers
@@ -98,11 +115,12 @@ public class ConnectManager(context: Application) {
             }
 
             HttpStatusCode.NotFound -> {
-                throw PageNotFoundException()
+                if (ignoreNotFound.not()) throw PageNotFoundException()
+                return@withIoContext successResult()
             }
 
             else -> {
-                return@withIoContext Jsoup.parse(response.bodyAsText(), url)
+                return@withIoContext successResult()
             }
         }
         Document("")
@@ -155,15 +173,7 @@ public class ConnectManager(context: Application) {
 
     public fun prepareUrl(url: String): String = url.removeSurrounding("\"", "\"")
 
-    private fun String.prepare(): String {
-        val prepare = trim().removeSurrounding("\"", "\"").trim()
-        return if (prepare.contains("http").not()) {
-            prepare.removePrefix("/").removePrefix("/")
-            "https://$prepare"
-        } else {
-            prepare
-        }
-    }
+    private fun String.prepare(): String = asHttps()
 
     private suspend fun download(
         url: String,

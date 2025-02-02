@@ -1,6 +1,8 @@
 package com.san.kir.data.parsing
 
 import com.san.kir.core.internet.ConnectManager
+import com.san.kir.core.utils.asHttp
+import com.san.kir.core.utils.asHttps
 import com.san.kir.data.models.catalog.SiteCatalogElement
 import com.san.kir.data.models.main.Chapter
 import com.san.kir.data.models.main.Manga
@@ -40,7 +42,9 @@ public abstract class SiteCatalogAlternative : SiteCatalog()
 
 internal fun SiteCatalog.getShortLink(fullLink: String): String {
     val foundedCatalogs = allCatalogName
-        .filter { catalog -> fullLink.contains(catalog, true) }
+        .filter { catalog ->
+            fullLink.startsWith(catalog.asHttp(), true) || fullLink.startsWith(catalog.asHttps(), true)
+        }
 
     val shortLink: String
     if (foundedCatalogs.size == 1 || fullLink.contains(catalogName, true)) {

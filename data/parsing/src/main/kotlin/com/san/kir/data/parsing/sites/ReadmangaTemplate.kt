@@ -18,7 +18,7 @@ import org.jsoup.nodes.Element
 import timber.log.Timber
 import java.util.regex.Pattern
 
-internal abstract class ReadmangaTemplate(private val connectManager: ConnectManager) :
+internal abstract class ReadmangaTemplate(protected val connectManager: ConnectManager) :
     SiteCatalogClassic() {
 
     override val catalog
@@ -60,14 +60,9 @@ internal abstract class ReadmangaTemplate(private val connectManager: ConnectMan
         val status = doc.select("#mangaBox .leftContent .expandable .subject-meta p")
 
         val statusEdition = when {
-            status.first()?.text()?.contains(Status.SINGLE, true) == true ->
-                Status.SINGLE
-
-            status.first()?.text()?.contains(Status.NOT_COMPLETE, true) == true ->
-                Status.NOT_COMPLETE
-
-            else ->
-                Status.COMPLETE
+            status.first()?.text()?.contains(Status.SINGLE, true) == true -> Status.SINGLE
+            status.first()?.text()?.contains(Status.NOT_COMPLETE, true) == true -> Status.NOT_COMPLETE
+            else -> Status.COMPLETE
         }
 
         val statusTranslate =
@@ -225,26 +220,25 @@ internal abstract class ReadmangaTemplate(private val connectManager: ConnectMan
 
         //        delay(1.seconds)
 
-        kotlin.runCatching {
-            val doc = connectManager.getDocument("$host$shortLink?mtr=1")
+        return runCatching {
+            val doc = documentForPages(shortLink)
 
             if (checkAuthorization(doc)) throw AuthorizationException()
             val html = doc.body().html()
 
             var list = tryReaderDoInit(html)
             if (list.isEmpty()) {
-               list = tryReaderInit(html)
+                list = tryReaderInit(html)
             }
 
             val clearUrls = if (list.isNotEmpty()) {
+                if (list.any { it.contains("/static/deleted.jpg", true) }) throw AuthorizationException()
+
                 val response = runCatching { connectManager.url(list.first()) }.getOrNull()
                 Timber.w("$response")
 
                 if (response != null && !response.request.url.host.contains("wikimedia", true)) {
-                    response.status in listOf(
-                        HttpStatusCode.Forbidden,
-                        HttpStatusCode.MultipleChoices
-                    )
+                    response.status in listOf(HttpStatusCode.Forbidden, HttpStatusCode.MultipleChoices)
                 } else {
                     true
                 }
@@ -254,11 +248,14 @@ internal abstract class ReadmangaTemplate(private val connectManager: ConnectMan
                 if (it.contains("?t=") && clearUrls) it.split("?t=").first()
                 else it
             }
-        }.onFailure(Timber.Forest::e)
-        return emptyList()
+        }.onFailure(Timber.Forest::e).getOrThrow()
     }
 
     open fun checkAuthorization(document: Document) = false
+
+    protected open suspend fun documentForPages(shortLink: String): Document {
+        return connectManager.getDocument("$host$shortLink?mtr=1")
+    }
 
     private fun tryReaderDoInit(html: String): List<String> {
         val list = mutableListOf<String>()

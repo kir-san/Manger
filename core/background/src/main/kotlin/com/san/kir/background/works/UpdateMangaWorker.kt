@@ -83,7 +83,7 @@ internal class UpdateMangaWorker(
                 if (oldInNew.isNotEmpty()) chaptersRepository.delete(oldInNew.map { it.ch.id })
 
                 /** Сохраняем все оставшиеся главы в БД */
-                chaptersRepository.save(new.map { it.ch.copy(id = 0) })
+                chaptersRepository.save(new.distinct().map { it.ch.copy(id = 0) })
 
                 updateCurrentTask { copy(newChapters = new.size - oldInNew.size) }
             }

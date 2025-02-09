@@ -128,7 +128,7 @@ internal fun Chapters(all: Int, read: Int) {
 @Composable
 private fun Score(inAccount: Boolean, mangaScore: Float, userScore: Int) {
     if (inAccount) {
-        TextWithFirstWordBold(stringResource(R.string.profile_item_score, userScore))
+        TextWithFirstWordBold(stringResource(R.string.profile_item_score, userScore.toFloat()))
     } else {
         TextWithFirstWordBold(stringResource(R.string.profile_item_score, mangaScore))
     }

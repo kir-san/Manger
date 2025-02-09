@@ -95,8 +95,8 @@ public class ConnectManager(context: Application) {
         ignoreNotFound: Boolean = false,
     ): Document = withIoContext {
         val response = formParams
-                ?.let { defaultClient.submitForm(url.prepare(), it) }
-                ?: defaultClient.get(url.prepare())
+            ?.let { defaultClient.submitForm(url.prepare(), it) }
+            ?: defaultClient.get(url.prepare())
 
         Timber.d("url $url\nresponce -> ${response.status}")
 
@@ -187,7 +187,7 @@ public class ConnectManager(context: Application) {
             defaultClient.get(url.prepare()) {
                 headers { headers?.let(::appendAll) }
                 onDownload { bytesSentTotal, contentLength ->
-                    onProgress(bytesSentTotal.toFloat() / contentLength)
+                    if (contentLength != null) onProgress(bytesSentTotal.toFloat() / contentLength)
                 }
             }.apply { contentLength = contentLength() ?: 1 }.body()
 

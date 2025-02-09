@@ -108,3 +108,4 @@
 }
 
 -dontwarn java.lang.invoke.*
+-dontwarn org.slf4j.impl.StaticLoggerBinder

@@ -1,6 +1,7 @@
 package com.san.kir.features.accounts.shikimori.logic.api
 
 import android.net.Uri
+import androidx.core.net.toUri
 import io.ktor.http.Parameters
 import io.ktor.http.plus
 
@@ -34,7 +35,7 @@ internal object ShikimoriData {
 
 
     val authorizeUrl: Uri =
-        Uri.parse("$BASE_URL/oauth/authorize")
+        "$BASE_URL/oauth/authorize".toUri()
             .buildUpon()
             .appendQueryParameter("client_id", CLIENT_ID)
             .appendQueryParameter("redirect_uri", REDIRECT_URI)

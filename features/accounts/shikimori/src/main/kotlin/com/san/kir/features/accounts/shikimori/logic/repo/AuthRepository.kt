@@ -53,9 +53,7 @@ internal class AuthRepository(
         currentAuth = currentAuth.copy(user = user)
 
         if (accountId != null) {
-            accountRepository.update(
-                accountId, ManualDI.jsonToString(currentAuth)
-            )
+            accountRepository.update(accountId, ManualDI.jsonToString(currentAuth))
         }
 
         return currentAuth
@@ -77,10 +75,13 @@ internal class AuthRepository(
 
     suspend fun user(): User? = withIoContext {
         runCatching {
-            client.post(ShikimoriApi.Graphql(), GraphQLQueries.queryCurrentUser())
-                .body<GraphQLResult>()
-                .data
-                .whoami
+            val response = client.post(ShikimoriApi.Graphql(), GraphQLQueries.queryCurrentUser())
+
+            val user = runCatching { response.body<GraphQLResult>().data.whoami }
+                .onFailure(Timber.Forest::e)
+                .getOrNull()
+
+            user ?: runCatching { response.body<User>() }.onFailure(Timber.Forest::e).getOrNull()
         }
             .onFailure(Timber.Forest::e)
             .getOrNull()

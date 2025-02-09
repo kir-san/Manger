@@ -29,6 +29,7 @@ import io.ktor.http.Parameters
 import io.ktor.http.URLProtocol
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import io.ktor.util.AttributeKey
 import kotlinx.serialization.json.Json
 import okhttp3.Cache
 import okhttp3.logging.HttpLoggingInterceptor
@@ -128,6 +129,11 @@ internal class InternetClient(cache: Cache, json: Json) {
                 val newToken: TokenContainer = tokenCall.body()
                 onTokenUpdateAction(newToken)
                 tokenContainer = newToken
+            }
+
+            if (tokenCall.response.status == HttpStatusCode.BadRequest) {
+                tokenCall.attributes.put(AttributeKey<Boolean>("ExpectSuccessAttributeKey"), false)
+                return@intercept tokenCall
             }
 
             tokenContainer?.let { request.addHeader(it.accessToken) }

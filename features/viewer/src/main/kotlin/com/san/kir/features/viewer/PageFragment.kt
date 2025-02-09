@@ -96,11 +96,18 @@ internal class PageFragment : Fragment() {
         binding.viewer.setRegionDecoderFactory { SkiaPooledImageRegionDecoder() }
         binding.viewer.setExecutor(Executors.newCachedThreadPool())
 
-        // Настройка кнопки обновления
-        binding.update.setOnClickListener {
-            showUI(binding.update, VisibleState(false))
+        // Настройка кнопки перезагрузки главы
+        binding.reloadPages.setOnClickListener {
+            showUI(binding.reloads, VisibleState(false))
             images.setInitState()
             viewModel.updatePagesForChapter().invokeOnCompletion { images.load(page, true) }
+        }
+
+        // Настройка кнопки перезагрузки текущей страницы
+        binding.reload.setOnClickListener {
+            showUI(binding.reloads, VisibleState(false))
+            images.setInitState()
+            images.load(page, true)
         }
     }
 
@@ -142,6 +149,7 @@ internal class PageFragment : Fragment() {
                             binding.progress.isVisible = false
                             binding.progressText.isVisible = false
                             binding.errorText.isVisible = true
+                            showUI(binding.reloads, VisibleState(true))
                         }
 
                         LoadState.Init -> {
@@ -161,8 +169,7 @@ internal class PageFragment : Fragment() {
                             binding.errorText.isVisible = false
                             binding.progressText.isVisible = false
                             binding.viewer.setImage(state.image)
-                            viewModel.chaptersManager
-                                .updateStatisticData(state.imageSize, state.downloadTime)
+                            viewModel.chaptersManager.updateStatisticData(state.imageSize, state.downloadTime)
                         }
                     }
                 }.launchIn(this)
@@ -171,7 +178,7 @@ internal class PageFragment : Fragment() {
             viewModel
                 .visibleUI
                 .flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
-                .onEach { showUI(binding.update, it) }
+                .onEach { showUI(binding.reloads, it) }
                 .launchIn(this)
 
             viewModel
@@ -185,8 +192,8 @@ internal class PageFragment : Fragment() {
                 .filter { it.color != 0 }
                 .onEach { state ->
                     binding.apply {
-                        context?.setContainerColor(state.color, update, progress)
-                        setContentColor(state.color, update, progressText, progress)
+                        context?.setContainerColor(state.color, reload, reloadPages, progress)
+                        setContentColor(state.color, reload, reloadPages, progressText, progress)
                     }
                 }
                 .launchIn(this)
@@ -197,7 +204,8 @@ internal class PageFragment : Fragment() {
         super.onDestroyView()
         binding.viewer.setOnTouchListener(null)
         binding.viewer.setOnImageEventListener(null)
-        binding.update.setOnClickListener(null)
+        binding.reload.setOnClickListener(null)
+        binding.reloadPages.setOnClickListener(null)
         _binding = null
     }
 

@@ -11,19 +11,39 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <ImageButton
-        android:id="@+id/update"
+    <LinearLayout
+        android:id="@+id/reloads"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/round_button"
-        android:clickable="true"
-        android:contentDescription="@string/reload_image_button"
-        android:focusable="true"
-        android:padding="16dp"
-        android:visibility="visible"
-        app:srcCompat="@drawable/ic_update" />
+        android:layout_marginBottom="16dp">
+
+        <ImageButton
+            android:id="@+id/reload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/round_button"
+            android:clickable="true"
+            android:contentDescription="@string/reload_image_button"
+            android:focusable="true"
+            android:padding="16dp"
+            android:visibility="visible"
+            app:srcCompat="@drawable/ic_update" />
+
+        <ImageButton
+            android:id="@+id/reload_pages"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/round_button"
+            android:clickable="true"
+            android:contentDescription="@string/reload_image_button"
+            android:layout_marginStart="16dp"
+            android:focusable="true"
+            android:padding="16dp"
+            android:visibility="visible"
+            app:srcCompat="@drawable/ic_reload_pages" />
+
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/progress"
@@ -31,9 +51,9 @@
         android:layout_width="72dp"
         android:layout_height="72dp"
         android:layout_gravity="center"
+        android:alpha="0.9"
         android:background="@drawable/bgr_progress"
         android:indeterminate="true"
-        android:alpha="0.9"
         tools:visibility="visible" />
 
     <TextView
@@ -62,6 +82,6 @@
         android:textSize="16sp"
         android:textStyle="bold"
         tools:text="@string/error_argument"
-        tools:visibility="gone"/>
+        tools:visibility="gone" />
 
 </FrameLayout>

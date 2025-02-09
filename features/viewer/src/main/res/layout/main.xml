@@ -136,6 +136,19 @@
             android:layout_marginRight="24dp"
             android:text="@string/data_loading"
             android:textAlignment="center"/>
+        <ImageButton
+            android:id="@+id/reload_pages"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/round_button"
+            android:clickable="true"
+            android:contentDescription="@string/reload_image_button"
+            android:layout_marginTop="16dp"
+            android:focusable="true"
+            android:padding="16dp"
+            android:visibility="visible"
+            android:layout_gravity="center_horizontal"
+            app:srcCompat="@drawable/ic_reload_pages" />
     </LinearLayout>
 
 </FrameLayout>

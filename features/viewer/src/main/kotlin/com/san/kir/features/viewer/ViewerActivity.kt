@@ -95,6 +95,13 @@ internal class ViewerActivity : AppCompatActivity() {
         binding.next.setOnClickListener { lifecycleScope.defaultLaunch { viewModel.chaptersManager.nextChapter() } }
         binding.prev.setOnClickListener { lifecycleScope.defaultLaunch { viewModel.chaptersManager.prevChapter() } }
         binding.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        binding.reloadPages.setOnClickListener {
+            lifecycleScope.defaultLaunch { viewModel.chaptersManager.updatePagesForCurrentChapter() }
+            binding.reloadPages.isVisible = false
+            binding.loaderText.setText(R.string.data_loading)
+            binding.loader.isVisible = true
+            binding.loaderContainer.isVisible = true
+        }
     }
 
     override fun onResume() {
@@ -174,6 +181,7 @@ internal class ViewerActivity : AppCompatActivity() {
                     binding.pager.isInvisible = state.pages.isEmpty()
                     binding.loaderContainer.isVisible = state.pages.isEmpty()
                     binding.loader.isVisible = state.pages.isEmpty()
+                    binding.reloadPages.isVisible = false
                     binding.loaderText.setText(R.string.data_loading)
                 } else {
                     viewModel.toggleVisibilityUI(true, true)
@@ -186,6 +194,7 @@ internal class ViewerActivity : AppCompatActivity() {
                         is ErrorState.NotFoundError -> getString(R.string.not_found_error_loading)
                         ErrorState.None -> ""
                     }
+                    binding.reloadPages.isVisible = true
                 }
 
                 // обновление прогрессбара
@@ -228,8 +237,10 @@ internal class ViewerActivity : AppCompatActivity() {
                 // Обновление цветов
                 if (state.color != 0) {
                     binding.apply {
-                        setContainerColor(state.color, prev, next, appbar)
-                        setContentColor(state.color, prev, next, back, title, stopwatch, chaptersText, pagesText)
+                        setContainerColor(state.color, prev, next, appbar, reloadPages)
+                        setContentColor(
+                            state.color, prev, next, back, title, stopwatch, chaptersText, pagesText, reloadPages
+                        )
                     }
                 }
             }

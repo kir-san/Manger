@@ -135,12 +135,11 @@ internal class AccountItemViewModel(
     private fun checkAccountAccess(nickname: String) = defaultLaunch {
         hasCheck = true
         auth = authRepository.whoami(auth, accountId) ?: return@defaultLaunch
-        loginState.value =
-            if (auth.hasUser) {
-                LoginState.Ok(accountId, auth.user.nickname, auth.user.avatar)
-            } else {
-                LoginState.LogInError(nickname)
-            }
+        loginState.value = if (auth.hasUser) {
+            LoginState.Ok(accountId, auth.user.nickname, auth.user.avatar)
+        } else {
+            LoginState.LogInError(nickname)
+        }
     }
 
     private fun subscribeOnGlobalEvents(eventBus: EventBus) {

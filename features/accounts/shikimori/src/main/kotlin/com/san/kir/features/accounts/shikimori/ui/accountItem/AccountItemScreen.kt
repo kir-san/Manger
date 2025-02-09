@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.san.kir.core.compose.Dimensions
+import com.san.kir.core.compose.HalfSpacer
 import com.san.kir.core.compose.animation.FromBottomToTopAnimContent
 import com.san.kir.core.compose.animation.FromEndToEndAnimContent
 import com.san.kir.core.compose.animation.SharedParams
@@ -113,14 +114,9 @@ private fun LoginOrNot(
             FromBottomToTopAnimContent(state) {
                 when (it) {
                     is LoginState.Ok, is LoginState.LogInCheck -> Row {
-                        Text(stringResource(R.string.login_text))
-                        Image(
-                            rememberImage(it.logo),
-                            "",
-                            modifier = Modifier
-                                .size(Dimensions.Image.mini)
-                                .padding(start = Dimensions.half),
-                        )
+                        Text(stringResource(R.string.login_text, it.nickName))
+                        HalfSpacer()
+                        Image(rememberImage(it.logo), "", modifier = Modifier.size(Dimensions.Image.mini))
                     }
 
                     is LoginState.Error -> {

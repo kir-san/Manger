@@ -19,7 +19,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
@@ -41,6 +40,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import kotlin.time.Duration.Companion.seconds
 
 public object MangaViewer {
@@ -170,66 +170,58 @@ internal class ViewerActivity : AppCompatActivity() {
         viewModel.chaptersManager.state
             .flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
             .onEach { state ->
-                //                Timber.i("state -> $state")
-                if (state.error is ErrorState.None) {
-                    if (state.pages.isEmpty()) {
-                        viewModel.toggleVisibilityUI(true, true)
-                    } else {
-                        viewModel.toggleVisibilityUI(viewModel.visibleUI.value.isShown)
-                    }
+                Timber.i("state -> $state")
 
-                    binding.pager.isInvisible = state.pages.isEmpty()
-                    binding.loaderContainer.isVisible = state.pages.isEmpty()
-                    binding.loader.isVisible = state.pages.isEmpty()
-                    binding.reloadPages.isVisible = false
-                    binding.loaderText.setText(R.string.data_loading)
-                } else {
+                // ---
+                binding.loaderText.text = when (val error = state.error) {
+                    is ErrorState.AuthError -> getString(R.string.auth_error_loading, error.catalogName)
+                    is ErrorState.BaseError -> getString(R.string.error_loading, error.text)
+                    is ErrorState.NotFoundError -> getString(R.string.not_found_error_loading)
+                    ErrorState.None -> getString(R.string.data_loading)
+                }
+                binding.loader.isVisible = state.error is ErrorState.None
+                binding.reloadPages.isVisible = state.error !is ErrorState.None
+
+                // ---
+                binding.loaderContainer.isVisible = state.pages.isEmpty()
+
+                if (state.error !is ErrorState.None || state.pages.isEmpty()) {
                     viewModel.toggleVisibilityUI(true, true)
-                    binding.loaderContainer.isVisible = true
-                    binding.loader.isVisible = false
-
-                    binding.loaderText.text = when (val error = state.error) {
-                        is ErrorState.AuthError -> getString(R.string.auth_error_loading, error.catalogName)
-                        is ErrorState.BaseError -> getString(R.string.error_loading, error.text)
-                        is ErrorState.NotFoundError -> getString(R.string.not_found_error_loading)
-                        ErrorState.None -> ""
-                    }
-                    binding.reloadPages.isVisible = true
+                } else {
+                    viewModel.toggleVisibilityUI(viewModel.visibleUI.value.isShown)
                 }
 
-                // обновление прогрессбара
-                binding.progressBar.max = state.pages.size - 1
-                binding.progressBar.progress = state.pagePosition
-                binding.pagesText.text = ""
-
-                if (state.pages.isNotEmpty()) {
+                binding.pager.isVisible = state.pages.isNotEmpty()
+                if (binding.pager.isVisible) {
                     // Обновление адаптера
                     adapter.setList(state.pages)
-
                     // установка страницы ViewPager
                     if (binding.pager.currentItem != state.pagePosition) {
-                        //                        Timber.v("pagePosition is ${state.pagePosition}")
+                        // Timber.v("pagePosition is ${state.pagePosition}")
                         binding.pager.currentItem = maxOf(0, state.pagePosition)
                     }
-
-                    // Проверка видимости кнопок переключения глав
-                    binding.prev.isEnabled = state.pages.first() is Page.Prev
-                    binding.prev.isVisible = state.pages.first() is Page.Prev
-                    binding.next.isEnabled = state.pages.last() is Page.Next
-                    binding.next.isVisible = state.pages.last() is Page.Next
-
-                    // Обновление статуса прочитанных страниц
-                    binding.pagesText.text = getString(
-                        R.string.viewer_pages_text, state.pagePosition, state.pages.size
-                    )
                 }
+
+                // Проверка видимости кнопок переключения глав
+                binding.prev.isEnabled = state.pages.firstOrNull() is Page.Prev
+                binding.prev.isVisible = state.pages.firstOrNull() is Page.Prev
+                binding.next.isEnabled = state.pages.lastOrNull() is Page.Next
+                binding.next.isVisible = state.pages.lastOrNull() is Page.Next
+
+                // Обновление статуса прочитанных страниц
+                binding.pagesText.isVisible = state.pagePosition >= 0 && state.pages.isNotEmpty()
+                binding.pagesText.text = getString(R.string.viewer_pages_text, state.pagePosition, state.pages.size)
+
+                // обновление прогрессбара
+                binding.progressBar.isVisible = state.pagePosition >= 0 && state.pages.isNotEmpty()
+                binding.progressBar.max = state.pages.size - 1
+                binding.progressBar.progress = state.pagePosition
 
                 // статуса прочитанных глав
-                if (state.chapters.isNotEmpty()) {
-                    binding.chaptersText.text = getString(
-                        R.string.viewer_chapters_text, state.uiChapterPosition, state.chapters.size
-                    )
-                }
+                binding.chaptersText.isVisible = state.chapters.isNotEmpty()
+                binding.chaptersText.text = getString(
+                    R.string.viewer_chapters_text, state.uiChapterPosition, state.chapters.size
+                )
 
                 // Обновление заголовка
                 binding.title.text = state.currentChapter.name

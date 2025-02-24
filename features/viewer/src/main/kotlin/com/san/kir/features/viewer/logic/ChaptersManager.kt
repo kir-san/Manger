@@ -199,19 +199,20 @@ internal data class ManagerState(
 
     val color: Int = 0,
 ) {
-    val uiChapterPosition: Int // Позиция текущей главы для ui
-        get() = chapterPosition + 1
-
-    val currentChapter: Chapter // Текущая глава
-        get() = if (chapterPosition in chapters.indices) chapters[chapterPosition] else Chapter()
+    val uiChapterPosition: Int = chapterPosition + 1
+    val currentChapter: Chapter = if (chapterPosition in chapters.indices) chapters[chapterPosition] else Chapter()
 
     override fun toString(): String {
         return buildString {
+            appendLine()
             appendLine("ManagerState")
             appendLine("\tpages -> ${pages.size}")
             appendLine("\tpage -> $pagePosition")
             appendLine("\tchapters -> ${chapters.size}")
             appendLine("\tchapter -> $chapterPosition")
+            appendLine("\terror -> $error")
+            appendLine("\tcolor -> $color")
+            appendLine("\tcurrent -> $currentChapter")
         }
     }
 }

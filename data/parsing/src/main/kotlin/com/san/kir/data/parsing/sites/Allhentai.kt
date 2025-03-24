@@ -30,7 +30,11 @@ internal class Allhentai(connectManager: ConnectManager) : ReadmangaTemplate(con
     override var volume = 0
 
     override val allCatalogName: List<String>
-        get() = super.allCatalogName + "allhentai.ru" + "23.allhen.online" + "22.allhen.online" + "2023.allhen.online"
+        get() = super.allCatalogName + "allhentai.ru" + "23.allhen.online" + "22.allhen.online" +
+                "2023.allhen.online"
+
+    override val servers: List<String>
+        get() = listOf("d.aaa200.rocks")
 
     override val categories = listOf(
         "3D",
@@ -55,6 +59,6 @@ internal class Allhentai(connectManager: ConnectManager) : ReadmangaTemplate(con
             Timber.v("pat: ${pat.group(1)}")
         }
         val hash = userHashes.filterNotNull().random()
-        return  connectManager.getDocument("$host$shortLink?d=$hash", ignoreNotFound = true)
+        return connectManager.getDocument("$host$shortLink?d=$hash", ignoreNotFound = true)
     }
 }

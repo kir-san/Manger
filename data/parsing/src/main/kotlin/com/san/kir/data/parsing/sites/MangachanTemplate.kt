@@ -178,10 +178,9 @@ internal abstract class MangachanTemplate(private val connectManager: ConnectMan
             .compile("\"fullimg\":\\[.+")
             .matcher(connectManager.getDocument(host + shortLink).select("#content").html())
         if (pat.find()) {
-            list = pat.group()
-                .removeSuffix(",]")
-                .removePrefix("\"fullimg\":[")
-                .split(",")
+            val data = pat.group()
+            Timber.d("data: $data")
+            list = data.removeSuffix(",]").removePrefix("\"fullimg\":[").split(",")
         }
         return list
     }

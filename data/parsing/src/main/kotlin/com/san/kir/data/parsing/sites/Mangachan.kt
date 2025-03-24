@@ -16,13 +16,13 @@ internal class Mangachan(connectManager: ConnectManager) : MangachanTemplate(con
 
     override val headers: StringValues
         get() = StringValuesBuilderImpl(true, 1).apply {
-            append("referer", HOST_NAME)
+            append("Referer", host)
         }.build()
     override val allCatalogName: List<String>
-        get() = super.allCatalogName + "mangachan.ru" + "mangachan.me"
+        get() = super.allCatalogName + "mangachan.ru" + "mangachan.me" + "manga-chan.me"
 
     companion object {
         const val SITE_NAME = "Манга - тян"
-        const val HOST_NAME = "manga-chan.me"
+        const val HOST_NAME = "im.manga-chan.me"
     }
 }

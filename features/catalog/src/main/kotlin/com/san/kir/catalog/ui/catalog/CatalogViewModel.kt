@@ -37,7 +37,7 @@ internal class CatalogViewModel(
     private val manager: UpdateCatalogManager = ManualDI.updateCatalogManager(),
 ) : ViewModel<CatalogState>(), CatalogStateHolder {
     private val catalogName = siteCatalogManager.catalogName(name)
-    private val siteCatalog = siteCatalogManager.catalogByName(name)
+    private val siteCatalog = siteCatalogManager.catalog(name)
     private val catalogItems = MutableStateFlow(emptyList<MiniCatalogItem>())
 
     override val filterState = MutableStateFlow(FilterState())

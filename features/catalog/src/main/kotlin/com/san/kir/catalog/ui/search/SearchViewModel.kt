@@ -140,7 +140,7 @@ internal class SearchViewModel(
 
         return mangaRepository.items.mapLatest { mangas ->
             val items = catalogsRepository.items(catalogName)
-            val links = mangas.linksForCatalog(manager.catalogByName(catalogName))
+            val links = mangas.linksForCatalog(manager.catalog(catalogName))
             items.onEach { item ->
                 val state = if (links.any { item.shortLink in it }) {
                     MiniCatalogItem.State.Update

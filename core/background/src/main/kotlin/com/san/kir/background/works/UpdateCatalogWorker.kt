@@ -39,7 +39,7 @@ internal class UpdateCatalogWorker(
         var fullCount = 0
         var lastSavedPercent = 0
         kotlin.runCatching {
-            val site = manager.catalogByName(task.name)
+            val site = manager.catalog(task.name)
             val catalogName = manager.catalogName(site.name)
             site.init()
 

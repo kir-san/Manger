@@ -51,11 +51,6 @@ public class SiteCatalogsManager(
         }
     }
 
-    public fun catalogByName(catalogName: String): SiteCatalog {
-        return catalog.firstOrNull { it.name == catalogName }
-            ?: catalog.first { it.catalogName == catalogName }
-    }
-
     public suspend fun chapters(manga: Manga): List<Chapter> = catalog(manga.host).chapters(manga)
 
     // Загрузка полной информации для элемента в каталоге
@@ -80,7 +75,7 @@ public class SiteCatalogsManager(
         }
 
     public fun catalogName(siteName: String): String {
-        val first = catalogByName(siteName)
+        val first = catalog(siteName)
         var catName = first.catalogName
         first.allCatalogName
             .firstOrNull { getFullPath(DIR.catalogName(it)).exists() }

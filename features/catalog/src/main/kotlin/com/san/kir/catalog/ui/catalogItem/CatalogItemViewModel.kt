@@ -26,7 +26,7 @@ internal class CatalogItemViewModel(
     private val mangaRepository: MangaRepository = ManualDI.mangaRepository(),
 ) : ViewModel<CatalogItemState>(), CatalogItemStateHolder {
     private val catalogName = manager.catalogName(item.catalogName)
-    private val siteCatalog = manager.catalogByName(item.catalogName)
+    private val siteCatalog = manager.catalog(item.catalogName)
 
     private val itemFlow = MutableStateFlow(item)
     private val background = MutableStateFlow<BackgroundState>(BackgroundState.Load)

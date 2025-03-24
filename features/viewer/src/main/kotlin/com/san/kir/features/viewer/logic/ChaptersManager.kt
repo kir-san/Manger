@@ -88,15 +88,7 @@ internal class ChaptersManager(
         )
         statisticsRepository.save(statisticItem)
 
-        _state.update { old ->
-            old.copy(
-                chapters = chapters.updatePages(currentChapterPosition),
-            ).preparePages()
-        }
-    }
-
-    suspend fun updatePagesForCurrentChapter(chapter: Chapter = currentState.currentChapter) {
-        updateCurrentChapter(chapter.withUpdatedPages())
+        updatePagesForChapter(chapters, currentChapterPosition)
     }
 
     suspend fun nextPage() = updatePagePosition(currentState.pagePosition + 1)
@@ -108,7 +100,8 @@ internal class ChaptersManager(
             old.copy(pagePosition = 1, chapterPosition = old.chapterPosition + 1, pages = emptyList())
         }
 
-        _state.update { old -> old.copy(chapters = old.chapters.updatePages(old.chapterPosition)).preparePages() }
+        updatePagesForChapter()
+
         statisticItem = statisticItem.copy(
             lastChapters = statisticItem.lastChapters + 1,
             allChapters = statisticItem.allChapters + 1,
@@ -126,10 +119,6 @@ internal class ChaptersManager(
 
     private fun findChapterPosition(chapters: List<Chapter>, chapterId: Long): Int {
         return (0..chapters.lastIndex).firstOrNull { chapters[it].id == chapterId } ?: 0
-    }
-
-    private fun updateCurrentChapter(chapter: Chapter) {
-        _state.update { old -> old.copy(chapters = old.chapters.set(old.chapterPosition, chapter)).preparePages() }
     }
 
     private suspend fun saveProgress(pos: Int) { // Сохранение позиции текущей главы
@@ -163,39 +152,54 @@ internal class ChaptersManager(
         }
     }
 
-    // Если страницы пустые, то обновляем их
     private suspend fun Chapter.withUpdatedPages(): Chapter {
-        val pages = runCatching { siteCatalogManager.pages(this) }
-            .onFailure { ex ->
-                Timber.v(ex)
-                val errorState = when (ex) {
-                    is AuthorizationException -> ErrorState.AuthError(siteCatalogManager.catalog(link).name)
-                    is PageNotFoundException -> ErrorState.NotFoundError
-                    else -> ErrorState.BaseError(ex.localizedMessage ?: "Unknown error")
-                }
-                _state.update { it.copy(error = errorState) }
-            }
-            .getOrDefault(emptyList())
-        val chapter = copy(pages = pages)
-        chapterRepository.save(chapter)
+        val pages =  siteCatalogManager.pages(this)
+        var chapter = copy(pages = pages)
+        if (pages.isNotEmpty()) {
+            chapterRepository.save(chapter)
+        }
         return chapter
     }
 
-    private suspend fun List<Chapter>.updatePages(chapterPosition: Int): List<Chapter> {
-        val chapter = get(chapterPosition)
-        return if (chapter.pages.all { it.isBlank() }.not()) this
-        else set(chapterPosition, get(chapterPosition).withUpdatedPages())
+    suspend fun updatePagesForChapter(
+        chapters: List<Chapter> = _state.value.chapters,
+        chapterPosition: Int = _state.value.chapterPosition,
+        force: Boolean = false,
+    ) {
+        Timber.d("updatePagesForChapter(chapter: ${chapters.size}, chapterPosition: $chapterPosition)")
+        _state.update { it.copy(loadState = State.Load) }
+
+        val chapter = chapters[chapterPosition]
+        runCatching {
+            val chapters =
+                if (!force && chapter.pages.all { it.isBlank() }.not()) {
+                    chapters
+                } else {
+                    chapters.set(chapterPosition, chapter.withUpdatedPages())
+                }
+            _state.update { old -> old.copy(chapters = chapters, loadState = State.Success).preparePages() }
+        }.onFailure { ex ->
+            Timber.v(ex)
+            val errorState = when (ex) {
+                is AuthorizationException -> ErrorState.AuthError(siteCatalogManager.catalog(chapter.link).name)
+                is PageNotFoundException -> ErrorState.NotFoundError
+                else -> ErrorState.BaseError(ex.localizedMessage ?: "Unknown error")
+            }
+            _state.update { it.copy(loadState = State.Error(errorState)) }
+        }
+
     }
+
 }
 
 internal data class ManagerState(
+    val loadState: State = State.Load,
+
     val pages: List<Page> = emptyList(), // Список страниц
     val pagePosition: Int = -1,
 
     val chapters: List<Chapter> = emptyList(), // Список глав
     val chapterPosition: Int = -1, // Позиция текущей глава
-
-    val error: ErrorState = ErrorState.None,
 
     val color: Int = 0,
 ) {
@@ -206,19 +210,24 @@ internal data class ManagerState(
         return buildString {
             appendLine()
             appendLine("ManagerState")
+            appendLine("\tloadState -> $loadState")
             appendLine("\tpages -> ${pages.size}")
             appendLine("\tpage -> $pagePosition")
             appendLine("\tchapters -> ${chapters.size}")
             appendLine("\tchapter -> $chapterPosition")
-            appendLine("\terror -> $error")
             appendLine("\tcolor -> $color")
             appendLine("\tcurrent -> $currentChapter")
         }
     }
 }
 
+internal sealed interface State {
+    data object Load : State
+    data class Error(val error: ErrorState) : State
+    data object Success : State
+}
+
 internal sealed interface ErrorState {
-    data object None : ErrorState
     data object NotFoundError : ErrorState
     data class BaseError(val text: String) : ErrorState
     data class AuthError(val catalogName: String) : ErrorState

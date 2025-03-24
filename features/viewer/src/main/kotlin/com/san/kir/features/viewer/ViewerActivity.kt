@@ -31,6 +31,7 @@ import com.san.kir.data.models.main.Settings
 import com.san.kir.data.models.utils.Orientation
 import com.san.kir.features.viewer.databinding.MainBinding
 import com.san.kir.features.viewer.logic.ErrorState
+import com.san.kir.features.viewer.logic.State
 import com.san.kir.features.viewer.utils.Page
 import com.san.kir.features.viewer.utils.VIEW_OFFSET
 import com.san.kir.features.viewer.utils.setContainerColor
@@ -96,7 +97,7 @@ internal class ViewerActivity : AppCompatActivity() {
         binding.prev.setOnClickListener { lifecycleScope.defaultLaunch { viewModel.chaptersManager.prevChapter() } }
         binding.back.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         binding.reloadPages.setOnClickListener {
-            lifecycleScope.defaultLaunch { viewModel.chaptersManager.updatePagesForCurrentChapter() }
+            viewModel.updatePagesForChapter()
             binding.reloadPages.isVisible = false
             binding.loaderText.setText(R.string.data_loading)
             binding.loader.isVisible = true
@@ -173,22 +174,27 @@ internal class ViewerActivity : AppCompatActivity() {
                 Timber.i("state -> $state")
 
                 // ---
-                binding.loaderText.text = when (val error = state.error) {
-                    is ErrorState.AuthError -> getString(R.string.auth_error_loading, error.catalogName)
-                    is ErrorState.BaseError -> getString(R.string.error_loading, error.text)
-                    is ErrorState.NotFoundError -> getString(R.string.not_found_error_loading)
-                    ErrorState.None -> getString(R.string.data_loading)
+                binding.loaderText.text = when (val load = state.loadState) {
+                    is State.Error -> when(val error = load.error) {
+                        is ErrorState.AuthError -> getString(R.string.auth_error_loading, error.catalogName)
+                        is ErrorState.BaseError -> getString(R.string.error_loading, error.text)
+                        is ErrorState.NotFoundError -> getString(R.string.not_found_error_loading)
+                    }
+                    State.Load -> getString(R.string.data_loading)
+                    State.Success -> ""
                 }
-                binding.loader.isVisible = state.error is ErrorState.None
-                binding.reloadPages.isVisible = state.error !is ErrorState.None
+                binding.loader.isVisible = state.loadState is State.Load
+                binding.reloadPages.isVisible = state.loadState is State.Error
 
                 // ---
-                binding.loaderContainer.isVisible = state.pages.isEmpty()
+                binding.loaderContainer.isVisible = state.loadState !is State.Success
 
-                if (state.error !is ErrorState.None || state.pages.isEmpty()) {
-                    viewModel.toggleVisibilityUI(true, true)
-                } else {
+                if (state.loadState is State.Success) {
+                    Timber.d("toggleVisibilityUI(${viewModel.visibleUI.value.isShown})")
                     viewModel.toggleVisibilityUI(viewModel.visibleUI.value.isShown)
+                } else {
+                    Timber.d("toggleVisibilityUI(true, true)")
+                    viewModel.toggleVisibilityUI(true, true)
                 }
 
                 binding.pager.isVisible = state.pages.isNotEmpty()

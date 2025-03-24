@@ -114,9 +114,7 @@ internal class ViewerViewModel(
     }
 
     // Обновление списка страниц для текущей главы
-    fun updatePagesForChapter() = viewModelScope.defaultLaunch {
-        chaptersManager.updatePagesForCurrentChapter()
-    }
+    fun updatePagesForChapter() = viewModelScope.defaultLaunch { chaptersManager.updatePagesForChapter(force = true) }
 
     companion object {
         private const val LEFT_SCREEN_PART = 2 / 5f

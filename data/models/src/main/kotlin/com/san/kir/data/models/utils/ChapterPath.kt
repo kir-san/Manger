@@ -23,4 +23,5 @@ public fun String.preparePath(): String {
         .replace(" ", "_")
         .replace("\"", "")
         .replace(":", "")
+        .replace("*", "")
 }

@@ -8,6 +8,7 @@ import com.san.kir.background.logic.di.updateMangaManager
 import com.san.kir.chapters.R
 import com.san.kir.chapters.logic.utils.SelectionHelper
 import com.san.kir.core.utils.ManualDI
+import com.san.kir.core.utils.coroutines.withIoContext
 import com.san.kir.core.utils.coroutines.withMainContext
 import com.san.kir.core.utils.delChapters
 import com.san.kir.core.utils.longToast
@@ -220,19 +221,21 @@ internal class ChaptersViewModel(
         }
     }
 
-    private fun updateMemoryCounts(list: List<SimplifiedChapter>? = null) {
+    private suspend fun updateMemoryCounts(list: List<SimplifiedChapter>? = null) {
         itemsContent.update { oldItems ->
             val countsMap = mutableMapOf<Long, Int>()
 
-            if (list != null) {
-                list.forEach {
-                    val count = it.countPages
-                    if (count > 0) countsMap[it.id] = count
-                }
-            } else {
-                oldItems.items.forEach {
-                    val count = it.chapter.countPages
-                    if (count > 0) countsMap[it.chapter.id] = count
+            withIoContext {
+                if (list != null) {
+                    list.forEach {
+                        val count = it.countPages
+                        if (count > 0) countsMap[it.id] = count
+                    }
+                } else {
+                    oldItems.items.forEach {
+                        val count = it.chapter.countPages
+                        if (count > 0) countsMap[it.chapter.id] = count
+                    }
                 }
             }
 

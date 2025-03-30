@@ -8,13 +8,7 @@ public object DIR {
     public const val MANGA: String = "$ROOT/manga"
     public const val CACHE: String = "$PROFILE/.cache"
     private const val LOCAL = "$MANGA/local"
-    public val ALL: List<String> = listOf(
-        CATALOGS,
-        MANGA,
-        PROFILE,
-        LOCAL,
-        CACHE
-    )
+    public val ALL: List<String> = listOf(CATALOGS, MANGA, PROFILE, LOCAL, CACHE)
 
     public val catalogName: (String) -> String = { "$CATALOGS/$it.db" }
 }

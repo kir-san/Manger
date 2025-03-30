@@ -31,7 +31,5 @@ public data class AccountManga(
 }
 
 public inline fun <reified T> AccountManga.data(): T? {
-    return runCatching { ManualDI.stringToJson<T>(data) }
-        .onFailure { Timber.tag(ManualDI.TAG).e(it) }
-        .getOrNull()
+    return runCatching { ManualDI.stringToJson<T>(data) }.onFailure { Timber.tag(ManualDI.TAG).e(it) }.getOrNull()
 }

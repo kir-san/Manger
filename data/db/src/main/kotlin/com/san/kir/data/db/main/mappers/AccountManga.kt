@@ -5,8 +5,7 @@ import com.san.kir.data.models.main.AccountManga
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-internal fun DbAccountManga.toModel() =
-    AccountManga(id, accountId, idInAccount, idInLibrary, idInSite, data)
+internal fun DbAccountManga.toModel() = AccountManga(id, accountId, idInAccount, idInLibrary, idInSite, data)
 
 @JvmName("toAccountMangaModels")
 internal fun List<DbAccountManga>.toModels() = map(DbAccountManga::toModel)
@@ -18,7 +17,6 @@ internal fun Flow<DbAccountManga?>.toModel() = map { it?.toModel() }
 internal fun Flow<List<DbAccountManga>>.toModels() = map { it.toModels() }
 
 
-internal fun AccountManga.toEntity() =
-    DbAccountManga(id, accountId, targetId, mangaId, libraryId, data)
+internal fun AccountManga.toEntity() = DbAccountManga(id, accountId, targetId, mangaId, libraryId, data)
 
 internal fun List<AccountManga>.toEntities() = map(AccountManga::toEntity)
